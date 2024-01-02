@@ -1,20 +1,23 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import BhaRun from "../../models/bhaRun";
-import { ObjectType } from "../../models/objectType";
-import { colors } from "../../styles/Colors";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
+import {
+  ObjectContextMenuProps,
+  ObjectMenuItems
+} from "components/ContextMenus/ObjectMenuItems";
 import BhaRunPropertiesModal, {
   BhaRunPropertiesModalProps
-} from "../Modals/BhaRunPropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
-import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
+} from "components/Modals/BhaRunPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import BhaRun from "models/bhaRun";
+import { ObjectType } from "models/objectType";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 
 const BhaRunContextMenu = (
   props: ObjectContextMenuProps

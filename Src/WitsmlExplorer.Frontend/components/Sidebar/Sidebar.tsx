@@ -1,18 +1,18 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
+import SearchFilter from "components/Sidebar/SearchFilter";
+import WellItem from "components/Sidebar/WellItem";
+import WellProgress from "components/WellProgress";
+import { useWellFilter } from "contexts/filter";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
 import styled, { CSSProp } from "styled-components";
-import { useWellFilter } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
-import WellProgress from "../WellProgress";
-import SearchFilter from "./SearchFilter";
-import WellItem from "./WellItem";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);

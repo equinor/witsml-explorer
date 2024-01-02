@@ -1,4 +1,4 @@
-import LogObject from "../logObject";
+import LogObject from "models/logObject";
 
 export default interface CheckLogHeaderJob {
   logReference: LogObject;

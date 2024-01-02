@@ -1,28 +1,37 @@
 import { Accordion, List, TextField } from "@equinor/eds-core-react";
-import { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import LogCurveInfo from "../../models/logCurveInfo";
-import LogObject from "../../models/logObject";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import ComponentService from "../../services/componentService";
-import { Colors } from "../../styles/Colors";
 import {
   ContentTable,
   ContentTableColumn,
   ContentType
-} from "../ContentViews/table";
-import formatDateString from "../DateFormatter";
-import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
-import ProgressSpinner from "../ProgressSpinner";
-import { LabelsLayout, StyledTypography } from "./ComparisonModalStyles";
-import { Indexes, calculateMismatchedIndexes } from "./LogComparisonUtils";
-import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
+} from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import {
+  LabelsLayout,
+  StyledTypography
+} from "components/Modals/ComparisonModalStyles";
+import {
+  Indexes,
+  calculateMismatchedIndexes
+} from "components/Modals/LogComparisonUtils";
+import { displayMissingObjectModal } from "components/Modals/MissingObjectModals";
+import ModalDialog, {
+  ModalContentLayout,
+  ModalWidth
+} from "components/Modals/ModalDialog";
+import ProgressSpinner from "components/ProgressSpinner";
+import OperationContext from "contexts/operationContext";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import LogCurveInfo from "models/logCurveInfo";
+import LogObject from "models/logObject";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import { useContext, useEffect, useState } from "react";
+import ComponentService from "services/componentService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
 
 export interface LogComparisonModalProps {
   sourceLog: LogObject;

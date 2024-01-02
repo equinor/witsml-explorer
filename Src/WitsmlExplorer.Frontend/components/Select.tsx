@@ -1,6 +1,6 @@
 import { NativeSelect } from "@equinor/eds-core-react";
 import styled from "styled-components";
-import { Colors } from "../styles/Colors";
+import { Colors } from "styles/Colors";
 
 export const StyledNativeSelect = styled(NativeSelect)<{ colors: Colors }>`
   select {

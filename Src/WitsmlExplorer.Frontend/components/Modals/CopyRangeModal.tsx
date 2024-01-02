@@ -1,21 +1,21 @@
-import React, { useContext, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import {
-  CopyRangeClipboard,
-  createComponentReferences
-} from "../../models/jobs/componentReferences";
-import LogObject, { indexToNumber } from "../../models/logObject";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD,
   WITSML_LOG_ORDERTYPE_DECREASING
-} from "../Constants";
-import ModalDialog from "./ModalDialog";
-import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
+} from "components/Constants";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import {
+  CopyRangeClipboard,
+  createComponentReferences
+} from "models/jobs/componentReferences";
+import LogObject, { indexToNumber } from "models/logObject";
+import React, { useContext, useState } from "react";
 
 export interface CopyRangeModalProps {
   mnemonics: string[];

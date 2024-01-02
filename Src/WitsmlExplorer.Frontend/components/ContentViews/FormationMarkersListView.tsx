@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import FormationMarker from "../../models/formationMarker";
-import { measureToString } from "../../models/measure";
-import StratigraphicStruct from "../../models/stratigraphicStruct";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import FormationMarkerContextMenu from "../ContextMenus/FormationMarkerContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import FormationMarkerContextMenu from "components/ContextMenus/FormationMarkerContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import FormationMarker from "models/formationMarker";
+import { measureToString } from "models/measure";
+import StratigraphicStruct from "models/stratigraphicStruct";
+import React, { useContext, useEffect, useState } from "react";
 
 export interface FormationMarkerRow extends ContentTableRow {
   formationMarker: FormationMarker;

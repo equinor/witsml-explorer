@@ -1,6 +1,6 @@
-import CommonData from "./commonData";
-import MeasureWithDatum from "./measureWithDatum";
-import ObjectOnWellbore from "./objectOnWellbore";
+import CommonData from "models/commonData";
+import MeasureWithDatum from "models/measureWithDatum";
+import ObjectOnWellbore from "models/objectOnWellbore";
 
 export default interface FluidsReport extends ObjectOnWellbore {
   dTim: string;

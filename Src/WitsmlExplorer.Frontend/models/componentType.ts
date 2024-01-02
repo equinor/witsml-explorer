@@ -1,10 +1,10 @@
-import Fluid from "./fluid";
-import GeologyInterval from "./geologyInterval";
-import LogCurveInfo from "./logCurveInfo";
-import { ObjectType } from "./objectType";
-import TrajectoryStation from "./trajectoryStation";
-import TubularComponent from "./tubularComponent";
-import WbGeometrySection from "./wbGeometrySection";
+import Fluid from "models/fluid";
+import GeologyInterval from "models/geologyInterval";
+import LogCurveInfo from "models/logCurveInfo";
+import { ObjectType } from "models/objectType";
+import TrajectoryStation from "models/trajectoryStation";
+import TubularComponent from "models/tubularComponent";
+import WbGeometrySection from "models/wbGeometrySection";
 
 export enum ComponentType {
   GeologyInterval = "GeologyInterval",

@@ -1,11 +1,11 @@
+import { DataItem } from "components/ContentViews/Charts/LogsGraph";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
 import type { ECharts, EChartsOption, SetOptionOpts } from "echarts";
 import { getInstanceByDom, init } from "echarts";
+import { ObjectType } from "models/objectType";
 import type { CSSProperties } from "react";
 import { useContext, useEffect, useRef } from "react";
-import NavigationContext from "../../../contexts/navigationContext";
-import NavigationType from "../../../contexts/navigationType";
-import { ObjectType } from "../../../models/objectType";
-import { DataItem } from "./LogsGraph";
 
 export interface ReactEChartsProps {
   option: EChartsOption;

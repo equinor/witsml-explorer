@@ -1,25 +1,25 @@
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
-} from "../components/Constants";
-import BhaRun from "./bhaRun";
-import ChangeLog from "./changeLog";
-import FluidsReport from "./fluidsReport";
-import FormationMarker from "./formationMarker";
-import LogObject from "./logObject";
-import Measure from "./measure";
-import MessageObject from "./messageObject";
-import MudLog from "./mudLog";
+} from "components/Constants";
+import BhaRun from "models/bhaRun";
+import ChangeLog from "models/changeLog";
+import FluidsReport from "models/fluidsReport";
+import FormationMarker from "models/formationMarker";
+import LogObject from "models/logObject";
+import Measure from "models/measure";
+import MessageObject from "models/messageObject";
+import MudLog from "models/mudLog";
 import {
   ObjectType,
   ObjectTypeToModel,
   pluralizeObjectType
-} from "./objectType";
-import Rig from "./rig";
-import RiskObject from "./riskObject";
-import Trajectory from "./trajectory";
-import Tubular from "./tubular";
-import WbGeometryObject from "./wbGeometry";
+} from "models/objectType";
+import Rig from "models/rig";
+import RiskObject from "models/riskObject";
+import Trajectory from "models/trajectory";
+import Tubular from "models/tubular";
+import WbGeometryObject from "models/wbGeometry";
 
 export interface WellboreProperties {
   uid: string;

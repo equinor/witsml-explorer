@@ -1,13 +1,16 @@
-import { ParsedUrlQuery } from "querystring";
-import * as url from "url";
-import { NavigationState } from "../../contexts/navigationContext";
 import {
-  getInitialState,
+  getQueryParamsFromState,
+  getQueryParamsFromUrl
+} from "components/Routing";
+import { NavigationState } from "contexts/navigationContext";
+import {
   SERVER_1,
   WELLBORE_1,
-  WELL_1
-} from "../../contexts/stateReducerTestUtils";
-import { getQueryParamsFromState, getQueryParamsFromUrl } from "../Routing";
+  WELL_1,
+  getInitialState
+} from "contexts/stateReducerTestUtils";
+import { ParsedUrlQuery } from "querystring";
+import * as url from "url";
 
 it("Should include the server, well, and wellbore when generating the URL from state", () => {
   const initialState: NavigationState = {

@@ -1,29 +1,29 @@
 import { Breadcrumbs } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import { v4 as uuid } from "uuid";
-import { NavigationAction } from "../contexts/navigationAction";
+import TopRightCornerMenu from "components/TopRightCornerMenu";
+import { NavigationAction } from "contexts/navigationAction";
 import {
   SelectLogTypeAction,
   SelectObjectGroupAction,
   SelectServerAction,
   SelectWellAction,
   SelectWellboreAction
-} from "../contexts/navigationActions";
+} from "contexts/navigationActions";
 import NavigationContext, {
   NavigationState,
   Selectable,
   ViewFlags
-} from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
-import OperationContext from "../contexts/operationContext";
-import { ObjectType, pluralizeObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Well from "../models/well";
-import Wellbore, { calculateLogTypeDepthId } from "../models/wellbore";
-import { colors } from "../styles/Colors";
-import Icon from "../styles/Icons";
-import TopRightCornerMenu from "./TopRightCornerMenu";
+} from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import { ObjectType, pluralizeObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore, { calculateLogTypeDepthId } from "models/wellbore";
+import React, { useContext, useEffect, useState } from "react";
+import styled from "styled-components";
+import { colors } from "styles/Colors";
+import Icon from "styles/Icons";
+import { v4 as uuid } from "uuid";
 
 const Nav = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);

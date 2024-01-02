@@ -1,10 +1,10 @@
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import { ObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
-import CurveThreshold from "./curveThreshold";
-import NavigationType from "./navigationType";
+import CurveThreshold from "contexts/curveThreshold";
+import NavigationType from "contexts/navigationType";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 
 export interface Action {
   type: any;

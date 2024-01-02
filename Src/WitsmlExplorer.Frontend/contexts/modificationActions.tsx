@@ -1,10 +1,10 @@
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import { ObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
-import ModificationType from "./modificationType";
-import { Action } from "./navigationActions";
+import ModificationType from "contexts/modificationType";
+import { Action } from "contexts/navigationActions";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 
 export interface AddServerAction extends Action {
   type: ModificationType.AddServer;

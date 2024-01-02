@@ -1,13 +1,16 @@
+import {
+  ContentType,
+  ExportableContentTableColumn
+} from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import { ContentViewDimensionsContext } from "components/PageLayout";
+import OperationContext from "contexts/operationContext";
+import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
+import { CurveSpecification } from "models/logData";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { DateTimeFormat, TimeZone } from "../../contexts/operationStateReducer";
-import { CurveSpecification } from "../../models/logData";
-import { Colors } from "../../styles/Colors";
-import formatDateString from "../DateFormatter";
-import { ContentViewDimensionsContext } from "../PageLayout";
-import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
+import { Colors } from "styles/Colors";
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;

@@ -1,25 +1,28 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import GeologyInterval from "../../models/geologyInterval";
-import { createComponentReferences } from "../../models/jobs/componentReferences";
-import MudLog from "../../models/mudLog";
-import { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
-import GeologyIntervalPropertiesModal from "../Modals/GeologyIntervalPropertiesModal";
-import ContextMenu from "./ContextMenu";
+import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteComponents
-} from "./ContextMenuUtils";
-import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
-import { copyComponents, pasteComponents } from "./CopyUtils";
-import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+} from "components/ContextMenus/ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
+import {
+  copyComponents,
+  pasteComponents
+} from "components/ContextMenus/CopyUtils";
+import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
+import GeologyIntervalPropertiesModal from "components/Modals/GeologyIntervalPropertiesModal";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import GeologyInterval from "models/geologyInterval";
+import { createComponentReferences } from "models/jobs/componentReferences";
+import MudLog from "models/mudLog";
+import React, { useContext } from "react";
+import { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
 
 export interface GeologyIntervalContextMenuProps {
   checkedGeologyIntervals: GeologyInterval[];

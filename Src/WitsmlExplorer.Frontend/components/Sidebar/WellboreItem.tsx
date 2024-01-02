@@ -1,49 +1,49 @@
 import { useTheme } from "@material-ui/core";
-import React, { createContext, useCallback, useContext, useState } from "react";
-import styled from "styled-components";
-import ModificationType from "../../contexts/modificationType";
-import {
-  SelectWellboreAction,
-  ToggleTreeNodeAction
-} from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
-import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
+} from "components/ContextMenus/ContextMenu";
+import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
 import LogsContextMenu, {
   LogsContextMenuProps
-} from "../ContextMenus/LogsContextMenu";
-import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
-import RigContextMenu from "../ContextMenus/RigContextMenu";
+} from "components/ContextMenus/LogsContextMenu";
+import MudLogContextMenu from "components/ContextMenus/MudLogContextMenu";
+import RigContextMenu from "components/ContextMenus/RigContextMenu";
 import RigsContextMenu, {
   RigsContextMenuProps
-} from "../ContextMenus/RigsContextMenu";
+} from "components/ContextMenus/RigsContextMenu";
 import TrajectoriesContextMenu, {
   TrajectoriesContextMenuProps
-} from "../ContextMenus/TrajectoriesContextMenu";
-import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
-import TubularContextMenu from "../ContextMenus/TubularContextMenu";
+} from "components/ContextMenus/TrajectoriesContextMenu";
+import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
+import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
 import TubularsContextMenu, {
   TubularsContextMenuProps
-} from "../ContextMenus/TubularsContextMenu";
-import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
+} from "components/ContextMenus/TubularsContextMenu";
+import WbGeometryObjectContextMenu from "components/ContextMenus/WbGeometryContextMenu";
 import WellboreContextMenu, {
   WellboreContextMenuProps
-} from "../ContextMenus/WellboreContextMenu";
-import { IndexCurve } from "../Modals/LogPropertiesModal";
-import LogTypeItem from "./LogTypeItem";
-import ObjectGroupItem from "./ObjectGroupItem";
-import { WellIndicator } from "./Sidebar";
-import TreeItem from "./TreeItem";
+} from "components/ContextMenus/WellboreContextMenu";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import LogTypeItem from "components/Sidebar/LogTypeItem";
+import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
+import { WellIndicator } from "components/Sidebar/Sidebar";
+import TreeItem from "components/Sidebar/TreeItem";
+import ModificationType from "contexts/modificationType";
+import {
+  SelectWellboreAction,
+  ToggleTreeNodeAction
+} from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ObjectType } from "models/objectType";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
+import React, { createContext, useCallback, useContext, useState } from "react";
+import ObjectService from "services/objectService";
+import styled from "styled-components";
 
 interface WellboreItemProps {
   well: Well;

@@ -1,8 +1,8 @@
-import { ErrorDetails } from "../models/errorDetails";
-import { LogData } from "../models/logData";
-import { ApiClient } from "./apiClient";
-import AuthorizationService from "./authorizationService";
-import NotificationService from "./notificationService";
+import { ErrorDetails } from "models/errorDetails";
+import { LogData } from "models/logData";
+import { ApiClient } from "services/apiClient";
+import AuthorizationService from "services/authorizationService";
+import NotificationService from "services/notificationService";
 
 export default class LogObjectService {
   public static async getLogData(

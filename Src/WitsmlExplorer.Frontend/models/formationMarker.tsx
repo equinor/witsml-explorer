@@ -1,8 +1,8 @@
-import CommonData from "./commonData";
-import Measure from "./measure";
-import MeasureWithDatum from "./measureWithDatum";
-import ObjectOnWellbore from "./objectOnWellbore";
-import StratigraphicStruct from "./stratigraphicStruct";
+import CommonData from "models/commonData";
+import Measure from "models/measure";
+import MeasureWithDatum from "models/measureWithDatum";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import StratigraphicStruct from "models/stratigraphicStruct";
 
 export default interface FormationMarker extends ObjectOnWellbore {
   mdPrognosed?: MeasureWithDatum;

@@ -6,29 +6,30 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import { CloudUpload } from "@material-ui/icons";
-import { useContext, useRef, useState } from "react";
-import styled from "styled-components";
-import { v4 as uuid } from "uuid";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import useExport from "../../hooks/useExport";
-import { useLocalStorageState } from "../../hooks/useLocalStorageState";
-import MissingDataJob, {
-  MissingDataCheck
-} from "../../models/jobs/missingDataJob";
-import WellReference from "../../models/jobs/wellReference";
-import WellboreReference from "../../models/jobs/wellboreReference";
-import { ObjectType } from "../../models/objectType";
-import JobService, { JobType } from "../../services/jobService";
-import { Colors } from "../../styles/Colors";
-import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "../../tools/localStorageHelpers";
-import { StyledAccordionHeader } from "./LogComparisonModal";
+import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import {
   objectToProperties,
   selectAllProperties
-} from "./MissingDataAgentProperties";
-import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
-import { ReportModal } from "./ReportModal";
+} from "components/Modals/MissingDataAgentProperties";
+import ModalDialog, {
+  ModalContentLayout,
+  ModalWidth
+} from "components/Modals/ModalDialog";
+import { ReportModal } from "components/Modals/ReportModal";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import useExport from "hooks/useExport";
+import { useLocalStorageState } from "hooks/useLocalStorageState";
+import MissingDataJob, { MissingDataCheck } from "models/jobs/missingDataJob";
+import WellReference from "models/jobs/wellReference";
+import WellboreReference from "models/jobs/wellboreReference";
+import { ObjectType } from "models/objectType";
+import { useContext, useRef, useState } from "react";
+import JobService, { JobType } from "services/jobService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "tools/localStorageHelpers";
+import { v4 as uuid } from "uuid";
 
 export interface MissingDataAgentModalProps {
   wellReferences: WellReference[];

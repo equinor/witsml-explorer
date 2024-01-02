@@ -1,4 +1,4 @@
-import { ObjectType } from "../../models/objectType";
+import { ObjectType } from "models/objectType";
 
 // The properties must equal the name of the corresponding Witsml model's properties
 // Checking properties in nested objects are supported by separating the objects and properties with a '.' as long as the parent object is not a list.

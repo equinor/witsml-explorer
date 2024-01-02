@@ -1,17 +1,20 @@
-import { getMeasureWithDatum } from "../__testUtils__/testUtils";
-import BhaRun from "../models/bhaRun";
-import ChangeLog from "../models/changeLog";
-import FormationMarker from "../models/formationMarker";
-import LogObject from "../models/logObject";
-import { ObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Trajectory from "../models/trajectory";
-import Well from "../models/well";
+import { getMeasureWithDatum } from "__testUtils__/testUtils";
+import {
+  EMPTY_NAVIGATION_STATE,
+  NavigationState
+} from "contexts/navigationContext";
+import BhaRun from "models/bhaRun";
+import ChangeLog from "models/changeLog";
+import FormationMarker from "models/formationMarker";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Trajectory from "models/trajectory";
+import Well from "models/well";
 import Wellbore, {
   WellboreObjects,
   objectTypeToWellboreObjects
-} from "../models/wellbore";
-import { EMPTY_NAVIGATION_STATE, NavigationState } from "./navigationContext";
+} from "models/wellbore";
 
 export const SERVER_1: Server = {
   id: "1",
