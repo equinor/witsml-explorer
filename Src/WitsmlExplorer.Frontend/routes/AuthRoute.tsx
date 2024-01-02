@@ -4,6 +4,7 @@ import { Outlet, useParams } from "react-router-dom";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "../components/Modals/UserCredentialsModal";
+import { useAuthorizationState } from "../contexts/authorizationStateContext";
 import {
   FilterContext,
   VisibilityStatus,
@@ -20,7 +21,6 @@ import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import { msalEnabled } from "../msal/MsalAuthProvider";
 import AuthorizationService, {
-  AuthorizationState,
   AuthorizationStatus
 } from "../services/authorizationService";
 import CapService from "../services/capService";
@@ -40,8 +40,9 @@ export default function AuthRoute() {
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   const { serverUrl } = useParams();
   const { dispatchOperation } = useContext(OperationContext);
-  const [authorizationState, setAuthorizationState] =
-    useState<AuthorizationState>();
+  const { authorizationState, setAuthorizationState } = useAuthorizationState();
+
+  console.log("authorizationState AuthRoute:", authorizationState);
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents =
@@ -189,7 +190,9 @@ export default function AuthRoute() {
     authorizationState &&
     authorizationState.status === AuthorizationStatus.Authorized
   ) {
+    console.log("return <Outlet />");
     return <Outlet />;
   }
-  return <></>;
+  console.log("return null");
+  return null;
 }

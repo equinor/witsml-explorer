@@ -8,6 +8,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import {
   FilterContext,
   VisibilityStatus,
@@ -28,7 +29,6 @@ import {
   msalEnabled
 } from "../../msal/MsalAuthProvider";
 import AuthorizationService, {
-  AuthorizationState,
   AuthorizationStatus
 } from "../../services/authorizationService";
 import CapService from "../../services/capService";
@@ -58,10 +58,9 @@ const ServerManager = (): React.ReactElement => {
   const { updateSelectedFilter } = useContext(FilterContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
-  const [authorizationState, setAuthorizationState] =
-    useState<AuthorizationState>();
+  const { authorizationState, setAuthorizationState } = useAuthorizationState();
   const navigate = useNavigate();
-  console.log(authorizationState);
+  console.log("authorizationState:", authorizationState);
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents =

@@ -14,6 +14,7 @@ import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
 import AuthorizationManager from "../components/Sidebar/AuthorizationManager";
 import Snackbar from "../components/Snackbar";
+import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
 import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
@@ -125,26 +126,28 @@ export default function Root() {
         <OperationContext.Provider
           value={{ operationState, dispatchOperation }}
         >
-          <ThemeProvider theme={getTheme(operationState.theme)}>
-            <GlobalStyles colors={operationState.colors} />
-            <NavigationContext.Provider
-              value={{ navigationState, dispatchNavigation }}
-            >
-              <FilterContextProvider>
-                <QueryContextProvider>
-                  {/* <Routing /> */}
-                  <AuthorizationManager />
-                  <RefreshHandler />
-                  <SnackbarProvider>
-                    <Snackbar />
-                  </SnackbarProvider>
-                  <PageLayout />
-                  <ContextMenuPresenter />
-                  <ModalPresenter />
-                </QueryContextProvider>
-              </FilterContextProvider>
-            </NavigationContext.Provider>
-          </ThemeProvider>
+          <AuthorizationStateProvider>
+            <ThemeProvider theme={getTheme(operationState.theme)}>
+              <GlobalStyles colors={operationState.colors} />
+              <NavigationContext.Provider
+                value={{ navigationState, dispatchNavigation }}
+              >
+                <FilterContextProvider>
+                  <QueryContextProvider>
+                    {/* <Routing /> */}
+                    <AuthorizationManager />
+                    <RefreshHandler />
+                    <SnackbarProvider>
+                      <Snackbar />
+                    </SnackbarProvider>
+                    <PageLayout />
+                    <ContextMenuPresenter />
+                    <ModalPresenter />
+                  </QueryContextProvider>
+                </FilterContextProvider>
+              </NavigationContext.Provider>
+            </ThemeProvider>
+          </AuthorizationStateProvider>
         </OperationContext.Provider>
       </MsalProvider>
     </ErrorBoundary>
