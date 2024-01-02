@@ -49,7 +49,7 @@ const BhaRunContextMenu = (
           dispatchNavigation,
           openInQueryView,
           wellbore,
-          null
+          []
         ),
         <Divider key={"divider"} />,
         <MenuItem
