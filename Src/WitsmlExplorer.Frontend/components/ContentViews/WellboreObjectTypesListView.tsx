@@ -1,9 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
+import ModificationType from "../../contexts/modificationType";
 import { SelectObjectGroupAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
+import Well from "../../models/well";
+import Wellbore from "../../models/wellbore";
 import ObjectService from "../../services/objectService";
 import {
   ContentTable,
@@ -20,8 +24,44 @@ interface ObjectTypeRow extends ContentTableRow {
 
 export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+  const { wells, selectedWell, selectedWellbore } = navigationState;
   const { selectedFilter } = useContext(FilterContext);
+  const { wellUid, wellboreUid } = useParams();
+
+  useEffect(() => {
+    const well: Well = wells.filter((well) => well.uid === wellUid)[0];
+    const wellbore: Wellbore = well?.wellbores?.filter(
+      (wellbore) => wellbore.uid === wellboreUid
+    )[0];
+
+    const updateWellborePartial = async () => {
+      const objectCount = await ObjectService.getExpandableObjectsCount(
+        wellbore
+      );
+      dispatchNavigation({
+        type: ModificationType.UpdateWellborePartial,
+        payload: {
+          wellboreUid: wellbore.uid,
+          wellUid: wellbore.wellUid,
+          wellboreProperties: { objectCount }
+        }
+      });
+    };
+
+    if (well) {
+      dispatchNavigation({
+        type: NavigationType.SelectWell,
+        payload: { well }
+      });
+      dispatchNavigation({
+        type: NavigationType.SelectWellbore,
+        payload: { well, wellbore }
+      });
+      if (wellbore.objectCount == null) {
+        updateWellborePartial();
+      }
+    }
+  }, [wells, wellUid, wellboreUid, selectedWell, selectedWellbore]);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }

@@ -55,19 +55,19 @@ const router = createBrowserRouter([
             element: <LogTypeListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/depth",
+            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType",
             element: <LogsListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/time",
+            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType",
             element: <LogsListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/depth/:logUid",
+            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType/:logUid",
             element: <LogCurveInfoListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/time/:logUid",
+            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType/:logUid",
             element: <LogCurveInfoListView />
           },
           {

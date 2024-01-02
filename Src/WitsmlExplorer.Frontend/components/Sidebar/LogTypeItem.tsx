@@ -1,5 +1,6 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import ModificationType from "../../contexts/modificationType";
 import { SelectLogTypeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -15,6 +16,7 @@ import Wellbore, {
   calculateLogTypeTimeId,
   calculateObjectGroupId
 } from "../../models/wellbore";
+import ObjectService from "../../services/objectService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -35,12 +37,56 @@ const LogTypeItem = (): React.ReactElement => {
   const { wellbore, well } = useContext(WellboreItemContext);
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { selectedObject, selectedObjectGroup, servers } = navigationState;
+  const {
+    wells,
+    selectedWell,
+    selectedWellbore,
+    selectedObject,
+    selectedObjectGroup,
+    servers
+  } = navigationState;
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
   const { serverUrl } = useParams();
   const navigate = useNavigate();
+
+  const { wellUid, wellboreUid } = useParams();
+
+  useEffect(() => {
+    const well: Well = wells.filter((well) => well.uid === wellUid)[0];
+    const wellbore: Wellbore = well?.wellbores?.filter(
+      (wellbore) => wellbore.uid === wellboreUid
+    )[0];
+
+    const updateWellborePartial = async () => {
+      const objectCount = await ObjectService.getExpandableObjectsCount(
+        wellbore
+      );
+      dispatchNavigation({
+        type: ModificationType.UpdateWellborePartial,
+        payload: {
+          wellboreUid: wellbore.uid,
+          wellUid: wellbore.wellUid,
+          wellboreProperties: { objectCount }
+        }
+      });
+    };
+
+    if (well) {
+      dispatchNavigation({
+        type: NavigationType.SelectWell,
+        payload: { well }
+      });
+      dispatchNavigation({
+        type: NavigationType.SelectWellbore,
+        payload: { well, wellbore }
+      });
+      if (wellbore.objectCount == null) {
+        updateWellborePartial();
+      }
+    }
+  }, [wells, wellUid, wellboreUid, selectedWell, selectedWellbore]);
 
   const onSelectType = async (logTypeGroup: string) => {
     const action: SelectLogTypeAction = {
