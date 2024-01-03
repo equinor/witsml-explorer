@@ -111,9 +111,8 @@ export function wellboreHasChanges(
   return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
-export const calculateWellboreNodeId = (
-  wellbore: Wellbore | { wellUid: string; uid: string }
-): string => {
+export const calculateWellboreNodeId = (wellbore: Wellbore | { wellUid: string; uid: string }): string => {
+  return wellbore?.wellUid + wellbore?.uid;
 };
 
 export const calculateObjectGroupId = (
@@ -172,7 +171,7 @@ export function getGeologyIntervalLength(wellbore: Wellbore, objectType: string)
     return null;
   }
 }
-}
+
 
 export function getObjectFromWellbore<Key extends ObjectType>(
   wellbore: Wellbore,

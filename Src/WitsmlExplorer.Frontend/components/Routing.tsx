@@ -331,8 +331,7 @@ export const getQueryParamsFromState = (
      ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
     ...(state.selectedObject && { objectUid: state.selectedObject.uid }),
     ...(state.selectedObject && { mudloguid: state.selectedObject.mudloguid }),
-    ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
-    }),
+    ...(state.selectedObjectGroup && { group: state.selectedObjectGroup })
   };
 };
 

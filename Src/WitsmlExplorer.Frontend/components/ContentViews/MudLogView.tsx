@@ -8,8 +8,7 @@ import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-  GeologyIntervalContextMenuProps
-} from "../ContextMenus/GeologyIntervalContextMenu";
+import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
 import {
   ContentTable,
   ContentTableColumn,
@@ -133,7 +132,6 @@ export const MudLogView = (): React.ReactElement => {
   ];
 
   const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals?.map((geologyInterval) => {
-    (geologyInterval) => {
       return {
         id: geologyInterval.uid,
         typeLithology: geologyInterval.typeLithology,
@@ -161,9 +159,7 @@ export const MudLogView = (): React.ReactElement => {
         }),
         geologyInterval
       };
-    }
-  );
-
+    });
   const insetColumns: ContentTableColumn[] = [
     { property: "type", label: "type", type: ContentType.String },
     { property: "codeLith", label: "codeLith", type: ContentType.Number },

@@ -77,3 +77,4 @@ export const getObjectOnWellboreProperties = (objectOnWellbore: ObjectOnWellbore
           [`UID ${objectType.toString()}`, (objectOnWellbore as ObjectOnWellbore)?.uid]
         ]
   );
+ }
