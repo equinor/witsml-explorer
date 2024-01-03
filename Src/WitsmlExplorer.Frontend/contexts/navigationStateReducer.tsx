@@ -297,6 +297,7 @@ const selectObjectGroup = (
     selectedServer: state.selectedServer,
     ...wellAndWellboreState,
     selectedObjectGroup: objectType,
+    selectedLogTypeGroup: state.selectedLogTypeGroup,
     currentSelected: objectType,
     expandedTreeNodes: shouldExpandNode
       ? toggleTreeNode(state.expandedTreeNodes, groupId)

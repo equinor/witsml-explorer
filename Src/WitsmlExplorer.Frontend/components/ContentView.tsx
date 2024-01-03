@@ -1,4 +1,3 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 
@@ -26,7 +25,7 @@ import styled from "styled-components";
 //   [ObjectType.FluidsReport]: <FluidsView />
 // };
 
-const ContentView = (): React.ReactElement => {
+export default function ContentView() {
   // const { navigationState } = useContext(NavigationContext);
   // const {
   //   selectedWell,
@@ -95,10 +94,8 @@ const ContentView = (): React.ReactElement => {
       <Outlet />
     </ContentPanel>
   );
-};
+}
 
 const ContentPanel = styled.div`
   height: 100%;
 `;
-
-export default ContentView;

@@ -42,8 +42,6 @@ export default function AuthRoute() {
   const { dispatchOperation } = useContext(OperationContext);
   const { authorizationState, setAuthorizationState } = useAuthorizationState();
 
-  console.log("authorizationState AuthRoute:", authorizationState);
-
   useEffect(() => {
     const unsubscribeFromCredentialsEvents =
       AuthorizationService.onAuthorizationChangeEvent.subscribe(
@@ -190,9 +188,7 @@ export default function AuthRoute() {
     authorizationState &&
     authorizationState.status === AuthorizationStatus.Authorized
   ) {
-    console.log("return <Outlet />");
     return <Outlet />;
   }
-  console.log("return null");
   return null;
 }

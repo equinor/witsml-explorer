@@ -60,7 +60,6 @@ const ServerManager = (): React.ReactElement => {
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const { authorizationState, setAuthorizationState } = useAuthorizationState();
   const navigate = useNavigate();
-  console.log("authorizationState:", authorizationState);
 
   useEffect(() => {
     const unsubscribeFromCredentialsEvents =
@@ -95,10 +94,6 @@ const ServerManager = (): React.ReactElement => {
           type: ModificationType.UpdateWells,
           payload: { wells: wells }
         });
-        console.log("lakjdlaksjdlasdkjalsdjkalkdjaldskjaldj");
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        // console.log(server);
-        // navigate(`${server.id}/wells`);
         navigate(`servers/${encodeURIComponent(selectedServer.url)}/wells`);
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
