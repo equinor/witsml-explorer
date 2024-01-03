@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 import { NavigationAction } from "../contexts/navigationAction";
 import {
   SelectLogTypeAction,
+  SelectObjectAction,
   SelectObjectGroupAction,
   SelectServerAction,
   SelectWellAction,

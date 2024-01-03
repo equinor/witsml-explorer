@@ -56,10 +56,10 @@ export const calculateObjectNodeId = (
   );
 };
 
-export const getObjectOnWellboreProperties = (
-  objectOnWellbore: ObjectOnWellbore | GeologyInterval,
-  objectType: ObjectType
-): Map<string, string> => {
+export const getObjectOnWellboreProperties = (objectOnWellbore: ObjectOnWellbore | GeologyInterval, objectType: ObjectType, wellbore: Wellbore): Map<string, string> => {
+  const selectedwellboreData = wellbore?.mudLogs?.filter((mudlogs) => mudlogs.uid == objectOnWellbore?.mudloguid);
+  return new Map(
+    objectType === ObjectType.geologyInterval
       ? [
           ["Well", selectedwellboreData[0]?.wellName],
           ["UID Well", selectedwellboreData[0]?.wellUid],
@@ -77,4 +77,3 @@ export const getObjectOnWellboreProperties = (
           [`UID ${objectType.toString()}`, (objectOnWellbore as ObjectOnWellbore)?.uid]
         ]
   );
-};
