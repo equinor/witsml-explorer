@@ -11,6 +11,9 @@ import useExport, { encloseCell } from "../../../hooks/useExport";
 import ObjectService from "../../../services/objectService";
 import WellService from "../../../services/wellService";
 import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
+import { ObjectType } from "../../../models/objectType";
+import MudLog from "../../../models/mudLog";
+import ObjectOnWellbore from "../../../models/objectOnWellbore";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -69,15 +72,31 @@ const Panel = (props: PanelProps) => {
     const wellUid = selectedWellbore.wellUid;
     const wellboreUid = selectedWellbore.uid;
     const uid = selectedObject.uid;
-    let freshObject = await ObjectService.getObject(wellUid, wellboreUid, uid, selectedObjectGroup);
-    const isDeleted = !freshObject;
-    if (isDeleted) {
-      freshObject = selectedObject;
+    if (selectedObjectGroup === ObjectType.geologyInterval) {
+      const mudoguid = selectedWellbore.mudLogs.filter((mudlogs) => mudlogs.uid === selectedObject.mudloguid);
+      const mudlogUid = mudoguid[0].uid;
+      let mudlogfreshObject: MudLog | ObjectOnWellbore;
+      mudlogfreshObject = await ObjectService.getObject(wellUid, wellboreUid, mudlogUid, ObjectType.MudLog);
+      const isDeleted = !mudlogfreshObject;
+      if (isDeleted) {
+        mudlogfreshObject = selectedObject;
+      }
+
+      dispatchNavigation({
+        type: ModificationType.UpdateWellboreObject,
+        payload: { objectToUpdate: mudlogfreshObject, objectType: ObjectType.MudLog, isDeleted }
+      });
+    } else {
+      let freshObject = await ObjectService.getObject(wellUid, wellboreUid, uid, selectedObjectGroup);
+      const isDeleted = !freshObject;
+      if (isDeleted) {
+        freshObject = selectedObject;
+      }
+      dispatchNavigation({
+        type: ModificationType.UpdateWellboreObject,
+        payload: { objectToUpdate: freshObject, objectType: selectedObjectGroup, isDeleted }
+      });
     }
-    dispatchNavigation({
-      type: ModificationType.UpdateWellboreObject,
-      payload: { objectToUpdate: freshObject, objectType: selectedObjectGroup, isDeleted }
-    });
   };
 
   const refreshWells = async () => {

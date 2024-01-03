@@ -19,4 +19,5 @@ export default interface GeologyInterval {
   dxcAv: string;
   description: string;
   lithologies: Lithology[];
+  mudloguid?: string;
 }

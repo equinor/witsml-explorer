@@ -3,9 +3,18 @@ import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
 import { FilterContext, WellFilterType } from "../contexts/filter";
 import ModificationType from "../contexts/modificationType";
-import { SelectLogTypeAction, SelectObjectAction, SelectObjectGroupAction, SelectServerAction, SelectWellAction, SelectWellboreAction } from "../contexts/navigationActions";
+import {
+  SelectLogTypeAction,
+  SelectObjectAction,
+  SelectObjectGroupAction,
+  SelectServerAction,
+  SelectWellAction,
+  SelectWellboreAction,
+  ToggleTreeNodeAction
+} from "../contexts/navigationActions";
 import NavigationContext, { NavigationState } from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
+import GeologyInterval from "../models/geologyInterval";
 import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Well from "../models/well";
@@ -14,6 +23,7 @@ import { truncateAbortHandler } from "../services/apiClient";
 import NotificationService from "../services/notificationService";
 import ObjectService from "../services/objectService";
 import { WITSML_INDEX_TYPE_MD } from "./Constants";
+import { calculateObjectNodeId } from "../models/objectOnWellbore";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
@@ -144,7 +154,7 @@ const Routing = (): React.ReactElement => {
   const [isFetchingObjects, setIsFetchingObjects] = useState(false);
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWellbore && !isFetchingObjects) {
-      const group = urlParams?.group as ObjectType;
+      const group = urlParams?.group === ObjectType.geologyInterval ? ObjectType.MudLog : (urlParams?.group as ObjectType);
       const objectUid = urlParams?.objectUid;
       if (group != null && getObjectsFromWellbore(selectedWellbore, group) == null) {
         const fetchAndSelectObjectGroup = async () => {
@@ -166,7 +176,7 @@ const Routing = (): React.ReactElement => {
         const action: SelectLogTypeAction = { type: NavigationType.SelectLogType, payload: { well: selectedWell, wellbore: selectedWellbore, logTypeGroup: logTypeGroup } };
         dispatchNavigation(action);
         setIsSyncingUrlAndState(false);
-      } else if (objectUid != null) {
+      } else if (objectUid != null && !urlParams.mudloguid) {
         const object = getObjectFromWellbore(selectedWellbore, objectUid, group);
         if (object != null) {
           const action: SelectObjectAction = {
@@ -184,6 +194,23 @@ const Routing = (): React.ReactElement => {
         setIsSyncingUrlAndState(false);
       } else {
         setIsSyncingUrlAndState(false);
+      }
+    } else if (urlParams?.mudloguid && selectedObjectGroup === ObjectType.MudLog) {
+      if (selectedWellbore.mudLogs) {
+        setIsFetchingObjects(true);
+        const object = selectedWellbore.mudLogs.filter((mudlogid) => mudlogid.uid == urlParams.mudloguid)[0];
+        let geologyData: any;
+        if (object?.geologyInterval) {
+          geologyData = object?.geologyInterval.filter((geology: GeologyInterval) => geology.uid == urlParams.objectUid)[0];
+        }
+        const action: SelectObjectAction = {
+          type: NavigationType.SelectObject,
+          payload: { object: geologyData, well: selectedWell, wellbore: selectedWellbore, objectType: urlParams.group as ObjectType }
+        };
+        dispatchNavigation(action);
+        const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId: calculateObjectNodeId(object, ObjectType.MudLog) } };
+        dispatchNavigation(toggleTreeNode);
+        setIsFetchingObjects(false);
       }
     }
   }, [selectedWellbore]);
@@ -212,7 +239,8 @@ export const getQueryParamsFromState = (state: NavigationState): QueryParams => 
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
     ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
-    ...(state.selectedObject && { objectUid: state.selectedObject.uid })
+    ...(state.selectedObject && { objectUid: state.selectedObject.uid }),
+    ...(state.selectedObject && { mudloguid: state.selectedObject.mudloguid })
   };
 };
 
@@ -223,7 +251,8 @@ export const getQueryParamsFromUrl = (query: ParsedUrlQuery): QueryParams => {
     ...(query.wellboreUid && { wellboreUid: query.wellboreUid.toString() }),
     ...(query.group && { group: query.group.toString() }),
     ...(query.logType && { logType: query.logType.toString() }),
-    ...(query.objectUid && { objectUid: query.objectUid.toString() })
+    ...(query.objectUid && { objectUid: query.objectUid.toString() }),
+    ...(query.mudloguid && { mudloguid: query.mudloguid?.toString() })
   };
 };
 
@@ -231,9 +260,10 @@ export interface QueryParams {
   serverUrl: string;
   wellUid?: string;
   wellboreUid?: string;
-  group?: string;
+  group?: string | undefined;
   logType?: string;
   objectUid?: string;
+  mudloguid?: string;
 }
 
 export default Routing;

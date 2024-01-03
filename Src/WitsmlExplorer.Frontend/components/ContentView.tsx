@@ -29,6 +29,7 @@ import WbGeometryView from "./ContentViews/WbGeometryView";
 import WellboreObjectTypesListView from "./ContentViews/WellboreObjectTypesListView";
 import { WellboresListView } from "./ContentViews/WellboresListView";
 import { WellsListView } from "./ContentViews/WellsListView";
+import GelogicalIntervalView from "./ContentViews/GelogicalIntervalView";
 
 const objectGroupViews: Record<ObjectType, ReactElement> = {
   [ObjectType.BhaRun]: <BhaRunsListView />,
@@ -42,7 +43,8 @@ const objectGroupViews: Record<ObjectType, ReactElement> = {
   [ObjectType.Risk]: <RisksListView />,
   [ObjectType.Trajectory]: <TrajectoriesListView />,
   [ObjectType.Tubular]: <TubularsListView />,
-  [ObjectType.WbGeometry]: <WbGeometriesListView />
+  [ObjectType.WbGeometry]: <WbGeometriesListView />,
+  [ObjectType.geologyInterval]: <MudLogsListView />
 };
 
 const objectViews: Partial<Record<ObjectType, ReactElement>> = {
@@ -51,7 +53,8 @@ const objectViews: Partial<Record<ObjectType, ReactElement>> = {
   [ObjectType.Trajectory]: <TrajectoryView />,
   [ObjectType.Tubular]: <TubularView />,
   [ObjectType.WbGeometry]: <WbGeometryView />,
-  [ObjectType.FluidsReport]: <FluidsView />
+  [ObjectType.FluidsReport]: <FluidsView />,
+  [ObjectType.geologyInterval]: <GelogicalIntervalView />
 };
 
 const ContentView = (): React.ReactElement => {
@@ -80,7 +83,9 @@ const ContentView = (): React.ReactElement => {
       } else if (currentSelected === selectedWellbore) {
         setView(<WellboreObjectTypesListView />);
       } else if (currentSelected === selectedObjectGroup) {
-        setObjectView(true);
+        if (selectedObjectGroup === ObjectType.geologyInterval) {
+          setView(<GelogicalIntervalView />);
+        } else setObjectView(true);
       } else if (currentSelected === selectedLogTypeGroup) {
         setView(<LogsListView />);
       } else if (currentSelected === selectedObject) {

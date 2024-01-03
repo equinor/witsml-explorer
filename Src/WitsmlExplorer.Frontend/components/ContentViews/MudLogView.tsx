@@ -10,6 +10,9 @@ import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
 import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import { ObjectType } from "../../models/objectType";
+import ModificationType from "../../contexts/modificationType";
+import { getGeologyIntervalLength } from "../../models/wellbore";
 
 export interface GeologyIntervalRow extends ContentTableRow {
   typeLithology: string;
@@ -31,8 +34,8 @@ export interface GeologyIntervalRow extends ContentTableRow {
 }
 
 export const MudLogView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedObject } = navigationState;
+  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { selectedObject, selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>([]);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
@@ -40,28 +43,43 @@ export const MudLogView = (): React.ReactElement => {
 
   useEffect(() => {
     setIsFetchingData(true);
-    if (selectedMudLog) {
-      const abortController = new AbortController();
+    if (selectedMudLog && selectedMudLog.uid) {
+      const objects = getGeologyIntervalLength(selectedWellbore, selectedMudLog.uid);
+      if (objects == null && selectedWellbore && selectedWellbore.uid) {
+        const abortController = new AbortController();
 
-      const getGeologyIntervals = async () => {
-        setGeologyIntervals(
-          await ComponentService.getComponents(
-            selectedMudLog.wellUid,
-            selectedMudLog.wellboreUid,
-            selectedMudLog.uid,
-            ComponentType.GeologyInterval,
-            undefined,
-            abortController.signal
-          )
-        );
+        const getGeologyIntervals = async () => {
+          setGeologyIntervals(
+            await ComponentService.getComponents(
+              selectedMudLog.wellUid,
+              selectedMudLog.wellboreUid,
+              selectedMudLog.uid,
+              ComponentType.GeologyInterval,
+              undefined,
+              abortController.signal
+            )
+          );
+          setIsFetchingData(false);
+        };
+
+        getGeologyIntervals();
+        const mudlogObjectIndex = selectedWellbore?.mudLogs?.findIndex((mudlogIndex) => mudlogIndex.uid === selectedMudLog.uid);
+
+        if (mudlogObjectIndex > -1) {
+          selectedWellbore.mudLogs[mudlogObjectIndex].geologyInterval = geologyIntervals;
+          dispatchNavigation({
+            type: ModificationType.UpdateWellboreObjects,
+            payload: { wellboreObjects: selectedWellbore.mudLogs, wellUid: selectedMudLog.wellUid, wellboreUid: selectedWellbore.uid, objectType: ObjectType.MudLog }
+          });
+        }
+
+        return function cleanup() {
+          abortController.abort();
+        };
+      } else if (objects?.length) {
+        setGeologyIntervals(objects);
         setIsFetchingData(false);
-      };
-
-      getGeologyIntervals();
-
-      return function cleanup() {
-        abortController.abort();
-      };
+      }
     }
   }, [selectedMudLog]);
 
@@ -91,7 +109,7 @@ export const MudLogView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals.map((geologyInterval) => {
+  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals?.map((geologyInterval) => {
     return {
       id: geologyInterval.uid,
       typeLithology: geologyInterval.typeLithology,

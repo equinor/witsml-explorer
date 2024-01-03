@@ -28,6 +28,7 @@ import LogTypeItem from "./LogTypeItem";
 import ObjectGroupItem from "./ObjectGroupItem";
 import { WellIndicator } from "./Sidebar";
 import TreeItem from "./TreeItem";
+import MudLogItem from "./MudLogItem";
 
 interface WellboreItemProps {
   well: Well;
@@ -136,7 +137,11 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             <LogTypeItem />
           </ObjectGroupItem>
           <ObjectGroupItem objectType={ObjectType.Message} />
-          <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu} />
+          <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu}>
+            {wellbore?.mudLogs?.map((mudlogs) => (
+              <MudLogItem key={mudlogs.uid} mudlogData={mudlogs} objectType={ObjectType.MudLog} />
+            ))}
+          </ObjectGroupItem>
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.rigs}
             objectType={ObjectType.Rig}

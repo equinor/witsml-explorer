@@ -259,7 +259,7 @@ const selectObject = (state: NavigationState, { payload }: SelectObjectAction): 
     selectedLogTypeGroup: logTypeGroup,
     selectedObject: object,
     currentSelected: object,
-    currentProperties: getObjectOnWellboreProperties(object, objectType),
+    currentProperties: getObjectOnWellboreProperties(object, objectType, wellbore),
     expandedTreeNodes
   };
 };

@@ -339,7 +339,7 @@ const getWellIndex = (wells: Well[], wellUid: string) => {
 };
 
 const getWellboreIndex = (wells: Well[], wellIndex: number, wellboreUid: string) => {
-  return wells[wellIndex].wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
+  return wells[wellIndex]?.wellbores.findIndex((wellbore) => wellbore.uid === wellboreUid);
 };
 
 const updateSelectedWellAndWellboreIfNeeded = (state: NavigationState, freshWells: Well[], wellUid: string, wellboreUid: string) => {
