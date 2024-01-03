@@ -37,6 +37,44 @@ export const CopyComponentsToServerMenuItem = (
       ? menuComponents + " with range to server"
       : menuComponents + " to server";
 
+  const onClickHandler = (server: Server) => {
+    if (withRange === true) {
+      const copyRangeModalProps: CopyRangeModalProps = {
+        mnemonics: [],
+        onSubmit(startIndex, endIndex) {
+          const componentsToCopyWithRange =
+            componentsToCopy as ComponentWithRange[];
+          const componentsRange = componentsToCopyWithRange.filter(
+            (x) => x.minIndex <= endIndex && x.maxIndex >= startIndex
+          );
+          copyComponentsToServer({
+            targetServer: server,
+            sourceServer: selectedServer,
+            componentsToCopy: componentsRange,
+            dispatchOperation,
+            sourceParent: selectedObject,
+            componentType: componentType,
+            startIndex: startIndex.toString(),
+            endIndex: endIndex.toString()
+          });
+        }
+      };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <CopyRangeModal {...copyRangeModalProps} />
+      });
+    } else {
+      copyComponentsToServer({
+        targetServer: server,
+        sourceServer: selectedServer,
+        componentsToCopy,
+        dispatchOperation,
+        sourceParent: selectedObject,
+        componentType
+      });
+    }
+  };
+
   return (
     <NestedMenuItem
       key={"copyComponentToServer"}
@@ -49,40 +87,7 @@ export const CopyComponentsToServerMenuItem = (
             <MenuItem
               key={server.name}
               onClick={() => {
-                if (withRange === true) {
-                  const copyRangeModalProps: CopyRangeModalProps = {
-                    mnemonics: [],
-                    onSubmit(startIndex, endIndex) {
-                      const componentsToCopyWithRange =
-                        componentsToCopy as ComponentWithRange[];
-                      const componentsRange = componentsToCopyWithRange.filter(
-                        (x) =>
-                          x.minIndex >= startIndex && x.maxIndex <= endIndex
-                      );
-                      copyComponentsToServer({
-                        targetServer: server,
-                        sourceServer: selectedServer,
-                        componentsToCopy: componentsRange,
-                        dispatchOperation,
-                        sourceParent: selectedObject,
-                        componentType: componentType
-                      });
-                    }
-                  };
-                  dispatchOperation({
-                    type: OperationType.DisplayModal,
-                    payload: <CopyRangeModal {...copyRangeModalProps} />
-                  });
-                } else {
-                  copyComponentsToServer({
-                    targetServer: server,
-                    sourceServer: selectedServer,
-                    componentsToCopy,
-                    dispatchOperation,
-                    sourceParent: selectedObject,
-                    componentType
-                  });
-                }
+                onClickHandler(server);
               }}
               disabled={componentsToCopy.length < 1}
             >

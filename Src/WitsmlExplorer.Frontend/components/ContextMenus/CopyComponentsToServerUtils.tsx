@@ -29,6 +29,8 @@ export interface OnClickCopyComponentToServerProps {
   dispatchOperation: DispatchOperation;
   sourceParent: ObjectOnWellbore;
   componentType: ComponentType;
+  startIndex?: string;
+  endIndex?: string;
 }
 
 export const copyComponentsToServer = async (
@@ -40,7 +42,9 @@ export const copyComponentsToServer = async (
     componentsToCopy,
     dispatchOperation,
     sourceParent,
-    componentType
+    componentType,
+    startIndex,
+    endIndex
   } = props;
   dispatchOperation({ type: OperationType.HideContextMenu });
   const wellUid = sourceParent.wellUid;
@@ -84,10 +88,20 @@ export const copyComponentsToServer = async (
     );
   const targetParentReference: ObjectReference =
     toObjectReference(targetParent);
-  const copyJob: CopyComponentsJob = {
-    source: sourceComponentReferences,
-    target: targetParentReference
-  };
+
+  let copyJob: CopyComponentsJob;
+  startIndex === undefined
+    ? (copyJob = {
+        source: sourceComponentReferences,
+        target: targetParentReference
+      })
+    : (copyJob = {
+        source: sourceComponentReferences,
+        target: targetParentReference,
+        startIndex: startIndex,
+        endIndex: endIndex
+      });
+
   const allTargetComponents = await ComponentService.getComponents(
     wellUid,
     wellboreUid,
