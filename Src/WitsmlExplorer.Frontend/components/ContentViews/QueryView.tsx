@@ -12,7 +12,14 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import { QueryEditor } from "../QueryEditor";
 import { getTag } from "../QueryEditorUtils";
 import { StyledNativeSelect } from "../Select";
-import { ReturnElements, StoreFunction, TemplateObjects, formatXml, getParserError, getQueryTemplate } from "./QueryViewUtils";
+import {
+  ReturnElements,
+  StoreFunction,
+  TemplateObjects,
+  formatXml,
+  getParserError,
+  getQueryTemplate
+} from "./QueryViewUtils";
 
 const QueryView = (): React.ReactElement => {
   const {
@@ -26,7 +33,8 @@ const QueryView = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
-  const { query, result, storeFunction, returnElements, optionsIn } = queries[tabIndex];
+  const { query, result, storeFunction, returnElements, optionsIn } =
+    queries[tabIndex];
 
   const validateAndFormatQuery = (): boolean => {
     const formattedQuery = formatXml(query);
@@ -43,8 +51,16 @@ const QueryView = (): React.ReactElement => {
     const getResult = async (dispatchOperation?: DispatchOperation | null) => {
       dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
-      const requestReturnElements = storeFunction === StoreFunction.GetFromStore ? returnElements : undefined;
-      let response = await QueryService.postQuery(query, storeFunction, requestReturnElements, optionsIn?.trim());
+      const requestReturnElements =
+        storeFunction === StoreFunction.GetFromStore
+          ? returnElements
+          : undefined;
+      let response = await QueryService.postQuery(
+        query,
+        storeFunction,
+        requestReturnElements,
+        optionsIn?.trim()
+      );
       if (response.startsWith("<")) {
         response = formatXml(response);
       }
@@ -54,7 +70,10 @@ const QueryView = (): React.ReactElement => {
     const isValid = validateAndFormatQuery();
     if (!isValid) return;
     if (storeFunction === StoreFunction.DeleteFromStore) {
-      displayConfirmation(() => getResult(dispatchOperation), dispatchOperation);
+      displayConfirmation(
+        () => getResult(dispatchOperation),
+        dispatchOperation
+      );
     } else {
       getResult();
     }
@@ -65,15 +84,24 @@ const QueryView = (): React.ReactElement => {
   };
 
   const onFunctionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatchQuery({ type: QueryActionType.SetStoreFunction, storeFunction: event.target.value as StoreFunction });
+    dispatchQuery({
+      type: QueryActionType.SetStoreFunction,
+      storeFunction: event.target.value as StoreFunction
+    });
   };
 
   const onReturnElementsChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatchQuery({ type: QueryActionType.SetReturnElements, returnElements: event.target.value as ReturnElements });
+    dispatchQuery({
+      type: QueryActionType.SetReturnElements,
+      returnElements: event.target.value as ReturnElements
+    });
   };
 
   const onOptionsInChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatchQuery({ type: QueryActionType.SetOptionsIn, optionsIn: event.target.value });
+    dispatchQuery({
+      type: QueryActionType.SetOptionsIn,
+      optionsIn: event.target.value
+    });
   };
 
   const onTemplateSelect = (templateObject: TemplateObjects) => {
@@ -98,17 +126,28 @@ const QueryView = (): React.ReactElement => {
   };
 
   const getTabName = (query: string) => {
-    return getTag(query.split("\n")?.[0]) ?? (query.split("\n")?.[0] || "Empty");
+    return (
+      getTag(query.split("\n")?.[0]) ?? (query.split("\n")?.[0] || "Empty")
+    );
   };
 
   return (
     <Layout>
-      <Tabs activeTab={tabIndex} onChange={onTabChange} scrollable style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+      <Tabs
+        activeTab={tabIndex}
+        onChange={onTabChange}
+        scrollable
+        style={{ overflowX: "auto", whiteSpace: "nowrap" }}
+      >
         <Tabs.List>
           {queries.map((query) => (
             <StyledTab key={query.tabId} colors={colors}>
               {getTabName(query.query)}
-              <StyledClearIcon name="clear" size={16} onClick={(event) => onCloseTab(event, query.tabId)} />
+              <StyledClearIcon
+                name="clear"
+                size={16}
+                onClick={(event) => onCloseTab(event, query.tabId)}
+              />
             </StyledTab>
           ))}
           <StyledTab colors={colors}>
@@ -116,11 +155,32 @@ const QueryView = (): React.ReactElement => {
           </StyledTab>
         </Tabs.List>
       </Tabs>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", height: "100%", padding: "1rem" }}>
-        <div style={{ display: "grid", gridTemplateRows: "1fr auto", gap: "1rem", height: "100%" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "1rem",
+          height: "100%",
+          padding: "1rem"
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateRows: "1fr auto",
+            gap: "1rem",
+            height: "100%"
+          }}
+        >
           <QueryEditor value={query} onChange={onQueryChange} />
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
-            <StyledNativeSelect label="Function" id="function" onChange={onFunctionChange} value={storeFunction} colors={colors}>
+            <StyledNativeSelect
+              label="Function"
+              id="function"
+              onChange={onFunctionChange}
+              value={storeFunction}
+              colors={colors}
+            >
               {Object.values(StoreFunction).map((value) => {
                 return (
                   <option key={value} value={value}>
@@ -129,7 +189,13 @@ const QueryView = (): React.ReactElement => {
                 );
               })}
             </StyledNativeSelect>
-            <StyledNativeSelect label="Return elements" id="return-elements" onChange={onReturnElementsChange} value={returnElements} colors={colors}>
+            <StyledNativeSelect
+              label="Return elements"
+              id="return-elements"
+              onChange={onReturnElementsChange}
+              value={returnElements}
+              colors={colors}
+            >
               {Object.values(ReturnElements).map((value) => {
                 return (
                   <option key={value} value={value}>
@@ -138,7 +204,13 @@ const QueryView = (): React.ReactElement => {
                 );
               })}
             </StyledNativeSelect>
-            <StyledTextField id="optionsIn" label="Options In" value={optionsIn} onChange={onOptionsInChange} colors={colors} />
+            <StyledTextField
+              id="optionsIn"
+              label="Options In"
+              value={optionsIn}
+              onChange={onOptionsInChange}
+              colors={colors}
+            />
             <Button
               ref={setMenuAnchor}
               id="anchor-default"
@@ -160,7 +232,11 @@ const QueryView = (): React.ReactElement => {
             >
               {Object.values(TemplateObjects).map((value) => {
                 return (
-                  <StyledMenuItem colors={colors} key={value} onClick={() => onTemplateSelect(value)}>
+                  <StyledMenuItem
+                    colors={colors}
+                    key={value}
+                    onClick={() => onTemplateSelect(value)}
+                  >
                     {value}
                   </StyledMenuItem>
                 );
@@ -179,7 +255,10 @@ const QueryView = (): React.ReactElement => {
   );
 };
 
-const displayConfirmation = (onConfirm: () => void, dispatchOperation: DispatchOperation) => {
+const displayConfirmation = (
+  onConfirm: () => void,
+  dispatchOperation: DispatchOperation
+) => {
   const confirmation = (
     <ConfirmModal
       heading={"Delete object?"}
@@ -190,7 +269,10 @@ const displayConfirmation = (onConfirm: () => void, dispatchOperation: DispatchO
       switchButtonPlaces={true}
     />
   );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: confirmation
+  });
 };
 
 const StyledMenu = styled(Menu)<{ colors: Colors }>`
@@ -202,7 +284,8 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
 
 const StyledMenuItem = styled(Menu.Item)<{ colors: Colors }>`
   &&:hover {
-    background-color: ${(props) => props.colors.interactive.contextMenuItemHover};
+    background-color: ${(props) =>
+      props.colors.interactive.contextMenuItemHover};
   }
   color: ${(props) => props.colors.text.staticIconsDefault};
   padding: 4px;

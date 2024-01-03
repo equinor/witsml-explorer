@@ -1,3 +1,4 @@
+import { FilterFn } from "@tanstack/react-table";
 import React from "react";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
@@ -8,6 +9,7 @@ export interface ContentTableColumn {
   property: string;
   label: string;
   type: ContentType;
+  filterFn?: FilterFn<any>;
 }
 
 export interface ContentTableRow {
@@ -18,7 +20,11 @@ export interface ContentTableProps {
   columns: ContentTableColumn[];
   data: any[];
   onSelect?: (row: ContentTableRow) => void;
-  onContextMenu?: (event: React.MouseEvent<HTMLElement, MouseEvent>, selectedItem: Record<string, any>, checkedItems: Record<string, any>[]) => void;
+  onContextMenu?: (
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    selectedItem: Record<string, any>,
+    checkedItems: Record<string, any>[]
+  ) => void;
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[]) => void;
   insetColumns?: ContentTableColumn[];

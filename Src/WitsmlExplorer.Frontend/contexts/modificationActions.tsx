@@ -43,7 +43,11 @@ export interface UpdateWellboreAction extends Action {
 
 export interface UpdateWellborePartialAction extends Action {
   type: ModificationType.UpdateWellborePartial;
-  payload: { wellUid: string; wellboreUid: string; wellboreProperties: Partial<Wellbore> };
+  payload: {
+    wellUid: string;
+    wellboreUid: string;
+    wellboreProperties: Partial<Wellbore>;
+  };
 }
 
 export interface RemoveWellAction extends Action {
@@ -63,12 +67,21 @@ export interface RemoveWitsmlServerAction extends Action {
 
 export interface UpdateWellboreObjectsAction extends Action {
   type: ModificationType.UpdateWellboreObjects;
-  payload: { wellboreObjects: ObjectOnWellbore[]; wellUid: string; wellboreUid: string; objectType: ObjectType };
+  payload: {
+    wellboreObjects: ObjectOnWellbore[];
+    wellUid: string;
+    wellboreUid: string;
+    objectType: ObjectType;
+  };
 }
 
 export interface UpdateWellboreObjectAction extends Action {
   type: ModificationType.UpdateWellboreObject;
-  payload: { objectToUpdate: ObjectOnWellbore; objectType: ObjectType; isDeleted: boolean };
+  payload: {
+    objectToUpdate: ObjectOnWellbore;
+    objectType: ObjectType;
+    isDeleted: boolean;
+  };
 }
 
 export interface UpdateServerListAction extends Action {

@@ -14,7 +14,13 @@ import { colors } from "../../styles/Colors";
 import { TubularComponentRow } from "../ContentViews/TubularView";
 import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickDeleteComponents, onClickRefreshObject, onClickShowObjectOnServer } from "./ContextMenuUtils";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickDeleteComponents,
+  onClickRefreshObject,
+  onClickShowObjectOnServer
+} from "./ContextMenuUtils";
 import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents, pasteComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
@@ -29,13 +35,35 @@ export interface TubularComponentContextMenuProps {
   servers: Server[];
 }
 
-const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): React.ReactElement => {
-  const { checkedTubularComponents, dispatchNavigation, dispatchOperation, tubular, selectedServer, servers } = props;
-  const tubularComponentReferences = useClipboardComponentReferencesOfType(ComponentType.TubularComponent);
+const TubularComponentContextMenu = (
+  props: TubularComponentContextMenuProps
+): React.ReactElement => {
+  const {
+    checkedTubularComponents,
+    dispatchNavigation,
+    dispatchOperation,
+    tubular,
+    selectedServer,
+    servers
+  } = props;
+  const tubularComponentReferences = useClipboardComponentReferencesOfType(
+    ComponentType.TubularComponent
+  );
 
   const onClickProperties = async () => {
-    const tubularComponentPropertiesModalProps = { tubularComponent: checkedTubularComponents[0].tubularComponent, tubular, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <TubularComponentPropertiesModal {...tubularComponentPropertiesModalProps} /> });
+    const tubularComponentPropertiesModalProps = {
+      tubularComponent: checkedTubularComponents[0].tubularComponent,
+      tubular,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: (
+        <TubularComponentPropertiesModal
+          {...tubularComponentPropertiesModalProps}
+        />
+      )
+    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
@@ -47,9 +75,24 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refresh"} onClick={() => onClickRefreshObject(tubular, ObjectType.Tubular, dispatchOperation, dispatchNavigation)}>
-          <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Refresh all tubular components</Typography>
+        <MenuItem
+          key={"refresh"}
+          onClick={() =>
+            onClickRefreshObject(
+              tubular,
+              ObjectType.Tubular,
+              dispatchOperation,
+              dispatchNavigation
+            )
+          }
+        >
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Refresh all tubular components
+          </Typography>
         </MenuItem>,
         <MenuItem
           key={"copy"}
@@ -65,27 +108,90 @@ const TubularComponentContextMenu = (props: TubularComponentContextMenuProps): R
           disabled={checkedTubularComponents.length === 0}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("copy", "tubular component", checkedTubularComponents)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText(
+              "copy",
+              "tubular component",
+              checkedTubularComponents
+            )}
+          </Typography>
         </MenuItem>,
-        <CopyComponentsToServerMenuItem key={"copyComponentToServer"} componentType={ComponentType.TubularComponent} componentsToCopy={checkedTubularComponents} />,
-        <MenuItem key={"paste"} onClick={() => pasteComponents(servers, tubularComponentReferences, dispatchOperation, tubular)} disabled={tubularComponentReferences === null}>
+        <CopyComponentsToServerMenuItem
+          key={"copyComponentToServer"}
+          componentType={ComponentType.TubularComponent}
+          componentsToCopy={checkedTubularComponents}
+        />,
+        <MenuItem
+          key={"paste"}
+          onClick={() =>
+            pasteComponents(
+              servers,
+              tubularComponentReferences,
+              dispatchOperation,
+              tubular
+            )
+          }
+          disabled={tubularComponentReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "tubular component", tubularComponentReferences?.componentUids)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText(
+              "paste",
+              "tubular component",
+              tubularComponentReferences?.componentUids
+            )}
+          </Typography>
         </MenuItem>,
-        <MenuItem key={"delete"} onClick={() => onClickDeleteComponents(dispatchOperation, toDelete, JobType.DeleteComponents)} disabled={checkedTubularComponents.length === 0}>
-          <StyledIcon name="deleteToTrash" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("delete", "tubular component", checkedTubularComponents)}</Typography>
+        <MenuItem
+          key={"delete"}
+          onClick={() =>
+            onClickDeleteComponents(
+              dispatchOperation,
+              toDelete,
+              JobType.DeleteComponents
+            )
+          }
+          disabled={checkedTubularComponents.length === 0}
+        >
+          <StyledIcon
+            name="deleteToTrash"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            {menuItemText(
+              "delete",
+              "tubular component",
+              checkedTubularComponents
+            )}
+          </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {servers.map((server: Server) => (
-            <MenuItem key={server.name} onClick={() => onClickShowObjectOnServer(dispatchOperation, server, tubular, ObjectType.Tubular)}>
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowObjectOnServer(
+                  dispatchOperation,
+                  server,
+                  tubular,
+                  ObjectType.Tubular
+                )
+              }
+            >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
           ))}
         </NestedMenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties} disabled={checkedTubularComponents.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <MenuItem
+          key={"properties"}
+          onClick={onClickProperties}
+          disabled={checkedTubularComponents.length !== 1}
+        >
+          <StyledIcon
+            name="settings"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}

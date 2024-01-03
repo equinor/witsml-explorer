@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.IdentityModel.Tokens;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
@@ -47,7 +48,7 @@ namespace WitsmlExplorer.Api.Services
                     WellName = log.NameWell,
                     WellboreUid = log.UidWellbore,
                     WellboreName = log.NameWellbore,
-                    ObjectGrowing = StringHelpers.ToBooleanSafe(log.ObjectGrowing),
+                    ObjectGrowing = StringHelpers.ToBoolean(log.ObjectGrowing),
                     ServiceCompany = log.ServiceCompany,
                     RunNumber = log.RunNumber,
                     StartIndex = log.GetStartIndexAsString(),
@@ -88,7 +89,7 @@ namespace WitsmlExplorer.Api.Services
                 WellboreUid = witsmlLog.UidWellbore,
                 WellboreName = witsmlLog.NameWellbore,
                 IndexCurve = witsmlLog.IndexCurve.Value,
-                ObjectGrowing = StringHelpers.ToBooleanSafe(witsmlLog.ObjectGrowing),
+                ObjectGrowing = StringHelpers.ToBoolean(witsmlLog.ObjectGrowing),
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber,
                 CommonData = new()
@@ -132,6 +133,8 @@ namespace WitsmlExplorer.Api.Services
                     MnemAlias = logCurveInfo.MnemAlias,
                     SensorOffset = LengthMeasure.FromWitsml(logCurveInfo.SensorOffset),
                     Unit = logCurveInfo.Unit,
+                    CurveDescription = logCurveInfo.CurveDescription,
+                    TypeLogData = logCurveInfo.TypeLogData,
                     AxisDefinitions = logCurveInfo.AxisDefinitions?.Select(a => new AxisDefinition()
                     {
                         Uid = a.Uid,
@@ -179,8 +182,8 @@ namespace WitsmlExplorer.Api.Services
                 }
             }
 
-            string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(",");
-            string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(",");
+            string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(CommonConstants.DataSeparator);
 
             return new LogData
             {
@@ -195,10 +198,10 @@ namespace WitsmlExplorer.Api.Services
         private static ICollection<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)
         {
             List<Dictionary<string, LogDataValue>> result = new();
-            string[] mnemonics = logData.MnemonicList.Split(",");
+            string[] mnemonics = logData.MnemonicList.Split(CommonConstants.DataSeparator);
             foreach (string valueRow in logData.Data.Select(d => d.Data))
             {
-                var keyValuePairs = valueRow.Split(",").Select((value, index) => new { index, value }).ToList();
+                var keyValuePairs = valueRow.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
                 if (keyValuePairs.Count > mnemonics.Length)
                 {
                     throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count}.", (int)HttpStatusCode.InternalServerError);

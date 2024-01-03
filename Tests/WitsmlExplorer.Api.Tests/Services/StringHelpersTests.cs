@@ -69,19 +69,19 @@ namespace WitsmlExplorer.Api.Tests.Services
         [Fact]
         public void OptionalBooleanToString_False_CorrectResult()
         {
-            Assert.Equal("false", StringHelpers.OptionalBooleanToString(false));
+            Assert.Equal("false", StringHelpers.NullableBooleanToString(false));
         }
 
         [Fact]
         public void OptionalBooleanToString_True_CorrectResult()
         {
-            Assert.Equal("true", StringHelpers.OptionalBooleanToString(true));
+            Assert.Equal("true", StringHelpers.NullableBooleanToString(true));
         }
 
         [Fact]
         public void OptionalBooleanToString_Null_CorrectResult()
         {
-            Assert.Null(StringHelpers.OptionalBooleanToString(null));
+            Assert.Null(StringHelpers.NullableBooleanToString(null));
         }
     }
 }

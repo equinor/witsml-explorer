@@ -46,12 +46,22 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedWell, selectedWellbore, selectedObject, selectedObjectGroup, currentSelected, expandedTreeNodes } = navigationState;
+  const {
+    selectedServer,
+    selectedWell,
+    selectedWellbore,
+    selectedObject,
+    selectedObjectGroup,
+    currentSelected,
+    expandedTreeNodes
+  } = navigationState;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
 
-  const selectedItemsText = checkableRows ? `Selected: ${numberOfCheckedItems}/${numberOfItems}` : `Items: ${numberOfItems}`;
+  const selectedItemsText = checkableRows
+    ? `Selected: ${numberOfCheckedItems}/${numberOfItems}`
+    : `Items: ${numberOfItems}`;
 
   useEffect(() => {
     return () => {
@@ -63,8 +73,21 @@ const Panel = (props: PanelProps) => {
     abortRefreshControllerRef.current = new AbortController();
     const wellUid = selectedWellbore.wellUid;
     const wellboreUid = selectedWellbore.uid;
-    const wellboreObjects = await ObjectService.getObjects(wellUid, wellboreUid, selectedObjectGroup, abortRefreshControllerRef.current.signal);
-    dispatchNavigation({ type: ModificationType.UpdateWellboreObjects, payload: { wellboreObjects, wellUid, wellboreUid, objectType: selectedObjectGroup } });
+    const wellboreObjects = await ObjectService.getObjects(
+      wellUid,
+      wellboreUid,
+      selectedObjectGroup,
+      abortRefreshControllerRef.current.signal
+    );
+    dispatchNavigation({
+      type: ModificationType.UpdateWellboreObjects,
+      payload: {
+        wellboreObjects,
+        wellUid,
+        wellboreUid,
+        objectType: selectedObjectGroup
+      }
+    });
   };
 
   const refreshObject = async () => {
@@ -72,6 +95,12 @@ const Panel = (props: PanelProps) => {
     const wellUid = selectedWellbore.wellUid;
     const wellboreUid = selectedWellbore.uid;
     const uid = selectedObject.uid;
+    let freshObject = await ObjectService.getObject(
+       wellUid,
+       wellboreUid,
+       uid,
+       selectedObjectGroup
+    );
     if (selectedObjectGroup === ObjectType.geologyInterval) {
       const mudoguid = selectedWellbore.mudLogs.filter((mudlogs) => mudlogs.uid === selectedObject.mudloguid);
       const mudlogUid = mudoguid[0].uid;
@@ -81,7 +110,6 @@ const Panel = (props: PanelProps) => {
       if (isDeleted) {
         mudlogfreshObject = selectedObject;
       }
-
       dispatchNavigation({
         type: ModificationType.UpdateWellboreObject,
         payload: { objectToUpdate: mudlogfreshObject, objectType: ObjectType.MudLog, isDeleted }
@@ -94,27 +122,48 @@ const Panel = (props: PanelProps) => {
       }
       dispatchNavigation({
         type: ModificationType.UpdateWellboreObject,
-        payload: { objectToUpdate: freshObject, objectType: selectedObjectGroup, isDeleted }
+      payload: {
+        objectToUpdate: freshObject,
+        objectType: selectedObjectGroup,
+        isDeleted
+      }
       });
     }
   };
 
   const refreshWells = async () => {
     abortRefreshControllerRef.current = new AbortController();
-    const wells = await WellService.getWells(abortRefreshControllerRef.current.signal);
-    dispatchNavigation({ type: ModificationType.UpdateWells, payload: { wells } });
-    dispatchNavigation({ type: NavigationType.SelectServer, payload: { server: selectedServer } });
+    const wells = await WellService.getWells(
+      abortRefreshControllerRef.current.signal
+    );
+    dispatchNavigation({
+      type: ModificationType.UpdateWells,
+      payload: { wells }
+    });
+    dispatchNavigation({
+      type: NavigationType.SelectServer,
+      payload: { server: selectedServer }
+    });
   };
 
   const refreshWell = async () => {
     abortRefreshControllerRef.current = new AbortController();
     const nodeId = selectedWell.uid;
     if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
-      dispatchNavigation({ type: NavigationType.CollapseTreeNodeChildren, payload: { nodeId } });
+      dispatchNavigation({
+        type: NavigationType.CollapseTreeNodeChildren,
+        payload: { nodeId }
+      });
     }
 
-    const well = await WellService.getWell(nodeId, abortRefreshControllerRef.current.signal);
-    dispatchNavigation({ type: ModificationType.UpdateWell, payload: { well, overrideWellbores: true } });
+    const well = await WellService.getWell(
+      nodeId,
+      abortRefreshControllerRef.current.signal
+    );
+    dispatchNavigation({
+      type: ModificationType.UpdateWell,
+      payload: { well, overrideWellbores: true }
+    });
     dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
   };
 
@@ -155,16 +204,33 @@ const Panel = (props: PanelProps) => {
 
   return (
     <Div>
-      <ColumnOptionsMenu checkableRows={checkableRows} table={table} viewId={viewId} columns={columns} expandableRows={expandableRows} stickyLeftColumns={stickyLeftColumns} />
+      <ColumnOptionsMenu
+        checkableRows={checkableRows}
+        table={table}
+        viewId={viewId}
+        columns={columns}
+        expandableRows={expandableRows}
+        stickyLeftColumns={stickyLeftColumns}
+      />
       <Typography>{selectedItemsText}</Typography>
       {showRefresh && (
-        <Button key="refreshObjects" aria-disabled={isRefreshing ? true : false} aria-label={isRefreshing ? "loading data" : null} onClick={onClickRefresh} disabled={isRefreshing}>
+        <Button
+          key="refreshObjects"
+          aria-disabled={isRefreshing ? true : false}
+          aria-label={isRefreshing ? "loading data" : null}
+          onClick={onClickRefresh}
+          disabled={isRefreshing}
+        >
           <Icon name="refresh" />
           Refresh
         </Button>
       )}
       {downloadToCsvFileName != null && (
-        <Button key="download" aria-label="download as csv" onClick={exportAsCsv}>
+        <Button
+          key="download"
+          aria-label="download as csv"
+          onClick={exportAsCsv}
+        >
           Download as .csv
         </Button>
       )}

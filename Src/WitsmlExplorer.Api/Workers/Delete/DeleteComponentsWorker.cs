@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
             WitsmlObjectOnWellbore query = ObjectQueries.IdsToObjects(wellUid, wellboreUid, new string[] { parentUid }, parentType).First();
             ObjectQueries.SetComponents(query, componentType, componentUids);
-            QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(query.AsSingletonWitsmlList());
+            QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(query.AsItemInWitsmlList());
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Deleted {ComponentType} for {ObjectType}. {Description}", componentsName, parentType, objectsDescription);

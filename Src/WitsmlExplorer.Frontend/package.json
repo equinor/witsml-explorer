@@ -36,8 +36,8 @@
   "dependencies": {
     "@azure/msal-browser": "^2.28.3",
     "@azure/msal-react": "^1.4.7",
-    "@equinor/eds-core-react": "^0.29.1",
-    "@equinor/eds-tokens": "^0.9.0",
+    "@equinor/eds-core-react": "^0.34.0",
+    "@equinor/eds-tokens": "^0.9.2",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
@@ -83,6 +83,7 @@
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
     "eslint": "<9.0.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-jest": "^27.0.4",
     "eslint-plugin-react": "^7.31.8",
     "jest": "^29.1.1",

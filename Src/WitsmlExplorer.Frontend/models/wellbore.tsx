@@ -1,4 +1,7 @@
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "../components/Constants";
 import BhaRun from "./bhaRun";
 import ChangeLog from "./changeLog";
 import FluidsReport from "./fluidsReport";
@@ -8,7 +11,11 @@ import LogObject from "./logObject";
 import Measure from "./measure";
 import MessageObject from "./messageObject";
 import MudLog from "./mudLog";
-import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "./objectType";
+import {
+  ObjectType,
+  ObjectTypeToModel,
+  pluralizeObjectType
+} from "./objectType";
 import Rig from "./rig";
 import RiskObject from "./riskObject";
 import Trajectory from "./trajectory";
@@ -97,19 +104,29 @@ export function emptyWellbore(): Wellbore {
   };
 }
 
-export function wellboreHasChanges(wellbore: WellboreProperties, updatedWellbore: WellboreProperties): boolean {
+export function wellboreHasChanges(
+  wellbore: WellboreProperties,
+  updatedWellbore: WellboreProperties
+): boolean {
   return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
-export const calculateWellboreNodeId = (wellbore: Wellbore | { wellUid: string; uid: string }): string => {
-  return wellbore?.wellUid + wellbore?.uid;
+export const calculateWellboreNodeId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
 };
 
-export const calculateObjectGroupId = (wellbore: Wellbore, objectType: ObjectType): string => {
+export const calculateObjectGroupId = (
+  wellbore: Wellbore,
+  objectType: ObjectType
+): string => {
   return calculateWellboreNodeId(wellbore) + objectType;
 };
 
-export const calculateLogTypeId = (wellbore: Wellbore, logType: string): string => {
+export const calculateLogTypeId = (
+  wellbore: Wellbore,
+  logType: string
+): string => {
   return calculateWellboreNodeId(wellbore) + logType;
 };
 
@@ -121,7 +138,9 @@ export const calculateLogTypeTimeId = (wellbore: Wellbore): string => {
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
 };
 
-export const getWellboreProperties = (wellbore: Wellbore): Map<string, string> => {
+export const getWellboreProperties = (
+  wellbore: Wellbore
+): Map<string, string> => {
   return new Map([
     ["Well", wellbore.wellName],
     ["UID Well", wellbore.wellUid],
@@ -130,12 +149,19 @@ export const getWellboreProperties = (wellbore: Wellbore): Map<string, string> =
   ]);
 };
 
-export function objectTypeToWellboreObjects(objectType: ObjectType): keyof WellboreObjects {
-  return (objectType.charAt(0).toLowerCase() + pluralizeObjectType(objectType).slice(1)) as keyof WellboreObjects;
+export function objectTypeToWellboreObjects(
+  objectType: ObjectType
+): keyof WellboreObjects {
+  return (objectType.charAt(0).toLowerCase() +
+    pluralizeObjectType(objectType).slice(1)) as keyof WellboreObjects;
 }
-
-export function getObjectsFromWellbore<Key extends ObjectType>(wellbore: Wellbore, objectType: Key): ObjectTypeToModel[Key][] {
-  return wellbore[objectTypeToWellboreObjects(objectType)] as ObjectTypeToModel[Key][];
+export function getObjectsFromWellbore<Key extends ObjectType>(
+  wellbore: Wellbore,
+  objectType: Key
+): ObjectTypeToModel[Key][] {
+  return wellbore[
+    objectTypeToWellboreObjects(objectType)
+  ] as ObjectTypeToModel[Key][];
 }
 
 export function getGeologyIntervalLength(wellbore: Wellbore, objectType: string): GeologyInterval[] | null {
@@ -146,8 +172,13 @@ export function getGeologyIntervalLength(wellbore: Wellbore, objectType: string)
     return null;
   }
 }
+}
 
-export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore, uid: string, objectType: Key): ObjectTypeToModel[Key] {
+export function getObjectFromWellbore<Key extends ObjectType>(
+  wellbore: Wellbore,
+  uid: string,
+  objectType: Key
+): ObjectTypeToModel[Key] {
   const objects = getObjectsFromWellbore(wellbore, objectType);
   return objects?.find((object) => object.uid === uid);
 }

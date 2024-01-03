@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -76,7 +75,7 @@ namespace WitsmlExplorer.Api.Services
             if (!objectPropertyValue.IsNullOrEmpty())
             {
                 // send a request to see if the server is capable of searching by the property.
-                IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsSingletonWitsmlList();
+                IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsItemInWitsmlList();
                 IWitsmlObjectList capabilityResult = await _witsmlClient.GetFromStoreNullableAsync(capabilityQuery, new OptionsIn(RequestObjectSelectionCapability: true));
 
                 WitsmlObjectOnWellbore capabilities = capabilityResult?.Objects?.FirstOrDefault();
@@ -137,7 +136,7 @@ namespace WitsmlExplorer.Api.Services
             }
             // return ObjectOnWellbore to avoid serializing null fields from concrete WITSML types
             return result.Objects.Select((obj) =>
-                new ObjectOnWellbore()
+                new BaseObjectOnWellbore()
                 {
                     Uid = obj.Uid,
                     WellboreUid = obj.UidWellbore,
@@ -146,7 +145,7 @@ namespace WitsmlExplorer.Api.Services
                     WellboreName = obj.NameWellbore,
                     WellName = obj.NameWell
                 }
-            ).ToList();
+            ).ToArray();
         }
 
         public async Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid)

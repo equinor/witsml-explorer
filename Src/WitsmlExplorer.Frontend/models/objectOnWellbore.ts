@@ -15,7 +15,9 @@ export default interface ObjectOnWellbore {
   mudloguid?: string;
 }
 
-export function toObjectReference(objectOnWellbore: ObjectOnWellbore): ObjectReference {
+export function toObjectReference(
+  objectOnWellbore: ObjectOnWellbore
+): ObjectReference {
   return {
     uid: objectOnWellbore.uid,
     wellboreUid: objectOnWellbore.wellboreUid,
@@ -25,7 +27,11 @@ export function toObjectReference(objectOnWellbore: ObjectOnWellbore): ObjectRef
     wellName: objectOnWellbore.wellName
   };
 }
-export function toObjectReferences(objectsOnWellbore: ObjectOnWellbore[], objectType: ObjectType, serverUrl: string = null): ObjectReferences {
+export function toObjectReferences(
+  objectsOnWellbore: ObjectOnWellbore[],
+  objectType: ObjectType,
+  serverUrl: string = null
+): ObjectReferences {
   return {
     wellboreUid: objectsOnWellbore[0].wellboreUid,
     wellboreName: objectsOnWellbore[0].wellboreName,
@@ -38,14 +44,22 @@ export function toObjectReferences(objectsOnWellbore: ObjectOnWellbore[], object
   };
 }
 
-export const calculateObjectNodeId = (objectOnWellbore: ObjectOnWellbore, objectType: ObjectType): string => {
-  return objectOnWellbore?.wellUid + objectOnWellbore.wellboreUid + objectType + objectOnWellbore.uid;
+export const calculateObjectNodeId = (
+  objectOnWellbore: ObjectOnWellbore,
+  objectType: ObjectType
+): string => {
+  return (
+    objectOnWellbore.wellUid +
+    objectOnWellbore.wellboreUid +
+    objectType +
+    objectOnWellbore.uid
+  );
 };
 
-export const getObjectOnWellboreProperties = (objectOnWellbore: ObjectOnWellbore | GeologyInterval, objectType: ObjectType, wellbore: Wellbore): Map<string, string> => {
-  const selectedwellboreData = wellbore?.mudLogs?.filter((mudlogs) => mudlogs.uid == objectOnWellbore?.mudloguid);
-  return new Map(
-    objectType === ObjectType.geologyInterval
+export const getObjectOnWellboreProperties = (
+  objectOnWellbore: ObjectOnWellbore | GeologyInterval,
+  objectType: ObjectType
+): Map<string, string> => {
       ? [
           ["Well", selectedwellboreData[0]?.wellName],
           ["UID Well", selectedwellboreData[0]?.wellUid],

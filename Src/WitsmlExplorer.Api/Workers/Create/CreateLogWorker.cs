@@ -69,8 +69,8 @@ namespace WitsmlExplorer.Api.Workers.Create
                         Mnemonic = indexType.ToString(),
                         Unit = unit,
                         TypeLogData = indexType == IndexType.Depth ? WitsmlLogCurveInfo.LogDataTypeDouble : WitsmlLogCurveInfo.LogDataTypeDatetime
-                    }.AsSingletonList()
-                }.AsSingletonList()
+                    }.AsItemInList()
+                }.AsItemInList()
             };
         }
 

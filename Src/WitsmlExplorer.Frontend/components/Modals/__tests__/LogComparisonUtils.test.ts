@@ -5,7 +5,6 @@ import { calculateMismatchedIndexes } from "../LogComparisonUtils";
 const irrelevantProperties = {
   uid: "",
   classWitsml: "",
-  unit: "",
   mnemAlias: "",
   sensorOffset: {
     value: 0,
@@ -20,10 +19,13 @@ const matchingMaxDateTimeIndex = "maxDateTimeIndex";
 const mismatchedDateTime = "mismatch";
 const matchingMinDepthIndex = "1";
 const matchingMaxDepthIndex = "2";
+const matchingUnit = "m";
+const mismatchedUnit = "ft";
 const mismatchedDepth = "1.5";
 
 const matchingDateTimes: LogCurveInfo = {
   mnemonic,
+  unit: matchingUnit,
   minDateTimeIndex: matchingMinDateTimeIndex,
   maxDateTimeIndex: matchingMaxDateTimeIndex,
   ...irrelevantProperties
@@ -31,6 +33,7 @@ const matchingDateTimes: LogCurveInfo = {
 
 const matchingDepths: LogCurveInfo = {
   mnemonic,
+  unit: matchingUnit,
   minDepthIndex: matchingMinDepthIndex,
   maxDepthIndex: matchingMaxDepthIndex,
   ...irrelevantProperties
@@ -179,6 +182,24 @@ it("Should detect mismatched minDepthIndex", () => {
   expect(result[0].sourceEnd).toEqual(matchingMaxDepthIndex);
   expect(result[0].targetStart).toEqual(mismatchedDepth);
   expect(result[0].targetEnd).toEqual(matchingMaxDepthIndex);
+});
+
+it("Should detect mismatched units", () => {
+  const source: LogCurveInfo[] = [
+    {
+      ...matchingDepths
+    }
+  ];
+  const target: LogCurveInfo[] = [
+    {
+      ...matchingDepths,
+      unit: mismatchedUnit
+    }
+  ];
+  const result = calculateMismatchedIndexes(source, target);
+  expect(result[0].mnemonic).toEqual(mnemonic);
+  expect(result[0].sourceUnit).toEqual(matchingUnit);
+  expect(result[0].targetUnit).toEqual(mismatchedUnit);
 });
 
 it("Should disregard matching dateTime indexes", () => {

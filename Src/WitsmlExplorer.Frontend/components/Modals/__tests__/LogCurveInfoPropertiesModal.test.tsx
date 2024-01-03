@@ -1,11 +1,19 @@
 import "@testing-library/jest-dom";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { getAxisDefinition, getLogCurveInfo, getLogObject } from "../../../__testUtils__/testUtils";
+import { mockEdsCoreReact } from "../../../__testUtils__/mocks/EDSMocks";
+import {
+  getAxisDefinition,
+  getLogCurveInfo,
+  getLogObject
+} from "../../../__testUtils__/testUtils";
 import JobService from "../../../services/jobService";
-import LogCurveInfoPropertiesModal, { LogCurveInfoPropertiesModalProps } from "../LogCurveInfoPropertiesModal";
+import LogCurveInfoPropertiesModal, {
+  LogCurveInfoPropertiesModalProps
+} from "../LogCurveInfoPropertiesModal";
 
 jest.mock("../../../services/jobService");
+jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
 const simpleProps: LogCurveInfoPropertiesModalProps = {
   logCurveInfo: getLogCurveInfo(),
@@ -25,11 +33,8 @@ it("Properties of a LogCurve should be shown in the modal", async () => {
 
   render(<LogCurveInfoPropertiesModal {...simpleProps} />);
 
-  const dialog = screen.getByRole("dialog", { name: /edit properties/i });
-  const inDialog = within(dialog);
-
-  const uidInput = inDialog.getByRole("textbox", { name: /uid/i });
-  const mnemonicInput = inDialog.getByRole("textbox", { name: /mnemonic/i });
+  const uidInput = screen.getByRole("textbox", { name: /uid/i });
+  const mnemonicInput = screen.getByRole("textbox", { name: /mnemonic/i });
 
   expect(uidInput).toHaveValue(expectedLogCurveInfo.uid);
   expect(mnemonicInput).toHaveValue(expectedLogCurveInfo.mnemonic);
@@ -44,15 +49,14 @@ it("AxisDefinition should be shown readonly in the LogCurveInfo modal when inclu
 
   render(<LogCurveInfoPropertiesModal {...propsWithAxisDefinition} />);
 
-  const dialog = screen.getByRole("dialog", { name: /edit properties/i });
-  const inDialog = within(dialog);
-
-  const uidInput = inDialog.getByRole("textbox", { name: /uid/i });
-  const mnemonicInput = inDialog.getByRole("textbox", { name: /mnemonic/i });
-  const axisDefinitionLabel = inDialog.getByText(/axisdefinition/i);
-  const orderInput = inDialog.getByRole("textbox", { name: /order/i });
-  const countInput = inDialog.getByRole("textbox", { name: /count/i });
-  const doubleValuesInput = inDialog.getByRole("textbox", { name: /doubleValues/i });
+  const uidInput = screen.getByRole("textbox", { name: /uid/i });
+  const mnemonicInput = screen.getByRole("textbox", { name: /mnemonic/i });
+  const axisDefinitionLabel = screen.getByText(/axisdefinition/i);
+  const orderInput = screen.getByRole("textbox", { name: /order/i });
+  const countInput = screen.getByRole("textbox", { name: /count/i });
+  const doubleValuesInput = screen.getByRole("textbox", {
+    name: /doubleValues/i
+  });
 
   expect(uidInput).toHaveValue(expectedLogCurveInfo.uid);
   expect(mnemonicInput).toHaveValue(expectedLogCurveInfo.mnemonic);

@@ -3,10 +3,21 @@ import { render } from "@testing-library/react";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import { Filter, FilterContextProvider } from "../contexts/filter";
-import NavigationContext, { EMPTY_NAVIGATION_STATE, NavigationState } from "../contexts/navigationContext";
+import NavigationContext, {
+  EMPTY_NAVIGATION_STATE,
+  NavigationState
+} from "../contexts/navigationContext";
 import { reducer as navigationReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
-import { DateTimeFormat, DecimalPreference, EMPTY_CONTEXT_MENU, OperationState, TimeZone, UserTheme, reducer as operationReducer } from "../contexts/operationStateReducer";
+import {
+  DateTimeFormat,
+  DecimalPreference,
+  EMPTY_CONTEXT_MENU,
+  OperationState,
+  TimeZone,
+  UserTheme,
+  reducer as operationReducer
+} from "../contexts/operationStateReducer";
 import { QueryContextProvider, QueryState } from "../contexts/queryContext";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
@@ -24,6 +35,7 @@ import MudLog from "../models/mudLog";
 import ObjectOnWellbore from "../models/objectOnWellbore";
 import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType, ObjectTypeToModel } from "../models/objectType";
+import RefNameString from "../models/refNameString";
 import Rig from "../models/rig";
 import RiskObject from "../models/riskObject";
 import { Server } from "../models/server";
@@ -46,26 +58,40 @@ interface RenderWithContextsOptions {
 
 export function renderWithContexts(
   ui: React.ReactElement,
-  { initialNavigationState, initialOperationState, initialFilter, initialQueryState, ...options }: RenderWithContextsOptions = {}
+  {
+    initialNavigationState,
+    initialOperationState,
+    initialFilter,
+    initialQueryState,
+    ...options
+  }: RenderWithContextsOptions = {}
 ) {
   const Wrapper = ({ children }: { children: React.ReactElement }) => {
-    const [operationState, dispatchOperation] = React.useReducer(operationReducer, {
-      contextMenu: EMPTY_CONTEXT_MENU,
-      progressIndicatorValue: 0,
-      modals: [],
-      theme: UserTheme.Compact,
-      timeZone: TimeZone.Local,
-      dateTimeFormat: DateTimeFormat.Raw,
-      decimals: DecimalPreference.Raw,
-      colors: light,
-      ...initialOperationState
-    });
-    const [navigationState, dispatchNavigation] = React.useReducer(navigationReducer, { ...EMPTY_NAVIGATION_STATE, ...initialNavigationState });
+    const [operationState, dispatchOperation] = React.useReducer(
+      operationReducer,
+      {
+        contextMenu: EMPTY_CONTEXT_MENU,
+        progressIndicatorValue: 0,
+        modals: [],
+        theme: UserTheme.Compact,
+        timeZone: TimeZone.Local,
+        dateTimeFormat: DateTimeFormat.Raw,
+        decimals: DecimalPreference.Raw,
+        colors: light,
+        ...initialOperationState
+      }
+    );
+    const [navigationState, dispatchNavigation] = React.useReducer(
+      navigationReducer,
+      { ...EMPTY_NAVIGATION_STATE, ...initialNavigationState }
+    );
 
     return (
       <OperationContext.Provider value={{ operationState, dispatchOperation }}>
         <ThemeProvider theme={getTheme(operationState.theme)}>
-          <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
+          <NavigationContext.Provider
+            value={{ navigationState, dispatchNavigation }}
+          >
             <FilterContextProvider initialFilter={initialFilter}>
               <QueryContextProvider initialQueryState={initialQueryState}>
                 <SnackbarProvider>{children}</SnackbarProvider>
@@ -145,7 +171,9 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
   };
 }
 
-export function getNotification(overrides?: Partial<Notification>): Notification {
+export function getNotification(
+  overrides?: Partial<Notification>
+): Notification {
   return {
     serverUrl: new URL("http://example.com"),
     isSuccess: true,
@@ -154,7 +182,9 @@ export function getNotification(overrides?: Partial<Notification>): Notification
   };
 }
 
-export function getObjectOnWellbore(overrides?: Partial<ObjectOnWellbore>): ObjectOnWellbore {
+export function getObjectOnWellbore(
+  overrides?: Partial<ObjectOnWellbore>
+): ObjectOnWellbore {
   return {
     uid: "uid",
     wellboreUid: "wellboreUid",
@@ -166,7 +196,9 @@ export function getObjectOnWellbore(overrides?: Partial<ObjectOnWellbore>): Obje
   };
 }
 
-export function getObjectSearchResult(overrides?: Partial<ObjectSearchResult>): ObjectSearchResult {
+export function getObjectSearchResult(
+  overrides?: Partial<ObjectSearchResult>
+): ObjectSearchResult {
   return {
     ...getObjectOnWellbore(),
     searchProperty: "searchProperty",
@@ -179,8 +211,7 @@ export function getBhaRun(overrides?: Partial<BhaRun>): BhaRun {
   return {
     ...getObjectOnWellbore(),
     numStringRun: "",
-    tubular: "",
-    tubularUidRef: "",
+    tubular: getRefNameString(),
     dTimStart: "",
     dTimStop: "",
     dTimStartDrilling: "",
@@ -208,7 +239,9 @@ export function getChangeLog(overrides?: Partial<ChangeLog>): ChangeLog {
   };
 }
 
-export function getFluidsReport(overrides?: Partial<FluidsReport>): FluidsReport {
+export function getFluidsReport(
+  overrides?: Partial<FluidsReport>
+): FluidsReport {
   return {
     ...getObjectOnWellbore(),
     dTim: "",
@@ -220,7 +253,9 @@ export function getFluidsReport(overrides?: Partial<FluidsReport>): FluidsReport
   };
 }
 
-export function getFormationMarker(overrides?: Partial<FormationMarker>): FormationMarker {
+export function getFormationMarker(
+  overrides?: Partial<FormationMarker>
+): FormationMarker {
   return {
     ...getObjectOnWellbore(),
     mdPrognosed: getMeasureWithDatum(),
@@ -312,8 +347,8 @@ export function getRisk(overrides?: Partial<RiskObject>): RiskObject {
 export function getTrajectory(overrides?: Partial<Trajectory>): Trajectory {
   return {
     ...getObjectOnWellbore(),
-    mdMin: 0,
-    mdMax: 0,
+    mdMin: getMeasureWithDatum(),
+    mdMax: getMeasureWithDatum(),
     aziRef: "",
     dTimTrajStart: "",
     dTimTrajEnd: "",
@@ -333,7 +368,9 @@ export function getTubular(overrides?: Partial<Tubular>): Tubular {
   };
 }
 
-export function getWbGeometry(overrides?: Partial<WbGeometryObject>): WbGeometryObject {
+export function getWbGeometry(
+  overrides?: Partial<WbGeometryObject>
+): WbGeometryObject {
   return {
     ...getObjectOnWellbore(),
     dTimReport: "",
@@ -360,7 +397,10 @@ const getObjectMapping = {
   [ObjectType.WbGeometry]: getWbGeometry
 };
 
-export function getObject<T extends ObjectType>(objectType: T, overrides?: Partial<ObjectTypeToModel[T]>): ObjectTypeToModel[T] {
+export function getObject<T extends ObjectType>(
+  objectType: T,
+  overrides?: Partial<ObjectTypeToModel[T]>
+): ObjectTypeToModel[T] {
   return getObjectMapping[objectType](overrides) as ObjectTypeToModel[T];
 }
 
@@ -392,7 +432,9 @@ export function getCommonData(overrides?: Partial<CommonData>): CommonData {
   };
 }
 
-export function getLogCurveInfo(overrides?: Partial<LogCurveInfo>): LogCurveInfo {
+export function getLogCurveInfo(
+  overrides?: Partial<LogCurveInfo>
+): LogCurveInfo {
   return {
     uid: "uid",
     mnemonic: "mnemonic",
@@ -404,6 +446,8 @@ export function getLogCurveInfo(overrides?: Partial<LogCurveInfo>): LogCurveInfo
     unit: "unit",
     mnemAlias: "mnemAlias",
     axisDefinitions: [],
+    curveDescription: "curveDescription",
+    typeLogData: "typeLogData",
     sensorOffset: getMeasure(),
     ...overrides
   };
@@ -417,7 +461,9 @@ export function getMeasure(overrides?: Partial<Measure>): Measure {
   };
 }
 
-export function getMeasureWithDatum(overrides?: Partial<MeasureWithDatum>): MeasureWithDatum {
+export function getMeasureWithDatum(
+  overrides?: Partial<MeasureWithDatum>
+): MeasureWithDatum {
   return {
     value: 0,
     uom: "m",
@@ -426,7 +472,9 @@ export function getMeasureWithDatum(overrides?: Partial<MeasureWithDatum>): Meas
   };
 }
 
-export function getStratigraphicStruct(overrides?: Partial<StratigraphicStruct>): StratigraphicStruct {
+export function getStratigraphicStruct(
+  overrides?: Partial<StratigraphicStruct>
+): StratigraphicStruct {
   return {
     value: "",
     kind: "",
@@ -434,7 +482,19 @@ export function getStratigraphicStruct(overrides?: Partial<StratigraphicStruct>)
   };
 }
 
-export function getAxisDefinition(overrides?: Partial<AxisDefinition>): AxisDefinition {
+export function getRefNameString(
+  overrides?: Partial<RefNameString>
+): RefNameString {
+  return {
+    uidRef: "",
+    value: "",
+    ...overrides
+  };
+}
+
+export function getAxisDefinition(
+  overrides?: Partial<AxisDefinition>
+): AxisDefinition {
   return {
     uid: "axisDefinitionUid",
     order: 1,

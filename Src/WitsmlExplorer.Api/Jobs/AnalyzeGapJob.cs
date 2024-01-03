@@ -30,6 +30,16 @@ public record AnalyzeGapJob : Job
     public long TimeGapSize { get; set; }
 
     /// <summary>
+    /// Start index of the log for searching gaps.
+    /// </summary>
+    public string StartIndex { get; set; }
+
+    /// <summary>
+    /// End index of the log for searching gaps.
+    /// </summary>
+    public string EndIndex { get; set; }
+
+    /// <summary>
     /// Getting description of log reference object.
     /// </summary>
     /// <returns>String of job info which provide WellUid, WellboreUid and LogUid.</returns>

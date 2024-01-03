@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -40,7 +41,7 @@ namespace Witsml.Data
         [XmlElement("magXAxialCorUsed")]
         public string MagXAxialCorUsedText
         {
-            get => MagXAxialCorUsed.HasValue ? XmlConvert.ToString(MagXAxialCorUsed.Value) : null;
+            get => MagXAxialCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => MagXAxialCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -49,7 +50,7 @@ namespace Witsml.Data
         [XmlElement("sagCorUsed")]
         public string SagCorUsedText
         {
-            get => SagCorUsed.HasValue ? XmlConvert.ToString(SagCorUsed.Value) : null;
+            get => SagCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => SagCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -58,7 +59,7 @@ namespace Witsml.Data
         [XmlElement("magDrlstrCorUsed")]
         public string MagDrlstrCorUsedText
         {
-            get => MagDrlstrCorUsed.HasValue ? XmlConvert.ToString(MagDrlstrCorUsed.Value) : null;
+            get => MagDrlstrCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => MagDrlstrCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -67,7 +68,7 @@ namespace Witsml.Data
         [XmlElement("infieldRefCorUsed")]
         public string InfieldRefCorUsedText
         {
-            get => InfieldRefCorUsed.HasValue ? XmlConvert.ToString(InfieldRefCorUsed.Value) : null;
+            get => InfieldRefCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => InfieldRefCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -76,7 +77,7 @@ namespace Witsml.Data
         [XmlElement("interpolatedInfieldRefCorUsed")]
         public string InterpolatedInfieldRefCorUsedText
         {
-            get => InterpolatedInfieldRefCorUsed.HasValue ? XmlConvert.ToString(InterpolatedInfieldRefCorUsed.Value) : null;
+            get => InterpolatedInfieldRefCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => InterpolatedInfieldRefCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -85,7 +86,7 @@ namespace Witsml.Data
         [XmlElement("inHoleRefCorUsed")]
         public string InHoleRefCorUsedText
         {
-            get => InHoleRefCorUsed.HasValue ? XmlConvert.ToString(InHoleRefCorUsed.Value) : null;
+            get => InHoleRefCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => InHoleRefCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -95,7 +96,7 @@ namespace Witsml.Data
         [XmlElement("axialMagInterferenceCorUsed")]
         public string AxialMagInterferenceCorUsedText
         {
-            get => AxialMagInterferenceCorUsed.HasValue ? XmlConvert.ToString(AxialMagInterferenceCorUsed.Value) : null;
+            get => AxialMagInterferenceCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => AxialMagInterferenceCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -104,7 +105,7 @@ namespace Witsml.Data
         [XmlElement("cosagCorUsed")]
         public string CosagCorUsedText
         {
-            get => CosagCorUsed.HasValue ? XmlConvert.ToString(CosagCorUsed.Value) : null;
+            get => CosagCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => CosagCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -113,7 +114,7 @@ namespace Witsml.Data
         [XmlElement("MSACorUsed")]
         public string MsaCorUsedText
         {
-            get => MsaCorUsed.HasValue ? XmlConvert.ToString(MsaCorUsed.Value) : null;
+            get => MsaCorUsed?.ToString(CultureInfo.InvariantCulture);
             set => MsaCorUsed = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
@@ -124,6 +125,10 @@ namespace Witsml.Data
         [XmlElement("magModelValid")] public string MagModelValid { get; set; }
         [XmlElement("geoModelUsed")] public string GeoModelUsed { get; set; }
         [XmlElement("statusTrajStation")] public string StatusTrajStation { get; set; }
+        [XmlElement("gravAxialRaw")] public WitsmlLinearAccelerationMeasure GravAxialRaw { get; set; }
+        [XmlElement("gravTran1Raw")] public WitsmlLinearAccelerationMeasure GravTran1Raw { get; set; }
+        [XmlElement("gravTran2Raw")] public WitsmlLinearAccelerationMeasure GravTran2Raw { get; set; }
+        [XmlElement("magAxialRaw")] public WitsmlMagneticFluxDensityMeasure MagAxialRaw { get; set; }
         [XmlElement("rawData")] public WitsmlTrajRawData RawData { get; set; }
         [XmlElement("corUsed")] public WitsmlStnTrajCorUsed CorUsed { get; set; }
         [XmlElement("valid")] public WitsmlStnTrajValid Valid { get; set; }

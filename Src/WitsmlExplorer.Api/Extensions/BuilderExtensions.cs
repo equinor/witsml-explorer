@@ -5,6 +5,8 @@ using Azure.Identity;
 
 using Microsoft.Extensions.Configuration;
 
+using Witsml;
+
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Services;
 
@@ -24,7 +26,7 @@ namespace WitsmlExplorer.Api.Extensions
                     new DefaultAzureCredential(),
                     new AzureKeyVaultConfigurationOptions()
                     {
-                        ReloadInterval = TimeSpan.FromMinutes(15)
+                        ReloadInterval = TimeSpan.FromMinutes(CommonConstants.DefaultReloadIntervalMinutes)
                     });
             }
             return configuration;

@@ -1,10 +1,11 @@
+import CommonData from "./commonData";
+import MeasureWithDatum from "./measureWithDatum";
 import ObjectOnWellbore from "./objectOnWellbore";
 import TrajectoryStation from "./trajectoryStation";
-import CommonData from "./commonData";
 
 export default interface Trajectory extends ObjectOnWellbore {
-  mdMin: number;
-  mdMax: number;
+  mdMin: MeasureWithDatum;
+  mdMax: MeasureWithDatum;
   aziRef: string;
   dTimTrajStart: string;
   dTimTrajEnd: string;
@@ -13,4 +14,9 @@ export default interface Trajectory extends ObjectOnWellbore {
   commonData: CommonData;
 }
 
-export const aziRefValues = ["unknown", "grid north", "magnetic north", "true north"];
+export const aziRefValues = [
+  "unknown",
+  "grid north",
+  "magnetic north",
+  "true north"
+];

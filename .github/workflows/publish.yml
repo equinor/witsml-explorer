@@ -7,13 +7,14 @@ on:
     paths:
       - '.github/workflows/publish.yml'
       - 'Src/Witsml/**'
-  workflow_dispatch:      
+  workflow_dispatch:
 
 permissions:
   packages: read
 
 jobs:
   build:
+    if: github.repository_owner == 'equinor'
     name: Package and publish
     runs-on: ubuntu-latest
     steps:

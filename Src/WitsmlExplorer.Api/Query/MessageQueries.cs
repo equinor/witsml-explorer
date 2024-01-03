@@ -1,8 +1,6 @@
 using Witsml.Data;
 using Witsml.Extensions;
 
-using WitsmlExplorer.Api.Models;
-
 namespace WitsmlExplorer.Api.Query
 {
     public class MessageQueries
@@ -16,7 +14,7 @@ namespace WitsmlExplorer.Api.Query
                     UidWellbore = wellboreUid,
                     UidWell = wellUid,
                     Uid = messageUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -42,24 +40,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = "",
                         Comments = ""
                     }
-                }.AsSingletonList()
-            };
-        }
-
-        public static WitsmlMessages CreateMessageObject(MessageObject messageObject)
-        {
-            return new WitsmlMessages
-            {
-                Messages = new WitsmlMessage
-                {
-                    UidWell = messageObject.WellUid,
-                    NameWell = messageObject.WellName,
-                    UidWellbore = messageObject.WellboreUid,
-                    NameWellbore = messageObject.WellboreName,
-                    Uid = messageObject.Uid,
-                    Name = messageObject.Name,
-                    MessageText = messageObject.MessageText
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

@@ -7,7 +7,10 @@ import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import TreeItem from "./TreeItem";
@@ -28,11 +31,23 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const { dispatchNavigation } = useContext(NavigationContext);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, log: LogObject) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    log: LogObject
+  ) => {
     preventContextMenuPropagation(event);
-    const contextProps: ObjectContextMenuProps = { checkedObjects: [log], wellbore };
+    const contextProps: ObjectContextMenuProps = {
+      checkedObjects: [log],
+      wellbore
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <LogObjectContextMenu {...contextProps} />,
+        position
+      }
+    });
   };
 
   return (
@@ -43,7 +58,12 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
       selected={selected}
       isActive={objectGrowing}
-      onLabelClick={() => dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: log, well, wellbore, objectType: ObjectType.Log } })}
+      onLabelClick={() =>
+        dispatchNavigation({
+          type: NavigationType.SelectObject,
+          payload: { object: log, well, wellbore, objectType: ObjectType.Log }
+        })
+      }
     />
   );
 };

@@ -59,7 +59,7 @@ namespace Witsml.Data.Curves
                     : new DepthIndex(
                         double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.StartIndex.Value,
                             CultureInfo.InvariantCulture),
-                        log.StartIndex?.Uom ?? "m"),
+                        log.StartIndex?.Uom ?? CommonConstants.DepthIndex.DefaultUnit),
                 WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => log.StartDateTimeIndex == null && string.IsNullOrEmpty(customIndexValue)
                     ? null
                     : new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.StartDateTimeIndex,
@@ -77,7 +77,7 @@ namespace Witsml.Data.Curves
                     : new DepthIndex(
                         double.Parse(customIndexValue.IsNumeric() ? customIndexValue : log.EndIndex.Value,
                             CultureInfo.InvariantCulture),
-                        log.EndIndex?.Uom ?? "m"),
+                        log.EndIndex?.Uom ?? CommonConstants.DepthIndex.DefaultUnit),
                 WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => log.EndDateTimeIndex == null && string.IsNullOrEmpty(customIndexValue)
                     ? null
                     : new DateTimeIndex(DateTime.Parse(customIndexValue.NullIfEmpty() ?? log.EndDateTimeIndex,

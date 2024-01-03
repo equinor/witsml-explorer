@@ -8,11 +8,18 @@ import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+  GeologyIntervalContextMenuProps
+} from "../ContextMenus/GeologyIntervalContextMenu";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 import { ObjectType } from "../../models/objectType";
 import ModificationType from "../../contexts/modificationType";
 import { getGeologyIntervalLength } from "../../models/wellbore";
+
 
 export interface GeologyIntervalRow extends ContentTableRow {
   typeLithology: string;
@@ -37,7 +44,9 @@ export const MudLogView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedObject, selectedWellbore } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>([]);
+  const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>(
+    []
+  );
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedMudLog = selectedObject as MudLog;
 
@@ -83,16 +92,30 @@ export const MudLogView = (): React.ReactElement => {
     }
   }, [selectedMudLog]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedRows: GeologyIntervalRow[]) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedRows: GeologyIntervalRow[]
+  ) => {
     const contextMenuProps: GeologyIntervalContextMenuProps = {
       checkedGeologyIntervals: checkedRows.map((row) => row.geologyInterval)
     };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <GeologyIntervalContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <GeologyIntervalContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
   const columns: ContentTableColumn[] = [
-    { property: "typeLithology", label: "typeLithology", type: ContentType.String },
+    {
+      property: "typeLithology",
+      label: "typeLithology",
+      type: ContentType.String
+    },
     { property: "description", label: "description", type: ContentType.String },
     { property: "mdTop", label: "mdTop", type: ContentType.Measure },
     { property: "mdBottom", label: "mdBottom", type: ContentType.Measure },
@@ -110,34 +133,36 @@ export const MudLogView = (): React.ReactElement => {
   ];
 
   const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals?.map((geologyInterval) => {
-    return {
-      id: geologyInterval.uid,
-      typeLithology: geologyInterval.typeLithology,
-      description: geologyInterval.description,
-      mdTop: measureToString(geologyInterval.mdTop),
-      mdBottom: measureToString(geologyInterval.mdBottom),
-      tvdTop: measureToString(geologyInterval.tvdTop),
-      tvdBase: measureToString(geologyInterval.tvdBase),
-      ropAv: measureToString(geologyInterval.ropAv),
-      wobAv: measureToString(geologyInterval.wobAv),
-      tqAv: measureToString(geologyInterval.tqAv),
-      currentAv: measureToString(geologyInterval.currentAv),
-      rpmAv: measureToString(geologyInterval.rpmAv),
-      wtMudAv: measureToString(geologyInterval.wtMudAv),
-      ecdTdAv: measureToString(geologyInterval.ecdTdAv),
-      dxcAv: geologyInterval.dxcAv,
-      uid: geologyInterval.uid,
-      inset: geologyInterval.lithologies.map((lithology) => {
-        return {
-          id: lithology.uid,
-          type: lithology.type,
-          codeLith: lithology.codeLith,
-          lithPc: lithology.lithPc
-        };
-      }),
-      geologyInterval
-    };
-  });
+    (geologyInterval) => {
+      return {
+        id: geologyInterval.uid,
+        typeLithology: geologyInterval.typeLithology,
+        description: geologyInterval.description,
+        mdTop: measureToString(geologyInterval.mdTop),
+        mdBottom: measureToString(geologyInterval.mdBottom),
+        tvdTop: measureToString(geologyInterval.tvdTop),
+        tvdBase: measureToString(geologyInterval.tvdBase),
+        ropAv: measureToString(geologyInterval.ropAv),
+        wobAv: measureToString(geologyInterval.wobAv),
+        tqAv: measureToString(geologyInterval.tqAv),
+        currentAv: measureToString(geologyInterval.currentAv),
+        rpmAv: measureToString(geologyInterval.rpmAv),
+        wtMudAv: measureToString(geologyInterval.wtMudAv),
+        ecdTdAv: measureToString(geologyInterval.ecdTdAv),
+        dxcAv: geologyInterval.dxcAv,
+        uid: geologyInterval.uid,
+        inset: geologyInterval.lithologies.map((lithology) => {
+          return {
+            id: lithology.uid,
+            type: lithology.type,
+            codeLith: lithology.codeLith,
+            lithPc: lithology.lithPc
+          };
+        }),
+        geologyInterval
+      };
+    }
+  );
 
   const insetColumns: ContentTableColumn[] = [
     { property: "type", label: "type", type: ContentType.String },

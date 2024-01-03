@@ -174,15 +174,15 @@ public class CountLogDataRowWorkerTest
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
                 Uid = LogUid,
-                StartIndex = new WitsmlIndex(new DepthIndex(startIndex, "m")),
-                EndIndex = new WitsmlIndex(new DepthIndex(endIndex, "m")),
+                StartIndex = new WitsmlIndex(new DepthIndex(startIndex, CommonConstants.Unit.Meter)),
+                EndIndex = new WitsmlIndex(new DepthIndex(endIndex, CommonConstants.Unit.Meter)),
                 StartDateTimeIndex = startDateTimeIndex,
                 EndDateTimeIndex = endDateTimeIndex,
                 IndexCurve = new WitsmlIndexCurve() { Value = isDepthLog ? IndexCurveDepth : IndexCurveTime },
                 LogData = logData,
                 IndexType = isDepthLog ? WitsmlLog.WITSML_INDEX_TYPE_MD : WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME,
                 LogCurveInfo = logCurveInfo,
-            }.AsSingletonList()
+            }.AsItemInList()
         };
     }
 

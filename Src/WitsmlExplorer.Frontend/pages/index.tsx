@@ -5,7 +5,6 @@ import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import React, { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
-import { STORAGE_DATETIMEFORMAT_KEY, STORAGE_DECIMAL_KEY, STORAGE_MODE_KEY, STORAGE_THEME_KEY, STORAGE_TIMEZONE_KEY } from "../components/Constants";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
 import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
@@ -21,22 +20,34 @@ import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import {
   DateTimeFormat,
+  DecimalPreference,
   SetDateTimeFormatAction,
+  SetDecimalAction,
   SetModeAction,
   SetThemeAction,
   SetTimeZoneAction,
   TimeZone,
   UserTheme,
-  initOperationStateReducer,
-  SetDecimalAction,
-  DecimalPreference
+  initOperationStateReducer
 } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { QueryContextProvider } from "../contexts/queryContext";
 import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
-import { authRequest, msalEnabled, msalInstance } from "../msal/MsalAuthProvider";
+import {
+  authRequest,
+  msalEnabled,
+  msalInstance
+} from "../msal/MsalAuthProvider";
 import { dark, light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
+import {
+  STORAGE_DATETIMEFORMAT_KEY,
+  STORAGE_DECIMAL_KEY,
+  STORAGE_MODE_KEY,
+  STORAGE_THEME_KEY,
+  STORAGE_TIMEZONE_KEY,
+  getLocalStorageItem
+} from "../tools/localStorageHelpers";
 
 const Home = (): React.ReactElement => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
@@ -44,29 +55,52 @@ const Home = (): React.ReactElement => {
 
   useEffect(() => {
     if (typeof localStorage != "undefined") {
-      const localStorageTheme = localStorage.getItem(STORAGE_THEME_KEY) as UserTheme;
+      const localStorageTheme =
+        getLocalStorageItem<UserTheme>(STORAGE_THEME_KEY);
       if (localStorageTheme) {
-        const action: SetThemeAction = { type: OperationType.SetTheme, payload: localStorageTheme };
+        const action: SetThemeAction = {
+          type: OperationType.SetTheme,
+          payload: localStorageTheme
+        };
         dispatchOperation(action);
       }
-      const storedTimeZone = localStorage.getItem(STORAGE_TIMEZONE_KEY) as TimeZone;
+      const storedTimeZone =
+        getLocalStorageItem<TimeZone>(STORAGE_TIMEZONE_KEY);
       if (storedTimeZone) {
-        const action: SetTimeZoneAction = { type: OperationType.SetTimeZone, payload: storedTimeZone };
+        const action: SetTimeZoneAction = {
+          type: OperationType.SetTimeZone,
+          payload: storedTimeZone
+        };
         dispatchOperation(action);
       }
-      const storedMode = localStorage.getItem(STORAGE_MODE_KEY) as "light" | "dark";
+      const storedMode = getLocalStorageItem<"light" | "dark">(
+        STORAGE_MODE_KEY
+      );
       if (storedMode) {
-        const action: SetModeAction = { type: OperationType.SetMode, payload: storedMode == "light" ? light : dark };
+        const action: SetModeAction = {
+          type: OperationType.SetMode,
+          payload: storedMode == "light" ? light : dark
+        };
         dispatchOperation(action);
       }
-      const storedDateTimeFormat = localStorage.getItem(STORAGE_DATETIMEFORMAT_KEY) as DateTimeFormat;
+      const storedDateTimeFormat = getLocalStorageItem(
+        STORAGE_DATETIMEFORMAT_KEY
+      ) as DateTimeFormat;
       if (storedDateTimeFormat) {
-        const action: SetDateTimeFormatAction = { type: OperationType.SetDateTimeFormat, payload: storedDateTimeFormat };
+        const action: SetDateTimeFormatAction = {
+          type: OperationType.SetDateTimeFormat,
+          payload: storedDateTimeFormat
+        };
         dispatchOperation(action);
       }
-      const storedDecimals = localStorage.getItem(STORAGE_DECIMAL_KEY) as DecimalPreference;
+      const storedDecimals = getLocalStorageItem(
+        STORAGE_DECIMAL_KEY
+      ) as DecimalPreference;
       if (storedDecimals) {
-        const action: SetDecimalAction = { type: OperationType.SetDecimal, payload: storedDecimals };
+        const action: SetDecimalAction = {
+          type: OperationType.SetDecimal,
+          payload: storedDecimals
+        };
         dispatchOperation(action);
       }
     }
@@ -78,15 +112,27 @@ const Home = (): React.ReactElement => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <MsalProvider instance={msalInstance}>
-        {msalEnabled && <MsalAuthenticationTemplate interactionType={InteractionType.Redirect} authenticationRequest={authRequest} />}
-        <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+        {msalEnabled && (
+          <MsalAuthenticationTemplate
+            interactionType={InteractionType.Redirect}
+            authenticationRequest={authRequest}
+          />
+        )}
+        <OperationContext.Provider
+          value={{ operationState, dispatchOperation }}
+        >
           <ThemeProvider theme={getTheme(operationState.theme)}>
             <GlobalStyles colors={operationState.colors} />
             <Head>
               <title>WITSML Explorer</title>
-              <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
+              <link
+                rel="icon"
+                href={AssetsLoader.getAssetsRoot() + "/favicon.ico"}
+              />
             </Head>
-            <NavigationContext.Provider value={{ navigationState, dispatchNavigation }}>
+            <NavigationContext.Provider
+              value={{ navigationState, dispatchNavigation }}
+            >
               <FilterContextProvider>
                 <QueryContextProvider>
                   <Routing />

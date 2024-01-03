@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CreateWellboreJob job = CreateJobTemplate(null);
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
-            job = CreateJobTemplate("");
+            job = CreateJobTemplate(string.Empty);
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Uid cannot be empty", exception.Message);
             _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
@@ -60,7 +60,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CreateWellboreJob job = CreateJobTemplate(name: null);
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
-            job = CreateJobTemplate(name: "");
+            job = CreateJobTemplate(name: string.Empty);
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("Name cannot be empty", exception.Message);
             _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
@@ -72,7 +72,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CreateWellboreJob job = CreateJobTemplate(wellUid: null);
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("WellUid cannot be empty", exception.Message);
-            job = CreateJobTemplate(wellUid: "");
+            job = CreateJobTemplate(wellUid: string.Empty);
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("WellUid cannot be empty", exception.Message);
             _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);
@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             CreateWellboreJob job = CreateJobTemplate(wellName: null);
             InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("WellName cannot be empty", exception.Message);
-            job = CreateJobTemplate(wellName: "");
+            job = CreateJobTemplate(wellName: string.Empty);
             exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
             Assert.Equal("WellName cannot be empty", exception.Message);
             _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlWells>()), Times.Never);

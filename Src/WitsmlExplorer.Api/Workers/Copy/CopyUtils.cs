@@ -37,7 +37,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 try
                 {
-                    QueryResult result = await witsmlClient.AddToStoreAsync(query.AsSingletonWitsmlList());
+                    QueryResult result = await witsmlClient.AddToStoreAsync(query.AsItemInWitsmlList());
                     if (result.IsSuccessful)
                     {
                         _logger.LogInformation(

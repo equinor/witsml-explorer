@@ -8,7 +8,11 @@ export default interface TrimLogObjectJob {
   endIndex?: string;
 }
 
-export function createTrimLogObjectJob(log: LogObject, startIndex?: string | number, endIndex?: string | number): TrimLogObjectJob {
+export function createTrimLogObjectJob(
+  log: LogObject,
+  startIndex?: string | number,
+  endIndex?: string | number
+): TrimLogObjectJob {
   const logObject: ObjectReference = toObjectReference(log);
 
   const formatIndexValue = (value?: string | number): string => {

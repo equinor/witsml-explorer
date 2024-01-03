@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class ModifyMessageObjectWorkerTest
     {
-        private readonly ModifyMessageWorker _worker;
+        private readonly ModifyObjectOnWellboreWorker _worker;
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
@@ -37,18 +37,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<ModifyMessageObjectJob> logger = loggerFactory.CreateLogger<ModifyMessageObjectJob>();
-            _worker = new ModifyMessageWorker(logger, witsmlClientProvider.Object);
+            ILogger<ModifyObjectOnWellboreJob> logger = loggerFactory.CreateLogger<ModifyObjectOnWellboreJob>();
+            _worker = new ModifyObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task UpdateMessageInStore()
         {
-            ModifyMessageObjectJob job = CreateJobTemplate();
+            ModifyObjectOnWellboreJob job = CreateJobTemplate();
 
             List<WitsmlMessages> updatedMessages = new();
             _witsmlClient.Setup(client =>
-                    client.UpdateInStoreAsync(It.IsAny<WitsmlMessages>())).Callback<WitsmlMessages>(msgs => updatedMessages.Add(msgs))
+                    client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>())).Callback<IWitsmlQueryType>(msgs => updatedMessages.Add(msgs as WitsmlMessages))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -57,17 +57,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(MsgText, updatedMessages.FirstOrDefault()?.Messages.FirstOrDefault()?.MessageText);
         }
 
-        private static ModifyMessageObjectJob CreateJobTemplate()
+        private static ModifyObjectOnWellboreJob CreateJobTemplate()
         {
-            return new ModifyMessageObjectJob
+            return new ModifyObjectOnWellboreJob
             {
-                MessageObject = new MessageObject()
+                Object = new MessageObject()
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
                     Uid = MsgUid,
                     MessageText = MsgText
-                }
+                },
+                ObjectType = EntityType.Message
             };
         }
     }

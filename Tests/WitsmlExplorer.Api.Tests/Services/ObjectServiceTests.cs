@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     It.Is<IWitsmlObjectList>((queryIn) =>
                         queryIn.Objects.First().UidWell == uidWell &&
                         queryIn.Objects.First().UidWellbore == uidWellbore &&
-                        queryIn.Objects.First().Uid == "" &&
+                        queryIn.Objects.First().Uid == string.Empty &&
                         queryIn.TypeName == new WitsmlLogs().TypeName
                     ),
                     It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly)))
@@ -112,7 +112,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     It.Is<IWitsmlObjectList>((queryIn) =>
                         queryIn.Objects.First().UidWell == uidWell &&
                         queryIn.Objects.First().UidWellbore == uidWellbore &&
-                        queryIn.Objects.First().Uid == "" &&
+                        queryIn.Objects.First().Uid == string.Empty &&
                         queryIn.TypeName == new WitsmlMessages().TypeName
                     ),
                     It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly)))
@@ -190,7 +190,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             o.UidWellbore = "";
             o.Uid = "";
             o.Name = "";
-            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsItemInWitsmlList();
 
             _witsmlClient.Setup(client =>
                 client.GetFromStoreNullableAsync(
@@ -226,7 +226,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 Name = "",
                 ServiceCompany = "myCompany"
             };
-            IWitsmlObjectList objectList = log.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = log.AsItemInWitsmlList();
 
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(
@@ -250,7 +250,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 Name = "",
                 ServiceCompany = "myCompany"
             };
-            IWitsmlObjectList objectList = log.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = log.AsItemInWitsmlList();
 
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(
@@ -271,7 +271,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             o.UidWellbore = "";
             o.Uid = "";
             o.Name = "";
-            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsSingletonWitsmlList();
+            IWitsmlObjectList objectList = (IWitsmlObjectList)o.AsItemInWitsmlList();
 
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(

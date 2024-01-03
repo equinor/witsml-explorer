@@ -3,6 +3,12 @@ import { UpdateServerAction } from "../contexts/modificationActions";
 import ModificationType from "../contexts/modificationType";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
+import {
+  STORAGE_KEEP_SERVER_CREDENTIALS,
+  getLocalStorageItem,
+  removeLocalStorageItem,
+  setLocalStorageItem
+} from "../tools/localStorageHelpers";
 import { ApiClient, throwError } from "./apiClient";
 import { AuthorizationClient } from "./authorizationClient";
 
@@ -25,7 +31,8 @@ export interface AuthorizationState {
 
 class AuthorizationService {
   private static _instance: AuthorizationService;
-  private _onAuthorizationChange = new SimpleEventDispatcher<AuthorizationState>();
+  private _onAuthorizationChange =
+    new SimpleEventDispatcher<AuthorizationState>();
   private server?: Server;
   private _sourceServer?: Server;
   private serversAwaitingAuthorization: Server[] = [];
@@ -35,14 +42,20 @@ class AuthorizationService {
   }
 
   public finishServerAuthorization(server: Server) {
-    const index = this.serversAwaitingAuthorization.findIndex((waitingServer) => waitingServer.id == server.id);
+    const index = this.serversAwaitingAuthorization.findIndex(
+      (waitingServer) => waitingServer.id == server.id
+    );
     if (index != -1) {
       this.serversAwaitingAuthorization.splice(index, 1);
     }
   }
 
   public serverIsAwaitingAuthorization(server: Server) {
-    return this.serversAwaitingAuthorization.find((waitingServer) => waitingServer.id == server.id) != undefined;
+    return (
+      this.serversAwaitingAuthorization.find(
+        (waitingServer) => waitingServer.id == server.id
+      ) != undefined
+    );
   }
 
   public setSelectedServer(server: Server) {
@@ -74,7 +87,11 @@ class AuthorizationService {
     }
   }
 
-  public onAuthorized(server: Server, username: string, dispatchNavigation: (action: UpdateServerAction) => void) {
+  public onAuthorized(
+    server: Server,
+    username: string,
+    dispatchNavigation: (action: UpdateServerAction) => void
+  ) {
     server.currentUsername = username;
     if (server.usernames == null) {
       server.usernames = [];
@@ -82,32 +99,46 @@ class AuthorizationService {
     if (!server.usernames.includes(username)) {
       server.usernames.push(username);
     }
-    dispatchNavigation({ type: ModificationType.UpdateServer, payload: { server } });
-    this._onAuthorizationChange.dispatch({ server, status: AuthorizationStatus.Authorized });
+    dispatchNavigation({
+      type: ModificationType.UpdateServer,
+      payload: { server }
+    });
+    this._onAuthorizationChange.dispatch({
+      server,
+      status: AuthorizationStatus.Authorized
+    });
   }
 
   public getKeepLoggedInToServer(serverUrl: string): boolean {
-    try {
-      return localStorage.getItem(serverUrl) == "keep";
-    } catch {
-      // ignore unavailable local storage
-    }
-    return false;
+    return (
+      getLocalStorageItem<string>(
+        serverUrl + STORAGE_KEEP_SERVER_CREDENTIALS
+      ) == "keep"
+    );
   }
 
   // Verify basic credentials for the first time
   // Basic credentials for this call will be set in header: WitsmlAuth
-  public async verifyCredentials(credentials: BasicServerCredentials, keep: boolean, abortSignal?: AbortSignal): Promise<any> {
-    try {
-      if (keep) {
-        localStorage.setItem(credentials.server.url, "keep");
-      } else {
-        localStorage.removeItem(credentials.server.url);
-      }
-    } catch {
-      // ignore unavailable local storage
+  public async verifyCredentials(
+    credentials: BasicServerCredentials,
+    keep: boolean,
+    abortSignal?: AbortSignal
+  ): Promise<any> {
+    if (keep) {
+      setLocalStorageItem<string>(
+        credentials.server.url + STORAGE_KEEP_SERVER_CREDENTIALS,
+        "keep"
+      );
+    } else {
+      removeLocalStorageItem(
+        credentials.server.url + STORAGE_KEEP_SERVER_CREDENTIALS
+      );
     }
-    const response = await AuthorizationClient.get(`/api/credentials/authorize?keep=` + keep, abortSignal, credentials);
+    const response = await AuthorizationClient.get(
+      `/api/credentials/authorize?keep=` + keep,
+      abortSignal,
+      credentials
+    );
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
       throwError(response.status, message);
@@ -115,7 +146,10 @@ class AuthorizationService {
   }
 
   public async deauthorize(abortSignal?: AbortSignal): Promise<any> {
-    const response = await ApiClient.get(`/api/credentials/deauthorize`, abortSignal);
+    const response = await ApiClient.get(
+      `/api/credentials/deauthorize`,
+      abortSignal
+    );
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
       throwError(response.status, message);

@@ -56,7 +56,14 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         }
 
         var jobMnemonics = job.Mnemonics.Any() ? job.Mnemonics.ToList() : witsmlLog.LogCurveInfo.Select(x => x.Mnemonic).ToList();
-        await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>(jobMnemonics), Logger);
+        var startIndex = Index.Start(witsmlLog, job.StartIndex);
+        var endIndex = Index.End(witsmlLog, job.EndIndex);
+        if ((!witsmlLog.IsDecreasing() && startIndex > endIndex) || (witsmlLog.IsDecreasing() && startIndex < endIndex))
+        {
+            return GetGapReportResult(job, jobMnemonics, new List<AnalyzeGapReportItem>(), isDepthLog, logUid, startIndex, endIndex);
+        }
+
+        await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>(jobMnemonics), Logger, startIndex, endIndex);
 
         WitsmlLogData logData = await logDataReader.GetNextBatch();
         var logMnemonics = logData?.MnemonicList.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
@@ -68,7 +75,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
         if (!logDataRows.Any() || logMnemonics.IsNullOrEmpty())
         {
-            return GetGapReportResult(job, jobMnemonics, new List<AnalyzeGapReportItem>(), isDepthLog, logUid);
+            return GetGapReportResult(job, jobMnemonics, new List<AnalyzeGapReportItem>(), isDepthLog, logUid, startIndex, endIndex);
         }
 
         if (logDataRows.Any(x => x.Length < logMnemonics.Count))
@@ -103,7 +110,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             gapReportItems.AddRange(GetAnalyzeGapReportItem(logMnemonic.value, inputAnalyzeDataList, gapSize, isLogIncreasing));
         }
 
-        return GetGapReportResult(job, jobMnemonics, gapReportItems, isDepthLog, logUid);
+        return GetGapReportResult(job, jobMnemonics, gapReportItems, isDepthLog, logUid, startIndex, endIndex);
     }
 
     private static Index GetDepthOrDateTimeIndex(bool isDepthLog, string value, LogCurveIndex logCurveIndex)
@@ -113,23 +120,26 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             : new DateTimeIndex(DateTime.Parse(value, CultureInfo.InvariantCulture));
     }
 
-    private (WorkerResult, RefreshAction) GetGapReportResult(AnalyzeGapJob job, IList<string> selectedMnemonics, IList<AnalyzeGapReportItem> gapReportItems, bool isDepth, string logUid)
+    private (WorkerResult, RefreshAction) GetGapReportResult(AnalyzeGapJob job, IList<string> selectedMnemonics, IList<AnalyzeGapReportItem> gapReportItems, bool isDepth,
+        string logUid, Index startIndex, Index endIndex)
     {
         Logger.LogInformation("Analyzing gaps is done. {jobDescription}", job.Description());
-        job.JobInfo.Report = GetGapReport(selectedMnemonics, gapReportItems, job.LogReference, isDepth);
+        job.JobInfo.Report = GetGapReport(selectedMnemonics, gapReportItems, job.LogReference, isDepth, startIndex, endIndex);
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Analyze gaps for log: {logUid}", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 
-    private AnalyzeGapReport GetGapReport(IList<string> selectedMnemonics, IList<AnalyzeGapReportItem> analyzeGapItems, LogObject logReference, bool isDepthLog)
+    private AnalyzeGapReport GetGapReport(IList<string> selectedMnemonics, IList<AnalyzeGapReportItem> analyzeGapItems, LogObject logReference, bool isDepthLog, Index startIndex,
+        Index endIndex)
     {
         var mnemonics = CommonConstants.NewLine + string.Join(CommonConstants.NewLine, selectedMnemonics);
+        var intervalMessage = $"in the interval {startIndex.GetValueAsString()} - {endIndex.GetValueAsString()}";
         return new AnalyzeGapReport
         {
             Title = $"Analyze gaps report",
             Summary = analyzeGapItems.Count > 0
-                ? $"Found {analyzeGapItems.Count} gaps in the {(isDepthLog ? "depth" : "time")} log '{logReference.Name}' for mnemonics: {mnemonics}."
-                : $"No gaps were found for mnemonics: {mnemonics}.",
+                ? $"Found {analyzeGapItems.Count} gaps in the {(isDepthLog ? "depth" : "time")} log '{logReference.Name}' {intervalMessage} for mnemonics: {mnemonics}."
+                : $"No gaps were found {intervalMessage} for mnemonics: {mnemonics}.",
             LogReference = logReference,
             ReportItems = analyzeGapItems
         };

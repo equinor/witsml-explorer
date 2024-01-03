@@ -14,7 +14,10 @@ const onClickOpenTag = (editor: any, row: number) => {
   const lineText = session.getLine(row);
   const tag = getTag(lineText);
   const newText = `${lineText.replace(/(\s*)\/>/, ">")}</${tag ?? ""}>`;
-  session.replace({ start: { row, column: 0 }, end: { row, column: lineText.length } }, newText);
+  session.replace(
+    { start: { row, column: 0 }, end: { row, column: lineText.length } },
+    newText
+  );
   editor.execCommand({
     exec: () => {
       editor.selection.moveCursorBy(0, -(tag?.length ?? 0) - 3);

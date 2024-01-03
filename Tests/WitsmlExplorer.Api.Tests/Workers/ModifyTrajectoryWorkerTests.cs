@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class ModifyTrajectoryWorkerTests
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
-        private readonly ModifyTrajectoryWorker _worker;
+        private readonly ModifyObjectOnWellboreWorker _worker;
         private const string TrajectoryUid = "trajectoryUid";
 
         public ModifyTrajectoryWorkerTests()
@@ -34,54 +34,60 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<ModifyTrajectoryJob> logger = loggerFactory.CreateLogger<ModifyTrajectoryJob>();
-            _worker = new ModifyTrajectoryWorker(logger, witsmlClientProvider.Object);
+            ILogger<ModifyObjectOnWellboreJob> logger = loggerFactory.CreateLogger<ModifyObjectOnWellboreJob>();
+            _worker = new ModifyObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task ModifyTrajectory_ValidResults()
         {
             const string expectedNewName = "NewName";
-            ModifyTrajectoryJob job = CreateJobTemplate(TrajectoryUid, expectedNewName);
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(TrajectoryUid, expectedNewName);
+            Trajectory trajectory = (Trajectory)job.Object;
 
             List<WitsmlTrajectories> updatedTrajectories = new();
             _witsmlClient.Setup(client =>
-                    client.UpdateInStoreAsync(It.IsAny<WitsmlTrajectories>())).Callback<WitsmlTrajectories>(trajectories => updatedTrajectories.Add(trajectories))
+                    client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>())).Callback<IWitsmlQueryType>(trajectories => updatedTrajectories.Add(trajectories as WitsmlTrajectories))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
 
             Assert.Single(updatedTrajectories);
             Assert.Equal(expectedNewName, updatedTrajectories.First().Trajectories.First().Name);
-            Assert.Equal(job.Trajectory.ServiceCompany, updatedTrajectories.First().Trajectories.First().ServiceCompany);
-            Assert.Equal(job.Trajectory.AziRef, updatedTrajectories.First().Trajectories.First().AziRef);
-            Assert.Equal(job.Trajectory.CommonData.SourceName, updatedTrajectories.First().Trajectories.First().CommonData?.SourceName);
+            Assert.Equal(trajectory.ServiceCompany, updatedTrajectories.First().Trajectories.First().ServiceCompany);
+            Assert.Equal(trajectory.AziRef, updatedTrajectories.First().Trajectories.First().AziRef);
+            Assert.Equal(trajectory.CommonData.SourceName, updatedTrajectories.First().Trajectories.First().CommonData?.SourceName);
         }
 
         [Fact]
         public async Task RenameTrajectory_EmptyName_ThrowsException()
         {
             var expectedMessage = "Name cannot be empty";
-            ModifyTrajectoryJob job = CreateJobTemplate(TrajectoryUid, "");
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(TrajectoryUid, string.Empty);
 
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-            Assert.Equal(expectedMessage, exception.Message);
+            var (workerResult, _) = await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlTrajectories>()), Times.Never);
+            Assert.False(workerResult.IsSuccess);
+            Assert.Equal(expectedMessage, workerResult.Message);
+
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>()), Times.Never);
         }
 
-        private static ModifyTrajectoryJob CreateJobTemplate(string uid, string name)
+        private static ModifyObjectOnWellboreJob CreateJobTemplate(string uid, string name)
         {
-            return new ModifyTrajectoryJob
+            return new ModifyObjectOnWellboreJob
             {
-                Trajectory = new Trajectory
+                Object = new Trajectory
                 {
+                    WellUid = "wellUid",
+                    WellboreUid = "wellboreUid",
                     Uid = uid,
                     Name = name,
                     ServiceCompany = "NewServiceCompany",
-                    AziRef = "GridNorth",
+                    AziRef = "Grid North",
                     CommonData = new CommonData() { SourceName = "NewSourceName" }
-                }
+                },
+                ObjectType = EntityType.Trajectory
             };
         }
     }

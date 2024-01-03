@@ -8,53 +8,42 @@ using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Workers.Modify;
 
 using Xunit;
 
 namespace WitsmlExplorer.IntegrationTests.Api.Workers
 {
-    public class RenameMnemonicWorkerTests
+    public class ModifyLogCurveInfoWorkerTests
     {
-        private readonly RenameMnemonicWorker _worker;
+        private readonly ModifyLogCurveInfoWorker _worker;
         private const string WellUid = "";
         private const string WellboreUid = "";
         private const string LogUid = "";
 
-        public RenameMnemonicWorkerTests()
+        public ModifyLogCurveInfoWorkerTests()
         {
             IConfiguration configuration = ConfigurationReader.GetConfig();
             WitsmlClientProvider witsmlClientProvider = new(configuration);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<RenameMnemonicJob> logger = loggerFactory.CreateLogger<RenameMnemonicJob>();
-            _worker = new RenameMnemonicWorker(logger, witsmlClientProvider);
+            ILogger<ModifyLogCurveInfoJob> logger = loggerFactory.CreateLogger<ModifyLogCurveInfoJob>();
+            _worker = new ModifyLogCurveInfoWorker(logger, witsmlClientProvider);
         }
 
         [Fact(Skip = "Should only be run manually")]
         public async void ValidInputRenameMnemonicShouldReturnSuccess()
         {
-            RenameMnemonicJob job = CreateJobTemplate() with
-            {
-                Mnemonic = "",
-                NewMnemonic = ""
-            };
+            ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Mnemonic = "" } };
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
 
             Assert.True(result.IsSuccess, result.Reason);
         }
 
-        private static RenameMnemonicJob CreateJobTemplate()
+        private static ModifyLogCurveInfoJob CreateJobTemplate()
         {
-            return new RenameMnemonicJob
-            {
-                LogReference = new ObjectReference
-                {
-                    WellUid = WellUid,
-                    WellboreUid = WellboreUid,
-                    Uid = LogUid
-                }
-            };
+            return new ModifyLogCurveInfoJob { LogReference = new ObjectReference { WellUid = WellUid, WellboreUid = WellboreUid, Uid = LogUid } };
         }
     }
 }

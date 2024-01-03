@@ -7,13 +7,22 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
-import { calculateLogTypeId, calculateLogTypeTimeId } from "../../models/wellbore";
+import {
+  calculateLogTypeId,
+  calculateLogTypeTimeId
+} from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
 import LogsGraph from "./Charts/LogsGraph";
-import { ContentTable, ContentTableColumn, ContentTableRow, ContentType } from "./table";
+import { CommonPanelContainer } from "./CurveValuesView";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "./table";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -21,7 +30,8 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedWell, selectedLogTypeGroup } = navigationState;
+  const { selectedWellbore, selectedWell, selectedLogTypeGroup } =
+    navigationState;
 
   const {
     dispatchOperation,
@@ -34,7 +44,13 @@ export const LogsListView = (): React.ReactElement => {
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
-      setLogs(selectedWellbore.logs.filter((log) => calculateLogTypeId(selectedWellbore, log.indexType) === selectedLogTypeGroup));
+      setLogs(
+        selectedWellbore.logs.filter(
+          (log) =>
+            calculateLogTypeId(selectedWellbore, log.indexType) ===
+            selectedLogTypeGroup
+        )
+      );
     }
   }, [selectedLogTypeGroup, selectedWellbore]);
 
@@ -42,10 +58,23 @@ export const LogsListView = (): React.ReactElement => {
     return selectedLogTypeGroup === calculateLogTypeTimeId(selectedWellbore);
   };
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, checkedLogObjectRows: LogObjectRow[]) => {
-    const contextProps: ObjectContextMenuProps = { checkedObjects: checkedLogObjectRows.map((row) => row.logObject), wellbore: selectedWellbore };
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedLogObjectRows: LogObjectRow[]
+  ) => {
+    const contextProps: ObjectContextMenuProps = {
+      checkedObjects: checkedLogObjectRows.map((row) => row.logObject),
+      wellbore: selectedWellbore
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogObjectContextMenu {...contextProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <LogObjectContextMenu {...contextProps} />,
+        position
+      }
+    });
   };
 
   const getTableData = (): LogObjectRow[] => {
@@ -53,10 +82,24 @@ export const LogsListView = (): React.ReactElement => {
       return {
         ...log,
         id: log.uid,
-        startIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.startIndex, timeZone, dateTimeFormat) : log.startIndex,
-        endIndex: selectedWellbore && isTimeIndexed() ? formatDateString(log.endIndex, timeZone, dateTimeFormat) : log.endIndex,
-        dTimCreation: formatDateString(log.commonData.dTimCreation, timeZone, dateTimeFormat),
-        dTimLastChange: formatDateString(log.commonData.dTimLastChange, timeZone, dateTimeFormat),
+        startIndex:
+          selectedWellbore && isTimeIndexed()
+            ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
+            : log.startIndex,
+        endIndex:
+          selectedWellbore && isTimeIndexed()
+            ? formatDateString(log.endIndex, timeZone, dateTimeFormat)
+            : log.endIndex,
+        dTimCreation: formatDateString(
+          log.commonData.dTimCreation,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimLastChange: formatDateString(
+          log.commonData.dTimLastChange,
+          timeZone,
+          dateTimeFormat
+        ),
         logObject: log
       };
     });
@@ -64,21 +107,52 @@ export const LogsListView = (): React.ReactElement => {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "startIndex", label: "startIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
-    { property: "endIndex", label: "endIndex", type: selectedWellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure },
+    {
+      property: "startIndex",
+      label: "startIndex",
+      type:
+        selectedWellbore && isTimeIndexed()
+          ? ContentType.DateTime
+          : ContentType.Measure
+    },
+    {
+      property: "endIndex",
+      label: "endIndex",
+      type:
+        selectedWellbore && isTimeIndexed()
+          ? ContentType.DateTime
+          : ContentType.Measure
+    },
     { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
-    { property: "serviceCompany", label: "serviceCompany", type: ContentType.String },
+    {
+      property: "serviceCompany",
+      label: "serviceCompany",
+      type: ContentType.String
+    },
     { property: "runNumber", label: "runNumber", type: ContentType.String },
     { property: "indexType", label: "indexType", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
-    { property: "dTimCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
-    { property: "dTimLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
+    {
+      property: "dTimCreation",
+      label: "commonData.dTimCreation",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimLastChange",
+      label: "commonData.dTimLastChange",
+      type: ContentType.DateTime
+    }
   ];
 
   const onSelect = (log: LogObjectRow) => {
     dispatchNavigation({
       type: NavigationType.SelectObject,
-      payload: { object: log.logObject, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
+      payload: {
+        object: log.logObject,
+        well: selectedWell,
+        wellbore: selectedWellbore,
+        objectType: ObjectType.Log
+      }
     });
   };
 
@@ -97,7 +171,9 @@ export const LogsListView = (): React.ReactElement => {
     <ContentContainer>
       <CommonPanelContainer>
         <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
-        <Typography>Gantt view{selectedRows.length > 0 && " (selected logs only)"}</Typography>
+        <Typography>
+          Gantt view{selectedRows.length > 0 && " (selected logs only)"}
+        </Typography>
       </CommonPanelContainer>
       {showGraph ? (
         <LogsGraph selectedLogs={selectedRows} />
@@ -108,7 +184,9 @@ export const LogsListView = (): React.ReactElement => {
           onSelect={onSelect}
           data={getTableData()}
           onContextMenu={onContextMenu}
-          onRowSelectionChange={(rows) => setSelectedRows(rows as LogObjectRow[])}
+          onRowSelectionChange={(rows) =>
+            setSelectedRows(rows as LogObjectRow[])
+          }
           checkableRows
           showRefresh
           initiallySelectedRows={selectedRows}
@@ -120,16 +198,6 @@ export const LogsListView = (): React.ReactElement => {
     <></>
   );
 };
-
-const CommonPanelContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  > p {
-    margin-left: -1rem;
-  }
-`;
 
 const ContentContainer = styled.div`
   display: flex;

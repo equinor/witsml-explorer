@@ -10,6 +10,7 @@ using Moq;
 using Serilog;
 
 using Witsml;
+using Witsml.Data;
 using Witsml.Data.Tubular;
 
 using WitsmlExplorer.Api.Jobs;
@@ -24,7 +25,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class ModifyTubularWorkerTests
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
-        private readonly ModifyTubularWorker _worker;
+        private readonly ModifyObjectOnWellboreWorker _worker;
         private const string TubularUid = "tubularUid";
 
         public ModifyTubularWorkerTests()
@@ -34,8 +35,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<ModifyTubularJob> logger = loggerFactory.CreateLogger<ModifyTubularJob>();
-            _worker = new ModifyTubularWorker(logger, witsmlClientProvider.Object);
+            ILogger<ModifyObjectOnWellboreJob> logger = loggerFactory.CreateLogger<ModifyObjectOnWellboreJob>();
+            _worker = new ModifyObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
@@ -43,11 +44,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             const string expectedNewName = "NewName";
             const string expectedNewType = "drilling";
-            ModifyTubularJob job = CreateJobTemplate(TubularUid, expectedNewName, expectedNewType);
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(TubularUid, expectedNewName, expectedNewType);
 
             List<WitsmlTubulars> updatedTubulars = new();
             _witsmlClient.Setup(client =>
-                client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>())).Callback<WitsmlTubulars>(tubulars => updatedTubulars.Add(tubulars))
+                client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>())).Callback<IWitsmlQueryType>(tubulars => updatedTubulars.Add(tubulars as WitsmlTubulars))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -60,24 +61,29 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task RenameTubular_EmptyName_ThrowsException()
         {
-            ModifyTubularJob job = CreateJobTemplate(TubularUid, "");
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(TubularUid, string.Empty);
 
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-            Assert.Equal("Name cannot be empty", exception.Message);
+            var (workerResult, _) = await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlTubulars>()), Times.Never);
+            Assert.False(workerResult.IsSuccess);
+            Assert.Equal("Name cannot be empty", workerResult.Message);
+
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>()), Times.Never);
         }
 
-        private static ModifyTubularJob CreateJobTemplate(string uid, string name, string type = null)
+        private static ModifyObjectOnWellboreJob CreateJobTemplate(string uid, string name, string type = null)
         {
-            return new ModifyTubularJob
+            return new ModifyObjectOnWellboreJob
             {
-                Tubular = new Tubular
+                Object = new Tubular
                 {
+                    WellUid = "wellUid",
+                    WellboreUid = "wellboreUid",
                     Uid = uid,
                     Name = name,
                     TypeTubularAssy = type
-                }
+                },
+                ObjectType = EntityType.Tubular
             };
         }
     }

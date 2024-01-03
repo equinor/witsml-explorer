@@ -8,13 +8,17 @@ import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import BhaRun from "../../models/bhaRun";
 import { ObjectType } from "../../models/objectType";
 import { colors } from "../../styles/Colors";
-import BhaRunPropertiesModal, { BhaRunPropertiesModalProps } from "../Modals/BhaRunPropertiesModal";
+import BhaRunPropertiesModal, {
+  BhaRunPropertiesModalProps
+} from "../Modals/BhaRunPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
 import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
 
-const BhaRunContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
+const BhaRunContextMenu = (
+  props: ObjectContextMenuProps
+): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
@@ -22,18 +26,41 @@ const BhaRunContextMenu = (props: ObjectContextMenuProps): React.ReactElement =>
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
-    const modifyBhaRunProps: BhaRunPropertiesModalProps = { mode, bhaRun: checkedObjects[0] as BhaRun, dispatchOperation };
-    dispatchOperation({ type: OperationType.DisplayModal, payload: <BhaRunPropertiesModal {...modifyBhaRunProps} /> });
+    const modifyBhaRunProps: BhaRunPropertiesModalProps = {
+      mode,
+      bhaRun: checkedObjects[0] as BhaRun,
+      dispatchOperation
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <BhaRunPropertiesModal {...modifyBhaRunProps} />
+    });
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   return (
     <ContextMenu
       menuItems={[
-        ...ObjectMenuItems(checkedObjects, ObjectType.BhaRun, navigationState, dispatchOperation, dispatchNavigation, openInQueryView, wellbore),
+        ...ObjectMenuItems(
+          checkedObjects,
+          ObjectType.BhaRun,
+          navigationState,
+          dispatchOperation,
+          dispatchNavigation,
+          openInQueryView,
+          wellbore,
+          []
+        ),
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickModify} disabled={checkedObjects.length !== 1}>
-          <StyledIcon name="settings" color={colors.interactive.primaryResting} />
+        <MenuItem
+          key={"properties"}
+          onClick={onClickModify}
+          disabled={checkedObjects.length !== 1}
+        >
+          <StyledIcon
+            name="settings"
+            color={colors.interactive.primaryResting}
+          />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>
       ]}
