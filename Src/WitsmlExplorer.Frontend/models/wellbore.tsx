@@ -111,7 +111,9 @@ export function wellboreHasChanges(
   return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
-export const calculateWellboreNodeId = (wellbore: Wellbore | { wellUid: string; uid: string }): string => {
+export const calculateWellboreNodeId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
   return wellbore?.wellUid + wellbore?.uid;
 };
 
@@ -163,15 +165,23 @@ export function getObjectsFromWellbore<Key extends ObjectType>(
   ] as ObjectTypeToModel[Key][];
 }
 
-export function getGeologyIntervalLength(wellbore: Wellbore, objectType: string): GeologyInterval[] | null {
-  const geologylength = wellbore?.mudLogs?.filter((mudlogIndex) => mudlogIndex.uid === objectType);
-  if (geologylength?.length && geologylength[0]?.geologyInterval && geologylength[0]?.geologyInterval?.length) {
+export function getGeologyIntervalLength(
+  wellbore: Wellbore,
+  objectType: string
+): GeologyInterval[] | null {
+  const geologylength = wellbore?.mudLogs?.filter(
+    (mudlogIndex) => mudlogIndex.uid === objectType
+  );
+  if (
+    geologylength?.length &&
+    geologylength[0]?.geologyInterval &&
+    geologylength[0]?.geologyInterval?.length
+  ) {
     return geologylength[0]?.geologyInterval;
   } else {
     return null;
   }
 }
-
 
 export function getObjectFromWellbore<Key extends ObjectType>(
   wellbore: Wellbore,

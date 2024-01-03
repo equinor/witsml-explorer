@@ -381,7 +381,11 @@ const selectObject = (
     selectedLogTypeGroup: logTypeGroup,
     selectedObject: object,
     currentSelected: object,
-    currentProperties: getObjectOnWellboreProperties(object, objectType, wellbore),
+    currentProperties: getObjectOnWellboreProperties(
+      object,
+      objectType,
+      wellbore
+    ),
     expandedTreeNodes
   };
 };

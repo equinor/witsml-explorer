@@ -10,7 +10,7 @@ import {
   SelectServerAction,
   SelectWellAction,
   SelectWellboreAction,
-   ToggleTreeNodeAction
+  ToggleTreeNodeAction
 } from "../contexts/navigationActions";
 import NavigationContext, {
   NavigationState
@@ -205,7 +205,10 @@ const Routing = (): React.ReactElement => {
   const [isFetchingObjects, setIsFetchingObjects] = useState(false);
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWellbore && !isFetchingObjects) {
-      const group = urlParams?.group === ObjectType.geologyInterval ? ObjectType.MudLog : (urlParams?.group as ObjectType);
+      const group =
+        urlParams?.group === ObjectType.geologyInterval
+          ? ObjectType.MudLog
+          : (urlParams?.group as ObjectType);
       const objectUid = urlParams?.objectUid;
       if (
         group != null &&
@@ -277,20 +280,35 @@ const Routing = (): React.ReactElement => {
       } else {
         setIsSyncingUrlAndState(false);
       }
-    } else if (urlParams?.mudloguid && selectedObjectGroup === ObjectType.MudLog) {
+    } else if (
+      urlParams?.mudloguid &&
+      selectedObjectGroup === ObjectType.MudLog
+    ) {
       if (selectedWellbore.mudLogs) {
         setIsFetchingObjects(true);
-        const object = selectedWellbore.mudLogs.filter((mudlogid) => mudlogid.uid == urlParams.mudloguid)[0];
+        const object = selectedWellbore.mudLogs.filter(
+          (mudlogid) => mudlogid.uid == urlParams.mudloguid
+        )[0];
         let geologyData: any;
         if (object?.geologyInterval) {
-          geologyData = object?.geologyInterval.filter((geology: GeologyInterval) => geology.uid == urlParams.objectUid)[0];
+          geologyData = object?.geologyInterval.filter(
+            (geology: GeologyInterval) => geology.uid == urlParams.objectUid
+          )[0];
         }
         const action: SelectObjectAction = {
           type: NavigationType.SelectObject,
-          payload: { object: geologyData, well: selectedWell, wellbore: selectedWellbore, objectType: urlParams.group as ObjectType }
+          payload: {
+            object: geologyData,
+            well: selectedWell,
+            wellbore: selectedWellbore,
+            objectType: urlParams.group as ObjectType
+          }
         };
         dispatchNavigation(action);
-        const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId: calculateObjectNodeId(object, ObjectType.MudLog) } };
+        const toggleTreeNode: ToggleTreeNodeAction = {
+          type: NavigationType.ToggleTreeNode,
+          payload: { nodeId: calculateObjectNodeId(object, ObjectType.MudLog) }
+        };
         dispatchNavigation(toggleTreeNode);
         setIsFetchingObjects(false);
       }
@@ -328,7 +346,9 @@ export const getQueryParamsFromState = (
     ...(state.selectedWell && { wellUid: state.selectedWell.uid }),
     ...(state.selectedWellbore && { wellboreUid: state.selectedWellbore.uid }),
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup }),
-     ...(state.selectedLogTypeGroup && { logType: logTypeToQuery(state.selectedLogTypeGroup) }),
+    ...(state.selectedLogTypeGroup && {
+      logType: logTypeToQuery(state.selectedLogTypeGroup)
+    }),
     ...(state.selectedObject && { objectUid: state.selectedObject.uid }),
     ...(state.selectedObject && { mudloguid: state.selectedObject.mudloguid }),
     ...(state.selectedObjectGroup && { group: state.selectedObjectGroup })

@@ -252,9 +252,17 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             <LogTypeItem />
           </ObjectGroupItem>
           <ObjectGroupItem objectType={ObjectType.Message} />
-          <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu}>
+          <ObjectGroupItem
+            objectsOnWellbore={wellbore?.mudLogs}
+            objectType={ObjectType.MudLog}
+            ObjectContextMenu={MudLogContextMenu}
+          >
             {wellbore?.mudLogs?.map((mudlogs) => (
-              <MudLogItem key={mudlogs.uid} mudlogData={mudlogs} objectType={ObjectType.MudLog} />
+              <MudLogItem
+                key={mudlogs.uid}
+                mudlogData={mudlogs}
+                objectType={ObjectType.MudLog}
+              />
             ))}
           </ObjectGroupItem>
           <ObjectGroupItem

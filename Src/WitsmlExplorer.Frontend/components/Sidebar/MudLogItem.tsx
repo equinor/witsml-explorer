@@ -46,7 +46,15 @@ const MudLogItem = (props: ObjectOnWellboreItemProps): React.ReactElement => {
         nodeId={calculateObjectNodeId(mudlogData, ObjectType.MudLog)}
         labelText={mudlogData.name}
         onLabelClick={() => {
-          dispatchNavigation({ type: NavigationType.SelectObject, payload: { object: mudlogData, wellbore: wellbore, well: well, objectType } });
+          dispatchNavigation({
+            type: NavigationType.SelectObject,
+            payload: {
+              object: mudlogData,
+              wellbore: wellbore,
+              well: well,
+              objectType
+            }
+          });
         }}
       >
         {listLogItemsByType(mudlogData, well, wellbore, isSelected)}
@@ -55,9 +63,16 @@ const MudLogItem = (props: ObjectOnWellboreItemProps): React.ReactElement => {
   );
 };
 
-const listLogItemsByType = (mudlogs: MudLog, well: Well, wellbore: Wellbore, isSelected: (mudlogs: MudLog) => boolean) => {
+const listLogItemsByType = (
+  mudlogs: MudLog,
+  well: Well,
+  wellbore: Wellbore,
+  isSelected: (mudlogs: MudLog) => boolean
+) => {
   const { dispatchNavigation } = useContext(NavigationContext);
-  const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>([]);
+  const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>(
+    []
+  );
 
   const getGeologyInterval = () => {
     const abortController = new AbortController();
@@ -71,13 +86,20 @@ const listLogItemsByType = (mudlogs: MudLog, well: Well, wellbore: Wellbore, isS
         abortController.signal
       );
       setGeologyIntervals(geologyresult);
-      const mudlogObjectIndex = wellbore.mudLogs.findIndex((mudlogIndex) => mudlogIndex.uid === mudlogs.uid);
+      const mudlogObjectIndex = wellbore.mudLogs.findIndex(
+        (mudlogIndex) => mudlogIndex.uid === mudlogs.uid
+      );
 
       if (mudlogObjectIndex > -1) {
         wellbore.mudLogs[mudlogObjectIndex].geologyInterval = geologyresult;
         dispatchNavigation({
           type: ModificationType.UpdateWellboreObjects,
-          payload: { wellboreObjects: wellbore.mudLogs, wellUid: well.uid, wellboreUid: wellbore.uid, objectType: ObjectType.MudLog }
+          payload: {
+            wellboreObjects: wellbore.mudLogs,
+            wellUid: well.uid,
+            wellboreUid: wellbore.uid,
+            objectType: ObjectType.MudLog
+          }
         });
       }
     };
@@ -97,7 +119,15 @@ const listLogItemsByType = (mudlogs: MudLog, well: Well, wellbore: Wellbore, isS
 
   return geologyIntervals.map((geology: GeologyInterval) =>
     geology.lithologies.length ? (
-      <GeologyIntervalItem key={geology.uid} geology={geology} mudloguid={mudlogs.uid} well={well} wellbore={wellbore} selected={isSelected(mudlogs)} nodeId={geology.uid} />
+      <GeologyIntervalItem
+        key={geology.uid}
+        geology={geology}
+        mudloguid={mudlogs.uid}
+        well={well}
+        wellbore={wellbore}
+        selected={isSelected(mudlogs)}
+        nodeId={geology.uid}
+      />
     ) : (
       []
     )

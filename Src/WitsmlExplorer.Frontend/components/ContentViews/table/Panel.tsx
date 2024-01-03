@@ -96,31 +96,47 @@ const Panel = (props: PanelProps) => {
     const wellboreUid = selectedWellbore.uid;
     const uid = selectedObject.uid;
     if (selectedObjectGroup === ObjectType.geologyInterval) {
-      const mudoguid = selectedWellbore.mudLogs.filter((mudlogs) => mudlogs.uid === selectedObject.mudloguid);
+      const mudoguid = selectedWellbore.mudLogs.filter(
+        (mudlogs) => mudlogs.uid === selectedObject.mudloguid
+      );
       const mudlogUid = mudoguid[0].uid;
       let mudlogfreshObject: MudLog | ObjectOnWellbore;
-      mudlogfreshObject = await ObjectService.getObject(wellUid, wellboreUid, mudlogUid, ObjectType.MudLog);
+      mudlogfreshObject = await ObjectService.getObject(
+        wellUid,
+        wellboreUid,
+        mudlogUid,
+        ObjectType.MudLog
+      );
       const isDeleted = !mudlogfreshObject;
       if (isDeleted) {
         mudlogfreshObject = selectedObject;
       }
       dispatchNavigation({
         type: ModificationType.UpdateWellboreObject,
-        payload: { objectToUpdate: mudlogfreshObject, objectType: ObjectType.MudLog, isDeleted }
+        payload: {
+          objectToUpdate: mudlogfreshObject,
+          objectType: ObjectType.MudLog,
+          isDeleted
+        }
       });
     } else {
-      let freshObject = await ObjectService.getObject(wellUid, wellboreUid, uid, selectedObjectGroup);
+      let freshObject = await ObjectService.getObject(
+        wellUid,
+        wellboreUid,
+        uid,
+        selectedObjectGroup
+      );
       const isDeleted = !freshObject;
       if (isDeleted) {
         freshObject = selectedObject;
       }
       dispatchNavigation({
         type: ModificationType.UpdateWellboreObject,
-      payload: {
-        objectToUpdate: freshObject,
-        objectType: selectedObjectGroup,
-        isDeleted
-      }
+        payload: {
+          objectToUpdate: freshObject,
+          objectType: selectedObjectGroup,
+          isDeleted
+        }
       });
     }
   };

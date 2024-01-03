@@ -7,8 +7,13 @@ import GeologyInterval from "../../models/geologyInterval";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "../ContextMenus/ContextMenu";
+import GeologyIntervalContextMenu, {
+  GeologyIntervalContextMenuProps
+} from "../ContextMenus/GeologyIntervalContextMenu";
 import TreeItem from "./TreeItem";
 
 interface GeologyIntervalProps {
@@ -20,7 +25,9 @@ interface GeologyIntervalProps {
   mudloguid: string;
 }
 
-const GeologyIntervalItem = (props: GeologyIntervalProps): React.ReactElement => {
+const GeologyIntervalItem = (
+  props: GeologyIntervalProps
+): React.ReactElement => {
   const { geology: geology, well, wellbore, nodeId, mudloguid } = props;
   useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
@@ -32,16 +39,31 @@ const GeologyIntervalItem = (props: GeologyIntervalProps): React.ReactElement =>
 
   const isSelected = useCallback(
     (geology: GeologyInterval) => {
-      return selectedObject && selectedObjectGroup === ObjectType.geologyInterval && selectedObject.uid === geology.uid ? true : undefined;
+      return selectedObject &&
+        selectedObjectGroup === ObjectType.geologyInterval &&
+        selectedObject.uid === geology.uid
+        ? true
+        : undefined;
     },
     [selectedObject, selectedObjectGroup]
   );
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, GeologyInterval: GeologyInterval[]) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    GeologyInterval: GeologyInterval[]
+  ) => {
     preventContextMenuPropagation(event);
-    const contextProps: GeologyIntervalContextMenuProps = { checkedGeologyIntervals: GeologyInterval };
+    const contextProps: GeologyIntervalContextMenuProps = {
+      checkedGeologyIntervals: GeologyInterval
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <GeologyIntervalContextMenu {...contextProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <GeologyIntervalContextMenu {...contextProps} />,
+        position
+      }
+    });
   };
 
   return (
@@ -52,7 +74,15 @@ const GeologyIntervalItem = (props: GeologyIntervalProps): React.ReactElement =>
       labelText={geology.typeLithology}
       selected={isSelected(geology)}
       onLabelClick={() => {
-        dispatchNavigation({ type: NavigationType.SelectObject, payload: { well: well, wellbore: wellbore, object: geology, objectType: ObjectType.geologyInterval } });
+        dispatchNavigation({
+          type: NavigationType.SelectObject,
+          payload: {
+            well: well,
+            wellbore: wellbore,
+            object: geology,
+            objectType: ObjectType.geologyInterval
+          }
+        });
       }}
     />
   );

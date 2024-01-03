@@ -8,7 +8,9 @@ import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import GeologyIntervalContextMenu, { GeologyIntervalContextMenuProps } from "../ContextMenus/GeologyIntervalContextMenu";
+import GeologyIntervalContextMenu, {
+  GeologyIntervalContextMenuProps
+} from "../ContextMenus/GeologyIntervalContextMenu";
 import {
   ContentTable,
   ContentTableColumn,
@@ -18,7 +20,6 @@ import {
 import { ObjectType } from "../../models/objectType";
 import ModificationType from "../../contexts/modificationType";
 import { getGeologyIntervalLength } from "../../models/wellbore";
-
 
 export interface GeologyIntervalRow extends ContentTableRow {
   typeLithology: string;
@@ -52,7 +53,10 @@ export const MudLogView = (): React.ReactElement => {
   useEffect(() => {
     setIsFetchingData(true);
     if (selectedMudLog && selectedMudLog.uid) {
-      const objects = getGeologyIntervalLength(selectedWellbore, selectedMudLog.uid);
+      const objects = getGeologyIntervalLength(
+        selectedWellbore,
+        selectedMudLog.uid
+      );
       if (objects == null && selectedWellbore && selectedWellbore.uid) {
         const abortController = new AbortController();
 
@@ -71,13 +75,21 @@ export const MudLogView = (): React.ReactElement => {
         };
 
         getGeologyIntervals();
-        const mudlogObjectIndex = selectedWellbore?.mudLogs?.findIndex((mudlogIndex) => mudlogIndex.uid === selectedMudLog.uid);
+        const mudlogObjectIndex = selectedWellbore?.mudLogs?.findIndex(
+          (mudlogIndex) => mudlogIndex.uid === selectedMudLog.uid
+        );
 
         if (mudlogObjectIndex > -1) {
-          selectedWellbore.mudLogs[mudlogObjectIndex].geologyInterval = geologyIntervals;
+          selectedWellbore.mudLogs[mudlogObjectIndex].geologyInterval =
+            geologyIntervals;
           dispatchNavigation({
             type: ModificationType.UpdateWellboreObjects,
-            payload: { wellboreObjects: selectedWellbore.mudLogs, wellUid: selectedMudLog.wellUid, wellboreUid: selectedWellbore.uid, objectType: ObjectType.MudLog }
+            payload: {
+              wellboreObjects: selectedWellbore.mudLogs,
+              wellUid: selectedMudLog.wellUid,
+              wellboreUid: selectedWellbore.uid,
+              objectType: ObjectType.MudLog
+            }
           });
         }
 
@@ -131,7 +143,8 @@ export const MudLogView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals?.map((geologyInterval) => {
+  const geologyIntervalRows: GeologyIntervalRow[] = geologyIntervals?.map(
+    (geologyInterval) => {
       return {
         id: geologyInterval.uid,
         typeLithology: geologyInterval.typeLithology,
@@ -159,7 +172,8 @@ export const MudLogView = (): React.ReactElement => {
         }),
         geologyInterval
       };
-    });
+    }
+  );
   const insetColumns: ContentTableColumn[] = [
     { property: "type", label: "type", type: ContentType.String },
     { property: "codeLith", label: "codeLith", type: ContentType.Number },
