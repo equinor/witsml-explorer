@@ -95,12 +95,6 @@ const Panel = (props: PanelProps) => {
     const wellUid = selectedWellbore.wellUid;
     const wellboreUid = selectedWellbore.uid;
     const uid = selectedObject.uid;
-    let freshObject = await ObjectService.getObject(
-       wellUid,
-       wellboreUid,
-       uid,
-       selectedObjectGroup
-    );
     if (selectedObjectGroup === ObjectType.geologyInterval) {
       const mudoguid = selectedWellbore.mudLogs.filter((mudlogs) => mudlogs.uid === selectedObject.mudloguid);
       const mudlogUid = mudoguid[0].uid;
