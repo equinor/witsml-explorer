@@ -85,7 +85,8 @@ export const getQueryTemplateWithPreset = (
   if (objectUid) {
     template = template.replace(
       /uidWell="" uidWellbore="" uid=""/g,
-      `uidWell="${wellUid ?? ""}" uidWellbore="${wellboreUid ?? ""
+      `uidWell="${wellUid ?? ""}" uidWellbore="${
+        wellboreUid ?? ""
       }" uid="${objectUid}"`
     );
   } else if (wellboreUid) {
