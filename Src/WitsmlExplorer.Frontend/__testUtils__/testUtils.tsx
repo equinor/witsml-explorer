@@ -386,7 +386,9 @@ export function getWbGeometry(
   };
 }
 
-export function getGeologyInterval(overrides?: Partial<GeologyInterval>): GeologyInterval {
+export function getGeologyInterval(
+  overrides?: Partial<GeologyInterval>
+): GeologyInterval {
   return {
     uid: "",
     typeLithology: "",
