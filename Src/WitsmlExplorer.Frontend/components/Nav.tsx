@@ -1,83 +1,105 @@
 import { Breadcrumbs } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
+import { capitalize } from "lodash";
+import { useContext, useEffect, useState } from "react";
+import {
+  NavLink,
+  NavigateFunction,
+  useNavigate,
+  useParams
+} from "react-router-dom";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
-import { NavigationAction } from "../contexts/navigationAction";
-import {
-  SelectLogTypeAction,
-  SelectObjectGroupAction,
-  SelectServerAction,
-  SelectWellAction,
-  SelectWellboreAction
-} from "../contexts/navigationActions";
 import NavigationContext, {
-  NavigationState,
   Selectable,
   ViewFlags
 } from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
+import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType, pluralizeObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import Well from "../models/well";
-import Wellbore, { calculateLogTypeDepthId } from "../models/wellbore";
+import Wellbore from "../models/wellbore";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import TopRightCornerMenu from "./TopRightCornerMenu";
 
-const Nav = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+export default function Nav() {
+  const { navigationState } = useContext(NavigationContext);
   const {
     selectedServer,
     selectedWell,
     selectedWellbore,
-    selectedLogTypeGroup,
     selectedObjectGroup,
+    selectedObject,
     currentSelected
   } = navigationState;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-
+  const navigate = useNavigate();
+  const { serverUrl, wellUid, wellboreUid, logType, logUid, mudLogUid } =
+    useParams();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
   const createBreadcrumbContent = () => {
     const groupCrumbs = Object.keys(ObjectType).map((key) => {
       return getObjectGroupCrumb(
         key as ObjectType,
+        serverUrl,
+        wellUid,
+        wellboreUid,
         selectedObjectGroup,
-        selectedWell,
-        selectedWellbore,
-        dispatchNavigation
+        navigate
       );
     });
     return [
-      getServerCrumb(selectedServer, dispatchNavigation),
-      getJobsCrumb(currentSelected),
+      getServerCrumb(serverUrl, selectedServer, navigate),
+      getJobsCrumb(serverUrl, currentSelected, navigate),
+      getQueryCrumb(serverUrl, currentSelected, navigate),
       getSearchCrumb(currentSelected),
-      getWellCrumb(selectedWell, dispatchNavigation),
-      getWellboreCrumb(selectedWellbore, selectedWell, dispatchNavigation),
-      ...groupCrumbs,
-      getLogTypeCrumb(
-        selectedLogTypeGroup,
-        selectedWell,
+      getWellCrumb(serverUrl, wellUid, selectedWell, navigate),
+      getWellboreCrumb(
+        serverUrl,
+        wellUid,
+        wellboreUid,
         selectedWellbore,
-        dispatchNavigation
+        navigate
       ),
-      getObjectCrumb(navigationState, dispatchNavigation)
+      ...groupCrumbs,
+      getLogTypeCrumb(serverUrl, wellUid, wellboreUid, logType, navigate),
+      getObjectCrumb(
+        serverUrl,
+        wellUid,
+        wellboreUid,
+        logType,
+        logUid,
+        mudLogUid,
+        selectedObject,
+        navigate
+      )
     ].filter((item) => item.name);
   };
 
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
-  }, [currentSelected, selectedServer, selectedWell, selectedWellbore]);
+  }, [
+    serverUrl,
+    wellUid,
+    wellboreUid,
+    logType,
+    logUid,
+    mudLogUid,
+    currentSelected
+  ]);
 
   return (
     <nav>
       <Layout>
         <NavContainer>
-          <Title style={{ color: colors.infographic.primaryMossGreen }}>
-            WITSML Explorer
-          </Title>
+          <NavLink to={"/"} style={{ textDecoration: "none" }}>
+            <Title style={{ color: colors.infographic.primaryMossGreen }}>
+              WITSML Explorer
+            </Title>
+          </NavLink>
           {breadcrumbContent.length != 0 && (
             <Icon
               name="chevronRight"
@@ -90,7 +112,6 @@ const Nav = (): React.ReactElement => {
             {breadcrumbContent.map((breadCrumb, index: number) => (
               <Breadcrumbs.Breadcrumb
                 key={uuid()}
-                href="#"
                 onClick={breadCrumb.onClick}
                 style={{
                   fontFamily:
@@ -110,137 +131,178 @@ const Nav = (): React.ReactElement => {
       </Layout>
     </nav>
   );
-};
+}
 
 const getServerCrumb = (
+  serverUrl: string,
   selectedServer: Server,
-  dispatch: (action: SelectServerAction) => void
+  navigate: NavigateFunction
 ) => {
-  return selectedServer
+  return serverUrl && selectedServer
     ? {
         name: selectedServer.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectServer,
-            payload: { server: selectedServer }
-          })
+        onClick: () => {
+          navigate(`servers/${encodeURIComponent(serverUrl)}/wells`);
+        }
       }
     : {};
 };
 
 const getWellCrumb = (
+  serverUrl: string,
+  wellUid: string,
   selectedWell: Well,
-  dispatch: (action: SelectWellAction) => void
+  navigate: NavigateFunction
 ) => {
-  return selectedWell
+  return serverUrl && wellUid && selectedWell
     ? {
         name: selectedWell.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectWell,
-            payload: { well: selectedWell }
-          })
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores`
+          );
+        }
       }
     : {};
 };
 
 const getWellboreCrumb = (
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
   selectedWellbore: Wellbore,
-  selectedWell: Well,
-  dispatch: (action: SelectWellboreAction) => void
+  navigate: NavigateFunction
 ) => {
-  return selectedWellbore
+  return serverUrl && wellUid && wellboreUid && selectedWellbore
     ? {
         name: selectedWellbore.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectWellbore,
-            payload: { well: selectedWell, wellbore: selectedWellbore }
-          })
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}`
+          );
+        }
       }
     : {};
 };
 
 const getObjectGroupCrumb = (
   objectType: ObjectType,
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
   selectedObjectGroup: ObjectType,
-  selectedWell: Well,
-  selectedWellbore: Wellbore,
-  dispatch: (action: SelectObjectGroupAction) => void
+  navigate: NavigateFunction
 ) => {
-  return selectedObjectGroup === objectType
+  const pluralizedObjectType = pluralizeObjectType(objectType);
+  const objectTypeUrlFormat = pluralizedObjectType
+    .replace(/ /g, "")
+    .toLowerCase();
+  return serverUrl &&
+    wellUid &&
+    wellboreUid &&
+    selectedObjectGroup === objectType
     ? {
-        name: pluralizeObjectType(objectType),
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectObjectGroup,
-            payload: {
-              wellUid: selectedWell.uid,
-              wellboreUid: selectedWellbore.uid,
-              objectType,
-              objects: null
-            }
-          })
+        name: pluralizedObjectType,
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/${objectTypeUrlFormat}`
+          );
+        }
       }
     : {};
 };
 
 const getLogTypeCrumb = (
-  selectedLogTypeGroup: string,
-  selectedWell: Well,
-  selectedWellbore: Wellbore,
-  dispatch: (action: SelectLogTypeAction) => void
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  logType: string,
+  navigate: NavigateFunction
 ) => {
-  return selectedLogTypeGroup
+  return logType
     ? {
-        name:
-          selectedLogTypeGroup === calculateLogTypeDepthId(selectedWellbore)
-            ? "Depth"
-            : "Time",
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectLogType,
-            payload: {
-              well: selectedWell,
-              wellbore: selectedWellbore,
-              logTypeGroup: selectedLogTypeGroup
-            }
-          })
+        name: capitalize(logType),
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logType}`
+          );
+        }
       }
     : {};
 };
 
 const getObjectCrumb = (
-  navigationState: NavigationState,
-  dispatch: (action: NavigationAction) => void
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  logType: string,
+  logUid: string,
+  mudLogUid: string,
+  selectedObject: ObjectOnWellbore,
+  navigate: NavigateFunction
 ) => {
-  return navigationState.selectedObject?.name
+  return (logUid || mudLogUid) && selectedObject
     ? {
-        name: navigationState.selectedObject.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectObject,
-            payload: {
-              well: navigationState.selectedWell,
-              wellbore: navigationState.selectedWellbore,
-              object: navigationState.selectedObject,
-              objectType: navigationState.selectedObjectGroup
-            }
-          })
+        name: selectedObject.name,
+        onClick: () => {
+          if (logUid) {
+            navigate(
+              `servers/${encodeURIComponent(
+                serverUrl
+              )}/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logType}/${logUid}`
+            );
+          } else if (mudLogUid) {
+            navigate(
+              `servers/${encodeURIComponent(
+                serverUrl
+              )}/wells/${wellUid}/wellbores/${wellboreUid}/mudlogs/${mudLogUid}`
+            );
+          }
+        }
       }
     : {};
 };
 
-const getJobsCrumb = (currentSelected: Selectable) => {
-  return currentSelected == ViewFlags.Jobs
+const getJobsCrumb = (
+  serverUrl: string,
+  currentSelected: Selectable,
+  navigate: NavigateFunction
+) => {
+  return currentSelected === ViewFlags.Jobs
     ? {
-        name: "Jobs"
+        name: "Jobs",
+        onClick: () => {
+          navigate(`servers/${encodeURIComponent(serverUrl)}/jobs`);
+        }
+      }
+    : {};
+};
+
+const getQueryCrumb = (
+  serverUrl: string,
+  currentSelected: Selectable,
+  navigate: NavigateFunction
+) => {
+  return currentSelected === ViewFlags.Query
+    ? {
+        name: "Query",
+        onClick: () => {
+          navigate(`servers/${encodeURIComponent(serverUrl)}/query`);
+        }
       }
     : {};
 };
 
 const getSearchCrumb = (currentSelected: Selectable) => {
-  return currentSelected == ViewFlags.ObjectSearchView
+  return currentSelected === ViewFlags.ObjectSearchView
     ? {
         name: "Search"
       }
@@ -276,5 +338,3 @@ const NavContainer = styled.div`
   align-items: center;
   height: 2.5rem;
 `;
-
-export default Nav;

@@ -1,13 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext } from "react";
 import { useWellFilter } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import ObjectService from "../../services/objectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -26,7 +24,7 @@ export interface WellboreRow extends ContentTableRow, Wellbore {}
 
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { wells, selectedWell } = navigationState;
+  const { selectedWell } = navigationState;
   const [selectedWellFiltered] = useWellFilter(
     React.useMemo(() => (selectedWell ? [selectedWell] : []), [selectedWell]),
     React.useMemo(() => ({ filterWellbores: true }), [])
@@ -35,17 +33,6 @@ export const WellboresListView = (): React.ReactElement => {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { wellUid } = useParams();
-
-  useEffect(() => {
-    const well: Well = wells.filter((well) => well.uid === wellUid)[0];
-    if (well) {
-      dispatchNavigation({
-        type: NavigationType.SelectWell,
-        payload: { well }
-      });
-    }
-  }, [wells, wellUid, selectedWell]);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },

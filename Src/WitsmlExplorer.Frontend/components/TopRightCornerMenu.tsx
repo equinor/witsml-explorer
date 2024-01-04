@@ -1,7 +1,8 @@
 import { Button } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { useAuthorizationState } from "../contexts/authorizationStateContext";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
@@ -17,7 +18,7 @@ import UserCredentialsModal, {
 } from "./Modals/UserCredentialsModal";
 import ServerManagerButton from "./ServerManagerButton";
 
-const TopRightCornerMenu = (): React.ReactElement => {
+export default function TopRightCornerMenu() {
   const {
     navigationState: { selectedServer },
     dispatchNavigation
@@ -35,8 +36,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
       payload: <SettingsModal />
     });
   };
-
-  const { serverId } = useParams();
+  const { authorizationState } = useAuthorizationState();
 
   const openCredentialsModal = () => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
@@ -75,10 +75,18 @@ const TopRightCornerMenu = (): React.ReactElement => {
       <Link to="/">
         <ServerManagerButton showLabels={showLabels} />
       </Link>
-      <Link to={`${serverId}/jobs`}>
+      <Link
+        to={`servers/${encodeURIComponent(
+          authorizationState?.server?.url
+        )}/jobs`}
+      >
         <JobsButton showLabels={showLabels} />
       </Link>
-      <Link to={`${serverId}/query`}>
+      <Link
+        to={`servers/${encodeURIComponent(
+          authorizationState?.server?.url
+        )}/query`}
+      >
         <StyledButton
           colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
@@ -99,7 +107,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
       </StyledButton>
     </Layout>
   );
-};
+}
 
 const Layout = styled.div`
   display: flex;
@@ -113,5 +121,3 @@ const StyledButton = styled(Button)<{ colors: Colors }>`
   color: ${(props) => props.colors.infographic.primaryMossGreen};
   white-space: nowrap;
 `;
-
-export default TopRightCornerMenu;

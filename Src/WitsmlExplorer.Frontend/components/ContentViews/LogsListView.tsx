@@ -1,21 +1,16 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
-import Wellbore, {
-  calculateLogTypeDepthId,
+import {
   calculateLogTypeId,
   calculateLogTypeTimeId
 } from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -34,11 +29,8 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 
 export const LogsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { wells, selectedWellbore, selectedWell, selectedLogTypeGroup } =
+  const { selectedWellbore, selectedWell, selectedLogTypeGroup } =
     navigationState;
-  const { wellUid, wellboreUid, logType } = useParams();
-  console.log("wells:", wells);
-  console.log("selectedLogTypeGroup:", selectedLogTypeGroup);
 
   const {
     dispatchOperation,
@@ -48,83 +40,6 @@ export const LogsListView = (): React.ReactElement => {
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
-
-  useEffect(() => {
-    console.log("updateState effect");
-    const well: Well = wells.filter((well) => well.uid === wellUid)[0];
-    const wellbore: Wellbore = well?.wellbores?.filter(
-      (wellbore) => wellbore.uid === wellboreUid
-    )[0];
-
-    const onSelectObjectGroup = async (wellbore: Wellbore) => {
-      const objects = await ObjectService.getObjectsIfMissing(
-        wellbore,
-        ObjectType.Log
-      );
-      dispatchNavigation({
-        type: NavigationType.SelectObjectGroup,
-        payload: {
-          wellUid: wellUid,
-          wellboreUid: wellboreUid,
-          objectType: ObjectType.Log,
-          objects
-        }
-      });
-    };
-
-    const onSelects = async (well: Well, wellbore: Wellbore, logType: any) => {
-      console.log("logType inside:", logType);
-      const logTypeGroup =
-        logType === 0
-          ? calculateLogTypeDepthId(wellbore)
-          : calculateLogTypeTimeId(wellbore);
-
-      console.log("logTypeGroup:", logTypeGroup);
-      dispatchNavigation({
-        type: NavigationType.SelectLogType,
-        payload: {
-          well: well,
-          wellbore: wellbore,
-          logTypeGroup: logTypeGroup
-        }
-      });
-    };
-
-    const updateWellborePartial = async () => {
-      const objectCount = await ObjectService.getExpandableObjectsCount(
-        wellbore
-      );
-
-      dispatchNavigation({
-        type: ModificationType.UpdateWellborePartial,
-        payload: {
-          wellboreUid: wellbore.uid,
-          wellUid: wellbore.wellUid,
-          wellboreProperties: { objectCount }
-        }
-      });
-    };
-
-    if (well) {
-      // dispatchNavigation({
-      //   type: NavigationType.SelectWellbore,
-      //   payload: { well, wellbore }
-      // });
-      if (wellbore?.objectCount == null) {
-        console.log("logType:", logType);
-        onSelects(well, wellbore, logType === "depth" ? 0 : 1);
-        onSelectObjectGroup(wellbore);
-        updateWellborePartial();
-      }
-    }
-  }, [
-    wells,
-    wellUid,
-    wellboreUid,
-    selectedWell,
-    selectedWellbore,
-    selectedLogTypeGroup
-  ]);
 
   useEffect(() => {
     if (selectedWellbore?.logs) {

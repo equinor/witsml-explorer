@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  Navigate,
+  RouterProvider,
+  createBrowserRouter
+} from "react-router-dom";
 import BhaRunsListView from "../components/ContentViews/BhaRunsListView";
 import ChangeLogsListView from "../components/ContentViews/ChangeLogsListView";
 import FluidsReportsListView from "../components/ContentViews/FluidsReportListView";
@@ -6,19 +10,19 @@ import FluidsView from "../components/ContentViews/FluidsView";
 import FormationMarkersListView from "../components/ContentViews/FormationMarkersListView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
-import LogsListView from "../components/ContentViews/LogsListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
+import LogsListView from "../components/ContentViews/LogsListView";
 import MessagesListView from "../components/ContentViews/MessagesListView";
-import MudLogsListView from "../components/ContentViews/MudLogsListView";
 import { MudLogView } from "../components/ContentViews/MudLogView";
+import MudLogsListView from "../components/ContentViews/MudLogsListView";
 import QueryView from "../components/ContentViews/QueryView";
 import RigsListView from "../components/ContentViews/RigsListView";
 import RisksListView from "../components/ContentViews/RisksListView";
 import ServerManager from "../components/ContentViews/ServerManager";
 import TrajectoriesListView from "../components/ContentViews/TrajectoriesListView";
 import TrajectoryView from "../components/ContentViews/TrajectoryView";
-import TubularsListView from "../components/ContentViews/TubularsListView";
 import TubularView from "../components/ContentViews/TubularView";
+import TubularsListView from "../components/ContentViews/TubularsListView";
 import WbGeometriesListView from "../components/ContentViews/WbGeometriesListView";
 import WbGeometryView from "../components/ContentViews/WbGeometryView";
 import WellboreObjectTypesListView from "../components/ContentViews/WellboreObjectTypesListView";
@@ -37,6 +41,7 @@ const router = createBrowserRouter([
         path: "servers/:serverUrl",
         element: <AuthRoute />,
         children: [
+          { index: true, element: <Navigate to={"wells"} /> },
           { path: "wells", element: <WellsListView /> },
           {
             path: "wells/:wellUid/wellbores",

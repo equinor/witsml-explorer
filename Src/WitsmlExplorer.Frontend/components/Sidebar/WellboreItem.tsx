@@ -1,7 +1,8 @@
 import { useTheme } from "@material-ui/core";
 import React, { createContext, useCallback, useContext, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import ModificationType from "../../contexts/modificationType";
 import {
   SelectWellboreAction,
@@ -72,8 +73,7 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-
-  const { serverUrl } = useParams();
+  const { authorizationState } = useAuthorizationState();
   const navigate = useNavigate();
 
   const onContextMenu = (
@@ -209,9 +209,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     dispatchNavigation(selectWellbore);
     getExpandableObjectCount();
     navigate(
-      `servers/${encodeURIComponent(serverUrl)}/wells/${well.uid}/wellbores/${
-        wellbore.uid
-      }`
+      `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        well.uid
+      }/wellbores/${wellbore.uid}`
     );
   };
 
@@ -239,30 +239,30 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
         <WellboreItemContext.Provider value={{ wellbore, well }}>
           <ObjectGroupItem
             objectType={ObjectType.BhaRun}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/bharuns`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/bharuns`}
           />
           <ObjectGroupItem
             objectType={ObjectType.ChangeLog}
             onGroupContextMenu={preventContextMenuPropagation}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/changelogs`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/changelogs`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.fluidsReports}
             objectType={ObjectType.FluidsReport}
             ObjectContextMenu={FluidsReportContextMenu}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/fluidsreports`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/fluidsreports`}
           />
           <ObjectGroupItem
             objectType={ObjectType.FormationMarker}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/formationmarkers`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/formationmarkers`}
           />
           <ObjectGroupItem
             objectType={ObjectType.Log}
@@ -272,25 +272,25 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             isActive={
               wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)
             }
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/logs`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/logs`}
           >
             <LogTypeItem />
           </ObjectGroupItem>
           <ObjectGroupItem
             objectType={ObjectType.Message}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/messages`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/messages`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.mudLogs}
             objectType={ObjectType.MudLog}
             ObjectContextMenu={MudLogContextMenu}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/mudlogs`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/mudlogs`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.rigs}
@@ -299,15 +299,15 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             onGroupContextMenu={(event, _, setIsLoading) =>
               onRigsContextMenu(event, wellbore, setIsLoading)
             }
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/rigs`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/rigs`}
           />
           <ObjectGroupItem
             objectType={ObjectType.Risk}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/risks`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/risks`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.trajectories}
@@ -316,9 +316,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             onGroupContextMenu={(event, _, setIsLoading) =>
               onTrajectoryContextMenu(event, wellbore, setIsLoading)
             }
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/tubulars`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/tubulars`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.tubulars}
@@ -327,17 +327,17 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             onGroupContextMenu={(event, _, setIsLoading) =>
               onTubularsContextMenu(event, wellbore, setIsLoading)
             }
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/tubulars`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/tubulars`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.wbGeometries}
             objectType={ObjectType.WbGeometry}
             ObjectContextMenu={WbGeometryObjectContextMenu}
-            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores/${wellbore.uid}/wbgeometries`}
+            to={`servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${wellbore.uid}/wbgeometries`}
           />
         </WellboreItemContext.Provider>
       </TreeItem>
