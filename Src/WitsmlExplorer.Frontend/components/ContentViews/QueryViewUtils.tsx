@@ -44,7 +44,8 @@ export enum TemplateObjects {
   Tubular = "tubular",
   WbGeometry = "wbGeometry",
   Well = "well",
-  Wellbore = "wellbore"
+  Wellbore = "wellbore",
+  GeologyInterval = "geologyInterval"
 }
 
 export const ObjectTypeToTemplateObject: Record<ObjectType, TemplateObjects> = {
@@ -59,7 +60,8 @@ export const ObjectTypeToTemplateObject: Record<ObjectType, TemplateObjects> = {
   [ObjectType.Risk]: TemplateObjects.Risk,
   [ObjectType.Trajectory]: TemplateObjects.Trajectory,
   [ObjectType.Tubular]: TemplateObjects.Tubular,
-  [ObjectType.WbGeometry]: TemplateObjects.WbGeometry
+  [ObjectType.WbGeometry]: TemplateObjects.WbGeometry,
+  [ObjectType.geologyInterval]: TemplateObjects.GeologyInterval
 };
 
 export interface QueryTemplatePreset {
@@ -83,8 +85,7 @@ export const getQueryTemplateWithPreset = (
   if (objectUid) {
     template = template.replace(
       /uidWell="" uidWellbore="" uid=""/g,
-      `uidWell="${wellUid ?? ""}" uidWellbore="${
-        wellboreUid ?? ""
+      `uidWell="${wellUid ?? ""}" uidWellbore="${wellboreUid ?? ""
       }" uid="${objectUid}"`
     );
   } else if (wellboreUid) {
