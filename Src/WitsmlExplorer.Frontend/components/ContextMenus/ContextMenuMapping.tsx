@@ -27,5 +27,6 @@ export const ObjectTypeToContextMenu: Record<
   [ObjectType.Risk]: RiskObjectContextMenu,
   [ObjectType.Trajectory]: TrajectoryContextMenu,
   [ObjectType.Tubular]: TubularContextMenu,
-  [ObjectType.WbGeometry]: WbGeometryObjectContextMenu
+  [ObjectType.WbGeometry]: WbGeometryObjectContextMenu,
+  [ObjectType.geologyInterval]: null
 };
