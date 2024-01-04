@@ -52,6 +52,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       wellName: wellbore.wellName,
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
+      typeLithology: "",
       indexCurve:
         indexCurve === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth
     };
