@@ -25,6 +25,7 @@ import ChangeLog from "../models/changeLog";
 import CommonData from "../models/commonData";
 import FluidsReport from "../models/fluidsReport";
 import FormationMarker from "../models/formationMarker";
+import GeologyInterval from "../models/geologyInterval";
 import JobInfo from "../models/jobs/jobInfo";
 import LogCurveInfo from "../models/logCurveInfo";
 import LogObject from "../models/logObject";
@@ -192,7 +193,9 @@ export function getObjectOnWellbore(
     name: "name",
     wellboreName: "wellboreName",
     wellName: "wellName",
-    ...overrides
+    ...overrides,
+    mudloguid: "",
+    typeLithology: ""
   };
 }
 
@@ -297,7 +300,8 @@ export function getMudLog(overrides?: Partial<MudLog>): MudLog {
     startMd: getMeasureWithDatum(),
     endMd: getMeasureWithDatum(),
     commonData: getCommonData(),
-    ...overrides
+    ...overrides,
+    geologyInterval: []
   };
 }
 
@@ -382,6 +386,28 @@ export function getWbGeometry(
   };
 }
 
+export function getGeologyInterval(overrides?: Partial<GeologyInterval>): GeologyInterval {
+  return {
+    uid: "",
+    typeLithology: "",
+    mdTop: getMeasureWithDatum(),
+    mdBottom: getMeasureWithDatum(),
+    tvdTop: getMeasureWithDatum(),
+    tvdBase: getMeasureWithDatum(),
+    ropAv: getMeasure(),
+    wobAv: getMeasure(),
+    tqAv: getMeasure(),
+    currentAv: getMeasure(),
+    rpmAv: getMeasure(),
+    wtMudAv: getMeasure(),
+    ecdTdAv: getMeasure(),
+    dxcAv: "",
+    description: "",
+    lithologies: [],
+    mudloguid: ""
+  };
+}
+
 const getObjectMapping = {
   [ObjectType.BhaRun]: getBhaRun,
   [ObjectType.ChangeLog]: getChangeLog,
@@ -394,7 +420,8 @@ const getObjectMapping = {
   [ObjectType.Risk]: getRisk,
   [ObjectType.Trajectory]: getTrajectory,
   [ObjectType.Tubular]: getTubular,
-  [ObjectType.WbGeometry]: getWbGeometry
+  [ObjectType.WbGeometry]: getWbGeometry,
+  [ObjectType.geologyInterval]: getGeologyInterval
 };
 
 export function getObject<T extends ObjectType>(
