@@ -278,11 +278,19 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
           >
             <LogTypeItem />
           </ObjectGroupItem>
-          <ObjectGroupItem objectType={ObjectType.Message} />
+          <ObjectGroupItem
+            objectType={ObjectType.Message}
+            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores/${wellbore.uid}/messages`}
+          />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.mudLogs}
             objectType={ObjectType.MudLog}
             ObjectContextMenu={MudLogContextMenu}
+            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores/${wellbore.uid}/mudlogs`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.rigs}
@@ -291,8 +299,16 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             onGroupContextMenu={(event, _, setIsLoading) =>
               onRigsContextMenu(event, wellbore, setIsLoading)
             }
+            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores/${wellbore.uid}/rigs`}
           />
-          <ObjectGroupItem objectType={ObjectType.Risk} />
+          <ObjectGroupItem
+            objectType={ObjectType.Risk}
+            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores/${wellbore.uid}/risks`}
+          />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.trajectories}
             objectType={ObjectType.Trajectory}
@@ -300,6 +316,9 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             onGroupContextMenu={(event, _, setIsLoading) =>
               onTrajectoryContextMenu(event, wellbore, setIsLoading)
             }
+            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores/${wellbore.uid}/tubulars`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.tubulars}
@@ -308,11 +327,17 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
             onGroupContextMenu={(event, _, setIsLoading) =>
               onTubularsContextMenu(event, wellbore, setIsLoading)
             }
+            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores/${wellbore.uid}/tubulars`}
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.wbGeometries}
             objectType={ObjectType.WbGeometry}
             ObjectContextMenu={WbGeometryObjectContextMenu}
+            to={`servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores/${wellbore.uid}/wbgeometries`}
           />
         </WellboreItemContext.Provider>
       </TreeItem>

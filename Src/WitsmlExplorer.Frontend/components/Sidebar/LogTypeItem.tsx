@@ -82,7 +82,7 @@ const LogTypeItem = (): React.ReactElement => {
         type: NavigationType.SelectWellbore,
         payload: { well, wellbore }
       });
-      if (wellbore.objectCount == null) {
+      if (wellbore?.objectCount == null) {
         updateWellborePartial();
       }
     }

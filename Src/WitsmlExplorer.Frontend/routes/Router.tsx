@@ -7,8 +7,15 @@ import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
 import LogsListView from "../components/ContentViews/LogsListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
+import MessagesListView from "../components/ContentViews/MessagesListView";
+import MudLogsListView from "../components/ContentViews/MudLogsListView";
 import QueryView from "../components/ContentViews/QueryView";
+import RigsListView from "../components/ContentViews/RigsListView";
+import RisksListView from "../components/ContentViews/RisksListView";
 import ServerManager from "../components/ContentViews/ServerManager";
+import TrajectoriesListView from "../components/ContentViews/TrajectoriesListView";
+import TubularsListView from "../components/ContentViews/TubularsListView";
+import WbGeometriesListView from "../components/ContentViews/WbGeometriesListView";
 import WellboreObjectTypesListView from "../components/ContentViews/WellboreObjectTypesListView";
 import WellboresListView from "../components/ContentViews/WellboresListView";
 import WellsListView from "../components/ContentViews/WellsListView";
@@ -59,16 +66,36 @@ const router = createBrowserRouter([
             element: <LogsListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType",
-            element: <LogsListView />
-          },
-          {
             path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType/:logUid",
             element: <LogCurveInfoListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType/:logUid",
-            element: <LogCurveInfoListView />
+            path: "wells/:wellUid/wellbores/:wellboreUid/messages",
+            element: <MessagesListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/mudlogs",
+            element: <MudLogsListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/rigs",
+            element: <RigsListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/risks",
+            element: <RisksListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/trajectories",
+            element: <TrajectoriesListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/tubulars",
+            element: <TubularsListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/wbgeometries",
+            element: <WbGeometriesListView />
           },
           {
             path: "jobs",
