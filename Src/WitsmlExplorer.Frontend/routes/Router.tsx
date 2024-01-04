@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import BhaRunsListView from "../components/ContentViews/BhaRunsListView";
 import ChangeLogsListView from "../components/ContentViews/ChangeLogsListView";
 import FluidsReportsListView from "../components/ContentViews/FluidsReportListView";
+import FluidsView from "../components/ContentViews/FluidsView";
 import FormationMarkersListView from "../components/ContentViews/FormationMarkersListView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
@@ -9,13 +10,17 @@ import LogsListView from "../components/ContentViews/LogsListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import MessagesListView from "../components/ContentViews/MessagesListView";
 import MudLogsListView from "../components/ContentViews/MudLogsListView";
+import { MudLogView } from "../components/ContentViews/MudLogView";
 import QueryView from "../components/ContentViews/QueryView";
 import RigsListView from "../components/ContentViews/RigsListView";
 import RisksListView from "../components/ContentViews/RisksListView";
 import ServerManager from "../components/ContentViews/ServerManager";
 import TrajectoriesListView from "../components/ContentViews/TrajectoriesListView";
+import TrajectoryView from "../components/ContentViews/TrajectoryView";
 import TubularsListView from "../components/ContentViews/TubularsListView";
+import TubularView from "../components/ContentViews/TubularView";
 import WbGeometriesListView from "../components/ContentViews/WbGeometriesListView";
+import WbGeometryView from "../components/ContentViews/WbGeometryView";
 import WellboreObjectTypesListView from "../components/ContentViews/WellboreObjectTypesListView";
 import WellboresListView from "../components/ContentViews/WellboresListView";
 import WellsListView from "../components/ContentViews/WellsListView";
@@ -54,6 +59,10 @@ const router = createBrowserRouter([
             element: <FluidsReportsListView />
           },
           {
+            path: "wells/:wellUid/wellbores/:wellboreUid/fluidsreports/:fluidReportUid",
+            element: <FluidsView />
+          },
+          {
             path: "wells/:wellUid/wellbores/:wellboreUid/formationmarkers",
             element: <FormationMarkersListView />
           },
@@ -78,6 +87,10 @@ const router = createBrowserRouter([
             element: <MudLogsListView />
           },
           {
+            path: "wells/:wellUid/wellbores/:wellboreUid/mudlogs/:mudLogUid",
+            element: <MudLogView />
+          },
+          {
             path: "wells/:wellUid/wellbores/:wellboreUid/rigs",
             element: <RigsListView />
           },
@@ -90,12 +103,24 @@ const router = createBrowserRouter([
             element: <TrajectoriesListView />
           },
           {
+            path: "wells/:wellUid/wellbores/:wellboreUid/trajectories/:trajectoryUid",
+            element: <TrajectoryView />
+          },
+          {
             path: "wells/:wellUid/wellbores/:wellboreUid/tubulars",
             element: <TubularsListView />
           },
           {
+            path: "wells/:wellUid/wellbores/:wellboreUid/tubulars/:tubularUid",
+            element: <TubularView />
+          },
+          {
             path: "wells/:wellUid/wellbores/:wellboreUid/wbgeometries",
             element: <WbGeometriesListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/wbgeometries/:wbGeometriesUid",
+            element: <WbGeometryView />
           },
           {
             path: "jobs",
