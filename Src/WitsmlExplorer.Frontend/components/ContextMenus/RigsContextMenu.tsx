@@ -65,7 +65,8 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
       registration: "",
       telNumber: "",
       typeRig: "unknown",
-      yearEntService: null
+      yearEntService: null,
+      typeLithology: ""
     };
     const rigPropertiesModalProps: RigPropertiesModalProps = {
       mode: PropertiesModalMode.New,
