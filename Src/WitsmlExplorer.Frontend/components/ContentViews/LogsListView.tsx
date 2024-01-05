@@ -1,6 +1,8 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -11,6 +13,7 @@ import {
   calculateLogTypeId,
   calculateLogTypeTimeId
 } from "../../models/wellbore";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -40,6 +43,8 @@ export const LogsListView = (): React.ReactElement => {
   const [resetCheckedItems, setResetCheckedItems] = useState(false);
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     if (selectedWellbore?.logs) {
@@ -153,6 +158,13 @@ export const LogsListView = (): React.ReactElement => {
         objectType: ObjectType.Log
       }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/logs/logtypes/${
+        log.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
+      }/objects/${log.uid}`
+    );
   };
 
   useEffect(() => {

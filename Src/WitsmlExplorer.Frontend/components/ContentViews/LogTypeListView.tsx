@@ -1,4 +1,6 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import {
@@ -15,6 +17,8 @@ interface LogType {
 export const LogTypeListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore } = navigationState;
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
@@ -39,6 +43,13 @@ export const LogTypeListView = (): React.ReactElement => {
         logTypeGroup: logTypeGroup
       }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/logs/logtypes/${
+        logType.uid === 0 ? "depth" : "time"
+      }/objects`
+    );
   };
 
   return (

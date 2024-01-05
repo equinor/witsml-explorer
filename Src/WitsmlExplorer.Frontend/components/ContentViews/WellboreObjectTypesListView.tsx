@@ -1,4 +1,6 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import { SelectObjectGroupAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
@@ -22,6 +24,8 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore } = navigationState;
   const { selectedFilter } = useContext(FilterContext);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
@@ -59,6 +63,17 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
       }
     };
     dispatchNavigation(action);
+    const pluralizedObjectType = pluralizeObjectType(row.objectType);
+    const objectTypeUrlFormat = pluralizedObjectType
+      .replace(/ /g, "")
+      .toLowerCase();
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/${objectTypeUrlFormat}/${
+        objectTypeUrlFormat === "logs" ? "logtypes" : "objects"
+      }`
+    );
   };
 
   return selectedWellbore ? (

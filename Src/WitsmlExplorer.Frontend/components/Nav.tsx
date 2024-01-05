@@ -37,9 +37,10 @@ export default function Nav() {
     operationState: { colors }
   } = useContext(OperationContext);
   const navigate = useNavigate();
-  const { serverUrl, wellUid, wellboreUid, logType, logUid, mudLogUid } =
+  const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
+
   const createBreadcrumbContent = () => {
     const groupCrumbs = Object.keys(ObjectType).map((key) => {
       return getObjectGroupCrumb(
@@ -47,6 +48,7 @@ export default function Nav() {
         serverUrl,
         wellUid,
         wellboreUid,
+        objectGroup,
         selectedObjectGroup,
         navigate
       );
@@ -70,9 +72,9 @@ export default function Nav() {
         serverUrl,
         wellUid,
         wellboreUid,
+        objectGroup,
+        objectUid,
         logType,
-        logUid,
-        mudLogUid,
         selectedObject,
         navigate
       )
@@ -85,9 +87,9 @@ export default function Nav() {
     serverUrl,
     wellUid,
     wellboreUid,
+    objectGroup,
+    objectUid,
     logType,
-    logUid,
-    mudLogUid,
     currentSelected
   ]);
 
@@ -182,7 +184,7 @@ const getWellboreCrumb = (
           navigate(
             `servers/${encodeURIComponent(
               serverUrl
-            )}/wells/${wellUid}/wellbores/${wellboreUid}`
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups`
           );
         }
       }
@@ -194,16 +196,15 @@ const getObjectGroupCrumb = (
   serverUrl: string,
   wellUid: string,
   wellboreUid: string,
+  objectGroup: string,
   selectedObjectGroup: ObjectType,
   navigate: NavigateFunction
 ) => {
   const pluralizedObjectType = pluralizeObjectType(objectType);
-  const objectTypeUrlFormat = pluralizedObjectType
-    .replace(/ /g, "")
-    .toLowerCase();
   return serverUrl &&
     wellUid &&
     wellboreUid &&
+    objectGroup &&
     selectedObjectGroup === objectType
     ? {
         name: pluralizedObjectType,
@@ -211,7 +212,9 @@ const getObjectGroupCrumb = (
           navigate(
             `servers/${encodeURIComponent(
               serverUrl
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/${objectTypeUrlFormat}`
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${objectGroup}/${
+              objectGroup === "logs" ? "logtypes" : "objects"
+            }`
           );
         }
       }
@@ -225,14 +228,14 @@ const getLogTypeCrumb = (
   logType: string,
   navigate: NavigateFunction
 ) => {
-  return logType
+  return serverUrl && wellUid && wellboreUid && logType
     ? {
         name: capitalize(logType),
         onClick: () => {
           navigate(
             `servers/${encodeURIComponent(
               serverUrl
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logType}`
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/logs/logtypes/${logType}/objects`
           );
         }
       }
@@ -243,29 +246,29 @@ const getObjectCrumb = (
   serverUrl: string,
   wellUid: string,
   wellboreUid: string,
+  objectGroup: string,
+  objectUid: string,
   logType: string,
-  logUid: string,
-  mudLogUid: string,
   selectedObject: ObjectOnWellbore,
   navigate: NavigateFunction
 ) => {
-  return (logUid || mudLogUid) && selectedObject
+  return serverUrl &&
+    wellUid &&
+    wellboreUid &&
+    objectGroup &&
+    objectUid &&
+    logType &&
+    selectedObject
     ? {
         name: selectedObject.name,
         onClick: () => {
-          if (logUid) {
-            navigate(
-              `servers/${encodeURIComponent(
-                serverUrl
-              )}/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logType}/${logUid}`
-            );
-          } else if (mudLogUid) {
-            navigate(
-              `servers/${encodeURIComponent(
-                serverUrl
-              )}/wells/${wellUid}/wellbores/${wellboreUid}/mudlogs/${mudLogUid}`
-            );
-          }
+          navigate(
+            `servers/${encodeURIComponent(
+              serverUrl
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${objectGroup}/${
+              logType ? `logtypes/${logType}` : ""
+            }/objects/${objectUid}`
+          );
         }
       }
     : {};

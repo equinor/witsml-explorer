@@ -1,5 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -29,6 +31,8 @@ export const WellsListView = (): React.ReactElement => {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const filteredWells = useWellFilter(wells);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
@@ -50,6 +54,11 @@ export const WellsListView = (): React.ReactElement => {
 
   const onSelect = (well: any) => {
     dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        well.uid
+      }/wellbores`
+    );
   };
 
   const onContextMenu = (

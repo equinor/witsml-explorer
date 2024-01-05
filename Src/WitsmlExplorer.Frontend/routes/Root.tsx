@@ -53,7 +53,6 @@ import {
 export default function Root() {
   const [operationState, dispatchOperation] = initOperationStateReducer();
   const [navigationState, dispatchNavigation] = initNavigationStateReducer();
-  console.log("navigationState", navigationState);
 
   useEffect(() => {
     if (typeof localStorage != "undefined") {

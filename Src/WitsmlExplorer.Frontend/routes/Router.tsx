@@ -3,28 +3,13 @@ import {
   RouterProvider,
   createBrowserRouter
 } from "react-router-dom";
-import BhaRunsListView from "../components/ContentViews/BhaRunsListView";
-import ChangeLogsListView from "../components/ContentViews/ChangeLogsListView";
-import FluidsReportsListView from "../components/ContentViews/FluidsReportListView";
-import FluidsView from "../components/ContentViews/FluidsView";
-import FormationMarkersListView from "../components/ContentViews/FormationMarkersListView";
 import JobsView from "../components/ContentViews/JobsView";
-import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
+import { LogCurveInfoListView } from "../components/ContentViews/LogCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import LogsListView from "../components/ContentViews/LogsListView";
-import MessagesListView from "../components/ContentViews/MessagesListView";
-import { MudLogView } from "../components/ContentViews/MudLogView";
-import MudLogsListView from "../components/ContentViews/MudLogsListView";
+import { ObjectsListView } from "../components/ContentViews/ObjectsListView";
 import QueryView from "../components/ContentViews/QueryView";
-import RigsListView from "../components/ContentViews/RigsListView";
-import RisksListView from "../components/ContentViews/RisksListView";
 import ServerManager from "../components/ContentViews/ServerManager";
-import TrajectoriesListView from "../components/ContentViews/TrajectoriesListView";
-import TrajectoryView from "../components/ContentViews/TrajectoryView";
-import TubularView from "../components/ContentViews/TubularView";
-import TubularsListView from "../components/ContentViews/TubularsListView";
-import WbGeometriesListView from "../components/ContentViews/WbGeometriesListView";
-import WbGeometryView from "../components/ContentViews/WbGeometryView";
 import WellboreObjectTypesListView from "../components/ContentViews/WellboreObjectTypesListView";
 import WellboresListView from "../components/ContentViews/WellboresListView";
 import WellsListView from "../components/ContentViews/WellsListView";
@@ -48,84 +33,24 @@ const router = createBrowserRouter([
             element: <WellboresListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid",
+            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups",
             element: <WellboreObjectTypesListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/bharuns",
-            element: <BhaRunsListView />
+            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects",
+            element: <ObjectsListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/changelogs",
-            element: <ChangeLogsListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/fluidsreports",
-            element: <FluidsReportsListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/fluidsreports/:fluidReportUid",
-            element: <FluidsView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/formationmarkers",
-            element: <FormationMarkersListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs",
+            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/",
             element: <LogTypeListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType",
+            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects",
             element: <LogsListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/logs/:logType/:logUid",
+            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects/:objectUid",
             element: <LogCurveInfoListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/messages",
-            element: <MessagesListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/mudlogs",
-            element: <MudLogsListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/mudlogs/:mudLogUid",
-            element: <MudLogView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/rigs",
-            element: <RigsListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/risks",
-            element: <RisksListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/trajectories",
-            element: <TrajectoriesListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/trajectories/:trajectoryUid",
-            element: <TrajectoryView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/tubulars",
-            element: <TubularsListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/tubulars/:tubularUid",
-            element: <TubularView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/wbgeometries",
-            element: <WbGeometriesListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/wbgeometries/:wbGeometriesUid",
-            element: <WbGeometryView />
           },
           {
             path: "jobs",

@@ -52,9 +52,9 @@ const LogTypeItem = (): React.ReactElement => {
     navigate(
       `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         well.uid
-      }/wellbores/${wellbore.uid}/logs/${
+      }/wellbores/${wellbore.uid}/objectgroups/logs/logtypes/${
         logTypeGroup === logTypeGroupDepth ? "depth" : "time"
-      }`
+      }/objects`
     );
   };
 
@@ -165,9 +165,9 @@ const listLogItemsByType = (
         objectGrowing={log.objectGrowing}
         to={`servers/${encodeURIComponent(serverUrl)}/wells/${
           well.uid
-        }/wellbores/${wellbore.uid}/logs/${
+        }/wellbores/${wellbore.uid}/objectgroups/logs/logtypes/${
           logType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
-        }/${log.uid}`}
+        }/objects/${log.uid}`}
       />
     </React.Fragment>
   ));
