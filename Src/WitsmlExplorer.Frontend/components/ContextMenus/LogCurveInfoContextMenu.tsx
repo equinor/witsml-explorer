@@ -14,10 +14,18 @@ import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import { JobType } from "../../services/jobService";
+import LogCurvePriorityService from "../../services/logCurvePriorityService";
 import { colors } from "../../styles/Colors";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
+import AnalyzeGapModal, {
+  AnalyzeGapModalProps
+} from "../Modals/AnalyzeGapModal";
 import CopyRangeModal, { CopyRangeModalProps } from "../Modals/CopyRangeModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
+import {
+  LogCurvePriorityModal,
+  LogCurvePriorityModalProps
+} from "../Modals/LogCurvePriorityModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
 import {
@@ -29,9 +37,6 @@ import {
 import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import AnalyzeGapModal, {
-  AnalyzeGapModalProps
-} from "../Modals/AnalyzeGapModal";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -42,6 +47,8 @@ export interface LogCurveInfoContextMenuProps {
   selectedLog: LogObject;
   selectedServer: Server;
   servers: Server[];
+  prioritizedCurves: string[];
+  setPrioritizedCurves: (prioritizedCurves: string[]) => void;
 }
 
 const LogCurveInfoContextMenu = (
@@ -53,7 +60,9 @@ const LogCurveInfoContextMenu = (
     dispatchNavigation,
     selectedLog,
     selectedServer,
-    servers
+    servers,
+    prioritizedCurves,
+    setPrioritizedCurves
   } = props;
 
   const onClickOpen = () => {
@@ -106,6 +115,32 @@ const LogCurveInfoContextMenu = (
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
     dispatchOperation({ type: OperationType.HideContextMenu });
+  };
+
+  const onClickEditPriority = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logCurvePriorityModalProps: LogCurvePriorityModalProps = {
+      wellUid: selectedLog.wellUid,
+      wellboreUid: selectedLog.wellboreUid,
+      prioritizedCurves,
+      setPrioritizedCurves
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <LogCurvePriorityModal {...logCurvePriorityModalProps} />
+    });
+  };
+
+  const onClickSetPriority = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const curvesToPrioritize = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
+    const newPrioritizedCurves =
+      await LogCurvePriorityService.updatePrioritizedCurves(
+        selectedLog.wellUid,
+        selectedLog.wellboreUid,
+        curvesToPrioritize
+      );
+    setPrioritizedCurves(newPrioritizedCurves);
   };
 
   const toDelete = createComponentReferences(
@@ -206,14 +241,23 @@ const LogCurveInfoContextMenu = (
             </MenuItem>
           ))}
         </NestedMenuItem>,
-        <MenuItem
-          key={"analyzeGaps"}
-          onClick={
-            onClickAnalyzeGaps
-          } /*disabled={checkedLogCurveInfoRows.length !== 1}*/
-        >
+        <MenuItem key={"analyzeGaps"} onClick={onClickAnalyzeGaps}>
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>
+        </MenuItem>,
+        <MenuItem key={"setPriority"} onClick={onClickSetPriority}>
+          <StyledIcon
+            name="favoriteOutlined"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>Set Priority</Typography>
+        </MenuItem>,
+        <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
+          <StyledIcon
+            name="favoriteOutlined"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>Edit Priority</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

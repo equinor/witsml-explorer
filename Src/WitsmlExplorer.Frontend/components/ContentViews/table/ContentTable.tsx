@@ -135,6 +135,7 @@ export const ContentTable = React.memo(
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
+      getRowId: (originalRow, index) => originalRow.id ?? index,
       getRowCanExpand:
         insetColumns != null
           ? (row) => !!row.original.inset?.length

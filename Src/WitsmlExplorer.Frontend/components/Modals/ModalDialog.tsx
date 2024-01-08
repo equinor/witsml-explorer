@@ -203,29 +203,6 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
   max-height: 75vh;
   overflow-y: auto;
 
-  color: ${(props) => props.colors.text.staticIconsDefault};
-  --track-color: #dddddd;
-  --thumb-color: #bbbbbb;
-  scrollbar-color: var(--track-color) var(--thumb-color);
-
-  //For firefox
-  scrollbar-width: thin;
-  padding-bottom: 8px;
-
-  // For Google Chrome/Safari/Edge
-  & ::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  & ::-webkit-scrollbar-thumb {
-    background: var(--thumb-color);
-    border-radius: 8px;
-  }
-
-  & ::-webkit-scrollbar-track {
-    background: var(--track-color);
-  }
-
   div[class*="InputWrapper__Container"] {
     label.dHhldd {
       color: ${(props) => props.colors.text.staticTextLabel};
