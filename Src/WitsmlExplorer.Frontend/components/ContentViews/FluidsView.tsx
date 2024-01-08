@@ -1,22 +1,22 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import Fluid from "../../models/fluid";
-import FluidsReport from "../../models/fluidsReport";
-import { measureToString } from "../../models/measure";
-import ComponentService from "../../services/componentService";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import FluidContextMenu, {
-  FluidContextMenuProps
-} from "../ContextMenus/FluidContextMenu";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import FluidContextMenu, {
+  FluidContextMenuProps
+} from "components/ContextMenus/FluidContextMenu";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import Fluid from "models/fluid";
+import FluidsReport from "models/fluidsReport";
+import { measureToString } from "models/measure";
+import React, { useContext, useEffect, useState } from "react";
+import ComponentService from "services/componentService";
 
 type FluidAsStrings = {
   [Property in keyof Fluid as Exclude<Property, "rheometers">]: string;

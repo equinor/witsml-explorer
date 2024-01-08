@@ -1,18 +1,18 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
+import ConfirmModal from "components/Modals/ConfirmModal";
 import {
   DisplayModalAction,
   HideContextMenuAction,
   HideModalAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { DeleteLogCurveValuesJob } from "../../models/jobs/deleteLogCurveValuesJob";
-import JobService, { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
-import ConfirmModal from "../Modals/ConfirmModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { DeleteLogCurveValuesJob } from "models/jobs/deleteLogCurveValuesJob";
+import React from "react";
+import JobService, { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
 
 export interface MnemonicsContextMenuProps {
   dispatchOperation: (

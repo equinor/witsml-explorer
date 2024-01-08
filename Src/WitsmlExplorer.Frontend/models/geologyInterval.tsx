@@ -1,6 +1,6 @@
-import Lithology from "./lithology";
-import Measure from "./measure";
-import MeasureWithDatum from "./measureWithDatum";
+import Lithology from "models/lithology";
+import Measure from "models/measure";
+import MeasureWithDatum from "models/measureWithDatum";
 
 export default interface GeologyInterval {
   uid: string;

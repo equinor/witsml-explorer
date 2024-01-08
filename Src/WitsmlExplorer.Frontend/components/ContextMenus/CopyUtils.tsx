@@ -1,22 +1,22 @@
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
 import ComponentReferences, {
   createComponentReferences
-} from "../../models/jobs/componentReferences";
-import { CopyComponentsJob, CopyObjectsJob } from "../../models/jobs/copyJobs";
-import ObjectReference from "../../models/jobs/objectReference";
-import ObjectReferences from "../../models/jobs/objectReferences";
-import WellboreReference from "../../models/jobs/wellboreReference";
+} from "models/jobs/componentReferences";
+import { CopyComponentsJob, CopyObjectsJob } from "models/jobs/copyJobs";
+import ObjectReference from "models/jobs/objectReference";
+import ObjectReferences from "models/jobs/objectReferences";
+import WellboreReference from "models/jobs/wellboreReference";
 import ObjectOnWellbore, {
   toObjectReference,
   toObjectReferences
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import AuthorizationService from "../../services/authorizationService";
-import JobService, { JobType } from "../../services/jobService";
+} from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
+import AuthorizationService from "services/authorizationService";
+import JobService, { JobType } from "services/jobService";
 
 export const onClickPaste = (
   servers: Server[],

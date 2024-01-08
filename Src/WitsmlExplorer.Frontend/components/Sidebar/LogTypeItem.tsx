@@ -1,34 +1,34 @@
-import React, { useCallback, useContext } from "react";
-import { SelectLogTypeAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
-import { calculateObjectNodeId } from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "components/ContextMenus/ContextMenu";
+import LogsContextMenu, {
+  LogsContextMenuProps
+} from "components/ContextMenus/LogsContextMenu";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import LogItem from "components/Sidebar/LogItem";
+import TreeItem from "components/Sidebar/TreeItem";
+import { WellboreItemContext } from "components/Sidebar/WellboreItem";
+import { SelectLogTypeAction } from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
+import { calculateObjectNodeId } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import Well from "models/well";
 import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeId,
   calculateLogTypeTimeId,
   calculateObjectGroupId
-} from "../../models/wellbore";
-import {
-  WITSML_INDEX_TYPE_DATE_TIME,
-  WITSML_INDEX_TYPE_MD
-} from "../Constants";
-import {
-  getContextMenuPosition,
-  preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
-import LogsContextMenu, {
-  LogsContextMenuProps
-} from "../ContextMenus/LogsContextMenu";
-import { IndexCurve } from "../Modals/LogPropertiesModal";
-import LogItem from "./LogItem";
-import TreeItem from "./TreeItem";
-import { WellboreItemContext } from "./WellboreItem";
+} from "models/wellbore";
+import React, { useCallback, useContext } from "react";
 
 const LogTypeItem = (): React.ReactElement => {
   const { wellbore, well } = useContext(WellboreItemContext);

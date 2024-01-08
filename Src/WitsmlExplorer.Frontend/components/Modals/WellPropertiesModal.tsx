@@ -1,13 +1,17 @@
 import { TextField } from "@material-ui/core";
+import formatDateString from "components/DateFormatter";
+import ModalDialog from "components/Modals/ModalDialog";
+import {
+  PropertiesModalMode,
+  validText,
+  validTimeZone
+} from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import Well from "models/well";
 import React, { useContext, useEffect, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import Well from "../../models/well";
-import JobService, { JobType } from "../../services/jobService";
-import formatDateString from "../DateFormatter";
-import ModalDialog from "./ModalDialog";
-import { PropertiesModalMode, validText, validTimeZone } from "./ModalParts";
+import JobService, { JobType } from "services/jobService";
 
 export interface WellPropertiesModalProps {
   mode: PropertiesModalMode;

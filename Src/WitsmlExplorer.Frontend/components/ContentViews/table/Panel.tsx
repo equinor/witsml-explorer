@@ -1,16 +1,16 @@
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
 import { Table } from "@tanstack/react-table";
+import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
+import ModificationType from "contexts/modificationType";
+import NavigationContext from "contexts/navigationContext";
+import { treeNodeIsExpanded } from "contexts/navigationStateReducer";
+import NavigationType from "contexts/navigationType";
+import useExport, { encloseCell } from "hooks/useExport";
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import ObjectService from "services/objectService";
+import WellService from "services/wellService";
 import styled from "styled-components";
 import { ContentTableColumn } from ".";
-import ModificationType from "../../../contexts/modificationType";
-import NavigationContext from "../../../contexts/navigationContext";
-import { treeNodeIsExpanded } from "../../../contexts/navigationStateReducer";
-import NavigationType from "../../../contexts/navigationType";
-import useExport, { encloseCell } from "../../../hooks/useExport";
-import ObjectService from "../../../services/objectService";
-import WellService from "../../../services/wellService";
-import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
 
 export interface PanelProps {
   checkableRows: boolean;

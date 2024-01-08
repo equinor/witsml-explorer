@@ -6,8 +6,12 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import styled, { CSSProp } from "styled-components";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
+import OptionsContextMenu, {
+  OptionsContextMenuProps
+} from "components/ContextMenus/OptionsContextMenu";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import FilterPanel from "components/Sidebar/FilterPanel";
 import {
   FilterContext,
   FilterType,
@@ -18,23 +22,19 @@ import {
   isWellFilterType,
   isWellPropertyFilterType,
   objectFilterTypeToObjects
-} from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import ObjectSearchResult from "../../models/objectSearchResult";
-import { ObjectType } from "../../models/objectType";
-import NotificationService from "../../services/notificationService";
-import ObjectService from "../../services/objectService";
-import { Colors } from "../../styles/Colors";
-import Icons from "../../styles/Icons";
-import { pluralize } from "../ContextMenus/ContextMenuUtils";
-import OptionsContextMenu, {
-  OptionsContextMenuProps
-} from "../ContextMenus/OptionsContextMenu";
-import ConfirmModal from "../Modals/ConfirmModal";
-import FilterPanel from "./FilterPanel";
+} from "contexts/filter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import ObjectSearchResult from "models/objectSearchResult";
+import { ObjectType } from "models/objectType";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import NotificationService from "services/notificationService";
+import ObjectService from "services/objectService";
+import styled, { CSSProp } from "styled-components";
+import { Colors } from "styles/Colors";
+import Icons from "styles/Icons";
 
 const searchOptions = Object.values(FilterType);
 

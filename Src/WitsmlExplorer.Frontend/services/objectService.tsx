@@ -1,17 +1,17 @@
-import { ErrorDetails } from "../models/errorDetails";
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import ObjectSearchResult from "../models/objectSearchResult";
+import { ErrorDetails } from "models/errorDetails";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import ObjectSearchResult from "models/objectSearchResult";
 import {
   ObjectType,
   ObjectTypeToModel,
   pluralizeObjectType
-} from "../models/objectType";
-import { Server } from "../models/server";
+} from "models/objectType";
+import { Server } from "models/server";
 import Wellbore, {
   ExpandableObjectsCount,
   getObjectsFromWellbore
-} from "../models/wellbore";
-import { ApiClient, throwError } from "./apiClient";
+} from "models/wellbore";
+import { ApiClient, throwError } from "services/apiClient";
 
 export default class ObjectService {
   public static async getObjects<Key extends ObjectType>(

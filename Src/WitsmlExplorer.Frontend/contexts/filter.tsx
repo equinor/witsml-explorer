@@ -1,12 +1,12 @@
-﻿import React from "react";
-import { pluralize } from "../components/ContextMenus/ContextMenuUtils";
-import ObjectSearchResult from "../models/objectSearchResult";
-import { ObjectType } from "../models/objectType";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
-import { NavigationAction } from "./navigationAction";
-import { ExpandTreeNodesAction } from "./navigationActions";
-import NavigationType from "./navigationType";
+﻿import { pluralize } from "components/ContextMenus/ContextMenuUtils";
+import { NavigationAction } from "contexts/navigationAction";
+import { ExpandTreeNodesAction } from "contexts/navigationActions";
+import NavigationType from "contexts/navigationType";
+import ObjectSearchResult from "models/objectSearchResult";
+import { ObjectType } from "models/objectType";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
+import React from "react";
 
 export interface Filter {
   name: string;

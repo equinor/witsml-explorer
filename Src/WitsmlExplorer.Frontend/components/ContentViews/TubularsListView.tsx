@@ -1,15 +1,19 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ObjectType } from "models/objectType";
+import Tubular from "models/tubular";
 import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
-import Tubular from "../../models/tubular";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import TubularContextMenu from "../ContextMenus/TubularContextMenu";
-import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const TubularsListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);

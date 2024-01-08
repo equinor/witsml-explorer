@@ -1,32 +1,35 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import { createComponentReferences } from "../../models/jobs/componentReferences";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import WbGeometry from "../../models/wbGeometry";
-import WbGeometrySection from "../../models/wbGeometrySection";
-import { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
-import WbGeometrySectionPropertiesModal from "../Modals/WbGeometrySectionPropertiesModal";
-import ContextMenu from "./ContextMenu";
+import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteComponents,
   onClickShowObjectOnServer
-} from "./ContextMenuUtils";
-import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
-import { copyComponents, pasteComponents } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+} from "components/ContextMenus/ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
+import {
+  copyComponents,
+  pasteComponents
+} from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
+import WbGeometrySectionPropertiesModal from "components/Modals/WbGeometrySectionPropertiesModal";
+import {
+  DisplayModalAction,
+  HideContextMenuAction,
+  HideModalAction
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import { createComponentReferences } from "models/jobs/componentReferences";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import WbGeometry from "models/wbGeometry";
+import WbGeometrySection from "models/wbGeometrySection";
+import React from "react";
+import { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
 
 export interface WbGeometrySectionContextMenuProps {
   checkedWbGeometrySections: WbGeometrySection[];

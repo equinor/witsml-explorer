@@ -1,14 +1,14 @@
 import { TextField } from "@material-ui/core";
+import formatDateString from "components/DateFormatter";
+import ModalDialog from "components/Modals/ModalDialog";
+import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import MessageObject from "models/messageObject";
+import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import MessageObject from "../../models/messageObject";
-import { ObjectType } from "../../models/objectType";
-import JobService, { JobType } from "../../services/jobService";
-import formatDateString from "../DateFormatter";
-import ModalDialog from "./ModalDialog";
-import { PropertiesModalMode, validText } from "./ModalParts";
+import JobService, { JobType } from "services/jobService";
 
 export interface MessagePropertiesModalProps {
   mode: PropertiesModalMode;

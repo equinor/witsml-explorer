@@ -5,22 +5,22 @@ import {
   Icon,
   Typography
 } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import BaseReport, { createReport } from "../../models/reports/BaseReport";
-import JobService from "../../services/jobService";
-import NotificationService from "../../services/notificationService";
-import { Colors } from "../../styles/Colors";
 import {
   ContentTable,
   ContentTableColumn,
   ContentType
-} from "../ContentViews/table";
-import { StyledAccordionHeader } from "./LogComparisonModal";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
+} from "components/ContentViews/table";
+import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
+import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import BaseReport, { createReport } from "models/reports/BaseReport";
+import React, { useContext, useEffect, useState } from "react";
+import JobService from "services/jobService";
+import NotificationService from "services/notificationService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
 
 export interface ReportModal {
   report?: BaseReport;

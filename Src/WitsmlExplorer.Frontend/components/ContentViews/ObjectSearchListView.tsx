@@ -1,5 +1,14 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectTypeToContextMenu } from "components/ContextMenus/ContextMenuMapping";
+import LoadingContextMenu from "components/ContextMenus/LoadingContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import {
   FilterContext,
   filterTypeToProperty,
@@ -7,27 +16,18 @@ import {
   getSearchRegex,
   isObjectFilterType,
   isSitecomSyntax
-} from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
-import Wellbore, { calculateLogTypeId } from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectTypeToContextMenu } from "../ContextMenus/ContextMenuMapping";
-import LoadingContextMenu from "../ContextMenus/LoadingContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import {
-  ContentTable,
-  ContentTableColumn,
-  ContentTableRow,
-  ContentType
-} from "./table";
+} from "contexts/filter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import Well from "models/well";
+import Wellbore, { calculateLogTypeId } from "models/wellbore";
+import React, { useContext, useEffect, useState } from "react";
+import ObjectService from "services/objectService";
 
 export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
   object: ObjectOnWellbore;

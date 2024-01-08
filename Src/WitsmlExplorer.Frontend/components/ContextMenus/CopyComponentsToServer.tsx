@@ -1,31 +1,32 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import { Fragment, useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ComponentType, getParentType } from "../../models/componentType";
+import {
+  menuItemText,
+  pluralize
+} from "components/ContextMenus/ContextMenuUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { displayMissingObjectModal } from "components/Modals/MissingObjectModals";
+import { displayReplaceModal } from "components/Modals/ReplaceModal";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ComponentType, getParentType } from "models/componentType";
 import ComponentReferences, {
   createComponentReferences
-} from "../../models/jobs/componentReferences";
-import { CopyComponentsJob } from "../../models/jobs/copyJobs";
-import { DeleteComponentsJob } from "../../models/jobs/deleteJobs";
-import ObjectReference from "../../models/jobs/objectReference";
-import { ReplaceComponentsJob } from "../../models/jobs/replaceComponentsJob";
-import LogCurveInfo from "../../models/logCurveInfo";
-import ObjectOnWellbore, {
-  toObjectReference
-} from "../../models/objectOnWellbore";
-import { Server } from "../../models/server";
-import AuthorizationService from "../../services/authorizationService";
-import ComponentService from "../../services/componentService";
-import JobService, { JobType } from "../../services/jobService";
-import ObjectService from "../../services/objectService";
-import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
-import { displayReplaceModal } from "../Modals/ReplaceModal";
-import { menuItemText, pluralize } from "./ContextMenuUtils";
-import NestedMenuItem from "./NestedMenuItem";
+} from "models/jobs/componentReferences";
+import { CopyComponentsJob } from "models/jobs/copyJobs";
+import { DeleteComponentsJob } from "models/jobs/deleteJobs";
+import ObjectReference from "models/jobs/objectReference";
+import { ReplaceComponentsJob } from "models/jobs/replaceComponentsJob";
+import LogCurveInfo from "models/logCurveInfo";
+import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
+import { Server } from "models/server";
+import { Fragment, useContext } from "react";
+import AuthorizationService from "services/authorizationService";
+import ComponentService from "services/componentService";
+import JobService, { JobType } from "services/jobService";
+import ObjectService from "services/objectService";
 
 export interface CopyComponentsToServerMenuItemProps {
   componentsToCopy: { uid: string }[];
