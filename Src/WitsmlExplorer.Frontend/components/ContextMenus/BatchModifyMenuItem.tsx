@@ -1,5 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import OperationContext from "contexts/operationContext";
+import { ReactElement, useContext } from "react";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -13,11 +15,16 @@ import { validText } from "../Modals/ModalParts";
 import { ReportModal } from "../Modals/ReportModal";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 
-export const getBatchModifyMenuItem = (
-  checkedObjects: ObjectOnWellbore[],
-  objectType: ObjectType,
-  dispatchOperation: (action: any) => void
-) => {
+export interface BatchModifyMenuItemProps {
+  checkedObjects: ObjectOnWellbore[];
+  objectType: ObjectType;
+}
+
+export const BatchModifyMenuItem = (
+  props: BatchModifyMenuItemProps
+): ReactElement => {
+  const { checkedObjects, objectType } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const batchModifyProperties = objectBatchModifyProperties[objectType];
 
   const onSubmitBatchModify = async (batchUpdates: {

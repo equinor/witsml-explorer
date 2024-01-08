@@ -5,7 +5,7 @@ import {
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table";
-import { getBatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
+import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu, {
   getContextMenuPosition
 } from "components/ContextMenus/ContextMenu";
@@ -130,11 +130,11 @@ export const ObjectSearchListView = (): React.ReactElement => {
         component: (
           <ContextMenu
             menuItems={[
-              getBatchModifyMenuItem(
-                checkedObjectRows,
-                objectType,
-                dispatchOperation
-              )
+              <BatchModifyMenuItem
+                key="batchModify"
+                checkedObjects={checkedObjectRows}
+                objectType={objectType}
+              />
             ]}
           />
         ),
