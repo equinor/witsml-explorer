@@ -1,7 +1,7 @@
+import NavigationContext from "contexts/navigationContext";
 import { useSnackbar } from "notistack";
 import React, { useContext, useEffect } from "react";
-import NavigationContext from "../contexts/navigationContext";
-import NotificationService from "../services/notificationService";
+import NotificationService from "services/notificationService";
 
 const Snackbar = (): React.ReactElement => {
   const { enqueueSnackbar } = useSnackbar();

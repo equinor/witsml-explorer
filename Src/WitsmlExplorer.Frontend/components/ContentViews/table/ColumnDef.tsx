@@ -1,14 +1,5 @@
 import { Checkbox, IconButton, useTheme } from "@material-ui/core";
 import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
-import { useContext, useMemo } from "react";
-import OperationContext from "../../../contexts/operationContext";
-import { DecimalPreference } from "../../../contexts/operationStateReducer";
-import Icon from "../../../styles/Icons";
-import {
-  STORAGE_CONTENTTABLE_ORDER_KEY,
-  STORAGE_CONTENTTABLE_WIDTH_KEY,
-  getLocalStorageItem
-} from "../../../tools/localStorageHelpers";
 import {
   activeId,
   calculateColumnWidth,
@@ -17,8 +8,20 @@ import {
   measureSortingFn,
   selectId,
   toggleRow
-} from "./contentTableUtils";
-import { ContentTableColumn, ContentType } from "./tableParts";
+} from "components/ContentViews/table/contentTableUtils";
+import {
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table/tableParts";
+import OperationContext from "contexts/operationContext";
+import { DecimalPreference } from "contexts/operationStateReducer";
+import { useContext, useMemo } from "react";
+import Icon from "styles/Icons";
+import {
+  STORAGE_CONTENTTABLE_ORDER_KEY,
+  STORAGE_CONTENTTABLE_WIDTH_KEY,
+  getLocalStorageItem
+} from "tools/localStorageHelpers";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

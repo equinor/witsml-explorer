@@ -1,9 +1,9 @@
 import * as signalR from "@microsoft/signalr";
 import { HubConnection } from "@microsoft/signalr";
+import { AlertSeverity } from "components/Alerts";
+import { msalEnabled } from "msal/MsalAuthProvider";
+import { ApiClient, getBaseUrl } from "services/apiClient";
 import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
-import { AlertSeverity } from "../components/Alerts";
-import { msalEnabled } from "../msal/MsalAuthProvider";
-import { ApiClient, getBaseUrl } from "./apiClient";
 
 export interface Notification {
   serverUrl: URL;

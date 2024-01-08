@@ -3,13 +3,13 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/mode-xml";
 import "ace-builds/src-noconflict/theme-merbivore";
 import "ace-builds/src-noconflict/theme-xcode";
+import { customCommands, customCompleter } from "components/QueryEditorUtils";
+import { updateLinesWithWidgets } from "components/QueryEditorWidgetUtils";
+import OperationContext from "contexts/operationContext";
 import { useContext } from "react";
 import AceEditor from "react-ace";
 import styled from "styled-components";
-import OperationContext from "../contexts/operationContext";
-import { Colors, dark } from "../styles/Colors";
-import { customCommands, customCompleter } from "./QueryEditorUtils";
-import { updateLinesWithWidgets } from "./QueryEditorWidgetUtils";
+import { Colors, dark } from "styles/Colors";
 
 export interface QueryEditorProps {
   value: string;

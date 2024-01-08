@@ -1,11 +1,11 @@
-import { pluralize } from "../components/ContextMenus/ContextMenuUtils";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import {
   ComponentType,
   ComponentTypeToModel,
   getParentType
-} from "../models/componentType";
-import { Server } from "../models/server";
-import { ApiClient } from "./apiClient";
+} from "models/componentType";
+import { Server } from "models/server";
+import { ApiClient } from "services/apiClient";
 
 export default class ComponentService {
   public static async getComponents<Key extends ComponentType>(

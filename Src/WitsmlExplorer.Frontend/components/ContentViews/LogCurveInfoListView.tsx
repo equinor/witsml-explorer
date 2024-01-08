@@ -1,28 +1,28 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
-import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import LogCurveInfo, { isNullOrEmptyIndex } from "../../models/logCurveInfo";
-import LogObject from "../../models/logObject";
-import { measureToString } from "../../models/measure";
-import { truncateAbortHandler } from "../../services/apiClient";
-import ComponentService from "../../services/componentService";
-import LogCurvePriorityService from "../../services/logCurvePriorityService";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import LogCurveInfoContextMenu, {
-  LogCurveInfoContextMenuProps
-} from "../ContextMenus/LogCurveInfoContextMenu";
-import formatDateString from "../DateFormatter";
-import { CommonPanelContainer } from "./CurveValuesView";
+import { CommonPanelContainer } from "components/ContentViews/CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import LogCurveInfoContextMenu, {
+  LogCurveInfoContextMenuProps
+} from "components/ContextMenus/LogCurveInfoContextMenu";
+import formatDateString from "components/DateFormatter";
+import { timeFromMinutesToMilliseconds } from "contexts/curveThreshold";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
+import LogObject from "models/logObject";
+import { measureToString } from "models/measure";
+import React, { useContext, useEffect, useState } from "react";
+import { truncateAbortHandler } from "services/apiClient";
+import ComponentService from "services/componentService";
+import LogCurvePriorityService from "services/logCurvePriorityService";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;

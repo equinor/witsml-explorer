@@ -1,9 +1,9 @@
 import { CellProps, Table } from "@equinor/eds-core-react";
+import OperationContext from "contexts/operationContext";
 import { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../../contexts/operationContext";
-import { Colors } from "../../../styles/Colors";
-import Icon from "../../../styles/Icons";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export type SortDirection = "ascending" | "descending" | "none";
 

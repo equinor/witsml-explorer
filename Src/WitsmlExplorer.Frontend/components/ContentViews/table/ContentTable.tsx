@@ -14,19 +14,13 @@ import {
   useReactTable
 } from "@tanstack/react-table";
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
-import * as React from "react";
-import { Fragment, useContext, useEffect, useMemo, useState } from "react";
-import OperationContext from "../../../contexts/operationContext";
-import { indexToNumber } from "../../../models/logObject";
-import { Colors } from "../../../styles/Colors";
-import Icon from "../../../styles/Icons";
-import { useColumnDef } from "./ColumnDef";
-import Panel from "./Panel";
+import { useColumnDef } from "components/ContentViews/table/ColumnDef";
+import Panel from "components/ContentViews/table/Panel";
 import {
   initializeColumnVisibility,
   useStoreVisibilityEffect,
   useStoreWidthsEffect
-} from "./contentTableStorage";
+} from "components/ContentViews/table/contentTableStorage";
 import {
   StyledResizer,
   StyledTable,
@@ -34,7 +28,7 @@ import {
   StyledTh,
   StyledTr,
   TableContainer
-} from "./contentTableStyles";
+} from "components/ContentViews/table/contentTableStyles";
 import {
   calculateHorizontalSpace,
   calculateRowHeight,
@@ -46,8 +40,17 @@ import {
   selectId,
   toggleRow,
   useInitFilterFns
-} from "./contentTableUtils";
-import { ContentTableColumn, ContentTableProps } from "./tableParts";
+} from "components/ContentViews/table/contentTableUtils";
+import {
+  ContentTableColumn,
+  ContentTableProps
+} from "components/ContentViews/table/tableParts";
+import OperationContext from "contexts/operationContext";
+import { indexToNumber } from "models/logObject";
+import * as React from "react";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

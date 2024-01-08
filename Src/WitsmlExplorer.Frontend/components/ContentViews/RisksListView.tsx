@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import RiskObject from "../../models/riskObject";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import RiskObjectContextMenu from "../ContextMenus/RiskContextMenu";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import RiskObjectContextMenu from "components/ContextMenus/RiskContextMenu";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import RiskObject from "models/riskObject";
+import React, { useContext, useEffect, useState } from "react";
 
 export interface RiskObjectRow extends ContentTableRow, RiskObject {
   risk: RiskObject;

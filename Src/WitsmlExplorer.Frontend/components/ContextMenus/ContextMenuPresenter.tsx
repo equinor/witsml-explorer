@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import OperationContext from "../../contexts/operationContext";
+import OperationContext from "contexts/operationContext";
 
 const ContextMenuPresenter = (): React.ReactElement => {
   const { operationState } = useContext(OperationContext);

@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
-import NavigationType from "../../contexts/navigationType";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
-} from "../Constants";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import ModalDialog from "./ModalDialog";
-import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
-import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
+} from "components/Constants";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import { SelectLogCurveInfoAction } from "contexts/navigationActions";
+import NavigationType from "contexts/navigationType";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
+import React, { useEffect, useState } from "react";
+import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
 
 export interface SelectIndexToDisplayModalProps {
   dispatchNavigation: (action: SelectLogCurveInfoAction) => void;

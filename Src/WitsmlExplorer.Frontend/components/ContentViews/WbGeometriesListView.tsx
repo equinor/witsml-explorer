@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { measureToString } from "../../models/measure";
-import { ObjectType } from "../../models/objectType";
-import WbGeometryObject from "../../models/wbGeometry";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import WbGeometryObjectContextMenu from "components/ContextMenus/WbGeometryContextMenu";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import WbGeometryObject from "models/wbGeometry";
+import React, { useContext, useEffect, useState } from "react";
 
 export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
   wbGeometry: WbGeometryObject;

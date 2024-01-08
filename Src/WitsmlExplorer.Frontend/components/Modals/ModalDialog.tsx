@@ -1,10 +1,10 @@
 import { Button, Dialog, Progress, Typography } from "@equinor/eds-core-react";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { Colors, dark, light } from "../../styles/Colors";
-import Icons from "../../styles/Icons";
+import { Colors, dark, light } from "styles/Colors";
+import Icons from "styles/Icons";
 
 interface ModalDialogProps {
   heading: string;

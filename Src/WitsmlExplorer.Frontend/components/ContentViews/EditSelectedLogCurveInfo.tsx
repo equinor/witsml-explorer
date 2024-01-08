@@ -7,8 +7,15 @@ import {
   TextField,
   Typography
 } from "@equinor/eds-core-react";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "components/Constants";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
+import { ComponentType } from "models/componentType";
+import LogCurveInfo from "models/logCurveInfo";
+import LogObject from "models/logObject";
 import {
   CSSProperties,
   Dispatch,
@@ -17,18 +24,11 @@ import {
   useEffect,
   useState
 } from "react";
+import { truncateAbortHandler } from "services/apiClient";
+import ComponentService from "services/componentService";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import { ComponentType } from "../../models/componentType";
-import LogCurveInfo from "../../models/logCurveInfo";
-import LogObject from "../../models/logObject";
-import { truncateAbortHandler } from "../../services/apiClient";
-import ComponentService from "../../services/componentService";
-import { Colors, colors, dark } from "../../styles/Colors";
-import { formatIndexValue } from "../../tools/IndexHelpers";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
+import { Colors, colors, dark } from "styles/Colors";
+import { formatIndexValue } from "tools/IndexHelpers";
 
 interface EditSelectedLogCurveInfoProps {
   disabled?: boolean;
