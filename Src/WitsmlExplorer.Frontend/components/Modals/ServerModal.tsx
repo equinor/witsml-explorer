@@ -6,29 +6,32 @@ import {
   Tooltip
 } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import React, { ChangeEvent, useContext, useState } from "react";
-import styled from "styled-components";
-import { RemoveWitsmlServerAction } from "../../contexts/modificationActions";
-import ModificationType from "../../contexts/modificationType";
-import { SelectServerAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
+import ModalDialog, {
+  ControlButtonPosition,
+  ModalWidth
+} from "components/Modals/ModalDialog";
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "components/Modals/UserCredentialsModal";
+import { RemoveWitsmlServerAction } from "contexts/modificationActions";
+import ModificationType from "contexts/modificationType";
+import { SelectServerAction } from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
 import {
   DisplayModalAction,
   HideModalAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { Server } from "../../models/server";
-import { msalEnabled } from "../../msal/MsalAuthProvider";
-import NotificationService from "../../services/notificationService";
-import ServerService from "../../services/serverService";
-import { Colors } from "../../styles/Colors";
-import Icons from "../../styles/Icons";
-import ModalDialog, { ControlButtonPosition, ModalWidth } from "./ModalDialog";
-import UserCredentialsModal, {
-  UserCredentialsModalProps
-} from "./UserCredentialsModal";
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { Server } from "models/server";
+import { msalEnabled } from "msal/MsalAuthProvider";
+import React, { ChangeEvent, useContext, useState } from "react";
+import NotificationService from "services/notificationService";
+import ServerService from "services/serverService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icons from "styles/Icons";
 
 export interface ServerModalProps {
   server: Server;

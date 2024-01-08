@@ -1,6 +1,6 @@
-import ObjectReferences from "../../../models/jobs/objectReferences";
-import { ObjectType } from "../../../models/objectType";
-import { parseStringToReferences } from "../UseClipboardReferences";
+import { parseStringToReferences } from "components/ContextMenus/UseClipboardReferences";
+import ObjectReferences from "models/jobs/objectReferences";
+import { ObjectType } from "models/objectType";
 
 const SERVER_URL = "server";
 const WELL_UID = "wellUid";

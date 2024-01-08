@@ -1,16 +1,16 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { Dispatch, SetStateAction } from "react";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
+import JobInfoPropertiesModal from "components/Modals/JobInfoPropertiesModal";
 import {
   DisplayModalAction,
   HideContextMenuAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import JobInfo from "../../models/jobs/jobInfo";
-import { colors } from "../../styles/Colors";
-import JobInfoPropertiesModal from "../Modals/JobInfoPropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import JobInfo from "models/jobs/jobInfo";
+import React, { Dispatch, SetStateAction } from "react";
+import { colors } from "styles/Colors";
 
 export interface JobInfoContextMenuProps {
   dispatchOperation: (

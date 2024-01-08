@@ -1,6 +1,6 @@
-import CommonData from "./commonData";
-import Measure from "./measure";
-import ObjectOnWellbore from "./objectOnWellbore";
+import CommonData from "models/commonData";
+import Measure from "models/measure";
+import ObjectOnWellbore from "models/objectOnWellbore";
 
 export default interface WbGeometryObject extends ObjectOnWellbore {
   dTimReport?: string;

@@ -1,6 +1,6 @@
-import Measure from "./measure";
-import MeasureWithDatum from "./measureWithDatum";
-import Rheometer from "./rheometer";
+import Measure from "models/measure";
+import MeasureWithDatum from "models/measureWithDatum";
+import Rheometer from "models/rheometer";
 
 export default interface Fluid {
   uid: string;

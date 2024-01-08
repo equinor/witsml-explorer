@@ -1,22 +1,22 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
-import React, { Dispatch, SetStateAction, useContext, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import FormationMarker from "../../models/formationMarker";
-import { itemStateTypes } from "../../models/itemStateTypes";
-import MaxLength from "../../models/maxLength";
-import Measure from "../../models/measure";
-import MeasureWithDatum from "../../models/measureWithDatum";
-import { ObjectType } from "../../models/objectType";
-import StratigraphicStruct from "../../models/stratigraphicStruct";
-import JobService, { JobType } from "../../services/jobService";
-import ModalDialog from "./ModalDialog";
+import ModalDialog from "components/Modals/ModalDialog";
 import {
   invalidMeasureInput,
   invalidStringInput,
   undefinedOnUnchagedEmptyString
-} from "./PropertiesModalUtils";
+} from "components/Modals/PropertiesModalUtils";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import FormationMarker from "models/formationMarker";
+import { itemStateTypes } from "models/itemStateTypes";
+import MaxLength from "models/maxLength";
+import Measure from "models/measure";
+import MeasureWithDatum from "models/measureWithDatum";
+import { ObjectType } from "models/objectType";
+import StratigraphicStruct from "models/stratigraphicStruct";
+import React, { Dispatch, SetStateAction, useContext, useState } from "react";
+import JobService, { JobType } from "services/jobService";
+import styled from "styled-components";
 
 export interface FormationMarkerPropertiesModalProps {
   formationMarker: FormationMarker;

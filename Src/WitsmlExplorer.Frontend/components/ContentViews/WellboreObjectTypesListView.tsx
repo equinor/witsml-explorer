@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
-import { FilterContext, VisibilityStatus } from "../../contexts/filter";
-import { SelectObjectGroupAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import { ObjectType, pluralizeObjectType } from "../../models/objectType";
-import ObjectService from "../../services/objectService";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { FilterContext, VisibilityStatus } from "contexts/filter";
+import { SelectObjectGroupAction } from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import { ObjectType, pluralizeObjectType } from "models/objectType";
+import React, { useContext } from "react";
+import ObjectService from "services/objectService";
 
 interface ObjectTypeRow extends ContentTableRow {
   uid: string;

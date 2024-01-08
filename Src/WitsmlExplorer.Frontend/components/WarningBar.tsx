@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { colors } from "../styles/Colors";
+import { colors } from "styles/Colors";
 
 const Warning = styled.div`
   border: 1px solid ${colors.interactive.dangerResting};

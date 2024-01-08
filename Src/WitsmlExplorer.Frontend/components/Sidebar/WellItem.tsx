@@ -1,20 +1,20 @@
-import React, { useContext } from "react";
-import { useWellFilter } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import Well from "../../models/well";
-import Wellbore, { calculateWellboreNodeId } from "../../models/wellbore";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
+} from "components/ContextMenus/ContextMenu";
 import WellContextMenu, {
   WellContextMenuProps
-} from "../ContextMenus/WellContextMenu";
-import TreeItem from "./TreeItem";
-import WellboreItem from "./WellboreItem";
+} from "components/ContextMenus/WellContextMenu";
+import TreeItem from "components/Sidebar/TreeItem";
+import WellboreItem from "components/Sidebar/WellboreItem";
+import { useWellFilter } from "contexts/filter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import Well from "models/well";
+import Wellbore, { calculateWellboreNodeId } from "models/wellbore";
+import React, { useContext } from "react";
 
 interface WellItemProps {
   well: Well;

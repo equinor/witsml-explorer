@@ -1,8 +1,12 @@
 import "@testing-library/jest-dom";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithContexts } from "../../../__testUtils__/testUtils";
-import { ContentTable, ContentTableRow, ContentType } from "../table";
+import { renderWithContexts } from "__testUtils__/testUtils";
+import { ContentTable } from "components/ContentViews/table/ContentTable";
+import {
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table/tableParts";
 
 class ResizeObserver {
   observe() {

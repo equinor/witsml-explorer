@@ -1,6 +1,6 @@
-import LogObject from "../logObject";
-import { toObjectReference } from "../objectOnWellbore";
-import ObjectReference from "./objectReference";
+import ObjectReference from "models/jobs/objectReference";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 
 export default interface TrimLogObjectJob {
   logObject: ObjectReference;

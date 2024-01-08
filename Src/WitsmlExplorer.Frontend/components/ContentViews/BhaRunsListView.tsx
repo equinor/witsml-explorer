@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import BhaRun from "../../models/bhaRun";
-import BhaRunContextMenu from "../ContextMenus/BhaRunContextMenu";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import BhaRunContextMenu from "components/ContextMenus/BhaRunContextMenu";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import BhaRun from "models/bhaRun";
+import React, { useContext, useEffect, useState } from "react";
 
 export interface BhaRunRow extends ContentTableRow, BhaRun {
   bhaRun: BhaRun;

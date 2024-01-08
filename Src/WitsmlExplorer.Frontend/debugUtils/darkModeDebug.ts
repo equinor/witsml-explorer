@@ -1,6 +1,6 @@
-import { DispatchOperation } from "../contexts/operationStateReducer";
-import OperationType from "../contexts/operationType";
-import { dark, light } from "../styles/Colors";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { dark, light } from "styles/Colors";
 
 let mode = "light";
 

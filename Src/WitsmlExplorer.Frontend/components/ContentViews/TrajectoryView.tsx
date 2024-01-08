@@ -1,23 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import Trajectory from "../../models/trajectory";
-import TrajectoryStation from "../../models/trajectoryStation";
-import ComponentService from "../../services/componentService";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TrajectoryStationContextMenu, {
-  TrajectoryStationContextMenuProps
-} from "../ContextMenus/TrajectoryStationContextMenu";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
-import { measureToString } from "../../models/measure";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import TrajectoryStationContextMenu, {
+  TrajectoryStationContextMenuProps
+} from "components/ContextMenus/TrajectoryStationContextMenu";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import { measureToString } from "models/measure";
+import Trajectory from "models/trajectory";
+import TrajectoryStation from "models/trajectoryStation";
+import React, { useContext, useEffect, useState } from "react";
+import ComponentService from "services/componentService";
 
 export interface TrajectoryStationRow extends ContentTableRow {
   uid: string;

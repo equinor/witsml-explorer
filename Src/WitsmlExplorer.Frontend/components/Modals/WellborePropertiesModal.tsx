@@ -1,19 +1,19 @@
 import { Autocomplete } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import formatDateString from "components/DateFormatter";
+import { DateTimeField } from "components/Modals/DateTimeField";
+import ModalDialog from "components/Modals/ModalDialog";
+import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
+import { invalidStringInput } from "components/Modals/PropertiesModalUtils";
+import OperationContext from "contexts/operationContext";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import MaxLength from "models/maxLength";
+import Wellbore, { wellboreHasChanges } from "models/wellbore";
 import React, { useContext, useEffect, useState } from "react";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import MaxLength from "../../models/maxLength";
-import Wellbore, { wellboreHasChanges } from "../../models/wellbore";
-import JobService, { JobType } from "../../services/jobService";
-import formatDateString from "../DateFormatter";
-import { DateTimeField } from "./DateTimeField";
-import ModalDialog from "./ModalDialog";
-import { PropertiesModalMode, validText } from "./ModalParts";
-import { invalidStringInput } from "./PropertiesModalUtils";
 
 export interface WellborePropertiesModalProps {
   mode: PropertiesModalMode;

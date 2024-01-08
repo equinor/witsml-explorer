@@ -1,8 +1,8 @@
 import {
   ReturnElements,
   StoreFunction
-} from "../components/ContentViews/QueryViewUtils";
-import { ApiClient } from "./apiClient";
+} from "components/ContentViews/QueryViewUtils";
+import { ApiClient } from "services/apiClient";
 
 export default class QueryService {
   public static async postQuery(

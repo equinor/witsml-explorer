@@ -1,6 +1,6 @@
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import ConfirmModal from "./ConfirmModal";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
 
 export function displayReplaceModal(
   existingObjects: any[],

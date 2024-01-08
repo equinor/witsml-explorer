@@ -1,11 +1,11 @@
 import { Button } from "@equinor/eds-core-react";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
 import styled from "styled-components";
-import NavigationContext from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
-import OperationContext from "../contexts/operationContext";
-import { Colors } from "../styles/Colors";
-import Icon from "../styles/Icons";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export interface ServerManagerButtonProps {
   showLabels: boolean;

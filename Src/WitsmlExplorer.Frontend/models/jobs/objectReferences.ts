@@ -1,4 +1,4 @@
-import { ObjectType } from "../objectType";
+import { ObjectType } from "models/objectType";
 
 export default interface ObjectReferences {
   serverUrl?: string;
