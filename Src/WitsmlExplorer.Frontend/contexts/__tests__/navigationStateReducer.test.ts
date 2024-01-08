@@ -1,22 +1,16 @@
-import { getObjectOnWellboreProperties } from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { emptyWell, getWellProperties } from "../../models/well";
-import Wellbore, {
-  calculateLogTypeTimeId,
-  calculateObjectGroupId,
-  calculateWellboreNodeId,
-  getWellboreProperties
-} from "../../models/wellbore";
-import { sortList } from "../modificationStateReducer";
+import { sortList } from "contexts/modificationStateReducer";
 import {
   SelectObjectAction,
   SelectObjectGroupAction,
   SelectServerAction,
   ToggleTreeNodeAction
-} from "../navigationActions";
-import { EMPTY_NAVIGATION_STATE, NavigationState } from "../navigationContext";
-import { reducer } from "../navigationStateReducer";
-import NavigationType from "../navigationType";
+} from "contexts/navigationActions";
+import {
+  EMPTY_NAVIGATION_STATE,
+  NavigationState
+} from "contexts/navigationContext";
+import { reducer } from "contexts/navigationStateReducer";
+import NavigationType from "contexts/navigationType";
 import {
   LOG_1,
   SERVER_1,
@@ -29,7 +23,16 @@ import {
   WELL_2,
   getEmptyWellboreObjects,
   getInitialState
-} from "../stateReducerTestUtils";
+} from "contexts/stateReducerTestUtils";
+import { getObjectOnWellboreProperties } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { emptyWell, getWellProperties } from "models/well";
+import Wellbore, {
+  calculateLogTypeTimeId,
+  calculateObjectGroupId,
+  calculateWellboreNodeId,
+  getWellboreProperties
+} from "models/wellbore";
 
 it("Should not update state when selecting current selected server", () => {
   const initialState = {

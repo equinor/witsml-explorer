@@ -5,45 +5,43 @@ import {
   Table,
   Typography
 } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
+import ServerModal, {
+  showDeleteServerModal
+} from "components/Modals/ServerModal";
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "components/Modals/UserCredentialsModal";
 import {
   FilterContext,
   VisibilityStatus,
   allVisibleObjects
-} from "../../contexts/filter";
-import { UpdateServerListAction } from "../../contexts/modificationActions";
-import ModificationType from "../../contexts/modificationType";
-import { SelectServerAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
-import { Server, emptyServer } from "../../models/server";
-import {
-  adminRole,
-  getUserAppRoles,
-  msalEnabled
-} from "../../msal/MsalAuthProvider";
+} from "contexts/filter";
+import { UpdateServerListAction } from "contexts/modificationActions";
+import ModificationType from "contexts/modificationType";
+import { SelectServerAction } from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ObjectType } from "models/objectType";
+import { Server, emptyServer } from "models/server";
+import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
+import React, { useContext, useEffect, useState } from "react";
 import AuthorizationService, {
   AuthorizationState,
   AuthorizationStatus
-} from "../../services/authorizationService";
-import CapService from "../../services/capService";
-import NotificationService from "../../services/notificationService";
-import ServerService from "../../services/serverService";
-import WellService from "../../services/wellService";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
+} from "services/authorizationService";
+import CapService from "services/capService";
+import NotificationService from "services/notificationService";
+import ServerService from "services/serverService";
+import WellService from "services/wellService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 import {
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
   getLocalStorageItem
-} from "../../tools/localStorageHelpers";
-import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
-import UserCredentialsModal, {
-  UserCredentialsModalProps
-} from "../Modals/UserCredentialsModal";
+} from "tools/localStorageHelpers";
 
 const NEW_SERVER_ID = "1";
 

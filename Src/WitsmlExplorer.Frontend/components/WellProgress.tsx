@@ -1,6 +1,6 @@
+import ProgressSpinner from "components/ProgressSpinner";
+import NavigationContext from "contexts/navigationContext";
 import React, { useContext } from "react";
-import NavigationContext from "../contexts/navigationContext";
-import ProgressSpinner from "./ProgressSpinner";
 
 type Props = {
   children: JSX.Element;

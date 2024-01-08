@@ -1,6 +1,6 @@
-import { ErrorDetails } from "../models/errorDetails";
-import { ServerCapabilities } from "../models/serverCapabilities";
-import { ApiClient, throwError } from "./apiClient";
+import { ErrorDetails } from "models/errorDetails";
+import { ServerCapabilities } from "models/serverCapabilities";
+import { ApiClient, throwError } from "services/apiClient";
 
 export default class CapService {
   public static async getCap(

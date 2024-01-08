@@ -6,18 +6,14 @@ import {
   getObjectSearchResult,
   getServer,
   renderWithContexts
-} from "../../../__testUtils__/testUtils";
-import {
-  EMPTY_FILTER,
-  FilterContext,
-  ObjectFilterType
-} from "../../../contexts/filter";
-import ObjectSearchResult from "../../../models/objectSearchResult";
-import ObjectService from "../../../services/objectService";
-import ContextMenuPresenter from "../../ContextMenus/ContextMenuPresenter";
-import SearchFilter from "../SearchFilter";
+} from "__testUtils__/testUtils";
+import ContextMenuPresenter from "components/ContextMenus/ContextMenuPresenter";
+import SearchFilter from "components/Sidebar/SearchFilter";
+import { EMPTY_FILTER, FilterContext, ObjectFilterType } from "contexts/filter";
+import ObjectSearchResult from "models/objectSearchResult";
+import ObjectService from "services/objectService";
 
-jest.mock("../../../services/objectService");
+jest.mock("services/objectService");
 
 describe("Search Filter", () => {
   it("A search filter should show a searchable field", () => {

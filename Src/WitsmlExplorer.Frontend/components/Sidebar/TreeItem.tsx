@@ -3,14 +3,14 @@ import { Tooltip } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { TreeItem } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
+import { ToggleTreeNodeAction } from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;

@@ -1,6 +1,40 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
 import { Button } from "@material-ui/core";
+import {
+  MILLIS_IN_SECOND,
+  SECONDS_IN_MINUTE,
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_LOG_ORDERTYPE_DECREASING
+} from "components/Constants";
+import { CurveValuesPlot } from "components/ContentViews/CurveValuesPlot";
+import EditNumber from "components/ContentViews/EditNumber";
+import EditSelectedLogCurveInfo from "components/ContentViews/EditSelectedLogCurveInfo";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType,
+  ExportableContentTableColumn,
+  Order
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
+import formatDateString from "components/DateFormatter";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import ProgressSpinner from "components/ProgressSpinner";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import useExport from "hooks/useExport";
 import orderBy from "lodash/orderBy";
+import {
+  DeleteLogCurveValuesJob,
+  IndexRange
+} from "models/jobs/deleteLogCurveValuesJob";
+import { CurveSpecification, LogData, LogDataRow } from "models/logData";
+import LogObject, { indexToNumber } from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import React, {
   useCallback,
   useContext,
@@ -9,43 +43,9 @@ import React, {
   useRef,
   useState
 } from "react";
+import { truncateAbortHandler } from "services/apiClient";
+import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import useExport from "../../hooks/useExport";
-import {
-  DeleteLogCurveValuesJob,
-  IndexRange
-} from "../../models/jobs/deleteLogCurveValuesJob";
-import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
-import LogObject, { indexToNumber } from "../../models/logObject";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import { truncateAbortHandler } from "../../services/apiClient";
-import LogObjectService from "../../services/logObjectService";
-import {
-  MILLIS_IN_SECOND,
-  SECONDS_IN_MINUTE,
-  WITSML_INDEX_TYPE_DATE_TIME,
-  WITSML_LOG_ORDERTYPE_DECREASING
-} from "../Constants";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import MnemonicsContextMenu from "../ContextMenus/MnemonicsContextMenu";
-import formatDateString from "../DateFormatter";
-import ConfirmModal from "../Modals/ConfirmModal";
-import ProgressSpinner from "../ProgressSpinner";
-import { CurveValuesPlot } from "./CurveValuesPlot";
-import EditNumber from "./EditNumber";
-import EditSelectedLogCurveInfo from "./EditSelectedLogCurveInfo";
-import { LogCurveInfoRow } from "./LogCurveInfoListView";
-import {
-  ContentTable,
-  ContentTableColumn,
-  ContentTableRow,
-  ContentType,
-  ExportableContentTableColumn,
-  Order
-} from "./table";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.

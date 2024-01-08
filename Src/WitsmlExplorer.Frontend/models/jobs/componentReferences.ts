@@ -1,6 +1,6 @@
-import { ComponentType } from "../componentType";
-import ObjectOnWellbore, { toObjectReference } from "../objectOnWellbore";
-import ObjectReference from "./objectReference";
+import { ComponentType } from "models/componentType";
+import ObjectReference from "models/jobs/objectReference";
+import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 
 export default interface ComponentReferences {
   serverUrl?: string;

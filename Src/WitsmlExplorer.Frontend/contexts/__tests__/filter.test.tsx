@@ -3,10 +3,7 @@
   getObjectSearchResult,
   getWell,
   getWellbore
-} from "../../__testUtils__/testUtils";
-import LogObject from "../../models/logObject";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
+} from "__testUtils__/testUtils";
 import {
   EMPTY_FILTER,
   Filter,
@@ -16,7 +13,10 @@ import {
   WellPropertyFilterType,
   filterTypeToProperty,
   filterWells
-} from "../filter";
+} from "contexts/filter";
+import LogObject from "models/logObject";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 
 describe("Filter", () => {
   let filter: Filter;

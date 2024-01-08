@@ -1,4 +1,27 @@
 import { Button, Icon, Switch, Typography } from "@equinor/eds-core-react";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import JobInfoContextMenu, {
+  JobInfoContextMenuProps
+} from "components/ContextMenus/JobInfoContextMenu";
+import formatDateString from "components/DateFormatter";
+import { ReportModal } from "components/Modals/ReportModal";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import JobInfo from "models/jobs/jobInfo";
+import BaseReport from "models/reports/BaseReport";
+import { Server } from "models/server";
+import {
+  adminRole,
+  developerRole,
+  getUserAppRoles,
+  msalEnabled
+} from "msal/MsalAuthProvider";
 import React, {
   ChangeEvent,
   useContext,
@@ -6,31 +29,12 @@ import React, {
   useMemo,
   useState
 } from "react";
-import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import JobInfo from "../../models/jobs/jobInfo";
-import BaseReport from "../../models/reports/BaseReport";
-import { Server } from "../../models/server";
-import {
-  adminRole,
-  developerRole,
-  getUserAppRoles,
-  msalEnabled
-} from "../../msal/MsalAuthProvider";
-import JobService from "../../services/jobService";
+import JobService from "services/jobService";
 import NotificationService, {
   Notification
-} from "../../services/notificationService";
-import { Colors } from "../../styles/Colors";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import JobInfoContextMenu, {
-  JobInfoContextMenuProps
-} from "../ContextMenus/JobInfoContextMenu";
-import formatDateString from "../DateFormatter";
-import { ReportModal } from "../Modals/ReportModal";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
+} from "services/notificationService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
 
 export const JobsView = (): React.ReactElement => {
   const { navigationState } = useContext(NavigationContext);

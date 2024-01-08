@@ -1,20 +1,23 @@
 ﻿import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { ObjectType } from "../../models/objectType";
-import Rig from "../../models/rig";
-import { colors } from "../../styles/Colors";
-import { PropertiesModalMode } from "../Modals/ModalParts";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
+import {
+  ObjectContextMenuProps,
+  ObjectMenuItems
+} from "components/ContextMenus/ObjectMenuItems";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
 import RigPropertiesModal, {
   RigPropertiesModalProps
-} from "../Modals/RigPropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
-import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
+} from "components/Modals/RigPropertiesModal";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { ObjectType } from "models/objectType";
+import Rig from "models/rig";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 
 const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { checkedObjects, wellbore } = props;

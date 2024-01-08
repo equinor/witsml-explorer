@@ -36,6 +36,8 @@
     "json.schemaDownload.enable": false,
     "javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
     "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+    "typescript.preferences.importModuleSpecifier": "non-relative",
     "[csharp]": {
       "editor.defaultFormatter": "ms-dotnettools.csharp",
       "editor.formatOnSave": true

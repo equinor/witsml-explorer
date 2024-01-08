@@ -1,6 +1,6 @@
-import { ErrorDetails } from "../models/errorDetails";
-import Well, { emptyWell } from "../models/well";
-import { ApiClient, throwError } from "./apiClient";
+import { ErrorDetails } from "models/errorDetails";
+import Well, { emptyWell } from "models/well";
+import { ApiClient, throwError } from "services/apiClient";
 
 export default class WellService {
   public static async getWells(

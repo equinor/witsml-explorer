@@ -1,4 +1,4 @@
-import Measure from "./measure";
+import Measure from "models/measure";
 
 export default interface TubularComponent {
   sequence: number;

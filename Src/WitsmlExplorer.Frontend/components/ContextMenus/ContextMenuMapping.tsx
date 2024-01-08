@@ -1,16 +1,16 @@
-import { ObjectType } from "../../models/objectType";
-import BhaRunContextMenu from "./BhaRunContextMenu";
-import FluidsReportContextMenu from "./FluidsReportContextMenu";
-import FormationMarkerContextMenu from "./FormationMarkerContextMenu";
-import LogObjectContextMenu from "./LogObjectContextMenu";
-import MessageObjectContextMenu from "./MessageObjectContextMenu";
-import MudLogContextMenu from "./MudLogContextMenu";
-import { ObjectContextMenuProps } from "./ObjectMenuItems";
-import RigContextMenu from "./RigContextMenu";
-import RiskObjectContextMenu from "./RiskContextMenu";
-import TrajectoryContextMenu from "./TrajectoryContextMenu";
-import TubularContextMenu from "./TubularContextMenu";
-import WbGeometryObjectContextMenu from "./WbGeometryContextMenu";
+import BhaRunContextMenu from "components/ContextMenus/BhaRunContextMenu";
+import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
+import FormationMarkerContextMenu from "components/ContextMenus/FormationMarkerContextMenu";
+import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
+import MessageObjectContextMenu from "components/ContextMenus/MessageObjectContextMenu";
+import MudLogContextMenu from "components/ContextMenus/MudLogContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import RigContextMenu from "components/ContextMenus/RigContextMenu";
+import RiskObjectContextMenu from "components/ContextMenus/RiskContextMenu";
+import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
+import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
+import WbGeometryObjectContextMenu from "components/ContextMenus/WbGeometryContextMenu";
+import { ObjectType } from "models/objectType";
 
 export const ObjectTypeToContextMenu: Record<
   ObjectType,

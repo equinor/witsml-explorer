@@ -1,17 +1,21 @@
 ﻿import { Autocomplete } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
+import { DateTimeField } from "components/Modals/DateTimeField";
+import ModalDialog from "components/Modals/ModalDialog";
+import {
+  PropertiesModalMode,
+  validPhoneNumber,
+  validText
+} from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { itemStateTypes } from "models/itemStateTypes";
+import { ObjectType } from "models/objectType";
+import Rig from "models/rig";
+import { rigType } from "models/rigType";
 import React, { useContext, useEffect, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { itemStateTypes } from "../../models/itemStateTypes";
-import { ObjectType } from "../../models/objectType";
-import Rig from "../../models/rig";
-import { rigType } from "../../models/rigType";
-import JobService, { JobType } from "../../services/jobService";
-import { DateTimeField } from "./DateTimeField";
-import ModalDialog from "./ModalDialog";
-import { PropertiesModalMode, validPhoneNumber, validText } from "./ModalParts";
+import JobService, { JobType } from "services/jobService";
 
 export interface RigPropertiesModalProps {
   mode: PropertiesModalMode;

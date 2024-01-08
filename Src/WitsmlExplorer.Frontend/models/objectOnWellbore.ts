@@ -1,6 +1,6 @@
-import ObjectReference from "./jobs/objectReference";
-import ObjectReferences from "./jobs/objectReferences";
-import { ObjectType } from "./objectType";
+import ObjectReference from "models/jobs/objectReference";
+import ObjectReferences from "models/jobs/objectReferences";
+import { ObjectType } from "models/objectType";
 
 export default interface ObjectOnWellbore {
   uid: string;

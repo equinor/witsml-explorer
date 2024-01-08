@@ -1,5 +1,5 @@
-import MaxLength from "../../models/maxLength";
-import Measure from "../../models/measure";
+import MaxLength from "models/maxLength";
+import Measure from "models/measure";
 
 export const undefinedOnUnchagedEmptyString = (
   original?: string,

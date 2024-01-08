@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import ModificationType from "../../../contexts/modificationType";
-import { NavigationAction } from "../../../contexts/navigationAction";
-import { HideModalAction } from "../../../contexts/operationStateReducer";
-import OperationType from "../../../contexts/operationType";
-import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
-import LogObject, { indexToNumber } from "../../../models/logObject";
-import { ObjectType } from "../../../models/objectType";
-import { truncateAbortHandler } from "../../../services/apiClient";
-import JobService, { JobType } from "../../../services/jobService";
-import ObjectService from "../../../services/objectService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD,
   WITSML_LOG_ORDERTYPE_DECREASING
-} from "../../Constants";
-import ModalDialog from "../ModalDialog";
-import AdjustDateTimeModal from "./AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
-import WarningBar from "../../WarningBar";
+} from "components/Constants";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import WarningBar from "components/WarningBar";
+import ModificationType from "contexts/modificationType";
+import { NavigationAction } from "contexts/navigationAction";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { createTrimLogObjectJob } from "models/jobs/trimLogObjectJob";
+import LogObject, { indexToNumber } from "models/logObject";
+import { ObjectType } from "models/objectType";
+import React, { useState } from "react";
+import { truncateAbortHandler } from "services/apiClient";
+import JobService, { JobType } from "services/jobService";
+import ObjectService from "services/objectService";
 
 export interface TrimLogObjectModalProps {
   dispatchNavigation: (action: NavigationAction) => void;

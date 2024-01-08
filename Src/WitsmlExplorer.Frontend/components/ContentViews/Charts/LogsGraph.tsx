@@ -5,18 +5,18 @@ import {
   CustomSeriesRenderItemParams
 } from "echarts";
 
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../../contexts/navigationContext";
-import OperationContext from "../../../contexts/operationContext";
-import LogObject from "../../../models/logObject";
 import {
-  calculateLogTypeId,
-  calculateLogTypeTimeId
-} from "../../../models/wellbore";
-import formatDateString from "../../DateFormatter";
-import { ContentTableRow } from "../table";
-import { ReactEChartsProps, ReactLogChart } from "./ReactLogChart";
-import { DateTimeFormat } from "../../../contexts/operationStateReducer";
+  ReactEChartsProps,
+  ReactLogChart
+} from "components/ContentViews/Charts/ReactLogChart";
+import { ContentTableRow } from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import { DateTimeFormat } from "contexts/operationStateReducer";
+import LogObject from "models/logObject";
+import { calculateLogTypeId, calculateLogTypeTimeId } from "models/wellbore";
+import React, { useContext, useEffect, useState } from "react";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;

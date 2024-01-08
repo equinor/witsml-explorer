@@ -1,20 +1,20 @@
-import React, { useContext, useEffect } from "react";
-import { RemoveWellboreAction } from "../contexts/modificationActions";
-import ModificationType from "../contexts/modificationType";
-import NavigationContext from "../contexts/navigationContext";
-import EntityType from "../models/entityType";
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import { ObjectType } from "../models/objectType";
+import { RemoveWellboreAction } from "contexts/modificationActions";
+import ModificationType from "contexts/modificationType";
+import NavigationContext from "contexts/navigationContext";
+import EntityType from "models/entityType";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
 import {
   getObjectsFromWellbore,
   objectTypeToWellboreObjects
-} from "../models/wellbore";
+} from "models/wellbore";
+import React, { useContext, useEffect } from "react";
 import NotificationService, {
   RefreshAction
-} from "../services/notificationService";
-import ObjectService from "../services/objectService";
-import WellService from "../services/wellService";
-import WellboreService from "../services/wellboreService";
+} from "services/notificationService";
+import ObjectService from "services/objectService";
+import WellService from "services/wellService";
+import WellboreService from "services/wellboreService";
 
 const RefreshHandler = (): React.ReactElement => {
   const {

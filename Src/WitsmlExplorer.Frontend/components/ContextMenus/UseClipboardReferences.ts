@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import ObjectReferences from "../../models/jobs/objectReferences";
-import { ObjectType } from "../../models/objectType";
+import ObjectReferences from "models/jobs/objectReferences";
+import { ObjectType } from "models/objectType";
 
 export const useClipboardReferences = (
   pollInterval = 0
