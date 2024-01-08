@@ -1,16 +1,16 @@
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "components/Modals/UserCredentialsModal";
+import ModificationType from "contexts/modificationType";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { Server } from "models/server";
 import React, { useContext, useEffect } from "react";
-import ModificationType from "../../contexts/modificationType";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { Server } from "../../models/server";
 import AuthorizationService, {
   AuthorizationState,
   AuthorizationStatus
-} from "../../services/authorizationService";
-import UserCredentialsModal, {
-  UserCredentialsModalProps
-} from "../Modals/UserCredentialsModal";
+} from "services/authorizationService";
 
 const AuthorizationManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);

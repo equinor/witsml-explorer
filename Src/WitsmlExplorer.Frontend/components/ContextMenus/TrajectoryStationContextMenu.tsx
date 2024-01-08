@@ -1,29 +1,32 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React from "react";
-import { DispatchNavigation } from "../../contexts/navigationAction";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import { createComponentReferences } from "../../models/jobs/componentReferences";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Trajectory from "../../models/trajectory";
-import { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
-import { TrajectoryStationRow } from "../ContentViews/TrajectoryView";
-import TrajectoryStationPropertiesModal from "../Modals/TrajectoryStationPropertiesModal";
-import ContextMenu from "./ContextMenu";
+import { TrajectoryStationRow } from "components/ContentViews/TrajectoryView";
+import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteComponents,
   onClickShowObjectOnServer
-} from "./ContextMenuUtils";
-import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
-import { copyComponents, pasteComponents } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+} from "components/ContextMenus/ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
+import {
+  copyComponents,
+  pasteComponents
+} from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
+import TrajectoryStationPropertiesModal from "components/Modals/TrajectoryStationPropertiesModal";
+import { DispatchNavigation } from "contexts/navigationAction";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import { createComponentReferences } from "models/jobs/componentReferences";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Trajectory from "models/trajectory";
+import React from "react";
+import { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];

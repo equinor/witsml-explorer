@@ -1,7 +1,7 @@
 import { TextField } from "@material-ui/core";
+import ModalDialog from "components/Modals/ModalDialog";
+import JobInfo from "models/jobs/jobInfo";
 import React from "react";
-import JobInfo from "../../models/jobs/jobInfo";
-import ModalDialog from "./ModalDialog";
 
 export interface JobInfoPropertiesModalInterface {
   jobInfo: JobInfo;

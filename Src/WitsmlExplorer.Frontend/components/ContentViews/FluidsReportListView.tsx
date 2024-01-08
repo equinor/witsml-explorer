@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import FluidsReport from "../../models/fluidsReport";
-import { measureToString } from "../../models/measure";
-import { ObjectType } from "../../models/objectType";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import FluidsReport from "models/fluidsReport";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import React, { useContext, useEffect, useState } from "react";
 
 export interface FluidsReportRow extends ContentTableRow, FluidsReport {
   fluidsReport: FluidsReport;

@@ -1,14 +1,14 @@
 import { Icon, Typography } from "@equinor/eds-core-react";
 import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
+import { StyledMenu } from "components/ContextMenus/ContextMenu";
+import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
+import OperationContext from "contexts/operationContext";
 import React, {
   useContext,
   useImperativeHandle,
   useRef,
   useState
 } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { StyledMenu } from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
   label: string;

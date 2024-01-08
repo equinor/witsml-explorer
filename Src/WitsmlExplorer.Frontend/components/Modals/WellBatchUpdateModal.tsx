@@ -1,15 +1,15 @@
 ﻿import { TextField } from "@material-ui/core";
-import React, { useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
+import { WellRow } from "components/ContentViews/WellsListView";
+import ModalDialog from "components/Modals/ModalDialog";
+import { validTimeZone } from "components/Modals/ModalParts";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
 import BatchModifyWellJob, {
   createBatchModifyWellJob
-} from "../../models/jobs/batchModifyWellJob";
-import Well, { emptyWell } from "../../models/well";
-import JobService, { JobType } from "../../services/jobService";
-import { WellRow } from "../ContentViews/WellsListView";
-import ModalDialog from "./ModalDialog";
-import { validTimeZone } from "./ModalParts";
+} from "models/jobs/batchModifyWellJob";
+import Well, { emptyWell } from "models/well";
+import React, { useState } from "react";
+import JobService, { JobType } from "services/jobService";
 
 export interface WellBatchUpdateModalProps {
   wellRows: WellRow[];

@@ -1,23 +1,23 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
-import { useWellFilter } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import Well from "../../models/well";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import WellContextMenu, {
-  WellContextMenuProps
-} from "../ContextMenus/WellContextMenu";
-import formatDateString from "../DateFormatter";
-import WellProgress from "../WellProgress";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import WellContextMenu, {
+  WellContextMenuProps
+} from "components/ContextMenus/WellContextMenu";
+import formatDateString from "components/DateFormatter";
+import WellProgress from "components/WellProgress";
+import { useWellFilter } from "contexts/filter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import Well from "models/well";
+import React, { useContext } from "react";
 
 export interface WellRow extends ContentTableRow, Well {}
 

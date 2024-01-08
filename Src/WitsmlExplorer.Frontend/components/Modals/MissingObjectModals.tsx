@@ -1,10 +1,10 @@
 import { TextField, Typography } from "@equinor/eds-core-react";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import ConfirmModal from "./ConfirmModal";
-import { ModalContentLayout } from "./ModalDialog";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import { ModalContentLayout } from "components/Modals/ModalDialog";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
 
 export function displayMissingWellboreModal(
   targetServer: Server,

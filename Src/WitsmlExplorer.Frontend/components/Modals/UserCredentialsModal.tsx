@@ -5,18 +5,18 @@ import {
   TextField,
   Typography
 } from "@equinor/eds-core-react";
+import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
+import { validText } from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { Server } from "models/server";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { Server } from "../../models/server";
 import AuthorizationService, {
   AuthorizationStatus,
   BasicServerCredentials
-} from "../../services/authorizationService";
-import { Colors } from "../../styles/Colors";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
-import { validText } from "./ModalParts";
+} from "services/authorizationService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
 
 export interface UserCredentialsModalProps {
   server: Server;

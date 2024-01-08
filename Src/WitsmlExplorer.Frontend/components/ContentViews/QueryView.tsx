@@ -1,17 +1,4 @@
 import { Button, Menu, Tabs, TextField } from "@equinor/eds-core-react";
-import React, { ChangeEvent, useContext, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { QueryActionType, QueryContext } from "../../contexts/queryContext";
-import QueryService from "../../services/queryService";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
-import ConfirmModal from "../Modals/ConfirmModal";
-import { QueryEditor } from "../QueryEditor";
-import { getTag } from "../QueryEditorUtils";
-import { StyledNativeSelect } from "../Select";
 import {
   ReturnElements,
   StoreFunction,
@@ -19,7 +6,20 @@ import {
   formatXml,
   getParserError,
   getQueryTemplate
-} from "./QueryViewUtils";
+} from "components/ContentViews/QueryViewUtils";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import { QueryEditor } from "components/QueryEditor";
+import { getTag } from "components/QueryEditorUtils";
+import { StyledNativeSelect } from "components/Select";
+import OperationContext from "contexts/operationContext";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { QueryActionType, QueryContext } from "contexts/queryContext";
+import React, { ChangeEvent, useContext, useState } from "react";
+import QueryService from "services/queryService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 const QueryView = (): React.ReactElement => {
   const {

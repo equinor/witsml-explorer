@@ -1,28 +1,23 @@
 import { TextField } from "@equinor/eds-core-react";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import { logTypeToQuery } from "components/Routing";
+import ModificationType from "contexts/modificationType";
+import { DispatchNavigation } from "contexts/navigationAction";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { getParentType } from "models/componentType";
+import ComponentReferences from "models/jobs/componentReferences";
+import { DeleteComponentsJob, DeleteObjectsJob } from "models/jobs/deleteJobs";
+import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
 import { Fragment } from "react";
+import AuthorizationService from "services/authorizationService";
+import JobService, { JobType } from "services/jobService";
+import ObjectService from "services/objectService";
 import styled from "styled-components";
-import ModificationType from "../../contexts/modificationType";
-import { DispatchNavigation } from "../../contexts/navigationAction";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { getParentType } from "../../models/componentType";
-import ComponentReferences from "../../models/jobs/componentReferences";
-import {
-  DeleteComponentsJob,
-  DeleteObjectsJob
-} from "../../models/jobs/deleteJobs";
-import ObjectOnWellbore, {
-  toObjectReferences
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import AuthorizationService from "../../services/authorizationService";
-import JobService, { JobType } from "../../services/jobService";
-import ObjectService from "../../services/objectService";
-import Icon from "../../styles/Icons";
-import ConfirmModal from "../Modals/ConfirmModal";
-import { logTypeToQuery } from "../Routing";
+import Icon from "styles/Icons";
 
 export const StyledIcon = styled(Icon)`
   && {

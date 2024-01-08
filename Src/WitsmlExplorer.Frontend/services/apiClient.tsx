@@ -1,9 +1,9 @@
-import { Server } from "../models/server";
-import { getAccessToken, msalEnabled } from "../msal/MsalAuthProvider";
+import { Server } from "models/server";
+import { getAccessToken, msalEnabled } from "msal/MsalAuthProvider";
 
 import AuthorizationService, {
   AuthorizationStatus
-} from "./authorizationService";
+} from "services/authorizationService";
 
 export class ApiClient {
   private static async getCommonHeaders(

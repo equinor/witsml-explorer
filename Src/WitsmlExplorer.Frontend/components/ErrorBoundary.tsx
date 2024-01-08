@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from "react";
-import { colors } from "../styles/Colors";
+import { colors } from "styles/Colors";
 
 interface ErrorBoundaryProps {
   FallbackComponent: React.ComponentType<{ error: Error }>;
