@@ -1,51 +1,55 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
-import { v4 as uuid } from "uuid";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { ComponentType } from "../../models/componentType";
-import CheckLogHeaderJob from "../../models/jobs/checkLogHeaderJob";
-import CompareLogDataJob from "../../models/jobs/compareLogData";
-import { CopyRangeClipboard } from "../../models/jobs/componentReferences";
-import { CopyComponentsJob } from "../../models/jobs/copyJobs";
-import ObjectReference from "../../models/jobs/objectReference";
-import LogObject from "../../models/logObject";
-import ObjectOnWellbore, {
-  toObjectReference
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import JobService, { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
+import { getBatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText
+} from "components/ContextMenus/ContextMenuUtils";
+import { onClickPaste } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import {
+  ObjectContextMenuProps,
+  ObjectMenuItems
+} from "components/ContextMenus/ObjectMenuItems";
+import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import AnalyzeGapModal, {
   AnalyzeGapModalProps
-} from "../Modals/AnalyzeGapModal";
+} from "components/Modals/AnalyzeGapModal";
 import LogComparisonModal, {
   LogComparisonModalProps
-} from "../Modals/LogComparisonModal";
+} from "components/Modals/LogComparisonModal";
 import LogDataImportModal, {
   LogDataImportModalProps
-} from "../Modals/LogDataImportModal";
-import LogPropertiesModal from "../Modals/LogPropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
+} from "components/Modals/LogDataImportModal";
+import LogPropertiesModal from "components/Modals/LogPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
-} from "../Modals/ObjectPickerModal";
-import { ReportModal } from "../Modals/ReportModal";
-import SpliceLogsModal from "../Modals/SpliceLogsModal";
+} from "components/Modals/ObjectPickerModal";
+import { ReportModal } from "components/Modals/ReportModal";
+import SpliceLogsModal from "components/Modals/SpliceLogsModal";
 import TrimLogObjectModal, {
   TrimLogObjectModalProps
-} from "../Modals/TrimLogObject/TrimLogObjectModal";
-import { getBatchModifyMenuItem } from "./BatchModifyMenuItem";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
-import { onClickPaste } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
-import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+} from "components/Modals/TrimLogObject/TrimLogObjectModal";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { ComponentType } from "models/componentType";
+import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
+import CompareLogDataJob from "models/jobs/compareLogData";
+import { CopyRangeClipboard } from "models/jobs/componentReferences";
+import { CopyComponentsJob } from "models/jobs/copyJobs";
+import ObjectReference from "models/jobs/objectReference";
+import LogObject from "models/logObject";
+import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import React, { useContext } from "react";
+import JobService, { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
+import { v4 as uuid } from "uuid";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps

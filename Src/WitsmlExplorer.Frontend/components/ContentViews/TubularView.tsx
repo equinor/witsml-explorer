@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import Tubular from "../../models/tubular";
-import TubularComponent from "../../models/tubularComponent";
-import ComponentService from "../../services/componentService";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TubularComponentContextMenu, {
-  TubularComponentContextMenuProps
-} from "../ContextMenus/TubularComponentContextMenu";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import TubularComponentContextMenu, {
+  TubularComponentContextMenuProps
+} from "components/ContextMenus/TubularComponentContextMenu";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import Tubular from "models/tubular";
+import TubularComponent from "models/tubularComponent";
+import React, { useContext, useEffect, useState } from "react";
+import ComponentService from "services/componentService";
 
 export interface TubularComponentRow extends ContentTableRow {
   uid: string;

@@ -1,5 +1,8 @@
+import {
+  OperationAction,
+  OperationState
+} from "contexts/operationStateReducer";
 import { createContext } from "react";
-import { OperationAction, OperationState } from "./operationStateReducer";
 
 export interface OperationContextProps {
   operationState: OperationState;

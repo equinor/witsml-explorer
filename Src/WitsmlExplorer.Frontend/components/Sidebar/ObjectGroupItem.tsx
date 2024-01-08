@@ -1,33 +1,33 @@
-import React, { ReactNode, useCallback, useContext, useState } from "react";
-import { FilterContext, VisibilityStatus } from "../../contexts/filter";
-import ModificationType from "../../contexts/modificationType";
-import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import { OperationAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import ObjectOnWellbore, {
-  calculateObjectNodeId
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import Wellbore, {
-  calculateObjectGroupId,
-  getObjectsFromWellbore
-} from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
-import { pluralize } from "../ContextMenus/ContextMenuUtils";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+} from "components/ContextMenus/ContextMenu";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import ObjectsSidebarContextMenu, {
   ObjectsSidebarContextMenuProps
-} from "../ContextMenus/ObjectsSidebarContextMenu";
-import ObjectOnWellboreItem from "./ObjectOnWellboreItem";
-import TreeItem from "./TreeItem";
-import { WellboreItemContext } from "./WellboreItem";
+} from "components/ContextMenus/ObjectsSidebarContextMenu";
+import ObjectOnWellboreItem from "components/Sidebar/ObjectOnWellboreItem";
+import TreeItem from "components/Sidebar/TreeItem";
+import { WellboreItemContext } from "components/Sidebar/WellboreItem";
+import { FilterContext, VisibilityStatus } from "contexts/filter";
+import ModificationType from "contexts/modificationType";
+import { ToggleTreeNodeAction } from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import { OperationAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import ObjectOnWellbore, {
+  calculateObjectNodeId
+} from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import Wellbore, {
+  calculateObjectGroupId,
+  getObjectsFromWellbore
+} from "models/wellbore";
+import React, { ReactNode, useCallback, useContext, useState } from "react";
+import ObjectService from "services/objectService";
 
 interface ObjectGroupItemProps {
   objectsOnWellbore?: ObjectOnWellbore[] | undefined; //a tree item for each object will be generated if this array is provided

@@ -1,4 +1,4 @@
-import { validText } from "../ModalParts";
+import { validText } from "components/Modals/ModalParts";
 
 it("Should detect any misbehavior during text validation using the validText() method.", () => {
   expect(validText(null)).toBeFalsy();

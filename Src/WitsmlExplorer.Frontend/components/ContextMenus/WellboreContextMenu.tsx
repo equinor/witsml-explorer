@@ -1,51 +1,54 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
-import { v4 as uuid } from "uuid";
-import ModificationType from "../../contexts/modificationType";
-import NavigationContext from "../../contexts/navigationContext";
-import { treeNodeIsExpanded } from "../../contexts/navigationStateReducer";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import { DisplayModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
-import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Well from "../../models/well";
-import Wellbore, { calculateWellboreNodeId } from "../../models/wellbore";
-import JobService, { JobType } from "../../services/jobService";
-import ObjectService from "../../services/objectService";
-import WellboreService from "../../services/wellboreService";
-import { colors } from "../../styles/Colors";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction,
   TemplateObjects
-} from "../ContentViews/QueryViewUtils";
-import { WellboreRow } from "../ContentViews/WellboresListView";
-import ConfirmModal from "../Modals/ConfirmModal";
+} from "components/ContentViews/QueryViewUtils";
+import { WellboreRow } from "components/ContentViews/WellboresListView";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText
+} from "components/ContextMenus/ContextMenuUtils";
+import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardReferences } from "components/ContextMenus/UseClipboardReferences";
+import ConfirmModal from "components/Modals/ConfirmModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
-} from "../Modals/DeleteEmptyMnemonicsModal";
+} from "components/Modals/DeleteEmptyMnemonicsModal";
 import LogPropertiesModal, {
   IndexCurve,
   LogPropertiesModalInterface
-} from "../Modals/LogPropertiesModal";
+} from "components/Modals/LogPropertiesModal";
 import MissingDataAgentModal, {
   MissingDataAgentModalProps
-} from "../Modals/MissingDataAgentModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
+} from "components/Modals/MissingDataAgentModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
 import WellborePropertiesModal, {
   WellborePropertiesModalProps
-} from "../Modals/WellborePropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
-import { pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferences } from "./UseClipboardReferences";
+} from "components/Modals/WellborePropertiesModal";
+import ModificationType from "contexts/modificationType";
+import NavigationContext from "contexts/navigationContext";
+import { treeNodeIsExpanded } from "contexts/navigationStateReducer";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import { DisplayModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { DeleteWellboreJob } from "models/jobs/deleteJobs";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore, { calculateWellboreNodeId } from "models/wellbore";
+import React, { useContext } from "react";
+import JobService, { JobType } from "services/jobService";
+import ObjectService from "services/objectService";
+import WellboreService from "services/wellboreService";
+import { colors } from "styles/Colors";
+import { v4 as uuid } from "uuid";
 
 export interface WellboreContextMenuProps {
   wellbore: Wellbore;

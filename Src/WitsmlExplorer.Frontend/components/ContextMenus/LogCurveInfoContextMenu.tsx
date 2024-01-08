@@ -1,37 +1,39 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
-import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import { createComponentReferences } from "../../models/jobs/componentReferences";
-import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import CopyRangeModal, { CopyRangeModalProps } from "../Modals/CopyRangeModal";
-import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
-import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
-import ContextMenu from "./ContextMenu";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteComponents,
   onClickShowObjectOnServer
-} from "./ContextMenuUtils";
-import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
-import { copyComponents } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
+} from "components/ContextMenus/ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
+import { copyComponents } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import AnalyzeGapModal, {
   AnalyzeGapModalProps
-} from "../Modals/AnalyzeGapModal";
+} from "components/Modals/AnalyzeGapModal";
+import CopyRangeModal, {
+  CopyRangeModalProps
+} from "components/Modals/CopyRangeModal";
+import LogCurveInfoPropertiesModal from "components/Modals/LogCurveInfoPropertiesModal";
+import SelectIndexToDisplayModal from "components/Modals/SelectIndexToDisplayModal";
+import { SelectLogCurveInfoAction } from "contexts/navigationActions";
+import {
+  DisplayModalAction,
+  HideContextMenuAction,
+  HideModalAction
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import { createComponentReferences } from "models/jobs/componentReferences";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import React from "react";
+import { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];

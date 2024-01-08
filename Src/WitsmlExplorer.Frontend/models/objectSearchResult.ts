@@ -1,5 +1,5 @@
-import ObjectOnWellbore from "./objectOnWellbore";
-import { ObjectType } from "./objectType";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
 
 export default interface ObjectSearchResult extends ObjectOnWellbore {
   searchProperty?: string;

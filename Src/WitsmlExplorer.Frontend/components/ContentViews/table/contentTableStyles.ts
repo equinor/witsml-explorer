@@ -1,6 +1,6 @@
 import { TableCell } from "@material-ui/core";
 import styled from "styled-components";
-import { Colors, light } from "../../../styles/Colors";
+import { Colors, light } from "styles/Colors";
 
 export const TableContainer = styled.div<{ showPanel?: boolean }>`
   overflow-y: auto;

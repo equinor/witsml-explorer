@@ -1,5 +1,5 @@
-import WellboreReference from "./wellboreReference";
-import WellReference from "./wellReference";
+import WellboreReference from "models/jobs/wellboreReference";
+import WellReference from "models/jobs/wellReference";
 
 export interface DeleteEmptyMnemonicsJob {
   wells: WellReference[];

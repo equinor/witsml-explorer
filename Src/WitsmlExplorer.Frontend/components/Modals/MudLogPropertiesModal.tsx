@@ -1,22 +1,20 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { itemStateValues } from "../../models/commonData";
-import MaxLength from "../../models/maxLength";
-import MudLog from "../../models/mudLog";
-import ObjectOnWellbore, {
-  toObjectReference
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import JobService, { JobType } from "../../services/jobService";
-import formatDateString from "../DateFormatter";
-import ModalDialog from "./ModalDialog";
+import formatDateString from "components/DateFormatter";
+import ModalDialog from "components/Modals/ModalDialog";
 import {
   invalidStringInput,
   undefinedOnUnchagedEmptyString
-} from "./PropertiesModalUtils";
+} from "components/Modals/PropertiesModalUtils";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { itemStateValues } from "models/commonData";
+import MaxLength from "models/maxLength";
+import MudLog from "models/mudLog";
+import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import React, { useContext, useEffect, useState } from "react";
+import JobService, { JobType } from "services/jobService";
+import styled from "styled-components";
 
 export interface MudLogPropertiesModalProps {
   mudLog: MudLog;

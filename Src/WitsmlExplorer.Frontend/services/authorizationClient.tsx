@@ -1,6 +1,6 @@
-import { ApiClient } from "./apiClient";
+import { ApiClient } from "services/apiClient";
 
-import { BasicServerCredentials } from "./authorizationService";
+import { BasicServerCredentials } from "services/authorizationService";
 
 export class AuthorizationClient {
   private static async getHeaders(

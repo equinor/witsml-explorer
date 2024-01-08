@@ -5,12 +5,12 @@ import {
   ReturnElements,
   StoreFunction,
   getQueryTemplateWithPreset
-} from "../components/ContentViews/QueryViewUtils";
-import { useLocalStorageState } from "../hooks/useLocalStorageState";
+} from "components/ContentViews/QueryViewUtils";
+import { useLocalStorageState } from "hooks/useLocalStorageState";
 import {
   STORAGE_QUERYVIEW_DATA,
   getLocalStorageItem
-} from "../tools/localStorageHelpers";
+} from "tools/localStorageHelpers";
 
 export interface QueryElement {
   query: string;

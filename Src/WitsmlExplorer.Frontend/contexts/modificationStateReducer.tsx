@@ -1,19 +1,3 @@
-import BhaRun from "../models/bhaRun";
-import LogObject from "../models/logObject";
-import MessageObject from "../models/messageObject";
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import { ObjectType } from "../models/objectType";
-import Rig from "../models/rig";
-import RiskObject from "../models/riskObject";
-import Trajectory from "../models/trajectory";
-import WbGeometryObject from "../models/wbGeometry";
-import Well from "../models/well";
-import Wellbore, {
-  WellboreObjects,
-  calculateWellboreNodeId,
-  objectTypeToWellboreObjects
-} from "../models/wellbore";
-import AuthorizationService from "../services/authorizationService";
 import {
   AddServerAction,
   AddWellAction,
@@ -29,11 +13,30 @@ import {
   UpdateWellboreObjectsAction,
   UpdateWellborePartialAction,
   UpdateWellsAction
-} from "./modificationActions";
-import ModificationType from "./modificationType";
-import { Action } from "./navigationActions";
-import { NavigationState, allDeselected } from "./navigationContext";
-import { toggleTreeNode, treeNodeIsExpanded } from "./navigationStateReducer";
+} from "contexts/modificationActions";
+import ModificationType from "contexts/modificationType";
+import { Action } from "contexts/navigationActions";
+import { NavigationState, allDeselected } from "contexts/navigationContext";
+import {
+  toggleTreeNode,
+  treeNodeIsExpanded
+} from "contexts/navigationStateReducer";
+import BhaRun from "models/bhaRun";
+import LogObject from "models/logObject";
+import MessageObject from "models/messageObject";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import Rig from "models/rig";
+import RiskObject from "models/riskObject";
+import Trajectory from "models/trajectory";
+import WbGeometryObject from "models/wbGeometry";
+import Well from "models/well";
+import Wellbore, {
+  WellboreObjects,
+  calculateWellboreNodeId,
+  objectTypeToWellboreObjects
+} from "models/wellbore";
+import AuthorizationService from "services/authorizationService";
 
 export const performModificationAction = (
   state: NavigationState,

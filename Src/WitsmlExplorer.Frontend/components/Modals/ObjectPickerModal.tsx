@@ -5,20 +5,23 @@ import {
   Checkbox,
   TextField
 } from "@equinor/eds-core-react";
+import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import ModalDialog, {
+  ModalContentLayout,
+  ModalWidth
+} from "components/Modals/ModalDialog";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import MaxLength from "models/maxLength";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
 import { ChangeEvent, useContext, useState } from "react";
+import ObjectService from "services/objectService";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import MaxLength from "../../models/maxLength";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import ObjectService from "../../services/objectService";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
-import { useClipboardReferencesOfType } from "../ContextMenus/UseClipboardReferences";
-import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export interface ObjectPickerProps {
   sourceObject: ObjectOnWellbore;

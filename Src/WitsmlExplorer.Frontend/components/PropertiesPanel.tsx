@@ -1,6 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
-import OperationContext from "../contexts/operationContext";
+import OperationContext from "contexts/operationContext";
 
 interface PropertiesPanelProps {
   properties: Map<string, string>;

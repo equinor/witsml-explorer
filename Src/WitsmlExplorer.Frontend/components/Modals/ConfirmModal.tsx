@@ -1,5 +1,5 @@
+import ModalDialog from "components/Modals/ModalDialog";
 import React, { ReactElement } from "react";
-import ModalDialog from "./ModalDialog";
 
 interface ConfirmProps {
   heading: string;

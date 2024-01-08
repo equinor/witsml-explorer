@@ -1,19 +1,19 @@
 import "@testing-library/jest-dom/extend-expect";
 import { act, screen, within } from "@testing-library/react";
-import { mockEdsCoreReact } from "../../../__testUtils__/mocks/EDSMocks";
+import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
 import {
   deferred,
   getJobInfo,
   getNotification,
   renderWithContexts
-} from "../../../__testUtils__/testUtils";
-import JobInfo from "../../../models/jobs/jobInfo";
-import { createReport } from "../../../models/reports/BaseReport";
-import JobService from "../../../services/jobService";
-import NotificationService from "../../../services/notificationService";
-import { ReportModal } from "../ReportModal";
+} from "__testUtils__/testUtils";
+import { ReportModal } from "components/Modals/ReportModal";
+import JobInfo from "models/jobs/jobInfo";
+import { createReport } from "models/reports/BaseReport";
+import JobService from "services/jobService";
+import NotificationService from "services/notificationService";
 
-jest.mock("../../../services/objectService");
+jest.mock("services/objectService");
 jest.mock("@microsoft/signalr");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 

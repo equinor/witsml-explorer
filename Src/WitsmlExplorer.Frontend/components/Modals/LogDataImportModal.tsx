@@ -1,21 +1,21 @@
 ﻿import { Accordion, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
+import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
+import ModalDialog from "components/Modals/ModalDialog";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import ImportLogDataJob from "models/jobs/importLogDataJob";
+import ObjectReference from "models/jobs/objectReference";
+import LogCurveInfo from "models/logCurveInfo";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { truncateAbortHandler } from "services/apiClient";
+import ComponentService from "services/componentService";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import ImportLogDataJob from "../../models/jobs/importLogDataJob";
-import ObjectReference from "../../models/jobs/objectReference";
-import LogCurveInfo from "../../models/logCurveInfo";
-import LogObject from "../../models/logObject";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import { truncateAbortHandler } from "../../services/apiClient";
-import ComponentService from "../../services/componentService";
-import JobService, { JobType } from "../../services/jobService";
-import { StyledAccordionHeader } from "./LogComparisonModal";
-import ModalDialog from "./ModalDialog";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;

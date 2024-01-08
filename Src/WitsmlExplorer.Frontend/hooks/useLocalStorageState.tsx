@@ -3,7 +3,7 @@ import {
   StorageOptions,
   getLocalStorageItem,
   setLocalStorageItem
-} from "../tools/localStorageHelpers";
+} from "tools/localStorageHelpers";
 
 /**
  * Custom hook that updates localStorage with the current state.

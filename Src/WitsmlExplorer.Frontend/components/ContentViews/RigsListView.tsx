@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import Rig from "../../models/rig";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import RigContextMenu from "../ContextMenus/RigContextMenu";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import RigContextMenu from "components/ContextMenus/RigContextMenu";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import Rig from "models/rig";
+import React, { useContext, useEffect, useState } from "react";
 
 export interface RigRow extends ContentTableRow, Rig {
   rig: Rig;
