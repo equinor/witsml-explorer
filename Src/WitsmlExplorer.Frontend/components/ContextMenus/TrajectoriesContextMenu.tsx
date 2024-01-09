@@ -1,30 +1,37 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
-import { v4 as uuid } from "uuid";
-import NavigationContext from "../../contexts/navigationContext";
+import {
+  StoreFunction,
+  TemplateObjects
+} from "components/ContentViews/QueryViewUtils";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickRefresh
+} from "components/ContextMenus/ContextMenuUtils";
+import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import TrajectoryPropertiesModal, {
+  TrajectoryPropertiesModalProps
+} from "components/Modals/TrajectoryPropertiesModal";
+import NavigationContext from "contexts/navigationContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
   HideModalAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Trajectory from "../../models/trajectory";
-import Wellbore from "../../models/wellbore";
-import { colors } from "../../styles/Colors";
-import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import TrajectoryPropertiesModal, {
-  TrajectoryPropertiesModalProps
-} from "../Modals/TrajectoryPropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
-import { pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Trajectory from "models/trajectory";
+import Wellbore from "models/wellbore";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
+import { v4 as uuid } from "uuid";
 
 export interface TrajectoriesContextMenuProps {
   dispatchOperation: (

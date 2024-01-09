@@ -1,24 +1,24 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
-import { useWellFilter } from "../../contexts/filter";
-import ModificationType from "../../contexts/modificationType";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import Wellbore from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import WellboreContextMenu, {
-  WellboreContextMenuProps
-} from "../ContextMenus/WellboreContextMenu";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import WellboreContextMenu, {
+  WellboreContextMenuProps
+} from "components/ContextMenus/WellboreContextMenu";
+import formatDateString from "components/DateFormatter";
+import { useWellFilter } from "contexts/filter";
+import ModificationType from "contexts/modificationType";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import Wellbore from "models/wellbore";
+import React, { useContext } from "react";
+import ObjectService from "services/objectService";
 
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 

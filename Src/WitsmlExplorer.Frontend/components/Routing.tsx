@@ -1,8 +1,6 @@
-import { useRouter } from "next/router";
-import { ParsedUrlQuery } from "querystring";
-import React, { useContext, useEffect, useState } from "react";
-import { FilterContext, WellFilterType } from "../contexts/filter";
-import ModificationType from "../contexts/modificationType";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import { FilterContext, WellFilterType } from "contexts/filter";
+import ModificationType from "contexts/modificationType";
 import {
   SelectLogTypeAction,
   SelectObjectAction,
@@ -11,26 +9,26 @@ import {
   SelectWellAction,
   SelectWellboreAction,
   ToggleTreeNodeAction
-} from "../contexts/navigationActions";
-import NavigationContext, {
-  NavigationState
-} from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
+} from "contexts/navigationActions";
+import NavigationContext, { NavigationState } from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
 import GeologyInterval from "../models/geologyInterval";
-import { ObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Well from "../models/well";
 import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeTimeId,
   getObjectFromWellbore,
   getObjectsFromWellbore
-} from "../models/wellbore";
-import { truncateAbortHandler } from "../services/apiClient";
-import NotificationService from "../services/notificationService";
-import ObjectService from "../services/objectService";
-import { WITSML_INDEX_TYPE_MD } from "./Constants";
+} from "models/wellbore";
+import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
+import React, { useContext, useEffect, useState } from "react";
+import { truncateAbortHandler } from "services/apiClient";
+import NotificationService from "services/notificationService";
 import { calculateObjectNodeId } from "../models/objectOnWellbore";
+import ObjectService from "services/objectService";
 
 const Routing = (): React.ReactElement => {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);

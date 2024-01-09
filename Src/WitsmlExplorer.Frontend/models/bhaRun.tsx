@@ -1,7 +1,7 @@
-import CommonData from "./commonData";
-import Measure from "./measure";
-import ObjectOnWellbore from "./objectOnWellbore";
-import RefNameString from "./refNameString";
+import CommonData from "models/commonData";
+import Measure from "models/measure";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import RefNameString from "models/refNameString";
 
 export default interface BhaRun extends ObjectOnWellbore {
   numStringRun: string;

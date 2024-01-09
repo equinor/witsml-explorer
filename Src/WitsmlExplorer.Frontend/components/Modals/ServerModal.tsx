@@ -1,28 +1,37 @@
-import { Button, Label, TextField } from "@equinor/eds-core-react";
+import {
+  Button,
+  Icon,
+  Label,
+  TextField,
+  Tooltip
+} from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import React, { ChangeEvent, useContext, useState } from "react";
-import styled from "styled-components";
-import { RemoveWitsmlServerAction } from "../../contexts/modificationActions";
-import ModificationType from "../../contexts/modificationType";
-import { SelectServerAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
+import ModalDialog, {
+  ControlButtonPosition,
+  ModalWidth
+} from "components/Modals/ModalDialog";
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "components/Modals/UserCredentialsModal";
+import { RemoveWitsmlServerAction } from "contexts/modificationActions";
+import ModificationType from "contexts/modificationType";
+import { SelectServerAction } from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
 import {
   DisplayModalAction,
   HideModalAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { Server } from "../../models/server";
-import { msalEnabled } from "../../msal/MsalAuthProvider";
-import NotificationService from "../../services/notificationService";
-import ServerService from "../../services/serverService";
-import { Colors } from "../../styles/Colors";
-import Icons from "../../styles/Icons";
-import ModalDialog, { ControlButtonPosition, ModalWidth } from "./ModalDialog";
-import UserCredentialsModal, {
-  UserCredentialsModalProps
-} from "./UserCredentialsModal";
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { Server } from "models/server";
+import { msalEnabled } from "msal/MsalAuthProvider";
+import React, { ChangeEvent, useContext, useState } from "react";
+import NotificationService from "services/notificationService";
+import ServerService from "services/serverService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icons from "styles/Icons";
 
 export interface ServerModalProps {
   server: Server;
@@ -192,7 +201,35 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   id="role"
                   defaultValue={server.roles?.join(" ")}
                   onChange={(e: any) =>
-                    setServer({ ...server, roles: e.target.value.split(" ") })
+                    setServer({
+                      ...server,
+                      roles: e.target.value
+                        .split(" ")
+                        .filter((role: string) => role.trim() !== "")
+                    })
+                  }
+                  disabled={props.editDisabled}
+                />
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  <Label label="Credential Ids" style={labelStyle} />
+                  <Tooltip title="If this (space delimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
+                    <Icon
+                      name="infoCircle"
+                      color={colors.interactive.primaryResting}
+                      size={18}
+                    />
+                  </Tooltip>
+                </div>
+                <TextField
+                  id="creds"
+                  defaultValue={server.credentialIds?.join(" ") ?? ""}
+                  onChange={(e: any) =>
+                    setServer({
+                      ...server,
+                      credentialIds: e.target.value
+                        .split(" ")
+                        .filter((id: string) => id.trim() !== "")
+                    })
                   }
                   disabled={props.editDisabled}
                 />

@@ -1,16 +1,16 @@
+import { UpdateServerAction } from "contexts/modificationActions";
+import ModificationType from "contexts/modificationType";
+import { ErrorDetails } from "models/errorDetails";
+import { Server } from "models/server";
+import { ApiClient, throwError } from "services/apiClient";
+import { AuthorizationClient } from "services/authorizationClient";
 import { SimpleEventDispatcher } from "ste-simple-events";
-import { UpdateServerAction } from "../contexts/modificationActions";
-import ModificationType from "../contexts/modificationType";
-import { ErrorDetails } from "../models/errorDetails";
-import { Server } from "../models/server";
 import {
   STORAGE_KEEP_SERVER_CREDENTIALS,
   getLocalStorageItem,
   removeLocalStorageItem,
   setLocalStorageItem
-} from "../tools/localStorageHelpers";
-import { ApiClient, throwError } from "./apiClient";
-import { AuthorizationClient } from "./authorizationClient";
+} from "tools/localStorageHelpers";
 
 export interface BasicServerCredentials {
   server: Server;

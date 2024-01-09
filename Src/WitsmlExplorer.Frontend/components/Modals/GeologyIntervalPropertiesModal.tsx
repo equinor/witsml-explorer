@@ -1,5 +1,24 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { Typography } from "@material-ui/core";
+import ModalDialog from "components/Modals/ModalDialog";
+import {
+  invalidMeasureInput,
+  invalidNumberInput,
+  invalidStringInput,
+  undefinedOnUnchagedEmptyString
+} from "components/Modals/PropertiesModalUtils";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import GeologyInterval from "models/geologyInterval";
+import ObjectReference from "models/jobs/objectReference";
+import { lithologySources } from "models/lithologySources";
+import { lithologyTypes } from "models/lithologyTypes";
+import MaxLength from "models/maxLength";
+import Measure from "models/measure";
+import MeasureWithDatum from "models/measureWithDatum";
+import MudLog from "models/mudLog";
+import { toObjectReference } from "models/objectOnWellbore";
 import React, {
   Dispatch,
   SetStateAction,
@@ -7,27 +26,8 @@ import React, {
   useEffect,
   useState
 } from "react";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import GeologyInterval from "../../models/geologyInterval";
-import ObjectReference from "../../models/jobs/objectReference";
-import { lithologySources } from "../../models/lithologySources";
-import { lithologyTypes } from "../../models/lithologyTypes";
-import MaxLength from "../../models/maxLength";
-import Measure from "../../models/measure";
-import MeasureWithDatum from "../../models/measureWithDatum";
-import MudLog from "../../models/mudLog";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import JobService, { JobType } from "../../services/jobService";
-import ModalDialog from "./ModalDialog";
-import {
-  invalidMeasureInput,
-  invalidNumberInput,
-  invalidStringInput,
-  undefinedOnUnchagedEmptyString
-} from "./PropertiesModalUtils";
 
 export interface GeologyIntervalPropertiesModalInterface {
   geologyInterval: GeologyInterval;

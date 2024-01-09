@@ -1,6 +1,6 @@
-import { Server } from "../models/server";
-import Wellbore, { emptyWellbore } from "../models/wellbore";
-import { ApiClient } from "./apiClient";
+import { Server } from "models/server";
+import Wellbore, { emptyWellbore } from "models/wellbore";
+import { ApiClient } from "services/apiClient";
 
 export default class WellboreService {
   public static async getWellbore(

@@ -1,22 +1,5 @@
-import { Dispatch, useReducer } from "react";
-import LogObject from "../models/logObject";
-import ObjectOnWellbore, {
-  getObjectOnWellboreProperties
-} from "../models/objectOnWellbore";
-import { ObjectType } from "../models/objectType";
-import { getWellProperties } from "../models/well";
-import Wellbore, {
-  WellboreObjects,
-  calculateLogTypeDepthId,
-  calculateLogTypeId,
-  calculateObjectGroupId,
-  calculateWellboreNodeId,
-  getWellboreProperties,
-  objectTypeToWellboreObjects
-} from "../models/wellbore";
-import AuthorizationService from "../services/authorizationService";
-import { performModificationAction } from "./modificationStateReducer";
-import ModificationType from "./modificationType";
+import { performModificationAction } from "contexts/modificationStateReducer";
+import ModificationType from "contexts/modificationType";
 import {
   Action,
   CollapseTreeNodeChildrenAction,
@@ -30,14 +13,31 @@ import {
   SelectWellboreAction,
   SetCurveThresholdAction,
   ToggleTreeNodeAction
-} from "./navigationActions";
+} from "contexts/navigationActions";
 import {
   EMPTY_NAVIGATION_STATE,
   NavigationState,
   ViewFlags,
   allDeselected
-} from "./navigationContext";
-import NavigationType from "./navigationType";
+} from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import LogObject from "models/logObject";
+import ObjectOnWellbore, {
+  getObjectOnWellboreProperties
+} from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { getWellProperties } from "models/well";
+import Wellbore, {
+  WellboreObjects,
+  calculateLogTypeDepthId,
+  calculateLogTypeId,
+  calculateObjectGroupId,
+  calculateWellboreNodeId,
+  getWellboreProperties,
+  objectTypeToWellboreObjects
+} from "models/wellbore";
+import { Dispatch, useReducer } from "react";
+import AuthorizationService from "services/authorizationService";
 
 export const initNavigationStateReducer = (): [
   NavigationState,

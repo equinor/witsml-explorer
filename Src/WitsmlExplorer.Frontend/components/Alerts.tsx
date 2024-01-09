@@ -1,13 +1,13 @@
 import { Collapse, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
 import { capitalize } from "lodash";
 import React, { useContext, useEffect, useState } from "react";
+import NotificationService from "services/notificationService";
 import styled from "styled-components";
-import NavigationContext from "../contexts/navigationContext";
-import OperationContext from "../contexts/operationContext";
-import NotificationService from "../services/notificationService";
-import { Colors } from "../styles/Colors";
+import { Colors } from "styles/Colors";
 
 interface AlertState {
   severity?: AlertSeverity;

@@ -1,9 +1,11 @@
 import { TextField } from "@equinor/eds-core-react";
+import formatDateString, {
+  validateIsoDateString
+} from "components/DateFormatter";
+import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { DateTimeFormat, TimeZone } from "../../contexts/operationStateReducer";
-import Icon from "../../styles/Icons";
-import formatDateString, { validateIsoDateString } from "../DateFormatter";
+import Icon from "styles/Icons";
 
 interface DateTimeFieldProps {
   value: string;

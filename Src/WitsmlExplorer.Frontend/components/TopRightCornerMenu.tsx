@@ -1,20 +1,20 @@
 import { Button } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
-import styled from "styled-components";
-import NavigationContext from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
-import OperationContext from "../contexts/operationContext";
-import OperationType from "../contexts/operationType";
-import useDocumentDimensions from "../hooks/useDocumentDimensions";
-import AuthorizationService from "../services/authorizationService";
-import { Colors } from "../styles/Colors";
-import Icon from "../styles/Icons";
-import JobsButton from "./JobsButton";
-import { SettingsModal } from "./Modals/SettingsModal";
+import JobsButton from "components/JobsButton";
+import { SettingsModal } from "components/Modals/SettingsModal";
 import UserCredentialsModal, {
   UserCredentialsModalProps
-} from "./Modals/UserCredentialsModal";
-import ServerManagerButton from "./ServerManagerButton";
+} from "components/Modals/UserCredentialsModal";
+import ServerManagerButton from "components/ServerManagerButton";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import useDocumentDimensions from "hooks/useDocumentDimensions";
+import React, { useContext } from "react";
+import AuthorizationService from "services/authorizationService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 const TopRightCornerMenu = (): React.ReactElement => {
   const {

@@ -1,28 +1,25 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
-import {
-  calculateLogTypeId,
-  calculateLogTypeTimeId
-} from "../../models/wellbore";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import formatDateString from "../DateFormatter";
-import LogsGraph from "./Charts/LogsGraph";
-import { CommonPanelContainer } from "./CurveValuesView";
+import LogsGraph from "components/ContentViews/Charts/LogsGraph";
+import { CommonPanelContainer } from "components/ContentViews/CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
+import { calculateLogTypeId, calculateLogTypeTimeId } from "models/wellbore";
+import React, { useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;

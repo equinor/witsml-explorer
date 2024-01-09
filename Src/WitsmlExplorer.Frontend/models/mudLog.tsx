@@ -1,7 +1,7 @@
-import CommonData from "./commonData";
+import CommonData from "models/commonData";
+import MeasureWithDatum from "models/measureWithDatum";
 import GeologyInterval from "./geologyInterval";
-import MeasureWithDatum from "./measureWithDatum";
-import ObjectOnWellbore from "./objectOnWellbore";
+import ObjectOnWellbore from "models/objectOnWellbore";
 
 export default interface MudLog extends ObjectOnWellbore {
   mudLogCompany: string;

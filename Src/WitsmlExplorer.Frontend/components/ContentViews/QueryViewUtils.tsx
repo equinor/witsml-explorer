@@ -1,5 +1,5 @@
-import { ObjectType } from "../../models/objectType";
-import { templates } from "../../templates/templates";
+import { ObjectType } from "models/objectType";
+import { templates } from "templates/templates";
 
 export enum ReturnElements {
   All = "all",

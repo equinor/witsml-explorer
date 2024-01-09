@@ -1,22 +1,17 @@
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Trajectory from "../../models/trajectory";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
 import {
   RemoveWellAction,
   RemoveWellboreAction,
   RemoveWitsmlServerAction,
   UpdateWellboreObjectAction
-} from "../modificationActions";
-import ModificationType from "../modificationType";
-import { NavigationAction } from "../navigationAction";
+} from "contexts/modificationActions";
+import ModificationType from "contexts/modificationType";
+import { NavigationAction } from "contexts/navigationAction";
 import {
   EMPTY_NAVIGATION_STATE,
   NavigationState,
   Selectable
-} from "../navigationContext";
-import { reducer } from "../navigationStateReducer";
+} from "contexts/navigationContext";
+import { reducer } from "contexts/navigationStateReducer";
 import {
   LOG_1,
   SERVER_1,
@@ -28,7 +23,12 @@ import {
   WELL_2,
   WELL_3,
   getInitialState
-} from "../stateReducerTestUtils";
+} from "contexts/stateReducerTestUtils";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Trajectory from "models/trajectory";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 
 it("Should only update list of servers if no server selected", () => {
   const editedServer: Server = {
@@ -82,6 +82,7 @@ it("Should update list of servers when adding a server", () => {
     url: "https://example.com",
     description: "A new server",
     roles: [],
+    credentialIds: [],
     depthLogDecimals: 0
   };
   const selectServerAction = {

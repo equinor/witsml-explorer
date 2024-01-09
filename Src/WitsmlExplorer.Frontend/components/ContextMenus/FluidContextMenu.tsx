@@ -1,27 +1,30 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import { ComponentType } from "../../models/componentType";
-import Fluid from "../../models/fluid";
-import FluidsReport from "../../models/fluidsReport";
-import { createComponentReferences } from "../../models/jobs/componentReferences";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
-import ContextMenu from "./ContextMenu";
+import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteComponents,
   onClickShowObjectOnServer
-} from "./ContextMenuUtils";
-import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
-import { copyComponents, pasteComponents } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+} from "components/ContextMenus/ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
+import {
+  copyComponents,
+  pasteComponents
+} from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import { ComponentType } from "models/componentType";
+import Fluid from "models/fluid";
+import FluidsReport from "models/fluidsReport";
+import { createComponentReferences } from "models/jobs/componentReferences";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import React, { useContext } from "react";
+import { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
 
 export interface FluidContextMenuProps {
   checkedFluids: Fluid[];

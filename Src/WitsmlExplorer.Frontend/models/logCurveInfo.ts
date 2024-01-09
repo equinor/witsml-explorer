@@ -1,5 +1,5 @@
-import AxisDefinition from "./AxisDefinition";
-import Measure from "./measure";
+import AxisDefinition from "models/AxisDefinition";
+import Measure from "models/measure";
 
 export default interface LogCurveInfo {
   uid: string;

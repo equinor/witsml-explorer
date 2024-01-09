@@ -1,14 +1,14 @@
-import Wellbore from "../../models/wellbore";
-import Well from "../../models/well";
-import JobService, { JobType } from "../../services/jobService";
 import { TextField } from "@material-ui/core";
-import OperationType from "../../contexts/operationType";
+import { DateTimeField } from "components/Modals/DateTimeField";
+import ModalDialog from "components/Modals/ModalDialog";
+import OperationContext from "contexts/operationContext";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { DeleteEmptyMnemonicsJob } from "models/jobs/deleteEmptyMnemonicsJob";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 import { useContext, useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import { DeleteEmptyMnemonicsJob } from "../../models/jobs/deleteEmptyMnemonicsJob";
-import ModalDialog from "./ModalDialog";
-import OperationContext from "../../contexts/operationContext";
-import { DateTimeField } from "./DateTimeField";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
 export interface DeleteEmptyMnemonicsModalProps {

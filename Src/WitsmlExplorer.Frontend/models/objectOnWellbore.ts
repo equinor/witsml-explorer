@@ -1,7 +1,7 @@
+import ObjectReference from "models/jobs/objectReference";
 import GeologyInterval from "./geologyInterval";
-import ObjectReference from "./jobs/objectReference";
-import ObjectReferences from "./jobs/objectReferences";
-import { ObjectType } from "./objectType";
+import ObjectReferences from "models/jobs/objectReferences";
+import { ObjectType } from "models/objectType";
 import Wellbore from "./wellbore";
 
 export default interface ObjectOnWellbore {

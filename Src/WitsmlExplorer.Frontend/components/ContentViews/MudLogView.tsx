@@ -1,25 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import GeologyInterval from "../../models/geologyInterval";
-import { measureToString } from "../../models/measure";
-import MudLog from "../../models/mudLog";
-import ComponentService from "../../services/componentService";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import GeologyIntervalContextMenu, {
-  GeologyIntervalContextMenuProps
-} from "../ContextMenus/GeologyIntervalContextMenu";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
 import { ObjectType } from "../../models/objectType";
 import ModificationType from "../../contexts/modificationType";
 import { getGeologyIntervalLength } from "../../models/wellbore";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import GeologyIntervalContextMenu, {
+  GeologyIntervalContextMenuProps
+} from "components/ContextMenus/GeologyIntervalContextMenu";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import GeologyInterval from "models/geologyInterval";
+import { measureToString } from "models/measure";
+import MudLog from "models/mudLog";
+import React, { useContext, useEffect, useState } from "react";
+import ComponentService from "services/componentService";
 
 export interface GeologyIntervalRow extends ContentTableRow {
   typeLithology: string;

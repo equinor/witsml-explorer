@@ -1,17 +1,17 @@
-import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import TreeItem from "./TreeItem";
-import { WellboreItemContext } from "./WellboreItem";
+} from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import TreeItem from "components/Sidebar/TreeItem";
+import { WellboreItemContext } from "components/Sidebar/WellboreItem";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import React, { useContext } from "react";
 
 interface ObjectOnWellboreItemProps {
   nodeId: string;
