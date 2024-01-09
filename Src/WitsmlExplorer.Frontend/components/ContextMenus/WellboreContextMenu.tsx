@@ -106,7 +106,8 @@ const WellboreContextMenu = (
       wellName: wellbore.wellName,
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
-      indexCurve: IndexCurve.Depth
+      indexCurve: IndexCurve.Depth,
+      typeLithology: ""
     };
     const logPropertiesModalProps: LogPropertiesModalInterface = {
       mode: PropertiesModalMode.New,
@@ -207,13 +208,13 @@ const WellboreContextMenu = (
       wellName: row.wellName,
       wellboreName: row.name
     })) || [
-      {
-        wellUid: wellbore.wellUid,
-        wellboreUid: wellbore.uid,
-        wellName: wellbore.wellName,
-        wellboreName: wellbore.name
-      }
-    ];
+        {
+          wellUid: wellbore.wellUid,
+          wellboreUid: wellbore.uid,
+          wellName: wellbore.wellName,
+          wellboreName: wellbore.name
+        }
+      ];
     const missingDataAgentModalProps: MissingDataAgentModalProps = {
       wellReferences: [],
       wellboreReferences: wellboreReferences
