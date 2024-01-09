@@ -37,6 +37,7 @@ const MudLogContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const modifyMudLogProps: MudLogPropertiesModalProps = {
       mudLog: checkedObjects[0] as MudLog
     };
@@ -44,7 +45,6 @@ const MudLogContextMenu = (
       type: OperationType.DisplayModal,
       payload: <MudLogPropertiesModal {...modifyMudLogProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {

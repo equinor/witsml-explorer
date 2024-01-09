@@ -28,6 +28,7 @@ const BhaRunContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyBhaRunProps: BhaRunPropertiesModalProps = {
       mode,
@@ -38,7 +39,6 @@ const BhaRunContextMenu = (
       type: OperationType.DisplayModal,
       payload: <BhaRunPropertiesModal {...modifyBhaRunProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   return (

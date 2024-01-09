@@ -38,6 +38,7 @@ const WbGeometryObjectContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyWbGeometryObjectProps: WbGeometryPropertiesModalProps = {
       mode,
@@ -48,7 +49,6 @@ const WbGeometryObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <WbGeometryPropertiesModal {...modifyWbGeometryObjectProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {
