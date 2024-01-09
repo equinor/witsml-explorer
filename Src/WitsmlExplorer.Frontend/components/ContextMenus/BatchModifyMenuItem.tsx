@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import OperationContext from "contexts/operationContext";
-import { ReactElement, useContext } from "react";
+import { ReactElement, forwardRef, useContext } from "react";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -20,67 +20,70 @@ export interface BatchModifyMenuItemProps {
   objectType: ObjectType;
 }
 
-export const BatchModifyMenuItem = (
-  props: BatchModifyMenuItemProps
-): ReactElement => {
-  const { checkedObjects, objectType } = props;
-  const { dispatchOperation } = useContext(OperationContext);
-  const batchModifyProperties = objectBatchModifyProperties[objectType];
+export const BatchModifyMenuItem = forwardRef(
+  (props: BatchModifyMenuItemProps, ref: React.Ref<any>): ReactElement => {
+    const { checkedObjects, objectType } = props;
+    const { dispatchOperation } = useContext(OperationContext);
+    const batchModifyProperties = objectBatchModifyProperties[objectType];
 
-  const onSubmitBatchModify = async (batchUpdates: {
-    [key: string]: string;
-  }) => {
-    const objectsToModify = checkedObjects.map((object) => ({
-      uid: object.uid,
-      wellboreUid: object.wellboreUid,
-      wellUid: object.wellUid,
-      name: object.name,
-      ...batchUpdates,
-      objectType
-    }));
-    const modifyJob = {
-      objects: objectsToModify,
-      objectType
+    const onSubmitBatchModify = async (batchUpdates: {
+      [key: string]: string;
+    }) => {
+      const objectsToModify = checkedObjects.map((object) => ({
+        uid: object.uid,
+        wellboreUid: object.wellboreUid,
+        wellUid: object.wellUid,
+        name: object.name,
+        ...batchUpdates,
+        objectType
+      }));
+      const modifyJob = {
+        objects: objectsToModify,
+        objectType
+      };
+      const jobId = await JobService.orderJob(
+        JobType.BatchModifyObjectsOnWellbore,
+        modifyJob
+      );
+      if (jobId) {
+        const reportModalProps = { jobId };
+        dispatchOperation({
+          type: OperationType.DisplayModal,
+          payload: <ReportModal {...reportModalProps} />
+        });
+      }
     };
-    const jobId = await JobService.orderJob(
-      JobType.BatchModifyObjectsOnWellbore,
-      modifyJob
-    );
-    if (jobId) {
-      const reportModalProps = { jobId };
+
+    const onClickBatchModify = () => {
+      dispatchOperation({ type: OperationType.HideContextMenu });
+      const batchModifyModalProps = {
+        title: menuItemText("Batch update", objectType, checkedObjects),
+        properties: batchModifyProperties,
+        onSubmit: onSubmitBatchModify
+      };
       dispatchOperation({
         type: OperationType.DisplayModal,
-        payload: <ReportModal {...reportModalProps} />
+        payload: <BatchModifyPropertiesModal {...batchModifyModalProps} />
       });
-    }
-  };
-
-  const onClickBatchModify = () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const batchModifyModalProps = {
-      title: menuItemText("Batch update", objectType, checkedObjects),
-      properties: batchModifyProperties,
-      onSubmit: onSubmitBatchModify
     };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <BatchModifyPropertiesModal {...batchModifyModalProps} />
-    });
-  };
 
-  return (
-    <MenuItem
-      key="batchModify"
-      onClick={onClickBatchModify}
-      disabled={checkedObjects.length < 2}
-    >
-      <StyledIcon name="edit" color={colors.interactive.primaryResting} />
-      <Typography color={"primary"}>
-        {menuItemText("Batch update", objectType, checkedObjects)}
-      </Typography>
-    </MenuItem>
-  );
-};
+    return (
+      <MenuItem
+        key="batchModify"
+        onClick={onClickBatchModify}
+        disabled={checkedObjects.length < 2}
+        ref={ref}
+      >
+        <StyledIcon name="edit" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>
+          {menuItemText("Batch update", objectType, checkedObjects)}
+        </Typography>
+      </MenuItem>
+    );
+  }
+);
+
+BatchModifyMenuItem.displayName = "BatchModifyMenuItem";
 
 // Note: Only add properties that can be updated directly (without having to create a new object and delete the old one)
 export const objectBatchModifyProperties: {
