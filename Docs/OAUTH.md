@@ -3,7 +3,9 @@
 OAuth mode uses JWT authentication to keep track of the user. For information about OAuth2 authorization code flow see: [auth code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow). This mode allows the user to log in with their own credentials, or if roles permit use a `system-user`.
 
 ## Configuration
+
 Example `mysettings.json` file for API:
+
 ```json
     "OAuth2Enabled": true,
     "AzureAd": {
@@ -26,9 +28,10 @@ Example `mysettings.json` file for API:
         },
         "KVWitsmlServerCreds": "witsmlexp-servers-kv",
     }
-``` 
+```
 
 Required environment variables in frontend:
+
 ```bash
 # To disable MSAL, leave NEXT_PUBLIC_MSALENABLED empty
 NEXT_PUBLIC_MSALENABLED=true
@@ -39,9 +42,11 @@ NEXT_PUBLIC_AZURE_AD_SCOPE_API=api://a10111dc-712d-485f-8600-57be8c597921/access
 ```
 
 ## System-user credentials
+
 Often users will enter their own credentials to authenticate against a WITSML server. With OAuth mode, it is possible to share `system-user` credentials based on role assignment. For information about app roles, see: [app roles](https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps). `System-user` credentials for a server can be included through a `secrets.json` file, or in Azure keyvault.
 
 **secrets.json format**
+
 ```json
 "WitsmlCreds": {
     "prod":  { "Host": "https://url1", "UserId": "user1", "Password": "pw1" },
@@ -53,29 +58,31 @@ To use Azure keyvault, create your keyvault (named `witsmlexp-servers-kv` in the
 
 **example keyvault entries**
 
-
 | Name         | Type      | Status   | Expiration date |
 |--------------|-----------|------------|------------|
-| witsmlcreds--prod--host | My server1 prod [R]      |         ||
-| witsmlcreds--prod--password | My server1 prod [R]      |         ||
-| witsmlcreds--prod--userid | My server1 prod [R]      |         ||
-| witsmlcreds--test--host | My server2 test [CRUD]      |         ||
-| witsmlcreds--test--password | My server2 test [CRUD]      |         ||
-| witsmlcreds--test--userid | My server2 test [CRUD]      |         ||
+| witsmlcreds--server1user--host | My server1 prod [R]      |         ||
+| witsmlcreds--server1user--password | My server1 prod [R]      |         ||
+| witsmlcreds--server1user--userid | My server1 prod [R]      |         ||
+| witsmlcreds--server2user--host | My server2 test [CRUD]      |         ||
+| witsmlcreds--server2user--password | My server2 test [CRUD]      |         ||
+| witsmlcreds--server2user--userid | My server2 test [CRUD]      |         ||
 
 Credentials will be mapped on URL from secrets with the server list. `Server` entry in MongoDB or CosmosDB will have the property `roles`. The app role assigned to a server will be compared to the role claims in the JWT provided in the Authorization header. If a user has been assigned the same application role, system credentials will be made available to the user. An API call will use the system credentials if the system username is set in the `WitsmlTargetUsername` or `WitsmlSourceUsername` header.
 
 **example server json in list**
+
 ```json
 {
     "name": "Equinor WITSML",
     "url": "https://witsml007.someserver/store/WITSML",
     "description": "Equinor testserver. Do not edit any datasets",
-    "roles": [ "user" ]
+    "roles": [ "user" ],
+    "credentialIds": []
 }
 ```
 
 **example JWT from Bearer token**
+
 ```json
   "roles": [
     "developer",
@@ -83,6 +90,20 @@ Credentials will be mapped on URL from secrets with the server list. `Server` en
     "user"
   ]
 ```
+
+## Sharing system-user credentials across multiple servers
+
+If you have multiple servers using the same credentials, you can configure them once and share them across all relevant servers. This reduces the overhead of maintaining multiple sets of identical credentials.
+
+To share system-user credentials:
+
+1. Create a single set of secrets in Azure Keyvault. The secrets should follow the same naming convention as individual server credentials, even with a valid host. For example, `witsmlcreds--shareduser--host`, `witsmlcreds--shareduser--password`, and `witsmlcreds--shareduser--userid`.
+2. While creating or editing a server in Witsml Explorer, set `Credential IDs` to match the credentialID (middle) part in the shared credentials' name. Following the previous example, this should be set to `shareduser`. If you have multiple sets of shared credentials, these can be added: `shareduser shareduser2`.
+3. Repeat this process for all servers you want to use `shareduser`.
+
+Note: Only users with the admin role can set or change the `Credential IDs` for a server. Regular users will not be able to modify it.
+
+When a server is queried, the backend will first check if you have a role that overlaps with the server roles. Then, if the credential IDs are set, the backend will use the credential IDs to match credentials from Azure Keyvault. If it is not set, the backend will fetch the server-specific credentials as before.
 
 ## System user credentials flow
 
@@ -127,6 +148,7 @@ sequenceDiagram
 ```
 
 ## Flow with entered credentials
+
 ```mermaid
 sequenceDiagram
     WEx Frontend->>+Identity Provider: Login
@@ -161,24 +183,26 @@ sequenceDiagram
 ```
 
 ## Swagger
+
 When developing, visit `https://localhost:5001/swagger/index.html` to examine endpoints and authentication schemes. OAuth mode requires a configuration matching your own Azure app registration as shown in the [Configuration section](#configuration). All endpoints will need a logged in user, authenticated by your tenant.
 
 The `WitsmlServerHandler` at `/api/witsml-servers` endpoint can be used to get a list of witsml servers in json format without any WITSML credentials.
 
 Steps to use endpoints:
+
 1. Authorize with the tenant.
-2. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlAuth`. 
+2. Authenticate against the WITSML server through the `AuthorizationHandler` endpoint `/api/credentials/authorize`. Url and base64 encoded credentials needs to be provided with the request in the header `WitsmlAuth`.
 3. Now visit any endpoint, e.g. `/api/wells` and provide the same Url in the header `WitsmlTargetServer` (now without credentials), as well as the username in the `WitsmlTargetUsername` header.
 
 When using a system user, the second step can be omitted.
 
-Further information about the header format is given on the swagger page/endpoint. 
+Further information about the header format is given on the swagger page/endpoint.
 
 ## API Access without frontend
 
 Below are some examples on the use of API endpoints without the frontend. See information about `Swagger` and `Swashbuckle` earlier in the documents for detailed information on the endpoints. Examples of accesing the API with a custom client are presented in the [APICLIENT.md document](./APICLIENT.md).
 
-__1. witsml-server configuration list__ (and other endpoints)
+**1. witsml-server configuration list** (and other endpoints)
 
 No cookie involved. But you will still need to authorize for servers configured as `Basic`.
 
@@ -190,7 +214,7 @@ Content-Type: application/json
 Authorization: Bearer eyJ...<token here>
 ```
 
-__2. Use endpoints__ 
+**2. Use endpoints**
 
 If a server has system credentials in keyvault and the bearer of the token has the correct `role` for this server, you can use endpoints directly. Example below for rigs
 
@@ -201,7 +225,8 @@ Content-Type: application/json
 WitsmlTargetServer: https://witsmlserver.using.system.creds/store/WITSML
 WitsmlTargetUsername: system-user123
 ```
-__3. Authorize WITSML credentials__ 
+
+**3. Authorize WITSML credentials**
 
 If you do not have system credentials in keyvault and need to use Basic credentials, you must `authorize` first like below before using endpoints with the given server.
 
@@ -213,4 +238,5 @@ Content-Type: application/json
 Origin: http://localhost:3000
 WitsmlAuth: dXNlcjEyMzpwYXNzNDU2@https://witsmlserver.using.basic.creds/Store/WITSML
 ```
+
 (note the base64 encoded `username:password` @ witsmlserver)
