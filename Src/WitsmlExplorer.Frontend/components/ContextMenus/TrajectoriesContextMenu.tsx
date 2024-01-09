@@ -60,7 +60,8 @@ const TrajectoriesContextMenu = (
       mdMax: null,
       mdMin: null,
       trajectoryStations: [],
-      commonData: null
+      commonData: null,
+      typeLithology: ""
     };
     const trajectoryPropertiesModalProps: TrajectoryPropertiesModalProps = {
       mode: PropertiesModalMode.New,
