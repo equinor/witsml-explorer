@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 using WitsmlExplorer.Api.Converters;
@@ -25,7 +26,7 @@ namespace WitsmlExplorer.Api.Models
     {
         public LogDataValue(string value)
         {
-            Value = double.TryParse(value, out double doubleValue) ? doubleValue : value;
+            Value = double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out double doubleValue) ? doubleValue : value;
         }
         public object Value { get; }
     }

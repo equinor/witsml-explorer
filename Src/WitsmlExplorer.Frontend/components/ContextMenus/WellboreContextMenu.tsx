@@ -121,6 +121,7 @@ const WellboreContextMenu = (
   };
 
   const deleteWellbore = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
       toDelete: {
@@ -131,7 +132,6 @@ const WellboreContextMenu = (
       }
     };
     await JobService.orderJob(JobType.DeleteWellbore, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickDelete = async () => {
@@ -243,10 +243,10 @@ const WellboreContextMenu = (
   };
 
   const onClickShowOnServer = async (server: Server) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const host = `${window.location.protocol}//${window.location.host}`;
     const wellboreUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}`;
     window.open(wellboreUrl);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   return (

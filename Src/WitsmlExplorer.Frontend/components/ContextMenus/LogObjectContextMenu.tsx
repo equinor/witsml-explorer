@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
@@ -62,6 +63,7 @@ const LogObjectContextMenu = (
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
 
   const onClickProperties = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const logObject = checkedObjects[0];
     const logPropertiesModalProps = {
       mode: PropertiesModalMode.Edit,
@@ -72,7 +74,6 @@ const LogObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <LogPropertiesModal {...logPropertiesModalProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickTrimLogObject = () => {
@@ -98,6 +99,7 @@ const LogObjectContextMenu = (
     });
   };
   const onClickAnalyzeGaps = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const logObject = checkedObjects[0];
     const analyzeGapModalProps: AnalyzeGapModalProps = {
       logObject,
@@ -107,10 +109,10 @@ const LogObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const orderCopyJob = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const targetReference: ObjectReference = toObjectReference(
       checkedObjects[0]
     );
@@ -121,7 +123,6 @@ const LogObjectContextMenu = (
       endIndex: logCurvesReference.endIndex
     };
     JobService.orderJob(JobType.CopyLogData, copyJob);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickCompareHeader = () => {
@@ -279,7 +280,12 @@ const LogObjectContextMenu = (
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Splice logs</Typography>
-          </MenuItem>
+          </MenuItem>,
+          <BatchModifyMenuItem
+            key="batchModify"
+            checkedObjects={checkedObjects}
+            objectType={ObjectType.Log}
+          />
         ]}
         ,
       </NestedMenuItem>,

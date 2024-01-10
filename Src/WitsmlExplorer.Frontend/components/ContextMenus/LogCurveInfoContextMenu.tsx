@@ -83,6 +83,7 @@ const LogCurveInfoContextMenu = (
   };
 
   const onClickProperties = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
     const logCurveInfoPropertiesModalProps = {
       logCurveInfo,
@@ -95,10 +96,10 @@ const LogCurveInfoContextMenu = (
         <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickAnalyzeGaps = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const logObject = selectedLog;
     const mnemonics = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
     const analyzeGapModalProps: AnalyzeGapModalProps = { logObject, mnemonics };
@@ -106,7 +107,6 @@ const LogCurveInfoContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const toDelete = createComponentReferences(

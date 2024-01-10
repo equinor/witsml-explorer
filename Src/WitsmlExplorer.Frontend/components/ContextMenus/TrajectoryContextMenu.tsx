@@ -38,6 +38,7 @@ const TrajectoryContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyObjectProps: TrajectoryPropertiesModalProps = {
       mode,
@@ -48,7 +49,6 @@ const TrajectoryContextMenu = (
       type: OperationType.DisplayModal,
       payload: <TrajectoryPropertiesModal {...modifyObjectProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {

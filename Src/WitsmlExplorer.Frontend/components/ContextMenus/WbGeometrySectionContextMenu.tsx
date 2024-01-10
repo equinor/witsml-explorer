@@ -56,6 +56,7 @@ const WbGeometrySectionContextMenu = (
   );
 
   const onClickProperties = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const wbGeometrySectionPropertiesModalProps = {
       wbGeometrySection: checkedWbGeometrySections[0],
       wbGeometry,
@@ -69,7 +70,6 @@ const WbGeometrySectionContextMenu = (
         />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const toDelete = createComponentReferences(

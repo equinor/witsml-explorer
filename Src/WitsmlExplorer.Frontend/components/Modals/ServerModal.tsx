@@ -1,4 +1,10 @@
-import { Button, Label, TextField } from "@equinor/eds-core-react";
+import {
+  Button,
+  Icon,
+  Label,
+  TextField,
+  Tooltip
+} from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import ModalDialog, {
   ControlButtonPosition,
@@ -195,7 +201,35 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   id="role"
                   defaultValue={server.roles?.join(" ")}
                   onChange={(e: any) =>
-                    setServer({ ...server, roles: e.target.value.split(" ") })
+                    setServer({
+                      ...server,
+                      roles: e.target.value
+                        .split(" ")
+                        .filter((role: string) => role.trim() !== "")
+                    })
+                  }
+                  disabled={props.editDisabled}
+                />
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  <Label label="Credential Ids" style={labelStyle} />
+                  <Tooltip title="If this (space delimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
+                    <Icon
+                      name="infoCircle"
+                      color={colors.interactive.primaryResting}
+                      size={18}
+                    />
+                  </Tooltip>
+                </div>
+                <TextField
+                  id="creds"
+                  defaultValue={server.credentialIds?.join(" ") ?? ""}
+                  onChange={(e: any) =>
+                    setServer({
+                      ...server,
+                      credentialIds: e.target.value
+                        .split(" ")
+                        .filter((id: string) => id.trim() !== "")
+                    })
                   }
                   disabled={props.editDisabled}
                 />

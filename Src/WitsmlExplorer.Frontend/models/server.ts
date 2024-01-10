@@ -4,6 +4,7 @@ export interface Server {
   description: string;
   url: string;
   roles: string[];
+  credentialIds: string[];
   currentUsername?: string;
   usernames?: string[];
   depthLogDecimals: number;
@@ -16,6 +17,7 @@ export function emptyServer(): Server {
     description: "",
     url: "",
     roles: [],
+    credentialIds: [],
     currentUsername: undefined,
     usernames: [],
     depthLogDecimals: 0

@@ -207,6 +207,7 @@ const replaceObjects = async (
   objectType: ObjectType,
   dispatchOperation: DispatchOperation
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   dispatchOperation({ type: OperationType.HideModal });
   const deleteJob: DeleteObjectsJob = {
     toDelete: toObjectReferences(toDelete, objectType)
@@ -224,7 +225,6 @@ const replaceObjects = async (
     targetServer,
     sourceServer
   );
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 function printObject(
