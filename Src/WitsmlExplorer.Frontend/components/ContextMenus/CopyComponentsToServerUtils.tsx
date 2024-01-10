@@ -89,7 +89,7 @@ export const copyComponentsToServer = async (
   const targetParentReference: ObjectReference =
     toObjectReference(targetParent);
 
-  let copyJob: CopyComponentsJob = createCopyJob();
+  const copyJob: CopyComponentsJob = createCopyJob();
 
   const allTargetComponents = await ComponentService.getComponents(
     wellUid,
