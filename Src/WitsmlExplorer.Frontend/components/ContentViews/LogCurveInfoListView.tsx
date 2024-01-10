@@ -264,7 +264,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     <CommonPanelContainer key="showPriority">
       <Switch
         checked={showOnlyPrioritizedCurves}
-        disabled={prioritizedCurves.length === 0}
+        disabled={prioritizedCurves.length === 0 && !showOnlyPrioritizedCurves}
         onChange={() =>
           setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
         }
