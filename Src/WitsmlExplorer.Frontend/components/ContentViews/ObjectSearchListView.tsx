@@ -5,7 +5,10 @@ import {
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table";
-import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
+import ContextMenu, {
+  getContextMenuPosition
+} from "components/ContextMenus/ContextMenu";
 import { ObjectTypeToContextMenu } from "components/ContextMenus/ContextMenuMapping";
 import LoadingContextMenu from "components/ContextMenus/LoadingContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
@@ -20,6 +23,7 @@ import {
 import NavigationContext from "contexts/navigationContext";
 import NavigationType from "contexts/navigationType";
 import OperationContext from "contexts/operationContext";
+import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
@@ -83,24 +87,20 @@ export const ObjectSearchListView = (): React.ReactElement => {
     );
   };
 
-  const onContextMenu = async (
-    event: React.MouseEvent<HTMLLIElement>,
-    {},
-    checkedObjectRows: ObjectSearchRow[]
+  const onContextMenuSingleObject = async (
+    checkedObjectRow: ObjectSearchRow,
+    position: MousePosition
   ) => {
-    const position = getContextMenuPosition(event);
     dispatchOperation({
       type: OperationType.DisplayContextMenu,
       payload: { component: <LoadingContextMenu />, position }
     });
-    const wellbore = checkedObjectRows[0].wellbore;
-    const objectType = checkedObjectRows[0].objectType;
-    const fetchedObject = await fetchSelectedObject(checkedObjectRows[0]);
+    const fetchedObject = await fetchSelectedObject(checkedObjectRow);
     const contextProps: ObjectContextMenuProps = {
       checkedObjects: [fetchedObject],
-      wellbore
+      wellbore: checkedObjectRow.wellbore
     };
-    const component = ObjectTypeToContextMenu[objectType];
+    const component = ObjectTypeToContextMenu[checkedObjectRow.objectType];
     if (component) {
       dispatchOperation({
         type: OperationType.DisplayContextMenu,
@@ -109,6 +109,51 @@ export const ObjectSearchListView = (): React.ReactElement => {
           position
         }
       });
+    }
+  };
+
+  const onContextMenuMultipleObjects = async (
+    checkedObjectRows: ObjectSearchRow[],
+    position: MousePosition
+  ) => {
+    const onlyOneObjectType = checkedObjectRows.every(
+      (row) => row.objectType === rows[0].objectType
+    );
+    if (!onlyOneObjectType) {
+      return;
+    }
+    const objectType = checkedObjectRows[0].objectType;
+
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: (
+          <ContextMenu
+            menuItems={[
+              <BatchModifyMenuItem
+                key="batchModify"
+                checkedObjects={checkedObjectRows}
+                objectType={objectType}
+              />
+            ]}
+          />
+        ),
+        position
+      }
+    });
+  };
+
+  const onContextMenu = async (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedObjectRows: ObjectSearchRow[]
+  ) => {
+    const position = getContextMenuPosition(event);
+    // If only one object is selected, show the normal context menu for that object. Otherwise, show the batch menu.
+    if (checkedObjectRows.length === 1) {
+      await onContextMenuSingleObject(checkedObjectRows[0], position);
+    } else {
+      await onContextMenuMultipleObjects(checkedObjectRows, position);
     }
   };
 
@@ -182,6 +227,7 @@ export const ObjectSearchListView = (): React.ReactElement => {
   ) : (
     <ContentTable
       viewId="objectOnWellboreListView"
+      checkableRows
       columns={getColumns()}
       onSelect={onSelect}
       data={rows}

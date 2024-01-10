@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,6 +22,39 @@ public class ObjectOnWellboreConverter : JsonConverter<ObjectOnWellbore>
     }
 
     public override void Write(Utf8JsonWriter writer, ObjectOnWellbore value, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+public class ObjectOnWellboreListConverter : JsonConverter<List<ObjectOnWellbore>>
+{
+    private readonly ObjectOnWellboreConverter _objectOnWellboreConverter = new ObjectOnWellboreConverter();
+
+    public override List<ObjectOnWellbore> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType != JsonTokenType.StartArray)
+        {
+            throw new JsonException("Expected StartArray");
+        }
+
+        var list = new List<ObjectOnWellbore>();
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndArray)
+            {
+                return list;
+            }
+
+            var objectOnWellbore = _objectOnWellboreConverter.Read(ref reader, typeof(ObjectOnWellbore), options);
+            list.Add(objectOnWellbore);
+        }
+
+        throw new JsonException("Expected EndArray");
+    }
+
+    public override void Write(Utf8JsonWriter writer, List<ObjectOnWellbore> value, JsonSerializerOptions options)
     {
         throw new NotImplementedException();
     }
