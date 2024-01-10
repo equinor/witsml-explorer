@@ -36,6 +36,7 @@ const TubularContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickProperties = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const tubularPropertiesModalProps = {
       mode: PropertiesModalMode.Edit,
       tubular: checkedObjects[0] as Tubular,
@@ -45,7 +46,6 @@ const TubularContextMenu = (
       type: OperationType.DisplayModal,
       payload: <TubularPropertiesModal {...tubularPropertiesModalProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {

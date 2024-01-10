@@ -58,10 +58,10 @@ export const onClickShowObjectOnServer = async (
   objectOnWellbore: ObjectOnWellbore,
   objectType: ObjectType
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
   const url = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&group=${objectType}&objectUid=${objectOnWellbore.uid}`;
   window.open(url);
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 export const onClickShowGroupOnServer = async (
@@ -71,13 +71,13 @@ export const onClickShowGroupOnServer = async (
   objectType: ObjectType,
   logTypeGroup: string = null
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
   let url = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&group=${objectType}`;
   if (objectType === ObjectType.Log && logTypeGroup != null) {
     url += `&logType=${logTypeToQuery(logTypeGroup)}`;
   }
   window.open(url);
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 export const onClickDeleteObjects = async (
@@ -85,6 +85,7 @@ export const onClickDeleteObjects = async (
   objectsOnWellbore: ObjectOnWellbore[],
   objectType: ObjectType
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const pluralizedName = pluralizeIfMultiple(objectType, objectsOnWellbore);
   const orderDeleteJob = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -92,7 +93,6 @@ export const onClickDeleteObjects = async (
       toDelete: toObjectReferences(objectsOnWellbore, objectType)
     };
     await JobService.orderJob(JobType.DeleteObjects, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
   displayDeleteModal(
     pluralizedName,
@@ -108,6 +108,7 @@ export const onClickDeleteComponents = async (
   componentReferences: ComponentReferences,
   jobType: JobType
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const pluralizedName = pluralizeIfMultiple(
     componentReferences.componentType,
     componentReferences.componentUids
@@ -118,7 +119,6 @@ export const onClickDeleteComponents = async (
       toDelete: componentReferences
     };
     await JobService.orderJob(jobType, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
   displayDeleteModal(
     pluralizedName,
@@ -139,8 +139,8 @@ export const onClickRefresh = async (
   objectType: ObjectType,
   setIsLoading?: (arg: boolean) => void
 ) => {
-  if (setIsLoading) setIsLoading(true);
   dispatchOperation({ type: OperationType.HideContextMenu });
+  if (setIsLoading) setIsLoading(true);
   const wellboreObjects = await ObjectService.getObjects(
     wellUid,
     wellboreUid,
@@ -159,6 +159,7 @@ export const onClickRefreshObject = async (
   dispatchOperation: DispatchOperation,
   dispatchNavigation: DispatchNavigation
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   let freshObject = await ObjectService.getObject(
     objectOnWellbore.wellUid,
     objectOnWellbore.wellboreUid,
@@ -173,7 +174,6 @@ export const onClickRefreshObject = async (
     type: ModificationType.UpdateWellboreObject,
     payload: { objectToUpdate: freshObject, objectType, isDeleted }
   });
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 const displayDeleteModal = (

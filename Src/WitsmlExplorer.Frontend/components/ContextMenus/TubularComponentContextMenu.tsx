@@ -54,6 +54,7 @@ const TubularComponentContextMenu = (
   );
 
   const onClickProperties = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const tubularComponentPropertiesModalProps = {
       tubularComponent: checkedTubularComponents[0].tubularComponent,
       tubular,
@@ -67,7 +68,6 @@ const TubularComponentContextMenu = (
         />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const toDelete = createComponentReferences(

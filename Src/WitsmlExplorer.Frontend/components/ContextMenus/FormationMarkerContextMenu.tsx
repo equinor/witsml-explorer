@@ -27,6 +27,7 @@ const FormationMarkerContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const modifyFormationMarkerProps: FormationMarkerPropertiesModalProps = {
       formationMarker: checkedObjects[0] as FormationMarker
     };
@@ -36,7 +37,6 @@ const FormationMarkerContextMenu = (
         <FormationMarkerPropertiesModal {...modifyFormationMarkerProps} />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {

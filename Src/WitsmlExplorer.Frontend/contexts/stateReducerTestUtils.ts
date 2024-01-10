@@ -22,6 +22,7 @@ export const SERVER_1: Server = {
   url: "http://example.com",
   description: "Witsml server",
   roles: [],
+  credentialIds: [],
   depthLogDecimals: 0
 };
 export const SERVER_2: Server = {
@@ -30,6 +31,7 @@ export const SERVER_2: Server = {
   url: "http://example2.com",
   description: "Witsml server 2",
   roles: [],
+  credentialIds: [],
   depthLogDecimals: 0
 };
 export const getEmptyWellboreObjects = () => {

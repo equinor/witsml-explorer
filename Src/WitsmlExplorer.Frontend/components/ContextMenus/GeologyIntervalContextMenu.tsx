@@ -42,6 +42,7 @@ const GeologyIntervalContextMenu = (
   const selectedMudLog = selectedObject as MudLog;
 
   const onClickProperties = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const geologyIntervalPropertiesModalProps = {
       geologyInterval: checkedGeologyIntervals[0]
     };
@@ -53,7 +54,6 @@ const GeologyIntervalContextMenu = (
         />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const toDelete = createComponentReferences(
