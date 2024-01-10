@@ -56,12 +56,18 @@ export default class LogCurvePriorityService {
   public static async deletePrioritizedCurves(
     wellUid: string,
     wellboreUid: string,
+    prioritizedCurvesToDelete: string[],
     abortSignal?: AbortSignal
-  ): Promise<Response> {
-    const response = await ApiClient.delete(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/logCurvePriority`,
+  ): Promise<string[]> {
+    const response = await ApiClient.patch(
+      `/api/wells/${wellUid}/wellbores/${wellboreUid}/logCurvePriority/delete`,
+      JSON.stringify(prioritizedCurvesToDelete),
       abortSignal
     );
-    return response;
+    if (response.ok) {
+      return response.json();
+    } else {
+      return [];
+    }
   }
 }

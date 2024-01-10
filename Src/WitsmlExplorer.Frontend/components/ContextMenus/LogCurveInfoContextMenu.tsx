@@ -66,6 +66,9 @@ const LogCurveInfoContextMenu = (
     prioritizedCurves,
     setPrioritizedCurves
   } = props;
+  const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every((row) =>
+    prioritizedCurves.includes(row.mnemonic)
+  );
 
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -141,6 +144,18 @@ const LogCurveInfoContextMenu = (
         selectedLog.wellUid,
         selectedLog.wellboreUid,
         curvesToPrioritize
+      );
+    setPrioritizedCurves(newPrioritizedCurves);
+  };
+
+  const onClickRemovePriority = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const curvesToDelete = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
+    const newPrioritizedCurves =
+      await LogCurvePriorityService.deletePrioritizedCurves(
+        selectedLog.wellUid,
+        selectedLog.wellboreUid,
+        curvesToDelete
       );
     setPrioritizedCurves(newPrioritizedCurves);
   };
@@ -247,12 +262,27 @@ const LogCurveInfoContextMenu = (
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>
         </MenuItem>,
-        <MenuItem key={"setPriority"} onClick={onClickSetPriority}>
+        <MenuItem
+          key={"setPriority"}
+          onClick={() =>
+            onlyPrioritizedCurvesAreChecked
+              ? onClickRemovePriority()
+              : onClickSetPriority()
+          }
+        >
           <StyledIcon
-            name="favoriteOutlined"
+            name={
+              onlyPrioritizedCurvesAreChecked
+                ? "favoriteFilled"
+                : "favoriteOutlined"
+            }
             color={colors.interactive.primaryResting}
           />
-          <Typography color={"primary"}>Set Priority</Typography>
+          <Typography color={"primary"}>
+            {onlyPrioritizedCurvesAreChecked
+              ? "Remove Priority"
+              : "Set Priority"}
+          </Typography>
         </MenuItem>,
         <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
           <StyledIcon

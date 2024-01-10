@@ -31,11 +31,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return TypedResults.Ok(updatedPrioritizedCurves);
         }
 
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public static async Task<IResult> DeletePrioritizedCurves(string wellUid, string wellboreUid, ILogCurvePriorityService logCurvePriorityService)
+        [Produces(typeof(IList<string>))]
+        public static async Task<IResult> DeletePrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurvesToDelete, ILogCurvePriorityService logCurvePriorityService)
         {
-            await logCurvePriorityService.DeletePrioritizedCurves(wellUid, wellboreUid);
-            return TypedResults.NoContent();
+            var updatedPrioritizedCurves = await logCurvePriorityService.DeletePrioritizedCurves(wellUid, wellboreUid, prioritizedCurvesToDelete);
+            return TypedResults.Ok(updatedPrioritizedCurves);
         }
     }
 }

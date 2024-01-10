@@ -269,7 +269,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
           setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
         }
       />
-      <Typography>Show only Priority Curves</Typography>
+      <Typography>Show Only Prioritized Curves</Typography>
     </CommonPanelContainer>
   ];
 

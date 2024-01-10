@@ -97,7 +97,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             var wellUid = "well1";
             var wellboreUid = "wellbore2";
             var curves = new List<string> { "D", "E" };
-            var expectedCurves = _prioritizedCurvesWell1Wellbore2.Union(curves).ToList();
+            var expectedCurves = new List<string> { "A", "B", "C", "D", "E" };
             var logCurvePriority = new LogCurvePriority($"{wellUid}-{wellboreUid}")
             {
                 PrioritizedCurves = curves
@@ -149,14 +149,16 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public async Task DeletePrioritizedCurves_ValidInput_DeletesCurves()
+        public async Task DeletePrioritizedCurves_ValidInput_RemovesCurves()
         {
-            var wellUid = "well1";
+            var wellUid = "well2";
             var wellboreUid = "wellbore1";
+            var curvesToRemove = new List<string> { "1", "2" };
+            var expectedCurves = new List<string> { "3", "4" };
 
-            await _logCurvePriorityService.DeletePrioritizedCurves(wellUid, wellboreUid);
+            await _logCurvePriorityService.DeletePrioritizedCurves(wellUid, wellboreUid, curvesToRemove);
 
-            _repository.Verify(repo => repo.DeleteDocumentAsync($"{wellUid}-{wellboreUid}"), Times.Once);
+            _repository.Verify(repo => repo.UpdateDocumentAsync($"{wellUid}-{wellboreUid}", It.Is<LogCurvePriority>(lcp => lcp.PrioritizedCurves.SequenceEqual(expectedCurves))), Times.Once);
         }
     }
 }
