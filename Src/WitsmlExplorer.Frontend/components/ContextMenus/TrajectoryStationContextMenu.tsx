@@ -52,6 +52,7 @@ const TrajectoryStationContextMenu = (
   );
 
   const onClickProperties = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const trajectoryStationPropertiesModalProps = {
       trajectoryStation: checkedTrajectoryStations[0].trajectoryStation,
       trajectory,
@@ -65,7 +66,6 @@ const TrajectoryStationContextMenu = (
         />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const toDelete = createComponentReferences(
