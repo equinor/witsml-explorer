@@ -89,18 +89,7 @@ export const copyComponentsToServer = async (
   const targetParentReference: ObjectReference =
     toObjectReference(targetParent);
 
-  let copyJob: CopyComponentsJob;
-  startIndex === undefined
-    ? (copyJob = {
-        source: sourceComponentReferences,
-        target: targetParentReference
-      })
-    : (copyJob = {
-        source: sourceComponentReferences,
-        target: targetParentReference,
-        startIndex: startIndex,
-        endIndex: endIndex
-      });
+  let copyJob: CopyComponentsJob = createCopyJob();
 
   const allTargetComponents = await ComponentService.getComponents(
     wellUid,
@@ -115,6 +104,34 @@ export const copyComponentsToServer = async (
     )
   );
   if (existingTargetComponents.length > 0) {
+    replaceComponents();
+  } else {
+    AuthorizationService.setSourceServer(sourceServer);
+    JobService.orderJobAtServer(
+      startIndex !== undefined ? JobType.CopyLogData : JobType.CopyComponents,
+      copyJob,
+      targetServer,
+      sourceServer
+    );
+  }
+
+  function createCopyJob(): CopyComponentsJob {
+    let copyJob: CopyComponentsJob;
+    startIndex !== undefined
+      ? (copyJob = {
+          source: sourceComponentReferences,
+          target: targetParentReference,
+          startIndex: startIndex,
+          endIndex: endIndex
+        })
+      : (copyJob = {
+          source: sourceComponentReferences,
+          target: targetParentReference
+        });
+    return copyJob;
+  }
+
+  function replaceComponents() {
     const onConfirm = async () => {
       dispatchOperation({ type: OperationType.HideModal });
       const deleteJob: DeleteComponentsJob = {
@@ -126,7 +143,9 @@ export const copyComponentsToServer = async (
       };
       const replaceJob: ReplaceComponentsJob = { deleteJob, copyJob };
       await JobService.orderJobAtServer(
-        JobType.ReplaceComponents,
+        startIndex !== undefined
+          ? JobType.ReplaceLogs
+          : JobType.ReplaceComponents,
         replaceJob,
         targetServer,
         sourceServer
@@ -142,14 +161,6 @@ export const copyComponentsToServer = async (
       dispatchOperation,
       onConfirm,
       print
-    );
-  } else {
-    AuthorizationService.setSourceServer(sourceServer);
-    JobService.orderJobAtServer(
-      JobType.CopyComponents,
-      copyJob,
-      targetServer,
-      sourceServer
     );
   }
 };
