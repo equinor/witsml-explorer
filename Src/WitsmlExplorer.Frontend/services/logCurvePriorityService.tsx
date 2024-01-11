@@ -34,40 +34,4 @@ export default class LogCurvePriorityService {
       return [];
     }
   }
-
-  public static async updatePrioritizedCurves(
-    wellUid: string,
-    wellboreUid: string,
-    prioritizedCurves: string[],
-    abortSignal?: AbortSignal
-  ): Promise<string[]> {
-    const response = await ApiClient.patch(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/logCurvePriority`,
-      JSON.stringify(prioritizedCurves),
-      abortSignal
-    );
-    if (response.ok) {
-      return response.json();
-    } else {
-      return [];
-    }
-  }
-
-  public static async deletePrioritizedCurves(
-    wellUid: string,
-    wellboreUid: string,
-    prioritizedCurvesToDelete: string[],
-    abortSignal?: AbortSignal
-  ): Promise<string[]> {
-    const response = await ApiClient.patch(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/logCurvePriority/delete`,
-      JSON.stringify(prioritizedCurvesToDelete),
-      abortSignal
-    );
-    if (response.ok) {
-      return response.json();
-    } else {
-      return [];
-    }
-  }
 }

@@ -66,8 +66,10 @@ const LogCurveInfoContextMenu = (
     prioritizedCurves,
     setPrioritizedCurves
   } = props;
-  const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every((row) =>
-    prioritizedCurves.includes(row.mnemonic)
+  const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
+    (row, index) =>
+      prioritizedCurves.includes(row.mnemonic) ||
+      (checkedLogCurveInfoRows.length > 1 && index === 0)
   );
 
   const onClickOpen = () => {
@@ -138,9 +140,14 @@ const LogCurveInfoContextMenu = (
 
   const onClickSetPriority = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const curvesToPrioritize = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
+    const newCurvesToPrioritize = checkedLogCurveInfoRows.map(
+      (lc) => lc.mnemonic
+    );
+    const curvesToPrioritize = Array.from(
+      new Set(prioritizedCurves.concat(newCurvesToPrioritize))
+    );
     const newPrioritizedCurves =
-      await LogCurvePriorityService.updatePrioritizedCurves(
+      await LogCurvePriorityService.setPrioritizedCurves(
         selectedLog.wellUid,
         selectedLog.wellboreUid,
         curvesToPrioritize
@@ -151,11 +158,14 @@ const LogCurveInfoContextMenu = (
   const onClickRemovePriority = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const curvesToDelete = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
+    const curvesToPrioritize = prioritizedCurves.filter(
+      (curve) => !curvesToDelete.includes(curve)
+    );
     const newPrioritizedCurves =
-      await LogCurvePriorityService.deletePrioritizedCurves(
+      await LogCurvePriorityService.setPrioritizedCurves(
         selectedLog.wellUid,
         selectedLog.wellboreUid,
-        curvesToDelete
+        curvesToPrioritize
       );
     setPrioritizedCurves(newPrioritizedCurves);
   };

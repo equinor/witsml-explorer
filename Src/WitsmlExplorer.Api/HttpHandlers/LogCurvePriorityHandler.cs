@@ -20,22 +20,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IList<string>))]
         public static async Task<IResult> SetPrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
         {
-            var createdPrioritizedCurves = await logCurvePriorityService.UpdatePrioritizedCurves(wellUid, wellboreUid, prioritizedCurves, false);
+            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, prioritizedCurves) ?? new List<string>();
             return TypedResults.Ok(createdPrioritizedCurves);
-        }
-
-        [Produces(typeof(IList<string>))]
-        public static async Task<IResult> UpdatePrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
-        {
-            var updatedPrioritizedCurves = await logCurvePriorityService.UpdatePrioritizedCurves(wellUid, wellboreUid, prioritizedCurves, true);
-            return TypedResults.Ok(updatedPrioritizedCurves);
-        }
-
-        [Produces(typeof(IList<string>))]
-        public static async Task<IResult> DeletePrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurvesToDelete, ILogCurvePriorityService logCurvePriorityService)
-        {
-            var updatedPrioritizedCurves = await logCurvePriorityService.DeletePrioritizedCurves(wellUid, wellboreUid, prioritizedCurvesToDelete);
-            return TypedResults.Ok(updatedPrioritizedCurves);
         }
     }
 }
