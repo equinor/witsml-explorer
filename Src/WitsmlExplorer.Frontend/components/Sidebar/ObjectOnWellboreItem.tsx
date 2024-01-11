@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
+import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -28,6 +30,8 @@ const ObjectOnWellboreItem = (
   const { wellbore, well } = useContext(WellboreItemContext);
   const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
@@ -63,6 +67,20 @@ const ObjectOnWellboreItem = (
             payload: { object: objectOnWellbore, wellbore, well, objectType }
           });
         }
+        console.log("ObjectOnWellboreItem clicked?");
+        console.log(objectOnWellbore);
+        console.log("objectType:", objectType);
+        const pluralizedObjectType =
+          pluralizeObjectType(objectType).toLowerCase();
+        navigate(
+          `/servers/${encodeURIComponent(
+            authorizationState.server.url
+          )}/wells/${well.uid}/wellbores/${
+            wellbore.uid
+          }/objectgroups/${pluralizedObjectType}/objects/${
+            objectOnWellbore.name
+          }`
+        );
       }}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) =>
         onContextMenu(event)

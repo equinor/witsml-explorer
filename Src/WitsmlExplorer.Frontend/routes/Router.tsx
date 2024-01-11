@@ -8,6 +8,7 @@ import JobsView from "../components/ContentViews/JobsView";
 import { LogCurveInfoListView } from "../components/ContentViews/LogCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import LogsListView from "../components/ContentViews/LogsListView";
+import { ObjectView } from "../components/ContentViews/ObjectView";
 import { ObjectsListView } from "../components/ContentViews/ObjectsListView";
 import QueryView from "../components/ContentViews/QueryView";
 import ServerManager from "../components/ContentViews/ServerManager";
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects",
             element: <ObjectsListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects/:objectUid",
+            element: <ObjectView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/",

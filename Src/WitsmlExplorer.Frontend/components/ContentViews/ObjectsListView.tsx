@@ -12,7 +12,7 @@ import TrajectoriesListView from "./TrajectoriesListView";
 import TubularsListView from "./TubularsListView";
 import WbGeometriesListView from "./WbGeometriesListView";
 
-export enum ObjectGroupUrlParams {
+enum ObjectGroupUrlParams {
   BhaRun = "bharuns",
   ChangeLog = "changelogs",
   FluidsReport = "fluidsreports",
@@ -45,13 +45,12 @@ export function ObjectsListView() {
 
   const getObjectListView = (objectType: string) => {
     const view = objectGroupViews[objectType as ObjectGroupUrlParams];
-    if (view != null) {
-      return view;
-    } else {
+    if (!view) {
       throw new Error(
         `No group view is implemented for item: ${JSON.stringify(objectType)}`
       );
     }
+    return view;
   };
 
   return getObjectListView(objectGroup);
