@@ -1,6 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
@@ -26,7 +26,7 @@ export interface WellboreRow extends ContentTableRow, Wellbore {}
 
 export const WellboresListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell } = navigationState;
+  const { wells, selectedWell } = navigationState;
   const [selectedWellFiltered] = useWellFilter(
     React.useMemo(() => (selectedWell ? [selectedWell] : []), [selectedWell]),
     React.useMemo(() => ({ filterWellbores: true }), [])
@@ -37,6 +37,17 @@ export const WellboresListView = (): React.ReactElement => {
   } = useContext(OperationContext);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { serverUrl, wellUid } = useParams();
+
+  useEffect(() => {
+    if (wells.length > 0) {
+      const well = wells.find((well) => well.uid === wellUid);
+      dispatchNavigation({
+        type: NavigationType.SelectWell,
+        payload: { well }
+      });
+    }
+  }, [wells, serverUrl, wellUid]);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },

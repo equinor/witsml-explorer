@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Well from "../../models/well";
@@ -24,7 +23,7 @@ import {
 export interface WellRow extends ContentTableRow, Well {}
 
 export const WellsListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { servers, wells } = navigationState;
   const {
     dispatchOperation,
@@ -53,7 +52,6 @@ export const WellsListView = (): React.ReactElement => {
   ];
 
   const onSelect = (well: any) => {
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
     navigate(
       `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         well.uid
