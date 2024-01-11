@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -29,6 +31,8 @@ export const WbGeometriesListView = (): React.ReactElement => {
   } = useContext(OperationContext);
   const { selectedWellbore, selectedWell } = navigationState;
   const [wbGeometries, setWbGeometries] = useState<WbGeometryObject[]>([]);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     if (selectedWellbore?.wbGeometries) {
@@ -74,6 +78,13 @@ export const WbGeometriesListView = (): React.ReactElement => {
         objectType: ObjectType.WbGeometry
       }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/wbgeometries/objects/${
+        wbGeometry.uid
+      }`
+    );
   };
 
   const columns: ContentTableColumn[] = [

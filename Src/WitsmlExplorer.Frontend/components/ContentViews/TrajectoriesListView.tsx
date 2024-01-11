@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -20,6 +22,8 @@ export const TrajectoriesListView = (): React.ReactElement => {
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
   const [trajectories, setTrajectories] = useState<Trajectory[]>([]);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     if (selectedWellbore?.trajectories) {
@@ -99,6 +103,13 @@ export const TrajectoriesListView = (): React.ReactElement => {
         objectType: ObjectType.Trajectory
       }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/trajectories/objects/${
+        trajectory.uid
+      }`
+    );
   };
 
   const trajectoryRows = trajectories.map((trajectory) => {

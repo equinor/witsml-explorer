@@ -67,20 +67,25 @@ const ObjectOnWellboreItem = (
             payload: { object: objectOnWellbore, wellbore, well, objectType }
           });
         }
-        console.log("ObjectOnWellboreItem clicked?");
-        console.log(objectOnWellbore);
-        console.log("objectType:", objectType);
-        const pluralizedObjectType =
-          pluralizeObjectType(objectType).toLowerCase();
-        navigate(
-          `/servers/${encodeURIComponent(
-            authorizationState.server.url
-          )}/wells/${well.uid}/wellbores/${
-            wellbore.uid
-          }/objectgroups/${pluralizedObjectType}/objects/${
-            objectOnWellbore.name
-          }`
-        );
+        if (
+          objectType === ObjectType.MudLog ||
+          objectType === ObjectType.Trajectory ||
+          objectType === ObjectType.Tubular ||
+          objectType === ObjectType.WbGeometry ||
+          objectType === ObjectType.FluidsReport
+        ) {
+          const pluralizedObjectType =
+            pluralizeObjectType(objectType).toLowerCase();
+          navigate(
+            `/servers/${encodeURIComponent(
+              authorizationState.server.url
+            )}/wells/${well.uid}/wellbores/${
+              wellbore.uid
+            }/objectgroups/${pluralizedObjectType}/objects/${
+              objectOnWellbore.uid
+            }`
+          );
+        }
       }}
       onContextMenu={(event: React.MouseEvent<HTMLLIElement>) =>
         onContextMenu(event)

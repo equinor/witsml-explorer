@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -19,6 +21,8 @@ export const TubularsListView = (): React.ReactElement => {
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore, wells } = navigationState;
   const [tubulars, setTubulars] = useState<Tubular[]>([]);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     if (selectedWellbore?.tubulars) {
@@ -72,6 +76,13 @@ export const TubularsListView = (): React.ReactElement => {
         objectType: ObjectType.Tubular
       }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/tubulars/objects/${
+        tubular.uid
+      }`
+    );
   };
 
   const tubularRows = tubulars.map((tubular) => {

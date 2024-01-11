@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -29,6 +31,8 @@ export const FluidsReportsListView = (): React.ReactElement => {
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
   const [fluidsReports, setFluidsReports] = useState<FluidsReport[]>([]);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     if (selectedWellbore?.fluidsReports) {
@@ -94,6 +98,13 @@ export const FluidsReportsListView = (): React.ReactElement => {
         objectType: ObjectType.FluidsReport
       }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/fluidsreports/objects/${
+        fluidsReportRow.fluidsReport.uid
+      }`
+    );
   };
 
   const onContextMenu = (

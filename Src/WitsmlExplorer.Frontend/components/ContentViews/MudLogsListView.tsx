@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -37,6 +39,8 @@ export const MudLogsListView = (): React.ReactElement => {
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
   const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     if (selectedWellbore?.mudLogs) {
@@ -54,6 +58,13 @@ export const MudLogsListView = (): React.ReactElement => {
         objectType: ObjectType.MudLog
       }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/mudlogs/objects/${
+        mudLogRow.mudLog.uid
+      }`
+    );
   };
 
   const getTableData = (): MudLogRow[] => {
