@@ -257,7 +257,6 @@ const getObjectCrumb = (
     wellboreUid &&
     objectGroup &&
     objectUid &&
-    logType &&
     selectedObject
     ? {
         name: selectedObject.name,
@@ -266,8 +265,8 @@ const getObjectCrumb = (
             `servers/${encodeURIComponent(
               serverUrl
             )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${objectGroup}/${
-              logType ? `logtypes/${logType}` : ""
-            }/objects/${objectUid}`
+              logType ? `logtypes/${logType}/` : ""
+            }objects/${objectUid}`
           );
         }
       }
