@@ -13,9 +13,14 @@ import { createComponentReferences } from "../../models/jobs/componentReferences
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
+import Well from "../../models/well";
+import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
+import AnalyzeGapModal, {
+  AnalyzeGapModalProps
+} from "../Modals/AnalyzeGapModal";
 import CopyRangeModal, { CopyRangeModalProps } from "../Modals/CopyRangeModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
@@ -29,9 +34,6 @@ import {
 import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
 import { copyComponents } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
-import AnalyzeGapModal, {
-  AnalyzeGapModalProps
-} from "../Modals/AnalyzeGapModal";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -41,6 +43,8 @@ export interface LogCurveInfoContextMenuProps {
   dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
   selectedLog: LogObject;
   selectedServer: Server;
+  selectedWell: Well;
+  selectedWellbore: Wellbore;
   servers: Server[];
 }
 
@@ -53,6 +57,8 @@ const LogCurveInfoContextMenu = (
     dispatchNavigation,
     selectedLog,
     selectedServer,
+    selectedWell,
+    selectedWellbore,
     servers
   } = props;
 
@@ -61,6 +67,8 @@ const LogCurveInfoContextMenu = (
     const modalProps = {
       selectedLogCurveInfoRow: checkedLogCurveInfoRows,
       selectedLog,
+      selectedWell,
+      selectedWellbore,
       dispatchOperation,
       dispatchNavigation
     };

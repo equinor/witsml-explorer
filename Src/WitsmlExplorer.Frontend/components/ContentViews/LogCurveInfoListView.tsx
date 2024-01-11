@@ -94,6 +94,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       dispatchNavigation,
       selectedLog,
       selectedServer,
+      selectedWell,
+      selectedWellbore,
       servers
     };
     const position = getContextMenuPosition(event);

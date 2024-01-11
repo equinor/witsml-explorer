@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
 import NavigationType from "../../contexts/navigationType";
 import { HideModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
+import Well from "../../models/well";
+import Wellbore from "../../models/wellbore";
+import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
@@ -12,12 +17,13 @@ import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import ModalDialog from "./ModalDialog";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
-import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 
 export interface SelectIndexToDisplayModalProps {
   dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
   dispatchOperation: (action: HideModalAction) => void;
   selectedLog: LogObject;
+  selectedWell: Well;
+  selectedWellbore: Wellbore;
   selectedLogCurveInfoRow: LogCurveInfoRow[];
 }
 
@@ -28,6 +34,8 @@ const SelectIndexToDisplayModal = (
     selectedLogCurveInfoRow,
     dispatchNavigation,
     dispatchOperation,
+    selectedWell,
+    selectedWellbore,
     selectedLog
   } = props;
   const isTimeIndexed = selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME;
@@ -42,6 +50,8 @@ const SelectIndexToDisplayModal = (
     isTimeIndexed ? selectedLog.endIndex : indexToNumber(selectedLog.endIndex)
   );
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
+  const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     setLog(selectedLog);
@@ -63,6 +73,13 @@ const SelectIndexToDisplayModal = (
       type: NavigationType.ShowCurveValues,
       payload: { logCurveInfo: logCurveInfoWithUpdatedIndex }
     });
+    navigate(
+      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        selectedWell.uid
+      }/wellbores/${selectedWellbore.uid}/objectgroups/logs/logtypes/${
+        selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
+      }/objects/${selectedLog.uid}/curvevalues`
+    );
   };
 
   const toggleConfirmDisabled = (isValid: boolean) => {

@@ -3,6 +3,7 @@ import {
   RouterProvider,
   createBrowserRouter
 } from "react-router-dom";
+import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import JobsView from "../components/ContentViews/JobsView";
 import { LogCurveInfoListView } from "../components/ContentViews/LogCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects/:objectUid",
             element: <LogCurveInfoListView />
+          },
+          {
+            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects/:objectUid/curvevalues",
+            element: <CurveValuesView />
           },
           {
             path: "jobs",
