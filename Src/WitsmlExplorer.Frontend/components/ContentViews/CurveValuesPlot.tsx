@@ -32,7 +32,16 @@ interface CurveValuesPlotProps {
 
 export const CurveValuesPlot = React.memo(
   (props: CurveValuesPlotProps): React.ReactElement => {
-    const { data, columns, name, autoRefresh, isDescending = false } = props;
+    const {
+      data,
+      columns: rawColumns,
+      name,
+      autoRefresh,
+      isDescending = false
+    } = props;
+    const columns = rawColumns.filter(
+      (col, index) => col.type === ContentType.Number || index === 0
+    );
     const {
       operationState: { colors, dateTimeFormat }
     } = useContext(OperationContext);
@@ -322,8 +331,8 @@ const getChartOption = (
             curve.length > LABEL_MAXIMUM_LENGHT
               ? curve.substring(0, LABEL_MAXIMUM_LENGHT) + "..."
               : curve;
-          let minValue = minMaxValue.minValue?.toFixed(3);
-          let maxValue = minMaxValue.maxValue?.toFixed(3);
+          let minValue = minMaxValue.minValue?.toFixed(3) ?? "NaN";
+          let maxValue = minMaxValue.maxValue?.toFixed(3) ?? "NaN";
           if (minValue.length > LABEL_NUMBER_MAX_LENGTH) {
             minValue =
               minValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
@@ -448,7 +457,7 @@ const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
 };
 
 const depthFormatter = (params: number, indexUnit: string) => {
-  return `${params.toFixed(2)} ${indexUnit}`;
+  return `${params?.toFixed(2)} ${indexUnit}`;
 };
 
 const getExtraWidth = (
