@@ -1,4 +1,5 @@
-import { Button, ButtonGroup, TextField } from "@material-ui/core";
+import { Button } from "@equinor/eds-core-react";
+import { TextField } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 
 export interface AdjustNumberRangeModalProps {
@@ -64,9 +65,8 @@ const AdjustNumberRangeModal = (
 
   return (
     <>
-      <ButtonGroup
+      <Button.Group
         aria-label="set depth range button group"
-        color="primary"
         style={{ margin: ".5rem" }}
       >
         {setRangeButtonValues.map((buttonValue) => {
@@ -93,7 +93,7 @@ const AdjustNumberRangeModal = (
         >
           Reset
         </Button>
-      </ButtonGroup>
+      </Button.Group>
       <TextField
         fullWidth
         label={"Start index"}

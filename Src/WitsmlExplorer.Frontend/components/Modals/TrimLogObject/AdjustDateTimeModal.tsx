@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from "@material-ui/core";
+import { Button } from "@equinor/eds-core-react";
 import {
   dateTimeFormatNoOffset,
   getOffset,
@@ -104,9 +104,8 @@ const AdjustDateTimeModal = (
 
   return (
     <>
-      <ButtonGroup
+      <Button.Group
         aria-label="set time range button group"
-        color="primary"
         style={{ margin: ".5rem" }}
       >
         {setRangeButtons.map((buttonValue) => {
@@ -149,7 +148,7 @@ const AdjustDateTimeModal = (
         >
           Reset
         </Button>
-      </ButtonGroup>
+      </Button.Group>
 
       <LogHeaderDateTimeField
         value={startIndex ?? ""}
