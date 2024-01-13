@@ -5,6 +5,7 @@ import { ReactElement, forwardRef, useContext } from "react";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
+import { rigType } from "../../models/rigType";
 import JobService, { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
 import {
@@ -110,7 +111,37 @@ export const objectBatchModifyProperties: {
   ],
   [ObjectType.Message]: [],
   [ObjectType.MudLog]: [],
-  [ObjectType.Rig]: [],
+  [ObjectType.Rig]: [
+    {
+      property: "owner",
+      validator: (value: string) => validText(value, 0, 32),
+      helperText: "Owner must be less than 32 characters"
+    },
+    {
+      property: "typeRig",
+      options: rigType
+    },
+    {
+      property: "manufacturer",
+      validator: (value: string) => validText(value, 0, 64),
+      helperText: "Owner must be less than 64 characters"
+    },
+    {
+      property: "classRig",
+      validator: (value: string) => validText(value, 0, 32),
+      helperText: "Owner must be less than 32 characters"
+    },
+    {
+      property: "approvals",
+      validator: (value: string) => validText(value, 0, 64),
+      helperText: "Owner must be less than 64 characters"
+    },
+    {
+      property: "registration",
+      validator: (value: string) => validText(value, 0, 32),
+      helperText: "Owner must be less than 32 characters"
+    }
+  ],
   [ObjectType.Risk]: [],
   [ObjectType.Trajectory]: [],
   [ObjectType.Tubular]: [],
