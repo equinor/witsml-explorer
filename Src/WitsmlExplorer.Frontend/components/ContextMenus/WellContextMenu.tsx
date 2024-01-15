@@ -179,8 +179,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickDeleteEmptyMnemonics = async () => {
     const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = {
-      wells: [well],
-      dispatchOperation: dispatchOperation
+      wells: [well]
     };
     const action: DisplayModalAction = {
       type: OperationType.DisplayModal,

@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 using Witsml;
@@ -17,7 +16,6 @@ using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Delete
@@ -26,19 +24,16 @@ namespace WitsmlExplorer.Api.Workers.Delete
     {
         public JobType JobType => JobType.DeleteEmptyMnemonics;
 
-        private readonly IWellboreService _wellboreService;
         private readonly ILogObjectService _logObjectService;
         private readonly IMnemonicService _mnemonicService;
 
         public DeleteEmptyMnemonicsWorker(
             ILogger<DeleteEmptyMnemonicsJob> logger,
             IWitsmlClientProvider witsmlClientProvider,
-            IWellboreService wellboreService,
             ILogObjectService logObjectService,
             IMnemonicService mnemonicService)
             : base(witsmlClientProvider, logger)
         {
-            _wellboreService = wellboreService;
             _logObjectService = logObjectService;
             _mnemonicService = mnemonicService;
         }
@@ -47,55 +42,52 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             IWitsmlClient client = GetTargetWitsmlClientOrThrow();
 
-            var wellboreRefsToCheck = job.Wellbores.ToList();
+            List<LogObject> logsToCheck = new List<LogObject>();
 
-            wellboreRefsToCheck.AddRange(await ExtractWellboreRefs(job.Wells));
+            logsToCheck.AddRange(await ExtractLogs(job.Logs));
+            logsToCheck.AddRange(await ExtractLogs(job.Wellbores));
+            logsToCheck.AddRange(await ExtractLogs(job.Wells));
 
             var reportItems = new List<DeleteEmptyMnemonicsReportItem>();
             var logCurvesCheckedCount = 0;
 
-            foreach (var wellboreRef in wellboreRefsToCheck)
+            if (!logsToCheck.IsNullOrEmpty())
             {
-                var logsToCheck = await ExtractLogs(wellboreRef);
-
-                if (!logsToCheck.IsNullOrEmpty())
+                foreach (var logToCheck in logsToCheck)
                 {
-                    foreach (var logToCheck in logsToCheck)
+                    var logCurves = await GetLogCurveInfos(logToCheck);
+
+                    logCurvesCheckedCount += logCurves.Count;
+
+                    var mnemonicsToDelete = FindNullMnemonics(job.NullDepthValue, job.NullTimeValue, logToCheck, logCurves);
+
+                    foreach (var mnemonicToDelete in mnemonicsToDelete)
                     {
-                        var logCurves = await GetLogCurveInfos(logToCheck);
+                        var result = await DeleteMnemonic(logToCheck.WellUid, logToCheck.WellboreUid, logToCheck.Uid, mnemonicToDelete);
 
-                        logCurvesCheckedCount += logCurves.Count;
-
-                        var mnemonicsToDelete = FindNullMnemonics(job.NullDepthValue, job.NullTimeValue, logToCheck, logCurves);
-
-                        foreach (var mnemonicToDelete in mnemonicsToDelete)
+                        var reportItem = new DeleteEmptyMnemonicsReportItem
                         {
-                            var result = await DeleteMnemonic(wellboreRef.WellUid, wellboreRef.WellboreUid, logToCheck.Uid, mnemonicToDelete);
+                            WellName = logToCheck.WellName,
+                            WellUid = logToCheck.WellUid,
+                            WellboreName = logToCheck.WellboreName,
+                            WellboreUid = logToCheck.WellboreUid,
+                            LogName = logToCheck.Name,
+                            LogUid = logToCheck.Uid,
+                            LogIndexType = logToCheck.IndexType,
+                            Mnemonic = mnemonicToDelete.Mnemonic
+                        };
 
-                            var reportItem = new DeleteEmptyMnemonicsReportItem
-                            {
-                                WellName = wellboreRef.WellName,
-                                WellUid = wellboreRef.WellUid,
-                                WellboreName = wellboreRef.WellboreName,
-                                WellboreUid = wellboreRef.WellboreUid,
-                                LogName = logToCheck.Name,
-                                LogUid = logToCheck.Uid,
-                                LogIndexType = logToCheck.IndexType,
-                                Mnemonic = mnemonicToDelete.Mnemonic
-                            };
+                        if (result.IsSuccessful)
+                        {
+                            reportItems.Add(reportItem);
 
-                            if (result.IsSuccessful)
-                            {
-                                reportItems.Add(reportItem);
-
-                                Logger.LogInformation("Successfully deleted empty mnemonic. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonic}"
-                                    , wellboreRef.WellUid, wellboreRef.WellboreUid, logToCheck.Uid, mnemonicToDelete.Mnemonic);
-                            }
-                            else
-                            {
-                                Logger.LogWarning("Failed to delete empty mnemonic. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonic}"
-                                    , wellboreRef.WellUid, wellboreRef.WellboreUid, logToCheck.Uid, mnemonicToDelete.Mnemonic);
-                            }
+                            Logger.LogInformation("Successfully deleted empty mnemonic. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonic}"
+                                , logToCheck.WellUid, logToCheck.WellboreUid, logToCheck.Uid, mnemonicToDelete.Mnemonic);
+                        }
+                        else
+                        {
+                            Logger.LogWarning("Failed to delete empty mnemonic. WellUid: {WellUid}, WellboreUid: {WellboreUid}, Uid: {LogUid}, Mnemonic: {Mnemonic}"
+                                , logToCheck.WellUid, logToCheck.WellboreUid, logToCheck.Uid, mnemonicToDelete.Mnemonic);
                         }
                     }
                 }
@@ -111,9 +103,13 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
             Logger.LogInformation("{JobType} - Job successful. {Message}", GetType().Name, reportItems.IsNullOrEmpty() ? "No empty mnemonics deleted" : "Empty mnemonics deleted.");
 
-            return (
-                new WorkerResult(client.GetServerHostname(), true, $"Empty mnemonics deleted"),
-                null);
+            var workerResult = new WorkerResult(client.GetServerHostname(), true, $"Empty mnemonics deleted", jobId: job.JobInfo.Id);
+
+            RefreshObjects refreshAction = job.Logs.Any()
+                ? new RefreshObjects(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Logs.First().WellUid, job.Logs.First().WellboreUid, EntityType.Log)
+                : null;
+
+            return (workerResult, refreshAction);
         }
 
         private string CreateReportSummary(DeleteEmptyMnemonicsJob job, int mnemonicsCheckedCount, int mnemonicsDeletedCount)
@@ -185,29 +181,60 @@ namespace WitsmlExplorer.Api.Workers.Delete
             return (await _logObjectService.GetLogCurveInfo(logToCheck.WellUid, logToCheck.WellboreUid, logToCheck.Uid)).ToList();
         }
 
-        private async Task<ICollection<LogObject>> ExtractLogs(WellboreReference wellboreRef)
+        private async Task<ICollection<LogObject>> ExtractLogs(ICollection<ObjectReference> logRefs)
         {
-            return (await _logObjectService.GetLogs(wellboreRef.WellUid, wellboreRef.WellboreUid)).ToList();
-        }
+            var logs = new List<LogObject>();
 
-        private async Task<ICollection<WellboreReference>> ExtractWellboreRefs(ICollection<WellReference> wellRefs)
-        {
-            var wellboreRefs = new List<WellboreReference>();
-
-            if (!wellRefs.IsNullOrEmpty())
+            if (!logRefs.IsNullOrEmpty())
             {
-                foreach (var wellRef in wellRefs)
+                foreach (var logObjectRef in logRefs)
                 {
-                    var wellbores = await _wellboreService.GetWellbores(wellRef.WellUid);
-
-                    if (!wellbores.IsNullOrEmpty())
+                    var log = await _logObjectService.GetLog(logObjectRef.WellUid, logObjectRef.WellboreUid, logObjectRef.Uid);
+                    if (log != null)
                     {
-                        wellboreRefs.AddRange(wellbores.Select(wb => new WellboreReference { WellboreUid = wb.Uid, WellboreName = wb.Name, WellUid = wb.WellUid, WellName = wb.WellName }));
+                        logs.Add(log);
                     }
                 }
             }
 
-            return wellboreRefs;
+            return logs;
+        }
+        private async Task<ICollection<LogObject>> ExtractLogs(ICollection<WellboreReference> wellboreRefs)
+        {
+            var logs = new List<LogObject>();
+
+            if (!wellboreRefs.IsNullOrEmpty())
+            {
+                foreach (var wellboreRef in wellboreRefs)
+                {
+                    var wellboreLogs = await _logObjectService.GetLogs(wellboreRef.WellUid, wellboreRef.WellboreUid);
+                    if (!wellboreLogs.IsNullOrEmpty())
+                    {
+                        logs.AddRange(wellboreLogs);
+                    }
+                }
+            }
+
+            return logs;
+        }
+
+        private async Task<ICollection<LogObject>> ExtractLogs(ICollection<WellReference> wellRefs)
+        {
+            var logs = new List<LogObject>();
+
+            if (!wellRefs.IsNullOrEmpty())
+            {
+                foreach (var wellboreRef in wellRefs)
+                {
+                    var wellLogs = await _logObjectService.GetLogs(wellboreRef.WellUid, string.Empty);
+                    if (!wellLogs.IsNullOrEmpty())
+                    {
+                        logs.AddRange(wellLogs);
+                    }
+                }
+            }
+
+            return logs;
         }
     }
 }
