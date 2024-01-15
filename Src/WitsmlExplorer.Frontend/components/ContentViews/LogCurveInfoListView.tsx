@@ -22,6 +22,7 @@ import { measureToString } from "models/measure";
 import React, { useContext, useEffect, useState } from "react";
 import { truncateAbortHandler } from "services/apiClient";
 import ComponentService from "services/componentService";
+import LogCurvePriorityService from "services/logCurvePriorityService";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -59,6 +60,9 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
+  const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
+    useState<boolean>(false);
+  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
 
   useEffect(() => {
     setIsFetchingData(true);
@@ -78,7 +82,19 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         setIsFetchingData(false);
       };
 
+      const getLogCurvePriority = async () => {
+        const prioritizedCurves =
+          await LogCurvePriorityService.getPrioritizedCurves(
+            selectedWell.uid,
+            selectedWellbore.uid,
+            controller.signal
+          );
+        setPrioritizedCurves(prioritizedCurves);
+      };
+
       getLogCurveInfo().catch(truncateAbortHandler);
+      getLogCurvePriority().catch(truncateAbortHandler);
+      setShowOnlyPrioritizedCurves(false);
 
       return () => {
         controller.abort();
@@ -97,7 +113,9 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       dispatchNavigation,
       selectedLog,
       selectedServer,
-      servers
+      servers,
+      prioritizedCurves,
+      setPrioritizedCurves
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -197,7 +215,18 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     ...(!isDepthIndex
       ? [{ property: "isActive", label: "active", type: ContentType.String }]
       : []),
-    { property: "mnemonic", label: "mnemonic", type: ContentType.String },
+    {
+      property: "mnemonic",
+      label: "mnemonic",
+      type: ContentType.String,
+      filterFn: (row) => {
+        return (
+          !showOnlyPrioritizedCurves ||
+          prioritizedCurves.includes(row.original.mnemonic) ||
+          row.original.mnemonic === selectedLog.indexCurve // Always show index curve
+        );
+      }
+    },
     {
       property: "minIndex",
       label: "minIndex",
@@ -231,6 +260,16 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         onChange={() => setHideEmptyMnemonics(!hideEmptyMnemonics)}
       />
       <Typography>Hide Empty Curves</Typography>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="showPriority">
+      <Switch
+        checked={showOnlyPrioritizedCurves}
+        disabled={prioritizedCurves.length === 0 && !showOnlyPrioritizedCurves}
+        onChange={() =>
+          setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
+        }
+      />
+      <Typography>Show Only Prioritized Curves</Typography>
     </CommonPanelContainer>
   ];
 

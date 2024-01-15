@@ -10,6 +10,7 @@ export interface ContentTableColumn {
   label: string;
   type: ContentType;
   filterFn?: FilterFn<any>;
+  width?: number;
 }
 
 export interface ContentTableRow {
