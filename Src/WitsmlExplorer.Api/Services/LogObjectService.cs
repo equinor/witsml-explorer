@@ -66,7 +66,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid)
         {
-            return await GetLog(wellUid, wellboreUid, logUid, new OptionsIn(ReturnElements.All));
+            return await GetLog(wellUid, wellboreUid, logUid, new OptionsIn(ReturnElements.HeaderOnly));
         }
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions)

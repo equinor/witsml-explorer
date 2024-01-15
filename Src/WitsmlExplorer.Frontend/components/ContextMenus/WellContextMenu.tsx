@@ -144,6 +144,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   };
 
   const deleteWell = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellJob = {
       toDelete: {
@@ -152,7 +153,6 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       }
     };
     await JobService.orderJob(JobType.DeleteWell, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickDelete = async () => {
@@ -222,10 +222,10 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   };
 
   const onClickShowOnServer = async (server: Server) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const host = `${window.location.protocol}//${window.location.host}`;
     const wellUrl = `${host}/?serverUrl=${server.url}&wellUid=${well.uid}`;
     window.open(wellUrl);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickBatchUpdate = () => {

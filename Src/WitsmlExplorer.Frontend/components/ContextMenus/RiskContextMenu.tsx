@@ -28,6 +28,7 @@ const RiskObjectContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyRiskObjectProps: RiskPropertiesModalProps = {
       mode,
@@ -38,7 +39,6 @@ const RiskObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <RiskPropertiesModal {...modifyRiskObjectProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {

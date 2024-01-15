@@ -4,7 +4,6 @@ using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
-using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 
@@ -48,6 +47,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
         }
 
+        // Properties not used when converting to WITSML can safely be added here.
         private static readonly Dictionary<EntityType, HashSet<string>> AllowedPropertiesToChange = new Dictionary<EntityType, HashSet<string>>
         {
             {
@@ -104,7 +104,8 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     nameof(LogObject.Name),
                     nameof(LogObject.ServiceCompany),
                     nameof(LogObject.RunNumber),
-                    nameof(LogObject.CommonData)
+                    nameof(LogObject.CommonData),
+                    nameof(LogObject.Mnemonics), // This is not used when converting to WITSML
                 }
             },
             {
@@ -190,7 +191,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             },
         };
 
-        public static ObjectOnWellbore PrepareModification(ObjectOnWellbore obj, EntityType objectType, ILogger<ModifyObjectOnWellboreJob> logger)
+        public static ObjectOnWellbore PrepareModification(ObjectOnWellbore obj, EntityType objectType, ILogger logger)
         {
             if (!AllowedPropertiesToChange.TryGetValue(objectType, out var allowedProperties))
             {
@@ -200,7 +201,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             return SetNotAllowedPropertiesToNull(obj, allowedProperties, logger);
         }
 
-        private static ObjectOnWellbore SetNotAllowedPropertiesToNull(ObjectOnWellbore obj, HashSet<string> allowedPropertiesToChange, ILogger<ModifyObjectOnWellboreJob> logger)
+        private static ObjectOnWellbore SetNotAllowedPropertiesToNull(ObjectOnWellbore obj, HashSet<string> allowedPropertiesToChange, ILogger logger)
         {
             // The uids should not be changed, but are needed to identify the object
             allowedPropertiesToChange.Add(nameof(obj.WellUid));
