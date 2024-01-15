@@ -57,6 +57,11 @@ const LogCurveInfoContextMenu = (
     selectedServer,
     servers
   } = props;
+  const checkedLogCurveInfoRowsWithoutIndexCurve =
+    checkedLogCurveInfoRows.filter(
+      (lc) => lc.mnemonic !== selectedLog.indexCurve
+    );
+
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const modalProps = {
@@ -110,10 +115,11 @@ const LogCurveInfoContextMenu = (
   };
 
   const toDelete = createComponentReferences(
-    checkedLogCurveInfoRows.map((lc) => lc.mnemonic),
+    checkedLogCurveInfoRowsWithoutIndexCurve.map((lc) => lc.mnemonic),
     selectedLog,
     ComponentType.Mnemonic
   );
+
   return (
     <ContextMenu
       menuItems={[
@@ -182,7 +188,7 @@ const LogCurveInfoContextMenu = (
               JobType.DeleteComponents
             )
           }
-          disabled={checkedLogCurveInfoRows.length === 0}
+          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
         >
           <StyledIcon
             name="deleteToTrash"
@@ -192,7 +198,7 @@ const LogCurveInfoContextMenu = (
             {menuItemText(
               "delete",
               ComponentType.Mnemonic,
-              checkedLogCurveInfoRows
+              checkedLogCurveInfoRowsWithoutIndexCurve
             )}
           </Typography>
         </MenuItem>,
@@ -215,9 +221,8 @@ const LogCurveInfoContextMenu = (
         </NestedMenuItem>,
         <MenuItem
           key={"analyzeGaps"}
-          onClick={
-            onClickAnalyzeGaps
-          } /*disabled={checkedLogCurveInfoRows.length !== 1}*/
+          onClick={onClickAnalyzeGaps}
+          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
         >
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>

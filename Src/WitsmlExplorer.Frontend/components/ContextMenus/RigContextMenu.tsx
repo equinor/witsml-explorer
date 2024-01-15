@@ -1,5 +1,6 @@
 ﻿import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import {
@@ -42,6 +43,11 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const extraMenuItems = (): React.ReactElement[] => {
     return [
       <Divider key={"divider"} />,
+      <BatchModifyMenuItem
+        key="batchModify"
+        checkedObjects={checkedObjects}
+        objectType={ObjectType.Rig}
+      />,
       <MenuItem
         key={"properties"}
         onClick={onClickModify}

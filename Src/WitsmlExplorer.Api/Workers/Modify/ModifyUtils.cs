@@ -140,6 +140,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     nameof(Rig.RatingDrillDepth),
                     nameof(Rig.RatingWaterDepth),
                     nameof(Rig.AirGap),
+                    nameof(Rig.Approvals),
+                    nameof(Rig.ClassRig),
+                    nameof(Rig.Manufacturer),
+                    nameof(Rig.Owner),
+                    nameof(Rig.Registration),
                     nameof(Rig.CommonData)
                 }
             },
@@ -342,6 +347,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
         {
             VerifyAllowedValues(rig.TypeRig, new List<string> { "barge", "coiled tubing", "floater", "jackup", "land", "platform", "semi-submersible", "unknown" }, nameof(rig.TypeRig));
             VerifyString(rig.YearEntService, nameof(rig.YearEntService), 4, 4);
+            VerifyString(rig.Owner, nameof(rig.Owner), 32);
+            VerifyString(rig.Manufacturer, nameof(rig.Manufacturer), 64);
+            VerifyString(rig.ClassRig, nameof(rig.ClassRig), 32);
+            VerifyString(rig.Approvals, nameof(rig.Approvals), 64);
+            VerifyString(rig.Registration, nameof(rig.Registration), 32);
             VerifyMeasure(rig.RatingDrillDepth, nameof(rig.RatingDrillDepth));
             VerifyMeasure(rig.RatingWaterDepth, nameof(rig.RatingWaterDepth));
             VerifyMeasure(rig.AirGap, nameof(rig.AirGap));
