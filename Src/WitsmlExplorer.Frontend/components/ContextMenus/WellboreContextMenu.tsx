@@ -158,8 +158,7 @@ const WellboreContextMenu = (
 
   const onClickDeleteEmptyMnemonics = async () => {
     const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = {
-      wellbores: [wellbore],
-      dispatchOperation: dispatchOperation
+      wellbores: [wellbore]
     };
     const action: DisplayModalAction = {
       type: OperationType.DisplayModal,

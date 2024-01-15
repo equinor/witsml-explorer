@@ -16,6 +16,9 @@ import { useClipboardComponentReferencesOfType } from "components/ContextMenus/U
 import AnalyzeGapModal, {
   AnalyzeGapModalProps
 } from "components/Modals/AnalyzeGapModal";
+import DeleteEmptyMnemonicsModal, {
+  DeleteEmptyMnemonicsModalProps
+} from "components/Modals/DeleteEmptyMnemonicsModal";
 import LogComparisonModal, {
   LogComparisonModalProps
 } from "components/Modals/LogComparisonModal";
@@ -34,6 +37,7 @@ import TrimLogObjectModal, {
 } from "components/Modals/TrimLogObject/TrimLogObjectModal";
 import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
+import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { ComponentType } from "models/componentType";
@@ -239,6 +243,17 @@ const LogObjectContextMenu = (
     }
   };
 
+  const onClickDeleteEmptyMnemonics = async () => {
+    const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = {
+      logs: checkedObjects
+    };
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} />
+    };
+    dispatchOperation(action);
+  };
+
   const extraMenuItems = (): React.ReactElement[] => {
     return [
       <MenuItem
@@ -364,6 +379,16 @@ const LogObjectContextMenu = (
               "log data",
               []
             )}`}</Typography>
+          </MenuItem>,
+          <MenuItem
+            key={"deleteEmptyMnemonics"}
+            onClick={onClickDeleteEmptyMnemonics}
+          >
+            <StyledIcon
+              name="deleteToTrash"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Delete empty mnemonics</Typography>
           </MenuItem>
         ]}
       </NestedMenuItem>,
