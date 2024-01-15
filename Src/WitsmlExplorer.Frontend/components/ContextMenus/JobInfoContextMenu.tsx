@@ -26,12 +26,12 @@ const JobInfoContextMenu = (
   const { dispatchOperation, jobInfo, setShouldRefresh } = props;
 
   const onClickProperties = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const jobInfoPropertiesModalProps = { jobInfo };
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <JobInfoPropertiesModal {...jobInfoPropertiesModalProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   return (

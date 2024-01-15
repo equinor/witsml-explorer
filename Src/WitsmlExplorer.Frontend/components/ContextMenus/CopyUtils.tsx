@@ -38,6 +38,7 @@ export const pasteObjectOnWellbore = async (
   dispatchOperation: DispatchOperation,
   wellbore: Wellbore
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const orderCopyJob = () => {
     const wellboreReference: WellboreReference = {
       wellUid: wellbore.wellUid,
@@ -50,7 +51,6 @@ export const pasteObjectOnWellbore = async (
       target: wellboreReference
     };
     JobService.orderJob(JobType.CopyObjects, copyJob);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   onClickPaste(servers, objectReferences?.serverUrl, orderCopyJob);
@@ -62,6 +62,7 @@ export const pasteComponents = async (
   dispatchOperation: DispatchOperation,
   target: ObjectOnWellbore
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const orderCopyJob = () => {
     const targetReference: ObjectReference = toObjectReference(target);
     const copyJob: CopyComponentsJob = {
@@ -69,7 +70,6 @@ export const pasteComponents = async (
       target: targetReference
     };
     JobService.orderJob(JobType.CopyComponents, copyJob);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   onClickPaste(servers, sourceReferences?.serverUrl, orderCopyJob);
@@ -81,13 +81,13 @@ export const copyObjectOnWellbore = async (
   dispatchOperation: DispatchOperation,
   objectType: ObjectType
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const objectReferences: ObjectReferences = toObjectReferences(
     objectsOnWellbore,
     objectType,
     selectedServer.url
   );
   await navigator.clipboard.writeText(JSON.stringify(objectReferences));
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 export const copyComponents = async (
@@ -97,6 +97,7 @@ export const copyComponents = async (
   dispatchOperation: DispatchOperation,
   componentType: ComponentType
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const componentReferences: ComponentReferences = createComponentReferences(
     uids,
     parent,
@@ -104,5 +105,4 @@ export const copyComponents = async (
     selectedServer.url
   );
   await navigator.clipboard.writeText(JSON.stringify(componentReferences));
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };

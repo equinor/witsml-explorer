@@ -66,11 +66,17 @@ const LogCurveInfoContextMenu = (
     prioritizedCurves,
     setPrioritizedCurves
   } = props;
+
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
     (row, index) =>
       prioritizedCurves.includes(row.mnemonic) ||
       (checkedLogCurveInfoRows.length > 1 && index === 0)
   );
+
+  const checkedLogCurveInfoRowsWithoutIndexCurve =
+    checkedLogCurveInfoRows.filter(
+      (lc) => lc.mnemonic !== selectedLog.indexCurve
+    );
 
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -98,6 +104,7 @@ const LogCurveInfoContextMenu = (
   };
 
   const onClickProperties = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
     const logCurveInfoPropertiesModalProps = {
       logCurveInfo,
@@ -110,10 +117,10 @@ const LogCurveInfoContextMenu = (
         <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickAnalyzeGaps = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const logObject = selectedLog;
     const mnemonics = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
     const analyzeGapModalProps: AnalyzeGapModalProps = { logObject, mnemonics };
@@ -121,7 +128,6 @@ const LogCurveInfoContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickEditPriority = () => {
@@ -171,10 +177,11 @@ const LogCurveInfoContextMenu = (
   };
 
   const toDelete = createComponentReferences(
-    checkedLogCurveInfoRows.map((lc) => lc.mnemonic),
+    checkedLogCurveInfoRowsWithoutIndexCurve.map((lc) => lc.mnemonic),
     selectedLog,
     ComponentType.Mnemonic
   );
+
   return (
     <ContextMenu
       menuItems={[
@@ -237,7 +244,7 @@ const LogCurveInfoContextMenu = (
               JobType.DeleteComponents
             )
           }
-          disabled={checkedLogCurveInfoRows.length === 0}
+          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
         >
           <StyledIcon
             name="deleteToTrash"
@@ -247,7 +254,7 @@ const LogCurveInfoContextMenu = (
             {menuItemText(
               "delete",
               ComponentType.Mnemonic,
-              checkedLogCurveInfoRows
+              checkedLogCurveInfoRowsWithoutIndexCurve
             )}
           </Typography>
         </MenuItem>,
@@ -268,7 +275,11 @@ const LogCurveInfoContextMenu = (
             </MenuItem>
           ))}
         </NestedMenuItem>,
-        <MenuItem key={"analyzeGaps"} onClick={onClickAnalyzeGaps}>
+        <MenuItem
+          key={"analyzeGaps"}
+          onClick={onClickAnalyzeGaps}
+          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
+        >
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>
         </MenuItem>,

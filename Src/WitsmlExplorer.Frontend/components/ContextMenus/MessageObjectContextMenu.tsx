@@ -40,6 +40,7 @@ const MessageObjectContextMenu = (
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyMessageObjectProps: MessagePropertiesModalProps = {
       mode,
@@ -50,7 +51,6 @@ const MessageObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <MessagePropertiesModal {...modifyMessageObjectProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickCompare = () => {

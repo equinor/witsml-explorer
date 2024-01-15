@@ -4,7 +4,6 @@ using System.Linq;
 
 using Microsoft.Extensions.Logging;
 
-using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 
@@ -48,6 +47,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
         }
 
+        // Properties not used when converting to WITSML can safely be added here.
         private static readonly Dictionary<EntityType, HashSet<string>> AllowedPropertiesToChange = new Dictionary<EntityType, HashSet<string>>
         {
             {
@@ -104,7 +104,8 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     nameof(LogObject.Name),
                     nameof(LogObject.ServiceCompany),
                     nameof(LogObject.RunNumber),
-                    nameof(LogObject.CommonData)
+                    nameof(LogObject.CommonData),
+                    nameof(LogObject.Mnemonics), // This is not used when converting to WITSML
                 }
             },
             {
@@ -139,6 +140,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     nameof(Rig.RatingDrillDepth),
                     nameof(Rig.RatingWaterDepth),
                     nameof(Rig.AirGap),
+                    nameof(Rig.Approvals),
+                    nameof(Rig.ClassRig),
+                    nameof(Rig.Manufacturer),
+                    nameof(Rig.Owner),
+                    nameof(Rig.Registration),
                     nameof(Rig.CommonData)
                 }
             },
@@ -190,7 +196,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             },
         };
 
-        public static ObjectOnWellbore PrepareModification(ObjectOnWellbore obj, EntityType objectType, ILogger<ModifyObjectOnWellboreJob> logger)
+        public static ObjectOnWellbore PrepareModification(ObjectOnWellbore obj, EntityType objectType, ILogger logger)
         {
             if (!AllowedPropertiesToChange.TryGetValue(objectType, out var allowedProperties))
             {
@@ -200,7 +206,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             return SetNotAllowedPropertiesToNull(obj, allowedProperties, logger);
         }
 
-        private static ObjectOnWellbore SetNotAllowedPropertiesToNull(ObjectOnWellbore obj, HashSet<string> allowedPropertiesToChange, ILogger<ModifyObjectOnWellboreJob> logger)
+        private static ObjectOnWellbore SetNotAllowedPropertiesToNull(ObjectOnWellbore obj, HashSet<string> allowedPropertiesToChange, ILogger logger)
         {
             // The uids should not be changed, but are needed to identify the object
             allowedPropertiesToChange.Add(nameof(obj.WellUid));
@@ -341,6 +347,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
         {
             VerifyAllowedValues(rig.TypeRig, new List<string> { "barge", "coiled tubing", "floater", "jackup", "land", "platform", "semi-submersible", "unknown" }, nameof(rig.TypeRig));
             VerifyString(rig.YearEntService, nameof(rig.YearEntService), 4, 4);
+            VerifyString(rig.Owner, nameof(rig.Owner), 32);
+            VerifyString(rig.Manufacturer, nameof(rig.Manufacturer), 64);
+            VerifyString(rig.ClassRig, nameof(rig.ClassRig), 32);
+            VerifyString(rig.Approvals, nameof(rig.Approvals), 64);
+            VerifyString(rig.Registration, nameof(rig.Registration), 32);
             VerifyMeasure(rig.RatingDrillDepth, nameof(rig.RatingDrillDepth));
             VerifyMeasure(rig.RatingWaterDepth, nameof(rig.RatingWaterDepth));
             VerifyMeasure(rig.AirGap, nameof(rig.AirGap));

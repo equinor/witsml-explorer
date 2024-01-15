@@ -18,6 +18,7 @@ namespace WitsmlExplorer.Api.Models
         ModifyLogCurveInfo,
         DeleteEmptyMnemonics,
         ModifyObjectOnWellbore,
+        BatchModifyObjectsOnWellbore,
         ModifyGeologyInterval,
         ModifyTrajectoryStation,
         ModifyTubularComponent,

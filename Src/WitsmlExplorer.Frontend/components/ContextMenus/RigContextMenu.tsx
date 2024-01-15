@@ -1,5 +1,6 @@
 ﻿import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import {
@@ -26,6 +27,7 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const openInQueryView = useOpenInQueryView();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyRigObjectProps: RigPropertiesModalProps = {
       mode,
@@ -36,12 +38,16 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
       type: OperationType.DisplayModal,
       payload: <RigPropertiesModal {...modifyRigObjectProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
       <Divider key={"divider"} />,
+      <BatchModifyMenuItem
+        key="batchModify"
+        checkedObjects={checkedObjects}
+        objectType={ObjectType.Rig}
+      />,
       <MenuItem
         key={"properties"}
         onClick={onClickModify}

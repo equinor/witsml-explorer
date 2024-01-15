@@ -87,6 +87,9 @@ const ServerManager = (): React.ReactElement => {
           CapService.getCapObjects()
         ]);
         updateVisibleObjects(supportedObjects);
+        updateSelectedFilter({
+          searchResults: []
+        });
         dispatchNavigation({
           type: ModificationType.UpdateWells,
           payload: { wells: wells }
