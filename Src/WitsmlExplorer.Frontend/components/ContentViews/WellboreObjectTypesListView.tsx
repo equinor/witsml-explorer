@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
+import ModificationType from "../../contexts/modificationType";
 import { SelectObjectGroupAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -22,14 +23,51 @@ interface ObjectTypeRow extends ContentTableRow {
 
 export const WellboreObjectTypesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+  const { wells, selectedWell, selectedWellbore } = navigationState;
   const { selectedFilter } = useContext(FilterContext);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { serverUrl, wellUid, wellboreUid } = useParams();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
   ];
+
+  useEffect(() => {
+    if (wells.length > 0) {
+      const well = wells.find((well) => well.uid === wellUid);
+      const wellbore = well.wellbores.find(
+        (wellbore) => wellbore.uid === wellboreUid
+      );
+
+      dispatchNavigation({
+        type: NavigationType.SelectWell,
+        payload: { well }
+      });
+
+      dispatchNavigation({
+        type: NavigationType.SelectWellbore,
+        payload: { well: well, wellbore }
+      });
+
+      const fetchExpandableObjectsCount = async () => {
+        const objectCount = await ObjectService.getExpandableObjectsCount(
+          wellbore
+        );
+        dispatchNavigation({
+          type: ModificationType.UpdateWellborePartial,
+          payload: {
+            wellboreUid: wellbore.uid,
+            wellUid: well.uid,
+            wellboreProperties: { objectCount }
+          }
+        });
+      };
+      if (wellbore?.objectCount == null) {
+        fetchExpandableObjectsCount();
+      }
+    }
+  }, [wells, serverUrl, wellUid, wellboreUid]);
 
   const getRows = (): ObjectTypeRow[] => {
     return Object.values(ObjectType)

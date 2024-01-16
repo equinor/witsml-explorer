@@ -3,13 +3,11 @@ import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
-import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import Wellbore from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, {
   WellboreContextMenuProps
@@ -113,28 +111,10 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   const onSelect = async (wellboreRow: any) => {
-    const wellbore: Wellbore = wellboreRow.wellbore;
-    dispatchNavigation({
-      type: NavigationType.SelectWellbore,
-      payload: { well: selectedWell, wellbore }
-    });
-    if (wellbore.objectCount == null) {
-      const objectCount = await ObjectService.getExpandableObjectsCount(
-        wellbore
-      );
-      dispatchNavigation({
-        type: ModificationType.UpdateWellborePartial,
-        payload: {
-          wellboreUid: wellbore.uid,
-          wellUid: wellbore.wellUid,
-          wellboreProperties: { objectCount }
-        }
-      });
-    }
     navigate(
       `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         selectedWell.uid
-      }/wellbores/${wellbore.uid}/objectgroups`
+      }/wellbores/${wellboreRow.wellbore.uid}/objectgroups`
     );
   };
 
