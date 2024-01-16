@@ -1,10 +1,12 @@
 import { TextField } from "@material-ui/core";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
+import { ReportModal } from "components/Modals/ReportModal";
 import OperationContext from "contexts/operationContext";
-import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { DeleteEmptyMnemonicsJob } from "models/jobs/deleteEmptyMnemonicsJob";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import { useContext, useState } from "react";
@@ -14,14 +16,15 @@ import styled from "styled-components";
 export interface DeleteEmptyMnemonicsModalProps {
   wells?: Well[];
   wellbores?: Wellbore[];
-  dispatchOperation: (action: HideModalAction) => void;
+  logs?: LogObject[];
 }
 
 const DeleteEmptyMnemonicsModal = (
   props: DeleteEmptyMnemonicsModalProps
 ): React.ReactElement => {
-  const { wells, wellbores, dispatchOperation } = props;
+  const { wells, wellbores, logs } = props;
   const {
+    dispatchOperation,
     operationState: { timeZone }
   } = useContext(OperationContext);
   const [nullDepthValue, setNullDepthValue] = useState<number>(-999.25);
@@ -32,6 +35,7 @@ const DeleteEmptyMnemonicsModal = (
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = async (nullDepthValue: number, nullTimeValue: string) => {
+    dispatchOperation({ type: OperationType.HideModal });
     setIsLoading(true);
 
     const job: DeleteEmptyMnemonicsJob = {
@@ -46,15 +50,21 @@ const DeleteEmptyMnemonicsModal = (
           wellName: x.wellName
         };
       }),
+      logs: logs?.map((log) => toObjectReference(log)),
       nullDepthValue: nullDepthValue,
       nullTimeValue: nullTimeValue
     };
 
-    await JobService.orderJob(JobType.DeleteEmptyMnemonics, job);
+    const jobId = await JobService.orderJob(JobType.DeleteEmptyMnemonics, job);
 
     setIsLoading(false);
 
-    dispatchOperation({ type: OperationType.HideModal });
+    if (jobId) {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ReportModal jobId={jobId} />
+      });
+    }
   };
 
   return (
