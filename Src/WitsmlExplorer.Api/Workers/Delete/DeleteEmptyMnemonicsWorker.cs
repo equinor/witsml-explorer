@@ -165,11 +165,17 @@ namespace WitsmlExplorer.Api.Workers.Delete
             {
                 if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
                 {
-                    nullMnemonics.AddRange(logCurves.Where(logCurve => logCurve.MinDepthIndex == nullDepthValueString && logCurve.MaxDepthIndex == nullDepthValueString));
+                    nullMnemonics.AddRange(logCurves.Where(logCurve =>
+                        (logCurve.MinDepthIndex == nullDepthValueString || logCurve.MinDepthIndex == null) &&
+                        (logCurve.MaxDepthIndex == nullDepthValueString || logCurve.MaxDepthIndex == null)
+                    ));
                 }
                 else if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
                 {
-                    nullMnemonics.AddRange(logCurves.Where(logCurve => logCurve.MinDateTimeIndex == nullTimeValueString && logCurve.MaxDateTimeIndex == nullTimeValueString));
+                    nullMnemonics.AddRange(logCurves.Where(logCurve =>
+                        (logCurve.MinDateTimeIndex == nullTimeValueString || logCurve.MinDateTimeIndex == null) &&
+                        (logCurve.MaxDateTimeIndex == nullTimeValueString || logCurve.MaxDateTimeIndex == null)
+                    ));
                 }
             }
 
