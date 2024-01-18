@@ -18,6 +18,10 @@ import CopyRangeModal, {
   CopyRangeModalProps
 } from "components/Modals/CopyRangeModal";
 import LogCurveInfoPropertiesModal from "components/Modals/LogCurveInfoPropertiesModal";
+import {
+  LogCurvePriorityModal,
+  LogCurvePriorityModalProps
+} from "components/Modals/LogCurvePriorityModal";
 import SelectIndexToDisplayModal from "components/Modals/SelectIndexToDisplayModal";
 import { SelectLogCurveInfoAction } from "contexts/navigationActions";
 import {
@@ -33,6 +37,7 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
 import { JobType } from "services/jobService";
+import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
 
 export interface LogCurveInfoContextMenuProps {
@@ -44,6 +49,8 @@ export interface LogCurveInfoContextMenuProps {
   selectedLog: LogObject;
   selectedServer: Server;
   servers: Server[];
+  prioritizedCurves: string[];
+  setPrioritizedCurves: (prioritizedCurves: string[]) => void;
 }
 
 const LogCurveInfoContextMenu = (
@@ -55,8 +62,17 @@ const LogCurveInfoContextMenu = (
     dispatchNavigation,
     selectedLog,
     selectedServer,
-    servers
+    servers,
+    prioritizedCurves,
+    setPrioritizedCurves
   } = props;
+
+  const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
+    (row, index) =>
+      prioritizedCurves.includes(row.mnemonic) ||
+      (checkedLogCurveInfoRows.length > 1 && index === 0)
+  );
+
   const checkedLogCurveInfoRowsWithoutIndexCurve =
     checkedLogCurveInfoRows.filter(
       (lc) => lc.mnemonic !== selectedLog.indexCurve
@@ -112,6 +128,52 @@ const LogCurveInfoContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
+  };
+
+  const onClickEditPriority = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logCurvePriorityModalProps: LogCurvePriorityModalProps = {
+      wellUid: selectedLog.wellUid,
+      wellboreUid: selectedLog.wellboreUid,
+      prioritizedCurves,
+      setPrioritizedCurves
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <LogCurvePriorityModal {...logCurvePriorityModalProps} />
+    });
+  };
+
+  const onClickSetPriority = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const newCurvesToPrioritize = checkedLogCurveInfoRows.map(
+      (lc) => lc.mnemonic
+    );
+    const curvesToPrioritize = Array.from(
+      new Set(prioritizedCurves.concat(newCurvesToPrioritize))
+    );
+    const newPrioritizedCurves =
+      await LogCurvePriorityService.setPrioritizedCurves(
+        selectedLog.wellUid,
+        selectedLog.wellboreUid,
+        curvesToPrioritize
+      );
+    setPrioritizedCurves(newPrioritizedCurves);
+  };
+
+  const onClickRemovePriority = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const curvesToDelete = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
+    const curvesToPrioritize = prioritizedCurves.filter(
+      (curve) => !curvesToDelete.includes(curve)
+    );
+    const newPrioritizedCurves =
+      await LogCurvePriorityService.setPrioritizedCurves(
+        selectedLog.wellUid,
+        selectedLog.wellboreUid,
+        curvesToPrioritize
+      );
+    setPrioritizedCurves(newPrioritizedCurves);
   };
 
   const toDelete = createComponentReferences(
@@ -226,6 +288,35 @@ const LogCurveInfoContextMenu = (
         >
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"setPriority"}
+          onClick={() =>
+            onlyPrioritizedCurvesAreChecked
+              ? onClickRemovePriority()
+              : onClickSetPriority()
+          }
+        >
+          <StyledIcon
+            name={
+              onlyPrioritizedCurvesAreChecked
+                ? "favoriteFilled"
+                : "favoriteOutlined"
+            }
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            {onlyPrioritizedCurvesAreChecked
+              ? "Remove Priority"
+              : "Set Priority"}
+          </Typography>
+        </MenuItem>,
+        <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
+          <StyledIcon
+            name="favoriteOutlined"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>Edit Priority</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

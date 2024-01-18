@@ -1,21 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.Jobs.Common;
-using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
     public record DeleteEmptyMnemonicsJob : Job
     {
-
         public ICollection<WellReference> Wells { get; init; } = new List<WellReference>();
         public ICollection<WellboreReference> Wellbores { get; init; } = new List<WellboreReference>();
+        public ICollection<ObjectReference> Logs { get; init; } = new List<ObjectReference>();
         public double NullDepthValue { get; init; }
         public DateTime NullTimeValue { get; init; }
 
@@ -23,22 +20,41 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return "DeleteEmptyMnemonicsJob"
                 + $" - WellUids: {GetWellUid()};"
-                + $" WellboreUids: {string.Join(", ", Wellbores.Select(w => w.WellboreUid))}";
+                + $" WellboreUids: {GetWellboreUid()};"
+                + $" LogUids: {GetObjectUid()};";
         }
 
         public override string GetObjectName()
         {
-            return null;
+            var logNames = Logs.Select(l => l.Name).Distinct();
+            return string.Join(", ", logNames);
         }
 
         public override string GetWellboreName()
         {
-            return Wellbores.IsNullOrEmpty() ? null : string.Join(", ", Wellbores.Select(w => w.WellboreName));
+            var wellboreNames = new List<string>();
+
+            if (!Logs.IsNullOrEmpty())
+            {
+                wellboreNames.AddRange(Logs.Select(w => w.WellboreName).Distinct());
+            }
+
+            if (!Wellbores.IsNullOrEmpty())
+            {
+                wellboreNames.AddRange(Wellbores.Select(w => w.WellboreName).Distinct());
+            }
+
+            return string.Join(", ", wellboreNames.Distinct());
         }
 
         public override string GetWellName()
         {
             var wellNames = new List<string>();
+
+            if (!Logs.IsNullOrEmpty())
+            {
+                wellNames.AddRange(Logs.Select(w => w.WellName).Distinct());
+            }
 
             if (!Wellbores.IsNullOrEmpty())
             {
@@ -57,6 +73,11 @@ namespace WitsmlExplorer.Api.Jobs
         {
             var wellUids = new List<string>();
 
+            if (!Logs.IsNullOrEmpty())
+            {
+                wellUids.AddRange(Logs.Select(w => w.WellUid).Distinct());
+            }
+
             if (!Wellbores.IsNullOrEmpty())
             {
                 wellUids.AddRange(Wellbores.Select(w => w.WellUid).Distinct());
@@ -68,6 +89,29 @@ namespace WitsmlExplorer.Api.Jobs
             }
 
             return string.Join(", ", wellUids.Distinct());
+        }
+
+        private string GetWellboreUid()
+        {
+            var wellboreUids = new List<string>();
+
+            if (!Logs.IsNullOrEmpty())
+            {
+                wellboreUids.AddRange(Logs.Select(w => w.WellboreUid).Distinct());
+            }
+
+            if (!Wellbores.IsNullOrEmpty())
+            {
+                wellboreUids.AddRange(Wellbores.Select(w => w.WellboreUid).Distinct());
+            }
+
+            return string.Join(", ", wellboreUids.Distinct());
+        }
+
+        private string GetObjectUid()
+        {
+            var logUids = Logs.Select(l => l.Uid).Distinct();
+            return string.Join(", ", logUids);
         }
     }
 }

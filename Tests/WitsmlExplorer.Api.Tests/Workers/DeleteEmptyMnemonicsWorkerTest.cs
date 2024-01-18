@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -29,7 +28,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private readonly DeleteEmptyMnemonicsWorker _worker;
-        private readonly Mock<IWellboreService> _wellboreService;
         private readonly Mock<ILogObjectService> _logObjectService;
         private readonly Mock<IMnemonicService> _mnemonicService;
 
@@ -43,11 +41,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(wcp => wcp.GetClient()).Returns(_witsmlClient.Object);
 
-            _wellboreService = new();
-            _wellboreService
-                .Setup(ws => ws.GetWellbores(It.IsAny<string>()))
-                .Returns(Task.Run(() => new List<Wellbore>() as IList<Wellbore>));
-
             _logObjectService = new();
 
             _mnemonicService = new();
@@ -55,7 +48,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Setup(ms => ms.DeleteMnemonic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LogCurveInfo>()))
                 .Returns(Task.Run(() => new QueryResult(true)));
 
-            _worker = new DeleteEmptyMnemonicsWorker(logger, witsmlClientProvider.Object, _wellboreService.Object, _logObjectService.Object, _mnemonicService.Object);
+            _worker = new DeleteEmptyMnemonicsWorker(logger, witsmlClientProvider.Object, _logObjectService.Object, _mnemonicService.Object);
         }
 
         [Fact]
@@ -65,11 +58,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var dateTime = new DateTime(2023, 8, 20, 12, 0, 0);
 
-            var job = CreateJob(10, dateTime);
+            var job = CreateJob(10, dateTime, testWellbores: true);
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
-
-            _wellboreService.Verify(s => s.GetWellbores(It.IsAny<string>()), Times.Never);
 
             _mnemonicService.Verify(s => s.DeleteMnemonic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LogCurveInfo>()),
                 Times.Never);
@@ -81,9 +72,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". No empty mnemonics were found and deleted.",
                 job.JobInfo.Report.Summary);
 
-            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112", job.JobInfo.Description);
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112; LogUids: ;", job.JobInfo.Description);
             Assert.Equal("Well111", job.JobInfo.WellName);
             Assert.Equal("Wellbore112", job.JobInfo.WellboreName);
+            Assert.Equal("", job.JobInfo.ObjectName);
         }
 
         [Fact]
@@ -93,11 +85,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var dateTime = new DateTime(2023, 8, 20, 12, 0, 0);
 
-            var job = CreateJob(0, dateTime);
+            var job = CreateJob(0, dateTime, testWellbores: true);
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
-
-            _wellboreService.Verify(s => s.GetWellbores(It.IsAny<string>()), Times.Never);
 
             _mnemonicService.Verify(s => s.DeleteMnemonic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LogCurveInfo>()),
                 Times.Once);
@@ -109,9 +99,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal("3 mnemonics were checked for NullDepthValue: \"0\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". One empty mnemonic was found and deleted.",
                 job.JobInfo.Report.Summary);
 
-            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112", job.JobInfo.Description);
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112; LogUids: ;", job.JobInfo.Description);
             Assert.Equal("Well111", job.JobInfo.WellName);
             Assert.Equal("Wellbore112", job.JobInfo.WellboreName);
+            Assert.Equal("", job.JobInfo.ObjectName);
         }
 
         [Fact]
@@ -121,11 +112,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var dateTime = new DateTime(2023, 3, 21, 12, 0, 0);
 
-            var job = CreateJob(10, dateTime);
+            var job = CreateJob(10, dateTime, testWellbores: true);
 
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
-
-            _wellboreService.Verify(s => s.GetWellbores(It.IsAny<string>()), Times.Never);
 
             _mnemonicService.Verify(s => s.DeleteMnemonic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LogCurveInfo>()),
                 Times.Exactly(2));
@@ -137,9 +126,64 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal("3 mnemonics were checked for NullDepthValue: \"10\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". 2 empty mnemonics were found and deleted.",
                 job.JobInfo.Report.Summary);
 
-            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112", job.JobInfo.Description);
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112; LogUids: ;", job.JobInfo.Description);
             Assert.Equal("Well111", job.JobInfo.WellName);
             Assert.Equal("Wellbore112", job.JobInfo.WellboreName);
+            Assert.Equal("", job.JobInfo.ObjectName);
+        }
+
+        [Fact]
+        public async Task DeleteWellMnemonics()
+        {
+            SetupDepthLogObject();
+
+            var dateTime = new DateTime(2023, 8, 20, 12, 0, 0);
+
+            var job = CreateJob(0, dateTime, testWells: true);
+
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
+
+            _mnemonicService.Verify(s => s.DeleteMnemonic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LogCurveInfo>()),
+                Times.Once);
+
+            Assert.True(result.IsSuccess);
+
+            Assert.NotNull(job.JobInfo?.Report);
+            Assert.Single(job.JobInfo.Report.ReportItems);
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"0\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". One empty mnemonic was found and deleted.",
+                job.JobInfo.Report.Summary);
+
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: ; LogUids: ;", job.JobInfo.Description);
+            Assert.Equal("Well111", job.JobInfo.WellName);
+            Assert.Equal("", job.JobInfo.WellboreName);
+            Assert.Equal("", job.JobInfo.ObjectName);
+        }
+
+        [Fact]
+        public async Task DeleteLogMnemonics()
+        {
+            SetupDepthLogObject();
+
+            var dateTime = new DateTime(2023, 8, 20, 12, 0, 0);
+
+            var job = CreateJob(0, dateTime, testLogs: true);
+
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
+
+            _mnemonicService.Verify(s => s.DeleteMnemonic(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LogCurveInfo>()),
+                Times.Once);
+
+            Assert.True(result.IsSuccess);
+
+            Assert.NotNull(job.JobInfo?.Report);
+            Assert.Single(job.JobInfo.Report.ReportItems);
+            Assert.Equal("3 mnemonics were checked for NullDepthValue: \"0\" and NullTimeValue: \"" + dateTime.ToISODateTimeString() + "\". One empty mnemonic was found and deleted.",
+                job.JobInfo.Report.Summary);
+
+            Assert.Equal("DeleteEmptyMnemonicsJob - WellUids: 111; WellboreUids: 112; LogUids: 123;", job.JobInfo.Description);
+            Assert.Equal("Well111", job.JobInfo.WellName);
+            Assert.Equal("Wellbore112", job.JobInfo.WellboreName);
+            Assert.Equal("Log123", job.JobInfo.ObjectName);
         }
 
         private void SetupDateTimeLogObject()
@@ -147,6 +191,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _logObjectService
                 .Setup(los => los.GetLogs(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME } }.AsCollection()));
+
+            _logObjectService
+                .Setup(los => los.GetLog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.Run(() => new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME }));
 
             var lcis = new List<LogCurveInfo>();
 
@@ -182,6 +230,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Setup(los => los.GetLogs(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD } }.AsCollection()));
 
+            _logObjectService
+                .Setup(los => los.GetLog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.Run(() => new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD }));
+
             var lcis = new List<LogCurveInfo>();
 
             var lci = new LogCurveInfo
@@ -210,14 +262,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Returns(Task.Run(() => lcis.AsCollection()));
         }
 
-        private DeleteEmptyMnemonicsJob CreateJob(double nullDepthValue, DateTime nullTimeValue)
+        private DeleteEmptyMnemonicsJob CreateJob(double nullDepthValue, DateTime nullTimeValue, bool testWells = false, bool testWellbores = false, bool testLogs = false)
         {
             return new DeleteEmptyMnemonicsJob()
             {
                 NullDepthValue = nullDepthValue,
                 NullTimeValue = nullTimeValue,
-                Wells = new List<WellReference>(),
-                Wellbores = new List<WellboreReference> { new WellboreReference() { WellUid = "111", WellName = "Well111", WellboreUid = "112", WellboreName = "Wellbore112" } },
+                Wells = testWells ? new List<WellReference> { new WellReference() { WellUid = "111", WellName = "Well111" } } : new List<WellReference>(),
+                Wellbores = testWellbores ? new List<WellboreReference> { new WellboreReference() { WellUid = "111", WellName = "Well111", WellboreUid = "112", WellboreName = "Wellbore112" } } : new List<WellboreReference>(),
+                Logs = testLogs ? new List<ObjectReference> { new ObjectReference() { WellUid = "111", WellName = "Well111", WellboreUid = "112", WellboreName = "Wellbore112", Uid = "123", Name = "Log123" } } : new List<ObjectReference>(),
                 JobInfo = new JobInfo()
             };
         }

@@ -35,6 +35,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .IgnoreThisInterface<IAsyncDisposable>()
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
+            AddRepository<LogCurvePriority, string>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
