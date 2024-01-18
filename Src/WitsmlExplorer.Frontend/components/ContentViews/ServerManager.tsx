@@ -9,11 +9,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import {
-  FilterContext,
-  VisibilityStatus,
-  allVisibleObjects
-} from "../../contexts/filter";
 import { UpdateServerListAction } from "../../contexts/modificationActions";
 import ModificationType from "../../contexts/modificationType";
 import { SelectServerAction } from "../../contexts/navigationActions";
@@ -21,7 +16,6 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
 import { Server, emptyServer } from "../../models/server";
 import {
   adminRole,
@@ -31,16 +25,10 @@ import {
 import AuthorizationService, {
   AuthorizationStatus
 } from "../../services/authorizationService";
-import CapService from "../../services/capService";
 import NotificationService from "../../services/notificationService";
 import ServerService from "../../services/serverService";
-import WellService from "../../services/wellService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import {
-  STORAGE_FILTER_HIDDENOBJECTS_KEY,
-  getLocalStorageItem
-} from "../../tools/localStorageHelpers";
 import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
 import UserCredentialsModal, {
   UserCredentialsModalProps
@@ -55,7 +43,6 @@ const ServerManager = (): React.ReactElement => {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
-  const { updateSelectedFilter } = useContext(FilterContext);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const { authorizationState, setAuthorizationState } = useAuthorizationState();
@@ -85,15 +72,15 @@ const ServerManager = (): React.ReactElement => {
         return;
       }
       try {
-        const [wells, supportedObjects] = await Promise.all([
-          WellService.getWells(),
-          CapService.getCapObjects()
-        ]);
-        updateVisibleObjects(supportedObjects);
-        dispatchNavigation({
-          type: ModificationType.UpdateWells,
-          payload: { wells: wells }
-        });
+        // const [wells, supportedObjects] = await Promise.all([
+        //   WellService.getWells(),
+        //   CapService.getCapObjects()
+        // ]);
+        // updateVisibleObjects(supportedObjects);
+        // dispatchNavigation({
+        //   type: ModificationType.UpdateWells,
+        //   payload: { wells: wells }
+        // });
         navigate(`servers/${encodeURIComponent(selectedServer.url)}/wells`);
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
@@ -136,28 +123,28 @@ const ServerManager = (): React.ReactElement => {
     }
   }, [isAuthenticated, hasFetchedServers]);
 
-  const updateVisibleObjects = (supportedObjects: string[]) => {
-    const updatedVisibility = { ...allVisibleObjects };
-    const hiddenItems = getLocalStorageItem<ObjectType[]>(
-      STORAGE_FILTER_HIDDENOBJECTS_KEY,
-      { defaultValue: [] }
-    );
-    hiddenItems.forEach(
-      (objectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden)
-    );
-    Object.values(ObjectType)
-      .filter(
-        (objectType) =>
-          !supportedObjects
-            .map((o) => o.toLowerCase())
-            .includes(objectType.toLowerCase())
-      )
-      .forEach(
-        (objectType) =>
-          (updatedVisibility[objectType] = VisibilityStatus.Disabled)
-      );
-    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
-  };
+  // const updateVisibleObjects = (supportedObjects: string[]) => {
+  //   const updatedVisibility = { ...allVisibleObjects };
+  //   const hiddenItems = getLocalStorageItem<ObjectType[]>(
+  //     STORAGE_FILTER_HIDDENOBJECTS_KEY,
+  //     { defaultValue: [] }
+  //   );
+  //   hiddenItems.forEach(
+  //     (objectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden)
+  //   );
+  //   Object.values(ObjectType)
+  //     .filter(
+  //       (objectType) =>
+  //         !supportedObjects
+  //           .map((o) => o.toLowerCase())
+  //           .includes(objectType.toLowerCase())
+  //     )
+  //     .forEach(
+  //       (objectType) =>
+  //         (updatedVisibility[objectType] = VisibilityStatus.Disabled)
+  //     );
+  //   updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+  // };
 
   const onSelectItem = async (server: Server) => {
     if (server.id === selectedServer?.id) {
