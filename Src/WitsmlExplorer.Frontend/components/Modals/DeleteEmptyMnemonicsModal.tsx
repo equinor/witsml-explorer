@@ -1,3 +1,4 @@
+import { Checkbox, Icon, Tooltip, Typography } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
@@ -25,12 +26,13 @@ const DeleteEmptyMnemonicsModal = (
   const { wells, wellbores, logs } = props;
   const {
     dispatchOperation,
-    operationState: { timeZone }
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const [nullDepthValue, setNullDepthValue] = useState<number>(-999.25);
   const [nullTimeValue, setNullTimeValue] = useState<string>(
     "1900-01-01T00:00:00.000Z"
   );
+  const [deleteNullIndex, setDeleteNullIndex] = useState<boolean>(false);
   const [nullTimeValueValid, setNullTimeValueValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -52,7 +54,8 @@ const DeleteEmptyMnemonicsModal = (
       }),
       logs: logs?.map((log) => toObjectReference(log)),
       nullDepthValue: nullDepthValue,
-      nullTimeValue: nullTimeValue
+      nullTimeValue: nullTimeValue,
+      deleteNullIndex: deleteNullIndex
     };
 
     const jobId = await JobService.orderJob(JobType.DeleteEmptyMnemonics, job);
@@ -90,6 +93,22 @@ const DeleteEmptyMnemonicsModal = (
               value={nullDepthValue}
               onChange={(e: any) => setNullDepthValue(+e.target.value)}
             />
+            <CheckboxLayout>
+              <Checkbox
+                checked={deleteNullIndex}
+                onChange={() => setDeleteNullIndex(!deleteNullIndex)}
+              />
+              <Typography>
+                Delete mnemonics with missing minIndex and maxIndex
+              </Typography>
+              <Tooltip title="This will also delete mnemonics where the minIndex and maxIndex in LogCurveInfo are not returned from the server. These properties normally contains the null value.">
+                <Icon
+                  name="infoCircle"
+                  color={colors.interactive.primaryResting}
+                  size={18}
+                />
+              </Tooltip>
+            </CheckboxLayout>
           </ContentLayout>
         }
         confirmDisabled={!nullTimeValueValid}
@@ -104,6 +123,13 @@ const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+`;
+
+const CheckboxLayout = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: center;
 `;
 
 export default DeleteEmptyMnemonicsModal;

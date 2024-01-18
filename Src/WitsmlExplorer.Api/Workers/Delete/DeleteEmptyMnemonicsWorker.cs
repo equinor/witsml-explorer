@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
                     logCurvesCheckedCount += logCurves.Count;
 
-                    var mnemonicsToDelete = FindNullMnemonics(job.NullDepthValue, job.NullTimeValue, logToCheck, logCurves);
+                    var mnemonicsToDelete = FindNullMnemonics(job.NullDepthValue, job.NullTimeValue, job.DeleteNullIndex, logToCheck, logCurves);
 
                     foreach (var mnemonicToDelete in mnemonicsToDelete)
                     {
@@ -154,7 +154,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             return await _mnemonicService.DeleteMnemonic(wellUid, wellboreUid, logToCheckUid, mnemonicToDelete);
         }
 
-        private ICollection<LogCurveInfo> FindNullMnemonics(double nullDepthValue, DateTime nullTimeValue, LogObject logToCheck, ICollection<LogCurveInfo> logCurves)
+        private ICollection<LogCurveInfo> FindNullMnemonics(double nullDepthValue, DateTime nullTimeValue, bool deleteNullIndex, LogObject logToCheck, ICollection<LogCurveInfo> logCurves)
         {
             var nullMnemonics = new List<LogCurveInfo>();
 
@@ -166,15 +166,15 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
                 {
                     nullMnemonics.AddRange(logCurves.Where(logCurve =>
-                        (logCurve.MinDepthIndex == nullDepthValueString || logCurve.MinDepthIndex == null) &&
-                        (logCurve.MaxDepthIndex == nullDepthValueString || logCurve.MaxDepthIndex == null)
+                        (logCurve.MinDepthIndex == nullDepthValueString || (deleteNullIndex && logCurve.MinDepthIndex == null)) &&
+                        (logCurve.MaxDepthIndex == nullDepthValueString || (deleteNullIndex && logCurve.MaxDepthIndex == null))
                     ));
                 }
                 else if (logToCheck.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
                 {
                     nullMnemonics.AddRange(logCurves.Where(logCurve =>
-                        (logCurve.MinDateTimeIndex == nullTimeValueString || logCurve.MinDateTimeIndex == null) &&
-                        (logCurve.MaxDateTimeIndex == nullTimeValueString || logCurve.MaxDateTimeIndex == null)
+                        (logCurve.MinDateTimeIndex == nullTimeValueString || (deleteNullIndex && logCurve.MinDateTimeIndex == null)) &&
+                        (logCurve.MaxDateTimeIndex == nullTimeValueString || (deleteNullIndex && logCurve.MaxDateTimeIndex == null))
                     ));
                 }
             }

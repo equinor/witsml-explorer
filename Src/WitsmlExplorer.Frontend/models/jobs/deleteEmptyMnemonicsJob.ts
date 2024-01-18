@@ -8,4 +8,5 @@ export interface DeleteEmptyMnemonicsJob {
   logs: ObjectReference[];
   nullDepthValue: number;
   nullTimeValue: string;
+  deleteNullIndex: boolean;
 }
