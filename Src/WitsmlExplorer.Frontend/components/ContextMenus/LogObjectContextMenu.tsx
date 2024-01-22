@@ -267,7 +267,7 @@ const LogObjectContextMenu = (
         <Typography color={"primary"}>
           {menuItemText(
             "paste",
-            "log curve",
+            "mnemonic",
             logCurvesReference?.componentUids
           )}
         </Typography>
