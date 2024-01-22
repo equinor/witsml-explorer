@@ -46,6 +46,7 @@ export const copyComponentsToServer = async (
     startIndex,
     endIndex
   } = props;
+
   dispatchOperation({ type: OperationType.HideContextMenu });
   const wellUid = sourceParent.wellUid;
   const wellboreUid = sourceParent.wellboreUid;
@@ -103,7 +104,8 @@ export const copyComponentsToServer = async (
       (componentToCopy) => getId(componentToCopy) === getId(component)
     )
   );
-  if (existingTargetComponents.length > 0) {
+
+  if (existingTargetComponents.length > 0 && startIndex === undefined) {
     replaceComponents();
   } else {
     AuthorizationService.setSourceServer(sourceServer);
@@ -143,7 +145,7 @@ export const copyComponentsToServer = async (
       };
       const replaceJob: ReplaceComponentsJob = { deleteJob, copyJob };
       await JobService.orderJobAtServer(
-        startIndex !== undefined
+        componentType == ComponentType.Mnemonic
           ? JobType.ReplaceLogs
           : JobType.ReplaceComponents,
         replaceJob,
@@ -175,6 +177,7 @@ function printUid(component: { uid: string }): JSX.Element {
 }
 
 function printCurveInfo(curve: LogCurveInfo): JSX.Element {
+  console.log(curve);
   const isDepthIndex = !!curve.maxDepthIndex;
   return (
     <Fragment key={curve.mnemonic}>

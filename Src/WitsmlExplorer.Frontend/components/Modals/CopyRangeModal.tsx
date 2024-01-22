@@ -20,6 +20,7 @@ import React, { useContext, useState } from "react";
 export interface CopyRangeModalProps {
   mnemonics: string[];
   onSubmit?: (minIndex: string | number, maxIndex: string | number) => void;
+  infoMessage?: string;
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
@@ -83,6 +84,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
               onValidChange={toggleConfirmDisabled}
             />
           )}
+          {props.infoMessage !== undefined && <p>{props.infoMessage} </p>}
         </>
       }
       isLoading={false}

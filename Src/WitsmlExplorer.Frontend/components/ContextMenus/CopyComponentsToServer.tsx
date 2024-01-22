@@ -43,6 +43,8 @@ export const CopyComponentsToServerMenuItem = (
     if (withRange === true) {
       const copyRangeModalProps: CopyRangeModalProps = {
         mnemonics: [],
+        infoMessage:
+          "This will replace all data in your selected range on the target with data from the source. Data outside this range will be preserved on target.",
         onSubmit(startIndex, endIndex) {
           const componentsToCopyWithRange =
             componentsToCopy as ComponentWithRange[];
