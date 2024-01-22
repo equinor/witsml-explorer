@@ -15,6 +15,7 @@ namespace WitsmlExplorer.Api.Jobs
         public ICollection<ObjectReference> Logs { get; init; } = new List<ObjectReference>();
         public double NullDepthValue { get; init; }
         public DateTime NullTimeValue { get; init; }
+        public bool DeleteNullIndex { get; init; }
 
         public override string Description()
         {
