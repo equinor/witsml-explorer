@@ -19,6 +19,8 @@ import React, { useContext, useState } from "react";
 
 export interface CopyRangeModalProps {
   mnemonics: string[];
+  onSubmit?: (minIndex: string | number, maxIndex: string | number) => void;
+  infoMessage?: string;
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
@@ -30,17 +32,22 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
   const selectedLog = selectedObject as LogObject;
+  const { onSubmit: onSubmitOverride } = props;
 
   const onSubmit = async () => {
-    const componentReferences: CopyRangeClipboard = createComponentReferences(
-      props.mnemonics,
-      selectedLog,
-      ComponentType.Mnemonic,
-      selectedServer.url
-    );
-    componentReferences.startIndex = startIndex.toString();
-    componentReferences.endIndex = endIndex.toString();
-    await navigator.clipboard.writeText(JSON.stringify(componentReferences));
+    if (onSubmitOverride) {
+      onSubmitOverride(startIndex, endIndex);
+    } else {
+      const componentReferences: CopyRangeClipboard = createComponentReferences(
+        props.mnemonics,
+        selectedLog,
+        ComponentType.Mnemonic,
+        selectedServer.url
+      );
+      componentReferences.startIndex = startIndex.toString();
+      componentReferences.endIndex = endIndex.toString();
+      await navigator.clipboard.writeText(JSON.stringify(componentReferences));
+    }
     dispatchOperation({ type: OperationType.HideModal });
   };
 
@@ -77,6 +84,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
               onValidChange={toggleConfirmDisabled}
             />
           )}
+          {props.infoMessage !== undefined && <p>{props.infoMessage} </p>}
         </>
       }
       isLoading={false}
