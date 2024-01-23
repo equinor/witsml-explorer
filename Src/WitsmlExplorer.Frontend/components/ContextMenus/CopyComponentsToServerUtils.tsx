@@ -145,9 +145,7 @@ export const copyComponentsToServer = async (
       };
       const replaceJob: ReplaceComponentsJob = { deleteJob, copyJob };
       await JobService.orderJobAtServer(
-        componentType == ComponentType.Mnemonic
-          ? JobType.ReplaceLogs
-          : JobType.ReplaceComponents,
+        JobType.ReplaceComponents,
         replaceJob,
         targetServer,
         sourceServer
@@ -177,7 +175,6 @@ function printUid(component: { uid: string }): JSX.Element {
 }
 
 function printCurveInfo(curve: LogCurveInfo): JSX.Element {
-  console.log(curve);
   const isDepthIndex = !!curve.maxDepthIndex;
   return (
     <Fragment key={curve.mnemonic}>
