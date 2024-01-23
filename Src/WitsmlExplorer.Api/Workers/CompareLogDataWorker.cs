@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers
         public JobType JobType => JobType.CompareLogData;
         private List<ICompareLogDataItem> _compareLogDataReportItems;
         private Dictionary<string, int> _mnemonicsMismatchCount;
-        private const int MaxMismatchesLimit = 10000;
+        private const int MaxMismatchesLimit = 500;
         private int _sourceDepthLogDecimals;
         private int _targetDepthLogDecimals;
         private int _smallestDepthLogDecimals;
@@ -81,7 +81,6 @@ namespace WitsmlExplorer.Api.Workers
                 {
 
                     _mnemonicsMismatchCount[mnemonic] = 0;
-                    if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
                     if (sharedMnemonics.Contains(mnemonic))
                     {
                         await AddSharedMnemonicData(sourceLog, targetLog, mnemonic);
@@ -139,7 +138,7 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
             {
-                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
 
                 var data = dataRow.Split(CommonConstants.DataSeparator);
                 var index = data.First();
@@ -183,7 +182,7 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string index in indexes)
             {
-                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
 
                 if (sourceData.ContainsKey(index) && targetData.ContainsKey(index))
                 {
@@ -228,7 +227,7 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string index in allIndexes)
             {
-                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
 
                 string roundedIndex = RoundStringDouble(index, _smallestDepthLogDecimals);
 
@@ -269,7 +268,7 @@ namespace WitsmlExplorer.Api.Workers
             string mnemonicsMismatchCountResult = "\nNumber of mismatches for each mnemonic:";
             foreach (KeyValuePair<string, int> keyValues in sortedMnemonicsMismatchCount)
             {
-                mnemonicsMismatchCountResult += $"\n{keyValues.Key}: {keyValues.Value:n0}";
+                mnemonicsMismatchCountResult += keyValues.Value >= 500 ? $"\n{keyValues.Key}: {keyValues.Value:n0} or more" : $"\n{keyValues.Key}: {keyValues.Value:n0}";
             }
 
             return new BaseReport
@@ -279,7 +278,7 @@ namespace WitsmlExplorer.Api.Workers
                 ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult
                 : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.",
                 ReportItems = _compareLogDataReportItems,
-                WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"After finding {MaxMismatchesLimit:n0} mismatches in the data indexes, we stopped comparing logs since this is the maximum limit for mismatches during the search. Something is likely wrong with the compare log setup. However, the report for the comparison so far can be found below." : null,
+                WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"When finding {MaxMismatchesLimit:n0} mismatches while searching through data indexes for any mnemonic, we stop comparing the log data for that particular mnemonic. This is because {MaxMismatchesLimit:n0} is the maximum limit for mismatches during the search for each mnemonic. It indicates that there might be an issue with the compare log setup. However, you can still access the report for the comparison performed below." : null,
             };
         }
 
