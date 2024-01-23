@@ -231,6 +231,12 @@ const LogCurveInfoContextMenu = (
           )} with range`}</Typography>
         </MenuItem>,
         <CopyComponentsToServerMenuItem
+          key={"copyComponentToServerWithRange"}
+          componentType={ComponentType.Mnemonic}
+          componentsToCopy={checkedLogCurveInfoRows}
+          withRange
+        />,
+        <CopyComponentsToServerMenuItem
           key={"copyComponentToServer"}
           componentType={ComponentType.Mnemonic}
           componentsToCopy={checkedLogCurveInfoRows}

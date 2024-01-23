@@ -265,11 +265,7 @@ const LogObjectContextMenu = (
       >
         <StyledIcon name="paste" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>
-          {menuItemText(
-            "paste",
-            "log curve",
-            logCurvesReference?.componentUids
-          )}
+          {menuItemText("paste", "mnemonic", logCurvesReference?.componentUids)}
         </Typography>
       </MenuItem>,
       <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} icon="edit">
