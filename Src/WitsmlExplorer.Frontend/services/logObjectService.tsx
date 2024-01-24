@@ -13,13 +13,15 @@ export default class LogObjectService {
     startIndexIsInclusive: boolean,
     startIndex: string,
     endIndex: string,
+    loadAllData: boolean,
     abortSignal: AbortSignal
   ): Promise<LogData> {
     if (mnemonics.length === 0) return;
     const params = [
       `startIndex=${encodeURIComponent(startIndex)}`,
       `endIndex=${encodeURIComponent(endIndex)}`,
-      `startIndexIsInclusive=${startIndexIsInclusive}`
+      `startIndexIsInclusive=${startIndexIsInclusive}`,
+      `loadAllData=${loadAllData}`
     ];
     const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join(
       "&"

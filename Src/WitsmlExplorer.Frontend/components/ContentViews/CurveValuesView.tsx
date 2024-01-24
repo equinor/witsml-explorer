@@ -1,5 +1,6 @@
-import { Switch, Typography } from "@equinor/eds-core-react";
+import { Radio, Switch, Typography } from "@equinor/eds-core-react";
 import { Button } from "@material-ui/core";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   MILLIS_IN_SECOND,
   SECONDS_IN_MINUTE,
@@ -25,6 +26,7 @@ import ConfirmModal from "components/Modals/ConfirmModal";
 import ProgressSpinner from "components/ProgressSpinner";
 import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
+import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
 import orderBy from "lodash/orderBy";
@@ -55,6 +57,12 @@ const DEFAULT_REFRESH_DELAY = 5.0; // seconds
 const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
+
+enum DownloadOptions {
+  All = "All",
+  IntervalOfData = "IntervalOfData",
+  SelectedIndexValues = "SelectedIndexValues"
+}
 
 export const CurveValuesView = (): React.ReactElement => {
   const {
@@ -88,6 +96,15 @@ export const CurveValuesView = (): React.ReactElement => {
   const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
   const selectedLog = selectedObject as LogObject;
   const { exportData, exportOptions } = useExport();
+  let downloadOptions: DownloadOptions = DownloadOptions.IntervalOfData;
+
+  const onChangeDownloadOption = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedValue = event.target.value;
+    const enumToString = selectedValue as DownloadOptions;
+    downloadOptions = enumToString;
+  };
 
   const onRowSelectionChange = useCallback(
     (rows: CurveValueRow[]) => setSelectedRows(rows),
@@ -174,6 +191,65 @@ export const CurveValuesView = (): React.ReactElement => {
     },
     [getIndexRanges, toObjectReference]
   );
+
+  const executeExport = () => {
+    switch (downloadOptions) {
+      case DownloadOptions.All:
+        exportAll();
+        displayDownloadProgress(dispatchOperation);
+        break;
+      case DownloadOptions.IntervalOfData:
+        exportSelectedIndexRange();
+        break;
+      case DownloadOptions.SelectedIndexValues:
+        exportSelectedDataPoints();
+    }
+  };
+
+  const exportAll = useCallback(async () => {
+    const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
+    const startIndexIsInclusive = !autoRefresh;
+    controller.current = new AbortController();
+
+    const logData: LogData = await LogObjectService.getLogData(
+      selectedWell.uid,
+      selectedWellbore.uid,
+      selectedLog.uid,
+      mnemonics,
+      startIndexIsInclusive,
+      selectedLog.startIndex,
+      selectedLog.endIndex,
+      true,
+      controller.current.signal
+    );
+
+    const logDataRows = logData.data.map((data) => {
+      const row: CurveValueRow = {
+        id: String(data[selectedLog.indexCurve]),
+        ...data
+      };
+      return row;
+    });
+    const exportColumns = columns
+      .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
+      .join(exportOptions.separator);
+
+    const data = orderBy(logDataRows, getComparatorByColumn(columns[0]), [
+      Order.Ascending,
+      Order.Ascending
+    ]) //Sorted because order is important when importing data
+      .map((row) =>
+        columns
+          .map((col) => row[col.columnOf.mnemonic] as string)
+          .join(exportOptions.separator)
+      )
+      .join(exportOptions.newLineCharacter);
+    exportData(
+      `${selectedWellbore.name}-${selectedLog.name}`,
+      exportColumns,
+      data
+    );
+  }, [columns]);
 
   const exportSelectedIndexRange = useCallback(() => {
     const exportColumns = columns
@@ -365,6 +441,82 @@ export const CurveValuesView = (): React.ReactElement => {
     }
   };
 
+  const displayConfirmation = (dispatchOperation: DispatchOperation) => {
+    const confirmation = (
+      <ConfirmModal
+        heading={"Download"}
+        content={
+          <>
+            <span>Choose download option?</span>
+            <label style={alignLayout}>
+              <Radio
+                name="group"
+                value={DownloadOptions.IntervalOfData}
+                id={DownloadOptions.IntervalOfData}
+                onChange={onChangeDownloadOption}
+                defaultChecked
+              />
+              Download shown interval
+            </label>
+            <label style={alignLayout}>
+              <Radio
+                name="group"
+                id={DownloadOptions.SelectedIndexValues}
+                value={DownloadOptions.SelectedIndexValues}
+                onChange={onChangeDownloadOption}
+                disabled={!selectedRows.length}
+              />
+              Download selected
+            </label>
+            <label style={alignLayout}>
+              <Radio
+                name="group"
+                id={DownloadOptions.All}
+                value={DownloadOptions.All}
+                onChange={onChangeDownloadOption}
+              />
+              Download all data
+            </label>
+          </>
+        }
+        onConfirm={() => {
+          dispatchOperation({ type: OperationType.HideModal });
+          executeExport();
+        }}
+        confirmText={"OK"}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
+  };
+
+  const displayDownloadProgress = (dispatchOperation: DispatchOperation) => {
+    const dowloadProgress = (
+      <ConfirmModal
+        heading={"Download of data in progress"}
+        content={
+          <>
+            You can close that window. File will be available in the jobs view
+            when ready.
+          </>
+        }
+        onConfirm={() => {
+          dispatchOperation({ type: OperationType.HideModal });
+        }}
+        confirmText={"OK"}
+        showCancelButton={false}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: dowloadProgress
+    });
+  };
+
   const getLogData = async (startIndex: string, endIndex: string) => {
     const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
     const startIndexIsInclusive = !autoRefresh;
@@ -378,6 +530,7 @@ export const CurveValuesView = (): React.ReactElement => {
       startIndexIsInclusive,
       startIndex,
       endIndex,
+      false,
       controller.current.signal
     );
     if (logData && logData.data) {
@@ -403,16 +556,9 @@ export const CurveValuesView = (): React.ReactElement => {
       <Button
         key="downloadall"
         disabled={isLoading}
-        onClick={() => exportSelectedIndexRange()}
+        onClick={() => displayConfirmation(dispatchOperation)}
       >
         Download all as .csv
-      </Button>,
-      <Button
-        key="downloadselected"
-        disabled={isLoading || !selectedRows.length}
-        onClick={() => exportSelectedDataPoints()}
-      >
-        Download selected as .csv
       </Button>
     ],
     [
@@ -426,6 +572,7 @@ export const CurveValuesView = (): React.ReactElement => {
   if (!selectedLog || !selectedLogCurveInfo) return null;
   return (
     <>
+      {selectedRows.length}
       <ContentContainer>
         <CommonPanelContainer>
           <EditSelectedLogCurveInfo
@@ -588,3 +735,8 @@ const ContentContainer = styled.div`
   flex-direction: column;
   height: 100%;
 `;
+
+const alignLayout: CSSProperties = {
+  display: "flex",
+  alignItems: "center"
+};

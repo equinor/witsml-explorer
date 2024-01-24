@@ -36,11 +36,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
             [FromQuery(Name = "startIndex")] string startIndex,
             [FromQuery(Name = "endIndex")] string endIndex,
             [FromQuery(Name = "startIndexIsInclusive")] bool startIndexIsInclusive,
+            [FromQuery(Name = "loadAllData")] bool loadAllData,
             [FromBody] IEnumerable<string> mnemonics,
             ILogObjectService logObjectService)
         {
             if (mnemonics.Any())
             {
+                if (loadAllData == true)
+                {
+                    LogData logDataRecursive = await logObjectService.ReadLogDataRecursive(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
+                    return TypedResults.Ok(logDataRecursive);
+                }
                 LogData logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
                 return TypedResults.Ok(logData);
             }

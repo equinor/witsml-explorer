@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -26,6 +27,7 @@ namespace WitsmlExplorer.Api.Services
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
         Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
         Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end);
+        Task<LogData> ReadLogDataRecursive(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -195,6 +197,59 @@ namespace WitsmlExplorer.Api.Services
             };
         }
 
+        public async Task<LogData> ReadLogDataRecursive(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end)
+        {
+            WitsmlLog log = await GetLogHeader(wellUid, wellboreUid, logUid);
+
+            Index startIndex = Index.Start(log, start);
+            Index endIndex = Index.End(log, end);
+
+            if ((!log.IsDecreasing() && startIndex > endIndex) || (log.IsDecreasing() && startIndex < endIndex))
+            {
+                return new LogData();
+            }
+
+            string indexMnemonic = log.IndexCurve.Value;
+            if (!mnemonics.Contains(indexMnemonic))
+            {
+                mnemonics.Insert(0, indexMnemonic);
+            }
+
+            await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
+            WitsmlLogData logData = await logDataReader.GetNextBatch();
+            var allLogData = logData;
+            while (logData != null)
+            {
+                allLogData.Data.AddRange(logData.Data);
+                logData = await logDataReader.GetNextBatch();
+            }
+
+            if (allLogData == null || allLogData.Data.IsNullOrEmpty())
+            {
+                return new LogData();
+            }
+
+            if (!startIndexIsInclusive)
+            {
+                allLogData.Data.RemoveAt(0);
+                if (allLogData.Data.Count == 0)
+                {
+                    return new LogData();
+                }
+            }
+
+            string[] witsmlLogMnemonics = allLogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            string[] witsmlLogUnits = allLogData.UnitList.Split(CommonConstants.DataSeparator);
+
+            return new LogData
+            {
+                StartIndex = startIndex.GetValueAsString(),
+                EndIndex = endIndex.GetValueAsString(),
+                CurveSpecifications = witsmlLogMnemonics.Zip(witsmlLogUnits, (mnemonic, unit) =>
+                    new CurveSpecification { Mnemonic = mnemonic, Unit = unit }).ToList(),
+                Data = GetDataDictionary(allLogData)
+            };
+        }
         private static ICollection<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)
         {
             List<Dictionary<string, LogDataValue>> result = new();
