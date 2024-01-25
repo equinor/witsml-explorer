@@ -1,5 +1,14 @@
-import { ContextMenu, OperationState, reducer, TimeZone, UserTheme } from "../operationStateReducer";
-import OperationType from "../operationType";
+import {
+  ContextMenu,
+  DateTimeFormat,
+  DecimalPreference,
+  OperationState,
+  reducer,
+  TimeZone,
+  UserTheme
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { light } from "styles/Colors";
 
 it("Should set context menu", () => {
   const setCurrentContextMenu = {
@@ -45,13 +54,20 @@ it("Should display properties modal and hide context menu", () => {
   });
 });
 
-const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
+const EMPTY_CONTEXT_MENU: ContextMenu = {
+  component: null,
+  position: { mouseX: null, mouseY: null }
+};
+
 const getEmptyState = (): OperationState => {
   return {
     contextMenu: EMPTY_CONTEXT_MENU,
     progressIndicatorValue: 0,
     theme: UserTheme.Compact,
     modals: [],
-    timeZone: TimeZone.Local
+    timeZone: TimeZone.Local,
+    dateTimeFormat: DateTimeFormat.Raw,
+    decimals: DecimalPreference.Raw,
+    colors: light
   };
 };

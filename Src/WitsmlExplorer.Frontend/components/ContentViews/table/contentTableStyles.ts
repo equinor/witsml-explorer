@@ -1,6 +1,6 @@
 import { TableCell } from "@material-ui/core";
 import styled from "styled-components";
-import { Colors, light } from "../../../styles/Colors";
+import { Colors, light } from "styles/Colors";
 
 export const TableContainer = styled.div<{ showPanel?: boolean }>`
   overflow-y: auto;
@@ -49,13 +49,20 @@ export const StyledTr = styled.tr<{ selected?: boolean; colors: Colors }>`
   top: 0;
   left: 0;
   &&& {
-    background-color: ${(props) => (props.selected ? props.colors.interactive.textHighlight : props.colors.ui.backgroundDefault)};
+    background-color: ${(props) =>
+      props.selected
+        ? props.colors.interactive.textHighlight
+        : props.colors.ui.backgroundDefault};
   }
   &&&:nth-of-type(even) {
-    background-color: ${(props) => (props.selected ? props.colors.interactive.textHighlight : props.colors.interactive.tableHeaderFillResting)};
+    background-color: ${(props) =>
+      props.selected
+        ? props.colors.interactive.textHighlight
+        : props.colors.interactive.tableHeaderFillResting};
   }
   &&&:hover {
-    background-color: ${(props) => props.colors.interactive.tableCellFillActivated};
+    background-color: ${(props) =>
+      props.colors.interactive.tableCellFillActivated};
   }
 `;
 
@@ -63,7 +70,8 @@ export const StyledTh = styled(TableCell)<{ sticky?: number; colors: Colors }>`
   && {
     border-right: 1px solid rgba(224, 224, 224, 1);
     border-bottom-width: 2px;
-    background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
+    background-color: ${(props) =>
+      props.colors.interactive.tableHeaderFillResting};
     color: ${(props) => props.colors.text.staticIconsDefault};
     text-align: center;
     font-family: EquinorMedium, Arial, sans-serif;
@@ -78,7 +86,11 @@ export const StyledTh = styled(TableCell)<{ sticky?: number; colors: Colors }>`
   ${(props) => (props.sticky ? "&&&{ position: sticky; z-index: 3; }" : "")}
 `;
 
-export const StyledTd = styled(TableCell)<{ clickable?: number; sticky?: number; colors: Colors }>`
+export const StyledTd = styled(TableCell)<{
+  clickable?: number;
+  sticky?: number;
+  colors: Colors;
+}>`
   border-right: 1px solid rgba(224, 224, 224, 1);
   background-color: inherit;
   z-index: 0;

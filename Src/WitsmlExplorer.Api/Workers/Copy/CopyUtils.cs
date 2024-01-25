@@ -37,7 +37,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 try
                 {
-                    QueryResult result = await witsmlClient.AddToStoreAsync(query.AsSingletonWitsmlList());
+                    QueryResult result = await witsmlClient.AddToStoreAsync(query.AsItemInWitsmlList());
                     if (result.IsSuccessful)
                     {
                         _logger.LogInformation(
@@ -75,10 +75,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
             }).ToList());
 
-            string successString = successUids.Count > 0 ? $"Copied {queries.First().GetType().Name}s: {string.Join(", ", successUids)}." : "";
+            var typeName = queries.FirstOrDefault()?.GetType().Name;
+            string successString = successUids.Count > 0 ? $"Copied {typeName}s: {string.Join(", ", successUids)}." : "";
             return !error
                 ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
-                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some {queries.First().GetType().Name}s", errorReason, errorEntity), successUids.Count > 0 ? refreshAction : null);
+                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some {typeName}s", errorReason, errorEntity), successUids.Count > 0 ? refreshAction : null);
         }
     }
 }

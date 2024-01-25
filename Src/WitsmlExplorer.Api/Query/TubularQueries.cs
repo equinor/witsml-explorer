@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 
 using Witsml.Data;
 using Witsml.Data.Measures;
@@ -32,44 +30,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
-            };
-        }
-
-        public static WitsmlTubulars GetWitsmlTubularsById(string wellUid, string wellboreUid, string[] tubularUids)
-        {
-            return new WitsmlTubulars
-            {
-                Tubulars = tubularUids.Select((tubularUid) => new WitsmlTubular
-                {
-                    Uid = tubularUid,
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid
-                }).ToList()
-            };
-        }
-
-        public static WitsmlTubulars CopyTubularComponents(WitsmlTubular tubular, IEnumerable<WitsmlTubularComponent> tubularComponents)
-        {
-            tubular.TubularComponents.AddRange(tubularComponents);
-            WitsmlTubulars copyTubularQuery = new() { Tubulars = new List<WitsmlTubular> { tubular } };
-            return copyTubularQuery;
-        }
-
-        public static WitsmlTubulars DeleteTubularComponents(string wellUid, string wellboreUid, string tubularUid, IEnumerable<string> tubularComponentUids)
-        {
-            return new WitsmlTubulars
-            {
-                Tubulars = new WitsmlTubular
-                {
-                    UidWell = wellUid,
-                    UidWellbore = wellboreUid,
-                    Uid = tubularUid,
-                    TubularComponents = tubularComponentUids.Select(uid => new WitsmlTubularComponent
-                    {
-                        Uid = uid
-                    }).ToList()
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -104,8 +65,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = tubularReference.WellUid,
                     UidWellbore = tubularReference.WellboreUid,
                     Uid = tubularReference.Uid,
-                    TubularComponents = tc.AsSingletonList()
-                }.AsSingletonList()
+                    TubularComponents = tc.AsItemInList()
+                }.AsItemInList()
             };
         }
     }

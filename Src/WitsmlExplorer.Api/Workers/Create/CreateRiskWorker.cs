@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Workers.Create
             Risk risk = job.Risk;
             Verify(risk);
 
-            WitsmlRisks riskToCreate = RiskQueries.CreateRisk(risk);
+            WitsmlRisks riskToCreate = risk.ToWitsml();
 
             QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(riskToCreate);
             if (result.IsSuccessful)

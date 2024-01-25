@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IRigService
     {
-        Task<IEnumerable<Rig>> GetRigs(string wellUid, string wellboreUid);
+        Task<ICollection<Rig>> GetRigs(string wellUid, string wellboreUid);
         Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid);
     }
 
@@ -21,11 +21,11 @@ namespace WitsmlExplorer.Api.Services
     {
         public RigService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
 
-        public async Task<IEnumerable<Rig>> GetRigs(string wellUid, string wellboreUid)
+        public async Task<ICollection<Rig>> GetRigs(string wellUid, string wellboreUid)
         {
             WitsmlRigs witsmlRigs = RigQueries.GetWitsmlRig(wellUid, wellboreUid);
             WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(witsmlRigs, new OptionsIn(ReturnElements.Requested));
-            return result.Rigs.Select(WitsmlRigToRig).OrderBy(rig => rig.Name);
+            return result.Rigs.Select(WitsmlRigToRig).OrderBy(rig => rig.Name).ToList();
         }
 
         public async Task<Rig> GetRig(string wellUid, string wellboreUid, string rigUid)
@@ -33,7 +33,6 @@ namespace WitsmlExplorer.Api.Services
             WitsmlRigs query = RigQueries.GetWitsmlRig(wellUid, wellboreUid, rigUid);
             WitsmlRigs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             WitsmlRig witsmlRig = result.Rigs.FirstOrDefault();
-
             return WitsmlRigToRig(witsmlRig);
         }
 
@@ -48,7 +47,7 @@ namespace WitsmlExplorer.Api.Services
                 DTimEndOp = witsmlRig.DTimEndOp,
                 EmailAddress = witsmlRig.EmailAddress,
                 FaxNumber = witsmlRig.FaxNumber,
-                IsOffshore = witsmlRig.IsOffshore == null ? null : StringHelpers.ToBooleanSafe(witsmlRig.IsOffshore),
+                IsOffshore = witsmlRig.IsOffshore == null ? null : StringHelpers.ToBoolean(witsmlRig.IsOffshore),
                 Owner = witsmlRig.Owner,
                 Manufacturer = witsmlRig.Manufacturer,
                 Name = witsmlRig.Name,

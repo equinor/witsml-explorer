@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IBhaRunService
     {
         Task<BhaRun> GetBhaRun(string wellUid, string wellboreUid, string bhaRunUid);
-        Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid);
+        Task<ICollection<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid);
     }
 
     public class BhaRunService : WitsmlService, IBhaRunService
@@ -25,19 +25,18 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlBhaRuns query = BhaRunQueries.GetWitsmlBhaRun(wellUid, wellboreUid, bhaRunUid);
             WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-            return result.BhaRuns.Any() ? WitsmlToBhaRun(result.BhaRuns.First()) : null;
+            return WitsmlToBhaRun(result.BhaRuns.FirstOrDefault());
         }
-        public async Task<IEnumerable<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
+        public async Task<ICollection<BhaRun>> GetBhaRuns(string wellUid, string wellboreUid)
         {
             WitsmlBhaRuns witsmlBhaRun = BhaRunQueries.GetWitsmlBhaRun(wellUid, wellboreUid);
             WitsmlBhaRuns result = await _witsmlClient.GetFromStoreAsync(witsmlBhaRun, new OptionsIn(ReturnElements.Requested));
-            return result.BhaRuns.Select(WitsmlToBhaRun
-                ).OrderBy(bhaRun => bhaRun.Name);
+            return result.BhaRuns.Select(WitsmlToBhaRun).OrderBy(bhaRun => bhaRun.Name).ToList();
         }
 
         private static BhaRun WitsmlToBhaRun(WitsmlBhaRun bhaRun)
         {
-            return new BhaRun
+            return bhaRun == null ? null : new BhaRun
             {
                 Uid = bhaRun.Uid,
                 Name = bhaRun.Name,
@@ -46,8 +45,11 @@ namespace WitsmlExplorer.Api.Services
                 WellboreName = bhaRun.NameWellbore,
                 WellboreUid = bhaRun.UidWellbore,
                 NumStringRun = bhaRun.NumStringRun,
-                Tubular = bhaRun.Tubular?.Value,
-                TubularUidRef = bhaRun.Tubular?.UidRef,
+                Tubular = new RefNameString
+                {
+                    UidRef = bhaRun.Tubular?.UidRef,
+                    Value = bhaRun.Tubular?.Value
+                },
                 StatusBha = bhaRun.StatusBha ?? null,
                 NumBitRun = bhaRun.NumBitRun,
                 ReasonTrip = bhaRun.ReasonTrip,

@@ -1,11 +1,11 @@
+import { DataItem } from "components/ContentViews/Charts/LogsGraph";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
 import type { ECharts, EChartsOption, SetOptionOpts } from "echarts";
 import { getInstanceByDom, init } from "echarts";
+import { ObjectType } from "models/objectType";
 import type { CSSProperties } from "react";
 import { useContext, useEffect, useRef } from "react";
-import NavigationContext from "../../../contexts/navigationContext";
-import NavigationType from "../../../contexts/navigationType";
-import { ObjectType } from "../../../models/objectType";
-import { DataItem } from "./LogsGraph";
 
 export interface ReactEChartsProps {
   option: EChartsOption;
@@ -17,7 +17,15 @@ export interface ReactEChartsProps {
   height: string;
 }
 
-export function ReactLogChart({ option, style, settings, loading, theme, width, height }: ReactEChartsProps): JSX.Element {
+export function ReactLogChart({
+  option,
+  style,
+  settings,
+  loading,
+  theme,
+  width,
+  height
+}: ReactEChartsProps): JSX.Element {
   const chartRef = useRef<HTMLDivElement>(null);
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore } = navigationState;
@@ -35,7 +43,12 @@ export function ReactLogChart({ option, style, settings, loading, theme, width, 
 
       dispatchNavigation({
         type: NavigationType.SelectObject,
-        payload: { object: log, well: selectedWell, wellbore: selectedWellbore, objectType: ObjectType.Log }
+        payload: {
+          object: log,
+          well: selectedWell,
+          wellbore: selectedWellbore,
+          objectType: ObjectType.Log
+        }
       });
     });
 
@@ -70,5 +83,7 @@ export function ReactLogChart({ option, style, settings, loading, theme, width, 
     }
   }, [loading, theme]);
 
-  return <div ref={chartRef} style={{ width: width, height: height, ...style }} />;
+  return (
+    <div ref={chartRef} style={{ width: width, height: height, ...style }} />
+  );
 }

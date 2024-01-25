@@ -1,6 +1,6 @@
-import LogObject from "../logObject";
-import { toObjectReference } from "../objectOnWellbore";
-import ObjectReference from "./objectReference";
+import ObjectReference from "models/jobs/objectReference";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 
 export default interface TrimLogObjectJob {
   logObject: ObjectReference;
@@ -8,7 +8,11 @@ export default interface TrimLogObjectJob {
   endIndex?: string;
 }
 
-export function createTrimLogObjectJob(log: LogObject, startIndex?: string | number, endIndex?: string | number): TrimLogObjectJob {
+export function createTrimLogObjectJob(
+  log: LogObject,
+  startIndex?: string | number,
+  endIndex?: string | number
+): TrimLogObjectJob {
   const logObject: ObjectReference = toObjectReference(log);
 
   const formatIndexValue = (value?: string | number): string => {

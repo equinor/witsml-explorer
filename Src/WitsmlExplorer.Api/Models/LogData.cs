@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 using WitsmlExplorer.Api.Converters;
@@ -10,8 +11,8 @@ namespace WitsmlExplorer.Api.Models
         public string StartIndex { get; init; }
         public string EndIndex { get; init; }
         public string Direction { get; set; }
-        public IEnumerable<CurveSpecification> CurveSpecifications { get; init; }
-        public IEnumerable<Dictionary<string, LogDataValue>> Data { get; init; }
+        public ICollection<CurveSpecification> CurveSpecifications { get; init; }
+        public ICollection<Dictionary<string, LogDataValue>> Data { get; init; }
     }
 
     public class CurveSpecification
@@ -25,7 +26,7 @@ namespace WitsmlExplorer.Api.Models
     {
         public LogDataValue(string value)
         {
-            Value = double.TryParse(value, out double doubleValue) ? doubleValue : value;
+            Value = double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out double doubleValue) ? doubleValue : value;
         }
         public object Value { get; }
     }

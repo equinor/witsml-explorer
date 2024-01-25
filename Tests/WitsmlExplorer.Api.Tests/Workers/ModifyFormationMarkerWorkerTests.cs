@@ -24,7 +24,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class ModifyFormationMarkerWorkerTests
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
-        private readonly ModifyFormationMarkerWorker _worker;
+        private readonly ModifyObjectOnWellboreWorker _worker;
         private const string FormationMarkerUid = "uid";
 
         public ModifyFormationMarkerWorkerTests()
@@ -34,19 +34,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<ModifyFormationMarkerJob> logger = loggerFactory.CreateLogger<ModifyFormationMarkerJob>();
-            _worker = new ModifyFormationMarkerWorker(logger, witsmlClientProvider.Object);
+            ILogger<ModifyObjectOnWellboreJob> logger = loggerFactory.CreateLogger<ModifyObjectOnWellboreJob>();
+            _worker = new ModifyObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task Execute_ValidNewName_NameModified()
         {
             const string expectedNewName = "NewName";
-            ModifyFormationMarkerJob job = CreateJobTemplate(FormationMarkerUid, expectedNewName);
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(FormationMarkerUid, expectedNewName);
 
             List<WitsmlFormationMarkers> updatedFormationMarkers = new();
             _witsmlClient.Setup(client =>
-                client.UpdateInStoreAsync(It.IsAny<WitsmlFormationMarkers>())).Callback<WitsmlFormationMarkers>(updatedFormationMarkers.Add)
+                client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>())).Callback<IWitsmlQueryType>(updatedFormationMarker => updatedFormationMarkers.Add(updatedFormationMarker as WitsmlFormationMarkers))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -58,25 +58,28 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_EmptyNewName_ThrowsException()
         {
-            ModifyFormationMarkerJob job = CreateJobTemplate(FormationMarkerUid, "");
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(FormationMarkerUid, string.Empty);
 
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-            Assert.Equal("Name cannot be empty", exception.Message);
+            var (workerResult, _) = await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlFormationMarkers>()), Times.Never);
+            Assert.False(workerResult.IsSuccess);
+            Assert.Equal("Name cannot be empty", workerResult.Message);
+
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>()), Times.Never);
         }
 
-        private static ModifyFormationMarkerJob CreateJobTemplate(string uid, string name)
+        private static ModifyObjectOnWellboreJob CreateJobTemplate(string uid, string name)
         {
-            return new ModifyFormationMarkerJob
+            return new ModifyObjectOnWellboreJob
             {
-                FormationMarker = new FormationMarker
+                Object = new FormationMarker
                 {
                     Uid = uid,
                     WellboreUid = "wellboreUid",
                     WellUid = "wellUid",
                     Name = name,
-                }
+                },
+                ObjectType = EntityType.FormationMarker
             };
         }
     }

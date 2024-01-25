@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -19,7 +20,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("sequence")]
         public string SequenceText
         {
-            get => Sequence.HasValue ? XmlConvert.ToString(Sequence.Value) : null;
+            get => Sequence?.ToString(CultureInfo.InvariantCulture);
             set => Sequence = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
@@ -46,7 +47,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("numJointStand")]
         public string NumJointStandText
         {
-            get => NumJointStand.HasValue ? XmlConvert.ToString(NumJointStand.Value) : null;
+            get => NumJointStand?.ToString(CultureInfo.InvariantCulture);
             set => NumJointStand = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 

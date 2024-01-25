@@ -1,9 +1,9 @@
 import { CellProps, Table } from "@equinor/eds-core-react";
+import OperationContext from "contexts/operationContext";
 import { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../../contexts/operationContext";
-import { Colors } from "../../../styles/Colors";
-import Icon from "../../../styles/Icons";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export type SortDirection = "ascending" | "descending" | "none";
 
@@ -43,7 +43,9 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
     columns.map((col) => {
       return {
         ...col,
-        ...(col.sortDirection === undefined ? { sortDirection: "none", isSorted: false } : { sortDirection: col.sortDirection, isSorted: true })
+        ...(col.sortDirection === undefined
+          ? { sortDirection: "none", isSorted: false }
+          : { sortDirection: col.sortDirection, isSorted: true })
       };
     });
   const [state, setState] = useState<State>({ columns: initColumns() });
@@ -85,10 +87,18 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
         }
         const { sortDirection, accessor } = sortedCol;
         if (sortDirection === "ascending") {
-          return left[accessor] > right[accessor] ? 1 : left[accessor] < right[accessor] ? -1 : 0;
+          return left[accessor] > right[accessor]
+            ? 1
+            : left[accessor] < right[accessor]
+            ? -1
+            : 0;
         }
         if (sortDirection === "descending") {
-          return left[accessor] < right[accessor] ? 1 : left[accessor] > right[accessor] ? -1 : 0;
+          return left[accessor] < right[accessor]
+            ? 1
+            : left[accessor] > right[accessor]
+            ? -1
+            : 0;
         }
       }),
     [state.columns]
@@ -116,7 +126,11 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
               isSorted={col.isSorted}
             >
               {col.name}
-              <Icon name={col.sortDirection === "descending" ? "arrowDown" : "arrowUp"} />
+              <Icon
+                name={
+                  col.sortDirection === "descending" ? "arrowDown" : "arrowUp"
+                }
+              />
             </StyledTableHeadCell>
           ))}
         </Table.Row>
@@ -136,7 +150,10 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
   );
 };
 
-const toCellValues = (data: Record<string, any>[], columns: Column[]): string[][] =>
+const toCellValues = (
+  data: Record<string, any>[],
+  columns: Column[]
+): string[][] =>
   data.map((item) =>
     columns.map((column) =>
       typeof item[column.accessor + "Value"] !== "undefined"
@@ -147,7 +164,9 @@ const toCellValues = (data: Record<string, any>[], columns: Column[]): string[][
     )
   );
 
-const StyledTableHeadCell = styled(Table.Cell)<{ isSorted: boolean; colors: Colors } & CellProps>`
+const StyledTableHeadCell = styled(Table.Cell)<
+  { isSorted: boolean; colors: Colors } & CellProps
+>`
   svg {
     visibility: ${({ isSorted }) => (isSorted ? "visible" : "hidden")};
   }
@@ -157,7 +176,8 @@ const StyledTableHeadCell = styled(Table.Cell)<{ isSorted: boolean; colors: Colo
     }
   }
   && {
-    background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
+    background-color: ${(props) =>
+      props.colors.interactive.tableHeaderFillResting};
     color: ${(props) => props.colors.text.staticIconsDefault};
   }
 `;
@@ -167,10 +187,12 @@ export const StyledTableRow = styled(Table.Row)<{ colors: Colors }>`
     background-color: ${(props) => props.colors.ui.backgroundDefault};
   }
   &&&:nth-of-type(even) {
-    background-color: ${(props) => props.colors.interactive.tableHeaderFillResting};
+    background-color: ${(props) =>
+      props.colors.interactive.tableHeaderFillResting};
   }
   &&&:hover {
-    background-color: ${(props) => props.colors.interactive.tableCellFillActivated};
+    background-color: ${(props) =>
+      props.colors.interactive.tableCellFillActivated};
   }
 `;
 

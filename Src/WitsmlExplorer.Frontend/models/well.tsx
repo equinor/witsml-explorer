@@ -1,4 +1,4 @@
-import Wellbore from "./wellbore";
+import Wellbore from "models/wellbore";
 
 export default interface Well {
   uid: string;

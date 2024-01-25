@@ -1,10 +1,10 @@
 import { Icon, Label, TextField } from "@equinor/eds-core-react";
 import { Tooltip } from "@material-ui/core";
+import { StyledButton } from "components/ContentViews/EditSelectedLogCurveInfo";
+import { TooltipLayout } from "components/ContextMenus/OptionsContextMenu";
+import OperationContext from "contexts/operationContext";
 import { ChangeEvent, ReactElement, useContext, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import { TooltipLayout } from "../ContextMenus/OptionsContextMenu";
-import { StyledButton } from "./EditInterval";
 
 interface EditNumberProps {
   label: string;
@@ -15,7 +15,13 @@ interface EditNumberProps {
 }
 
 const EditNumber = (props: EditNumberProps): ReactElement => {
-  const { label, infoTooltip, infoIconColor, defaultValue = 0, onSubmit } = props;
+  const {
+    label,
+    infoTooltip,
+    infoIconColor,
+    defaultValue = 0,
+    onSubmit
+  } = props;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -45,12 +51,21 @@ const EditNumber = (props: EditNumberProps): ReactElement => {
         inputIcon={
           infoTooltip ? (
             <Tooltip title={<TooltipLayout>{infoTooltip}</TooltipLayout>}>
-              <Icon name="infoCircle" color={infoIconColor ?? colors.interactive.primaryResting} size={18} />
+              <Icon
+                name="infoCircle"
+                color={infoIconColor ?? colors.interactive.primaryResting}
+                size={18}
+              />
             </Tooltip>
           ) : null
         }
       />
-      <StyledButton variant={"ghost"} color={"primary"} onClick={submitEditNumber} disabled={!isEdited}>
+      <StyledButton
+        variant={"ghost"}
+        color={"primary"}
+        onClick={submitEditNumber}
+        disabled={!isEdited}
+      >
         <Icon size={16} name={"arrowForward"} />
       </StyledButton>
     </EditNumberLayout>

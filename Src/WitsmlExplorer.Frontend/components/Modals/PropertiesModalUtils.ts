@@ -1,7 +1,10 @@
-import MaxLength from "../../models/maxLength";
-import Measure from "../../models/measure";
+import MaxLength from "models/maxLength";
+import Measure from "models/measure";
 
-export const undefinedOnUnchagedEmptyString = (original?: string, edited?: string): string | null => {
+export const undefinedOnUnchagedEmptyString = (
+  original?: string,
+  edited?: string
+): string | null => {
   if (edited?.length > 0) {
     return edited;
   }
@@ -11,8 +14,15 @@ export const undefinedOnUnchagedEmptyString = (original?: string, edited?: strin
   return "";
 };
 
-export const invalidStringInput = (original: string, edited: string, maxLength: MaxLength): boolean => {
-  return errorOnDeletion(original, edited) || (edited != null && edited.length > maxLength);
+export const invalidStringInput = (
+  original: string,
+  edited: string,
+  maxLength: MaxLength
+): boolean => {
+  return (
+    errorOnDeletion(original, edited) ||
+    (edited != null && edited.length > maxLength)
+  );
 };
 
 const errorOnDeletion = (original: string, edited: string): boolean => {

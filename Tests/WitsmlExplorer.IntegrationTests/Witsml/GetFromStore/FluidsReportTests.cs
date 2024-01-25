@@ -36,7 +36,7 @@ namespace WitsmlExplorer.IntegrationTests.Witsml.GetFromStore
                 UidWell = wellUid,
                 UidWellbore = wellboreUid,
                 Uid = fluidsReportUid
-            }.AsSingletonWitsmlList();
+            }.AsItemInWitsmlList();
             WitsmlFluidsReports serverFluidsReport = await _client.GetFromStoreAsync(queryExisting, new OptionsIn(ReturnElements.All));
             string responseXml = XmlHelper.Serialize(serverFluidsReport);
             string serverFluidsReportXml = TestUtils.CleanResponse(responseXml);

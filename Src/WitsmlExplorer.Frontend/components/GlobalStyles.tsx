@@ -1,6 +1,6 @@
+import { AssetsLoader } from "components/AssetsLoader";
 import { createGlobalStyle } from "styled-components";
-import { Colors } from "../styles/Colors";
-import { AssetsLoader } from "./AssetsLoader";
+import { Colors } from "styles/Colors";
 
 const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
   @font-face {
@@ -142,7 +142,8 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
     }
     li:hover {
      text-decoration: none;
-     background-color: ${(props) => props.colors.interactive.contextMenuItemHover};
+     background-color: ${(props) =>
+       props.colors.interactive.contextMenuItemHover};
     }
   }
 

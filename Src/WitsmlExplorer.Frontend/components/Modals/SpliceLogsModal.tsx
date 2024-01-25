@@ -1,18 +1,27 @@
 import { Accordion, TextField, Typography } from "@equinor/eds-core-react";
-import { DragEvent, ReactElement, useContext, useEffect, useState } from "react";
+import {
+  Draggable,
+  DummyDrop
+} from "components/ContentViews/table/ColumnOptionsMenu";
+import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
+import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
+import { validText } from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import SpliceLogsJob from "models/jobs/spliceLogsJob";
+import LogObject from "models/logObject";
+import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import {
+  DragEvent,
+  ReactElement,
+  useContext,
+  useEffect,
+  useState
+} from "react";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import SpliceLogsJob from "../../models/jobs/spliceLogsJob";
-import LogObject from "../../models/logObject";
-import ObjectOnWellbore, { toObjectReferences } from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import JobService, { JobType } from "../../services/jobService";
-import { Draggable, DummyDrop } from "../ContentViews/table/ColumnOptionsMenu";
-import { StyledAccordionHeader } from "./LogComparisonModal";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
-import { validText } from "./ModalParts";
 
 const lastId = "dummyLastId";
 
@@ -47,12 +56,20 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
 
   const drop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (draggedId != null && draggedOverId != null && draggedId != draggedOverId) {
-      const dragItemIndex = orderedLogs.findIndex((log) => log.uid == draggedId);
+    if (
+      draggedId != null &&
+      draggedOverId != null &&
+      draggedId != draggedOverId
+    ) {
+      const dragItemIndex = orderedLogs.findIndex(
+        (log) => log.uid == draggedId
+      );
       const newOrder = [...orderedLogs];
       newOrder.splice(dragItemIndex, 1);
       if (draggedOverId != lastId) {
-        const dragOverItemIndex = newOrder.findIndex((log) => log.uid == draggedOverId);
+        const dragOverItemIndex = newOrder.findIndex(
+          (log) => log.uid == draggedOverId
+        );
         newOrder.splice(dragOverItemIndex, 0, orderedLogs[dragItemIndex]);
       } else {
         newOrder.push(orderedLogs[dragItemIndex]);
@@ -77,13 +94,19 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
         <>
           <Accordion>
             <Accordion.Item>
-              <StyledAccordionHeader colors={colors}>How are the logs spliced?</StyledAccordionHeader>
-              <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
+              <StyledAccordionHeader colors={colors}>
+                How are the logs spliced?
+              </StyledAccordionHeader>
+              <Accordion.Panel
+                style={{ backgroundColor: colors.ui.backgroundLight }}
+              >
                 <ExampleSplice />
               </Accordion.Panel>
             </Accordion.Item>
           </Accordion>
-          <Typography style={{ marginTop: "16px", marginBottom: "16px" }}>Priority:</Typography>
+          <Typography style={{ marginTop: "16px", marginBottom: "16px" }}>
+            Priority:
+          </Typography>
           <DragLayout>
             <OrderingLabel>{`\tname`}</OrderingLabel>
             <OrderingLabel>startIndex</OrderingLabel>
@@ -104,7 +127,9 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
                   colors={colors}
                 >
                   <DraggableItem>
-                    <OrderingLabel>{`${index + 1}.\t ${log.name}${log.runNumber ? ` (${log.runNumber})` : ""}`}</OrderingLabel>
+                    <OrderingLabel>{`${index + 1}.\t ${log.name}${
+                      log.runNumber ? ` (${log.runNumber})` : ""
+                    }`}</OrderingLabel>
                     <OrderingLabel>{log.startIndex}</OrderingLabel>
                     <OrderingLabel>{log.endIndex}</OrderingLabel>
                     <OrderingLabel>{log.uid}</OrderingLabel>
@@ -112,7 +137,12 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
                 </Draggable>
               </div>
             ))}
-            <DummyDrop onDragEnter={() => setDraggedOverId(lastId)} onDragEnd={drop} isDraggedOver={lastId == draggedOverId ? 1 : 0} colors={colors}>
+            <DummyDrop
+              onDragEnter={() => setDraggedOverId(lastId)}
+              onDragEnd={drop}
+              isDraggedOver={lastId == draggedOverId ? 1 : 0}
+              colors={colors}
+            >
               <div style={{ visibility: "hidden", height: "15px" }}></div>
             </DummyDrop>
           </DraggableArea>
@@ -122,7 +152,11 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
             required
             value={newLogName}
             variant={validText(newLogName) ? undefined : "error"}
-            helperText={!validText(newLogName, 1, 64) ? "The name must be 1-64 characters" : ""}
+            helperText={
+              !validText(newLogName, 1, 64)
+                ? "The name must be 1-64 characters"
+                : ""
+            }
             onChange={(e: any) => setNewLogName(e.target.value)}
           />
         </>
@@ -133,10 +167,14 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
 
 const ExampleSplice = (): ReactElement => {
   return (
-    <Typography style={{ whiteSpace: "pre-line", fontVariantNumeric: "tabular-nums" }}>
-      The logs are spliced by only adding the data for subsequent logs that are not within the min and max indexes of the previous log.
+    <Typography
+      style={{ whiteSpace: "pre-line", fontVariantNumeric: "tabular-nums" }}
+    >
+      The logs are spliced by only adding the data for subsequent logs that are
+      not within the min and max indexes of the previous log.
       <br />
-      This process is repeated for each curve using the min/max index of the curve, not the start/end index of the log.
+      This process is repeated for each curve using the min/max index of the
+      curve, not the start/end index of the log.
       <br />
       <br />
       Log 1: <br />

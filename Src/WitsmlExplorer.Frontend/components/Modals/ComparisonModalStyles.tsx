@@ -1,6 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import styled from "styled-components";
-import { Colors } from "../../styles/Colors";
+import { Colors } from "styles/Colors";
 
 export const LabelsLayout = styled.div`
   display: grid;

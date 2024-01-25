@@ -1,4 +1,4 @@
-import BaseReport from "../reports/BaseReport";
+import BaseReport from "models/reports/BaseReport";
 
 export default interface JobInfo {
   jobType: string;

@@ -1,8 +1,8 @@
-import ComponentReferences from "./componentReferences";
-import ObjectReference from "./objectReference";
-import ObjectReferences from "./objectReferences";
-import WellboreReference from "./wellboreReference";
-import WellReference from "./wellReference";
+import ComponentReferences from "models/jobs/componentReferences";
+import ObjectReference from "models/jobs/objectReference";
+import ObjectReferences from "models/jobs/objectReferences";
+import WellboreReference from "models/jobs/wellboreReference";
+import WellReference from "models/jobs/wellReference";
 
 export interface CopyWellJob {
   source: WellReference;

@@ -8,7 +8,6 @@ using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Create;
@@ -30,7 +29,7 @@ public class CreateTrajectoryWorker : BaseWorker<CreateTrajectoryJob>, IWorker
     {
         Verify(job.Trajectory);
 
-        WitsmlTrajectories trajectoryToCreate = TrajectoryQueries.CreateTrajectory(job.Trajectory);
+        WitsmlTrajectories trajectoryToCreate = job.Trajectory.ToWitsml();
 
         QueryResult addToStoreResult = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(trajectoryToCreate);
 

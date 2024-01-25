@@ -1,20 +1,25 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
+import formatDateString from "components/DateFormatter";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import Trajectory from "models/trajectory";
 import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
-import Trajectory from "../../models/trajectory";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
-import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const TrajectoriesListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
-    operationState: { timeZone },
+    operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
@@ -26,10 +31,28 @@ export const TrajectoriesListView = (): React.ReactElement => {
     }
   }, [selectedWellbore?.trajectories]);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, {}, trajectories: Trajectory[]) => {
-    const contextProps: ObjectContextMenuProps = { checkedObjects: trajectories, wellbore: selectedWellbore };
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    selectedTrajectories: Trajectory[]
+  ) => {
+    const unchangedSelectedTrajectories = trajectories.filter((trajectory) =>
+      selectedTrajectories.some(
+        (selectedTrajectory) => selectedTrajectory.uid === trajectory.uid
+      )
+    );
+    const contextProps: ObjectContextMenuProps = {
+      checkedObjects: unchangedSelectedTrajectories,
+      wellbore: selectedWellbore
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoryContextMenu {...contextProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <TrajectoryContextMenu {...contextProps} />,
+        position
+      }
+    });
   };
 
   const columns: ContentTableColumn[] = [
@@ -37,28 +60,77 @@ export const TrajectoriesListView = (): React.ReactElement => {
     { property: "mdMin", label: "mdMin", type: ContentType.Number },
     { property: "mdMax", label: "mdMax", type: ContentType.Number },
     { property: "aziRef", label: "aziRef", type: ContentType.String },
-    { property: "dTimTrajStart", label: "dTimTrajStart", type: ContentType.DateTime },
-    { property: "dTimTrajEnd", label: "dTimTrajEnd", type: ContentType.DateTime },
-    { property: "serviceCompany", label: "serviceCompany", type: ContentType.String },
+    {
+      property: "dTimTrajStart",
+      label: "dTimTrajStart",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimTrajEnd",
+      label: "dTimTrajEnd",
+      type: ContentType.DateTime
+    },
+    {
+      property: "serviceCompany",
+      label: "serviceCompany",
+      type: ContentType.String
+    },
     { property: "uid", label: "uid", type: ContentType.String },
-    { property: "dateTimeCreation", label: "commonData.dTimCreation", type: ContentType.DateTime },
-    { property: "dateTimeLastChange", label: "commonData.dTimLastChange", type: ContentType.DateTime }
+    {
+      property: "sourceName",
+      label: "commonData.sourceName",
+      type: ContentType.String
+    },
+    {
+      property: "dateTimeCreation",
+      label: "commonData.dTimCreation",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dateTimeLastChange",
+      label: "commonData.dTimLastChange",
+      type: ContentType.DateTime
+    }
   ];
 
   const onSelect = (trajectory: any) => {
     dispatchNavigation({
       type: NavigationType.SelectObject,
-      payload: { well: selectedWell, wellbore: selectedWellbore, object: trajectory, objectType: ObjectType.Trajectory }
+      payload: {
+        well: selectedWell,
+        wellbore: selectedWellbore,
+        object: trajectory,
+        objectType: ObjectType.Trajectory
+      }
     });
   };
 
   const trajectoryRows = trajectories.map((trajectory) => {
     return {
       ...trajectory,
-      dTimTrajStart: formatDateString(trajectory.dTimTrajStart, timeZone),
-      dTimTrajEnd: formatDateString(trajectory.dTimTrajEnd, timeZone),
-      dateTimeCreation: formatDateString(trajectory.dateTimeCreation, timeZone),
-      dateTimeLastChange: formatDateString(trajectory.dateTimeLastChange, timeZone),
+      ...trajectory.commonData,
+      dTimTrajStart: formatDateString(
+        trajectory.dTimTrajStart,
+        timeZone,
+        dateTimeFormat
+      ),
+      dTimTrajEnd: formatDateString(
+        trajectory.dTimTrajEnd,
+        timeZone,
+        dateTimeFormat
+      ),
+      dateTimeCreation: formatDateString(
+        trajectory.commonData.dTimCreation,
+        timeZone,
+        dateTimeFormat
+      ),
+      dateTimeLastChange: formatDateString(
+        trajectory.commonData.dTimLastChange,
+        timeZone,
+        dateTimeFormat
+      ),
+      mdMin: measureToString(trajectory.mdMin),
+      mdMax: measureToString(trajectory.mdMax),
       id: trajectory.uid
     };
   });

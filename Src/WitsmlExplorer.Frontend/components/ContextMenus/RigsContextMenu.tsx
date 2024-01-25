@@ -1,27 +1,42 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import {
+  StoreFunction,
+  TemplateObjects
+} from "components/ContentViews/QueryViewUtils";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickRefresh
+} from "components/ContextMenus/ContextMenuUtils";
+import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import RigPropertiesModal, {
+  RigPropertiesModalProps
+} from "components/Modals/RigPropertiesModal";
+import NavigationContext from "contexts/navigationContext";
+import {
+  DisplayModalAction,
+  HideContextMenuAction,
+  HideModalAction
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { ObjectType } from "models/objectType";
+import Rig from "models/rig";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
-import NavigationContext from "../../contexts/navigationContext";
-import { DisplayModalAction, HideContextMenuAction, HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { ObjectType } from "../../models/objectType";
-import Rig from "../../models/rig";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import { colors } from "../../styles/Colors";
-import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import RigPropertiesModal, { RigPropertiesModalProps } from "../Modals/RigPropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
-import { pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface RigsContextMenuProps {
-  dispatchOperation: (action: DisplayModalAction | HideModalAction | HideContextMenuAction) => void;
+  dispatchOperation: (
+    action: DisplayModalAction | HideModalAction | HideContextMenuAction
+  ) => void;
   wellbore: Wellbore;
   servers: Server[];
   setIsLoading?: (arg: boolean) => void;
@@ -42,25 +57,32 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
       airGap: null,
-      approvals: "",
+      approvals: null,
       commonData: null,
-      classRig: "",
-      dTimEndOp: "",
-      dTimStartOp: "",
-      emailAddress: "",
-      faxNumber: "",
-      manufacturer: "",
-      nameContact: "",
-      owner: "",
+      classRig: null,
+      dTimEndOp: null,
+      dTimStartOp: null,
+      emailAddress: null,
+      faxNumber: null,
+      manufacturer: null,
+      nameContact: null,
+      owner: null,
       ratingDrillDepth: null,
       ratingWaterDepth: null,
-      registration: "",
-      telNumber: "",
+      registration: null,
+      telNumber: null,
       typeRig: "unknown",
       yearEntService: null
     };
-    const rigPropertiesModalProps: RigPropertiesModalProps = { mode: PropertiesModalMode.New, rig: newRig, dispatchOperation };
-    const action: DisplayModalAction = { type: OperationType.DisplayModal, payload: <RigPropertiesModal {...rigPropertiesModalProps} /> };
+    const rigPropertiesModalProps: RigPropertiesModalProps = {
+      mode: PropertiesModalMode.New,
+      rig: newRig,
+      dispatchOperation
+    };
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: <RigPropertiesModal {...rigPropertiesModalProps} />
+    };
     dispatchOperation(action);
   };
 
@@ -68,8 +90,23 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
     <ContextMenu
       menuItems={[
         setIsLoading ? (
-          <MenuItem key={"refresh"} onClick={() => onClickRefresh(dispatchOperation, dispatchNavigation, wellbore.wellUid, wellbore.uid, ObjectType.Rig, setIsLoading)}>
-            <StyledIcon name="refresh" color={colors.interactive.primaryResting} />
+          <MenuItem
+            key={"refresh"}
+            onClick={() =>
+              onClickRefresh(
+                dispatchOperation,
+                dispatchNavigation,
+                wellbore.wellUid,
+                wellbore.uid,
+                ObjectType.Rig,
+                setIsLoading
+              )
+            }
+          >
+            <StyledIcon
+              name="refresh"
+              color={colors.interactive.primaryResting}
+            />
             <Typography color={"primary"}>{`Refresh Rigs`}</Typography>
           </MenuItem>
         ) : null,
@@ -77,9 +114,22 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Rig</Typography>
         </MenuItem>,
-        <MenuItem key={"pasteRig"} onClick={() => pasteObjectOnWellbore(servers, rigReferences, dispatchOperation, wellbore)} disabled={rigReferences === null}>
+        <MenuItem
+          key={"pasteRig"}
+          onClick={() =>
+            pasteObjectOnWellbore(
+              servers,
+              rigReferences,
+              dispatchOperation,
+              wellbore
+            )
+          }
+          disabled={rigReferences === null}
+        >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{menuItemText("paste", "rig", rigReferences?.objectUids)}</Typography>
+          <Typography color={"primary"}>
+            {menuItemText("paste", "rig", rigReferences?.objectUids)}
+          </Typography>
         </MenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
@@ -95,7 +145,10 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
                 })
               }
             >
-              <StyledIcon name="add" color={colors.interactive.primaryResting} />
+              <StyledIcon
+                name="add"
+                color={colors.interactive.primaryResting}
+              />
               <Typography color={"primary"}>New Rig</Typography>
             </MenuItem>
           ]}

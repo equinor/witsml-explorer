@@ -1,6 +1,6 @@
-import ObjectReferences from "../../../models/jobs/objectReferences";
-import { ObjectType } from "../../../models/objectType";
-import { parseStringToReferences } from "../UseClipboardReferences";
+import { parseStringToReferences } from "components/ContextMenus/UseClipboardReferences";
+import ObjectReferences from "models/jobs/objectReferences";
+import { ObjectType } from "models/objectType";
 
 const SERVER_URL = "server";
 const WELL_UID = "wellUid";
@@ -63,22 +63,30 @@ it("Should parse correct well uid", async () => {
 });
 
 it("Should parse correct wellbore uid", async () => {
-  const result = parseStringToReferences(getText({ wellboreUid: WELLBORE_UID }));
+  const result = parseStringToReferences(
+    getText({ wellboreUid: WELLBORE_UID })
+  );
   expect(result.wellboreUid).toStrictEqual(WELLBORE_UID);
 });
 
 it("Should parse correct object uid", async () => {
-  const result = parseStringToReferences(getText({ objectUids: [OBJECT_UID_1] }));
+  const result = parseStringToReferences(
+    getText({ objectUids: [OBJECT_UID_1] })
+  );
   expect(result.objectUids).toStrictEqual([OBJECT_UID_1]);
 });
 
 it("Should correctly parse multiple object uids", async () => {
-  const result = parseStringToReferences(getText({ objectUids: [OBJECT_UID_1, OBJECT_UID_2] }));
+  const result = parseStringToReferences(
+    getText({ objectUids: [OBJECT_UID_1, OBJECT_UID_2] })
+  );
   expect(result.objectUids).toStrictEqual([OBJECT_UID_1, OBJECT_UID_2]);
 });
 
 it("Should parse correct object type", async () => {
-  const result = parseStringToReferences(getText({ serverUrl: ObjectType.Tubular }));
+  const result = parseStringToReferences(
+    getText({ serverUrl: ObjectType.Tubular })
+  );
   expect(result.serverUrl).toStrictEqual(ObjectType.Tubular);
 });
 
@@ -88,7 +96,9 @@ it("Should parse correct well name", async () => {
 });
 
 it("Should parse correct wellbore name", async () => {
-  const result = parseStringToReferences(getText({ wellboreName: WELLBORE_NAME }));
+  const result = parseStringToReferences(
+    getText({ wellboreName: WELLBORE_NAME })
+  );
   expect(result.wellboreName).toStrictEqual(WELLBORE_NAME);
 });
 
@@ -99,40 +109,56 @@ it("Should parse correct object name", async () => {
 
 it("Should throw error on missing server", async () => {
   const text = getInverseText({ serverUrl: "is missing" });
-  expect(() => parseStringToReferences(text)).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(text)).toThrowError(
+    new Error("Missing required fields.")
+  );
 });
 
 it("Should throw error on missing well uid", async () => {
   const text = getInverseText({ serverUrl: "is missing" });
-  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(
+    new Error("Missing required fields.")
+  );
 });
 
 it("Should throw error on missing wellbore uid", async () => {
   const text = getInverseText({ wellboreUid: "is missing" });
-  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(
+    new Error("Missing required fields.")
+  );
 });
 
 it("Should throw error on missing objects uids", async () => {
   const text = getInverseText({ objectUids: ["are missing"] });
-  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(
+    new Error("Missing required fields.")
+  );
 });
 
 it("Should throw error on missing object type", async () => {
   const text = getInverseText({ objectType: ObjectType.BhaRun });
-  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(
+    new Error("Missing required fields.")
+  );
 });
 
 it("Should throw error on missing well name", async () => {
   const text = getInverseText({ wellName: "is missing" });
-  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(
+    new Error("Missing required fields.")
+  );
 });
 
 it("Should throw error on missing wellbore name", async () => {
   const text = getInverseText({ wellboreName: "is missing" });
-  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(
+    new Error("Missing required fields.")
+  );
 });
 
 it("Should throw error on missing object names", async () => {
   const text = getInverseText({ names: ["are missing"] });
-  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(new Error("Missing required fields."));
+  expect(() => parseStringToReferences(JSON.stringify(text))).toThrowError(
+    new Error("Missing required fields.")
+  );
 });

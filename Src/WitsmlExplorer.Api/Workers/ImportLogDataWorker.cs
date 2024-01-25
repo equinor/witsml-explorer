@@ -39,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             WitsmlLogs addMnemonicsQuery = CreateAddMnemonicsQuery(job, witsmlLog);
-            if (addMnemonicsQuery.Logs.FirstOrDefault().LogCurveInfo.Count > 0)
+            if (addMnemonicsQuery.Logs.FirstOrDefault().LogCurveInfo?.Count > 0)
             {
                 QueryResult addMnemonicsResult = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(addMnemonicsQuery);
                 if (addMnemonicsResult.IsSuccessful)
@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             return job.DataRows
                 .Where(d => d.Count() > 1)
-                .Select(row => new WitsmlData { Data = string.Join(',', row) })
+                .Select(row => new WitsmlData { Data = string.Join(CommonConstants.DataSeparator, row) })
                 .Chunk(chunkSize)
                 .Select(logData => new WitsmlLogs
                 {
@@ -114,8 +114,8 @@ namespace WitsmlExplorer.Api.Workers
                             LogData = new WitsmlLogData
                             {
                                 Data = logData.ToList(),
-                                MnemonicList = string.Join(',', job.Mnemonics),
-                                UnitList = string.Join(',', job.Units)
+                                MnemonicList = string.Join(CommonConstants.DataSeparator, job.Mnemonics),
+                                UnitList = string.Join(CommonConstants.DataSeparator, job.Units)
                             }
                         }
                     },
@@ -136,11 +136,11 @@ namespace WitsmlExplorer.Api.Workers
                                 .Select(i => new WitsmlLogCurveInfo
                                 {
                                     Mnemonic = job.Mnemonics.ElementAt(i),
-                                    Unit = string.IsNullOrEmpty(job.Units.ElementAt(i)) ? "unitless" : job.Units.ElementAt(i), // Can't updateInStore with an empty unit
+                                    Unit = string.IsNullOrEmpty(job.Units.ElementAt(i)) ? CommonConstants.Unit.Unitless : job.Units.ElementAt(i), // Can't updateInStore with an empty unit
                                     Uid = job.Mnemonics.ElementAt(i),
                                     TypeLogData = WitsmlLogCurveInfo.LogDataTypeDouble
                                 }).ToList(),
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

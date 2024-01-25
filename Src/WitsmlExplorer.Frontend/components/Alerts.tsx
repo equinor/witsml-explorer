@@ -1,13 +1,13 @@
 import { Collapse, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
 import { capitalize } from "lodash";
 import React, { useContext, useEffect, useState } from "react";
+import NotificationService from "services/notificationService";
 import styled from "styled-components";
-import NavigationContext from "../contexts/navigationContext";
-import OperationContext from "../contexts/operationContext";
-import NotificationService from "../services/notificationService";
-import { Colors } from "../styles/Colors";
+import { Colors } from "styles/Colors";
 
 interface AlertState {
   severity?: AlertSeverity;
@@ -24,44 +24,71 @@ const Alerts = (): React.ReactElement => {
   } = useContext(OperationContext);
 
   useEffect(() => {
-    const unsubscribeOnConnectionStateChanged = NotificationService.Instance.onConnectionStateChanged.subscribe((connected) => {
-      if (connected) {
-        setAlert(null);
-      } else {
-        setAlert({ content: "Lost connection to notifications service. Please wait for reconnection or refresh browser" });
-      }
-    });
-    const unsubscribeOnJobFinished = NotificationService.Instance.alertDispatcherAsEvent.subscribe((notification) => {
-      const shouldNotify = notification.serverUrl == null || notification.serverUrl.toString().toLowerCase() === navigationState.selectedServer?.url?.toLowerCase();
-      if (!shouldNotify) {
-        return;
-      }
-      if (notification.description) {
-        const content = (
-          <>
-            <h4>{notification.message}</h4>
-            {notification.description.wellName && <span>Well: {notification.description.wellName},</span>}
-            {notification.description.wellboreName && <span> Wellbore: {notification.description.wellboreName},</span>}
-            {notification.description.objectName && <span> Name: {notification.description.objectName}</span>}
-            {notification.reason && (
+    const unsubscribeOnConnectionStateChanged =
+      NotificationService.Instance.onConnectionStateChanged.subscribe(
+        (connected) => {
+          if (connected) {
+            setAlert(null);
+          } else {
+            setAlert({
+              content:
+                "Lost connection to notifications service. Please wait for reconnection or refresh browser"
+            });
+          }
+        }
+      );
+    const unsubscribeOnJobFinished =
+      NotificationService.Instance.alertDispatcherAsEvent.subscribe(
+        (notification) => {
+          const shouldNotify =
+            notification.serverUrl == null ||
+            notification.serverUrl.toString().toLowerCase() ===
+              navigationState.selectedServer?.url?.toLowerCase();
+          if (!shouldNotify) {
+            return;
+          }
+          if (notification.description) {
+            const content = (
               <>
-                <br />
-                <span style={{ whiteSpace: "pre-wrap" }}>Reason: {notification.reason}</span>
+                <h4>{notification.message}</h4>
+                {notification.description.wellName && (
+                  <span>Well: {notification.description.wellName},</span>
+                )}
+                {notification.description.wellboreName && (
+                  <span>
+                    {" "}
+                    Wellbore: {notification.description.wellboreName},
+                  </span>
+                )}
+                {notification.description.objectName && (
+                  <span> Name: {notification.description.objectName}</span>
+                )}
+                {notification.reason && (
+                  <>
+                    <br />
+                    <span style={{ whiteSpace: "pre-wrap" }}>
+                      Reason: {notification.reason}
+                    </span>
+                  </>
+                )}
               </>
-            )}
-          </>
-        );
-        setAlert({ severity: notification.severity, content });
-      } else {
-        const content = (
-          <>
-            <h4>{notification.message}</h4>
-            {notification.reason && <span style={{ whiteSpace: "pre-wrap" }}>Reason: {notification.reason}</span>}
-          </>
-        );
-        setAlert({ severity: notification.severity, content });
-      }
-    });
+            );
+            setAlert({ severity: notification.severity, content });
+          } else {
+            const content = (
+              <>
+                <h4>{notification.message}</h4>
+                {notification.reason && (
+                  <span style={{ whiteSpace: "pre-wrap" }}>
+                    Reason: {notification.reason}
+                  </span>
+                )}
+              </>
+            );
+            setAlert({ severity: notification.severity, content });
+          }
+        }
+      );
 
     return function cleanup() {
       unsubscribeOnConnectionStateChanged();
@@ -87,7 +114,9 @@ const Alerts = (): React.ReactElement => {
             </IconButton>
           }
         >
-          <AlertTitle>{alert?.severity ? capitalize(alert.severity) : "Error"}</AlertTitle>
+          <AlertTitle>
+            {alert?.severity ? capitalize(alert.severity) : "Error"}
+          </AlertTitle>
           {alert?.content}
         </Alert>
       </AlertContainer>

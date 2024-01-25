@@ -1,14 +1,10 @@
-import LogObject from "../models/logObject";
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import { ObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Trajectory from "../models/trajectory";
-import Tubular from "../models/tubular";
-import WbGeometryObject from "../models/wbGeometry";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
-import ModificationType from "./modificationType";
-import { Action } from "./navigationActions";
+import ModificationType from "contexts/modificationType";
+import { Action } from "contexts/navigationActions";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 
 export interface AddServerAction extends Action {
   type: ModificationType.AddServer;
@@ -47,7 +43,11 @@ export interface UpdateWellboreAction extends Action {
 
 export interface UpdateWellborePartialAction extends Action {
   type: ModificationType.UpdateWellborePartial;
-  payload: { wellUid: string; wellboreUid: string; wellboreProperties: Partial<Wellbore> };
+  payload: {
+    wellUid: string;
+    wellboreUid: string;
+    wellboreProperties: Partial<Wellbore>;
+  };
 }
 
 export interface RemoveWellAction extends Action {
@@ -65,29 +65,23 @@ export interface RemoveWitsmlServerAction extends Action {
   payload: { serverUid: string };
 }
 
-export interface UpdateWellboreLogAction extends Action {
-  type: ModificationType.UpdateLogObject;
-  payload: { log: LogObject };
-}
-
-export interface UpdateWellboreTrajectoryAction extends Action {
-  type: ModificationType.UpdateTrajectoryOnWellbore;
-  payload: { trajectory: Trajectory; wellUid: string; wellboreUid: string };
-}
-
-export interface UpdateWellboreTubularAction extends Action {
-  type: ModificationType.UpdateTubularOnWellbore;
-  payload: { tubular: Tubular; exists: boolean };
-}
-
-export interface UpdateWellboreWbGeometryAction extends Action {
-  type: ModificationType.UpdateWbGeometryOnWellbore;
-  payload: { wbGeometry: WbGeometryObject; wellUid: string; wellboreUid: string };
-}
-
 export interface UpdateWellboreObjectsAction extends Action {
   type: ModificationType.UpdateWellboreObjects;
-  payload: { wellboreObjects: ObjectOnWellbore[]; wellUid: string; wellboreUid: string; objectType: ObjectType };
+  payload: {
+    wellboreObjects: ObjectOnWellbore[];
+    wellUid: string;
+    wellboreUid: string;
+    objectType: ObjectType;
+  };
+}
+
+export interface UpdateWellboreObjectAction extends Action {
+  type: ModificationType.UpdateWellboreObject;
+  payload: {
+    objectToUpdate: ObjectOnWellbore;
+    objectType: ObjectType;
+    isDeleted: boolean;
+  };
 }
 
 export interface UpdateServerListAction extends Action {

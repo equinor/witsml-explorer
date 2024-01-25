@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
-            IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
+            ICollection<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
             int targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
             int sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
 
@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 ? job.Source.ComponentUids.Distinct().ToList()
                 : sourceLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
 
-            IEnumerable<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic);
+            ICollection<string> targetLogMnemonics = targetLog.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
             List<string> existingMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
             List<string> newMnemonicsInTarget = mnemonicsToCopy.Where(mnemonic => !targetLogMnemonics.Contains(mnemonic, StringComparer.OrdinalIgnoreCase)).ToList();
 
@@ -202,12 +202,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Index.Start(sourceLog, startIndex.ToString(CultureInfo.InvariantCulture)),
                     Index.End(sourceLog, endIndex.ToString(CultureInfo.InvariantCulture)));
                 WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), Logger);
-                if (!sourceData.Logs.Any())
+                WitsmlLog sourceLogWithData = sourceData?.Logs?.FirstOrDefault();
+
+                if (sourceLogWithData == null)
                 {
                     break;
                 }
-
-                WitsmlLog sourceLogWithData = sourceData.Logs.First();
 
                 List<WitsmlData> data = sourceLogWithData.LogData.Data;
                 List<WitsmlData> newData = new();
@@ -218,7 +218,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 double targetIndex = double.MinValue;
                 foreach (WitsmlData row in data)
                 {
-                    string[] split = row.Data.Split(",");
+                    string[] split = row.Data.Split(CommonConstants.DataSeparator);
                     lastSourceRowIndex = StringHelpers.ToDouble(split[0]);
                     double nextTargetIndex = Math.Round(lastSourceRowIndex, targetDepthLogDecimals, MidpointRounding.AwayFromZero);
                     if (Math.Abs(targetIndex - nextTargetIndex) > difference)
@@ -226,10 +226,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         if (rowsToCollate.Any())
                         {
                             newData.Add(CollateData(rowsToCollate, targetIndex));
+                            rowsToCollate.Clear();
                         }
                         firstSourceRowIndex = lastSourceRowIndex;
                         targetIndex = nextTargetIndex;
-                        rowsToCollate = new();
                     }
                     rowsToCollate.Add(split[1..]);
                 }
@@ -263,14 +263,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 for (int j = 0; j < oldRows.Count; j++)
                 {
-                    if (oldRows[j][i] != "")
+                    if (oldRows[j][i] != string.Empty)
                     {
                         newRow[i] = oldRows[j][i];
                         break;
                     }
                 }
             }
-            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + "," + string.Join(",", newRow) };
+            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + CommonConstants.DataSeparator + string.Join(CommonConstants.DataSeparator, newRow) };
         }
 
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
@@ -294,7 +294,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
                 if (!result.IsSuccessful)
                 {
-                    string newMnemonics = string.Join(",", newLogCurveInfos.Select(lci => lci.Mnemonic));
+                    string newMnemonics = string.Join(CommonConstants.DataSeparator, newLogCurveInfos.Select(lci => lci.Mnemonic));
                     Logger.LogError("Failed to update LogCurveInfo for wellbore during copy data. Mnemonics: {Mnemonics}. " +
                               "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}, Uid: {TargetLogUid}. ",
                         newMnemonics, targetLog.UidWell, targetLog.UidWellbore, targetLog.Uid);
@@ -304,7 +304,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private static WitsmlLogs CreateCopyQuery(WitsmlLog targetLog, WitsmlLogData logData)
         {
-            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(",", StringComparison.InvariantCulture)..];
+            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
             return new()
             {
                 Logs = new List<WitsmlLog> {
@@ -369,23 +369,23 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<(WitsmlLog sourceLog, WitsmlLog targetLog)> GetLogs(CopyLogDataJob job)
         {
-            Task<WitsmlLog> sourceLog = WorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.Source.Parent, ReturnElements.HeaderOnly);
-            Task<WitsmlLog> targetLog = WorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.Target, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> sourceLog = LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.Source.Parent, ReturnElements.HeaderOnly);
+            Task<WitsmlLog> targetLog = LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.Target, ReturnElements.HeaderOnly);
             await Task.WhenAll(sourceLog, targetLog);
 
             return sourceLog.Result == null
                 ? throw new Exception($"Could not find source log object: {job.Source.Parent.Description()}")
                 : targetLog.Result == null
                 ? throw new Exception($"Could not find target log object: UidWell: {job.Target.Description()}")
-                : ((WitsmlLog sourceLog, WitsmlLog targetLog))(sourceLog.Result, targetLog.Result);
+                : (sourceLog.Result, targetLog.Result);
         }
 
         private class CopyResult
         {
-            public bool Success { get; set; }
-            public int NumberOfRowsCopied { get; set; }
-            public int OriginalNumberOfRows { get; set; }
-            public string ErrorReason { get; set; }
+            public bool Success { get; init; }
+            public int NumberOfRowsCopied { get; init; }
+            public int OriginalNumberOfRows { get; init; }
+            public string ErrorReason { get; init; }
         }
     }
 }

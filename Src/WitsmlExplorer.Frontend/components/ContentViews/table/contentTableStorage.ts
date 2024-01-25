@@ -1,63 +1,45 @@
 import { Table, VisibilityState } from "@tanstack/react-table";
 import { useEffect } from "react";
+import { useLocalStorageState } from "hooks/useLocalStorageState";
+import {
+  STORAGE_CONTENTTABLE_HIDDEN_KEY,
+  STORAGE_CONTENTTABLE_WIDTH_KEY,
+  getLocalStorageItem
+} from "tools/localStorageHelpers";
 
-export const widthsStorageKey = "-widths";
-const hiddenStorageKey = "-hidden";
-export const orderingStorageKey = "-ordering";
-type StorageKey = typeof widthsStorageKey | typeof hiddenStorageKey | typeof orderingStorageKey;
-type StorageKeyToPreference = {
-  [widthsStorageKey]: { [label: string]: number };
-  [hiddenStorageKey]: string[];
-  [orderingStorageKey]: string[];
-};
-
-export function saveToStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key, preference: StorageKeyToPreference[Key]): void {
-  try {
-    if (viewId != null) {
-      localStorage.setItem(viewId + storageKey, JSON.stringify(preference));
-    }
-  } catch {
-    // disregard unavailable local storage
-  }
-}
-
-export function getFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): StorageKeyToPreference[Key] | null {
-  try {
-    if (viewId != null) {
-      return JSON.parse(localStorage.getItem(viewId + storageKey));
-    }
-  } catch {
-    return null;
-  }
-}
-
-export function removeFromStorage<Key extends StorageKey>(viewId: string | null, storageKey: Key): void {
-  try {
-    if (viewId != null) {
-      localStorage.removeItem(viewId + storageKey);
-    }
-  } catch {
-    // disregard unavailable local storage
-  }
-}
-
-export const useStoreWidthsEffect = (viewId: string | null, table: Table<any>) => {
+export const useStoreWidthsEffect = (
+  viewId: string | null,
+  table: Table<any>
+) => {
+  const [, setWidths] = useLocalStorageState<{ [label: string]: number }>(
+    viewId + STORAGE_CONTENTTABLE_WIDTH_KEY
+  );
   useEffect(() => {
-    const dispatch = setTimeout(() => {
-      if (viewId != null) {
-        const widths = Object.assign({}, ...table.getLeafHeaders().map((header) => ({ [header.id]: header.getSize() })));
-        saveToStorage(viewId, widthsStorageKey, widths);
-      }
-    }, 400);
-    return () => clearTimeout(dispatch);
+    if (viewId) {
+      const widths = Object.assign(
+        {},
+        ...table
+          .getLeafHeaders()
+          .map((header) => ({ [header.id]: header.getSize() }))
+      );
+      if (viewId) setWidths(widths);
+    }
   }, [table.getTotalSize()]);
 };
 
-export const useStoreVisibilityEffect = (viewId: string | null, columnVisibility: VisibilityState) => {
+export const useStoreVisibilityEffect = (
+  viewId: string | null,
+  columnVisibility: VisibilityState
+) => {
+  const [, setVisibility] = useLocalStorageState<string[]>(
+    viewId + STORAGE_CONTENTTABLE_HIDDEN_KEY
+  );
   useEffect(() => {
-    if (viewId != null) {
-      const hiddenColumns = Object.entries(columnVisibility).flatMap(([columnId, isVisible]) => (isVisible ? [] : columnId));
-      saveToStorage(viewId, hiddenStorageKey, hiddenColumns);
+    if (viewId) {
+      const hiddenColumns = Object.entries(columnVisibility).flatMap(
+        ([columnId, isVisible]) => (isVisible ? [] : columnId)
+      );
+      if (viewId) setVisibility(hiddenColumns);
     }
   }, [columnVisibility]);
 };
@@ -66,6 +48,13 @@ export const initializeColumnVisibility = (viewId: string | null) => {
   if (viewId == null) {
     return {};
   }
-  const hiddenColumns = getFromStorage(viewId, hiddenStorageKey);
-  return hiddenColumns == null ? {} : Object.assign({}, ...hiddenColumns.map((hiddenColumn) => ({ [hiddenColumn]: false })));
+  const hiddenColumns = getLocalStorageItem<string[]>(
+    viewId + STORAGE_CONTENTTABLE_HIDDEN_KEY
+  );
+  return hiddenColumns == null
+    ? {}
+    : Object.assign(
+        {},
+        ...hiddenColumns.map((hiddenColumn) => ({ [hiddenColumn]: false }))
+      );
 };

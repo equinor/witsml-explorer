@@ -1,6 +1,6 @@
+import OperationType from "contexts/operationType";
 import { Dispatch, ReactElement, useReducer } from "react";
-import { Colors, light } from "../styles/Colors";
-import OperationType from "./operationType";
+import { Colors, light } from "styles/Colors";
 
 export enum UserTheme {
   Compact = "compact",
@@ -19,6 +19,16 @@ export enum TimeZone {
   London = "Europe/London",
   NewDelhi = "Asia/Kolkata",
   Houston = "America/Chicago"
+}
+
+export enum DateTimeFormat {
+  Raw = "raw",
+  Natural = "natural"
+}
+
+export enum DecimalPreference {
+  Decimal = "decimal",
+  Raw = "raw"
 }
 
 interface Action {
@@ -62,6 +72,16 @@ export interface SetModeAction extends PayloadAction {
   payload: Colors;
 }
 
+export interface SetDateTimeFormatAction extends PayloadAction {
+  type: OperationType.SetDateTimeFormat;
+  payload: DateTimeFormat;
+}
+
+export interface SetDecimalAction extends PayloadAction {
+  type: OperationType.SetDecimal;
+  payload: DecimalPreference;
+}
+
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
@@ -69,6 +89,8 @@ export interface OperationState {
   theme: UserTheme;
   timeZone: TimeZone;
   colors: Colors;
+  dateTimeFormat: DateTimeFormat;
+  decimals: DecimalPreference;
 }
 
 export interface MousePosition {
@@ -81,23 +103,34 @@ export interface ContextMenu {
   position: MousePosition;
 }
 
-export const EMPTY_CONTEXT_MENU: ContextMenu = { component: null, position: { mouseX: null, mouseY: null } };
+export const EMPTY_CONTEXT_MENU: ContextMenu = {
+  component: null,
+  position: { mouseX: null, mouseY: null }
+};
 
 const Light: Colors = light;
 
-export const initOperationStateReducer = (): [OperationState, Dispatch<Action>] => {
+export const initOperationStateReducer = (): [
+  OperationState,
+  Dispatch<Action>
+] => {
   const initialState: OperationState = {
     contextMenu: EMPTY_CONTEXT_MENU,
     progressIndicatorValue: 0,
     modals: [],
     theme: UserTheme.Compact,
     timeZone: TimeZone.Raw,
-    colors: Light
+    colors: Light,
+    dateTimeFormat: DateTimeFormat.Raw,
+    decimals: DecimalPreference.Raw
   };
   return useReducer(reducer, initialState);
 };
 
-export const reducer = (state: OperationState, action: Action | PayloadAction): OperationState => {
+export const reducer = (
+  state: OperationState,
+  action: Action | PayloadAction
+): OperationState => {
   switch (action.type) {
     case OperationType.DisplayContextMenu:
       return displayContextMenu(state, action as DisplayContextMenuAction);
@@ -113,6 +146,10 @@ export const reducer = (state: OperationState, action: Action | PayloadAction): 
       return setTimeZone(state, action as SetTimeZoneAction);
     case OperationType.SetMode:
       return setMode(state, action as SetModeAction);
+    case OperationType.SetDateTimeFormat:
+      return setDateTimeFormat(state, action as SetDateTimeFormatAction);
+    case OperationType.SetDecimal:
+      return setDecimal(state, action as SetDecimalAction);
     default:
       throw new Error();
   }
@@ -128,7 +165,10 @@ const hideModal = (state: OperationState) => {
   };
 };
 
-const displayModal = (state: OperationState, { payload }: DisplayModalAction) => {
+const displayModal = (
+  state: OperationState,
+  { payload }: DisplayModalAction
+) => {
   const modals = state.modals.concat(payload);
   return {
     ...state,
@@ -144,7 +184,10 @@ const hideContextMenu = (state: OperationState) => {
   };
 };
 
-const displayContextMenu = (state: OperationState, { payload }: DisplayContextMenuAction) => {
+const displayContextMenu = (
+  state: OperationState,
+  { payload }: DisplayContextMenuAction
+) => {
   return {
     ...state,
     contextMenu: payload
@@ -172,6 +215,32 @@ const setMode = (state: OperationState, { payload }: SetModeAction) => {
   };
 };
 
-export type OperationAction = DisplayModalAction | HideModalAction | DisplayContextMenuAction | HideContextMenuAction | SetThemeAction | SetTimeZoneAction | SetModeAction;
+const setDateTimeFormat = (
+  state: OperationState,
+  { payload }: SetDateTimeFormatAction
+) => {
+  return {
+    ...state,
+    dateTimeFormat: payload
+  };
+};
+
+const setDecimal = (state: OperationState, { payload }: SetDecimalAction) => {
+  return {
+    ...state,
+    decimals: payload
+  };
+};
+
+export type OperationAction =
+  | DisplayModalAction
+  | HideModalAction
+  | DisplayContextMenuAction
+  | HideContextMenuAction
+  | SetThemeAction
+  | SetTimeZoneAction
+  | SetModeAction
+  | SetDateTimeFormatAction
+  | SetDecimalAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

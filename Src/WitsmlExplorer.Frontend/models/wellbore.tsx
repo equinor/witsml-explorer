@@ -1,18 +1,25 @@
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD } from "../components/Constants";
-import BhaRun from "./bhaRun";
-import ChangeLog from "./changeLog";
-import FluidsReport from "./fluidsReport";
-import FormationMarker from "./formationMarker";
-import LogObject from "./logObject";
-import Measure from "./measure";
-import MessageObject from "./messageObject";
-import MudLog from "./mudLog";
-import { ObjectType, ObjectTypeToModel, pluralizeObjectType } from "./objectType";
-import Rig from "./rig";
-import RiskObject from "./riskObject";
-import Trajectory from "./trajectory";
-import Tubular from "./tubular";
-import WbGeometryObject from "./wbGeometry";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
+import BhaRun from "models/bhaRun";
+import ChangeLog from "models/changeLog";
+import FluidsReport from "models/fluidsReport";
+import FormationMarker from "models/formationMarker";
+import LogObject from "models/logObject";
+import Measure from "models/measure";
+import MessageObject from "models/messageObject";
+import MudLog from "models/mudLog";
+import {
+  ObjectType,
+  ObjectTypeToModel,
+  pluralizeObjectType
+} from "models/objectType";
+import Rig from "models/rig";
+import RiskObject from "models/riskObject";
+import Trajectory from "models/trajectory";
+import Tubular from "models/tubular";
+import WbGeometryObject from "models/wbGeometry";
 
 export interface WellboreProperties {
   uid: string;
@@ -96,19 +103,30 @@ export function emptyWellbore(): Wellbore {
   };
 }
 
-export function wellboreHasChanges(wellbore: WellboreProperties, updatedWellbore: WellboreProperties): boolean {
+export function wellboreHasChanges(
+  wellbore: WellboreProperties,
+  updatedWellbore: WellboreProperties
+): boolean {
   return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
-export const calculateWellboreNodeId = (wellbore: Wellbore | { wellUid: string; uid: string }): string => {
+export const calculateWellboreNodeId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
   return wellbore.wellUid + wellbore.uid;
 };
 
-export const calculateObjectGroupId = (wellbore: Wellbore, objectType: ObjectType): string => {
+export const calculateObjectGroupId = (
+  wellbore: Wellbore,
+  objectType: ObjectType
+): string => {
   return calculateWellboreNodeId(wellbore) + objectType;
 };
 
-export const calculateLogTypeId = (wellbore: Wellbore, logType: string): string => {
+export const calculateLogTypeId = (
+  wellbore: Wellbore,
+  logType: string
+): string => {
   return calculateWellboreNodeId(wellbore) + logType;
 };
 
@@ -120,7 +138,9 @@ export const calculateLogTypeTimeId = (wellbore: Wellbore): string => {
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
 };
 
-export const getWellboreProperties = (wellbore: Wellbore): Map<string, string> => {
+export const getWellboreProperties = (
+  wellbore: Wellbore
+): Map<string, string> => {
   return new Map([
     ["Well", wellbore.wellName],
     ["UID Well", wellbore.wellUid],
@@ -129,15 +149,27 @@ export const getWellboreProperties = (wellbore: Wellbore): Map<string, string> =
   ]);
 };
 
-export function objectTypeToWellboreObjects(objectType: ObjectType): keyof WellboreObjects {
-  return (objectType.charAt(0).toLowerCase() + pluralizeObjectType(objectType).slice(1)) as keyof WellboreObjects;
+export function objectTypeToWellboreObjects(
+  objectType: ObjectType
+): keyof WellboreObjects {
+  return (objectType.charAt(0).toLowerCase() +
+    pluralizeObjectType(objectType).slice(1)) as keyof WellboreObjects;
 }
 
-export function getObjectsFromWellbore<Key extends ObjectType>(wellbore: Wellbore, objectType: Key): ObjectTypeToModel[Key][] {
-  return wellbore[objectTypeToWellboreObjects(objectType)] as ObjectTypeToModel[Key][];
+export function getObjectsFromWellbore<Key extends ObjectType>(
+  wellbore: Wellbore,
+  objectType: Key
+): ObjectTypeToModel[Key][] {
+  return wellbore[
+    objectTypeToWellboreObjects(objectType)
+  ] as ObjectTypeToModel[Key][];
 }
 
-export function getObjectFromWellbore<Key extends ObjectType>(wellbore: Wellbore, uid: string, objectType: Key): ObjectTypeToModel[Key] {
+export function getObjectFromWellbore<Key extends ObjectType>(
+  wellbore: Wellbore,
+  uid: string,
+  objectType: Key
+): ObjectTypeToModel[Key] {
   const objects = getObjectsFromWellbore(wellbore, objectType);
   return objects?.find((object) => object.uid === uid);
 }

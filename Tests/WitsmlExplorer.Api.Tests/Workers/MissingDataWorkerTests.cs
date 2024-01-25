@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public void IsPropertyEmpty_EmptyString_ReturnsTrue()
         {
-            string obj = "";
+            string obj = string.Empty;
             Assert.True(MissingDataWorker.IsPropertyEmpty(obj));
         }
 

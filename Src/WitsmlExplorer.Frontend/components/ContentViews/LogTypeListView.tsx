@@ -1,8 +1,15 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import {
+  calculateLogTypeDepthId,
+  calculateLogTypeTimeId
+} from "models/wellbore";
 import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import { calculateLogTypeDepthId, calculateLogTypeTimeId } from "../../models/wellbore";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 interface LogType {
   uid: number;
@@ -13,7 +20,9 @@ export const LogTypeListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWell, selectedWellbore } = navigationState;
 
-  const columns: ContentTableColumn[] = [{ property: "name", label: "Name", type: ContentType.String }];
+  const columns: ContentTableColumn[] = [
+    { property: "name", label: "Name", type: ContentType.String }
+  ];
 
   const logTypes: LogType[] = [
     { uid: 0, name: "Depth" },
@@ -21,7 +30,10 @@ export const LogTypeListView = (): React.ReactElement => {
   ];
 
   const onSelect = async (logType: any) => {
-    const logTypeGroup = logType.uid === 0 ? calculateLogTypeDepthId(selectedWellbore) : calculateLogTypeTimeId(selectedWellbore);
+    const logTypeGroup =
+      logType.uid === 0
+        ? calculateLogTypeDepthId(selectedWellbore)
+        : calculateLogTypeTimeId(selectedWellbore);
 
     dispatchNavigation({
       type: NavigationType.SelectLogType,
@@ -33,7 +45,14 @@ export const LogTypeListView = (): React.ReactElement => {
     });
   };
 
-  return <ContentTable columns={columns} data={logTypes} onSelect={onSelect} showPanel={false} />;
+  return (
+    <ContentTable
+      columns={columns}
+      data={logTypes}
+      onSelect={onSelect}
+      showPanel={false}
+    />
+  );
 };
 
 export default LogTypeListView;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -18,10 +17,10 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IObjectService
     {
-        Task<IEnumerable<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue);
-        Task<IEnumerable<ObjectSearchResult>> GetObjectsByType(EntityType objectType);
-        Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
-        Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
+        Task<ICollection<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue);
+        Task<ICollection<ObjectSearchResult>> GetObjectsByType(EntityType objectType);
+        Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
+        Task<ICollection<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
         Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid);
     }
 
@@ -35,15 +34,15 @@ namespace WitsmlExplorer.Api.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ObjectSearchResult>> GetObjectsByType(EntityType objectType)
+        public async Task<ICollection<ObjectSearchResult>> GetObjectsByType(EntityType objectType)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {
                 throw new ArgumentException($"{nameof(objectType)} must be a valid type of an object on wellbore");
             }
 
-            IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectsByType(objectType);
-            IWitsmlObjectList result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested));
+            var query = ObjectQueries.GetWitsmlObjectsByType(objectType);
+            var result = await _witsmlClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.Requested));
             if (result?.Objects == null)
             {
                 return new List<ObjectSearchResult>();
@@ -59,10 +58,10 @@ namespace WitsmlExplorer.Api.Services
                     WellboreName = obj.NameWellbore,
                     WellName = obj.NameWell
                 }
-            );
+            ).ToList();
         }
 
-        public async Task<IEnumerable<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue)
+        public async Task<ICollection<ObjectSearchResult>> GetObjectsWithParamByType(EntityType objectType, string objectProperty, string objectPropertyValue)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {
@@ -76,11 +75,11 @@ namespace WitsmlExplorer.Api.Services
             if (!objectPropertyValue.IsNullOrEmpty())
             {
                 // send a request to see if the server is capable of searching by the property.
-                IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsSingletonWitsmlList();
+                IWitsmlObjectList capabilityQuery = (IWitsmlObjectList)EntityTypeHelper.ToObjectOnWellbore(objectType).AsItemInWitsmlList();
                 IWitsmlObjectList capabilityResult = await _witsmlClient.GetFromStoreNullableAsync(capabilityQuery, new OptionsIn(RequestObjectSelectionCapability: true));
 
-                WitsmlObjectOnWellbore capabilities = capabilityResult.Objects.First();
-                bool isCapable = capabilities.GetType().GetProperty(objectProperty.CapitalizeFirstLetter())?.GetValue(capabilities, null) != null;
+                WitsmlObjectOnWellbore capabilities = capabilityResult?.Objects?.FirstOrDefault();
+                bool isCapable = capabilities?.GetType().GetProperty(objectProperty.CapitalizeFirstLetter())?.GetValue(capabilities, null) != null;
                 if (!isCapable)
                 {
                     throw new Middleware.WitsmlUnsupportedCapabilityException($"The server does not support to select {objectProperty} for a {objectType}.");
@@ -115,15 +114,15 @@ namespace WitsmlExplorer.Api.Services
                 }
 
                 return searchResult;
-            });
+            }).ToList();
         }
 
-        public async Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType)
+        public async Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType)
         {
             return await GetObjectIdOnly(wellUid, wellboreUid, "", objectType);
         }
 
-        public async Task<IEnumerable<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType)
+        public async Task<ICollection<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {
@@ -137,7 +136,7 @@ namespace WitsmlExplorer.Api.Services
             }
             // return ObjectOnWellbore to avoid serializing null fields from concrete WITSML types
             return result.Objects.Select((obj) =>
-                new ObjectOnWellbore()
+                new BaseObjectOnWellbore()
                 {
                     Uid = obj.Uid,
                     WellboreUid = obj.UidWellbore,
@@ -146,7 +145,7 @@ namespace WitsmlExplorer.Api.Services
                     WellboreName = obj.NameWellbore,
                     WellName = obj.NameWell
                 }
-            );
+            ).ToArray();
         }
 
         public async Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid)

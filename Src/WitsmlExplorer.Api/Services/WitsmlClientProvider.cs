@@ -72,14 +72,14 @@ namespace WitsmlExplorer.Api.Services
             if (_witsmlClient == null)
             {
                 _targetCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
-                _witsmlClient = (_targetCreds != null && !_targetCreds.IsCredsNullOrEmpty())
+                _witsmlClient = (_targetCreds != null && !_targetCreds.IsNullOrEmpty())
                     ? new WitsmlClient(options =>
                     {
-                        options.Hostname = _targetCreds.Host.ToString();
+                        options.Hostname = _httpHeaders.TargetServer;
                         options.Credentials = new WitsmlCredentials(_targetCreds.UserId, _targetCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
-                        options.RequestTimeOut = TimeSpan.FromSeconds(90);
+                        options.RequestTimeOut = TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                     })
                     : null;
             }
@@ -91,14 +91,14 @@ namespace WitsmlExplorer.Api.Services
             if (_witsmlSourceClient == null)
             {
                 _sourceCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
-                _witsmlSourceClient = (_sourceCreds != null && !_sourceCreds.IsCredsNullOrEmpty())
+                _witsmlSourceClient = (_sourceCreds != null && !_sourceCreds.IsNullOrEmpty())
                     ? new WitsmlClient(options =>
                     {
-                        options.Hostname = _sourceCreds.Host.ToString();
+                        options.Hostname = _httpHeaders.SourceServer;
                         options.Credentials = new WitsmlCredentials(_sourceCreds.UserId, _sourceCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
-                        options.RequestTimeOut = TimeSpan.FromSeconds(90);
+                        options.RequestTimeOut = TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                     })
                     : null;
             }

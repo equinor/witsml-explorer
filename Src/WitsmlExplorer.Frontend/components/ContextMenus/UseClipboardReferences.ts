@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import ObjectReferences from "../../models/jobs/objectReferences";
-import { ObjectType } from "../../models/objectType";
+import ObjectReferences from "models/jobs/objectReferences";
+import { ObjectType } from "models/objectType";
 
-export const useClipboardReferences = (pollInterval = 0): ObjectReferences | null => {
+export const useClipboardReferences = (
+  pollInterval = 0
+): ObjectReferences | null => {
   const [objectReferences, setReferences] = useState<ObjectReferences>(null);
 
   const tryToParseClipboardContent = async () => {
@@ -31,7 +33,10 @@ export const useClipboardReferences = (pollInterval = 0): ObjectReferences | nul
   return objectReferences;
 };
 
-export const useClipboardReferencesOfType = (type: ObjectType, pollInterval = 0): ObjectReferences | null => {
+export const useClipboardReferencesOfType = (
+  type: ObjectType,
+  pollInterval = 0
+): ObjectReferences | null => {
   const objectReferences = useClipboardReferences(pollInterval);
   return objectReferences?.objectType == type ? objectReferences : null;
 };
@@ -48,8 +53,19 @@ export function parseStringToReferences(input: string): ObjectReferences {
 }
 
 function verifyRequiredProperties(jsonObject: ObjectReferences) {
-  const requiredProps = ["serverUrl", "wellUid", "wellboreUid", "objectUids", "objectType", "wellName", "wellboreName", "names"];
-  const hasRequiredProperties = requiredProps.every((prop) => Object.prototype.hasOwnProperty.call(jsonObject, prop));
+  const requiredProps = [
+    "serverUrl",
+    "wellUid",
+    "wellboreUid",
+    "objectUids",
+    "objectType",
+    "wellName",
+    "wellboreName",
+    "names"
+  ];
+  const hasRequiredProperties = requiredProps.every((prop) =>
+    Object.prototype.hasOwnProperty.call(jsonObject, prop)
+  );
   if (!hasRequiredProperties) {
     throw new Error("Missing required fields.");
   }

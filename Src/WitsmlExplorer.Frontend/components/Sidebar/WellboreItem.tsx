@@ -1,33 +1,49 @@
 import { useTheme } from "@material-ui/core";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "components/ContextMenus/ContextMenu";
+import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
+import LogsContextMenu, {
+  LogsContextMenuProps
+} from "components/ContextMenus/LogsContextMenu";
+import MudLogContextMenu from "components/ContextMenus/MudLogContextMenu";
+import RigContextMenu from "components/ContextMenus/RigContextMenu";
+import RigsContextMenu, {
+  RigsContextMenuProps
+} from "components/ContextMenus/RigsContextMenu";
+import TrajectoriesContextMenu, {
+  TrajectoriesContextMenuProps
+} from "components/ContextMenus/TrajectoriesContextMenu";
+import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
+import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
+import TubularsContextMenu, {
+  TubularsContextMenuProps
+} from "components/ContextMenus/TubularsContextMenu";
+import WbGeometryObjectContextMenu from "components/ContextMenus/WbGeometryContextMenu";
+import WellboreContextMenu, {
+  WellboreContextMenuProps
+} from "components/ContextMenus/WellboreContextMenu";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import LogTypeItem from "components/Sidebar/LogTypeItem";
+import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
+import { WellIndicator } from "components/Sidebar/Sidebar";
+import TreeItem from "components/Sidebar/TreeItem";
+import ModificationType from "contexts/modificationType";
+import {
+  SelectWellboreAction,
+  ToggleTreeNodeAction
+} from "contexts/navigationActions";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ObjectType } from "models/objectType";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 import React, { createContext, useCallback, useContext, useState } from "react";
+import ObjectService from "services/objectService";
 import styled from "styled-components";
-import ModificationType from "../../contexts/modificationType";
-import { SelectWellboreAction, ToggleTreeNodeAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
-import { getContextMenuPosition, preventContextMenuPropagation } from "../ContextMenus/ContextMenu";
-import FluidsReportContextMenu from "../ContextMenus/FluidsReportContextMenu";
-import LogsContextMenu, { LogsContextMenuProps } from "../ContextMenus/LogsContextMenu";
-import MudLogContextMenu from "../ContextMenus/MudLogContextMenu";
-import RigContextMenu from "../ContextMenus/RigContextMenu";
-import RigsContextMenu, { RigsContextMenuProps } from "../ContextMenus/RigsContextMenu";
-import TrajectoryContextMenu from "../ContextMenus/TrajectoryContextMenu";
-import TubularContextMenu from "../ContextMenus/TubularContextMenu";
-import TubularsContextMenu, { TubularsContextMenuProps } from "../ContextMenus/TubularsContextMenu";
-import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
-import WellboreContextMenu, { WellboreContextMenuProps } from "../ContextMenus/WellboreContextMenu";
-import TrajectoriesContextMenu, { TrajectoriesContextMenuProps } from "../ContextMenus/TrajectoriesContextMenu";
-import { IndexCurve } from "../Modals/LogPropertiesModal";
-import LogTypeItem from "./LogTypeItem";
-import ObjectGroupItem from "./ObjectGroupItem";
-import { WellIndicator } from "./Sidebar";
-import TreeItem from "./TreeItem";
 
 interface WellboreItemProps {
   well: Well;
@@ -41,7 +57,9 @@ export interface WellboreItemContextProps {
   wellbore: Wellbore;
 }
 
-export const WellboreItemContext = createContext<WellboreItemContextProps>({} as WellboreItemContextProps);
+export const WellboreItemContext = createContext<WellboreItemContextProps>(
+  {} as WellboreItemContextProps
+);
 
 const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
   const { wellbore, well, selected, nodeId } = props;
@@ -54,59 +72,145 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
     operationState: { colors }
   } = useContext(OperationContext);
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+  const onContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    wellbore: Wellbore
+  ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: WellboreContextMenuProps = { wellbore, well };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <WellboreContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <WellboreContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
-  const onLogsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => {
+  const onLogsContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    wellbore: Wellbore,
+    setIsLoading: (arg: boolean) => void
+  ) => {
     preventContextMenuPropagation(event);
     const indexCurve = IndexCurve.Depth;
-    const contextMenuProps: LogsContextMenuProps = { dispatchOperation, wellbore, servers, indexCurve, setIsLoading };
+    const contextMenuProps: LogsContextMenuProps = {
+      dispatchOperation,
+      wellbore,
+      servers,
+      indexCurve,
+      setIsLoading
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <LogsContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <LogsContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
-  const onRigsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => {
+  const onRigsContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    wellbore: Wellbore,
+    setIsLoading: (arg: boolean) => void
+  ) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: RigsContextMenuProps = { dispatchOperation, wellbore, servers, setIsLoading };
+    const contextMenuProps: RigsContextMenuProps = {
+      dispatchOperation,
+      wellbore,
+      servers,
+      setIsLoading
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <RigsContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <RigsContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
-  const onTubularsContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore) => {
+  const onTubularsContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    wellbore: Wellbore,
+    setIsLoading: (arg: boolean) => void
+  ) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: TubularsContextMenuProps = { dispatchNavigation, dispatchOperation, wellbore, servers };
+    const contextMenuProps: TubularsContextMenuProps = {
+      dispatchNavigation,
+      dispatchOperation,
+      wellbore,
+      servers,
+      setIsLoading
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TubularsContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <TubularsContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
-  const onTrajectoryContextMenu = (event: React.MouseEvent<HTMLLIElement>, wellbore: Wellbore, setIsLoading?: (arg: boolean) => void) => {
+  const onTrajectoryContextMenu = (
+    event: React.MouseEvent<HTMLLIElement>,
+    wellbore: Wellbore,
+    setIsLoading: (arg: boolean) => void
+  ) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: TrajectoriesContextMenuProps = { dispatchOperation, wellbore, servers, setIsLoading };
+    const contextMenuProps: TrajectoriesContextMenuProps = {
+      dispatchOperation,
+      wellbore,
+      servers,
+      setIsLoading
+    };
     const position = getContextMenuPosition(event);
-    dispatchOperation({ type: OperationType.DisplayContextMenu, payload: { component: <TrajectoriesContextMenu {...contextMenuProps} />, position } });
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <TrajectoriesContextMenu {...contextMenuProps} />,
+        position
+      }
+    });
   };
 
   const getExpandableObjectCount = useCallback(async () => {
     if (wellbore.objectCount == null) {
       setIsFetchingCount(true);
-      const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
-      dispatchNavigation({ type: ModificationType.UpdateWellborePartial, payload: { wellboreUid: wellbore.uid, wellUid: well.uid, wellboreProperties: { objectCount } } });
+      const objectCount = await ObjectService.getExpandableObjectsCount(
+        wellbore
+      );
+      dispatchNavigation({
+        type: ModificationType.UpdateWellborePartial,
+        payload: {
+          wellboreUid: wellbore.uid,
+          wellUid: well.uid,
+          wellboreProperties: { objectCount }
+        }
+      });
       setIsFetchingCount(false);
     }
   }, [wellbore]);
 
   const onLabelClick = () => {
-    const selectWellbore: SelectWellboreAction = { type: NavigationType.SelectWellbore, payload: { well, wellbore } };
+    const selectWellbore: SelectWellboreAction = {
+      type: NavigationType.SelectWellbore,
+      payload: { well, wellbore }
+    };
     dispatchNavigation(selectWellbore);
     getExpandableObjectCount();
   };
 
   const onIconClick = () => {
-    const toggleTreeNode: ToggleTreeNodeAction = { type: NavigationType.ToggleTreeNode, payload: { nodeId } };
+    const toggleTreeNode: ToggleTreeNodeAction = {
+      type: NavigationType.ToggleTreeNode,
+      payload: { nodeId }
+    };
     dispatchNavigation(toggleTreeNode);
     getExpandableObjectCount();
   };
@@ -125,41 +229,70 @@ const WellboreItem = (props: WellboreItemProps): React.ReactElement => {
       >
         <WellboreItemContext.Provider value={{ wellbore, well }}>
           <ObjectGroupItem objectType={ObjectType.BhaRun} />
-          <ObjectGroupItem objectType={ObjectType.ChangeLog} onGroupContextMenu={preventContextMenuPropagation} />
-          <ObjectGroupItem objectsOnWellbore={wellbore?.fluidsReports} objectType={ObjectType.FluidsReport} ObjectContextMenu={FluidsReportContextMenu} />
+          <ObjectGroupItem
+            objectType={ObjectType.ChangeLog}
+            onGroupContextMenu={preventContextMenuPropagation}
+          />
+          <ObjectGroupItem
+            objectsOnWellbore={wellbore?.fluidsReports}
+            objectType={ObjectType.FluidsReport}
+            ObjectContextMenu={FluidsReportContextMenu}
+          />
           <ObjectGroupItem objectType={ObjectType.FormationMarker} />
           <ObjectGroupItem
             objectType={ObjectType.Log}
-            onGroupContextMenu={(event, _, setIsLoading) => onLogsContextMenu(event, wellbore, setIsLoading)}
-            isActive={wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)}
+            onGroupContextMenu={(event, _, setIsLoading) =>
+              onLogsContextMenu(event, wellbore, setIsLoading)
+            }
+            isActive={
+              wellbore.logs && wellbore.logs.some((log) => log.objectGrowing)
+            }
           >
             <LogTypeItem />
           </ObjectGroupItem>
           <ObjectGroupItem objectType={ObjectType.Message} />
-          <ObjectGroupItem objectsOnWellbore={wellbore?.mudLogs} objectType={ObjectType.MudLog} ObjectContextMenu={MudLogContextMenu} />
+          <ObjectGroupItem
+            objectsOnWellbore={wellbore?.mudLogs}
+            objectType={ObjectType.MudLog}
+            ObjectContextMenu={MudLogContextMenu}
+          />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.rigs}
             objectType={ObjectType.Rig}
             ObjectContextMenu={RigContextMenu}
-            onGroupContextMenu={(event, _, setIsLoading) => onRigsContextMenu(event, wellbore, setIsLoading)}
+            onGroupContextMenu={(event, _, setIsLoading) =>
+              onRigsContextMenu(event, wellbore, setIsLoading)
+            }
           />
           <ObjectGroupItem objectType={ObjectType.Risk} />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.trajectories}
             objectType={ObjectType.Trajectory}
             ObjectContextMenu={TrajectoryContextMenu}
-            onGroupContextMenu={(event, _, setIsLoading) => onTrajectoryContextMenu(event, wellbore, setIsLoading)}
+            onGroupContextMenu={(event, _, setIsLoading) =>
+              onTrajectoryContextMenu(event, wellbore, setIsLoading)
+            }
           />
           <ObjectGroupItem
             objectsOnWellbore={wellbore?.tubulars}
             objectType={ObjectType.Tubular}
             ObjectContextMenu={TubularContextMenu}
-            onGroupContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
+            onGroupContextMenu={(event, _, setIsLoading) =>
+              onTubularsContextMenu(event, wellbore, setIsLoading)
+            }
           />
-          <ObjectGroupItem objectsOnWellbore={wellbore?.wbGeometries} objectType={ObjectType.WbGeometry} ObjectContextMenu={WbGeometryObjectContextMenu} />
+          <ObjectGroupItem
+            objectsOnWellbore={wellbore?.wbGeometries}
+            objectType={ObjectType.WbGeometry}
+            ObjectContextMenu={WbGeometryObjectContextMenu}
+          />
         </WellboreItemContext.Provider>
       </TreeItem>
-      <WellIndicator compactMode={isCompactMode} active={wellbore.isActive} colors={colors} />
+      <WellIndicator
+        compactMode={isCompactMode}
+        active={wellbore.isActive}
+        colors={colors}
+      />
     </WellboreLayout>
   );
 };

@@ -1,4 +1,4 @@
-import LogCurveInfo from "../../models/logCurveInfo";
+import LogCurveInfo from "models/logCurveInfo";
 
 export interface Indexes {
   mnemonic: string;
@@ -6,17 +6,26 @@ export interface Indexes {
   targetStart: string | number;
   sourceEnd: string | number;
   targetEnd: string | number;
+  sourceUnit: string;
+  targetUnit: string;
 }
 
 export const missingIndex = "-";
 
-function logCurveInfoToIndexes(sourceLogCurveInfo?: LogCurveInfo, targetLogCurveInfo?: LogCurveInfo): Indexes {
+function logCurveInfoToIndexes(
+  sourceLogCurveInfo?: LogCurveInfo,
+  targetLogCurveInfo?: LogCurveInfo
+): Indexes {
   return {
-    mnemonic: sourceLogCurveInfo ? sourceLogCurveInfo.mnemonic : targetLogCurveInfo.mnemonic,
+    mnemonic: sourceLogCurveInfo
+      ? sourceLogCurveInfo.mnemonic
+      : targetLogCurveInfo.mnemonic,
     sourceStart: getStartIndex(sourceLogCurveInfo),
     targetStart: getStartIndex(targetLogCurveInfo),
     sourceEnd: getEndIndex(sourceLogCurveInfo),
-    targetEnd: getEndIndex(targetLogCurveInfo)
+    targetEnd: getEndIndex(targetLogCurveInfo),
+    sourceUnit: sourceLogCurveInfo?.unit,
+    targetUnit: targetLogCurveInfo?.unit
   };
 }
 
@@ -46,26 +55,39 @@ function getEndIndex(logCurveInfo?: LogCurveInfo): string | number {
   return missingIndex;
 }
 
-function areMismatched(sourceLogCurveInfo: LogCurveInfo, targetLogCurveInfo: LogCurveInfo): boolean {
+function areMismatched(
+  sourceLogCurveInfo: LogCurveInfo,
+  targetLogCurveInfo: LogCurveInfo
+): boolean {
   return (
-    sourceLogCurveInfo.minDateTimeIndex != targetLogCurveInfo.minDateTimeIndex ||
-    sourceLogCurveInfo.maxDateTimeIndex != targetLogCurveInfo.maxDateTimeIndex ||
+    sourceLogCurveInfo.minDateTimeIndex !=
+      targetLogCurveInfo.minDateTimeIndex ||
+    sourceLogCurveInfo.maxDateTimeIndex !=
+      targetLogCurveInfo.maxDateTimeIndex ||
     sourceLogCurveInfo.minDepthIndex != targetLogCurveInfo.minDepthIndex ||
-    sourceLogCurveInfo.maxDepthIndex != targetLogCurveInfo.maxDepthIndex
+    sourceLogCurveInfo.maxDepthIndex != targetLogCurveInfo.maxDepthIndex ||
+    sourceLogCurveInfo.unit != targetLogCurveInfo.unit
   );
 }
 
-export function calculateMismatchedIndexes(sourceLogCurveInfo: LogCurveInfo[], targetLogCurveInfo: LogCurveInfo[]): Indexes[] {
+export function calculateMismatchedIndexes(
+  sourceLogCurveInfo: LogCurveInfo[],
+  targetLogCurveInfo: LogCurveInfo[]
+): Indexes[] {
   const mismatchedIndexes = [];
 
   for (const sourceCurve of sourceLogCurveInfo) {
-    const targetCurve = targetLogCurveInfo.find((targetCurve) => targetCurve.mnemonic == sourceCurve.mnemonic);
+    const targetCurve = targetLogCurveInfo.find(
+      (targetCurve) => targetCurve.mnemonic == sourceCurve.mnemonic
+    );
     if (!targetCurve || areMismatched(sourceCurve, targetCurve)) {
       mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
     }
   }
   for (const targetCurve of targetLogCurveInfo) {
-    const sourceCurve = sourceLogCurveInfo.find((sourceCurve) => sourceCurve.mnemonic == targetCurve.mnemonic);
+    const sourceCurve = sourceLogCurveInfo.find(
+      (sourceCurve) => sourceCurve.mnemonic == targetCurve.mnemonic
+    );
     if (!sourceCurve) {
       mismatchedIndexes.push(logCurveInfoToIndexes(sourceCurve, targetCurve));
     }
@@ -81,7 +103,10 @@ const toFixed = (value: string | number): string => {
   return number.toFixed(4);
 };
 
-export function markNumberDifferences(string1: string | number, string2: string | number): (string | JSX.Element)[][] {
+export function markNumberDifferences(
+  string1: string | number,
+  string2: string | number
+): (string | JSX.Element)[][] {
   string1 = toFixed(string1);
   string2 = toFixed(string2);
   if (string1 == missingIndex || string2 == missingIndex) {
@@ -106,12 +131,21 @@ export function markNumberDifferences(string1: string | number, string2: string 
     return [[string1], [string2]];
   }
   return [
-    [string1.slice(0, firstDifference), <mark key="mark">{string1.slice(firstDifference)}</mark>],
-    [string2.slice(0, firstDifference), <mark key="mark">{string2.slice(firstDifference)}</mark>]
+    [
+      string1.slice(0, firstDifference),
+      <mark key="mark">{string1.slice(firstDifference)}</mark>
+    ],
+    [
+      string2.slice(0, firstDifference),
+      <mark key="mark">{string2.slice(firstDifference)}</mark>
+    ]
   ];
 }
 
-export function markDateTimeStringDifferences(string1: string, string2: string): (string | JSX.Element)[][] {
+export function markDateTimeStringDifferences(
+  string1: string,
+  string2: string
+): (string | JSX.Element)[][] {
   if (string1 == missingIndex || string2 == missingIndex) {
     return [[<mark key="1">{string1}</mark>], [<mark key="2">{string2}</mark>]];
   }

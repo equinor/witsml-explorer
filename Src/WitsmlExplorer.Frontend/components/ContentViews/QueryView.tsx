@@ -1,16 +1,25 @@
-import { Button, Menu, TextField } from "@equinor/eds-core-react";
-import React, { ChangeEvent, Fragment, useContext, useState } from "react";
+import { Button, Menu, Tabs, TextField } from "@equinor/eds-core-react";
+import {
+  ReturnElements,
+  StoreFunction,
+  TemplateObjects,
+  formatXml,
+  getParserError,
+  getQueryTemplate
+} from "components/ContentViews/QueryViewUtils";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import { QueryEditor } from "components/QueryEditor";
+import { getTag } from "components/QueryEditorUtils";
+import { StyledNativeSelect } from "components/Select";
+import OperationContext from "contexts/operationContext";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { QueryActionType, QueryContext } from "contexts/queryContext";
+import React, { ChangeEvent, useContext, useState } from "react";
+import QueryService from "services/queryService";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { QueryActionType, QueryContext } from "../../contexts/queryContext";
-import QueryService from "../../services/queryService";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
-import ConfirmModal from "../Modals/ConfirmModal";
-import { StyledNativeSelect } from "../Select";
-import { ReturnElements, StoreFunction, TemplateObjects, formatXml, getQueryTemplate } from "./QueryViewUtils";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 const QueryView = (): React.ReactElement => {
   const {
@@ -18,49 +27,81 @@ const QueryView = (): React.ReactElement => {
     dispatchOperation
   } = useContext(OperationContext);
   const {
-    queryState: { query, storeFunction, returnElements, optionsIn },
+    queryState: { queries, tabIndex },
     dispatchQuery
   } = useContext(QueryContext);
-  const [result, setResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isXmlResponse, setIsXmlResponse] = useState(false);
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
+  const { query, result, storeFunction, returnElements, optionsIn } =
+    queries[tabIndex];
+
+  const validateAndFormatQuery = (): boolean => {
+    const formattedQuery = formatXml(query);
+    const parserError = getParserError(formattedQuery);
+    if (parserError) {
+      dispatchQuery({ type: QueryActionType.SetResult, result: parserError });
+    } else if (formattedQuery !== query) {
+      onQueryChange(formattedQuery);
+    }
+    return !parserError;
+  };
 
   const sendQuery = () => {
     const getResult = async (dispatchOperation?: DispatchOperation | null) => {
       dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
-      const requestReturnElements = storeFunction == StoreFunction.GetFromStore ? returnElements : undefined;
-      let response = await QueryService.postQuery(query, storeFunction, requestReturnElements, optionsIn.trim());
+      const requestReturnElements =
+        storeFunction === StoreFunction.GetFromStore
+          ? returnElements
+          : undefined;
+      let response = await QueryService.postQuery(
+        query,
+        storeFunction,
+        requestReturnElements,
+        optionsIn?.trim()
+      );
       if (response.startsWith("<")) {
         response = formatXml(response);
       }
-      setIsXmlResponse(response.startsWith("<"));
-      setResult(response);
+      dispatchQuery({ type: QueryActionType.SetResult, result: response });
       setIsLoading(false);
     };
-    if (storeFunction == StoreFunction.DeleteFromStore) {
-      displayConfirmation(() => getResult(dispatchOperation), dispatchOperation);
+    const isValid = validateAndFormatQuery();
+    if (!isValid) return;
+    if (storeFunction === StoreFunction.DeleteFromStore) {
+      displayConfirmation(
+        () => getResult(dispatchOperation),
+        dispatchOperation
+      );
     } else {
       getResult();
     }
   };
 
-  const onQueryChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatchQuery({ type: QueryActionType.SetQuery, query: event.target.value });
+  const onQueryChange = (newValue: string) => {
+    dispatchQuery({ type: QueryActionType.SetQuery, query: newValue });
   };
 
   const onFunctionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatchQuery({ type: QueryActionType.SetStoreFunction, storeFunction: event.target.value as StoreFunction });
+    dispatchQuery({
+      type: QueryActionType.SetStoreFunction,
+      storeFunction: event.target.value as StoreFunction
+    });
   };
 
   const onReturnElementsChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatchQuery({ type: QueryActionType.SetReturnElements, returnElements: event.target.value as ReturnElements });
+    dispatchQuery({
+      type: QueryActionType.SetReturnElements,
+      returnElements: event.target.value as ReturnElements
+    });
   };
 
   const onOptionsInChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatchQuery({ type: QueryActionType.SetOptionsIn, optionsIn: event.target.value });
+    dispatchQuery({
+      type: QueryActionType.SetOptionsIn,
+      optionsIn: event.target.value
+    });
   };
 
   const onTemplateSelect = (templateObject: TemplateObjects) => {
@@ -71,13 +112,75 @@ const QueryView = (): React.ReactElement => {
     setIsTemplateMenuOpen(false);
   };
 
+  const onTabChange = (index: number) => {
+    if (index >= queries.length) {
+      dispatchQuery({ type: QueryActionType.AddTab });
+    } else {
+      dispatchQuery({ type: QueryActionType.SetTabIndex, tabIndex: index });
+    }
+  };
+
+  const onCloseTab = (event: React.MouseEvent, tabId: string) => {
+    event.stopPropagation();
+    dispatchQuery({ type: QueryActionType.RemoveTab, tabId });
+  };
+
+  const getTabName = (query: string) => {
+    return (
+      getTag(query.split("\n")?.[0]) ?? (query.split("\n")?.[0] || "Empty")
+    );
+  };
+
   return (
-    <Fragment>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", height: "100%", padding: "1rem" }}>
-        <div style={{ display: "grid", gridTemplateRows: "1fr auto", gap: "1rem", height: "100%" }}>
-          <StyledLargeTextField id="input" multiline colors={colors} onChange={onQueryChange} value={query} />
+    <Layout>
+      <Tabs
+        activeTab={tabIndex}
+        onChange={onTabChange}
+        scrollable
+        style={{ overflowX: "auto", whiteSpace: "nowrap" }}
+      >
+        <Tabs.List>
+          {queries.map((query) => (
+            <StyledTab key={query.tabId} colors={colors}>
+              {getTabName(query.query)}
+              <StyledClearIcon
+                name="clear"
+                size={16}
+                onClick={(event) => onCloseTab(event, query.tabId)}
+              />
+            </StyledTab>
+          ))}
+          <StyledTab colors={colors}>
+            <Icon name="add" />
+          </StyledTab>
+        </Tabs.List>
+      </Tabs>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "1rem",
+          height: "100%",
+          padding: "1rem"
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateRows: "1fr auto",
+            gap: "1rem",
+            height: "100%"
+          }}
+        >
+          <QueryEditor value={query} onChange={onQueryChange} />
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
-            <StyledNativeSelect label="Function" id="function" onChange={onFunctionChange} value={storeFunction} colors={colors}>
+            <StyledNativeSelect
+              label="Function"
+              id="function"
+              onChange={onFunctionChange}
+              value={storeFunction}
+              colors={colors}
+            >
               {Object.values(StoreFunction).map((value) => {
                 return (
                   <option key={value} value={value}>
@@ -86,7 +189,13 @@ const QueryView = (): React.ReactElement => {
                 );
               })}
             </StyledNativeSelect>
-            <StyledNativeSelect label="Return elements" id="return-elements" onChange={onReturnElementsChange} value={returnElements} colors={colors}>
+            <StyledNativeSelect
+              label="Return elements"
+              id="return-elements"
+              onChange={onReturnElementsChange}
+              value={returnElements}
+              colors={colors}
+            >
               {Object.values(ReturnElements).map((value) => {
                 return (
                   <option key={value} value={value}>
@@ -95,7 +204,13 @@ const QueryView = (): React.ReactElement => {
                 );
               })}
             </StyledNativeSelect>
-            <StyledTextField id="optionsIn" label="Options In" value={optionsIn} onChange={onOptionsInChange} colors={colors} />
+            <StyledTextField
+              id="optionsIn"
+              label="Options In"
+              value={optionsIn}
+              onChange={onOptionsInChange}
+              colors={colors}
+            />
             <Button
               ref={setMenuAnchor}
               id="anchor-default"
@@ -117,7 +232,11 @@ const QueryView = (): React.ReactElement => {
             >
               {Object.values(TemplateObjects).map((value) => {
                 return (
-                  <StyledMenuItem colors={colors} key={value} onClick={() => onTemplateSelect(value)}>
+                  <StyledMenuItem
+                    colors={colors}
+                    key={value}
+                    onClick={() => onTemplateSelect(value)}
+                  >
                     {value}
                   </StyledMenuItem>
                 );
@@ -129,14 +248,17 @@ const QueryView = (): React.ReactElement => {
           </div>
         </div>
         <div>
-          <StyledLargeTextField id="output" multiline colors={colors} readOnly value={result} textWrap={!isXmlResponse} />
+          <QueryEditor value={result} readonly />
         </div>
       </div>
-    </Fragment>
+    </Layout>
   );
 };
 
-const displayConfirmation = (onConfirm: () => void, dispatchOperation: DispatchOperation) => {
+const displayConfirmation = (
+  onConfirm: () => void,
+  dispatchOperation: DispatchOperation
+) => {
   const confirmation = (
     <ConfirmModal
       heading={"Delete object?"}
@@ -147,31 +269,11 @@ const displayConfirmation = (onConfirm: () => void, dispatchOperation: DispatchO
       switchButtonPlaces={true}
     />
   );
-  dispatchOperation({ type: OperationType.DisplayModal, payload: confirmation });
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: confirmation
+  });
 };
-
-const StyledLargeTextField = styled(TextField)<{ colors: Colors; textWrap?: boolean }>`
-  border: 1px solid ${(props) => props.colors.interactive.tableBorder};
-  height: 100%;
-  &&& > div {
-    background-color: ${(props) => props.colors.ui.backgroundLight};
-    height: 100% !important;
-    border: 0;
-    box-shadow: none;
-  }
-  div > textarea {
-    height: 100%;
-    overflow: scroll;
-    text-wrap: ${(props) => (props.textWrap ? "wrap" : "nowrap")};
-    line-height: 15px;
-    font-size: 13px;
-    font-family: monospace;
-    cursor: auto;
-  }
-  div > div {
-    display: none; /* disable input adornment */
-  }
-`;
 
 const StyledMenu = styled(Menu)<{ colors: Colors }>`
   background: ${(props) => props.colors.ui.backgroundLight};
@@ -182,7 +284,8 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
 
 const StyledMenuItem = styled(Menu.Item)<{ colors: Colors }>`
   &&:hover {
-    background-color: ${(props) => props.colors.interactive.contextMenuItemHover};
+    background-color: ${(props) =>
+      props.colors.interactive.contextMenuItemHover};
   }
   color: ${(props) => props.colors.text.staticIconsDefault};
   padding: 4px;
@@ -195,6 +298,24 @@ const StyledTextField = styled(TextField)<{ colors: Colors }>`
   div {
     background: ${(props) => props.colors.text.staticTextFieldDefault};
   }
+`;
+
+const Layout = styled.div`
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+`;
+
+const StyledClearIcon = styled(Icon)`
+  margin-left: 8px;
+  border-radius: 50%;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const StyledTab = styled(Tabs.Tab)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
 export default QueryView;

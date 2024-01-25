@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace WitsmlExplorer.Api.Configuration
 {
     public interface IWitsmlSystemCredentials
     {
-        public ServerCredentials[] WitsmlCreds { get; set; }
+        public IReadOnlyCollection<ServerCredentials> WitsmlCreds { get; set; }
     }
 
     /// <summary>
@@ -21,7 +22,7 @@ namespace WitsmlExplorer.Api.Configuration
     ///       "ObjectB":  { "Host": "my_host_2", "UserId": "my_user_2", "Password": "my_user_2" }
     ///    }
     /// </c>
-    /// Example keyvault entries ("homeserver" will be ignored):
+    /// Example keyvault entries ("homeserver" will be used as CredentialId):
     /// <c>
     ///    witsmlcreds--homeserver--host
     ///    witsmlcreds--homeserver--userid
@@ -30,11 +31,13 @@ namespace WitsmlExplorer.Api.Configuration
     /// </summary>
     public class WitsmlSystemCredentials : IWitsmlSystemCredentials, IDisposable
     {
-        public ServerCredentials[] WitsmlCreds { get; set; }
+        public IReadOnlyCollection<ServerCredentials> WitsmlCreds { get; set; }
         private IDisposable _unregister;
+        private readonly ILogger<WitsmlSystemCredentials> _logger;
 
-        public WitsmlSystemCredentials(IConfiguration configuration)
+        public WitsmlSystemCredentials(IConfiguration configuration, ILogger<WitsmlSystemCredentials> logger)
         {
+            _logger = logger;
             Bind(configuration);
         }
 
@@ -46,15 +49,16 @@ namespace WitsmlExplorer.Api.Configuration
             List<IConfigurationSection> creds = configuration.GetSection(ConfigConstants.WitsmlServerCredsSection).GetChildren().ToList();
             foreach (IConfigurationSection rule in creds)
             {
-                ServerCredentials cred = new();
+                ServerCredentials cred = new() { CredentialId = rule.Key };
                 rule.Bind(cred);
-                if (!cred.IsCredsNullOrEmpty() && cred.Host != null)
+                _logger.LogDebug("Binding credential with server {server} and credentialId {credentialId}", cred.Host, cred.CredentialId);
+                if (!cred.IsNullOrEmpty() && cred.Host != null)
                 {
                     credsList.Add(cred);
                 }
             }
 
-            WitsmlCreds = credsList.ToArray();
+            WitsmlCreds = credsList;
             _unregister?.Dispose();
             _unregister = configuration.GetReloadToken().RegisterChangeCallback((_) => Bind(configuration), null);
         }

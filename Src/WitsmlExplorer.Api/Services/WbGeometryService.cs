@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IWbGeometryService
     {
-        Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid);
+        Task<ICollection<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid);
         Task<WbGeometry> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid);
         Task<List<WbGeometrySection>> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid);
     }
@@ -28,20 +28,20 @@ namespace WitsmlExplorer.Api.Services
             WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryById(wellUid, wellboreUid, wbGeometryUid);
             WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
-            return result.WbGeometrys.Any() ? FromWitsml(result.WbGeometrys.First()) : null;
+            return FromWitsml(result.WbGeometrys.FirstOrDefault());
         }
 
-        public async Task<IEnumerable<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid)
+        public async Task<ICollection<WbGeometry>> GetWbGeometrys(string wellUid, string wellboreUid)
         {
             WitsmlWbGeometrys query = WbGeometryQueries.GetWitsmlWbGeometryByWellbore(wellUid, wellboreUid);
             WitsmlWbGeometrys result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
-            return result.WbGeometrys.Select(FromWitsml).OrderBy(wbGeometry => wbGeometry.DTimReport);
+            return result.WbGeometrys.Select(FromWitsml).OrderBy(wbGeometry => wbGeometry.DTimReport).ToList();
         }
 
         private static WbGeometry FromWitsml(WitsmlWbGeometry wbGeometry)
         {
-            return new WbGeometry
+            return wbGeometry == null ? null : new WbGeometry
             {
                 WellUid = wbGeometry.UidWell,
                 Uid = wbGeometry.Uid,
@@ -81,7 +81,7 @@ namespace WitsmlExplorer.Api.Services
                 OdSection = LengthMeasure.FromWitsml(section.OdSection),
                 WtPerLen = LengthMeasure.FromWitsml(section.WtPerLen),
                 Grade = section.Grade,
-                CurveConductor = StringHelpers.ToNullableBoolean(section.CurveConductor),
+                CurveConductor = StringHelpers.ToBoolean(section.CurveConductor),
                 DiaDrift = LengthMeasure.FromWitsml(section.DiaDrift),
                 FactFric = string.IsNullOrEmpty(section.FactFric) ? null : StringHelpers.ToDouble(section.FactFric)
             }).ToList();

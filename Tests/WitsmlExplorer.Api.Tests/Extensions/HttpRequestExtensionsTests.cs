@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.Tests.Extensions
 
             // "Decrypt" function is not under test
             ServerCredentials testResult = mockRequest.Object.GetWitsmlServerHttpHeader(headerName, n => "");
-            Assert.True(testResult.IsCredsNullOrEmpty() && testResult.Host == null);
+            Assert.True(testResult.IsNullOrEmpty() && testResult.Host == null);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace WitsmlExplorer.Api.Tests.Extensions
             string basicHeader = "http://some.url.com";
 
             ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(basicHeader, n => n);
-            Assert.True(creds.IsCredsNullOrEmpty());
+            Assert.True(creds.IsNullOrEmpty());
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Tests.Extensions
             string basicHeader = null;
 
             ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(basicHeader, n => n);
-            Assert.True(creds.IsCredsNullOrEmpty());
+            Assert.True(creds.IsNullOrEmpty());
         }
 
         private static string CreateBasicHeaderValue(string username, string dummypassword, string host)

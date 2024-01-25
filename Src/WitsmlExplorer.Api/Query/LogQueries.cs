@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
@@ -33,7 +34,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimCreation = "",
                         DTimLastChange = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -46,7 +47,7 @@ namespace WitsmlExplorer.Api.Query
                     Uid = logUid,
                     UidWell = wellUid,
                     UidWellbore = wellboreUid
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -82,7 +83,7 @@ namespace WitsmlExplorer.Api.Query
                 LogCurveInfo = new List<WitsmlLogCurveInfo>(),
                 LogData = new WitsmlLogData
                 {
-                    MnemonicList = string.Join(",", mnemonics)
+                    MnemonicList = string.Join(CommonConstants.DataSeparator, mnemonics)
                 }
             };
 
@@ -160,7 +161,7 @@ namespace WitsmlExplorer.Api.Query
                     {
                         Mnemonic = mnemonic
                     }).ToList()
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -185,8 +186,8 @@ namespace WitsmlExplorer.Api.Query
                         MaxIndex = new WitsmlIndex(),
                         MinDateTimeIndex = "",
                         MaxDateTimeIndex = ""
-                    }.AsSingletonList(),
-                }.AsSingletonList()
+                    }.AsItemInList(),
+                }.AsItemInList()
             };
         }
     }

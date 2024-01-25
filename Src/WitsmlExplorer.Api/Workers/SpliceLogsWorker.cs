@@ -13,7 +13,6 @@ using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
@@ -39,13 +38,12 @@ namespace WitsmlExplorer.Api.Workers
             {
                 VerifyLogHeaders(logHeaders);
 
-                bool isDescending = logHeaders.Logs.FirstOrDefault().Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
                 bool isDepthLog = logHeaders.Logs.FirstOrDefault().IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
 
                 WitsmlLogData newLogData = new()
                 {
-                    MnemonicList = string.Join(",", newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic)),
-                    UnitList = string.Join(",", newLogHeader.LogCurveInfo.Select(lci => lci.Unit)),
+                    MnemonicList = string.Join(CommonConstants.DataSeparator, newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic)),
+                    UnitList = string.Join(CommonConstants.DataSeparator, newLogHeader.LogCurveInfo.Select(lci => lci.Unit)),
                     Data = new() // Will be populated in the loop below
                 };
 
@@ -54,8 +52,8 @@ namespace WitsmlExplorer.Api.Workers
                     WitsmlLog logHeader = logHeaders.Logs.Find(l => l.Uid == logUid);
                     foreach (var mnemonic in logHeader.LogCurveInfo.Select(lci => lci.Mnemonic).Skip(1))
                     {
-                        WitsmlLogData logData = await GetLogDataForCurve(logHeader, mnemonic);
-                        newLogData = SpliceLogDataForCurve(newLogData, logData, mnemonic, isDescending, isDepthLog);
+                        WitsmlLogData logData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), logHeader, mnemonic, Logger);
+                        newLogData = SpliceLogDataForCurve(newLogData, logData, mnemonic, isDepthLog);
                     }
                 }
 
@@ -78,72 +76,48 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task<WitsmlLogs> GetLogHeaders(string wellUid, string wellboreUid, string[] logUids)
         {
-            WitsmlLogs logQuery = LogQueries.GetWitsmlLogsByIds(wellUid, wellboreUid, logUids);
-            return await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(logQuery, new OptionsIn(ReturnElements.HeaderOnly));
+            return await LogWorkerTools.GetLogsByIds(GetTargetWitsmlClientOrThrow(), wellUid, wellboreUid, logUids, ReturnElements.HeaderOnly);
         }
 
         private static void VerifyLogHeaders(WitsmlLogs logHeaders)
         {
             if (logHeaders.Logs.IsNullOrEmpty()) throw new ArgumentException("Log headers could not be fetched");
-            var indexCurve = logHeaders.Logs.FirstOrDefault().IndexCurve;
-            if (logHeaders.Logs.Any(log => log.IndexCurve.Value != indexCurve.Value)) throw new ArgumentException("IndexCurve must match for all logs");
             var direction = logHeaders.Logs.FirstOrDefault().Direction;
             if (logHeaders.Logs.Any(log => log.Direction != direction)) throw new ArgumentException("Direction must match for all logs");
             var indexType = logHeaders.Logs.FirstOrDefault().IndexType;
             if (logHeaders.Logs.Any(log => log.IndexType != indexType)) throw new ArgumentException("Index type must match for all logs");
         }
 
-        private async Task<WitsmlLogData> GetLogDataForCurve(WitsmlLog log, string mnemonic)
+        private static WitsmlLogData SpliceLogDataForCurve(WitsmlLogData primaryData, WitsmlLogData secondaryData, string mnemonic, bool isDepthLog)
         {
-            await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), log, mnemonic.AsSingletonList(), Logger);
-            List<WitsmlData> data = new();
-            WitsmlLogData logData = await logDataReader.GetNextBatch();
-            var mnemonicList = logData?.MnemonicList;
-            var unitList = logData?.UnitList;
-            while (logData != null)
-            {
-                data.AddRange(logData.Data);
-                logData = await logDataReader.GetNextBatch();
-            }
-
-            return new WitsmlLogData
-            {
-                MnemonicList = mnemonicList,
-                UnitList = unitList,
-                Data = data
-            };
-        }
-
-        private static WitsmlLogData SpliceLogDataForCurve(WitsmlLogData primaryData, WitsmlLogData secondaryData, string mnemonic, bool isDescending, bool isDepthLog)
-        {
-            int mnemonicIndex = primaryData.MnemonicList.Split(',').ToList().FindIndex(m => m == mnemonic);
-            Dictionary<string, string> primaryDict = primaryData.Data?.ToDictionary(row => row.Data.Split(',')[0], row => row.Data) ?? new();
+            int mnemonicIndex = primaryData.MnemonicList.Split(CommonConstants.DataSeparator).ToList().FindIndex(m => m == mnemonic);
+            Dictionary<string, string> primaryDict = primaryData.Data?.ToDictionary(row => row.Data.Split(CommonConstants.DataSeparator)[0], row => row.Data) ?? new();
             string startIndex = null;
             string endIndex = null;
             if (primaryDict.Any())
             {
-                var firstElementForCurve = primaryDict.FirstOrDefault(x => x.Value.Split(',')[mnemonicIndex] != "");
+                var firstElementForCurve = primaryDict.FirstOrDefault(x => x.Value.Split(CommonConstants.DataSeparator)[mnemonicIndex] != string.Empty);
                 startIndex = firstElementForCurve.Equals(default(KeyValuePair<string, string>)) ? null : firstElementForCurve.Key;
-                var lastElementForCurve = primaryDict.LastOrDefault(x => x.Value.Split(',')[mnemonicIndex] != "");
+                var lastElementForCurve = primaryDict.LastOrDefault(x => x.Value.Split(CommonConstants.DataSeparator)[mnemonicIndex] != string.Empty);
                 endIndex = lastElementForCurve.Equals(default(KeyValuePair<string, string>)) ? null : lastElementForCurve.Key;
             }
 
             foreach (var dataRow in secondaryData.Data.Select(row => row.Data))
             {
-                var rowIndex = dataRow.Split(',').First();
+                var rowIndex = dataRow.Split(CommonConstants.DataSeparator).First();
                 if ((startIndex == null && endIndex == null)
-                    || isDepthLog && (double.Parse(rowIndex) < double.Parse(startIndex) || double.Parse(rowIndex) > double.Parse(endIndex))
+                    || isDepthLog && (StringHelpers.ToDouble(rowIndex) < StringHelpers.ToDouble(startIndex) || StringHelpers.ToDouble(rowIndex) > StringHelpers.ToDouble(endIndex))
                     || !isDepthLog && (DateTime.Parse(rowIndex) < DateTime.Parse(startIndex) || DateTime.Parse(rowIndex) > DateTime.Parse(endIndex)))
                 {
-                    var newCellValue = dataRow.Split(',').Last();
-                    var currentRowValue = (primaryDict.GetValueOrDefault(rowIndex)?.Split(',') ?? Enumerable.Repeat("", primaryData.MnemonicList.Split(',').Length)).ToList();
+                    var newCellValue = dataRow.Split(CommonConstants.DataSeparator).Last();
+                    var currentRowValue = (primaryDict.GetValueOrDefault(rowIndex)?.Split(CommonConstants.DataSeparator) ?? Enumerable.Repeat("", primaryData.MnemonicList.Split(CommonConstants.DataSeparator).Length)).ToList();
                     currentRowValue[0] = rowIndex;
                     currentRowValue[mnemonicIndex] = newCellValue;
-                    primaryDict[rowIndex] = string.Join(",", currentRowValue);
+                    primaryDict[rowIndex] = string.Join(CommonConstants.DataSeparator, currentRowValue);
                 }
             }
 
-            var sorted = isDepthLog ? primaryDict.OrderBy(x => double.Parse(x.Key)) : primaryDict.OrderBy(x => DateTime.Parse(x.Key));
+            var sorted = isDepthLog ? primaryDict.OrderBy(x => StringHelpers.ToDouble(x.Key)) : primaryDict.OrderBy(x => DateTime.Parse(x.Key));
             List<WitsmlData> splicedData = sorted.Select(x => new WitsmlData { Data = x.Value }).ToList();
 
             WitsmlLogData newData = new()
@@ -160,7 +134,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             WitsmlLogs query = new()
             {
-                Logs = newLogHeader.AsSingletonList()
+                Logs = newLogHeader.AsItemInList()
             };
             QueryResult result = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(query);
             if (!result.IsSuccessful) throw new ArgumentException($"Could not create log. {result.Reason}");
@@ -168,6 +142,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private static WitsmlLog CreateNewLogQuery(WitsmlLogs logHeaders, string newLogUid, string newLogName)
         {
+            // The main data should be taken from the first log, but LogCurveInfo and IndexCurve should be taken from the last log.
             WitsmlLog baseLog = logHeaders.Logs.FirstOrDefault();
             return new()
             {
@@ -178,14 +153,24 @@ namespace WitsmlExplorer.Api.Workers
                 UidWell = baseLog.UidWell,
                 UidWellbore = baseLog.UidWellbore,
                 IndexType = baseLog.IndexType,
-                IndexCurve = baseLog.IndexCurve,
+                IndexCurve = logHeaders.Logs.LastOrDefault().IndexCurve,
                 Direction = baseLog.Direction,
-                LogCurveInfo = logHeaders.Logs
-                    .SelectMany(log => log.LogCurveInfo)
+                LogCurveInfo = GetNewLogCurveInfo(logHeaders)
+            };
+        }
+
+        private static List<WitsmlLogCurveInfo> GetNewLogCurveInfo(WitsmlLogs logHeaders)
+        {
+            // Returns the LogCurveInfo where curves from the last logs are prioritized.
+            // The index curve from the last log is also placed first in the new LogCurveInfo.
+            var indexLogCurveInfo = logHeaders.Logs.LastOrDefault().LogCurveInfo.FirstOrDefault();
+            List<WitsmlLogCurveInfo> otherLogCurveInfos = logHeaders.Logs.SelectMany(log => log.LogCurveInfo.Skip(1)).ToList(); // Skip index curve of each log.
+            var newLogCurveInfo = otherLogCurveInfos
                     .GroupBy(x => x.Mnemonic)
                     .Select(g => g.Last())
-                    .ToList()
-            };
+                    .Prepend(indexLogCurveInfo)
+                    .ToList();
+            return newLogCurveInfo;
         }
 
         private async Task AddDataToLog(string wellUid, string wellboreUid, string logUid, WitsmlLogData data)

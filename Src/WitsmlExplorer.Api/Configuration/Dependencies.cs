@@ -19,6 +19,8 @@ namespace WitsmlExplorer.Api.Configuration
 {
     public static class Dependencies
     {
+        private const string MissingDatabaseConfigMessage = "Did not detect any configuration for database";
+
         public static void ConfigureDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
@@ -33,6 +35,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .IgnoreThisInterface<IAsyncDisposable>()
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
+            AddRepository<LogCurvePriority, string>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
@@ -55,16 +58,19 @@ namespace WitsmlExplorer.Api.Configuration
             }
             else
             {
-                Log.Error("Did not detect any configuration for database");
-                return;
+                Log.Error(MissingDatabaseConfigMessage);
+                throw new ApplicationException(MissingDatabaseConfigMessage);
             }
 
         }
 
         public static void InitializeRepository(this IApplicationBuilder app)
         {
-            IDocumentRepository<Server, Guid> repository = app.ApplicationServices.GetService<IDocumentRepository<Server, Guid>>();
-            repository?.InitClientAsync().GetAwaiter().GetResult();
+            IDocumentRepository<Server, Guid> serverRepository = app.ApplicationServices.GetService<IDocumentRepository<Server, Guid>>();
+            serverRepository?.InitClientAsync().GetAwaiter().GetResult();
+
+            IDocumentRepository<LogCurvePriority, string> logCurvePriorityRepository = app.ApplicationServices.GetService<IDocumentRepository<LogCurvePriority, string>>();
+            logCurvePriorityRepository?.InitClientAsync().GetAwaiter().GetResult();
         }
     }
 }

@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Query
                     Operator = well.Operator.NullIfEmpty(),
                     NumLicense = well.NumLicense.NullIfEmpty(),
                     TimeZone = well.TimeZone
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Query
                 {
                     Uid = wellUid,
                     Name = name
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
@@ -64,13 +64,13 @@ namespace WitsmlExplorer.Api.Query
                     Country = well.Country,
                     Operator = well.Operator,
                     NumLicense = well.NumLicense
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
 
         public static WitsmlWells DeleteWitsmlWell(string wellUid)
         {
-            return new WitsmlWells { Wells = new WitsmlWell { Uid = wellUid }.AsSingletonList() };
+            return new WitsmlWells { Wells = new WitsmlWell { Uid = wellUid }.AsItemInList() };
         }
 
         private static WitsmlWells GetWitsmlWell(string wellUid = "")
@@ -97,7 +97,7 @@ namespace WitsmlExplorer.Api.Query
                         DTimLastChange = "",
                         ItemState = ""
                     }
-                }.AsSingletonList()
+                }.AsItemInList()
             };
         }
     }

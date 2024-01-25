@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Serilog;
-
 using Witsml.Data;
+using Witsml.Helpers;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -43,7 +40,7 @@ namespace WitsmlExplorer.Api.Services
                     SuffixAPI = witsmlWellbore.SuffixAPI,
                     NumGovt = witsmlWellbore.NumGovt,
                     WellStatus = witsmlWellbore.StatusWellbore,
-                    IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
+                    IsActive = StringHelpers.ToBoolean(witsmlWellbore.IsActive),
                     WellborePurpose = witsmlWellbore.PurposeWellbore,
                     WellboreParentUid = witsmlWellbore.ParentWellbore?.UidRef,
                     WellboreParentName = witsmlWellbore.ParentWellbore?.Value,
@@ -68,29 +65,28 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IList<Wellbore>> GetWellbores(string wellUid = "")
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByWell(wellUid);
-
-            WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            List<Wellbore> wellbores = result.Wellbores
-                .Select(witsmlWellbore =>
-                    new Wellbore
-                    {
-                        Uid = witsmlWellbore.Uid,
-                        Name = witsmlWellbore.Name,
-                        WellUid = witsmlWellbore.UidWell,
-                        WellName = witsmlWellbore.NameWell,
-                        WellStatus = witsmlWellbore.StatusWellbore,
-                        WellType = witsmlWellbore.TypeWellbore,
-                        IsActive = StringHelpers.ToBooleanSafe(witsmlWellbore.IsActive),
-                        DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange,
-                        DateTimeCreation = witsmlWellbore.CommonData.DTimCreation
-                    })
-                .OrderBy(wellbore => wellbore.Name).ToList();
-            stopwatch.Stop();
-            Log.Debug("Fetched {Count} wellbores in {Elapsed} ms", wellbores.Count, stopwatch.ElapsedMilliseconds);
-            return wellbores;
+            return await MeasurementHelper.MeasureExecutionTimeAsync(async (timeMeasurer) =>
+            {
+                WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByWell(wellUid);
+                WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+                List<Wellbore> wellbores = result.Wellbores
+                    .Select(witsmlWellbore =>
+                        new Wellbore
+                        {
+                            Uid = witsmlWellbore.Uid,
+                            Name = witsmlWellbore.Name,
+                            WellUid = witsmlWellbore.UidWell,
+                            WellName = witsmlWellbore.NameWell,
+                            WellStatus = witsmlWellbore.StatusWellbore,
+                            WellType = witsmlWellbore.TypeWellbore,
+                            IsActive = StringHelpers.ToBoolean(witsmlWellbore.IsActive),
+                            DateTimeLastChange = witsmlWellbore.CommonData.DTimLastChange,
+                            DateTimeCreation = witsmlWellbore.CommonData.DTimCreation
+                        })
+                    .OrderBy(wellbore => wellbore.Name).ToList();
+                timeMeasurer.LogMessage = executionTime => $"Fetched {wellbores.Count} wellbores in {executionTime} ms.";
+                return wellbores;
+            });
         }
     }
 }

@@ -1,9 +1,12 @@
 import { TextField } from "@equinor/eds-core-react";
+import {
+  dateTimeFormatNoOffset,
+  validateIsoDateStringNoOffset
+} from "components/DateFormatter";
 import { formatInTimeZone } from "date-fns-tz";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Icon from "../../styles/Icons";
-import { dateTimeFormatNoOffset, validateIsoDateStringNoOffset } from "../DateFormatter";
+import Icon from "styles/Icons";
 
 interface DateTimeFieldProps {
   value: string;
@@ -27,7 +30,9 @@ interface DateTimeFieldProps {
  * @param maxValue Optional latest time the value can be.
  * @returns
  */
-export const LogHeaderDateTimeField = (props: DateTimeFieldProps): React.ReactElement => {
+export const LogHeaderDateTimeField = (
+  props: DateTimeFieldProps
+): React.ReactElement => {
   const { value, label, updateObject, offset, minValue, maxValue } = props;
   const [initiallyEmpty, setInitiallyEmpty] = useState(false);
   const isFirefox = navigator.userAgent.includes("Firefox");
@@ -38,7 +43,9 @@ export const LogHeaderDateTimeField = (props: DateTimeFieldProps): React.ReactEl
 
   const validate = (current: string) => {
     return (
-      (validateIsoDateStringNoOffset(current, offset) && (!minValue || value >= minValue) && (!maxValue || value <= maxValue)) ||
+      (validateIsoDateStringNoOffset(current, offset) &&
+        (!minValue || current >= minValue) &&
+        (!maxValue || current <= maxValue)) ||
       (initiallyEmpty && (current == null || current === ""))
     );
   };
@@ -77,7 +84,9 @@ export const LogHeaderDateTimeField = (props: DateTimeFieldProps): React.ReactEl
           helperText={getHelperText()}
           variant={validate(value) ? undefined : "error"}
           autoComplete="off"
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+          onChange={(
+            e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+          ) => {
             updateObject(e.target.value, validate(e.target.value));
           }}
           style={{
@@ -95,7 +104,9 @@ export const LogHeaderDateTimeField = (props: DateTimeFieldProps): React.ReactEl
         type={isFirefox ? "date" : "datetime-local"}
         style={{ width: "44px" }}
         tabIndex={-1} //disable tab focus due to the native datepicker including multiple invisible fields that are not to be used
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        onChange={(
+          e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+        ) => {
           let toFormat = e.target.value;
           if (validateIsoDateStringNoOffset(value, offset)) {
             // preserve the ss.SSS (and also HH:mm for Firefox) part of the original value that the datepicker does not set
@@ -103,7 +114,11 @@ export const LogHeaderDateTimeField = (props: DateTimeFieldProps): React.ReactEl
             toFormat += slice;
           }
           toFormat += offset;
-          const formatted = formatInTimeZone(toFormat, offset, dateTimeFormatNoOffset);
+          const formatted = formatInTimeZone(
+            toFormat,
+            offset,
+            dateTimeFormatNoOffset
+          );
           updateObject(formatted, validate(formatted));
         }}
       />

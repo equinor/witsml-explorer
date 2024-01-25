@@ -1,14 +1,18 @@
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_LOG_ORDERTYPE_DECREASING
+} from "components/Constants";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import { SelectLogCurveInfoAction } from "contexts/navigationActions";
+import NavigationType from "contexts/navigationType";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
 import React, { useEffect, useState } from "react";
-import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
-import NavigationType from "../../contexts/navigationType";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_LOG_ORDERTYPE_DECREASING } from "../Constants";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import ModalDialog from "./ModalDialog";
-import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
+import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
 
 export interface SelectIndexToDisplayModalProps {
   dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
@@ -17,13 +21,26 @@ export interface SelectIndexToDisplayModalProps {
   selectedLogCurveInfoRow: LogCurveInfoRow[];
 }
 
-const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React.ReactElement => {
-  const { selectedLogCurveInfoRow, dispatchNavigation, dispatchOperation, selectedLog } = props;
+const SelectIndexToDisplayModal = (
+  props: SelectIndexToDisplayModalProps
+): React.ReactElement => {
+  const {
+    selectedLogCurveInfoRow,
+    dispatchNavigation,
+    dispatchOperation,
+    selectedLog
+  } = props;
   const isTimeIndexed = selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME;
   const [log, setLog] = useState<LogObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [startIndex, setStartIndex] = useState<string | number>(isTimeIndexed ? selectedLog.startIndex : indexToNumber(selectedLog.startIndex));
-  const [endIndex, setEndIndex] = useState<string | number>(isTimeIndexed ? selectedLog.endIndex : indexToNumber(selectedLog.endIndex));
+  const [startIndex, setStartIndex] = useState<string | number>(
+    isTimeIndexed
+      ? selectedLog.startIndex
+      : indexToNumber(selectedLog.startIndex)
+  );
+  const [endIndex, setEndIndex] = useState<string | number>(
+    isTimeIndexed ? selectedLog.endIndex : indexToNumber(selectedLog.endIndex)
+  );
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
 
   useEffect(() => {
@@ -32,13 +49,15 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
 
   const onSubmit = async () => {
     setIsLoading(true);
-    const logCurveInfoWithUpdatedIndex = selectedLogCurveInfoRow.map((logCurveInfo: LogCurveInfoRow) => {
-      return {
-        ...logCurveInfo,
-        minIndex: formatIndexValue(startIndex),
-        maxIndex: formatIndexValue(endIndex)
-      };
-    });
+    const logCurveInfoWithUpdatedIndex = selectedLogCurveInfoRow.map(
+      (logCurveInfo: LogCurveInfoRow) => {
+        return {
+          ...logCurveInfo,
+          minIndex: formatIndexValue(startIndex),
+          maxIndex: formatIndexValue(endIndex)
+        };
+      }
+    );
     dispatchOperation({ type: OperationType.HideModal });
     dispatchNavigation({
       type: NavigationType.ShowCurveValues,
@@ -62,7 +81,9 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
                   <AdjustDateTimeModal
                     minDate={log.startIndex}
                     maxDate={log.endIndex}
-                    isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                    isDescending={
+                      log.direction == WITSML_LOG_ORDERTYPE_DECREASING
+                    }
                     onStartDateChanged={setStartIndex}
                     onEndDateChanged={setEndIndex}
                     onValidChange={toggleConfirmDisabled}
@@ -72,7 +93,9 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
                 <AdjustNumberRangeModal
                   minValue={indexToNumber(log.startIndex)}
                   maxValue={indexToNumber(log.endIndex)}
-                  isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                  isDescending={
+                    log.direction == WITSML_LOG_ORDERTYPE_DECREASING
+                  }
                   onStartValueChanged={setStartIndex}
                   onEndValueChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}
@@ -89,15 +112,6 @@ const SelectIndexToDisplayModal = (props: SelectIndexToDisplayModalProps): React
       )}
     </>
   );
-};
-
-const indexToNumber = (index: string): number => {
-  if (!index) return null;
-  return Number(index.replace(/[^\d.-]/g, ""));
-};
-
-export const formatIndexValue = (value: string | number): string => {
-  return typeof value === "number" ? String(value) : value;
 };
 
 export default SelectIndexToDisplayModal;

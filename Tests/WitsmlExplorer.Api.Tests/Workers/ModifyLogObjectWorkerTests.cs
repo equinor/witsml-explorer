@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     public class ModifyLogObjectWorkerTests
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
-        private readonly ModifyLogObjectWorker _worker;
+        private readonly ModifyObjectOnWellboreWorker _worker;
         private const string WellUid = "wellUid";
         private const string WellboreUid = "wellboreUid";
         private const string LogUid = "logUid";
@@ -36,20 +35,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<ModifyLogObjectJob> logger = loggerFactory.CreateLogger<ModifyLogObjectJob>();
-            _worker = new ModifyLogObjectWorker(logger, witsmlClientProvider.Object);
+            ILogger<ModifyObjectOnWellboreJob> logger = loggerFactory.CreateLogger<ModifyObjectOnWellboreJob>();
+            _worker = new ModifyObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task RenameLogObject()
         {
             string expectedNewName = "NewName";
-            ModifyLogObjectJob job = CreateJobTemplate();
-            job.LogObject.Name = expectedNewName;
+            ModifyObjectOnWellboreJob job = CreateJobTemplate();
+            job.Object.Name = expectedNewName;
 
             List<WitsmlLogs> updatedLogs = new();
             _witsmlClient.Setup(client =>
-                client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>())).Callback<WitsmlLogs>(logs => updatedLogs.Add(logs))
+                client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>())).Callback<IWitsmlQueryType>(logs => updatedLogs.Add(logs as WitsmlLogs))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -61,25 +60,28 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task RenameLogObject_EmptyName_ThrowsException()
         {
-            ModifyLogObjectJob job = CreateJobTemplate();
-            job.LogObject.Name = "";
+            ModifyObjectOnWellboreJob job = CreateJobTemplate();
+            job.Object.Name = string.Empty;
 
-            InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-            Assert.Equal("Name cannot be empty", exception.Message);
+            var (workerResult, _) = await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            Assert.False(workerResult.IsSuccess);
+            Assert.Equal("Name cannot be empty", workerResult.Message);
+
+            _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>()), Times.Never);
         }
 
-        private static ModifyLogObjectJob CreateJobTemplate()
+        private static ModifyObjectOnWellboreJob CreateJobTemplate()
         {
-            return new ModifyLogObjectJob
+            return new ModifyObjectOnWellboreJob
             {
-                LogObject = new LogObject
+                Object = new LogObject
                 {
                     WellUid = WellUid,
                     WellboreUid = WellboreUid,
                     Uid = LogUid
-                }
+                },
+                ObjectType = EntityType.Log
             };
         }
     }

@@ -8,11 +8,11 @@ namespace Witsml.Data
 {
     public class WitsmlRisk : WitsmlObjectOnWellbore
     {
-        public override WitsmlRisks AsSingletonWitsmlList()
+        public override WitsmlRisks AsItemInWitsmlList()
         {
             return new WitsmlRisks()
             {
-                Risks = this.AsSingletonList()
+                Risks = this.AsItemInList()
             };
         }
         [XmlElement("objectReference")]

@@ -1,18 +1,33 @@
-import { TimeZone } from "../../contexts/operationStateReducer";
-import formatDateString, { getOffsetFromTimeZone, validateIsoDateString } from "../DateFormatter";
+import formatDateString, {
+  getOffsetFromTimeZone,
+  validateIsoDateString
+} from "components/DateFormatter";
+import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 
 it("Should replace +00:00 with Z when TimeZone is Raw", () => {
-  const actual = formatDateString("2022-11-17T13:54:17.000+00:00", TimeZone.Raw);
+  const actual = formatDateString(
+    "2022-11-17T13:54:17.000+00:00",
+    TimeZone.Raw,
+    DateTimeFormat.Raw
+  );
   expect(actual).toEqual("2022-11-17T13:54:17.000Z");
 });
 
 it("Should keep the offset when TimeZone is Raw", () => {
-  const actual = formatDateString("2022-11-17T13:54:17.000+01:00", TimeZone.Raw);
+  const actual = formatDateString(
+    "2022-11-17T13:54:17.000+01:00",
+    TimeZone.Raw,
+    DateTimeFormat.Raw
+  );
   expect(actual).toEqual("2022-11-17T13:54:17.000+01:00");
 });
 
 it("Should convert the time when a specific TimeZone is picked", () => {
-  const actual = formatDateString("2022-11-17T13:54:17.000+02:00", TimeZone.Houston);
+  const actual = formatDateString(
+    "2022-11-17T13:54:17.000+02:00",
+    TimeZone.Houston,
+    DateTimeFormat.Raw
+  );
   //handle daylight saving time for Houston
   const offset = getOffsetFromTimeZone(TimeZone.Houston);
   let expected;
@@ -26,6 +41,24 @@ it("Should convert the time when a specific TimeZone is picked", () => {
     expected = "check whether Houston still uses daylight saving time";
   }
   expect(actual).toEqual(expected);
+});
+
+it("Should replace +02:00 with Z when TimeZone is Raw", () => {
+  const actual = formatDateString(
+    "2022-11-17T13:54:17.000+02:00",
+    TimeZone.Raw,
+    DateTimeFormat.Natural
+  );
+  expect(actual).toEqual("17.11.2022 13:54:17.000");
+});
+
+it("Should convert the time when a specific DateTime Format Picked", () => {
+  const actual = formatDateString(
+    "2023-08-08T12:20:53.418Z",
+    TimeZone.Raw,
+    DateTimeFormat.Natural
+  );
+  expect(actual).toEqual("08.08.2023 12:20:53.418");
 });
 
 it("Should validate offset with minus", () => {

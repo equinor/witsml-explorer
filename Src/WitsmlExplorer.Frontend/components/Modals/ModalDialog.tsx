@@ -1,10 +1,10 @@
 import { Button, Dialog, Progress, Typography } from "@equinor/eds-core-react";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { Colors, dark, light } from "../../styles/Colors";
-import Icons from "../../styles/Icons";
+import { Colors, dark, light } from "styles/Colors";
+import Icons from "styles/Icons";
 
 interface ModalDialogProps {
   heading: string;
@@ -42,7 +42,8 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     buttonPosition: ButtonPosition = ControlButtonPosition.BOTTOM
   } = props;
   const context = React.useContext(OperationContext);
-  const [confirmButtonIsFocused, setConfirmButtonIsFocused] = useState<boolean>(false);
+  const [confirmButtonIsFocused, setConfirmButtonIsFocused] =
+    useState<boolean>(false);
   const { operationState } = context;
   const colors: Colors = operationState?.colors || light;
   const confirmButtonIsDisabled = isLoading || confirmDisabled;
@@ -80,7 +81,11 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
           confirmButtonIsDisabled={confirmButtonIsDisabled}
           colors={colors}
         >
-          {ButtonPosition == ControlButtonPosition.TOP ? <Icons name="save" /> : ""}
+          {ButtonPosition == ControlButtonPosition.TOP ? (
+            <Icons name="save" />
+          ) : (
+            ""
+          )}
           {confirmText ?? "Save"}
         </StyledButton>
       )
@@ -88,7 +93,14 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
       <></>
     ),
     showCancelButton ? (
-      <StyledButton colors={colors} key={"cancel"} disabled={isLoading} onClick={onCancel} color={confirmColor ?? "primary"} variant="outlined">
+      <StyledButton
+        colors={colors}
+        key={"cancel"}
+        disabled={isLoading}
+        onClick={onCancel}
+        color={confirmColor ?? "primary"}
+        variant="outlined"
+      >
         Cancel
       </StyledButton>
     ) : (
@@ -137,7 +149,9 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   );
   const header = (
     <DialogHeader colors={colors}>
-      <Dialog.Title style={{ color: colors.text.staticIconsDefault }}>{heading}</Dialog.Title>
+      <Dialog.Title style={{ color: colors.text.staticIconsDefault }}>
+        {heading}
+      </Dialog.Title>
     </DialogHeader>
   );
   const dialogStyle = {
@@ -188,29 +202,6 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
   margin-top: 0.5em;
   max-height: 75vh;
   overflow-y: auto;
-
-  color: ${(props) => props.colors.text.staticIconsDefault};
-  --track-color: #dddddd;
-  --thumb-color: #bbbbbb;
-  scrollbar-color: var(--track-color) var(--thumb-color);
-
-  //For firefox
-  scrollbar-width: thin;
-  padding-bottom: 8px;
-
-  // For Google Chrome/Safari/Edge
-  & ::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  & ::-webkit-scrollbar-thumb {
-    background: var(--thumb-color);
-    border-radius: 8px;
-  }
-
-  & ::-webkit-scrollbar-track {
-    background: var(--track-color);
-  }
 
   div[class*="InputWrapper__Container"] {
     label.dHhldd {
@@ -269,7 +260,11 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
       : ""};
 `;
 
-const StyledButton = styled(Button)<{ align?: string; colors?: Colors; confirmButtonIsDisabled: boolean }>`
+const StyledButton = styled(Button)<{
+  align?: string;
+  colors?: Colors;
+  confirmButtonIsDisabled: boolean;
+}>`
   ${(props) => (props.colors === dark ? `color:white` : "")};
   ${(props) =>
     props.confirmButtonIsDisabled && props.colors === dark
@@ -281,7 +276,8 @@ const StyledButton = styled(Button)<{ align?: string; colors?: Colors; confirmBu
       }`
       : ""};
   &&& {
-    ${({ align }) => (align === "right" ? `margin-left: auto;` : "margin: 0.5em;")};
+    ${({ align }) =>
+      align === "right" ? `margin-left: auto;` : "margin: 0.5em;"};
   }
 `;
 

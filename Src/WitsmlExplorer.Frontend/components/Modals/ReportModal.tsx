@@ -1,15 +1,26 @@
-import { Accordion, DotProgress, Typography } from "@equinor/eds-core-react";
+import {
+  Accordion,
+  Banner,
+  DotProgress,
+  Icon,
+  Typography
+} from "@equinor/eds-core-react";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
+import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import BaseReport, { createReport } from "models/reports/BaseReport";
 import React, { useContext, useEffect, useState } from "react";
+import JobService from "services/jobService";
+import NotificationService from "services/notificationService";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import BaseReport, { createReport } from "../../models/reports/BaseReport";
-import JobService from "../../services/jobService";
-import NotificationService from "../../services/notificationService";
-import { ContentTable, ContentTableColumn, ContentType } from "../ContentViews/table";
-import { StyledAccordionHeader } from "./LogComparisonModal";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
+import { Colors } from "styles/Colors";
 
 export interface ReportModal {
   report?: BaseReport;
@@ -60,33 +71,62 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
       confirmText="Ok"
       showCancelButton={false}
       content={
-        <>
+        <ContentLayout>
           {report ? (
-            <ContentLayout>
-              {report.summary && report.summary.includes("\n") ? (
+            <>
+              {report.warningMessage && (
+                <StyledBanner colors={colors}>
+                  <Banner.Icon variant="warning">
+                    <Icon name="infoCircle" />
+                  </Banner.Icon>
+                  <Banner.Message>{report.warningMessage}</Banner.Message>
+                </StyledBanner>
+              )}
+              {report.summary?.includes("\n") ? (
                 <Accordion>
                   <Accordion.Item>
-                    <StyledAccordionHeader colors={colors}>{report.summary.split("\n")[0]}</StyledAccordionHeader>
-                    <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
-                      <Typography style={{ whiteSpace: "pre-line" }}>{report.summary.split("\n").splice(1).join("\n")}</Typography>
+                    <StyledAccordionHeader colors={colors}>
+                      {report.summary.split("\n")[0]}
+                    </StyledAccordionHeader>
+                    <Accordion.Panel
+                      style={{ backgroundColor: colors.ui.backgroundLight }}
+                    >
+                      <Typography style={{ whiteSpace: "pre-line" }}>
+                        {report.summary.split("\n").splice(1).join("\n")}
+                      </Typography>
                     </Accordion.Panel>
                   </Accordion.Item>
                 </Accordion>
               ) : (
                 <Typography>{report.summary}</Typography>
               )}
-              {columns.length > 0 && <ContentTable columns={columns} data={report.reportItems} downloadToCsvFileName={report.title.replace(/\s+/g, "")} />}
-            </ContentLayout>
+              {columns.length > 0 && (
+                <ContentTable
+                  columns={columns}
+                  data={report.reportItems}
+                  downloadToCsvFileName={report.title.replace(/\s+/g, "")}
+                />
+              )}
+            </>
           ) : (
-            <ContentLayout>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5em" }}>
-                <Typography style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem" }}>Waiting for the job to finish.</Typography>
+            <>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "0.5em" }}
+              >
+                <Typography
+                  style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem" }}
+                >
+                  Waiting for the job to finish.
+                </Typography>
                 <DotProgress />
               </div>
-              <Typography>The report will also be available in the jobs view once the job is finished.</Typography>
-            </ContentLayout>
+              <Typography>
+                The report will also be available in the jobs view once the job
+                is finished.
+              </Typography>
+            </>
           )}
-        </>
+        </ContentLayout>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
       isLoading={false}
@@ -101,21 +141,31 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
   if (!jobId) return null;
 
   useEffect(() => {
-    const unsubscribeOnJobFinished = NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(async (notification) => {
-      if (notification.jobId === jobId) {
-        const jobInfo = await JobService.getUserJobInfo(notification.jobId);
-        if (!jobInfo) {
-          setReport(createReport(`The job has finished, but could not find job info for job ${jobId}`));
-        } else {
-          setReport(jobInfo.report);
+    const unsubscribeOnJobFinished =
+      NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(
+        async (notification) => {
+          if (notification.jobId === jobId) {
+            const jobInfo = await JobService.getUserJobInfo(notification.jobId);
+            if (!jobInfo) {
+              setReport(
+                createReport(
+                  `The job has finished, but could not find job info for job ${jobId}`
+                )
+              );
+            } else {
+              setReport(jobInfo.report);
+            }
+          }
         }
-      }
-    });
-    const unsubscribeOnJobFailed = NotificationService.Instance.alertDispatcherAsEvent.subscribe(async (notification) => {
-      if (notification.jobId === jobId) {
-        setReport(createReport(notification.message, notification.reason));
-      }
-    });
+      );
+    const unsubscribeOnJobFailed =
+      NotificationService.Instance.alertDispatcherAsEvent.subscribe(
+        async (notification) => {
+          if (notification.jobId === jobId) {
+            setReport(createReport(notification.message, notification.reason));
+          }
+        }
+      );
 
     return function cleanup() {
       unsubscribeOnJobFinished();
@@ -133,4 +183,21 @@ const ContentLayout = styled.div`
   justify-content: space-between;
   margin: 1em 0.2em 1em 0.2em;
   max-height: 65vh;
+`;
+
+const StyledBanner = styled(Banner)<{ colors: Colors }>`
+  background-color: ${(props) => props.colors.ui.backgroundDefault};
+  span {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  div {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
+  p {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  hr {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
 `;

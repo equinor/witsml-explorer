@@ -1,18 +1,26 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
-import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from "react";
+import Alerts from "components/Alerts";
+import ContentView from "components/ContentView";
+import { preventContextMenuPropagation } from "components/ContextMenus/ContextMenu";
+import Nav from "components/Nav";
+import PropertiesPanel from "components/PropertiesPanel";
+import Sidebar from "components/Sidebar/Sidebar";
+import NavigationContext from "contexts/navigationContext";
+import OperationContext from "contexts/operationContext";
+import useDocumentDimensions from "hooks/useDocumentDimensions";
+import { msalEnabled } from "msal/MsalAuthProvider";
+import {
+  ReactElement,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import styled from "styled-components";
-import Alerts from "../components/Alerts";
-import ContentView from "../components/ContentView";
-import { preventContextMenuPropagation } from "../components/ContextMenus/ContextMenu";
-import Nav from "../components/Nav";
-import Sidebar from "../components/Sidebar/Sidebar";
-import NavigationContext from "../contexts/navigationContext";
-import OperationContext from "../contexts/operationContext";
-import useDocumentDimensions from "../hooks/useDocumentDimensions";
-import { msalEnabled } from "../msal/MsalAuthProvider";
-import { Colors } from "../styles/Colors";
-import PropertiesPanel from "./PropertiesPanel";
+import { Colors } from "styles/Colors";
 
 const PageLayout = (): ReactElement => {
   const sidebarRef = useRef(null);
@@ -20,7 +28,8 @@ const PageLayout = (): ReactElement => {
   const [isVisible, setIsVisibile] = useState(false);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(316);
-  const { width: documentWidth } = useDocumentDimensions();
+  const { width: documentWidth, height: documentHeight } =
+    useDocumentDimensions();
   const { navigationState } = useContext(NavigationContext);
   const { currentProperties } = navigationState;
   const version = process.env.NEXT_PUBLIC_WEX_VERSION;
@@ -36,11 +45,21 @@ const PageLayout = (): ReactElement => {
   }, []);
 
   const resize = useCallback(
-    (mouseMoveEvent: { stopPropagation: () => void; preventDefault: () => void; clientX: number }) => {
+    (mouseMoveEvent: {
+      stopPropagation: () => void;
+      preventDefault: () => void;
+      clientX: number;
+    }) => {
       if (isResizing) {
         mouseMoveEvent.stopPropagation();
         mouseMoveEvent.preventDefault();
-        setSidebarWidth(Math.max(mouseMoveEvent.clientX - sidebarRef.current.getBoundingClientRect().left, 174));
+        setSidebarWidth(
+          Math.max(
+            mouseMoveEvent.clientX -
+              sidebarRef.current.getBoundingClientRect().left,
+            174
+          )
+        );
       }
     },
     [isResizing]
@@ -68,28 +87,72 @@ const PageLayout = (): ReactElement => {
       <NavLayout colors={colors}>
         <Nav />
       </NavLayout>
-      <SidebarLayout colors={colors} ref={sidebarRef} style={{ width: sidebarWidth, ...(!isSidebarExpanded && { display: "none" }) }}>
+      <SidebarLayout
+        colors={colors}
+        ref={sidebarRef}
+        style={{
+          width: sidebarWidth,
+          ...(!isSidebarExpanded && { display: "none" })
+        }}
+      >
         <Sidebar />
       </SidebarLayout>
-      <Divider onMouseDown={startResizing} colors={colors} style={{ ...(!isSidebarExpanded && { display: "none" }) }} />
-      <ContentViewLayout style={isSidebarExpanded ? { width: contentWidth } : { width: "100%", gridColumn: "1 / -1" }}>
+      <Divider
+        onMouseDown={startResizing}
+        colors={colors}
+        style={{ ...(!isSidebarExpanded && { display: "none" }) }}
+      />
+      <ContentViewLayout
+        style={
+          isSidebarExpanded
+            ? { width: contentWidth }
+            : { width: "100%", gridColumn: "1 / -1" }
+        }
+      >
         <Alerts />
-        <ContentView />
+        <ContentViewDimensionsContext.Provider
+          value={{ width: contentWidth, height: documentHeight }}
+        >
+          <ContentView />
+        </ContentViewDimensionsContext.Provider>
       </ContentViewLayout>
       <PropertyBar colors={colors}>
-        <Button colors={colors} variant={"ghost_icon"} style={{ marginRight: "0.5rem" }} onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}>
+        <Button
+          colors={colors}
+          variant={"ghost_icon"}
+          style={{ marginRight: "0.5rem" }}
+          onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+        >
           <Icon name={isSidebarExpanded ? "collapse" : "expand"} />
         </Button>
         <Properties>
           <PropertiesPanel properties={currentProperties} />
         </Properties>
-        {version && <Typography token={{ fontFamily: "Equinor", fontSize: "0.875rem", color: colors.text.staticIconsTertiary }}>v.{version}</Typography>}
+        {version && (
+          <Typography
+            token={{
+              fontFamily: "Equinor",
+              fontSize: "0.875rem",
+              color: colors.text.staticIconsTertiary
+            }}
+          >
+            v.{version}
+          </Typography>
+        )}
       </PropertyBar>
     </Layout>
   ) : (
     <></>
   );
 };
+
+interface ContentViewDimensions {
+  width: number;
+  height: number;
+}
+
+export const ContentViewDimensionsContext =
+  createContext<ContentViewDimensions>({} as ContentViewDimensions);
 
 const Layout = styled.div`
   display: grid;

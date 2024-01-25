@@ -1,8 +1,12 @@
 import "@testing-library/jest-dom";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithContexts } from "../../../__testUtils__/testUtils";
-import { ContentTable, ContentTableRow, ContentType } from "../table";
+import { renderWithContexts } from "__testUtils__/testUtils";
+import { ContentTable } from "components/ContentViews/table/ContentTable";
+import {
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table/tableParts";
 
 class ResizeObserver {
   observe() {
@@ -30,7 +34,9 @@ describe("<ContentTable />", () => {
   ];
 
   it("Should render a plain table", () => {
-    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} showPanel={false} />);
+    const { container } = renderWithContexts(
+      <ContentTable columns={columns} data={data} showPanel={false} />
+    );
     expect(container.querySelectorAll("table")).toHaveLength(1);
     expect(container.querySelectorAll("th")).toHaveLength(columns.length + 2);
     data.forEach((element) => {
@@ -40,7 +46,9 @@ describe("<ContentTable />", () => {
   });
 
   it("Should have sortable columns", () => {
-    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} showPanel={false} />);
+    const { container } = renderWithContexts(
+      <ContentTable columns={columns} data={data} showPanel={false} />
+    );
     let firstRow = container.querySelector("tbody").querySelector("tr");
     expect(firstRow.querySelectorAll("td")[1]).toHaveTextContent(data[0].name);
 
@@ -60,16 +68,32 @@ describe("<ContentTable />", () => {
       selectedRow = row;
       selections++;
     };
-    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} onSelect={onSelect} showPanel={false} />);
+    const { container } = renderWithContexts(
+      <ContentTable
+        columns={columns}
+        data={data}
+        onSelect={onSelect}
+        showPanel={false}
+      />
+    );
     const rowToSelect = 1;
-    const cellToClick = container.querySelector("tbody").querySelectorAll("tr")[rowToSelect].children[1];
+    const cellToClick = container.querySelector("tbody").querySelectorAll("tr")[
+      rowToSelect
+    ].children[1];
     fireEvent.click(cellToClick);
     expect(selections).toBe(1);
     expect(selectedRow).toBe(data[rowToSelect]);
   });
 
   it("Should render a table with checkable rows", () => {
-    const { container } = renderWithContexts(<ContentTable columns={columns} data={data} checkableRows showPanel={false} />);
+    const { container } = renderWithContexts(
+      <ContentTable
+        columns={columns}
+        data={data}
+        checkableRows
+        showPanel={false}
+      />
+    );
 
     const bodyRows = container.querySelector("tbody").querySelectorAll("tr");
     expect(bodyRows).toHaveLength(data.length);
@@ -81,10 +105,15 @@ describe("<ContentTable />", () => {
   it("Tables with checkable rows should display the number of checked rows", async () => {
     const noSelectedRegex = new RegExp(`selected: 0/${data.length}`, "i");
     const oneSelectedRegex = new RegExp(`selected: 1/${data.length}`, "i");
-    const allSelectedRegex = new RegExp(`selected: ${data.length}/${data.length}`, "i");
+    const allSelectedRegex = new RegExp(
+      `selected: ${data.length}/${data.length}`,
+      "i"
+    );
 
     const user = userEvent.setup();
-    renderWithContexts(<ContentTable columns={columns} data={data} checkableRows />);
+    renderWithContexts(
+      <ContentTable columns={columns} data={data} checkableRows />
+    );
     const [toggleAll, ...toggleRows] = screen.getAllByRole("checkbox");
     const selected = screen.getByText(/selected:/i);
 
@@ -113,7 +142,11 @@ describe("<ContentTable />", () => {
   });
 
   it("Tables with showRefresh=True should show a refresh button", async () => {
-    renderWithContexts(<ContentTable columns={columns} data={data} showRefresh />);
-    expect(screen.getByRole("button", { name: /refresh/i })).toBeInTheDocument();
+    renderWithContexts(
+      <ContentTable columns={columns} data={data} showRefresh />
+    );
+    expect(
+      screen.getByRole("button", { name: /refresh/i })
+    ).toBeInTheDocument();
   });
 });

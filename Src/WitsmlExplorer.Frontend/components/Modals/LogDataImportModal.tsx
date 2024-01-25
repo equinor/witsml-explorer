@@ -1,21 +1,21 @@
 ﻿import { Accordion, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
+import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
+import ModalDialog from "components/Modals/ModalDialog";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
+import ImportLogDataJob from "models/jobs/importLogDataJob";
+import ObjectReference from "models/jobs/objectReference";
+import LogCurveInfo from "models/logCurveInfo";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import React, { useCallback, useContext, useEffect, useState } from "react";
+import { truncateAbortHandler } from "services/apiClient";
+import ComponentService from "services/componentService";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { ComponentType } from "../../models/componentType";
-import ImportLogDataJob from "../../models/jobs/importLogDataJob";
-import ObjectReference from "../../models/jobs/objectReference";
-import LogCurveInfo from "../../models/logCurveInfo";
-import LogObject from "../../models/logObject";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import { truncateAbortHandler } from "../../services/apiClient";
-import ComponentService from "../../services/componentService";
-import JobService, { JobType } from "../../services/jobService";
-import { StyledAccordionHeader } from "./LogComparisonModal";
-import ModalDialog from "./ModalDialog";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;
@@ -26,11 +26,15 @@ interface ImportColumn {
   unit: string;
 }
 
-const IMPORT_FORMAT_INVALID = "Can't recognize every column, the csv format may be invalid.";
-const MISSING_INDEX_CURVE = "The target index curve needs to be present in the csv";
+const IMPORT_FORMAT_INVALID =
+  "Can't recognize every column, the csv format may be invalid.";
+const MISSING_INDEX_CURVE =
+  "The target index curve needs to be present in the csv";
 const UNITLESS_UNIT = "unitless";
 
-const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement => {
+const LogDataImportModal = (
+  props: LogDataImportModalProps
+): React.ReactElement => {
   const { targetLog } = props;
   const {
     dispatchOperation,
@@ -38,8 +42,12 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
   } = useContext(OperationContext);
   const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
-  const [uploadedFileColumns, setUploadedFileColumns] = useState<ImportColumn[]>([]);
-  const [targetLogCurveInfos, setTargetLogCurveInfos] = useState<LogCurveInfo[]>([]);
+  const [uploadedFileColumns, setUploadedFileColumns] = useState<
+    ImportColumn[]
+  >([]);
+  const [targetLogCurveInfos, setTargetLogCurveInfos] = useState<
+    LogCurveInfo[]
+  >([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const separator = ",";
@@ -49,7 +57,14 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
     const controller = new AbortController();
 
     const getLogCurveInfo = async () => {
-      const logCurveInfos = await ComponentService.getComponents(targetLog.wellUid, targetLog.wellboreUid, targetLog.uid, ComponentType.Mnemonic, undefined, controller.signal);
+      const logCurveInfos = await ComponentService.getComponents(
+        targetLog.wellUid,
+        targetLog.wellboreUid,
+        targetLog.uid,
+        ComponentType.Mnemonic,
+        undefined,
+        controller.signal
+      );
       setTargetLogCurveInfos(logCurveInfos);
       setIsLoading(false);
     };
@@ -64,8 +79,16 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
   useEffect(() => {
     setError("");
     if (uploadedFileColumns.length) {
-      if (uploadedFileColumns.map((col) => col.name).some((value) => value === "")) setError(IMPORT_FORMAT_INVALID);
-      if (!uploadedFileColumns.map((col) => col.name).includes(targetLog.indexCurve)) setError(MISSING_INDEX_CURVE);
+      if (
+        uploadedFileColumns.map((col) => col.name).some((value) => value === "")
+      )
+        setError(IMPORT_FORMAT_INVALID);
+      if (
+        !uploadedFileColumns
+          .map((col) => col.name)
+          .includes(targetLog.indexCurve)
+      )
+        setError(MISSING_INDEX_CURVE);
     }
   }, [uploadedFileColumns, targetLogCurveInfos]);
 
@@ -85,18 +108,21 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
     dispatchOperation({ type: OperationType.HideModal });
   };
 
-  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-    const file = e.target.files.item(0);
-    if (!file) return;
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+      const file = e.target.files.item(0);
+      if (!file) return;
 
-    const text = await file.text();
-    const header = text.split("\n", 1)[0];
-    const data = text.split("\n").slice(1);
+      const text = await file.text();
+      const header = text.split("\n", 1)[0];
+      const data = text.split("\n").slice(1);
 
-    setUploadedFile(file);
-    updateUploadedFileColumns(header);
-    setUploadedFileData(data);
-  }, []);
+      setUploadedFile(file);
+      updateUploadedFileColumns(header);
+      setUploadedFileData(data);
+    },
+    []
+  );
 
   const updateUploadedFileColumns = (header: string): void => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
@@ -119,20 +145,39 @@ const LogDataImportModal = (props: LogDataImportModalProps): React.ReactElement 
           content={
             <Container>
               <FileContainer>
-                <Button variant="contained" color={"primary"} component="label" startIcon={<CloudUpload />}>
+                <Button
+                  variant="contained"
+                  color={"primary"}
+                  component="label"
+                  startIcon={<CloudUpload />}
+                >
                   <Typography noWrap>Upload File</Typography>
-                  <input type="file" accept=".csv,text/csv" hidden onChange={handleFileChange} />
+                  <input
+                    type="file"
+                    accept=".csv,text/csv"
+                    hidden
+                    onChange={handleFileChange}
+                  />
                 </Button>
                 <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
-                  <Typography noWrap>{uploadedFile?.name ?? "No file chosen"}</Typography>
+                  <Typography noWrap>
+                    {uploadedFile?.name ?? "No file chosen"}
+                  </Typography>
                 </Tooltip>
               </FileContainer>
               <Accordion>
                 <Accordion.Item>
-                  <StyledAccordionHeader colors={colors}>Limitations</StyledAccordionHeader>
-                  <Accordion.Panel style={{ backgroundColor: colors.ui.backgroundLight }}>
+                  <StyledAccordionHeader colors={colors}>
+                    Limitations
+                  </StyledAccordionHeader>
+                  <Accordion.Panel
+                    style={{ backgroundColor: colors.ui.backgroundLight }}
+                  >
                     <List>
-                      <List.Item>Currently, only double values are supported as TypeLogData.</List.Item>
+                      <List.Item>
+                        Currently, only double values are supported as
+                        TypeLogData.
+                      </List.Item>
                       <List.Item>
                         The csv is expected to have this format:
                         <List>

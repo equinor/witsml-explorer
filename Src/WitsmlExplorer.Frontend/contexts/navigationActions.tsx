@@ -1,10 +1,10 @@
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import { ObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
-import CurveThreshold from "./curveThreshold";
-import NavigationType from "./navigationType";
+import CurveThreshold from "contexts/curveThreshold";
+import NavigationType from "contexts/navigationType";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 
 export interface Action {
   type: any;
@@ -54,7 +54,12 @@ export interface SelectQueryViewAction extends Action {
 
 export interface SelectObjectGroupAction extends Action {
   type: NavigationType.SelectObjectGroup;
-  payload: { wellUid: string; wellboreUid: string; objectType: ObjectType; objects: ObjectOnWellbore[] | null };
+  payload: {
+    wellUid: string;
+    wellboreUid: string;
+    objectType: ObjectType;
+    objects: ObjectOnWellbore[] | null;
+  };
 }
 
 export interface SelectLogTypeAction extends Action {
@@ -69,7 +74,12 @@ export interface SelectLogCurveInfoAction extends Action {
 
 export interface SelectObjectAction extends Action {
   type: NavigationType.SelectObject;
-  payload: { object: ObjectOnWellbore; well: Well; wellbore: Wellbore; objectType: ObjectType };
+  payload: {
+    object: ObjectOnWellbore;
+    well: Well;
+    wellbore: Wellbore;
+    objectType: ObjectType;
+  };
 }
 
 export interface SetCurveThresholdAction extends Action {

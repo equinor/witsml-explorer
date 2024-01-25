@@ -15,12 +15,12 @@ namespace WitsmlExplorer.Api.Query
 {
     public static class ObjectQueries
     {
-        public static IEnumerable<WitsmlObjectOnWellbore> DeleteObjectsQuery(ObjectReferences toDelete)
+        public static IList<WitsmlObjectOnWellbore> DeleteObjectsQuery(ObjectReferences toDelete)
         {
             return IdsToObjects(toDelete.WellUid, toDelete.WellboreUid, toDelete.ObjectUids, toDelete.ObjectType);
         }
 
-        public static IEnumerable<WitsmlObjectOnWellbore> IdsToObjects(string wellUid, string wellboreUid, string[] objectUids, EntityType type)
+        public static IList<WitsmlObjectOnWellbore> IdsToObjects(string wellUid, string wellboreUid, string[] objectUids, EntityType type)
         {
             return objectUids.Select((uid) =>
             {
@@ -29,20 +29,19 @@ namespace WitsmlExplorer.Api.Query
                 o.UidWellbore = wellboreUid;
                 o.UidWell = wellUid;
                 return o;
-            }
-            );
+            }).ToList();
         }
 
-        public static IEnumerable<T> CopyObjectsQuery<T>(IEnumerable<T> objects, WitsmlWellbore targetWellbore) where T : WitsmlObjectOnWellbore
+        public static IList<T> CopyObjectsQuery<T>(IEnumerable<T> objects, WitsmlWellbore targetWellbore) where T : WitsmlObjectOnWellbore
         {
-            return objects.Select((o) =>
+            return objects.Select(o =>
             {
                 o.UidWell = targetWellbore.UidWell;
                 o.NameWell = targetWellbore.NameWell;
                 o.UidWellbore = targetWellbore.Uid;
                 o.NameWellbore = targetWellbore.Name;
                 return o;
-            });
+            }).ToList();
         }
 
         public static IWitsmlObjectList GetWitsmlObjectsByType(EntityType type)
@@ -53,17 +52,19 @@ namespace WitsmlExplorer.Api.Query
         public static IWitsmlObjectList GetWitsmlObjectsWithParamByType(EntityType type, string objectProperty, string objectPropertyValue)
         {
             WitsmlObjectOnWellbore o = EntityTypeHelper.ToObjectOnWellbore(type);
-            o.UidWell = "";
-            o.UidWellbore = "";
-            o.Uid = "";
-            o.NameWell = "";
-            o.NameWellbore = "";
-            o.Name = "";
+            o.UidWell = string.Empty;
+            o.UidWellbore = string.Empty;
+            o.Uid = string.Empty;
+            o.NameWell = string.Empty;
+            o.NameWellbore = string.Empty;
+            o.Name = string.Empty;
             if (objectProperty != null)
             {
                 o = QueryHelper.AddPropertyToObject(o, objectProperty, objectPropertyValue);
             };
-            return (IWitsmlObjectList)o.AsSingletonWitsmlList();
+
+            // TODO: REMOVE CASTING!
+            return (IWitsmlObjectList)o.AsItemInWitsmlList();
         }
 
         public static IWitsmlObjectList GetWitsmlObjectsByIds(string wellUid, string wellboreUid, string[] objectUids, EntityType type)
@@ -144,6 +145,7 @@ namespace WitsmlExplorer.Api.Query
         /// <param name="componentType">The type of components copy.</param>
         /// <param name="reference">Reference of the target object that will be used to initialize the query.</param>
         /// <param name="uidsToCopy">A list of uids that will be used to filter the <paramref name="source"/> components.</param>
+        /// </summary>
         public static WitsmlObjectOnWellbore CopyComponents(WitsmlObjectOnWellbore source, ComponentType componentType, ObjectReference reference, string[] uidsToCopy)
         {
             WitsmlObjectOnWellbore target = EntityTypeHelper.FromObjectReference(componentType.ToParentType(), reference);

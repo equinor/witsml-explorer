@@ -1,16 +1,16 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
+import ModalDialog from "components/Modals/ModalDialog";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { holeCasingTypes } from "models/holeCasingTypes";
+import ObjectReference from "models/jobs/objectReference";
+import Measure from "models/measure";
+import { toObjectReference } from "models/objectOnWellbore";
+import WbGeometryObject from "models/wbGeometry";
+import WbGeometrySection from "models/wbGeometrySection";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { holeCasingTypes } from "../../models/holeCasingTypes";
-import ObjectReference from "../../models/jobs/objectReference";
-import Measure from "../../models/measure";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import WbGeometryObject from "../../models/wbGeometry";
-import WbGeometrySection from "../../models/wbGeometrySection";
-import JobService, { JobType } from "../../services/jobService";
-import ModalDialog from "./ModalDialog";
 
 export interface WbGeometrySectionPropertiesModalInterface {
   wbGeometrySection: WbGeometrySection;
@@ -18,9 +18,12 @@ export interface WbGeometrySectionPropertiesModalInterface {
   wbGeometry: WbGeometryObject;
 }
 
-const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModalInterface): React.ReactElement => {
+const WbGeometrySectionPropertiesModal = (
+  props: WbGeometrySectionPropertiesModalInterface
+): React.ReactElement => {
   const { wbGeometrySection, dispatchOperation, wbGeometry } = props;
-  const [editableWbgs, setEditableWbGeometrySection] = useState<WbGeometrySection>(null);
+  const [editableWbgs, setEditableWbGeometrySection] =
+    useState<WbGeometrySection>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = async (updatedWbGeometrySection: WbGeometrySection) => {
@@ -30,7 +33,10 @@ const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModa
       wbGeometrySection: updatedWbGeometrySection,
       wbGeometryReference
     };
-    await JobService.orderJob(JobType.ModifyWbGeometrySection, modifyWbGeometrySectionJob);
+    await JobService.orderJob(
+      JobType.ModifyWbGeometrySection,
+      modifyWbGeometrySectionJob
+    );
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
   };
@@ -39,16 +45,27 @@ const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModa
     setEditableWbGeometrySection(JSON.parse(JSON.stringify(wbGeometrySection))); //deep copy
   }, [wbGeometrySection]);
 
-  const invalidGrade = errorOnDeletion(wbGeometrySection.grade, editableWbgs?.grade) || editableWbgs?.grade?.length > 32;
-  const invalidMdTop = wbGeometrySection.mdTop && editableWbgs?.mdTop.value == undefined;
-  const invalidMdBottom = wbGeometrySection.mdBottom && editableWbgs?.mdBottom.value == undefined;
-  const invalidTvdTop = wbGeometrySection.tvdTop && editableWbgs?.tvdTop.value == undefined;
-  const invalidTvdBottom = wbGeometrySection.tvdBottom && editableWbgs?.tvdBottom.value == undefined;
-  const invalidIdSection = wbGeometrySection.idSection && editableWbgs?.idSection.value == undefined;
-  const invalidOdSection = wbGeometrySection.odSection && editableWbgs?.odSection.value == undefined;
-  const invalidWtPerLen = wbGeometrySection.wtPerLen && editableWbgs?.wtPerLen.value == undefined;
-  const invalidDiaDrift = wbGeometrySection.diaDrift && editableWbgs?.diaDrift.value == undefined;
-  const invalidFactFric = wbGeometrySection.factFric != null && editableWbgs?.factFric == undefined;
+  const invalidGrade =
+    errorOnDeletion(wbGeometrySection.grade, editableWbgs?.grade) ||
+    editableWbgs?.grade?.length > 32;
+  const invalidMdTop =
+    wbGeometrySection.mdTop && editableWbgs?.mdTop.value == undefined;
+  const invalidMdBottom =
+    wbGeometrySection.mdBottom && editableWbgs?.mdBottom.value == undefined;
+  const invalidTvdTop =
+    wbGeometrySection.tvdTop && editableWbgs?.tvdTop.value == undefined;
+  const invalidTvdBottom =
+    wbGeometrySection.tvdBottom && editableWbgs?.tvdBottom.value == undefined;
+  const invalidIdSection =
+    wbGeometrySection.idSection && editableWbgs?.idSection.value == undefined;
+  const invalidOdSection =
+    wbGeometrySection.odSection && editableWbgs?.odSection.value == undefined;
+  const invalidWtPerLen =
+    wbGeometrySection.wtPerLen && editableWbgs?.wtPerLen.value == undefined;
+  const invalidDiaDrift =
+    wbGeometrySection.diaDrift && editableWbgs?.diaDrift.value == undefined;
+  const invalidFactFric =
+    wbGeometrySection.factFric != null && editableWbgs?.factFric == undefined;
   return (
     <>
       {editableWbgs && (
@@ -56,43 +73,113 @@ const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModa
           heading={`Edit properties for ${editableWbgs.uid}`}
           content={
             <Layout>
-              <TextField disabled id="uid" label="uid" defaultValue={editableWbgs.uid} />
+              <TextField
+                disabled
+                id="uid"
+                label="uid"
+                defaultValue={editableWbgs.uid}
+              />
               <Autocomplete
                 id="typeHoleCasing"
                 label="typeHoleCasing"
                 options={holeCasingTypes}
                 initialSelectedOptions={[wbGeometrySection.typeHoleCasing]}
                 onOptionsChange={({ selectedItems }) => {
-                  setEditableWbGeometrySection({ ...editableWbgs, typeHoleCasing: selectedItems[0] });
+                  setEditableWbGeometrySection({
+                    ...editableWbgs,
+                    typeHoleCasing: selectedItems[0]
+                  });
                 }}
                 hideClearButton={!!wbGeometrySection.typeHoleCasing}
                 onFocus={(e) => e.preventDefault()}
               />
-              <MeasureField measure={editableWbgs.mdTop} editableWbgs={editableWbgs} invalid={invalidMdTop} name="mdTop" setResult={setEditableWbGeometrySection} />
-              <MeasureField measure={editableWbgs.mdBottom} editableWbgs={editableWbgs} invalid={invalidMdBottom} name="mdBottom" setResult={setEditableWbGeometrySection} />
-              <MeasureField measure={editableWbgs.tvdTop} editableWbgs={editableWbgs} invalid={invalidTvdTop} name="tvdTop" setResult={setEditableWbGeometrySection} />
-              <MeasureField measure={editableWbgs.tvdBottom} editableWbgs={editableWbgs} invalid={invalidTvdBottom} name="tvdBottom" setResult={setEditableWbGeometrySection} />
-              <MeasureField measure={editableWbgs.idSection} editableWbgs={editableWbgs} invalid={invalidIdSection} name="idSection" setResult={setEditableWbGeometrySection} />
-              <MeasureField measure={editableWbgs.odSection} editableWbgs={editableWbgs} invalid={invalidOdSection} name="odSection" setResult={setEditableWbGeometrySection} />
-              <MeasureField measure={editableWbgs.wtPerLen} editableWbgs={editableWbgs} invalid={invalidWtPerLen} name="wtPerLen" setResult={setEditableWbGeometrySection} />
+              <MeasureField
+                measure={editableWbgs.mdTop}
+                editableWbgs={editableWbgs}
+                invalid={invalidMdTop}
+                name="mdTop"
+                setResult={setEditableWbGeometrySection}
+              />
+              <MeasureField
+                measure={editableWbgs.mdBottom}
+                editableWbgs={editableWbgs}
+                invalid={invalidMdBottom}
+                name="mdBottom"
+                setResult={setEditableWbGeometrySection}
+              />
+              <MeasureField
+                measure={editableWbgs.tvdTop}
+                editableWbgs={editableWbgs}
+                invalid={invalidTvdTop}
+                name="tvdTop"
+                setResult={setEditableWbGeometrySection}
+              />
+              <MeasureField
+                measure={editableWbgs.tvdBottom}
+                editableWbgs={editableWbgs}
+                invalid={invalidTvdBottom}
+                name="tvdBottom"
+                setResult={setEditableWbGeometrySection}
+              />
+              <MeasureField
+                measure={editableWbgs.idSection}
+                editableWbgs={editableWbgs}
+                invalid={invalidIdSection}
+                name="idSection"
+                setResult={setEditableWbGeometrySection}
+              />
+              <MeasureField
+                measure={editableWbgs.odSection}
+                editableWbgs={editableWbgs}
+                invalid={invalidOdSection}
+                name="odSection"
+                setResult={setEditableWbGeometrySection}
+              />
+              <MeasureField
+                measure={editableWbgs.wtPerLen}
+                editableWbgs={editableWbgs}
+                invalid={invalidWtPerLen}
+                name="wtPerLen"
+                setResult={setEditableWbGeometrySection}
+              />
               <Autocomplete
                 id="curveConductor"
                 label="curveConductor"
                 options={["false", "true"]}
-                initialSelectedOptions={[wbGeometrySection.curveConductor == null ? null : wbGeometrySection ? "true" : "false"]}
+                initialSelectedOptions={[
+                  wbGeometrySection.curveConductor == null
+                    ? null
+                    : wbGeometrySection
+                    ? "true"
+                    : "false"
+                ]}
                 onOptionsChange={({ selectedItems }) => {
-                  setEditableWbGeometrySection({ ...editableWbgs, curveConductor: selectedItems[0] == "false" ? false : true });
+                  setEditableWbGeometrySection({
+                    ...editableWbgs,
+                    curveConductor: selectedItems[0] == "false" ? false : true
+                  });
                 }}
                 hideClearButton={wbGeometrySection.curveConductor != null}
               />
-              <MeasureField measure={editableWbgs.diaDrift} editableWbgs={editableWbgs} invalid={invalidDiaDrift} name="diaDrift" setResult={setEditableWbGeometrySection} />
+              <MeasureField
+                measure={editableWbgs.diaDrift}
+                editableWbgs={editableWbgs}
+                invalid={invalidDiaDrift}
+                name="diaDrift"
+                setResult={setEditableWbGeometrySection}
+              />
               <TextField
                 id="grade"
                 label="grade"
                 defaultValue={editableWbgs?.grade}
                 variant={invalidGrade ? "error" : undefined}
                 helperText={invalidGrade ? "Grade must be 1-32 characters" : ""}
-                onChange={(e: any) => setEditableWbGeometrySection({ ...editableWbgs, grade: e.target.value })}
+                onChange={(e: any) =>
+                  setEditableWbGeometrySection({
+                    ...editableWbgs,
+                    grade: e.target.value
+                  })
+                }
               />
               <TextField
                 id="factFric"
@@ -104,7 +191,9 @@ const WbGeometrySectionPropertiesModal = (props: WbGeometrySectionPropertiesModa
                 onChange={(e: any) => {
                   setEditableWbGeometrySection({
                     ...editableWbgs,
-                    factFric: isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value)
+                    factFric: isNaN(parseFloat(e.target.value))
+                      ? undefined
+                      : parseFloat(e.target.value)
                   });
                 }}
               />
@@ -151,7 +240,9 @@ const MeasureField = (props: MeasureFieldProps): React.ReactElement => {
       helperText={invalid ? `${name} cannot be empty` : ""}
       variant={invalid ? "error" : undefined}
       onChange={(e: any) => {
-        measure.value = isNaN(parseFloat(e.target.value)) ? undefined : parseFloat(e.target.value);
+        measure.value = isNaN(parseFloat(e.target.value))
+          ? undefined
+          : parseFloat(e.target.value);
         setResult({
           ...editableWbgs
         });

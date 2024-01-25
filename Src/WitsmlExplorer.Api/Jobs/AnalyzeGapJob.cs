@@ -17,7 +17,7 @@ public record AnalyzeGapJob : Job
     /// <summary>
     /// Array of mnemonics names
     /// </summary>
-    public IEnumerable<string> Mnemonics { get; init; }
+    public ICollection<string> Mnemonics { get; init; }
 
     /// <summary>
     /// Size of the GAP for depth
@@ -28,6 +28,16 @@ public record AnalyzeGapJob : Job
     /// Size of the GAP for dateTime
     /// </summary>
     public long TimeGapSize { get; set; }
+
+    /// <summary>
+    /// Start index of the log for searching gaps.
+    /// </summary>
+    public string StartIndex { get; set; }
+
+    /// <summary>
+    /// End index of the log for searching gaps.
+    /// </summary>
+    public string EndIndex { get; set; }
 
     /// <summary>
     /// Getting description of log reference object.

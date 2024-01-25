@@ -1,19 +1,23 @@
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD,
+  WITSML_LOG_ORDERTYPE_DECREASING
+} from "components/Constants";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import WarningBar from "components/WarningBar";
+import ModificationType from "contexts/modificationType";
+import { NavigationAction } from "contexts/navigationAction";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { createTrimLogObjectJob } from "models/jobs/trimLogObjectJob";
+import LogObject, { indexToNumber } from "models/logObject";
+import { ObjectType } from "models/objectType";
 import React, { useState } from "react";
-import ModificationType from "../../../contexts/modificationType";
-import { NavigationAction } from "../../../contexts/navigationAction";
-import { HideModalAction } from "../../../contexts/operationStateReducer";
-import OperationType from "../../../contexts/operationType";
-import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
-import LogObject, { indexToNumber } from "../../../models/logObject";
-import { ObjectType } from "../../../models/objectType";
-import { truncateAbortHandler } from "../../../services/apiClient";
-import JobService, { JobType } from "../../../services/jobService";
-import ObjectService from "../../../services/objectService";
-import { WITSML_INDEX_TYPE_DATE_TIME, WITSML_INDEX_TYPE_MD, WITSML_LOG_ORDERTYPE_DECREASING } from "../../Constants";
-import ModalDialog from "../ModalDialog";
-import AdjustDateTimeModal from "./AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
-import WarningBar from "../../WarningBar";
+import { truncateAbortHandler } from "services/apiClient";
+import JobService, { JobType } from "services/jobService";
+import ObjectService from "services/objectService";
 
 export interface TrimLogObjectModalProps {
   dispatchNavigation: (action: NavigationAction) => void;
@@ -21,7 +25,9 @@ export interface TrimLogObjectModalProps {
   logObject: LogObject;
 }
 
-const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement => {
+const TrimLogObjectModal = (
+  props: TrimLogObjectModalProps
+): React.ReactElement => {
   const { dispatchNavigation, dispatchOperation, logObject } = props;
   const [log] = useState<LogObject>(logObject);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -40,10 +46,20 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
     const controller = new AbortController();
 
     async function getLogObject() {
-      const freshLogs = await ObjectService.getObjects(log.wellUid, log.wellboreUid, ObjectType.Log, controller.signal);
+      const freshLogs = await ObjectService.getObjects(
+        log.wellUid,
+        log.wellboreUid,
+        ObjectType.Log,
+        controller.signal
+      );
       dispatchNavigation({
         type: ModificationType.UpdateWellboreObjects,
-        payload: { wellUid: log.wellUid, wellboreUid: log.wellboreUid, wellboreObjects: freshLogs, objectType: ObjectType.Log }
+        payload: {
+          wellUid: log.wellUid,
+          wellboreUid: log.wellboreUid,
+          wellboreObjects: freshLogs,
+          objectType: ObjectType.Log
+        }
       });
       setIsLoading(false);
       dispatchOperation({ type: OperationType.HideModal });
@@ -69,7 +85,9 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
                 <AdjustDateTimeModal
                   minDate={log.startIndex}
                   maxDate={log.endIndex}
-                  isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                  isDescending={
+                    log.direction == WITSML_LOG_ORDERTYPE_DECREASING
+                  }
                   onStartDateChanged={setStartIndex}
                   onEndDateChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}
@@ -79,7 +97,9 @@ const TrimLogObjectModal = (props: TrimLogObjectModalProps): React.ReactElement 
                 <AdjustNumberRangeModal
                   minValue={indexToNumber(logObject.startIndex)}
                   maxValue={indexToNumber(logObject.endIndex)}
-                  isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                  isDescending={
+                    log.direction == WITSML_LOG_ORDERTYPE_DECREASING
+                  }
                   onStartValueChanged={setStartIndex}
                   onEndValueChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}

@@ -1,9 +1,9 @@
 import * as signalR from "@microsoft/signalr";
 import { HubConnection } from "@microsoft/signalr";
+import { AlertSeverity } from "components/Alerts";
+import { msalEnabled } from "msal/MsalAuthProvider";
+import { ApiClient, getBaseUrl } from "services/apiClient";
 import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
-import { AlertSeverity } from "../components/Alerts";
-import { msalEnabled } from "../msal/MsalAuthProvider";
-import { ApiClient, getBaseUrl } from "./apiClient";
 
 export interface Notification {
   serverUrl: URL;
@@ -63,14 +63,18 @@ export default class NotificationService {
     }
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${notificationURL}notifications`, {
-        accessTokenFactory: msalEnabled ? () => NotificationService.getToken() : undefined
+        accessTokenFactory: msalEnabled
+          ? () => NotificationService.getToken()
+          : undefined
       })
       ?.withAutomaticReconnect([3000, 5000, 10000])
       ?.configureLogging(signalR.LogLevel.None)
       ?.build();
 
     this.hubConnection?.on("jobFinished", (notification: Notification) => {
-      notification.isSuccess ? this._snackbarDispatcher.dispatch(notification) : this._alertDispatcher.dispatch(notification);
+      notification.isSuccess
+        ? this._snackbarDispatcher.dispatch(notification)
+        : this._alertDispatcher.dispatch(notification);
     });
 
     this.hubConnection?.on("refresh", (refreshAction: RefreshAction) => {

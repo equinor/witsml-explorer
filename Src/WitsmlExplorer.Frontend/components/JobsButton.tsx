@@ -1,11 +1,11 @@
 import { Button } from "@equinor/eds-core-react";
+import NavigationContext from "contexts/navigationContext";
+import NavigationType from "contexts/navigationType";
+import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
 import styled from "styled-components";
-import NavigationContext from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
-import OperationContext from "../contexts/operationContext";
-import { Colors } from "../styles/Colors";
-import Icon from "../styles/Icons";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export interface JobsButtonProps {
   showLabels: boolean;
@@ -24,7 +24,12 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
   };
 
   return (
-    <StyledButton colors={colors} variant={props.showLabels ? "ghost" : "ghost_icon"} onClick={onClick} disabled={!selectedServer}>
+    <StyledButton
+      colors={colors}
+      variant={props.showLabels ? "ghost" : "ghost_icon"}
+      onClick={onClick}
+      disabled={!selectedServer}
+    >
       <Icon name="assignment" />
       {props.showLabels && "Jobs"}
     </StyledButton>

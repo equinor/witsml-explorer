@@ -1,3 +1,4 @@
+using Witsml.Data;
 
 namespace WitsmlExplorer.Api.Models
 {
@@ -5,5 +6,10 @@ namespace WitsmlExplorer.Api.Models
     {
         public string SearchProperty { get; set; }
         public EntityType ObjectType { get; set; }
+
+        public override IWitsmlQueryType ToWitsml()
+        {
+            throw new System.NotImplementedException("ObjectSearchResult is not supposed to be converted to a WITSML model");
+        }
     }
 }
