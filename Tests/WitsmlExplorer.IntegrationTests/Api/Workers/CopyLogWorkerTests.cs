@@ -119,10 +119,10 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
                 LogData sourceLogData = await _logObjectService.ReadLogData(sourceReference.WellUid,
                     sourceReference.WellboreUid, logUid,
                     new List<string>(sourceLog.LogData.MnemonicList.Split(CommonConstants.DataSeparator)), currentIndex.Equals(Index.Start(sourceLog)),
-                    currentIndex.GetValueAsString(), endIndex.ToString());
+                    currentIndex.GetValueAsString(), endIndex.ToString(), false);
                 LogData targetLogData = await _logObjectService.ReadLogData(targetReference.WellUid, targetReference.WellboreUid, logUid,
                     new List<string>(targetLog.LogData.MnemonicList.Split(CommonConstants.DataSeparator)), currentIndex.Equals(Index.Start(targetLog)),
-                    currentIndex.GetValueAsString(), endIndex.ToString());
+                    currentIndex.GetValueAsString(), endIndex.ToString(), false);
 
                 Assert.Equal(sourceLogData.EndIndex, targetLogData.EndIndex);
                 Assert.Equal(sourceLogData.CurveSpecifications.Count(), targetLogData.CurveSpecifications.Count());
