@@ -1,17 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+
 using Microsoft.IdentityModel.Tokens;
+
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
+
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
+
 using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Services
