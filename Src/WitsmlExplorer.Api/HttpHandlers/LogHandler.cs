@@ -36,12 +36,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
             [FromQuery(Name = "startIndex")] string startIndex,
             [FromQuery(Name = "endIndex")] string endIndex,
             [FromQuery(Name = "startIndexIsInclusive")] bool startIndexIsInclusive,
+            [FromQuery(Name = "loadAllData")] bool loadAllData,
             [FromBody] IEnumerable<string> mnemonics,
             ILogObjectService logObjectService)
         {
             if (mnemonics.Any())
             {
-                LogData logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
+                var logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData);
                 return TypedResults.Ok(logData);
             }
             else

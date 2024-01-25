@@ -25,14 +25,13 @@ namespace WitsmlExplorer.Api.Services
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid);
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
         Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
-        Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end);
+        Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData);
     }
 
     // ReSharper disable once UnusedMember.Global
     public class LogObjectService : WitsmlService, ILogObjectService
     {
         public LogObjectService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
-
         public async Task<ICollection<LogObject>> GetLogs(string wellUid, string wellboreUid)
         {
             WitsmlLogs witsmlLog = LogQueries.GetWitsmlLogsByWellbore(wellUid, wellboreUid);
@@ -145,7 +144,7 @@ namespace WitsmlExplorer.Api.Services
                 }).ToList();
         }
 
-        public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end)
+        public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData)
         {
             WitsmlLog log = await GetLogHeader(wellUid, wellboreUid, logUid);
 
@@ -163,10 +162,8 @@ namespace WitsmlExplorer.Api.Services
                 mnemonics.Insert(0, indexMnemonic);
             }
 
-            WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
-            WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
-
-            WitsmlLog witsmlLog = witsmlLogs.Logs?.FirstOrDefault();
+            WitsmlLog witsmlLog = loadAllData ? await LoadDataRecursive(mnemonics, log, startIndex, endIndex, wellUid, wellboreUid, logUid)
+                : await LoadData(mnemonics, log, startIndex, endIndex, wellUid, wellboreUid, logUid);
 
             if (witsmlLog?.LogData == null || witsmlLog.LogData.Data.IsNullOrEmpty())
             {
@@ -187,12 +184,40 @@ namespace WitsmlExplorer.Api.Services
 
             return new LogData
             {
-                StartIndex = Index.Start(witsmlLog).GetValueAsString(),
-                EndIndex = Index.End(witsmlLog).GetValueAsString(),
+                StartIndex = witsmlLog.StartIndex == null ? startIndex.GetValueAsString() :
+                Index.Start(witsmlLog).GetValueAsString(),
+                EndIndex = witsmlLog.EndIndex == null ? endIndex.GetValueAsString() :
+                Index.End(witsmlLog).GetValueAsString(),
                 CurveSpecifications = witsmlLogMnemonics.Zip(witsmlLogUnits, (mnemonic, unit) =>
                     new CurveSpecification { Mnemonic = mnemonic, Unit = unit }).ToList(),
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
+        }
+
+        private async Task<WitsmlLog> LoadData(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, string wellUid = null, string wellboreUid = null, string logUid = null)
+        {
+            WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
+            WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+
+            WitsmlLog witsmlLog = witsmlLogs.Logs?.FirstOrDefault();
+            return witsmlLog;
+        }
+
+        private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, string wellUid = null, string wellboreUid = null, string logUid = null)
+        {
+            await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
+            WitsmlLogData logData = await logDataReader.GetNextBatch();
+            var allLogData = logData;
+            while (logData != null)
+            {
+                allLogData.Data.AddRange(logData.Data);
+                logData = await logDataReader.GetNextBatch();
+
+            }
+
+            var witsmlLog = new WitsmlLog();
+            witsmlLog.LogData = allLogData;
+            return witsmlLog;
         }
 
         private static ICollection<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)

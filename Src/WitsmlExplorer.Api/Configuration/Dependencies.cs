@@ -66,8 +66,11 @@ namespace WitsmlExplorer.Api.Configuration
 
         public static void InitializeRepository(this IApplicationBuilder app)
         {
-            IDocumentRepository<Server, Guid> repository = app.ApplicationServices.GetService<IDocumentRepository<Server, Guid>>();
-            repository?.InitClientAsync().GetAwaiter().GetResult();
+            IDocumentRepository<Server, Guid> serverRepository = app.ApplicationServices.GetService<IDocumentRepository<Server, Guid>>();
+            serverRepository?.InitClientAsync().GetAwaiter().GetResult();
+
+            IDocumentRepository<LogCurvePriority, string> logCurvePriorityRepository = app.ApplicationServices.GetService<IDocumentRepository<LogCurvePriority, string>>();
+            logCurvePriorityRepository?.InitClientAsync().GetAwaiter().GetResult();
         }
     }
 }
