@@ -193,7 +193,7 @@ namespace WitsmlExplorer.Api.Services
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
         }
-      
+
         private async Task<WitsmlLog> LoadData(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, string wellUid = null, string wellboreUid = null, string logUid = null)
         {
             WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
