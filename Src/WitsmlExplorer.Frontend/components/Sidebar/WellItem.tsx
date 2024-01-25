@@ -1,13 +1,15 @@
 import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useServers } from "../../contexts/serversContext";
 import Well from "../../models/well";
-import Wellbore, { calculateWellboreNodeId } from "../../models/wellbore";
+import Wellbore, {
+  calculateWellNodeId,
+  calculateWellboreNodeId
+} from "../../models/wellbore";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -22,11 +24,10 @@ interface WellItemProps {
   well: Well;
 }
 
-const WellItem = (props: WellItemProps): React.ReactElement => {
-  const { well } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedWell, servers } = navigationState;
+export default function WellItem({ well }: WellItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
+  const { servers } = useServers();
+  const { wellUid, wellboreUid } = useParams();
   const [wellWithFilteredWellbores] = useWellFilter(
     React.useMemo(() => [well], [well]),
     React.useMemo(() => ({ filterWellbores: true }), [])
@@ -54,8 +55,7 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
     });
   };
 
-  const onSelectWell = async (well: Well) => {
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+  const onSelectWell = (well: Well) => {
     navigate(
       `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         well.uid
@@ -66,23 +66,21 @@ const WellItem = (props: WellItemProps): React.ReactElement => {
   return (
     <TreeItem
       onContextMenu={(event) => onContextMenu(event, well)}
-      selected={selectedWell?.uid === well.uid ? true : undefined}
+      selected={wellUid === well.uid}
       key={well.uid}
       labelText={well.name}
-      nodeId={well.uid}
+      nodeId={calculateWellNodeId(well.uid)}
       onLabelClick={() => onSelectWell(well)}
     >
       {wellWithFilteredWellbores?.wellbores?.map((wellbore: Wellbore) => (
         <WellboreItem
           well={well}
           wellbore={wellbore}
-          selected={selectedWellbore?.uid === wellbore.uid ? true : undefined}
+          selected={wellboreUid === wellbore.uid}
           key={calculateWellboreNodeId(wellbore)}
           nodeId={calculateWellboreNodeId(wellbore)}
         />
       ))}
     </TreeItem>
   );
-};
-
-export default WellItem;
+}

@@ -4,9 +4,7 @@ import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType } from "../models/objectType";
 import Well from "../models/well";
 import Wellbore from "../models/wellbore";
-import { NavigationAction } from "./navigationAction";
-import { ExpandTreeNodesAction } from "./navigationActions";
-import NavigationType from "./navigationType";
+import { SidebarAction, SidebarActionType } from "./sidebarReducer";
 
 export interface Filter {
   name: string;
@@ -171,7 +169,7 @@ export function FilterContextProvider({
 
 export interface FilterOptions {
   filterWellbores?: boolean; // Filter the wellbores (if the well itself doesn't match). Setting this to true will remove wellbores that don't match.
-  dispatchNavigation?: (action: NavigationAction) => void; //A function to dispatch an action to expand tree nodes every time the filter changes.
+  dispatchSidebar?: (action: SidebarAction) => void; //A function to dispatch an action to expand tree nodes every time the filter changes.
 }
 
 export const DEFAULT_FILTER_OPTIONS: FilterOptions = {
@@ -184,7 +182,7 @@ const filterOnName = (
   filterOptions: FilterOptions
 ) => {
   const { name, filterType, searchResults } = filter;
-  const { filterWellbores, dispatchNavigation } = filterOptions;
+  const { filterWellbores, dispatchSidebar } = filterOptions;
   const isObjectFilter = isObjectFilterType(filterType);
   const isWellPropertyFilter = isWellPropertyFilterType(filterType);
   const isWellFilter = isWellFilterType(filterType);
@@ -193,12 +191,11 @@ const filterOnName = (
     : filterTypeToProperty[filterType];
 
   if (!name) {
-    if (filterOptions.dispatchNavigation) {
-      const expandTreeNodes: ExpandTreeNodesAction = {
-        type: NavigationType.ExpandTreeNodes,
-        payload: { nodeIds: [] }
-      };
-      dispatchNavigation(expandTreeNodes);
+    if (filterOptions.dispatchSidebar) {
+      dispatchSidebar({
+        type: SidebarActionType.CollapseTreeNodes,
+        payload: null
+      });
     }
     if (isWellFilter) {
       return wells;
@@ -258,12 +255,11 @@ const filterOnName = (
     }
   }
 
-  if (filterOptions.dispatchNavigation) {
-    const expandTreeNodes: ExpandTreeNodesAction = {
-      type: NavigationType.ExpandTreeNodes,
+  if (filterOptions.dispatchSidebar) {
+    dispatchSidebar({
+      type: SidebarActionType.ExpandTreeNodes,
       payload: { nodeIds: treeNodesToExpand }
-    };
-    dispatchNavigation(expandTreeNodes);
+    });
   }
 
   return filteredWells;
@@ -373,7 +369,7 @@ export const useWellFilter = (
       prevFilter.current.name == selectedFilter.name
     ) {
       // Treenodes should only toggle expand state if the filter type or name has changed
-      filterOptions = { ...filterOptions, dispatchNavigation: null };
+      filterOptions = { ...filterOptions, dispatchSidebar: null };
     }
     prevFilter.current = selectedFilter;
 

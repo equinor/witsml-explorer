@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
@@ -28,24 +28,20 @@ interface LogItemProps {
   to: string;
 }
 
-const LogItem = (props: LogItemProps): React.ReactElement => {
-  const {
-    log: log,
-    well,
-    wellbore,
-    selected,
-    nodeId,
-    objectGrowing,
-    to
-  } = props;
+export default function LogItem({
+  log: log,
+  well,
+  wellbore,
+  selected,
+  nodeId,
+  objectGrowing,
+  to
+}: LogItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const { dispatchNavigation } = useContext(NavigationContext);
   const navigate = useNavigate();
 
-  const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
-    log: LogObject
-  ) => {
+  const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
     const contextProps: ObjectContextMenuProps = {
       checkedObjects: [log],
@@ -78,5 +74,4 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
       }}
     />
   );
-};
-export default LogItem;
+}

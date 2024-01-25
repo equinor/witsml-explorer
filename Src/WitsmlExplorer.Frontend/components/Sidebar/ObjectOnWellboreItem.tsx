@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { ComponentType, MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
@@ -6,7 +6,7 @@ import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType, pluralizeObjectType } from "../../models/objectType";
+import { ObjectType } from "../../models/objectType";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -20,20 +20,23 @@ interface ObjectOnWellboreItemProps {
   objectOnWellbore: ObjectOnWellbore;
   objectType: ObjectType;
   selected: boolean;
-  ContextMenu: React.ComponentType<ObjectContextMenuProps>;
+  ContextMenu: ComponentType<ObjectContextMenuProps>;
 }
 
-const ObjectOnWellboreItem = (
-  props: ObjectOnWellboreItemProps
-): React.ReactElement => {
-  const { nodeId, objectOnWellbore, objectType, selected, ContextMenu } = props;
+export default function ObjectOnWellboreItem({
+  nodeId,
+  objectOnWellbore,
+  objectType,
+  selected,
+  ContextMenu
+}: ObjectOnWellboreItemProps) {
   const { wellbore, well } = useContext(WellboreItemContext);
   const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
+  const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: ObjectContextMenuProps = {
       checkedObjects: [objectOnWellbore],
@@ -74,24 +77,16 @@ const ObjectOnWellboreItem = (
           objectType === ObjectType.WbGeometry ||
           objectType === ObjectType.FluidsReport
         ) {
-          const pluralizedObjectType =
-            pluralizeObjectType(objectType).toLowerCase();
           navigate(
             `/servers/${encodeURIComponent(
               authorizationState.server.url
             )}/wells/${well.uid}/wellbores/${
               wellbore.uid
-            }/objectgroups/${pluralizedObjectType}/objects/${
-              objectOnWellbore.uid
-            }`
+            }/objectgroups/${objectType}/objects/${objectOnWellbore.uid}`
           );
         }
       }}
-      onContextMenu={(event: React.MouseEvent<HTMLLIElement>) =>
-        onContextMenu(event)
-      }
+      onContextMenu={(event: MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );
-};
-
-export default ObjectOnWellboreItem;
+}

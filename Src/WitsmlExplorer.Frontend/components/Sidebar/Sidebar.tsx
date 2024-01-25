@@ -1,39 +1,50 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
-import React, { useContext } from "react";
-import styled, { CSSProp } from "styled-components";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import styled from "styled-components";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import { useSidebar } from "../../contexts/sidebarContext";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
+import { AuthorizationStatus } from "../../services/authorizationService";
+import WellService from "../../services/wellService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import WellProgress from "../WellProgress";
 import SearchFilter from "./SearchFilter";
 import WellItem from "./WellItem";
 
-const Sidebar = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { wells, expandedTreeNodes } = navigationState;
-  const filteredWells = useWellFilter(
-    wells,
-    React.useMemo(() => ({ dispatchNavigation }), [])
-  );
-  const WellListing: CSSProp = {
-    display: "grid",
-    gridTemplateColumns: "1fr 18px",
-    justifyContent: "center",
-    alignContent: "stretch"
-  };
+export default function Sidebar() {
+  const { authorizationState } = useAuthorizationState();
+  const [wells, setWells] = useState<Well[]>([]);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const filteredWells = useWellFilter(
+    wells,
+    useMemo(() => ({ dispatchSidebar }), [])
+  );
+
+  useEffect(() => {
+    if (
+      authorizationState &&
+      authorizationState.status === AuthorizationStatus.Authorized
+    ) {
+      const fetchWells = async () => {
+        const fetchedWells = await WellService.getWells();
+        setWells(fetchedWells);
+      };
+      fetchWells();
+    }
+  }, [authorizationState]);
 
   return (
-    <React.Fragment>
+    <Fragment>
       <SearchFilter />
       <SidebarTreeView>
         <WellProgress>
@@ -60,8 +71,8 @@ const Sidebar = (): React.ReactElement => {
                 expanded={expandedTreeNodes}
               >
                 {filteredWells.map((well: Well) => (
-                  <React.Fragment key={well.uid}>
-                    <div style={WellListing}>
+                  <Fragment key={well.uid}>
+                    <WellListing>
                       <WellItem well={well} />
                       <WellIndicator
                         compactMode={isCompactMode}
@@ -70,22 +81,29 @@ const Sidebar = (): React.ReactElement => {
                         )}
                         colors={colors}
                       />
-                    </div>
+                    </WellListing>
                     <Divider
                       style={{
                         margin: "0px",
                         backgroundColor: colors.interactive.disabledBorder
                       }}
                     />
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </TreeView>
             ))}
         </WellProgress>
       </SidebarTreeView>
-    </React.Fragment>
+    </Fragment>
   );
-};
+}
+
+const WellListing = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 18px;
+  justify-content: center;
+  align-content: stretch;
+`;
 
 const SidebarTreeView = styled.div`
   overflow-y: scroll;
@@ -124,5 +142,3 @@ export const WellIndicator = styled.div<{
       ? `background-color: ${props.colors.interactive.successHover};`
       : `border: 2px solid ${props.colors.text.staticIconsTertiary};`}
 `;
-
-export default Sidebar;

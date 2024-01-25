@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import { Fragment, MouseEvent, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { SelectLogTypeAction } from "../../contexts/navigationActions";
@@ -32,7 +32,11 @@ import LogItem from "./LogItem";
 import TreeItem from "./TreeItem";
 import { WellboreItemContext } from "./WellboreItem";
 
-const LogTypeItem = (): React.ReactElement => {
+interface LogTypeItemProps {
+  logs: LogObject[];
+}
+
+export default function LogTypeItem({ logs }: LogTypeItemProps) {
   const { wellbore, well } = useContext(WellboreItemContext);
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
@@ -59,7 +63,7 @@ const LogTypeItem = (): React.ReactElement => {
   };
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     wellbore: Wellbore,
     indexCurve: IndexCurve
   ) => {
@@ -79,8 +83,8 @@ const LogTypeItem = (): React.ReactElement => {
       }
     });
   };
-  const depthLogs = filterLogsByType(wellbore, WITSML_INDEX_TYPE_MD);
-  const timeLogs = filterLogsByType(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
+  const depthLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_MD);
+  const timeLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_DATE_TIME);
 
   const isSelected = useCallback(
     (log: LogObject) => {
@@ -137,10 +141,10 @@ const LogTypeItem = (): React.ReactElement => {
       </TreeItem>
     </>
   );
-};
+}
 
-const filterLogsByType = (wellbore: Wellbore, logType: string) => {
-  return wellbore?.logs?.filter((log) => log.indexType === logType) ?? [];
+const filterLogsByType = (logs: LogObject[], logType: string) => {
+  return logs?.filter((log) => log.indexType === logType) ?? [];
 };
 
 const listLogItemsByType = (
@@ -153,7 +157,7 @@ const listLogItemsByType = (
   serverUrl: string
 ) => {
   return logObjects?.map((log) => (
-    <React.Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
+    <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
       <LogItem
         log={log}
         well={well}
@@ -169,8 +173,6 @@ const listLogItemsByType = (
           logType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
         }/objects/${log.uid}`}
       />
-    </React.Fragment>
+    </Fragment>
   ));
 };
-
-export default LogTypeItem;

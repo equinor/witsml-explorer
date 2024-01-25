@@ -33,6 +33,8 @@ import {
 } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { QueryContextProvider } from "../contexts/queryContext";
+import { ServersProvider } from "../contexts/serversContext";
+import { SidebarProvider } from "../contexts/sidebarContext";
 import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
 import {
   authRequest,
@@ -129,22 +131,27 @@ export default function Root() {
           <AuthorizationStateProvider>
             <ThemeProvider theme={getTheme(operationState.theme)}>
               <GlobalStyles colors={operationState.colors} />
+
               <NavigationContext.Provider
                 value={{ navigationState, dispatchNavigation }}
               >
-                <FilterContextProvider>
-                  <QueryContextProvider>
-                    {/* <Routing /> */}
-                    <AuthorizationManager />
-                    <RefreshHandler />
-                    <SnackbarProvider>
-                      <Snackbar />
-                    </SnackbarProvider>
-                    <PageLayout />
-                    <ContextMenuPresenter />
-                    <ModalPresenter />
-                  </QueryContextProvider>
-                </FilterContextProvider>
+                <ServersProvider>
+                  <SidebarProvider>
+                    <FilterContextProvider>
+                      <QueryContextProvider>
+                        {/* <Routing /> */}
+                        <AuthorizationManager />
+                        <RefreshHandler />
+                        <SnackbarProvider>
+                          <Snackbar />
+                        </SnackbarProvider>
+                        <PageLayout />
+                        <ContextMenuPresenter />
+                        <ModalPresenter />
+                      </QueryContextProvider>
+                    </FilterContextProvider>
+                  </SidebarProvider>
+                </ServersProvider>
               </NavigationContext.Provider>
             </ThemeProvider>
           </AuthorizationStateProvider>

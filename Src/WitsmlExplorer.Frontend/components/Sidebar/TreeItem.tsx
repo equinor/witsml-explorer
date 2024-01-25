@@ -5,10 +5,9 @@ import { TreeItem } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { ToggleTreeNodeAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
+import { useSidebar } from "../../contexts/sidebarContext";
+import { SidebarActionType } from "../../contexts/sidebarReducer";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 
@@ -21,15 +20,19 @@ interface StyledTreeItemProps extends TreeItemProps {
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
   const { labelText, selected, isActive, isLoading, ...other } = props; // eslint-disable-line
-  const { dispatchNavigation } = useContext(NavigationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const { dispatchSidebar } = useSidebar();
 
   const toggleTreeNode = (props: StyledTreeItemProps) => {
-    const toggleTreeNode: ToggleTreeNodeAction = {
-      type: NavigationType.ToggleTreeNode,
+    // const toggleTreeNode: ToggleTreeNodeAction = {
+    //   type: NavigationType.ToggleTreeNode,
+    //   payload: { nodeId: props.nodeId }
+    // };
+    // dispatchNavigation(toggleTreeNode);
+    dispatchSidebar({
+      type: SidebarActionType.ToggleTreeNode,
       payload: { nodeId: props.nodeId }
-    };
-    dispatchNavigation(toggleTreeNode);
+    });
   };
   const {
     operationState: { colors }

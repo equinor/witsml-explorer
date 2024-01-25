@@ -110,10 +110,14 @@ export function wellboreHasChanges(
   return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
+export const calculateWellNodeId = (wellUid: string): string => {
+  return wellUid + "1289f745f72f47863ea2ee3515395097";
+};
+
 export const calculateWellboreNodeId = (
   wellbore: Wellbore | { wellUid: string; uid: string }
 ): string => {
-  return wellbore.wellUid + wellbore.uid;
+  return calculateWellNodeId(wellbore.wellUid) + wellbore.uid;
 };
 
 export const calculateObjectGroupId = (

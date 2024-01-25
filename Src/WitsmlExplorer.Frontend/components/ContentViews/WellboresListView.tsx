@@ -7,7 +7,9 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import Wellbore from "../../models/wellbore";
+import { useSidebar } from "../../contexts/sidebarContext";
+import { SidebarActionType } from "../../contexts/sidebarReducer";
+import Wellbore, { calculateWellNodeId } from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, {
   WellboreContextMenuProps
@@ -36,16 +38,25 @@ export const WellboresListView = (): React.ReactElement => {
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { serverUrl, wellUid } = useParams();
+  const { dispatchSidebar } = useSidebar();
 
   useEffect(() => {
     if (wells.length > 0) {
       const well = wells.find((well) => well.uid === wellUid);
+
       dispatchNavigation({
         type: NavigationType.SelectWell,
         payload: { well }
       });
     }
   }, [wells, serverUrl, wellUid]);
+
+  useEffect(() => {
+    dispatchSidebar({
+      type: SidebarActionType.ExpandTreeNodes,
+      payload: { nodeIds: [calculateWellNodeId(wellUid)] }
+    });
+  }, [wellUid]);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },

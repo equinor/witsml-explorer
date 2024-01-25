@@ -13,17 +13,17 @@ import TubularsListView from "./TubularsListView";
 import WbGeometriesListView from "./WbGeometriesListView";
 
 enum ObjectGroupUrlParams {
-  BhaRun = "bharuns",
-  ChangeLog = "changelogs",
-  FluidsReport = "fluidsreports",
-  FormationMarker = "formationmarkers",
-  Message = "messages",
-  MudLog = "mudlogs",
-  Rig = "rigs",
-  Risk = "risks",
-  Trajectory = "trajectories",
-  Tubular = "tubulars",
-  WbGeometry = "wbgeometries"
+  BhaRun = "BhaRun",
+  ChangeLog = "ChangeLog",
+  FluidsReport = "FluidsReport",
+  FormationMarker = "FormationMarker",
+  Message = "Message",
+  MudLog = "MudLog",
+  Rig = "Rig",
+  Risk = "Risk",
+  Trajectory = "Trajectory",
+  Tubular = "Tubular",
+  WbGeometry = "WbGeometry"
 }
 
 const objectGroupViews: Record<ObjectGroupUrlParams, ReactElement> = {
