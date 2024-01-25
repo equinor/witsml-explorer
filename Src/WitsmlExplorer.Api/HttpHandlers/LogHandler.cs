@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
@@ -42,12 +40,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             if (mnemonics.Any())
             {
-                if (loadAllData == true)
-                {
-                    LogData logDataRecursive = await logObjectService.ReadLogDataRecursive(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
-                    return TypedResults.Ok(logDataRecursive);
-                }
-                LogData logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex);
+                var logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData);
                 return TypedResults.Ok(logData);
             }
             else
