@@ -1,8 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import BhaRun from "../../models/bhaRun";
+import { ObjectType } from "../../models/objectType";
 import BhaRunContextMenu from "../ContextMenus/BhaRunContextMenu";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -18,20 +22,22 @@ export interface BhaRunRow extends ContentTableRow, BhaRun {
   bhaRun: BhaRun;
 }
 
-export const BhaRunsListView = (): React.ReactElement => {
+export default function BhaRunsListView() {
   const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const [bhaRuns, setBhaRuns] = useState<BhaRun[]>([]);
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.bhaRuns) {
-      setBhaRuns(selectedWellbore.bhaRuns);
-    }
-  }, [selectedWellbore]);
+  const bhaRuns = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.BhaRun
+  ) as BhaRun[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.BhaRun);
 
   const getTableData = () => {
     return bhaRuns.map((bhaRun) => {
@@ -101,7 +107,7 @@ export const BhaRunsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedBhaRunRows: BhaRunRow[]
   ) => {
@@ -117,7 +123,7 @@ export const BhaRunsListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.bhaRuns, bhaRuns) && (
+    bhaRuns && (
       <ContentTable
         viewId="bhaRunsListView"
         columns={columns}
@@ -129,6 +135,4 @@ export const BhaRunsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default BhaRunsListView;
+}

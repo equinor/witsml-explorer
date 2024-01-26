@@ -6,6 +6,7 @@ import { useWellFilter } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useServers } from "../../contexts/serversContext";
 import Well from "../../models/well";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellContextMenu, {
@@ -22,9 +23,10 @@ import {
 
 export interface WellRow extends ContentTableRow, Well {}
 
-export const WellsListView = (): React.ReactElement => {
+export default function WellsListView() {
   const { navigationState } = useContext(NavigationContext);
-  const { servers, wells } = navigationState;
+  const { wells } = navigationState;
+  const { servers } = useServers();
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
@@ -116,6 +118,4 @@ export const WellsListView = (): React.ReactElement => {
       )}
     </WellProgress>
   );
-};
-
-export default WellsListView;
+}

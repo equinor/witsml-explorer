@@ -5,7 +5,7 @@ import {
   useContext,
   useState
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
@@ -69,6 +69,7 @@ export default function ObjectGroupItem({
     isActive =
       groupObjects && groupObjects.some((log: LogObject) => log.objectGrowing);
   }
+  const { wellUid, wellboreUid, objectGroup } = useParams();
 
   const fetchObjects = async () => {
     const objects = getObjectsFromWellbore(wellbore, objectType);
@@ -137,6 +138,13 @@ export default function ObjectGroupItem({
         isLoading={isLoading}
         onIconClick={toggleTreeNode}
         isActive={isActive}
+        selected={
+          calculateObjectGroupId(wellbore, objectType) ===
+          calculateObjectGroupId(
+            { wellUid, uid: wellboreUid },
+            objectGroup as ObjectType
+          )
+        }
       >
         {objectType === ObjectType.Log ? (
           <LogTypeItem logs={groupObjects} />

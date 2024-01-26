@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -13,25 +15,27 @@ import TubularContextMenu from "../ContextMenus/TubularContextMenu";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
-export const TubularsListView = (): React.ReactElement => {
+export default function TubularsListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore, wells } = navigationState;
-  const [tubulars, setTubulars] = useState<Tubular[]>([]);
+  const { selectedWell, selectedWellbore } = navigationState;
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.tubulars) {
-      setTubulars(selectedWellbore.tubulars);
-    }
-  }, [selectedWellbore?.tubulars, wells]);
+  const tubulars = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.Tubular
+  ) as Tubular[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     tubulars: Tubular[]
   ) => {
@@ -102,20 +106,18 @@ export const TubularsListView = (): React.ReactElement => {
     };
   });
 
-  return selectedWellbore && tubulars == selectedWellbore.tubulars ? (
-    <ContentTable
-      viewId="tubularsListView"
-      columns={columns}
-      data={tubularRows}
-      onSelect={onSelect}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName="Tubulars"
-    />
-  ) : (
-    <></>
+  return (
+    tubulars && (
+      <ContentTable
+        viewId="tubularsListView"
+        columns={columns}
+        data={tubularRows}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName="Tubulars"
+      />
+    )
   );
-};
-
-export default TubularsListView;
+}

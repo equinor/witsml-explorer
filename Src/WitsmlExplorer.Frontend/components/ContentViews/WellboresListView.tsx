@@ -24,7 +24,7 @@ import {
 
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
-export const WellboresListView = (): React.ReactElement => {
+export default function WellboresListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { wells, selectedWell } = navigationState;
   const [selectedWellFiltered] = useWellFilter(
@@ -148,6 +148,4 @@ export const WellboresListView = (): React.ReactElement => {
       />
     ))
   );
-};
-
-export default WellboresListView;
+}

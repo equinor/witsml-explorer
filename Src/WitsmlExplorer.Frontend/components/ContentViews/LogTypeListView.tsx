@@ -1,11 +1,13 @@
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
+import { useSidebar } from "../../contexts/sidebarContext";
+import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { ObjectType } from "../../models/objectType";
 import {
-  calculateLogTypeDepthId,
-  calculateLogTypeTimeId
+  calculateObjectGroupId,
+  calculateWellNodeId,
+  calculateWellboreNodeId
 } from "../../models/wellbore";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
@@ -14,11 +16,11 @@ interface LogType {
   name: string;
 }
 
-export const LogTypeListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+export default function LogTypeListView() {
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { dispatchSidebar } = useSidebar();
+  const { wellUid, wellboreUid } = useParams();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
@@ -29,26 +31,26 @@ export const LogTypeListView = (): React.ReactElement => {
     { uid: 1, name: "Time" }
   ];
 
-  const onSelect = async (logType: any) => {
-    const logTypeGroup =
-      logType.uid === 0
-        ? calculateLogTypeDepthId(selectedWellbore)
-        : calculateLogTypeTimeId(selectedWellbore);
-
-    dispatchNavigation({
-      type: NavigationType.SelectLogType,
+  useEffect(() => {
+    dispatchSidebar({
+      type: SidebarActionType.ExpandTreeNodes,
       payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        logTypeGroup: logTypeGroup
+        nodeIds: [
+          calculateWellNodeId(wellUid),
+          calculateWellboreNodeId({ wellUid, uid: wellboreUid }),
+          calculateObjectGroupId({ wellUid, uid: wellboreUid }, ObjectType.Log)
+        ]
       }
     });
+  }, [wellUid, wellboreUid]);
+
+  const onSelect = async (logType: any) => {
     navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/logs/logtypes/${
-        logType.uid === 0 ? "depth" : "time"
-      }/objects`
+      `/servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        ObjectType.Log
+      }/logtypes/${logType.uid === 0 ? "depth" : "time"}/objects`
     );
   };
 
@@ -60,6 +62,4 @@ export const LogTypeListView = (): React.ReactElement => {
       showPanel={false}
     />
   );
-};
-
-export default LogTypeListView;
+}

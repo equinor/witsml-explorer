@@ -213,7 +213,7 @@ const getObjectGroupCrumb = (
             `servers/${encodeURIComponent(
               serverUrl
             )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${objectGroup}/${
-              objectGroup === "logs" ? "logtypes" : "objects"
+              objectGroup === ObjectType.Log ? "logtypes" : "objects"
             }`
           );
         }
@@ -235,7 +235,9 @@ const getLogTypeCrumb = (
           navigate(
             `servers/${encodeURIComponent(
               serverUrl
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/logs/logtypes/${logType}/objects`
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+              ObjectType.Log
+            }/logtypes/${logType}/objects`
           );
         }
       }

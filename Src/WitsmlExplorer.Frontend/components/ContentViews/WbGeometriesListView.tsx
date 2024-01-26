@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
@@ -23,22 +25,24 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
   wbGeometry: WbGeometryObject;
 }
 
-export const WbGeometriesListView = (): React.ReactElement => {
+export default function WbGeometriesListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore, selectedWell } = navigationState;
-  const [wbGeometries, setWbGeometries] = useState<WbGeometryObject[]>([]);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.wbGeometries) {
-      setWbGeometries(selectedWellbore.wbGeometries);
-    }
-  }, [selectedWellbore, selectedWellbore?.wbGeometries]);
+  const wbGeometries = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.WbGeometry
+  ) as WbGeometryObject[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const getTableData = () => {
     return wbGeometries.map((wbGeometry) => {
@@ -111,7 +115,7 @@ export const WbGeometriesListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedWbGeometryObjectRows: WbGeometryObjectRow[]
   ) => {
@@ -130,7 +134,7 @@ export const WbGeometriesListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.wbGeometries, wbGeometries) && (
+    wbGeometries && (
       <ContentTable
         viewId="wbGeometriesListView"
         columns={columns}
@@ -143,5 +147,4 @@ export const WbGeometriesListView = (): React.ReactElement => {
       />
     )
   );
-};
-export default WbGeometriesListView;
+}

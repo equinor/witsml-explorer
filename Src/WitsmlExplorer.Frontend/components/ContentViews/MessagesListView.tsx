@@ -1,8 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import MessageObject from "../../models/messageObject";
+import { ObjectType } from "../../models/objectType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import MessageObjectContextMenu from "../ContextMenus/MessageObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -18,20 +22,22 @@ export interface MessageObjectRow extends ContentTableRow {
   message: MessageObject;
 }
 
-export const MessagesListView = (): React.ReactElement => {
+export default function MessagesListView() {
   const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const [messages, setMessages] = useState<MessageObject[]>([]);
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.messages) {
-      setMessages(selectedWellbore.messages);
-    }
-  }, [selectedWellbore]);
+  const messages = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.Message
+  ) as MessageObject[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Message);
 
   const getTableData = () => {
     return messages.map((msg, index) => {
@@ -90,7 +96,7 @@ export const MessagesListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedMessageObjectRows: MessageObjectRow[]
   ) => {
@@ -109,7 +115,7 @@ export const MessagesListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.messages, messages) && (
+    messages && (
       <ContentTable
         viewId="messagesListView"
         columns={columns}
@@ -121,6 +127,4 @@ export const MessagesListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default MessagesListView;
+}

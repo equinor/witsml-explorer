@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import FluidsReport from "../../models/fluidsReport";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
@@ -23,22 +25,24 @@ export interface FluidsReportRow extends ContentTableRow, FluidsReport {
   fluidsReport: FluidsReport;
 }
 
-export const FluidsReportsListView = (): React.ReactElement => {
+export default function FluidsReportsListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
-  const [fluidsReports, setFluidsReports] = useState<FluidsReport[]>([]);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.fluidsReports) {
-      setFluidsReports(selectedWellbore.fluidsReports);
-    }
-  }, [selectedWellbore]);
+  const fluidsReports = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.FluidsReport
+  ) as FluidsReport[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   const getTableData = () => {
     return fluidsReports.map((fluidsReport) => {
@@ -108,7 +112,7 @@ export const FluidsReportsListView = (): React.ReactElement => {
   };
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedFluidsReportRows: FluidsReportRow[]
   ) => {
@@ -127,7 +131,7 @@ export const FluidsReportsListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.fluidsReports, fluidsReports) && (
+    fluidsReports && (
       <ContentTable
         viewId="fluidsReportsListView"
         columns={columns}
@@ -140,6 +144,4 @@ export const FluidsReportsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default FluidsReportsListView;
+}

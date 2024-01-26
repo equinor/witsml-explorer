@@ -121,24 +121,28 @@ export const calculateWellboreNodeId = (
 };
 
 export const calculateObjectGroupId = (
-  wellbore: Wellbore,
+  wellbore: Wellbore | { wellUid: string; uid: string },
   objectType: ObjectType
 ): string => {
   return calculateWellboreNodeId(wellbore) + objectType;
 };
 
 export const calculateLogTypeId = (
-  wellbore: Wellbore,
+  wellbore: Wellbore | { wellUid: string; uid: string },
   logType: string
 ): string => {
   return calculateWellboreNodeId(wellbore) + logType;
 };
 
-export const calculateLogTypeDepthId = (wellbore: Wellbore): string => {
+export const calculateLogTypeDepthId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD);
 };
 
-export const calculateLogTypeTimeId = (wellbore: Wellbore): string => {
+export const calculateLogTypeTimeId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
 };
 

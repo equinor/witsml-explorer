@@ -41,14 +41,6 @@ const router = createBrowserRouter([
             element: <ObjectsListView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups",
-            element: <WellboreObjectTypesListView />
-          },
-          {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects",
-            element: <ObjectsListView />
-          },
-          {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects/:objectUid",
             element: <ObjectView />
           },

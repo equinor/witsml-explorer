@@ -1,9 +1,8 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
-import { SelectObjectGroupAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { useSidebar } from "../../contexts/sidebarContext";
@@ -27,7 +26,7 @@ interface ObjectTypeRow extends ContentTableRow {
   objectType: ObjectType;
 }
 
-export const WellboreObjectTypesListView = (): React.ReactElement => {
+export default function WellboreObjectTypesListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { wells, selectedWell, selectedWellbore } = navigationState;
   const { selectedFilter } = useContext(FilterContext);
@@ -106,43 +105,23 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
   };
 
   const onSelect = async (row: ObjectTypeRow) => {
-    const objects = await ObjectService.getObjectsIfMissing(
-      selectedWellbore,
-      row.objectType
-    );
-    const action: SelectObjectGroupAction = {
-      type: NavigationType.SelectObjectGroup,
-      payload: {
-        objectType: row.objectType,
-        wellUid: selectedWell.uid,
-        wellboreUid: selectedWellbore.uid,
-        objects
-      }
-    };
-    dispatchNavigation(action);
-    const pluralizedObjectType = pluralizeObjectType(row.objectType);
-    const objectTypeUrlFormat = pluralizedObjectType
-      .replace(/ /g, "")
-      .toLowerCase();
     navigate(
       `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/${objectTypeUrlFormat}/${
-        objectTypeUrlFormat === "logs" ? "logtypes" : "objects"
+      }/wellbores/${selectedWellbore.uid}/objectgroups/${row.objectType}/${
+        row.objectType === ObjectType.Log ? "logtypes" : "objects"
       }`
     );
   };
 
-  return selectedWellbore ? (
-    <ContentTable
-      columns={columns}
-      data={getRows()}
-      onSelect={onSelect}
-      showPanel={false}
-    />
-  ) : (
-    <></>
+  return (
+    selectedWellbore && (
+      <ContentTable
+        columns={columns}
+        data={getRows()}
+        onSelect={onSelect}
+        showPanel={false}
+      />
+    )
   );
-};
-
-export default WellboreObjectTypesListView;
+}

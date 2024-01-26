@@ -1,7 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
+import { ObjectType } from "../../models/objectType";
 import RiskObject from "../../models/riskObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -25,13 +29,15 @@ export const RisksListView = (): React.ReactElement => {
     dispatchOperation
   } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const [risks, setRisks] = useState<RiskObject[]>([]);
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.risks) {
-      setRisks(selectedWellbore.risks);
-    }
-  }, [selectedWellbore]);
+  const risks = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.Risk
+  ) as RiskObject[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Risk);
 
   const getTableData = () => {
     return risks.map((risk) => {
@@ -103,7 +109,7 @@ export const RisksListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedRiskObjectRows: RiskObjectRow[]
   ) => {
@@ -122,7 +128,7 @@ export const RisksListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.risks, risks) && (
+    risks && (
       <ContentTable
         viewId="risksListView"
         columns={columns}

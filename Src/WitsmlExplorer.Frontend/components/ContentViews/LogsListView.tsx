@@ -1,6 +1,6 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { MouseEvent, useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
@@ -9,11 +9,11 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
+import ObjectService from "../../services/objectService";
 import {
-  calculateLogTypeId,
-  calculateLogTypeTimeId
-} from "../../models/wellbore";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "../Constants";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
@@ -30,7 +30,7 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
 }
 
-export const LogsListView = (): React.ReactElement => {
+export default function LogsListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedWellbore, selectedWell, selectedLogTypeGroup } =
     navigationState;
@@ -45,25 +45,35 @@ export const LogsListView = (): React.ReactElement => {
   const [selectedRows, setSelectedRows] = useState([]);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { wellUid, wellboreUid, logType } = useParams();
 
+  const filterLogsByType = (logs: LogObject[], logType: string) => {
+    return logs?.filter((log) => log.indexType === logType) ?? [];
+  };
   useEffect(() => {
-    if (selectedWellbore?.logs) {
-      setLogs(
-        selectedWellbore.logs.filter(
-          (log) =>
-            calculateLogTypeId(selectedWellbore, log.indexType) ===
-            selectedLogTypeGroup
-        )
+    const fetchObjects = async () => {
+      const objects = await ObjectService.getObjects(
+        wellUid,
+        wellboreUid,
+        ObjectType.Log
       );
-    }
-  }, [selectedLogTypeGroup, selectedWellbore]);
+      if (logType === "depth") {
+        setLogs(filterLogsByType(objects, WITSML_INDEX_TYPE_MD));
+      } else if (logType === "time") {
+        setLogs(filterLogsByType(objects, WITSML_INDEX_TYPE_DATE_TIME));
+      } else {
+        throw Error(`logType=${logType} is not supported`);
+      }
+    };
+    fetchObjects();
+  }, [wellUid, wellboreUid, logType]);
 
   const isTimeIndexed = () => {
-    return selectedLogTypeGroup === calculateLogTypeTimeId(selectedWellbore);
+    return logType === "time";
   };
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedLogObjectRows: LogObjectRow[]
   ) => {
@@ -161,7 +171,9 @@ export const LogsListView = (): React.ReactElement => {
     navigate(
       `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/logs/logtypes/${
+      }/wellbores/${selectedWellbore.uid}/objectgroups/${
+        ObjectType.Log
+      }/logtypes/${
         log.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
       }/objects/${log.uid}`
     );
@@ -208,7 +220,7 @@ export const LogsListView = (): React.ReactElement => {
   ) : (
     <></>
   );
-};
+}
 
 const CommonPanelContainer = styled.div`
   display: flex;
@@ -225,5 +237,3 @@ const ContentContainer = styled.div`
   flex-direction: column;
   height: 100%;
 `;
-
-export default LogsListView;

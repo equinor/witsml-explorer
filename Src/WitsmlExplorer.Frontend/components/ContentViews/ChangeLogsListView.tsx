@@ -1,23 +1,26 @@
-import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import ChangeLog from "../../models/changeLog";
+import { ObjectType } from "../../models/objectType";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const ChangeLogsListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
-  const [changeLogs, setChangeLogs] = useState<ChangeLog[]>([]);
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.changeLogs) {
-      setChangeLogs(selectedWellbore.changeLogs);
-    }
-  }, [selectedWellbore]);
+  const changeLogs = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.ChangeLog
+  ) as ChangeLog[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.ChangeLog);
 
   const getTableData = () => {
     return changeLogs.map((changeLog) => {
@@ -61,7 +64,7 @@ export const ChangeLogsListView = (): React.ReactElement => {
   ];
 
   return (
-    Object.is(selectedWellbore?.changeLogs, changeLogs) && (
+    changeLogs && (
       <ContentTable
         viewId="changeLogsListView"
         columns={columns}

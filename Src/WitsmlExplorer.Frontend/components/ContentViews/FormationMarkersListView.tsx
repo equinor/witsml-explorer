@@ -1,9 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import FormationMarker from "../../models/formationMarker";
 import { measureToString } from "../../models/measure";
+import { ObjectType } from "../../models/objectType";
 import StratigraphicStruct from "../../models/stratigraphicStruct";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FormationMarkerContextMenu from "../ContextMenus/FormationMarkerContextMenu";
@@ -20,22 +24,22 @@ export interface FormationMarkerRow extends ContentTableRow {
   formationMarker: FormationMarker;
 }
 
-export const FormationMarkersListView = (): React.ReactElement => {
+export default function FormationMarkersListView() {
   const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedWellbore } = navigationState;
-  const [formationMarkers, setFormationMarkers] = useState<FormationMarker[]>(
-    []
-  );
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.formationMarkers) {
-      setFormationMarkers(selectedWellbore.formationMarkers);
-    }
-  }, [selectedWellbore]);
+  const formationMarkers = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.FormationMarker
+  ) as FormationMarker[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FormationMarker);
 
   const structToString = (struct: StratigraphicStruct) => {
     if (struct == null) {
@@ -82,7 +86,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
   };
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedRows: FormationMarkerRow[]
   ) => {
@@ -101,7 +105,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.formationMarkers, formationMarkers) && (
+    formationMarkers && (
       <ContentTable
         viewId="formationMarkersListView"
         columns={columns}
@@ -113,7 +117,7 @@ export const FormationMarkersListView = (): React.ReactElement => {
       />
     )
   );
-};
+}
 
 const columns: ContentTableColumn[] = [
   { property: "name", label: "name", type: ContentType.String },
@@ -179,5 +183,3 @@ const columns: ContentTableColumn[] = [
     type: ContentType.DateTime
   }
 ];
-
-export default FormationMarkersListView;

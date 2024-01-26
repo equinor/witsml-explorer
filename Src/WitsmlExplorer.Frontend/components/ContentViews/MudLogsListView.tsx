@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjects } from "../../hooks/useGetObjects";
 import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
@@ -31,22 +33,24 @@ export interface MudLogRow extends ContentTableRow {
   uid: string;
 }
 
-export const MudLogsListView = (): React.ReactElement => {
+export default function MudLogsListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { selectedWell, selectedWellbore } = navigationState;
-  const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { wellUid, wellboreUid } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.mudLogs) {
-      setMudLogs(selectedWellbore.mudLogs);
-    }
-  }, [selectedWellbore]);
+  const mudLogs = useGetObjects(
+    wellUid,
+    wellboreUid,
+    ObjectType.MudLog
+  ) as MudLog[];
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onSelect = (mudLogRow: MudLogRow) => {
     dispatchNavigation({
@@ -126,7 +130,7 @@ export const MudLogsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedRows: MudLogRow[]
   ) => {
@@ -142,7 +146,7 @@ export const MudLogsListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.mudLogs, mudLogs) && (
+    mudLogs && (
       <ContentTable
         viewId="mudLogsListView"
         columns={columns}
@@ -155,6 +159,4 @@ export const MudLogsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default MudLogsListView;
+}

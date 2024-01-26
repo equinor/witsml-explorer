@@ -1,5 +1,5 @@
 import { Fragment, MouseEvent, useCallback, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { SelectLogTypeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
@@ -46,6 +46,7 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { wellUid, wellboreUid, logType } = useParams();
 
   const onSelectType = async (logTypeGroup: string) => {
     const action: SelectLogTypeAction = {
@@ -56,7 +57,7 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
     navigate(
       `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         well.uid
-      }/wellbores/${wellbore.uid}/objectgroups/logs/logtypes/${
+      }/wellbores/${wellbore.uid}/objectgroups/${ObjectType.Log}/logtypes/${
         logTypeGroup === logTypeGroupDepth ? "depth" : "time"
       }/objects`
     );
@@ -109,6 +110,10 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
           onContextMenu(event, wellbore, IndexCurve.Depth)
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
+        selected={
+          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
+          calculateLogTypeId(wellbore, "depth")
+        }
       >
         {listLogItemsByType(
           depthLogs,
@@ -128,6 +133,7 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
           onContextMenu(event, wellbore, IndexCurve.Time)
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
+        selected={logType === "time"}
       >
         {listLogItemsByType(
           timeLogs,
@@ -169,7 +175,7 @@ const listLogItemsByType = (
         objectGrowing={log.objectGrowing}
         to={`servers/${encodeURIComponent(serverUrl)}/wells/${
           well.uid
-        }/wellbores/${wellbore.uid}/objectgroups/logs/logtypes/${
+        }/wellbores/${wellbore.uid}/objectgroups/${ObjectType.Log}/logtypes/${
           logType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
         }/objects/${log.uid}`}
       />
