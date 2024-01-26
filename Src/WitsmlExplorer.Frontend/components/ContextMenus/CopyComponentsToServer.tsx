@@ -1,34 +1,31 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { menuItemText } from "components/ContextMenus/ContextMenuUtils";
-import { useContext } from "react";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import CopyRangeModal, {
+  CopyRangeModalProps
+} from "components/Modals/CopyRangeModal";
 import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { ComponentType } from "models/componentType";
+import LogCurveInfo from "models/logCurveInfo";
 import { Server } from "models/server";
+import { useContext } from "react";
 import { copyComponentsToServer } from "./CopyComponentsToServerUtils";
-import CopyRangeModal, {
-  CopyRangeModalProps
-} from "components/Modals/CopyRangeModal";
 
 export interface CopyComponentsToServerMenuItemProps {
-  componentsToCopy: { uid: string }[];
+  componentsToCopy: { uid: string }[] | LogCurveInfo[];
   componentType: ComponentType;
   withRange?: boolean;
-}
-
-interface ComponentWithRange {
-  uid: string;
-  minIndex: number | Date;
-  maxIndex: number | Date;
+  componentsToPreserve?: { uid: string }[] | LogCurveInfo[];
 }
 
 export const CopyComponentsToServerMenuItem = (
   props: CopyComponentsToServerMenuItemProps
 ): React.ReactElement => {
-  const { componentsToCopy, componentType, withRange } = props;
+  const { componentsToCopy, componentType, withRange, componentsToPreserve } =
+    props;
   const {
     navigationState: { selectedServer, selectedObject, servers }
   } = useContext(NavigationContext);
@@ -46,15 +43,10 @@ export const CopyComponentsToServerMenuItem = (
         infoMessage:
           "This will replace all data in your selected range on the target with data from the source. Data outside this range will be preserved on target.",
         onSubmit(startIndex, endIndex) {
-          const componentsToCopyWithRange =
-            componentsToCopy as ComponentWithRange[];
-          const componentsRange = componentsToCopyWithRange.filter(
-            (x) => x.minIndex <= endIndex && x.maxIndex >= startIndex
-          );
           copyComponentsToServer({
             targetServer: server,
             sourceServer: selectedServer,
-            componentsToCopy: componentsRange,
+            componentsToCopy,
             dispatchOperation,
             sourceParent: selectedObject,
             componentType: componentType,
@@ -74,7 +66,8 @@ export const CopyComponentsToServerMenuItem = (
         componentsToCopy,
         dispatchOperation,
         sourceParent: selectedObject,
-        componentType
+        componentType,
+        componentsToPreserve
       });
     }
   };

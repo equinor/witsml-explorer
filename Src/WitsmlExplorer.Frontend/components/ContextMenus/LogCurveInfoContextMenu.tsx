@@ -240,6 +240,9 @@ const LogCurveInfoContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.Mnemonic}
           componentsToCopy={checkedLogCurveInfoRows}
+          componentsToPreserve={checkedLogCurveInfoRows.filter(
+            (lci) => lci.mnemonic === selectedLog.indexCurve
+          )}
         />,
         <MenuItem
           key={"delete"}

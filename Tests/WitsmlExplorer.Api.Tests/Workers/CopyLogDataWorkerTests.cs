@@ -226,6 +226,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, sourceLogs);
             WitsmlLogs targetLog = LogUtils.GetTargetLogs(WitsmlLog.WITSML_INDEX_TYPE_MD);
             targetLog.Logs.First().IndexCurve = new() { Value = targetIndexCurve };
+            targetLog.Logs.First().LogCurveInfo.First().Mnemonic = targetIndexCurve;
+            targetLog.Logs.First().LogCurveInfo.First().Uid = targetIndexCurve;
             LogUtils.SetupTargetLog(WitsmlLog.WITSML_INDEX_TYPE_MD, _witsmlClient, targetLog);
 
             WitsmlLogs query = null;
@@ -243,7 +245,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.True(result.IsSuccess);
             Assert.Equal(3, updatedLogs.First().Logs.First().LogCurveInfo.Count);
             Assert.StartsWith(targetIndexCurve, updatedLogs[1].Logs.First().LogData.MnemonicList);
-            Assert.StartsWith(targetIndexCurve, updatedLogs[2].Logs.First().LogData.MnemonicList);
         }
 
         [Fact]
