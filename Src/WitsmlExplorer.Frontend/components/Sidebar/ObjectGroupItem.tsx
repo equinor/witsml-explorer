@@ -8,6 +8,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
+import { ObjectGroupItemProvider } from "../../contexts/objectGroupItemContext";
 import OperationContext from "../../contexts/operationContext";
 import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -19,11 +20,7 @@ import ObjectOnWellbore, {
   calculateObjectNodeId
 } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Wellbore, {
-  calculateObjectGroupId,
-  getObjectsFromWellbore
-} from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
+import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -71,27 +68,11 @@ export default function ObjectGroupItem({
   }
   const { wellUid, wellboreUid, objectGroup } = useParams();
 
-  const fetchObjects = async () => {
-    const objects = getObjectsFromWellbore(wellbore, objectType);
-    if (objects == null || objects.length == 0) {
-      setIsLoading(true);
-      const fetchedObjects = await ObjectService.getObjects(
-        wellbore.wellUid,
-        wellbore.uid,
-        objectType
-      );
-      setGroupObjects(fetchedObjects);
-      setIsLoading(false);
-    }
-  };
-
   const onSelectObjectGroup = useCallback(async () => {
-    fetchObjects();
     if (to) navigate(to);
   }, [well, wellbore, objectType]);
 
   const toggleTreeNode = useCallback(async () => {
-    fetchObjects();
     dispatchSidebar({
       type: SidebarActionType.ToggleTreeNode,
       payload: { nodeId: calculateObjectGroupId(wellbore, objectType) }
@@ -146,23 +127,30 @@ export default function ObjectGroupItem({
           )
         }
       >
-        {objectType === ObjectType.Log ? (
-          <LogTypeItem logs={groupObjects} />
-        ) : (
-          (wellbore &&
-            groupObjects &&
-            groupObjects.map((objectOnWellbore: ObjectOnWellbore) => (
-              <ObjectOnWellboreItem
-                key={calculateObjectNodeId(objectOnWellbore, objectType)}
-                nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
-                objectOnWellbore={objectOnWellbore}
-                objectType={objectType}
-                selected={isSelected(objectType, objectOnWellbore)}
-                ContextMenu={ObjectContextMenu}
-              />
-            ))) ||
-          (showStub && ["", ""])
-        )}
+        <ObjectGroupItemProvider
+          wellbore={wellbore}
+          objectType={objectType}
+          setParentGroupObjects={setGroupObjects}
+          setIsFetching={setIsLoading}
+        >
+          {objectType === ObjectType.Log ? (
+            <LogTypeItem />
+          ) : (
+            (wellbore &&
+              groupObjects &&
+              groupObjects.map((objectOnWellbore: ObjectOnWellbore) => (
+                <ObjectOnWellboreItem
+                  key={calculateObjectNodeId(objectOnWellbore, objectType)}
+                  nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
+                  objectOnWellbore={objectOnWellbore}
+                  objectType={objectType}
+                  selected={isSelected(objectType, objectOnWellbore)}
+                  ContextMenu={ObjectContextMenu}
+                />
+              ))) ||
+            (showStub && ["", ""])
+          )}
+        </ObjectGroupItemProvider>
       </TreeItem>
     )
   );

@@ -4,6 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import { SelectLogTypeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
+import { useObjectGroupItem } from "../../contexts/objectGroupItemContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useWellboreItem } from "../../contexts/wellboreItemContext";
@@ -32,11 +33,8 @@ import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogItem from "./LogItem";
 import TreeItem from "./TreeItem";
 
-interface LogTypeItemProps {
-  logs: LogObject[];
-}
-
-export default function LogTypeItem({ logs }: LogTypeItemProps) {
+export default function LogTypeItem() {
+  const { groupObjects: logs } = useObjectGroupItem();
   const { wellbore, well } = useWellboreItem();
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
