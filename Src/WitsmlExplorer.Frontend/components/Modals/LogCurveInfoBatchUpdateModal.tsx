@@ -73,7 +73,7 @@ const LogCurveInfoBatchUpdateModal = (
     editableLogCurveInfo.sensorOffset
   );
 
-  const validateSensorOffsetWithValueInvalid = (sensorOffset) =>
+  const validateSensorOffsetWithValueInvalid = (sensorOffset: Measure) =>
     (sensorOffset?.value !== undefined || sensorOffset?.uom !== undefined) &&
     !isSensorOffsetValid;
 
