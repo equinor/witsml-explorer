@@ -180,18 +180,20 @@ public class BatchModifyLogCurveInfoTests
         return new BatchModifyLogCurveInfoJob()
         {
             WellboreReference = new WellboreReference()
-                {
-                    WellUid = WellUid, WellboreUid = WellboreUid
-                },
+            {
+                WellUid = WellUid,
+                WellboreUid = WellboreUid
+            },
             EditedLogCurveInfo = new LogCurveInfo()
             {
                 TraceState =
                     logTraceState ??
                     EnumHelper.GetEnumDescription(LogTraceState.Raw),
                 SensorOffset = new LengthMeasure()
-                    {
-                        Value = 22, Uom = CommonConstants.Unit.Meter
-                    },
+                {
+                    Value = 22,
+                    Uom = CommonConstants.Unit.Meter
+                },
                 NullValue = NullValue
             },
             LogCurveInfoBatchItems = emptyLogCurveInfoItems

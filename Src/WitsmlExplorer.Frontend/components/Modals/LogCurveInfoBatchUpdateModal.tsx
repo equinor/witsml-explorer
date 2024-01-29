@@ -108,7 +108,7 @@ const LogCurveInfoBatchUpdateModal = (
                     label={"SensorOffset value"}
                     type="number"
                     value={editableLogCurveInfo.sensorOffset?.value}
-                    onChange={(e) =>
+                    onChange={(e: any) =>
                       setEditableLogCurveInfo({
                         ...editableLogCurveInfo,
                         sensorOffset: {
@@ -147,7 +147,7 @@ const LogCurveInfoBatchUpdateModal = (
                 label={"NullValue"}
                 type="number"
                 value={editableLogCurveInfo.nullValue}
-                onChange={(e) =>
+                onChange={(e: any) =>
                   setEditableLogCurveInfo({
                     ...editableLogCurveInfo,
                     nullValue: e.target.value
