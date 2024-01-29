@@ -1,4 +1,4 @@
-import { Fragment, MouseEvent, useCallback, useContext } from "react";
+import { Fragment, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
@@ -36,13 +36,13 @@ export default function LogTypeItem() {
   const { wellbore, well } = useWellboreItem();
   const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { selectedObject, selectedObjectGroup, servers } = navigationState;
+  const { servers } = navigationState;
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
-  const { wellUid, wellboreUid, logType } = useParams();
+  const { wellUid, wellboreUid, logType, objectUid } = useParams();
 
   const onSelectType = (logTypeGroup: string) => {
     navigate(
@@ -78,18 +78,9 @@ export default function LogTypeItem() {
   const depthLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_MD);
   const timeLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_DATE_TIME);
 
-  const isSelected = useCallback(
-    (log: LogObject) => {
-      return selectedObject &&
-        selectedObjectGroup === ObjectType.Log &&
-        selectedObject.uid === log.uid &&
-        selectedObject.wellboreUid === log.wellboreUid &&
-        selectedObject.wellUid === log.wellUid
-        ? true
-        : undefined;
-    },
-    [selectedObject, selectedObjectGroup]
-  );
+  const isSelected = (log: LogObject) => {
+    return log.uid === objectUid;
+  };
 
   return (
     <>

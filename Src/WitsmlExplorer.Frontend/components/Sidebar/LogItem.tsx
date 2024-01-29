@@ -1,11 +1,8 @@
 import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import {
@@ -30,7 +27,6 @@ interface LogItemProps {
 
 export default function LogItem({
   log: log,
-  well,
   wellbore,
   selected,
   nodeId,
@@ -38,7 +34,6 @@ export default function LogItem({
   to
 }: LogItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
   const navigate = useNavigate();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
@@ -66,10 +61,6 @@ export default function LogItem({
       selected={selected}
       isActive={objectGrowing}
       onLabelClick={() => {
-        dispatchNavigation({
-          type: NavigationType.SelectObject,
-          payload: { object: log, well, wellbore, objectType: ObjectType.Log }
-        });
         navigate(to);
       }}
     />

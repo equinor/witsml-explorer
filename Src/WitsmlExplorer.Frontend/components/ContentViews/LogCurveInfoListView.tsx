@@ -1,14 +1,28 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useSidebar } from "../../contexts/sidebarContext";
+import { SidebarActionType } from "../../contexts/sidebarReducer";
 import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
 import { measureToString } from "../../models/measure";
+import { ObjectType } from "../../models/objectType";
+import {
+  calculateLogTypeId,
+  calculateObjectGroupId,
+  calculateWellNodeId,
+  calculateWellboreNodeId
+} from "../../models/wellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import ComponentService from "../../services/componentService";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "../Constants";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
@@ -56,6 +70,27 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const { dispatchSidebar } = useSidebar();
+  const { wellUid, wellboreUid, logType } = useParams();
+
+  useEffect(() => {
+    dispatchSidebar({
+      type: SidebarActionType.ExpandTreeNodes,
+      payload: {
+        nodeIds: [
+          calculateWellNodeId(wellUid),
+          calculateWellboreNodeId({ wellUid, uid: wellboreUid }),
+          calculateObjectGroupId({ wellUid, uid: wellboreUid }, ObjectType.Log),
+          calculateLogTypeId(
+            { wellUid, uid: wellboreUid },
+            logType === "depth"
+              ? WITSML_INDEX_TYPE_MD
+              : WITSML_INDEX_TYPE_DATE_TIME
+          )
+        ]
+      }
+    });
+  }, [wellUid, wellboreUid, logType]);
 
   useEffect(() => {
     setIsFetchingData(true);
