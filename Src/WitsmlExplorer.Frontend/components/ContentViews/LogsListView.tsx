@@ -4,11 +4,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useSidebar } from "../../contexts/sidebarContext";
+import { SidebarActionType } from "../../contexts/sidebarReducer";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
+import {
+  calculateLogTypeId,
+  calculateObjectGroupId,
+  calculateWellNodeId,
+  calculateWellboreNodeId
+} from "../../models/wellbore";
 import ObjectService from "../../services/objectService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -31,7 +38,7 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 }
 
 export default function LogsListView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { selectedWellbore, selectedWell, selectedLogTypeGroup } =
     navigationState;
 
@@ -46,6 +53,26 @@ export default function LogsListView() {
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid, logType } = useParams();
+  const { dispatchSidebar } = useSidebar();
+
+  useEffect(() => {
+    dispatchSidebar({
+      type: SidebarActionType.ExpandTreeNodes,
+      payload: {
+        nodeIds: [
+          calculateWellNodeId(wellUid),
+          calculateWellboreNodeId({ wellUid, uid: wellboreUid }),
+          calculateObjectGroupId({ wellUid, uid: wellboreUid }, ObjectType.Log),
+          calculateLogTypeId(
+            { wellUid, uid: wellboreUid },
+            logType === "depth"
+              ? WITSML_INDEX_TYPE_MD
+              : WITSML_INDEX_TYPE_DATE_TIME
+          )
+        ]
+      }
+    });
+  }, [wellUid, wellboreUid, logType]);
 
   const filterLogsByType = (logs: LogObject[], logType: string) => {
     return logs?.filter((log) => log.indexType === logType) ?? [];
@@ -159,15 +186,6 @@ export default function LogsListView() {
   ];
 
   const onSelect = (log: LogObjectRow) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        object: log.logObject,
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        objectType: ObjectType.Log
-      }
-    });
     navigate(
       `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         selectedWell.uid
@@ -190,35 +208,38 @@ export default function LogsListView() {
     setResetCheckedItems(true);
   }, [selectedWellbore, selectedLogTypeGroup]);
 
-  return selectedWellbore && !resetCheckedItems ? (
-    <ContentContainer>
-      <CommonPanelContainer>
-        <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
-        <Typography>
-          Gantt view{selectedRows.length > 0 && " (selected logs only)"}
-        </Typography>
-      </CommonPanelContainer>
-      {showGraph ? (
-        <LogsGraph selectedLogs={selectedRows} />
-      ) : (
-        <ContentTable
-          viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
-          columns={columns}
-          onSelect={onSelect}
-          data={getTableData()}
-          onContextMenu={onContextMenu}
-          onRowSelectionChange={(rows) =>
-            setSelectedRows(rows as LogObjectRow[])
-          }
-          checkableRows
-          showRefresh
-          initiallySelectedRows={selectedRows}
-          downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
-        />
-      )}
-    </ContentContainer>
-  ) : (
-    <></>
+  return (
+    !resetCheckedItems && (
+      <ContentContainer>
+        <CommonPanelContainer>
+          <Switch
+            checked={showGraph}
+            onChange={() => setShowGraph(!showGraph)}
+          />
+          <Typography>
+            Gantt view{selectedRows.length > 0 && " (selected logs only)"}
+          </Typography>
+        </CommonPanelContainer>
+        {showGraph ? (
+          <LogsGraph selectedLogs={selectedRows} />
+        ) : (
+          <ContentTable
+            viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
+            columns={columns}
+            onSelect={onSelect}
+            data={getTableData()}
+            onContextMenu={onContextMenu}
+            onRowSelectionChange={(rows) =>
+              setSelectedRows(rows as LogObjectRow[])
+            }
+            checkableRows
+            showRefresh
+            initiallySelectedRows={selectedRows}
+            downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
+          />
+        )}
+      </ContentContainer>
+    )
   );
 }
 

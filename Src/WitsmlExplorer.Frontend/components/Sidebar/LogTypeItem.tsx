@@ -1,9 +1,7 @@
 import { Fragment, MouseEvent, useCallback, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import { SelectLogTypeAction } from "../../contexts/navigationActions";
 import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import { useObjectGroupItem } from "../../contexts/objectGroupItemContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -36,7 +34,7 @@ import TreeItem from "./TreeItem";
 export default function LogTypeItem() {
   const { groupObjects: logs } = useObjectGroupItem();
   const { wellbore, well } = useWellboreItem();
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedObject, selectedObjectGroup, servers } = navigationState;
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
@@ -46,12 +44,7 @@ export default function LogTypeItem() {
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid, logType } = useParams();
 
-  const onSelectType = async (logTypeGroup: string) => {
-    const action: SelectLogTypeAction = {
-      type: NavigationType.SelectLogType,
-      payload: { well, wellbore, logTypeGroup: logTypeGroup }
-    };
-    dispatchNavigation(action);
+  const onSelectType = (logTypeGroup: string) => {
     navigate(
       `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         well.uid
