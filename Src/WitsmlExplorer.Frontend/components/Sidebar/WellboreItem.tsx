@@ -1,11 +1,5 @@
 import { useTheme } from "@material-ui/core";
-import {
-  MouseEvent,
-  createContext,
-  useCallback,
-  useContext,
-  useState
-} from "react";
+import { MouseEvent, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
@@ -17,10 +11,10 @@ import OperationType from "../../contexts/operationType";
 import { useServers } from "../../contexts/serversContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { WellboreItemProvider } from "../../contexts/wellboreItemContext";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -51,16 +45,6 @@ import ObjectGroupItem from "./ObjectGroupItem";
 import { WellIndicator } from "./Sidebar";
 import TreeItem from "./TreeItem";
 
-export interface WellboreItemContextProps {
-  well: Well;
-  wellbore: Wellbore;
-  objectCount: Partial<Record<ObjectType, number>>;
-}
-
-export const WellboreItemContext = createContext<WellboreItemContextProps>(
-  {} as WellboreItemContextProps
-);
-
 interface WellboreItemProps {
   well: Well;
   wellbore: Wellbore;
@@ -85,8 +69,6 @@ export default function WellboreItem({
   const { authorizationState } = useAuthorizationState();
   const navigate = useNavigate();
   const { dispatchSidebar } = useSidebar();
-  const [objectCount, setObjectCount] =
-    useState<Partial<Record<ObjectType, number>>>(null);
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,
@@ -195,24 +177,12 @@ export default function WellboreItem({
     });
   };
 
-  const getExpandableObjectCount = useCallback(async () => {
-    if (objectCount == null) {
-      setIsFetchingCount(true);
-      const objectCount = await ObjectService.getExpandableObjectsCount(
-        wellbore
-      );
-      setObjectCount(objectCount);
-      setIsFetchingCount(false);
-    }
-  }, [wellbore]);
-
   const onLabelClick = () => {
     const selectWellbore: SelectWellboreAction = {
       type: NavigationType.SelectWellbore,
       payload: { well, wellbore }
     };
     dispatchNavigation(selectWellbore);
-    getExpandableObjectCount();
     navigate(
       `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
         well.uid
@@ -225,7 +195,6 @@ export default function WellboreItem({
       type: SidebarActionType.ToggleTreeNode,
       payload: { nodeId: nodeId }
     });
-    getExpandableObjectCount();
   };
 
   return (
@@ -240,12 +209,10 @@ export default function WellboreItem({
         onIconClick={onIconClick}
         isLoading={isFetchingCount}
       >
-        <WellboreItemContext.Provider
-          value={{
-            well,
-            wellbore,
-            objectCount
-          }}
+        <WellboreItemProvider
+          well={well}
+          wellbore={wellbore}
+          setIsFetchingCount={setIsFetchingCount}
         >
           <ObjectGroupItem
             objectType={ObjectType.BhaRun}
@@ -362,7 +329,7 @@ export default function WellboreItem({
               ObjectType.WbGeometry
             }/objects`}
           />
-        </WellboreItemContext.Provider>
+        </WellboreItemProvider>
       </TreeItem>
       <WellIndicator
         compactMode={isCompactMode}

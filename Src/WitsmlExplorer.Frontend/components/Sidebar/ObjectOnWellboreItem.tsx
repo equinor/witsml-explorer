@@ -5,6 +5,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useWellboreItem } from "../../contexts/wellboreItemContext";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import {
@@ -13,7 +14,6 @@ import {
 } from "../ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import TreeItem from "./TreeItem";
-import { WellboreItemContext } from "./WellboreItem";
 
 interface ObjectOnWellboreItemProps {
   nodeId: string;
@@ -30,7 +30,7 @@ export default function ObjectOnWellboreItem({
   selected,
   ContextMenu
 }: ObjectOnWellboreItemProps) {
-  const { wellbore, well } = useContext(WellboreItemContext);
+  const { wellbore, well } = useWellboreItem();
   const { dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();

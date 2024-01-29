@@ -13,6 +13,7 @@ import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useWellboreItem } from "../../contexts/wellboreItemContext";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore, {
   calculateObjectNodeId
@@ -35,7 +36,6 @@ import ObjectsSidebarContextMenu, {
 import LogTypeItem from "./LogTypeItem";
 import ObjectOnWellboreItem from "./ObjectOnWellboreItem";
 import TreeItem from "./TreeItem";
-import { WellboreItemContext } from "./WellboreItem";
 
 interface ObjectGroupItemProps {
   objectType: ObjectType;
@@ -58,7 +58,7 @@ export default function ObjectGroupItem({
     navigationState: { selectedObject, selectedObjectGroup }
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { wellbore, well, objectCount } = useContext(WellboreItemContext);
+  const { wellbore, well, objectCount } = useWellboreItem();
   const { selectedFilter } = useContext(FilterContext);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();

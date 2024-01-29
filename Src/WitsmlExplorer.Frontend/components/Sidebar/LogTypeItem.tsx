@@ -6,6 +6,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useWellboreItem } from "../../contexts/wellboreItemContext";
 import LogObject from "../../models/logObject";
 import { calculateObjectNodeId } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -30,14 +31,13 @@ import LogsContextMenu, {
 import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogItem from "./LogItem";
 import TreeItem from "./TreeItem";
-import { WellboreItemContext } from "./WellboreItem";
 
 interface LogTypeItemProps {
   logs: LogObject[];
 }
 
 export default function LogTypeItem({ logs }: LogTypeItemProps) {
-  const { wellbore, well } = useContext(WellboreItemContext);
+  const { wellbore, well } = useWellboreItem();
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedObject, selectedObjectGroup, servers } = navigationState;
