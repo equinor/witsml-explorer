@@ -40,7 +40,6 @@ export interface LogCurveInfoRow extends ContentTableRow {
   isActive: boolean;
   logCurveInfo: LogCurveInfo;
 }
-
 export const LogCurveInfoListView = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
@@ -179,6 +178,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
           unit: logCurveInfo.unit,
           sensorOffset: measureToString(logCurveInfo.sensorOffset),
           mnemAlias: logCurveInfo.mnemAlias,
+          traceState: logCurveInfo.traceState,
+          nullValue: logCurveInfo.nullValue,
           logUid: selectedLog.uid,
           wellUid: selectedWell.uid,
           wellboreUid: selectedWellbore.uid,
@@ -250,6 +251,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       type: ContentType.Measure
     },
     { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
+    { property: "traceState", label: "traceState", type: ContentType.String },
+    { property: "nullValue", label: "nullValue", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 

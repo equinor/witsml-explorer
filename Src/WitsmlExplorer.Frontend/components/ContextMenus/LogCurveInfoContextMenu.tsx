@@ -39,6 +39,7 @@ import React from "react";
 import { JobType } from "services/jobService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
+import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -117,6 +118,21 @@ const LogCurveInfoContextMenu = (
         <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} />
       )
     });
+  };
+
+  const onClickBatchUpdate = () => {
+    const logCurveInfoRows = checkedLogCurveInfoRows;
+    const logCurveInfoBatchUpdateModalProps = {
+      logCurveInfoRows,
+      selectedLog
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: (
+        <LogCurveInfoBatchUpdateModal {...logCurveInfoBatchUpdateModalProps} />
+      )
+    });
+    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickAnalyzeGaps = () => {
@@ -329,6 +345,17 @@ const LogCurveInfoContextMenu = (
             color={colors.interactive.primaryResting}
           />
           <Typography color={"primary"}>Properties</Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"batchUpdate"}
+          onClick={onClickBatchUpdate}
+          disabled={checkedLogCurveInfoRows.length < 2}
+        >
+          <StyledIcon
+            name="settings"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>Batch Update</Typography>
         </MenuItem>
       ]}
     />

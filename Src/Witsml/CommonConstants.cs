@@ -11,6 +11,8 @@ public static class CommonConstants
     public const string NewLine = "\n";
     public const int DefaultClientRequestTimeOutSeconds = 90;
     public const int DefaultReloadIntervalMinutes = 15;
+    public const string Yes = "Yes";
+    public const string No = "No";
 
     public static class DepthIndex
     {

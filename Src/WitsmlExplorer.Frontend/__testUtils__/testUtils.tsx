@@ -450,6 +450,8 @@ export function getLogCurveInfo(
     curveDescription: "curveDescription",
     typeLogData: "typeLogData",
     sensorOffset: getMeasure(),
+    nullValue: "123",
+    traceState: "raw",
     ...overrides
   };
 }
