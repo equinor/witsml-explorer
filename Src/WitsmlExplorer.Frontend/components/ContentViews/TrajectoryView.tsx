@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
-import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TrajectoryStationContextMenu, {
   TrajectoryStationContextMenuProps
@@ -39,37 +39,19 @@ export default function TrajectoryView() {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { selectedServer, selectedObject, servers } = navigationState;
-  const [trajectoryStations, setTrajectoryStations] = useState<
-    TrajectoryStation[]
-  >([]);
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedTrajectory = selectedObject as Trajectory;
   const { wellUid, wellboreUid, objectUid } = useParams();
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Trajectory);
+  const [trajectoryStations, isFetching] =
+    useGetObjectComponents<TrajectoryStation>(
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.TrajectoryStation
+    );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    const abortController = new AbortController();
-    const getTrajectory = async () => {
-      setTrajectoryStations(
-        await ComponentService.getComponents(
-          wellUid,
-          wellboreUid,
-          objectUid,
-          ComponentType.TrajectoryStation,
-          undefined,
-          abortController.signal
-        )
-      );
-      setIsFetchingData(false);
-    };
-    getTrajectory();
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [wellUid, wellboreUid, objectUid]);
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -139,7 +121,7 @@ export default function TrajectoryView() {
   });
 
   return (
-    !isFetchingData && (
+    !isFetching && (
       <ContentTable
         viewId="trajectoryView"
         columns={columns}

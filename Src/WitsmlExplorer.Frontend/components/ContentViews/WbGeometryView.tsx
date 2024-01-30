@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
 import WbGeometrySection from "../../models/wbGeometrySection";
-import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
@@ -28,37 +28,19 @@ interface WbGeometrySectionRow extends ContentTableRow {
 export default function WbGeometryView() {
   const { navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedServer, servers } = navigationState;
-  const [wbGeometrySections, setWbGeometrySections] = useState<
-    WbGeometrySection[]
-  >([]);
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedWbGeometry = selectedObject as WbGeometryObject;
   const { wellUid, wellboreUid, objectUid } = useParams();
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
+  const [wbGeometrySections, isFetching] =
+    useGetObjectComponents<WbGeometrySection>(
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.WbGeometrySection
+    );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    const abortController = new AbortController();
-    const getWbGeometry = async () => {
-      setWbGeometrySections(
-        await ComponentService.getComponents(
-          wellUid,
-          wellboreUid,
-          objectUid,
-          ComponentType.WbGeometrySection,
-          undefined,
-          abortController.signal
-        )
-      );
-      setIsFetchingData(false);
-    };
-    getWbGeometry();
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [wellUid, wellboreUid, objectUid]);
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -134,7 +116,7 @@ export default function WbGeometryView() {
   });
 
   return (
-    !isFetchingData && (
+    !isFetching && (
       <ContentTable
         viewId="wbGeometryView"
         columns={columns}

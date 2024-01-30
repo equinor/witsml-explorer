@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
 import TubularComponent from "../../models/tubularComponent";
-import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
@@ -35,38 +35,19 @@ export interface TubularComponentRow extends ContentTableRow {
 export default function TubularView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const { selectedServer, selectedObject, servers } = navigationState;
-  const [tubularComponents, setTubularComponents] = useState<
-    TubularComponent[]
-  >([]);
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedTubular = selectedObject as Tubular;
   const { wellUid, wellboreUid, objectUid } = useParams();
 
+  const [tubularComponents, isFetching] =
+    useGetObjectComponents<TubularComponent>(
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.TubularComponent
+    );
+
   useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Tubular);
-
-  useEffect(() => {
-    setIsFetchingData(true);
-    const abortController = new AbortController();
-
-    const getTubular = async () => {
-      setTubularComponents(
-        await ComponentService.getComponents(
-          wellUid,
-          wellboreUid,
-          objectUid,
-          ComponentType.TubularComponent,
-          undefined,
-          abortController.signal
-        )
-      );
-      setIsFetchingData(false);
-    };
-    getTubular();
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [wellUid, wellboreUid, objectUid]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -136,7 +117,7 @@ export default function TubularView() {
   });
 
   return (
-    !isFetchingData && (
+    !isFetching && (
       <ContentTable
         viewId="tubularView"
         columns={columns}

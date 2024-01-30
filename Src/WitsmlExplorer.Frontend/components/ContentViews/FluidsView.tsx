@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import Fluid from "../../models/fluid";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
-import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
@@ -29,33 +29,16 @@ interface FluidsRow extends ContentTableRow, FluidAsStrings {
 
 export default function FluidsView() {
   const { dispatchOperation } = useContext(OperationContext);
-  const [fluids, setFluids] = useState<Fluid[]>([]);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const { wellUid, wellboreUid, objectUid } = useParams();
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
+  const [fluids, isFetching] = useGetObjectComponents<Fluid>(
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.Fluid
+  );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    const abortController = new AbortController();
-    const getFluids = async () => {
-      setFluids(
-        await ComponentService.getComponents(
-          wellUid,
-          wellboreUid,
-          objectUid,
-          ComponentType.Fluid,
-          undefined,
-          abortController.signal
-        )
-      );
-      setIsFetchingData(false);
-    };
-    getFluids();
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [wellUid, wellboreUid, objectUid]);
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -269,7 +252,7 @@ export default function FluidsView() {
   ];
 
   return (
-    !isFetchingData && (
+    !isFetching && (
       <ContentTable
         viewId="fluidView"
         columns={columns}

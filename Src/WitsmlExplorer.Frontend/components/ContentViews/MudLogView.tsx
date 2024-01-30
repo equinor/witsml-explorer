@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
-import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
   GeologyIntervalContextMenuProps
@@ -40,35 +40,17 @@ export interface GeologyIntervalRow extends ContentTableRow {
 
 export default function MudLogView() {
   const { dispatchOperation } = useContext(OperationContext);
-  const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>(
-    []
-  );
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const { wellUid, wellboreUid, objectUid } = useParams();
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.MudLog);
+  const [geologyIntervals, isFetching] =
+    useGetObjectComponents<GeologyInterval>(
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.GeologyInterval
+    );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    const abortController = new AbortController();
-    const getGeologyIntervals = async () => {
-      setGeologyIntervals(
-        await ComponentService.getComponents(
-          wellUid,
-          wellboreUid,
-          objectUid,
-          ComponentType.GeologyInterval,
-          undefined,
-          abortController.signal
-        )
-      );
-      setIsFetchingData(false);
-    };
-    getGeologyIntervals();
-    return function cleanup() {
-      abortController.abort();
-    };
-  }, [objectUid]);
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -149,7 +131,7 @@ export default function MudLogView() {
   ];
 
   return (
-    !isFetchingData && (
+    !isFetching && (
       <ContentTable
         viewId="mudLogView"
         columns={columns}
