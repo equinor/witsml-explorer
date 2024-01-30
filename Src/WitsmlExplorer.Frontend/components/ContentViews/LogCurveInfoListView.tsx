@@ -19,6 +19,7 @@ import {
 } from "../../models/wellbore";
 import { truncateAbortHandler } from "../../services/apiClient";
 import ComponentService from "../../services/componentService";
+import ObjectService from "../../services/objectService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -52,7 +53,7 @@ export interface LogCurveInfoRow extends ContentTableRow {
   logCurveInfo: LogCurveInfo;
 }
 
-export const LogCurveInfoListView = (): React.ReactElement => {
+export default function LogCurveInfoListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat }
@@ -71,7 +72,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const { dispatchSidebar } = useSidebar();
-  const { wellUid, wellboreUid, logType } = useParams();
+  const { wellUid, wellboreUid, logType, objectUid } = useParams();
+  const [logObject, setLogObject] = useState<LogObject>(null);
 
   useEffect(() => {
     dispatchSidebar({
@@ -94,29 +96,38 @@ export const LogCurveInfoListView = (): React.ReactElement => {
 
   useEffect(() => {
     setIsFetchingData(true);
-    if (selectedLog) {
-      const controller = new AbortController();
 
-      const getLogCurveInfo = async () => {
-        const logCurveInfo = await ComponentService.getComponents(
-          selectedWell.uid,
-          selectedWellbore.uid,
-          selectedLog.uid,
-          ComponentType.Mnemonic,
-          undefined,
-          controller.signal
-        );
-        setLogCurveInfoList(logCurveInfo);
-        setIsFetchingData(false);
-      };
+    // const controller = new AbortController();
 
-      getLogCurveInfo().catch(truncateAbortHandler);
+    const getLogCurveInfo = async () => {
+      const logCurveInfo = await ComponentService.getComponents(
+        wellUid,
+        wellboreUid,
+        objectUid,
+        ComponentType.Mnemonic,
+        undefined
+        // controller.signal
+      );
+      setLogCurveInfoList(logCurveInfo);
 
-      return () => {
-        controller.abort();
-      };
-    }
-  }, [selectedLog]);
+      const fetchedLogObject = await ObjectService.getObject(
+        wellUid,
+        wellboreUid,
+        objectUid,
+        ObjectType.Log
+      );
+      setLogObject(fetchedLogObject);
+
+      setIsFetchingData(false);
+    };
+
+    // getLogCurveInfo().catch(truncateAbortHandler);
+    getLogCurveInfo().catch(truncateAbortHandler);
+
+    // return () => {
+    //   controller.abort();
+    // };
+  }, [wellUid, wellboreUid, logType, objectUid]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -170,10 +181,10 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     return logCurveInfoList
       .map((logCurveInfo) => {
         const isActive =
-          selectedLog.objectGrowing &&
+          logObject.objectGrowing &&
           calculateIsCurveActive(logCurveInfo, maxDepth);
         return {
-          id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
+          id: `${objectUid}-${logCurveInfo.mnemonic}`,
           uid: logCurveInfo.uid,
           mnemonic: logCurveInfo.mnemonic,
           minIndex: isDepthIndex
@@ -194,11 +205,11 @@ export const LogCurveInfoListView = (): React.ReactElement => {
           unit: logCurveInfo.unit,
           sensorOffset: measureToString(logCurveInfo.sensorOffset),
           mnemAlias: logCurveInfo.mnemAlias,
-          logUid: selectedLog.uid,
-          wellUid: selectedWell.uid,
-          wellboreUid: selectedWellbore.uid,
-          wellName: selectedWell.name,
-          wellboreName: selectedWellbore.name,
+          logUid: objectUid,
+          wellUid: logObject.wellUid,
+          wellboreUid: logObject.wellboreUid,
+          wellName: logObject.wellName,
+          wellboreName: logObject.wellboreName,
           isActive: isActive,
           isVisibleFunction: isVisibleFunction(isActive),
           logCurveInfo
@@ -206,12 +217,11 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       })
       .sort((curve, curve2) => {
         if (
-          curve.mnemonic.toLowerCase() === selectedLog.indexCurve?.toLowerCase()
+          curve.mnemonic.toLowerCase() === logObject.indexCurve?.toLowerCase()
         ) {
           return -1;
         } else if (
-          curve2.mnemonic.toLowerCase() ===
-          selectedLog.indexCurve?.toLowerCase()
+          curve2.mnemonic.toLowerCase() === logObject.indexCurve?.toLowerCase()
         ) {
           return 1;
         }
@@ -252,21 +262,23 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
-  return selectedLog && !isFetchingData ? (
-    <ContentTable
-      viewId={
-        isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"
-      }
-      columns={columns}
-      data={getTableData()}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
-    />
-  ) : (
-    <></>
+  return (
+    !isFetchingData && (
+      <ContentTable
+        viewId={
+          isDepthIndex
+            ? "depthLogCurveInfoListView"
+            : "timeLogCurveInfoListView"
+        }
+        columns={columns}
+        data={getTableData()}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        // TODO: Fix downloadToCsvFileName, removed selectedLog.name
+        // downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
+        downloadToCsvFileName={`LogCurveInfo_${objectUid}`}
+      />
+    )
   );
-};
-
-export default LogCurveInfoListView;
+}
