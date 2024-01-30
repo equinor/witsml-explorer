@@ -2,7 +2,6 @@ import { Fragment, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
-import { useObjectGroupItem } from "../../contexts/objectGroupItemContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useWellboreItem } from "../../contexts/wellboreItemContext";
@@ -31,8 +30,11 @@ import { IndexCurve } from "../Modals/LogPropertiesModal";
 import LogItem from "./LogItem";
 import TreeItem from "./TreeItem";
 
-export default function LogTypeItem() {
-  const { groupObjects: logs } = useObjectGroupItem();
+interface LogTypeItemProps {
+  logs: LogObject[];
+}
+
+export default function LogTypeItem({ logs }: LogTypeItemProps) {
   const { wellbore, well } = useWellboreItem();
   const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);

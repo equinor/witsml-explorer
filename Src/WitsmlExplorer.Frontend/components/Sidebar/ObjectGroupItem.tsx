@@ -3,12 +3,12 @@ import {
   MouseEvent,
   useCallback,
   useContext,
+  useEffect,
   useState
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
-import { ObjectGroupItemProvider } from "../../contexts/objectGroupItemContext";
 import OperationContext from "../../contexts/operationContext";
 import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -20,7 +20,11 @@ import ObjectOnWellbore, {
   calculateObjectNodeId
 } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
+import Wellbore, {
+  calculateObjectGroupId,
+  getObjectsFromWellbore
+} from "../../models/wellbore";
+import ObjectService from "../../services/objectService";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -59,7 +63,7 @@ export default function ObjectGroupItem({
   const { selectedFilter } = useContext(FilterContext);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { dispatchSidebar } = useSidebar();
+  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const [groupObjects, setGroupObjects] = useState<any>(null);
   let isActive = false;
   if (objectType === ObjectType.Log) {
@@ -67,6 +71,40 @@ export default function ObjectGroupItem({
       groupObjects && groupObjects.some((log: LogObject) => log.objectGrowing);
   }
   const { wellUid, wellboreUid, objectGroup } = useParams();
+
+  const findExpandedNode = (): any => {
+    return expandedTreeNodes.includes(
+      calculateObjectGroupId(wellbore, objectType)
+    );
+  };
+
+  const fetchObjects = async () => {
+    const objects = getObjectsFromWellbore(wellbore, objectType);
+    if (objects == null || objects.length == 0) {
+      setIsLoading(true);
+      const fetchedObjects = await ObjectService.getObjects(
+        wellbore.wellUid,
+        wellbore.uid,
+        objectType
+      );
+      setGroupObjects(fetchedObjects);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // TODO: Fix fetching when refreshing
+    if (
+      findExpandedNode() &&
+      !groupObjects &&
+      objectType !== ObjectType.BhaRun &&
+      objectType !== ObjectType.FormationMarker &&
+      objectType !== ObjectType.Message &&
+      objectType !== ObjectType.Risk
+    ) {
+      fetchObjects();
+    }
+  }, [wellUid, wellboreUid, objectGroup, expandedTreeNodes]);
 
   const onSelectObjectGroup = useCallback(async () => {
     if (to) navigate(to);
@@ -127,30 +165,23 @@ export default function ObjectGroupItem({
           )
         }
       >
-        <ObjectGroupItemProvider
-          wellbore={wellbore}
-          objectType={objectType}
-          setParentGroupObjects={setGroupObjects}
-          setIsFetching={setIsLoading}
-        >
-          {objectType === ObjectType.Log ? (
-            <LogTypeItem />
-          ) : (
-            (wellbore &&
-              groupObjects &&
-              groupObjects.map((objectOnWellbore: ObjectOnWellbore) => (
-                <ObjectOnWellboreItem
-                  key={calculateObjectNodeId(objectOnWellbore, objectType)}
-                  nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
-                  objectOnWellbore={objectOnWellbore}
-                  objectType={objectType}
-                  selected={isSelected(objectType, objectOnWellbore)}
-                  ContextMenu={ObjectContextMenu}
-                />
-              ))) ||
-            (showStub && ["", ""])
-          )}
-        </ObjectGroupItemProvider>
+        {objectType === ObjectType.Log ? (
+          <LogTypeItem logs={groupObjects} />
+        ) : (
+          (wellbore &&
+            groupObjects &&
+            groupObjects.map((objectOnWellbore: ObjectOnWellbore) => (
+              <ObjectOnWellboreItem
+                key={calculateObjectNodeId(objectOnWellbore, objectType)}
+                nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
+                objectOnWellbore={objectOnWellbore}
+                objectType={objectType}
+                selected={isSelected(objectType, objectOnWellbore)}
+                ContextMenu={ObjectContextMenu}
+              />
+            ))) ||
+          (showStub && ["", ""])
+        )}
       </TreeItem>
     )
   );
