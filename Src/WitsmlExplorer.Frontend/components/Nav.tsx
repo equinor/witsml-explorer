@@ -14,25 +14,14 @@ import NavigationContext, {
   ViewFlags
 } from "../contexts/navigationContext";
 import OperationContext from "../contexts/operationContext";
-import ObjectOnWellbore from "../models/objectOnWellbore";
 import { ObjectType, pluralizeObjectType } from "../models/objectType";
-import { Server } from "../models/server";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import TopRightCornerMenu from "./TopRightCornerMenu";
 
 export default function Nav() {
   const { navigationState } = useContext(NavigationContext);
-  const {
-    selectedServer,
-    selectedWell,
-    selectedWellbore,
-    selectedObjectGroup,
-    selectedObject,
-    currentSelected
-  } = navigationState;
+  const { currentSelected } = navigationState;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -49,23 +38,16 @@ export default function Nav() {
         wellUid,
         wellboreUid,
         objectGroup,
-        selectedObjectGroup,
         navigate
       );
     });
     return [
-      getServerCrumb(serverUrl, selectedServer, navigate),
+      getServerCrumb(serverUrl, navigate),
       getJobsCrumb(serverUrl, currentSelected, navigate),
       getQueryCrumb(serverUrl, currentSelected, navigate),
       getSearchCrumb(currentSelected),
-      getWellCrumb(serverUrl, wellUid, selectedWell, navigate),
-      getWellboreCrumb(
-        serverUrl,
-        wellUid,
-        wellboreUid,
-        selectedWellbore,
-        navigate
-      ),
+      getWellCrumb(serverUrl, wellUid, navigate),
+      getWellboreCrumb(serverUrl, wellUid, wellboreUid, navigate),
       ...groupCrumbs,
       getLogTypeCrumb(serverUrl, wellUid, wellboreUid, logType, navigate),
       getObjectCrumb(
@@ -75,7 +57,6 @@ export default function Nav() {
         objectGroup,
         objectUid,
         logType,
-        selectedObject,
         navigate
       )
     ].filter((item) => item.name);
@@ -135,14 +116,10 @@ export default function Nav() {
   );
 }
 
-const getServerCrumb = (
-  serverUrl: string,
-  selectedServer: Server,
-  navigate: NavigateFunction
-) => {
-  return serverUrl && selectedServer
+const getServerCrumb = (serverUrl: string, navigate: NavigateFunction) => {
+  return serverUrl
     ? {
-        name: selectedServer.name,
+        name: serverUrl,
         onClick: () => {
           navigate(`servers/${encodeURIComponent(serverUrl)}/wells`);
         }
@@ -153,12 +130,11 @@ const getServerCrumb = (
 const getWellCrumb = (
   serverUrl: string,
   wellUid: string,
-  selectedWell: Well,
   navigate: NavigateFunction
 ) => {
-  return serverUrl && wellUid && selectedWell
+  return serverUrl && wellUid
     ? {
-        name: selectedWell.name,
+        name: wellUid,
         onClick: () => {
           navigate(
             `servers/${encodeURIComponent(
@@ -174,12 +150,11 @@ const getWellboreCrumb = (
   serverUrl: string,
   wellUid: string,
   wellboreUid: string,
-  selectedWellbore: Wellbore,
   navigate: NavigateFunction
 ) => {
-  return serverUrl && wellUid && wellboreUid && selectedWellbore
+  return serverUrl && wellUid && wellboreUid
     ? {
-        name: selectedWellbore.name,
+        name: wellboreUid,
         onClick: () => {
           navigate(
             `servers/${encodeURIComponent(
@@ -197,15 +172,10 @@ const getObjectGroupCrumb = (
   wellUid: string,
   wellboreUid: string,
   objectGroup: string,
-  selectedObjectGroup: ObjectType,
   navigate: NavigateFunction
 ) => {
   const pluralizedObjectType = pluralizeObjectType(objectType);
-  return serverUrl &&
-    wellUid &&
-    wellboreUid &&
-    objectGroup &&
-    selectedObjectGroup === objectType
+  return serverUrl && wellUid && wellboreUid && objectGroup === objectType
     ? {
         name: pluralizedObjectType,
         onClick: () => {
@@ -251,17 +221,11 @@ const getObjectCrumb = (
   objectGroup: string,
   objectUid: string,
   logType: string,
-  selectedObject: ObjectOnWellbore,
   navigate: NavigateFunction
 ) => {
-  return serverUrl &&
-    wellUid &&
-    wellboreUid &&
-    objectGroup &&
-    objectUid &&
-    selectedObject
+  return serverUrl && wellUid && wellboreUid && objectGroup && objectUid
     ? {
-        name: selectedObject.name,
+        name: objectUid,
         onClick: () => {
           navigate(
             `servers/${encodeURIComponent(
