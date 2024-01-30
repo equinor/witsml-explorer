@@ -2,7 +2,6 @@ import { MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
@@ -34,12 +33,12 @@ export interface MudLogRow extends ContentTableRow {
 }
 
 export default function MudLogsListView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+  const { selectedWellbore } = navigationState;
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid } = useParams();
@@ -53,21 +52,12 @@ export default function MudLogsListView() {
   useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onSelect = (mudLogRow: MudLogRow) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        object: mudLogRow.mudLog,
-        objectType: ObjectType.MudLog
-      }
-    });
     navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/mudlogs/objects/${
-        mudLogRow.mudLog.uid
-      }`
+      `/servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        ObjectType.MudLog
+      }/objects/${mudLogRow.mudLog.uid}`
     );
   };
 

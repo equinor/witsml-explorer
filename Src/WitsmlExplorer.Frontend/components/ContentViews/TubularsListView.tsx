@@ -2,7 +2,6 @@ import { MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
@@ -16,12 +15,12 @@ import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export default function TubularsListView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+  const { selectedWellbore } = navigationState;
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid } = useParams();
@@ -71,21 +70,12 @@ export default function TubularsListView() {
   ];
 
   const onSelect = (tubular: any) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        object: tubular,
-        objectType: ObjectType.Tubular
-      }
-    });
     navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/tubulars/objects/${
-        tubular.uid
-      }`
+      `/servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        ObjectType.Tubular
+      }/objects/${tubular.uid}`
     );
   };
 

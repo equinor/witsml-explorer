@@ -2,7 +2,6 @@ import { MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
@@ -26,12 +25,12 @@ export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
 }
 
 export default function WbGeometriesListView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedWell } = navigationState;
+  const { selectedWellbore } = navigationState;
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid } = useParams();
@@ -73,21 +72,12 @@ export default function WbGeometriesListView() {
   };
 
   const onSelect = (wbGeometry: any) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        object: wbGeometry,
-        objectType: ObjectType.WbGeometry
-      }
-    });
     navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/wbgeometries/objects/${
-        wbGeometry.uid
-      }`
+      `/servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        ObjectType.WbGeometry
+      }/objects/${wbGeometry.uid}`
     );
   };
 

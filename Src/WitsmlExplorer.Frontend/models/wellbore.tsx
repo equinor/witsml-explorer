@@ -122,7 +122,7 @@ export const calculateWellboreNodeId = (
 
 export const calculateObjectGroupId = (
   wellbore: Wellbore | { wellUid: string; uid: string },
-  objectType: ObjectType
+  objectType: ObjectType | string
 ): string => {
   return calculateWellboreNodeId(wellbore) + objectType;
 };
@@ -144,6 +144,14 @@ export const calculateLogTypeTimeId = (
   wellbore: Wellbore | { wellUid: string; uid: string }
 ): string => {
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
+};
+
+export const calculateObjectNodeId = (
+  wellbore: Wellbore | { wellUid: string; uid: string },
+  objectType: ObjectType | string,
+  objectUid: string
+): string => {
+  return calculateObjectGroupId(wellbore, objectType) + objectUid;
 };
 
 export const getWellboreProperties = (

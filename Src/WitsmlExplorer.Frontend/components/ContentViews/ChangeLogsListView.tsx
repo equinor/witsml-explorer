@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
@@ -8,7 +8,7 @@ import { ObjectType } from "../../models/objectType";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
-export const ChangeLogsListView = (): React.ReactElement => {
+export default function ChangeLogsListView() {
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
@@ -74,6 +74,4 @@ export const ChangeLogsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default ChangeLogsListView;
+}

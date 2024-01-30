@@ -1,11 +1,12 @@
 import { ComponentType, MouseEvent, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useWellboreItem } from "../../contexts/wellboreItemContext";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
+import { calculateObjectNodeId } from "../../models/wellbore";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -17,7 +18,6 @@ interface ObjectOnWellboreItemProps {
   nodeId: string;
   objectOnWellbore: ObjectOnWellbore;
   objectType: ObjectType;
-  selected: boolean;
   ContextMenu: ComponentType<ObjectContextMenuProps>;
 }
 
@@ -25,13 +25,13 @@ export default function ObjectOnWellboreItem({
   nodeId,
   objectOnWellbore,
   objectType,
-  selected,
   ContextMenu
 }: ObjectOnWellboreItemProps) {
   const { wellbore, well } = useWellboreItem();
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { objectGroup, objectUid } = useParams();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
@@ -49,7 +49,10 @@ export default function ObjectOnWellboreItem({
     <TreeItem
       nodeId={nodeId}
       labelText={objectOnWellbore.name}
-      selected={selected}
+      selected={
+        calculateObjectNodeId(wellbore, objectType, objectOnWellbore.uid) ===
+        calculateObjectNodeId(wellbore, objectGroup, objectUid)
+      }
       onLabelClick={() => {
         if (
           objectType === ObjectType.MudLog ||

@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import Fluid from "../../models/fluid";
-import FluidsReport from "../../models/fluidsReport";
 import { measureToString } from "../../models/measure";
+import { ObjectType } from "../../models/objectType";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FluidContextMenu, {
@@ -26,40 +27,35 @@ interface FluidsRow extends ContentTableRow, FluidAsStrings {
   fluid: Fluid;
 }
 
-export const FluidsView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedObject } = navigationState;
+export default function FluidsView() {
   const { dispatchOperation } = useContext(OperationContext);
   const [fluids, setFluids] = useState<Fluid[]>([]);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const selectedFluidsReport = selectedObject as FluidsReport;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   useEffect(() => {
     setIsFetchingData(true);
-    if (selectedFluidsReport) {
-      const abortController = new AbortController();
-
-      const getFluids = async () => {
-        setFluids(
-          await ComponentService.getComponents(
-            selectedFluidsReport.wellUid,
-            selectedFluidsReport.wellboreUid,
-            selectedFluidsReport.uid,
-            ComponentType.Fluid,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getFluids();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedFluidsReport]);
+    const abortController = new AbortController();
+    const getFluids = async () => {
+      setFluids(
+        await ComponentService.getComponents(
+          wellUid,
+          wellboreUid,
+          objectUid,
+          ComponentType.Fluid,
+          undefined,
+          abortController.signal
+        )
+      );
+      setIsFetchingData(false);
+    };
+    getFluids();
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [wellUid, wellboreUid, objectUid]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -272,20 +268,20 @@ export const FluidsView = (): React.ReactElement => {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
-  return selectedFluidsReport && !isFetchingData ? (
-    <ContentTable
-      viewId="fluidView"
-      columns={columns}
-      data={fluidRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      insetColumns={insetColumns}
-      showRefresh
-      downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
-    />
-  ) : (
-    <></>
+  return (
+    !isFetchingData && (
+      <ContentTable
+        viewId="fluidView"
+        columns={columns}
+        data={fluidRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        insetColumns={insetColumns}
+        showRefresh
+        // TODO: Fix downloadToCsvFileName, selectedFluidReport.name has been removed.
+        // downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
+        downloadToCsvFileName={`FluidsReport_${objectUid}`}
+      />
+    )
   );
-};
-
-export default FluidsView;
+}

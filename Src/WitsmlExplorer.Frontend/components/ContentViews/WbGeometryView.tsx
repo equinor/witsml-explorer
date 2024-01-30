@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
+import { ObjectType } from "../../models/objectType";
 import WbGeometryObject from "../../models/wbGeometry";
 import WbGeometrySection from "../../models/wbGeometrySection";
 import ComponentService from "../../services/componentService";
@@ -22,7 +25,7 @@ interface WbGeometrySectionRow extends ContentTableRow {
   wbGeometrySection: WbGeometrySection;
 }
 
-export const WbGeometryView = (): React.ReactElement => {
+export default function WbGeometryView() {
   const { navigationState } = useContext(NavigationContext);
   const { selectedObject, selectedServer, servers } = navigationState;
   const [wbGeometrySections, setWbGeometrySections] = useState<
@@ -31,33 +34,31 @@ export const WbGeometryView = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedWbGeometry = selectedObject as WbGeometryObject;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   useEffect(() => {
     setIsFetchingData(true);
-    if (selectedWbGeometry) {
-      const abortController = new AbortController();
-
-      const getWbGeometry = async () => {
-        setWbGeometrySections(
-          await ComponentService.getComponents(
-            selectedWbGeometry.wellUid,
-            selectedWbGeometry.wellboreUid,
-            selectedWbGeometry.uid,
-            ComponentType.WbGeometrySection,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getWbGeometry();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedWbGeometry]);
+    const abortController = new AbortController();
+    const getWbGeometry = async () => {
+      setWbGeometrySections(
+        await ComponentService.getComponents(
+          wellUid,
+          wellboreUid,
+          objectUid,
+          ComponentType.WbGeometrySection,
+          undefined,
+          abortController.signal
+        )
+      );
+      setIsFetchingData(false);
+    };
+    getWbGeometry();
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [wellUid, wellboreUid, objectUid]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -132,19 +133,18 @@ export const WbGeometryView = (): React.ReactElement => {
     };
   });
 
-  return selectedWbGeometry && !isFetchingData ? (
-    <ContentTable
-      viewId="wbGeometryView"
-      columns={columns}
-      data={wbGeometrySectionRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`WbGeometry_${selectedWbGeometry.name}`}
-    />
-  ) : (
-    <></>
+  return (
+    !isFetchingData && (
+      <ContentTable
+        viewId="wbGeometryView"
+        columns={columns}
+        data={wbGeometrySectionRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        // TODO: Fix downloadToCsvFileName
+        downloadToCsvFileName={`WbGeometry_${objectUid}`}
+      />
+    )
   );
-};
-
-export default WbGeometryView;
+}

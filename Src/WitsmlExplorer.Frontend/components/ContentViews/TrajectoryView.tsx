@@ -1,8 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
+import { measureToString } from "../../models/measure";
+import { ObjectType } from "../../models/objectType";
 import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
 import ComponentService from "../../services/componentService";
@@ -17,7 +21,6 @@ import {
   ContentTableRow,
   ContentType
 } from "./table";
-import { measureToString } from "../../models/measure";
 
 export interface TrajectoryStationRow extends ContentTableRow {
   uid: string;
@@ -30,7 +33,7 @@ export interface TrajectoryStationRow extends ContentTableRow {
   trajectoryStation: TrajectoryStation;
 }
 
-export const TrajectoryView = (): React.ReactElement => {
+export default function TrajectoryView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat }
@@ -42,33 +45,31 @@ export const TrajectoryView = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const selectedTrajectory = selectedObject as Trajectory;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
   useEffect(() => {
     setIsFetchingData(true);
-    if (selectedTrajectory) {
-      const abortController = new AbortController();
-
-      const getTrajectory = async () => {
-        setTrajectoryStations(
-          await ComponentService.getComponents(
-            selectedTrajectory.wellUid,
-            selectedTrajectory.wellboreUid,
-            selectedTrajectory.uid,
-            ComponentType.TrajectoryStation,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getTrajectory();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedTrajectory]);
+    const abortController = new AbortController();
+    const getTrajectory = async () => {
+      setTrajectoryStations(
+        await ComponentService.getComponents(
+          wellUid,
+          wellboreUid,
+          objectUid,
+          ComponentType.TrajectoryStation,
+          undefined,
+          abortController.signal
+        )
+      );
+      setIsFetchingData(false);
+    };
+    getTrajectory();
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [wellUid, wellboreUid, objectUid]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -137,19 +138,19 @@ export const TrajectoryView = (): React.ReactElement => {
     };
   });
 
-  return selectedTrajectory && !isFetchingData ? (
-    <ContentTable
-      viewId="trajectoryView"
-      columns={columns}
-      data={trajectoryStationRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
-    />
-  ) : (
-    <></>
+  return (
+    !isFetchingData && (
+      <ContentTable
+        viewId="trajectoryView"
+        columns={columns}
+        data={trajectoryStationRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        // TODO: Fix downloadToCsvFilename, selectedTrajectory.name has been removed.
+        // downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
+        downloadToCsvFileName={`Trajectory_${objectUid}`}
+      />
+    )
   );
-};
-
-export default TrajectoryView;
+}

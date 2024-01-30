@@ -7,11 +7,11 @@ import TubularView from "./TubularView";
 import WbGeometryView from "./WbGeometryView";
 
 enum ObjectGroupUrlParams {
-  MudLog = "mudlogs",
-  Trajectory = "trajectories",
-  Tubular = "tubulars",
-  WbGeometry = "wbgeometries",
-  FluidsReport = "fluidsreports"
+  MudLog = "MudLog",
+  Trajectory = "Trajectory",
+  Tubular = "Tubular",
+  WbGeometry = "WbGeometry",
+  FluidsReport = "FluidsReport"
 }
 
 const objectViews: Record<ObjectGroupUrlParams, ReactElement> = {

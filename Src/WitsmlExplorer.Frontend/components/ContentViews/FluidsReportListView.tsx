@@ -2,7 +2,6 @@ import { MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
@@ -26,12 +25,12 @@ export interface FluidsReportRow extends ContentTableRow, FluidsReport {
 }
 
 export default function FluidsReportsListView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+  const { selectedWellbore } = navigationState;
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid } = useParams();
@@ -93,21 +92,12 @@ export default function FluidsReportsListView() {
   ];
 
   const onSelect = (fluidsReportRow: FluidsReportRow) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        object: fluidsReportRow.fluidsReport,
-        objectType: ObjectType.FluidsReport
-      }
-    });
     navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/fluidsreports/objects/${
-        fluidsReportRow.fluidsReport.uid
-      }`
+      `/servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        ObjectType.FluidsReport
+      }/objects/${fluidsReportRow.fluidsReport.uid}`
     );
   };
 

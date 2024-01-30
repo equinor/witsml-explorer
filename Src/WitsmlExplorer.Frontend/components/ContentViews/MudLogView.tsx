@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { measureToString } from "../../models/measure";
-import MudLog from "../../models/mudLog";
+import { ObjectType } from "../../models/objectType";
 import ComponentService from "../../services/componentService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
@@ -37,42 +38,37 @@ export interface GeologyIntervalRow extends ContentTableRow {
   geologyInterval: GeologyInterval;
 }
 
-export const MudLogView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedObject } = navigationState;
+export default function MudLogView() {
   const { dispatchOperation } = useContext(OperationContext);
   const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>(
     []
   );
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const selectedMudLog = selectedObject as MudLog;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+
+  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   useEffect(() => {
     setIsFetchingData(true);
-    if (selectedMudLog) {
-      const abortController = new AbortController();
-
-      const getGeologyIntervals = async () => {
-        setGeologyIntervals(
-          await ComponentService.getComponents(
-            selectedMudLog.wellUid,
-            selectedMudLog.wellboreUid,
-            selectedMudLog.uid,
-            ComponentType.GeologyInterval,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getGeologyIntervals();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedMudLog]);
+    const abortController = new AbortController();
+    const getGeologyIntervals = async () => {
+      setGeologyIntervals(
+        await ComponentService.getComponents(
+          wellUid,
+          wellboreUid,
+          objectUid,
+          ComponentType.GeologyInterval,
+          undefined,
+          abortController.signal
+        )
+      );
+      setIsFetchingData(false);
+    };
+    getGeologyIntervals();
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, [objectUid]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -152,20 +148,20 @@ export const MudLogView = (): React.ReactElement => {
     { property: "lithPc", label: "lithPc %", type: ContentType.Number }
   ];
 
-  return selectedMudLog && !isFetchingData ? (
-    <ContentTable
-      viewId="mudLogView"
-      columns={columns}
-      data={geologyIntervalRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      insetColumns={insetColumns}
-      showRefresh
-      downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
-    />
-  ) : (
-    <></>
+  return (
+    !isFetchingData && (
+      <ContentTable
+        viewId="mudLogView"
+        columns={columns}
+        data={geologyIntervalRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        insetColumns={insetColumns}
+        showRefresh
+        // TODO: Fix downloadToCsvFilename, selectedMudlog.name has been removed.
+        // downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
+        downloadToCsvFileName={`MudLog_${objectUid}`}
+      />
+    )
   );
-};
-
-export default MudLogView;
+}

@@ -8,7 +8,6 @@ import {
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -55,9 +54,6 @@ export default function ObjectGroupItem({
   onGroupContextMenu,
   to
 }: ObjectGroupItemProps) {
-  const {
-    navigationState: { selectedObject, selectedObjectGroup }
-  } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { wellbore, well, objectCount } = useWellboreItem();
   const { selectedFilter } = useContext(FilterContext);
@@ -117,19 +113,6 @@ export default function ObjectGroupItem({
     });
   }, [well, wellbore, objectType]);
 
-  const isSelected = useCallback(
-    (objectType: ObjectType, objectOnWellbore: ObjectOnWellbore) => {
-      return (
-        selectedObject &&
-        selectedObjectGroup === objectType &&
-        selectedObject.uid === objectOnWellbore.uid &&
-        selectedObject.wellboreUid === objectOnWellbore.wellboreUid &&
-        selectedObject.wellUid === objectOnWellbore.wellUid
-      );
-    },
-    [selectedObject, selectedObjectGroup]
-  );
-
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
     return onGroupContextMenu == null
       ? onGenericGroupContextMenu(
@@ -176,7 +159,6 @@ export default function ObjectGroupItem({
                 nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
                 objectOnWellbore={objectOnWellbore}
                 objectType={objectType}
-                selected={isSelected(objectType, objectOnWellbore)}
                 ContextMenu={ObjectContextMenu}
               />
             ))) ||
