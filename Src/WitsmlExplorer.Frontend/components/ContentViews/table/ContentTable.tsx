@@ -155,7 +155,7 @@ export const ContentTable = React.memo(
           newRowSelection = rowSelection;
         setRowSelection(newRowSelection);
         onRowSelectionChange?.(
-          data.filter((_, index) => newRowSelection[index])
+          data.filter((dataRow, index) => newRowSelection[dataRow.id ?? index])
         );
       },
       meta: {
