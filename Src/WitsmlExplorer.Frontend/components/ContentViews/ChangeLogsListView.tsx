@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import ChangeLog from "../../models/changeLog";
 import { ObjectType } from "../../models/objectType";
@@ -20,7 +20,7 @@ export default function ChangeLogsListView() {
     ObjectType.ChangeLog
   ) as ChangeLog[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.ChangeLog);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.ChangeLog);
 
   const getTableData = () => {
     return changeLogs.map((changeLog) => {

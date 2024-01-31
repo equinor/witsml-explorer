@@ -4,7 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
@@ -31,7 +31,7 @@ export default function TubularsListView() {
     ObjectType.Tubular
   ) as Tubular[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Tubular);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,

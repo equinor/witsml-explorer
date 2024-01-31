@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
@@ -47,7 +47,7 @@ export default function TubularView() {
       ComponentType.TubularComponent
     );
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Tubular);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,

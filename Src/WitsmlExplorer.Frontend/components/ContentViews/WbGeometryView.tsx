@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
@@ -40,7 +40,7 @@ export default function WbGeometryView() {
       ComponentType.WbGeometrySection
     );
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,

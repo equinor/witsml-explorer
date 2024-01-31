@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import Fluid from "../../models/fluid";
@@ -38,7 +38,7 @@ export default function FluidsView() {
     ComponentType.Fluid
   );
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
@@ -51,7 +51,7 @@ export default function TrajectoryView() {
       ComponentType.TrajectoryStation
     );
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Trajectory);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,

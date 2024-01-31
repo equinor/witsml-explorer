@@ -6,16 +6,9 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useSidebar } from "../../contexts/sidebarContext";
-import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
-import {
-  calculateLogTypeId,
-  calculateObjectGroupId,
-  calculateWellNodeId,
-  calculateWellboreNodeId
-} from "../../models/wellbore";
 import ObjectService from "../../services/objectService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -39,8 +32,7 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 
 export default function LogsListView() {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWellbore, selectedWell, selectedLogTypeGroup } =
-    navigationState;
+  const { selectedWellbore, selectedLogTypeGroup } = navigationState;
 
   const {
     dispatchOperation,
@@ -53,26 +45,13 @@ export default function LogsListView() {
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid, logType } = useParams();
-  const { dispatchSidebar } = useSidebar();
 
-  useEffect(() => {
-    dispatchSidebar({
-      type: SidebarActionType.ExpandTreeNodes,
-      payload: {
-        nodeIds: [
-          calculateWellNodeId(wellUid),
-          calculateWellboreNodeId({ wellUid, uid: wellboreUid }),
-          calculateObjectGroupId({ wellUid, uid: wellboreUid }, ObjectType.Log),
-          calculateLogTypeId(
-            { wellUid, uid: wellboreUid },
-            logType === "depth"
-              ? WITSML_INDEX_TYPE_MD
-              : WITSML_INDEX_TYPE_DATE_TIME
-          )
-        ]
-      }
-    });
-  }, [wellUid, wellboreUid, logType]);
+  useExpandSidebarNodes(
+    wellUid,
+    wellboreUid,
+    ObjectType.Log,
+    logType === "depth" ? WITSML_INDEX_TYPE_MD : WITSML_INDEX_TYPE_DATE_TIME
+  );
 
   const filterLogsByType = (logs: LogObject[], logType: string) => {
     return logs?.filter((log) => log.indexType === logType) ?? [];
@@ -187,9 +166,9 @@ export default function LogsListView() {
 
   const onSelect = (log: LogObjectRow) => {
     navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/${
+      `/servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
         ObjectType.Log
       }/logtypes/${
         log.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"

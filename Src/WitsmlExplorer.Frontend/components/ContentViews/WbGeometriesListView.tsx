@@ -4,7 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
@@ -41,7 +41,7 @@ export default function WbGeometriesListView() {
     ObjectType.WbGeometry
   ) as WbGeometryObject[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const getTableData = () => {
     return wbGeometries.map((wbGeometry) => {
