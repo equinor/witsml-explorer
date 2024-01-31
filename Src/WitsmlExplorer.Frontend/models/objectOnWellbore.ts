@@ -5,7 +5,7 @@ import { ObjectType } from "models/objectType";
 import Wellbore from "./wellbore";
 
 export default interface ObjectOnWellbore {
-  typeLithology: any;
+  typeLithology?: any;
   uid: string;
   wellboreUid: string;
   wellUid: string;
