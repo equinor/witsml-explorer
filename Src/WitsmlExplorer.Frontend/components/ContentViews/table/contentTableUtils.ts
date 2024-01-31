@@ -79,7 +79,7 @@ export const toggleRow = (
     const toIndex = Math.max(sortedPreviousIndex, sortedCurrentIndex);
     const newSelections: { [index: string]: boolean } = {};
     for (let i = fromIndex; i <= toIndex; i++) {
-      newSelections[sortedRows[i].index] = true;
+      newSelections[sortedRows[i].id ?? sortedRows[i].index] = true;
     }
     table.setRowSelection({
       ...newSelections,
