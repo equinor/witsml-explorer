@@ -4,7 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
@@ -32,7 +32,7 @@ export default function TrajectoriesListView() {
     ObjectType.Trajectory
   ) as Trajectory[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Trajectory);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,

@@ -24,11 +24,6 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
   const { dispatchSidebar } = useSidebar();
 
   const toggleTreeNode = (props: StyledTreeItemProps) => {
-    // const toggleTreeNode: ToggleTreeNodeAction = {
-    //   type: NavigationType.ToggleTreeNode,
-    //   payload: { nodeId: props.nodeId }
-    // };
-    // dispatchNavigation(toggleTreeNode);
     dispatchSidebar({
       type: SidebarActionType.ToggleTreeNode,
       payload: { nodeId: props.nodeId }

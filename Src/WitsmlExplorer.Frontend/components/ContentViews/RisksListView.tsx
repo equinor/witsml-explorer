@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import { ObjectType } from "../../models/objectType";
 import RiskObject from "../../models/riskObject";
@@ -22,7 +22,7 @@ export interface RiskObjectRow extends ContentTableRow, RiskObject {
   risk: RiskObject;
 }
 
-export const RisksListView = (): React.ReactElement => {
+export default function RisksListView() {
   const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
@@ -37,7 +37,7 @@ export const RisksListView = (): React.ReactElement => {
     ObjectType.Risk
   ) as RiskObject[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Risk);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Risk);
 
   const getTableData = () => {
     return risks.map((risk) => {
@@ -140,6 +140,4 @@ export const RisksListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default RisksListView;
+}

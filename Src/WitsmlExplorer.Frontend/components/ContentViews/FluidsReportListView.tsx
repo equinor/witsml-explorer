@@ -4,7 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import FluidsReport from "../../models/fluidsReport";
 import { measureToString } from "../../models/measure";
@@ -41,7 +41,7 @@ export default function FluidsReportsListView() {
     ObjectType.FluidsReport
   ) as FluidsReport[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   const getTableData = () => {
     return fluidsReports.map((fluidsReport) => {

@@ -66,7 +66,7 @@ export default function WellItem({ well }: WellItemProps) {
   return (
     <TreeItem
       onContextMenu={(event) => onContextMenu(event, well)}
-      selected={wellUid === well.uid}
+      selected={calculateWellNodeId(well.uid) === calculateWellNodeId(wellUid)}
       key={well.uid}
       labelText={well.name}
       nodeId={calculateWellNodeId(well.uid)}
@@ -76,7 +76,12 @@ export default function WellItem({ well }: WellItemProps) {
         <WellboreItem
           well={well}
           wellbore={wellbore}
-          selected={wellboreUid === wellbore.uid}
+          selected={
+            calculateWellboreNodeId({
+              wellUid: well.uid,
+              uid: wellbore.uid
+            }) === calculateWellboreNodeId({ wellUid, uid: wellboreUid })
+          }
           key={calculateWellboreNodeId(wellbore)}
           nodeId={calculateWellboreNodeId(wellbore)}
         />
