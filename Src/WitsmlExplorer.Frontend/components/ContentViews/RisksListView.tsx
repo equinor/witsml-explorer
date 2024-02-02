@@ -1,8 +1,9 @@
 import { MouseEvent, useContext } from "react";
 import { useParams } from "react-router-dom";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import { ObjectType } from "../../models/objectType";
@@ -23,13 +24,17 @@ export interface RiskObjectRow extends ContentTableRow, RiskObject {
 }
 
 export default function RisksListView() {
-  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
   const { wellUid, wellboreUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
 
   const risks = useGetObjects(
     wellUid,
@@ -115,7 +120,7 @@ export default function RisksListView() {
   ) => {
     const contextProps: ObjectContextMenuProps = {
       checkedObjects: checkedRiskObjectRows.map((row) => row.risk),
-      wellbore: selectedWellbore
+      wellbore
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
@@ -54,7 +56,6 @@ export default function LogCurveInfoListView() {
   const {
     selectedServer,
     selectedWell,
-    selectedWellbore,
     selectedObject,
     selectedCurveThreshold,
     servers
@@ -66,6 +67,12 @@ export default function LogCurveInfoListView() {
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const [logObject, setLogObject] = useState<LogObject>(null);
+  const { authorizationState } = useAuthorizationState();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
 
   useExpandSidebarNodes(
     wellUid,
@@ -121,7 +128,7 @@ export default function LogCurveInfoListView() {
       selectedLog,
       selectedServer,
       selectedWell,
-      selectedWellbore,
+      selectedWellbore: wellbore,
       servers
     };
     const position = getContextMenuPosition(event);

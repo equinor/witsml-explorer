@@ -1,8 +1,9 @@
 import { MouseEvent, useContext } from "react";
 import { useParams } from "react-router-dom";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import FormationMarker from "../../models/formationMarker";
@@ -25,13 +26,17 @@ export interface FormationMarkerRow extends ContentTableRow {
 }
 
 export default function FormationMarkersListView() {
-  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
+  const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid } = useParams();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
 
   const formationMarkers = useGetObjects(
     wellUid,
@@ -92,7 +97,7 @@ export default function FormationMarkersListView() {
   ) => {
     const contextProps: ObjectContextMenuProps = {
       checkedObjects: checkedRows.map((row) => row.formationMarker),
-      wellbore: selectedWellbore
+      wellbore
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

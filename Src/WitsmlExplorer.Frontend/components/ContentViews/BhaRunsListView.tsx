@@ -1,8 +1,9 @@
 import { MouseEvent, useContext } from "react";
 import { useParams } from "react-router-dom";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import BhaRun from "../../models/bhaRun";
@@ -23,13 +24,17 @@ export interface BhaRunRow extends ContentTableRow, BhaRun {
 }
 
 export default function BhaRunsListView() {
-  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
   const { wellUid, wellboreUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
 
   const bhaRuns = useGetObjects(
     wellUid,
@@ -113,7 +118,7 @@ export default function BhaRunsListView() {
   ) => {
     const contextProps: ObjectContextMenuProps = {
       checkedObjects: checkedBhaRunRows.map((row) => row.bhaRun),
-      wellbore: selectedWellbore
+      wellbore
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
