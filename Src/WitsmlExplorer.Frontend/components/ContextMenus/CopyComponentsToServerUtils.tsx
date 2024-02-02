@@ -31,6 +31,7 @@ export interface OnClickCopyComponentToServerProps {
   componentType: ComponentType;
   startIndex?: string;
   endIndex?: string;
+  componentsToPreserve?: { uid: string }[] | LogCurveInfo[]; // These components will not be deleted if they exist on the target server
 }
 
 export const copyComponentsToServer = async (
@@ -44,7 +45,8 @@ export const copyComponentsToServer = async (
     sourceParent,
     componentType,
     startIndex,
-    endIndex
+    endIndex,
+    componentsToPreserve
   } = props;
 
   dispatchOperation({ type: OperationType.HideContextMenu });
@@ -105,7 +107,14 @@ export const copyComponentsToServer = async (
     )
   );
 
-  if (existingTargetComponents.length > 0 && startIndex === undefined) {
+  const componentsToDelete = existingTargetComponents.filter(
+    (component) =>
+      !componentsToPreserve?.find(
+        (componentToPreserve) => getId(componentToPreserve) === getId(component)
+      )
+  );
+
+  if (componentsToDelete.length > 0 && startIndex === undefined) {
     replaceComponents();
   } else {
     AuthorizationService.setSourceServer(sourceServer);
@@ -138,7 +147,7 @@ export const copyComponentsToServer = async (
       dispatchOperation({ type: OperationType.HideModal });
       const deleteJob: DeleteComponentsJob = {
         toDelete: createComponentReferences(
-          existingTargetComponents.map((component) => getId(component)),
+          componentsToDelete.map((component) => getId(component)),
           targetParent,
           componentType
         )
