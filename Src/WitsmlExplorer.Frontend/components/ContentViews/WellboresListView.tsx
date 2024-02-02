@@ -1,13 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useGetWells } from "../../hooks/query/useGetWells";
+import { useGetWell } from "../../hooks/query/useGetWell";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -15,6 +13,7 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "../ContextMenus/WellboreContextMenu";
 import formatDateString from "../DateFormatter";
+import WellProgress from "../WellProgress";
 import {
   ContentTable,
   ContentTableColumn,
@@ -25,12 +24,11 @@ import {
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
 export default function WellboresListView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell } = navigationState;
   const { authorizationState } = useAuthorizationState();
-  const { wells } = useGetWells(authorizationState?.server);
+  const { wellUid } = useParams();
+  const { well } = useGetWell(authorizationState?.server, wellUid);
   const [selectedWellFiltered] = useWellFilter(
-    React.useMemo(() => (selectedWell ? [selectedWell] : []), [selectedWell]),
+    React.useMemo(() => (well ? [well] : []), [well]),
     React.useMemo(() => ({ filterWellbores: true }), [])
   );
   const {
@@ -38,18 +36,6 @@ export default function WellboresListView() {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const navigate = useNavigate();
-  const { serverUrl, wellUid } = useParams();
-
-  useEffect(() => {
-    if (wells.length > 0) {
-      const well = wells.find((well) => well.uid === wellUid);
-
-      dispatchNavigation({
-        type: NavigationType.SelectWell,
-        payload: { well }
-      });
-    }
-  }, [wells, serverUrl, wellUid]);
 
   useExpandSidebarNodes(wellUid);
 
@@ -81,7 +67,7 @@ export default function WellboresListView() {
   ) => {
     const contextMenuProps: WellboreContextMenuProps = {
       wellbore,
-      well: selectedWell,
+      well: well,
       checkedWellboreRows
     };
     const position = getContextMenuPosition(event);
@@ -119,28 +105,29 @@ export default function WellboresListView() {
   const onSelect = async (wellboreRow: any) => {
     navigate(
       `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
+        well.uid
       }/wellbores/${wellboreRow.wellbore.uid}/objectgroups`
     );
   };
 
   return (
-    selectedWell &&
-    (selectedWell.wellbores.length > 0 && !selectedWellFiltered?.wellbores ? (
-      <Typography style={{ padding: "1rem" }}>
-        No wellbores match the current filter
-      </Typography>
-    ) : (
-      <ContentTable
-        viewId="wellboresListView"
-        columns={columns}
-        data={getTableData()}
-        onSelect={onSelect}
-        onContextMenu={onContextMenu}
-        downloadToCsvFileName="Wellbores"
-        checkableRows
-        showRefresh
-      />
-    ))
+    <WellProgress>
+      {well && well.wellbores.length > 0 && !selectedWellFiltered?.wellbores ? (
+        <Typography style={{ padding: "1rem" }}>
+          No wellbores match the current filter
+        </Typography>
+      ) : (
+        <ContentTable
+          viewId="wellboresListView"
+          columns={columns}
+          data={getTableData()}
+          onSelect={onSelect}
+          onContextMenu={onContextMenu}
+          downloadToCsvFileName="Wellbores"
+          checkableRows
+          showRefresh
+        />
+      )}
+    </WellProgress>
   );
 }

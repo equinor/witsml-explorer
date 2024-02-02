@@ -6,6 +6,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
@@ -32,7 +33,7 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 
 export default function LogsListView() {
   const { navigationState } = useContext(NavigationContext);
-  const { selectedWellbore, selectedLogTypeGroup } = navigationState;
+  const { selectedLogTypeGroup } = navigationState;
 
   const {
     dispatchOperation,
@@ -45,6 +46,11 @@ export default function LogsListView() {
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid, logType } = useParams();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
 
   useExpandSidebarNodes(
     wellUid,
@@ -85,7 +91,7 @@ export default function LogsListView() {
   ) => {
     const contextProps: ObjectContextMenuProps = {
       checkedObjects: checkedLogObjectRows.map((row) => row.logObject),
-      wellbore: selectedWellbore
+      wellbore
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -103,11 +109,11 @@ export default function LogsListView() {
         ...log,
         id: log.uid,
         startIndex:
-          selectedWellbore && isTimeIndexed()
+          wellbore && isTimeIndexed()
             ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
             : log.startIndex,
         endIndex:
-          selectedWellbore && isTimeIndexed()
+          wellbore && isTimeIndexed()
             ? formatDateString(log.endIndex, timeZone, dateTimeFormat)
             : log.endIndex,
         dTimCreation: formatDateString(
@@ -131,17 +137,13 @@ export default function LogsListView() {
       property: "startIndex",
       label: "startIndex",
       type:
-        selectedWellbore && isTimeIndexed()
-          ? ContentType.DateTime
-          : ContentType.Measure
+        wellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure
     },
     {
       property: "endIndex",
       label: "endIndex",
       type:
-        selectedWellbore && isTimeIndexed()
-          ? ContentType.DateTime
-          : ContentType.Measure
+        wellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure
     },
     { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
     {
@@ -185,7 +187,7 @@ export default function LogsListView() {
 
   useEffect(() => {
     setResetCheckedItems(true);
-  }, [selectedWellbore, selectedLogTypeGroup]);
+  }, [wellbore, selectedLogTypeGroup]);
 
   return (
     !resetCheckedItems && (
