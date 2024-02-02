@@ -105,7 +105,13 @@ export const LogCurvePriorityModal = (
                 }
                 value={newCurve}
               />
-              <Button variant="contained_icon" onClick={addCurve}>
+              <Button
+                variant="contained_icon"
+                onClick={addCurve}
+                disabled={
+                  newCurve === "" || updatedPrioritizedCurves.includes(newCurve)
+                }
+              >
                 <Icon name="add" />
               </Button>
             </AddItemLayout>
