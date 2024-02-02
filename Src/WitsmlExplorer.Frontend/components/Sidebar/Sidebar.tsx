@@ -1,16 +1,15 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
-import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { Fragment, useContext, useMemo } from "react";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import { useSidebar } from "../../contexts/sidebarContext";
+import { useGetWells } from "../../hooks/query/useGetWells";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
-import { AuthorizationStatus } from "../../services/authorizationService";
-import WellService from "../../services/wellService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import WellProgress from "../WellProgress";
@@ -19,7 +18,7 @@ import WellItem from "./WellItem";
 
 export default function Sidebar() {
   const { authorizationState } = useAuthorizationState();
-  const [wells, setWells] = useState<Well[]>([]);
+  const { wells } = useGetWells(authorizationState?.server);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const {
@@ -29,19 +28,6 @@ export default function Sidebar() {
     wells,
     useMemo(() => ({ dispatchSidebar }), [])
   );
-
-  useEffect(() => {
-    if (
-      authorizationState &&
-      authorizationState.status === AuthorizationStatus.Authorized
-    ) {
-      const fetchWells = async () => {
-        const fetchedWells = await WellService.getWells();
-        setWells(fetchedWells);
-      };
-      fetchWells();
-    }
-  }, [authorizationState]);
 
   return (
     <Fragment>

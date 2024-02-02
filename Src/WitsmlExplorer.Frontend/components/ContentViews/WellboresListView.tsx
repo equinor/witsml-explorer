@@ -9,6 +9,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useGetWells } from "../../hooks/query/useGetWells";
 import Wellbore, { calculateWellNodeId } from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, {
@@ -26,7 +27,9 @@ export interface WellboreRow extends ContentTableRow, Wellbore {}
 
 export default function WellboresListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { wells, selectedWell } = navigationState;
+  const { selectedWell } = navigationState;
+  const { authorizationState } = useAuthorizationState();
+  const { wells } = useGetWells(authorizationState?.server);
   const [selectedWellFiltered] = useWellFilter(
     React.useMemo(() => (selectedWell ? [selectedWell] : []), [selectedWell]),
     React.useMemo(() => ({ filterWellbores: true }), [])
@@ -36,7 +39,6 @@ export default function WellboresListView() {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const navigate = useNavigate();
-  const { authorizationState } = useAuthorizationState();
   const { serverUrl, wellUid } = useParams();
   const { dispatchSidebar } = useSidebar();
 

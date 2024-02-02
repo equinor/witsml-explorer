@@ -7,6 +7,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useGetWells } from "../../hooks/query/useGetWells";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import {
   calculateWellNodeId,
@@ -28,12 +29,13 @@ interface ObjectTypeRow extends ContentTableRow {
 
 export default function WellboreObjectTypesListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { wells, selectedWell, selectedWellbore } = navigationState;
+  const { selectedWell, selectedWellbore } = navigationState;
   const { selectedFilter } = useContext(FilterContext);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { serverUrl, wellUid, wellboreUid } = useParams();
   const { dispatchSidebar } = useSidebar();
+  const { wells } = useGetWells(authorizationState?.server);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }

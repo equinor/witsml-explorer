@@ -1,4 +1,5 @@
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -55,6 +56,7 @@ const Panel = (props: PanelProps) => {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
+  const queryClient = useQueryClient();
 
   const selectedItemsText = checkableRows
     ? `Selected: ${numberOfCheckedItems}/${numberOfItems}`
@@ -113,18 +115,7 @@ const Panel = (props: PanelProps) => {
   };
 
   const refreshWells = async () => {
-    abortRefreshControllerRef.current = new AbortController();
-    const wells = await WellService.getWells(
-      abortRefreshControllerRef.current.signal
-    );
-    dispatchNavigation({
-      type: ModificationType.UpdateWells,
-      payload: { wells }
-    });
-    dispatchNavigation({
-      type: NavigationType.SelectServer,
-      payload: { server: selectedServer }
-    });
+    queryClient.invalidateQueries({ queryKey: ["wells"] });
   };
 
   const refreshWell = async () => {

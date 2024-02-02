@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import {
   FilterContext,
   filterTypeToProperty,
@@ -12,6 +13,7 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetWells } from "../../hooks/query/useGetWells";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -37,10 +39,9 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
 }
 
 export const ObjectSearchListView = (): React.ReactElement => {
-  const {
-    navigationState: { wells },
-    dispatchNavigation
-  } = useContext(NavigationContext);
+  const { dispatchNavigation } = useContext(NavigationContext);
+  const { authorizationState } = useAuthorizationState();
+  const { wells } = useGetWells(authorizationState?.server);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedFilter } = useContext(FilterContext);
   const [rows, setRows] = useState<ObjectSearchRow[]>([]);
