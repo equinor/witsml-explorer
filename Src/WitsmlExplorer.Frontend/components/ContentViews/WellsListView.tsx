@@ -3,10 +3,10 @@ import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useWellFilter } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useServers } from "../../contexts/serversContext";
+import { useGetWells } from "../../hooks/query/useGetWells";
 import Well from "../../models/well";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellContextMenu, {
@@ -24,8 +24,8 @@ import {
 export interface WellRow extends ContentTableRow, Well {}
 
 export default function WellsListView() {
-  const { navigationState } = useContext(NavigationContext);
-  const { wells } = navigationState;
+  const { authorizationState } = useAuthorizationState();
+  const { wells } = useGetWells(authorizationState?.server);
   const { servers } = useServers();
   const {
     dispatchOperation,
@@ -33,7 +33,6 @@ export default function WellsListView() {
   } = useContext(OperationContext);
   const filteredWells = useWellFilter(wells);
   const navigate = useNavigate();
-  const { authorizationState } = useAuthorizationState();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },

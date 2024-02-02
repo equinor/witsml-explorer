@@ -1,4 +1,6 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
@@ -11,8 +13,17 @@ import ServerManager from "../components/ContentViews/ServerManager";
 import WellboreObjectTypesListView from "../components/ContentViews/WellboreObjectTypesListView";
 import WellboresListView from "../components/ContentViews/WellboresListView";
 import WellsListView from "../components/ContentViews/WellsListView";
+import { wellsLoader } from "../hooks/query/useGetWells";
 import AuthRoute from "./AuthRoute";
 import Root from "./Root";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND
+    }
+  }
+});
 
 const router = createBrowserRouter([
   {
@@ -26,6 +37,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "wells",
+            loader: wellsLoader(queryClient),
             element: <WellsListView />
           },
           {
@@ -75,5 +87,9 @@ const router = createBrowserRouter([
 ]);
 
 export default function Router() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }

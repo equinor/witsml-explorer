@@ -5,6 +5,7 @@ import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
+import { useGetWells } from "../../hooks/query/useGetWells";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import ObjectService from "../../services/objectService";
@@ -23,11 +24,12 @@ interface ObjectTypeRow extends ContentTableRow {
 
 export default function WellboreObjectTypesListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { wells, selectedWell, selectedWellbore } = navigationState;
+  const { selectedWell, selectedWellbore } = navigationState;
   const { selectedFilter } = useContext(FilterContext);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { serverUrl, wellUid, wellboreUid } = useParams();
+  const { wells } = useGetWells(authorizationState?.server);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }

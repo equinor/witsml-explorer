@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext, useEffect } from "react";
 import { RemoveWellboreAction } from "../contexts/modificationActions";
 import ModificationType from "../contexts/modificationType";
@@ -13,7 +14,6 @@ import NotificationService, {
   RefreshAction
 } from "../services/notificationService";
 import ObjectService from "../services/objectService";
-import WellService from "../services/wellService";
 import WellboreService from "../services/wellboreService";
 
 const RefreshHandler = (): React.ReactElement => {
@@ -21,6 +21,7 @@ const RefreshHandler = (): React.ReactElement => {
     dispatchNavigation,
     navigationState: { wells, selectedServer }
   } = useContext(NavigationContext);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const unsubscribe =
@@ -110,20 +111,10 @@ const RefreshHandler = (): React.ReactElement => {
       });
     } else if (
       modificationType === ModificationType.AddWell ||
-      modificationType === ModificationType.UpdateWell
+      modificationType === ModificationType.UpdateWell ||
+      modificationType === ModificationType.BatchUpdateWell
     ) {
-      const well = await WellService.getWell(refreshAction.wellUid);
-      if (well) {
-        dispatchNavigation({ type: modificationType, payload: { well } });
-      }
-    } else if (modificationType === ModificationType.BatchUpdateWell) {
-      const wells = await WellService.getWells();
-      if (wells) {
-        dispatchNavigation({
-          type: ModificationType.UpdateWells,
-          payload: { wells }
-        });
-      }
+      queryClient.invalidateQueries({ queryKey: ["wells"] });
     }
   }
 

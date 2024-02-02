@@ -1,9 +1,11 @@
 import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import styled from "styled-components";
+import { useAuthorizationState } from "../contexts/authorizationStateContext";
 import NavigationContext from "../contexts/navigationContext";
 import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
+import { AuthorizationStatus } from "../services/authorizationService";
 import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 
@@ -14,8 +16,8 @@ export interface ServerManagerButtonProps {
 const ServerManagerButton = (
   props: ServerManagerButtonProps
 ): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, wells } = navigationState;
+  const { dispatchNavigation } = useContext(NavigationContext);
+  const { authorizationState } = useAuthorizationState();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -27,7 +29,8 @@ const ServerManagerButton = (
     });
   };
 
-  const connected = selectedServer && wells.length;
+  const connected =
+    authorizationState?.status === AuthorizationStatus.Authorized;
   return (
     <StyledButton
       colors={colors}

@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
 import ModificationType from "../../contexts/modificationType";
@@ -56,9 +57,10 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
   const {
     dispatchNavigation,
-    navigationState: { expandedTreeNodes, selectedServer, selectedWell }
+    navigationState: { expandedTreeNodes, selectedWell }
   } = useContext(NavigationContext);
   const openInQueryView = useOpenInQueryView();
+  const queryClient = useQueryClient();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -105,15 +107,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const updatedWells = await WellService.getWells();
-    dispatchNavigation({
-      type: ModificationType.UpdateWells,
-      payload: { wells: updatedWells }
-    });
-    dispatchNavigation({
-      type: NavigationType.SelectServer,
-      payload: { server: selectedServer }
-    });
+    queryClient.invalidateQueries({ queryKey: ["wells"] });
   };
 
   const onClickNewWellbore = () => {

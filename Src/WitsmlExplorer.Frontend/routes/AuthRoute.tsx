@@ -18,6 +18,7 @@ import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import { useServers } from "../contexts/serversContext";
+import { useGetWells } from "../hooks/query/useGetWells";
 import { ObjectType } from "../models/objectType";
 import { Server } from "../models/server";
 import { msalEnabled } from "../msal/MsalAuthProvider";
@@ -27,7 +28,6 @@ import AuthorizationService, {
 import CapService from "../services/capService";
 import NotificationService from "../services/notificationService";
 import ServerService from "../services/serverService";
-import WellService from "../services/wellService";
 import {
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
   getLocalStorageItem
@@ -35,13 +35,14 @@ import {
 
 export default function AuthRoute() {
   const { dispatchNavigation, navigationState } = useContext(NavigationContext);
-  const { servers, wells, selectedServer } = navigationState;
+  const { servers, selectedServer } = navigationState;
+  const { authorizationState, setAuthorizationState } = useAuthorizationState();
+  const { wells } = useGetWells(authorizationState?.server);
   const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const { updateSelectedFilter } = useContext(FilterContext);
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   const { serverUrl } = useParams();
   const { dispatchOperation } = useContext(OperationContext);
-  const { authorizationState, setAuthorizationState } = useAuthorizationState();
   const { setServers } = useServers();
 
   useEffect(() => {
@@ -160,15 +161,8 @@ export default function AuthRoute() {
         return;
       }
       try {
-        const [wells, supportedObjects] = await Promise.all([
-          WellService.getWells(),
-          CapService.getCapObjects()
-        ]);
+        const supportedObjects = await CapService.getCapObjects();
         updateVisibleObjects(supportedObjects);
-        dispatchNavigation({
-          type: ModificationType.UpdateWells,
-          payload: { wells: wells }
-        });
       } catch (error) {
         NotificationService.Instance.alertDispatcher.dispatch({
           serverUrl: new URL(selectedServer.url),
