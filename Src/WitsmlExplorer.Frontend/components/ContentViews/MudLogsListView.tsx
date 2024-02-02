@@ -4,7 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
@@ -49,7 +49,7 @@ export default function MudLogsListView() {
     ObjectType.MudLog
   ) as MudLog[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.MudLog);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onSelect = (mudLogRow: MudLogRow) => {
     navigate(

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import { ObjectType } from "../../models/objectType";
 import Rig from "../../models/rig";
@@ -33,7 +33,7 @@ export default function RigsListView() {
 
   const rigs = useGetObjects(wellUid, wellboreUid, ObjectType.Rig) as Rig[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Rig);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Rig);
 
   const getTableData = () => {
     return rigs.map((rig) => {

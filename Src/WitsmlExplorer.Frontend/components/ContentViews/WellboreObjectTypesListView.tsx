@@ -5,14 +5,9 @@ import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
-import { useSidebar } from "../../contexts/sidebarContext";
-import { SidebarActionType } from "../../contexts/sidebarReducer";
 import { useGetWells } from "../../hooks/query/useGetWells";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
-import {
-  calculateWellNodeId,
-  calculateWellboreNodeId
-} from "../../models/wellbore";
 import ObjectService from "../../services/objectService";
 import {
   ContentTable,
@@ -34,24 +29,13 @@ export default function WellboreObjectTypesListView() {
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { serverUrl, wellUid, wellboreUid } = useParams();
-  const { dispatchSidebar } = useSidebar();
   const { wells } = useGetWells(authorizationState?.server);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
   ];
 
-  useEffect(() => {
-    dispatchSidebar({
-      type: SidebarActionType.ExpandTreeNodes,
-      payload: {
-        nodeIds: [
-          calculateWellNodeId(wellUid),
-          calculateWellboreNodeId({ wellUid: wellUid, uid: wellboreUid })
-        ]
-      }
-    });
-  }, [wellUid]);
+  useExpandSidebarNodes(wellUid, wellboreUid);
 
   useEffect(() => {
     if (wells.length > 0) {

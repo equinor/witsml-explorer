@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import BhaRun from "../../models/bhaRun";
 import { ObjectType } from "../../models/objectType";
@@ -37,7 +37,7 @@ export default function BhaRunsListView() {
     ObjectType.BhaRun
   ) as BhaRun[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.BhaRun);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.BhaRun);
 
   const getTableData = () => {
     return bhaRuns.map((bhaRun) => {

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import FormationMarker from "../../models/formationMarker";
 import { measureToString } from "../../models/measure";
@@ -39,7 +39,7 @@ export default function FormationMarkersListView() {
     ObjectType.FormationMarker
   ) as FormationMarker[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.FormationMarker);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FormationMarker);
 
   const structToString = (struct: StratigraphicStruct) => {
     if (struct == null) {

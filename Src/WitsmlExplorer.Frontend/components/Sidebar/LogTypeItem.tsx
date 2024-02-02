@@ -13,7 +13,8 @@ import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeId,
   calculateLogTypeTimeId,
-  calculateObjectGroupId
+  calculateObjectGroupId,
+  calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "../../models/wellbore";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -81,7 +82,20 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
   const timeLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_DATE_TIME);
 
   const isSelected = (log: LogObject) => {
-    return log.uid === objectUid;
+    return (
+      calculateWellboreObjectNodeId(
+        { wellUid: log.wellUid, uid: log.wellboreUid },
+        log.indexType,
+        log.uid
+      ) ===
+      calculateWellboreObjectNodeId(
+        { wellUid, uid: wellboreUid },
+        logType === "depth"
+          ? WITSML_INDEX_TYPE_MD
+          : WITSML_INDEX_TYPE_DATE_TIME,
+        objectUid
+      )
+    );
   };
 
   return (
@@ -117,7 +131,10 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
           onContextMenu(event, wellbore, IndexCurve.Time)
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
-        selected={logType === "time"}
+        selected={
+          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
+          calculateLogTypeId(wellbore, "time")
+        }
       >
         {listLogItemsByType(
           timeLogs,

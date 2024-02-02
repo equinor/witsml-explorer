@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useExpandObjectsGroupNodes } from "../../hooks/useExpandObjectGroupNodes";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { useGetObjects } from "../../hooks/useGetObjects";
 import MessageObject from "../../models/messageObject";
 import { ObjectType } from "../../models/objectType";
@@ -37,7 +37,7 @@ export default function MessagesListView() {
     ObjectType.Message
   ) as MessageObject[];
 
-  useExpandObjectsGroupNodes(wellUid, wellboreUid, ObjectType.Message);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Message);
 
   const getTableData = () => {
     return messages.map((msg, index) => {
