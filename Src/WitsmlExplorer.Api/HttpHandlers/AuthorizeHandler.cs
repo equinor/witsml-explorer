@@ -59,7 +59,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        
+
         public static IResult VerifyUserIsLoggedIn(string serverUrl, string userName, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(httpContext?.Request);
