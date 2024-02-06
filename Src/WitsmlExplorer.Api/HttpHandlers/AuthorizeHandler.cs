@@ -12,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Middleware;
 
 namespace WitsmlExplorer.Api.HttpHandlers
 {
@@ -64,7 +63,6 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static IResult VerifyUserIsLoggedIn(string serverUrl, string userName, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(httpContext?.Request);
-            
             var creds = credentialsService.GetCredentials(eh, WebUtility.UrlDecode(serverUrl), userName);
             if (creds == null)
             {

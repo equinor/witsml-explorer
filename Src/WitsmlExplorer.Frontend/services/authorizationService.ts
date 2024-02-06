@@ -156,9 +156,15 @@ class AuthorizationService {
     }
   }
 
-  public async verifyuserisloggedin(serverUrl: string, userName: string, abortSignal?: AbortSignal): Promise<any> {
+  public async verifyuserisloggedin(
+    serverUrl: string,
+    userName: string,
+    abortSignal?: AbortSignal
+  ): Promise<any> {
     const response = await ApiClient.get(
-      `/api/credentials/verifyuserisloggedin/${encodeURIComponent(serverUrl)}/${userName}`,
+      `/api/credentials/verifyuserisloggedin/${encodeURIComponent(
+        serverUrl
+      )}/${userName}`,
       abortSignal
     );
     if (!response.ok) {
