@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 
 using Serilog;
 
+using Witsml;
+
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.HttpHandlers;
@@ -48,6 +50,16 @@ namespace WitsmlExplorer.Api.Middleware
                 {
                     StatusCode = (int)HttpStatusCode.BadGateway,
                     Message = "Remote endpoint sent not WITSML server response"
+                };
+                await HandleExceptionAsync(httpContext, errorDetails);
+            }
+            catch (WitsmlRemoteServerRequestCrashedException ex)
+            {
+                Log.Error($"Invalid response from server: {ex}");
+                ErrorDetails errorDetails = new()
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "WITSML remote request failed on the server."
                 };
                 await HandleExceptionAsync(httpContext, errorDetails);
             }
