@@ -1,23 +1,22 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
-import ModificationType from "../../contexts/modificationType";
 import NavigationContext from "../../contexts/navigationContext";
-import { treeNodeIsExpanded } from "../../contexts/navigationStateReducer";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { refreshWellboreQuery } from "../../hooks/query/queryRefreshHelpers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Well from "../../models/well";
-import Wellbore, { calculateWellboreNodeId } from "../../models/wellbore";
+import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
-import ObjectService from "../../services/objectService";
 import WellboreService from "../../services/wellboreService";
 import { colors } from "../../styles/Colors";
 import {
@@ -58,17 +57,13 @@ const WellboreContextMenu = (
 ): React.ReactElement => {
   const { wellbore, well, checkedWellboreRows } = props;
   const {
-    dispatchNavigation,
-    navigationState: {
-      servers,
-      expandedTreeNodes,
-      selectedWell,
-      selectedWellbore
-    }
+    navigationState: { servers }
   } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
+  const { serverUrl } = useParams();
+  const queryClient = useQueryClient();
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -167,34 +162,7 @@ const WellboreContextMenu = (
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    // toggle the wellbore node and navigate to parent wellbore to reset the sidebar and content view
-    //   because we do not load in objects that have been loaded in before the refresh
-    const nodeId = calculateWellboreNodeId(wellbore);
-    if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
-      dispatchNavigation({
-        type: NavigationType.CollapseTreeNodeChildren,
-        payload: { nodeId }
-      });
-    }
-    if (
-      selectedWell?.uid == well.uid &&
-      selectedWellbore?.uid == wellbore.uid
-    ) {
-      dispatchNavigation({
-        type: NavigationType.SelectWellbore,
-        payload: { well, wellbore }
-      });
-    }
-
-    const refreshedWellbore = await WellboreService.getWellbore(
-      wellbore.wellUid,
-      wellbore.uid
-    );
-    const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
-    dispatchNavigation({
-      type: ModificationType.UpdateWellbore,
-      payload: { wellbore: { ...refreshedWellbore, objectCount } }
-    });
+    refreshWellboreQuery(queryClient, serverUrl, well.uid, wellbore.uid);
   };
 
   const onClickMissingDataAgent = () => {

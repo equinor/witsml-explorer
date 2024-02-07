@@ -12,8 +12,9 @@ import { useServers } from "../../contexts/serversContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
 import { WellboreItemProvider } from "../../contexts/wellboreItemContext";
+import { useGetWell } from "../../hooks/query/useGetWell";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import {
   getContextMenuPosition,
@@ -46,15 +47,15 @@ import { WellIndicator } from "./Sidebar";
 import TreeItem from "./TreeItem";
 
 interface WellboreItemProps {
-  well: Well;
-  wellbore: Wellbore;
+  wellUid: string;
+  wellboreUid: string;
   selected: boolean;
   nodeId: string;
 }
 
 export default function WellboreItem({
-  well,
-  wellbore,
+  wellUid,
+  wellboreUid,
   selected,
   nodeId
 }: WellboreItemProps) {
@@ -69,6 +70,16 @@ export default function WellboreItem({
   const { authorizationState } = useAuthorizationState();
   const navigate = useNavigate();
   const { dispatchSidebar } = useSidebar();
+  const { well, isFetching: isFetchingWell } = useGetWell(
+    authorizationState?.server,
+    wellUid
+  );
+  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
+  const isFetching = isFetchingCount || isFetchingWell || isFetchingWellbore;
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,
@@ -184,9 +195,9 @@ export default function WellboreItem({
     };
     dispatchNavigation(selectWellbore);
     navigate(
-      `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        well.uid
-      }/wellbores/${wellbore.uid}/objectgroups`
+      `servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups`
     );
   };
 
@@ -197,6 +208,8 @@ export default function WellboreItem({
     });
   };
 
+  // TODO: Continue passing down only the uids (remove the provider?) to make the components more independent, and so they can calculate their own loading states.
+
   return (
     <WellboreLayout>
       <TreeItem
@@ -204,10 +217,10 @@ export default function WellboreItem({
         key={nodeId}
         nodeId={nodeId}
         selected={selected}
-        labelText={wellbore.name}
+        labelText={wellbore?.name}
         onLabelClick={onLabelClick}
         onIconClick={onIconClick}
-        isLoading={isFetchingCount}
+        isLoading={isFetching}
       >
         <WellboreItemProvider
           well={well}
@@ -218,7 +231,7 @@ export default function WellboreItem({
             objectType={ObjectType.BhaRun}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.BhaRun
             }/objects`}
           />
@@ -227,7 +240,7 @@ export default function WellboreItem({
             onGroupContextMenu={preventContextMenuPropagation}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.ChangeLog
             }/objects`}
           />
@@ -236,7 +249,7 @@ export default function WellboreItem({
             ObjectContextMenu={FluidsReportContextMenu}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.FluidsReport
             }/objects`}
           />
@@ -244,7 +257,7 @@ export default function WellboreItem({
             objectType={ObjectType.FormationMarker}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.FormationMarker
             }/objects`}
           />
@@ -255,7 +268,7 @@ export default function WellboreItem({
             }
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.Log
             }/logtypes`}
           />
@@ -263,7 +276,7 @@ export default function WellboreItem({
             objectType={ObjectType.Message}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.Message
             }/objects`}
           />
@@ -272,7 +285,7 @@ export default function WellboreItem({
             ObjectContextMenu={MudLogContextMenu}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.MudLog
             }/objects`}
           />
@@ -284,7 +297,7 @@ export default function WellboreItem({
             }
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.Rig
             }/objects`}
           />
@@ -292,7 +305,7 @@ export default function WellboreItem({
             objectType={ObjectType.Risk}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.Risk
             }/objects`}
           />
@@ -304,7 +317,7 @@ export default function WellboreItem({
             }
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.Trajectory
             }/objects`}
           />
@@ -316,7 +329,7 @@ export default function WellboreItem({
             }
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.Tubular
             }/objects`}
           />
@@ -325,7 +338,7 @@ export default function WellboreItem({
             ObjectContextMenu={WbGeometryObjectContextMenu}
             to={`servers/${encodeURIComponent(
               authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups/${
+            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
               ObjectType.WbGeometry
             }/objects`}
           />
@@ -333,7 +346,7 @@ export default function WellboreItem({
       </TreeItem>
       <WellIndicator
         compactMode={isCompactMode}
-        active={wellbore.isActive}
+        active={wellbore?.isActive}
         colors={colors}
       />
     </WellboreLayout>

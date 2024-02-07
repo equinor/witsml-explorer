@@ -1,11 +1,10 @@
-import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetWell } from "../../hooks/query/useGetWell";
+import { useGetWellbores } from "../../hooks/query/useGetWellbores";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import Wellbore from "../../models/wellbore";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -13,7 +12,7 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "../ContextMenus/WellboreContextMenu";
 import formatDateString from "../DateFormatter";
-import WellProgress from "../WellProgress";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -26,11 +25,15 @@ export interface WellboreRow extends ContentTableRow, Wellbore {}
 export default function WellboresListView() {
   const { authorizationState } = useAuthorizationState();
   const { wellUid } = useParams();
-  const { well } = useGetWell(authorizationState?.server, wellUid);
-  const [selectedWellFiltered] = useWellFilter(
-    React.useMemo(() => (well ? [well] : []), [well]),
-    React.useMemo(() => ({ filterWellbores: true }), [])
+  const { well, isFetching: isFetchingWell } = useGetWell(
+    authorizationState?.server,
+    wellUid
   );
+  const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
+    authorizationState?.server,
+    wellUid
+  );
+  const isFetching = isFetchingWell || isFetchingWellbores;
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
@@ -82,7 +85,7 @@ export default function WellboresListView() {
 
   const getTableData = () => {
     return (
-      selectedWellFiltered?.wellbores?.map((wellbore) => {
+      wellbores?.map((wellbore) => {
         return {
           ...wellbore,
           id: wellbore.uid,
@@ -110,24 +113,20 @@ export default function WellboresListView() {
     );
   };
 
+  if (isFetching) {
+    return <ProgressSpinner message="Fetching wellbores." />;
+  }
+
   return (
-    <WellProgress>
-      {well && well.wellbores.length > 0 && !selectedWellFiltered?.wellbores ? (
-        <Typography style={{ padding: "1rem" }}>
-          No wellbores match the current filter
-        </Typography>
-      ) : (
-        <ContentTable
-          viewId="wellboresListView"
-          columns={columns}
-          data={getTableData()}
-          onSelect={onSelect}
-          onContextMenu={onContextMenu}
-          downloadToCsvFileName="Wellbores"
-          checkableRows
-          showRefresh
-        />
-      )}
-    </WellProgress>
+    <ContentTable
+      viewId="wellboresListView"
+      columns={columns}
+      data={getTableData()}
+      onSelect={onSelect}
+      onContextMenu={onContextMenu}
+      downloadToCsvFileName="Wellbores"
+      checkableRows
+      showRefresh
+    />
   );
 }

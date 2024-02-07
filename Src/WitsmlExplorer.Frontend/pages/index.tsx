@@ -7,3 +7,5 @@ const Router = dynamic(() => import("../routes/Router"), {
 export default function Index() {
   return <Router />;
 }
+
+// TODO: Rework filtering both in the listViews and the sidebar.

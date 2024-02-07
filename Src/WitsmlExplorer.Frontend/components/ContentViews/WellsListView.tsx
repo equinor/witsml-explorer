@@ -13,7 +13,7 @@ import WellContextMenu, {
   WellContextMenuProps
 } from "../ContextMenus/WellContextMenu";
 import formatDateString from "../DateFormatter";
-import WellProgress from "../WellProgress";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -25,7 +25,9 @@ export interface WellRow extends ContentTableRow, Well {}
 
 export default function WellsListView() {
   const { authorizationState } = useAuthorizationState();
-  const { wells } = useGetWells(authorizationState?.server);
+  const { wells, isFetching } = useGetWells(authorizationState?.server, {
+    placeholderData: []
+  });
   const { servers } = useServers();
   const {
     dispatchOperation,
@@ -97,24 +99,26 @@ export default function WellsListView() {
     });
   };
 
-  return (
-    <WellProgress>
-      {wells.length > 0 && filteredWells.length == 0 ? (
-        <Typography style={{ padding: "1rem" }}>
-          No wells match the current filter
-        </Typography>
-      ) : (
-        <ContentTable
-          viewId="wellsListView"
-          columns={columns}
-          data={getTableData()}
-          onSelect={onSelect}
-          onContextMenu={onContextMenu}
-          checkableRows
-          downloadToCsvFileName="Wells"
-          showRefresh
-        />
-      )}
-    </WellProgress>
+  if (isFetching) {
+    return (
+      <ProgressSpinner message="Fetching wells. This may take some time." />
+    );
+  }
+
+  return wells.length > 0 && filteredWells.length == 0 ? (
+    <Typography style={{ padding: "1rem" }}>
+      No wells match the current filter
+    </Typography>
+  ) : (
+    <ContentTable
+      viewId="wellsListView"
+      columns={columns}
+      data={getTableData()}
+      onSelect={onSelect}
+      onContextMenu={onContextMenu}
+      checkableRows
+      downloadToCsvFileName="Wells"
+      showRefresh
+    />
   );
 }

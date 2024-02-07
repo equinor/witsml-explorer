@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
@@ -20,7 +19,7 @@ import Root from "./Root";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND
+      staleTime: Infinity
     }
   }
 });
