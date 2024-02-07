@@ -154,7 +154,7 @@ export default function AuthRoute() {
     const onCurrentLoginStateChange = async () => {
       if (
         selectedServer == null ||
-        wells.length !== 0 ||
+        (!!wells && wells.length !== 0) ||
         (authorizationState &&
           authorizationState.status != AuthorizationStatus.Authorized)
       ) {

@@ -1,23 +1,52 @@
 import {
   QueryClient,
   QueryObserverResult,
-  useQuery
+  useQuery,
+  useQueryClient
 } from "@tanstack/react-query";
 import { LoaderFunctionArgs } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { Server, emptyServer } from "../../models/server";
 import Well from "../../models/well";
-import { AuthorizationStatus } from "../../services/authorizationService";
 import WellService from "../../services/wellService";
+import { QUERY_KEY_WELLS } from "./queryKeys";
+import { QueryOptions } from "./queryOptions";
+import { getWellQueryKey } from "./useGetWell";
+
+export const getWellsQueryKey = (serverUrl: string) => {
+  return [QUERY_KEY_WELLS, serverUrl?.toLowerCase()];
+};
+
+export const invalidateWellsQuery = (
+  queryClient: QueryClient,
+  serverUrl: string
+) => {
+  queryClient.invalidateQueries({ queryKey: getWellsQueryKey(serverUrl) });
+};
+
+// TODO: Investigate if this can cause any race conditions.
+const updateIndividualWells = (
+  queryClient: QueryClient,
+  server: Server,
+  wells: Well[]
+) => {
+  wells.forEach((well) =>
+    queryClient.setQueryData<Well>(getWellQueryKey(server?.url, well.uid), well)
+  );
+};
 
 export const wellsQuery = (
+  queryClient: QueryClient,
   server: Server,
-  abortSignal: AbortSignal = null
+  options?: QueryOptions
 ) => ({
-  queryKey: ["wells", server?.url],
+  queryKey: getWellsQueryKey(server?.url),
   queryFn: async () => {
-    return await WellService.getWells(abortSignal);
-  }
+    const wells = await WellService.getWells(null, server);
+    updateIndividualWells(queryClient, server, wells);
+    return wells;
+  },
+  ...options,
+  enabled: !!server && !(options?.enabled === false)
 });
 
 export interface WellsLoaderParams {
@@ -30,12 +59,10 @@ export const wellsLoader =
     const { serverUrl } = params;
     // Not sure if creating a new server object will have any side-effects, or if it's just the url that's used anyway.
     const server: Server = { ...emptyServer(), url: serverUrl };
-    const query = wellsQuery(server);
+    const query = wellsQuery(queryClient, server);
     queryClient.prefetchQuery(query);
     return null;
   };
-
-const emptyList: Well[] = [];
 
 type WellsQueryResult = Omit<QueryObserverResult<Well[], unknown>, "data"> & {
   wells: Well[];
@@ -43,13 +70,11 @@ type WellsQueryResult = Omit<QueryObserverResult<Well[], unknown>, "data"> & {
 
 export const useGetWells = (
   server: Server,
-  abortSignal: AbortSignal = null
+  options?: QueryOptions
 ): WellsQueryResult => {
-  const { authorizationState } = useAuthorizationState();
-  const { data, ...state } = useQuery<Well[]>({
-    ...wellsQuery(server, abortSignal),
-    enabled:
-      !!server && authorizationState?.status === AuthorizationStatus.Authorized
-  });
-  return { wells: data ?? emptyList, ...state };
+  const queryClient = useQueryClient();
+  const { data, ...state } = useQuery<Well[]>(
+    wellsQuery(queryClient, server, options)
+  );
+  return { wells: data, ...state };
 };

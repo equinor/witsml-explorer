@@ -331,7 +331,7 @@ export const filterWells = (
 ): Well[] => {
   let filteredWells: Well[] = wells;
 
-  if (filter) {
+  if (filter && wells?.length > 0) {
     filteredWells = filterOnName(filteredWells, filter, filterOptions);
     filteredWells = filterOnIsActive(filteredWells, filter.isActive);
     filteredWells = filterOnObjectGrowing(filteredWells, filter.objectGrowing);

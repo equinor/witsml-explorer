@@ -1,10 +1,13 @@
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useServers } from "../../contexts/serversContext";
+import { useSidebar } from "../../contexts/sidebarContext";
+import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useGetWell } from "../../hooks/query/useGetWell";
+import { useGetWellbores } from "../../hooks/query/useGetWellbores";
 import Well from "../../models/well";
 import Wellbore, {
   calculateWellNodeId,
@@ -21,19 +24,27 @@ import TreeItem from "./TreeItem";
 import WellboreItem from "./WellboreItem";
 
 interface WellItemProps {
-  well: Well;
+  wellUid: string;
 }
 
-export default function WellItem({ well }: WellItemProps) {
+export default function WellItem({ wellUid }: WellItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const { servers } = useServers();
-  const { wellUid, wellboreUid } = useParams();
-  const [wellWithFilteredWellbores] = useWellFilter(
-    React.useMemo(() => [well], [well]),
-    React.useMemo(() => ({ filterWellbores: true }), [])
-  );
-  const navigate = useNavigate();
+  const { wellUid: urlWellUid, wellboreUid: urlWellboreUid } = useParams();
   const { authorizationState } = useAuthorizationState();
+  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
+  const { well, isFetching: isFetchingWell } = useGetWell(
+    authorizationState?.server,
+    wellUid
+  ); // TODO: Note: This only works because each WellItem is not rendered while useGetWells is fetching. Otherwise, we would request all wells individually in parallel.
+  const isExpanded = expandedTreeNodes.includes(calculateWellNodeId(wellUid));
+  const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
+    authorizationState?.server,
+    wellUid,
+    { enabled: isExpanded }
+  );
+  const isFetching = isFetchingWell || isFetchingWellbores;
+  const navigate = useNavigate();
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -55,37 +66,52 @@ export default function WellItem({ well }: WellItemProps) {
     });
   };
 
-  const onSelectWell = (well: Well) => {
+  const onIconClick = () => {
+    dispatchSidebar({
+      type: SidebarActionType.ToggleTreeNode,
+      payload: { nodeId: calculateWellNodeId(wellUid) }
+    });
+  };
+
+  const onSelectWell = () => {
     navigate(
-      `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        well.uid
-      }/wellbores`
+      `servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores`
     );
   };
 
   return (
     <TreeItem
       onContextMenu={(event) => onContextMenu(event, well)}
-      selected={calculateWellNodeId(well.uid) === calculateWellNodeId(wellUid)}
-      key={well.uid}
-      labelText={well.name}
-      nodeId={calculateWellNodeId(well.uid)}
-      onLabelClick={() => onSelectWell(well)}
+      selected={
+        calculateWellNodeId(wellUid) === calculateWellNodeId(urlWellUid)
+      }
+      key={wellUid}
+      labelText={well?.name}
+      nodeId={calculateWellNodeId(wellUid)}
+      onLabelClick={onSelectWell}
+      onIconClick={onIconClick}
+      isLoading={isFetching}
     >
-      {wellWithFilteredWellbores?.wellbores?.map((wellbore: Wellbore) => (
+      {wellbores?.map((wellbore: Wellbore) => (
         <WellboreItem
-          well={well}
-          wellbore={wellbore}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           selected={
             calculateWellboreNodeId({
-              wellUid: well.uid,
+              wellUid: wellUid,
               uid: wellbore.uid
-            }) === calculateWellboreNodeId({ wellUid, uid: wellboreUid })
+            }) ===
+            calculateWellboreNodeId({
+              wellUid: urlWellUid,
+              uid: urlWellboreUid
+            })
           }
           key={calculateWellboreNodeId(wellbore)}
           nodeId={calculateWellboreNodeId(wellbore)}
         />
-      ))}
+      )) || ["", ""]}
     </TreeItem>
   );
 }

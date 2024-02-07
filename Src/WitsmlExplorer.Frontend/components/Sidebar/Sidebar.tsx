@@ -9,16 +9,15 @@ import OperationContext from "../../contexts/operationContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { useGetWells } from "../../hooks/query/useGetWells";
 import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import WellProgress from "../WellProgress";
+import ProgressSpinner from "../ProgressSpinner";
 import SearchFilter from "./SearchFilter";
 import WellItem from "./WellItem";
 
 export default function Sidebar() {
   const { authorizationState } = useAuthorizationState();
-  const { wells } = useGetWells(authorizationState?.server);
+  const { wells, isFetching } = useGetWells(authorizationState?.server);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const {
@@ -33,52 +32,52 @@ export default function Sidebar() {
     <Fragment>
       <SearchFilter />
       <SidebarTreeView>
-        <WellProgress>
-          {filteredWells &&
-            (filteredWells.length === 0 ? (
-              <Typography style={{ paddingTop: "1rem" }}>
-                No wells match the current filter
-              </Typography>
-            ) : (
-              <TreeView
-                defaultCollapseIcon={
-                  <Icon
-                    name="chevronDown"
-                    color={colors.interactive.primaryResting}
-                  />
-                }
-                defaultExpandIcon={
-                  <Icon
-                    name="chevronRight"
-                    color={colors.interactive.primaryResting}
-                  />
-                }
-                defaultEndIcon={<div style={{ width: 24 }} />}
-                expanded={expandedTreeNodes}
-              >
-                {filteredWells.map((well: Well) => (
-                  <Fragment key={well.uid}>
-                    <WellListing>
-                      <WellItem well={well} />
-                      <WellIndicator
-                        compactMode={isCompactMode}
-                        active={well.wellbores.some(
-                          (wellbore: Wellbore) => wellbore.isActive
-                        )}
-                        colors={colors}
-                      />
-                    </WellListing>
-                    <Divider
-                      style={{
-                        margin: "0px",
-                        backgroundColor: colors.interactive.disabledBorder
-                      }}
+        {isFetching ? (
+          <ProgressSpinner message="Fetching wells. This may take some time." />
+        ) : (
+          filteredWells &&
+          (filteredWells.length === 0 ? (
+            <Typography style={{ paddingTop: "1rem" }}>
+              No wells match the current filter
+            </Typography>
+          ) : (
+            <TreeView
+              defaultCollapseIcon={
+                <Icon
+                  name="chevronDown"
+                  color={colors.interactive.primaryResting}
+                />
+              }
+              defaultExpandIcon={
+                <Icon
+                  name="chevronRight"
+                  color={colors.interactive.primaryResting}
+                />
+              }
+              defaultEndIcon={<div style={{ width: 24 }} />}
+              expanded={expandedTreeNodes}
+            >
+              {filteredWells.map((well: Well) => (
+                <Fragment key={well.uid}>
+                  <WellListing>
+                    <WellItem wellUid={well.uid} />
+                    <WellIndicator
+                      compactMode={isCompactMode}
+                      active={well.isActive}
+                      colors={colors}
                     />
-                  </Fragment>
-                ))}
-              </TreeView>
-            ))}
-        </WellProgress>
+                  </WellListing>
+                  <Divider
+                    style={{
+                      margin: "0px",
+                      backgroundColor: colors.interactive.disabledBorder
+                    }}
+                  />
+                </Fragment>
+              ))}
+            </TreeView>
+          ))
+        )}
       </SidebarTreeView>
     </Fragment>
   );
