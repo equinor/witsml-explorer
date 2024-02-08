@@ -58,6 +58,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             try
             {
+                VerifyNormalSourceMnemonicsDoesNotMatchIndexCurveOnTarget(sourceLog, targetLog, mnemonicsToCopy);
                 VerifyMatchingIndexTypes(sourceLog, targetLog);
                 VerifyValidInterval(sourceLog);
                 VerifyIndexCurveIsIncludedInMnemonics(sourceLog, newMnemonicsInTarget, existingMnemonicsInTarget);
@@ -66,7 +67,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             catch (Exception e)
             {
                 string errorMessage = "Failed to copy log data.";
-                Logger.LogError("{errorMessage} - {Description}", errorMessage, job.Description());
+                Logger.LogError("{errorMessage} - {error} - {Description}", errorMessage, e.Message, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, e.Message), null);
             }
 
@@ -334,6 +335,18 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     }
                 }
             };
+        }
+
+        private static void VerifyNormalSourceMnemonicsDoesNotMatchIndexCurveOnTarget(WitsmlLog sourceLog, WitsmlLog targetLog, IEnumerable<string> mnemonics)
+        {
+            foreach (string mnemonic in mnemonics)
+            {
+                if (!string.Equals(mnemonic, sourceLog.IndexCurve.Value, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(mnemonic, targetLog.IndexCurve.Value, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new Exception($"The source log mnemonic '{mnemonic}' is not the index curve of the source log, but still has the same name as the target log index curve '{targetLog.IndexCurve.Value}'.");
+                }
+            }
         }
 
         private static void VerifyMatchingIndexTypes(WitsmlLog sourceLog, WitsmlLog targetLog)
