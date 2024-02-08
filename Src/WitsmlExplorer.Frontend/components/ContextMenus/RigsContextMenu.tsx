@@ -1,13 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
-import NavigationContext from "../../contexts/navigationContext";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "../../contexts/operationStateReducer";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import OperationContext from "../../contexts/operationContext";
+import { DisplayModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ObjectType } from "../../models/objectType";
@@ -27,19 +25,17 @@ import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface RigsContextMenuProps {
-  dispatchOperation: (
-    action: DisplayModalAction | HideModalAction | HideContextMenuAction
-  ) => void;
   wellbore: Wellbore;
   servers: Server[];
-  setIsLoading?: (arg: boolean) => void;
 }
 
 const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers, setIsLoading } = props;
-  const { dispatchNavigation } = useContext(NavigationContext);
+  const { wellbore, servers } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const rigReferences = useClipboardReferencesOfType(ObjectType.Rig);
   const openInQueryView = useOpenInQueryView();
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   const onClickNewRig = () => {
     const newRig: Rig = {
@@ -82,27 +78,25 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        setIsLoading ? (
-          <MenuItem
-            key={"refresh"}
-            onClick={() =>
-              onClickRefresh(
-                dispatchOperation,
-                dispatchNavigation,
-                wellbore.wellUid,
-                wellbore.uid,
-                ObjectType.Rig,
-                setIsLoading
-              )
-            }
-          >
-            <StyledIcon
-              name="refresh"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`Refresh Rigs`}</Typography>
-          </MenuItem>
-        ) : null,
+        <MenuItem
+          key={"refresh"}
+          onClick={() =>
+            onClickRefresh(
+              dispatchOperation,
+              queryClient,
+              authorizationState?.server?.url,
+              wellbore.wellUid,
+              wellbore.uid,
+              ObjectType.Rig
+            )
+          }
+        >
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>{`Refresh Rigs`}</Typography>
+        </MenuItem>,
         <MenuItem key={"newRig"} onClick={onClickNewRig}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Rig</Typography>

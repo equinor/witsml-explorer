@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjects } from "../../hooks/useGetObjects";
 import { measureToString } from "../../models/measure";
 import MudLog from "../../models/mudLog";
 import { ObjectType } from "../../models/objectType";
@@ -46,11 +46,12 @@ export default function MudLogsListView() {
     wellboreUid
   );
 
-  const mudLogs = useGetObjects(
+  const { objects: mudLogs } = useGetObjects(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     ObjectType.MudLog
-  ) as MudLog[];
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 

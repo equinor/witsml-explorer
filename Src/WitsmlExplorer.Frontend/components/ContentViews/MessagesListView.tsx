@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjects } from "../../hooks/useGetObjects";
 import MessageObject from "../../models/messageObject";
 import { ObjectType } from "../../models/objectType";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -36,11 +36,12 @@ export default function MessagesListView() {
     wellboreUid
   );
 
-  const messages = useGetObjects(
+  const { objects: messages } = useGetObjects(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     ObjectType.Message
-  ) as MessageObject[];
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Message);
 

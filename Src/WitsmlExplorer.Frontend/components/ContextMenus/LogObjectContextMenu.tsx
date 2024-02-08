@@ -1,7 +1,9 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -56,6 +58,8 @@ const LogObjectContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   const onClickProperties = () => {
     const logObject = checkedObjects[0];
@@ -386,7 +390,8 @@ const LogObjectContextMenu = (
           ObjectType.Log,
           navigationState,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
+          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

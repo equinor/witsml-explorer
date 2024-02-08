@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjects } from "../../hooks/useGetObjects";
 import BhaRun from "../../models/bhaRun";
 import { ObjectType } from "../../models/objectType";
 import BhaRunContextMenu from "../ContextMenus/BhaRunContextMenu";
@@ -36,11 +36,12 @@ export default function BhaRunsListView() {
     wellboreUid
   );
 
-  const bhaRuns = useGetObjects(
+  const { objects: bhaRuns } = useGetObjects(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     ObjectType.BhaRun
-  ) as BhaRun[];
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.BhaRun);
 

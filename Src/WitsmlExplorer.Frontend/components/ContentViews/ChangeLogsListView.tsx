@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjects } from "../../hooks/useGetObjects";
-import ChangeLog from "../../models/changeLog";
 import { ObjectType } from "../../models/objectType";
 import formatDateString from "../DateFormatter";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
@@ -13,12 +13,14 @@ export default function ChangeLogsListView() {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { wellUid, wellboreUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
 
-  const changeLogs = useGetObjects(
+  const { objects: changeLogs } = useGetObjects(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     ObjectType.ChangeLog
-  ) as ChangeLog[];
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.ChangeLog);
 

@@ -25,17 +25,6 @@ export const getWellboreQueryKey = (
   ];
 };
 
-export const invalidateWellboreQuery = (
-  queryClient: QueryClient,
-  serverUrl: string,
-  wellUid: string,
-  wellboreUid: string
-) => {
-  queryClient.invalidateQueries({
-    queryKey: getWellboreQueryKey(serverUrl, wellUid, wellboreUid)
-  });
-};
-
 const updatePartialWellbores = (
   queryClient: QueryClient,
   server: Server,
@@ -75,7 +64,8 @@ export const wellboreQuery = (
     return wellbore;
   },
   ...options,
-  enabled: !!server && !!wellUid && !(options?.enabled === false)
+  enabled:
+    !!server && !!wellUid && !!wellboreUid && !(options?.enabled === false)
 });
 
 export interface WellboreLoaderParams {

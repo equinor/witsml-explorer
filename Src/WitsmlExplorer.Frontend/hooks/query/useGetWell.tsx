@@ -16,16 +16,6 @@ export const getWellQueryKey = (serverUrl: string, wellUid: string) => {
   return [QUERY_KEY_WELL, serverUrl?.toLowerCase(), wellUid?.toLowerCase()];
 };
 
-export const invalidateWellQuery = (
-  queryClient: QueryClient,
-  serverUrl: string,
-  wellUid: string
-) => {
-  queryClient.invalidateQueries({
-    queryKey: getWellQueryKey(serverUrl, wellUid)
-  });
-};
-
 const updatePartialWells = (
   queryClient: QueryClient,
   server: Server,

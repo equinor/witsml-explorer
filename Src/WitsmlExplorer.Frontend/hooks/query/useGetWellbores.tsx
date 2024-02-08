@@ -20,16 +20,6 @@ export const getWellboresQueryKey = (serverUrl: string, wellUid: string) => {
   ];
 };
 
-export const invalidateWellboresQuery = (
-  queryClient: QueryClient,
-  serverUrl: string,
-  wellUid: string
-) => {
-  queryClient.invalidateQueries({
-    queryKey: getWellboresQueryKey(serverUrl, wellUid)
-  });
-};
-
 const updateIndividualWellbores = (
   queryClient: QueryClient,
   server: Server,
@@ -51,22 +41,24 @@ export const wellboresQuery = (
 ) => ({
   queryKey: getWellboresQueryKey(server?.url, wellUid),
   queryFn: async () => {
-    const wells = await WellboreService.getWellbores(wellUid, null, server);
-    updateIndividualWellbores(queryClient, server, wells);
-    return wells;
+    const wellbores = await WellboreService.getWellbores(wellUid, null, server);
+    updateIndividualWellbores(queryClient, server, wellbores);
+    return wellbores;
   },
   ...options,
   enabled: !!server && !!wellUid && !(options?.enabled === false)
 });
 
-export interface WellsLoaderParams {
+export interface WellboresLoaderParams {
   serverUrl: string;
   wellUid: string;
 }
 
 export const wellboresLoader =
   (queryClient: QueryClient) =>
-  async ({ params }: LoaderFunctionArgs<WellsLoaderParams>): Promise<null> => {
+  async ({
+    params
+  }: LoaderFunctionArgs<WellboresLoaderParams>): Promise<null> => {
     const { serverUrl, wellUid } = params;
     // Not sure if creating a new server object will have any side-effects, or if it's just the url that's used anyway.
     const server: Server = { ...emptyServer(), url: serverUrl };
@@ -75,7 +67,7 @@ export const wellboresLoader =
     return null;
   };
 
-type WellsQueryResult = Omit<
+type WellboresQueryResult = Omit<
   QueryObserverResult<Wellbore[], unknown>,
   "data"
 > & {
@@ -86,7 +78,7 @@ export const useGetWellbores = (
   server: Server,
   wellUid: string,
   options?: QueryOptions
-): WellsQueryResult => {
+): WellboresQueryResult => {
   const queryClient = useQueryClient();
   const { data, ...state } = useQuery<Wellbore[]>(
     wellboresQuery(queryClient, server, wellUid, options)

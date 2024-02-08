@@ -1,10 +1,13 @@
 import { TextField } from "@equinor/eds-core-react";
+import { QueryClient } from "@tanstack/react-query";
 import { Fragment } from "react";
 import styled from "styled-components";
-import ModificationType from "../../contexts/modificationType";
-import { DispatchNavigation } from "../../contexts/navigationAction";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import {
+  refreshObjectQuery,
+  refreshObjectsQuery
+} from "../../hooks/query/queryRefreshHelpers";
 import { getParentType } from "../../models/componentType";
 import ComponentReferences from "../../models/jobs/componentReferences";
 import {
@@ -19,7 +22,6 @@ import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
-import ObjectService from "../../services/objectService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { logTypeToQuery } from "../Routing";
@@ -138,47 +140,34 @@ export const onClickDeleteComponents = async (
 
 export const onClickRefresh = async (
   dispatchOperation: DispatchOperation,
-  dispatchNavigation: DispatchNavigation,
+  queryClient: QueryClient,
+  serverUrl: string,
   wellUid: string,
   wellboreUid: string,
-  objectType: ObjectType,
-  setIsLoading?: (arg: boolean) => void
+  objectType: ObjectType
 ) => {
-  if (setIsLoading) setIsLoading(true);
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const wellboreObjects = await ObjectService.getObjects(
-    wellUid,
-    wellboreUid,
-    objectType
-  );
-  dispatchNavigation({
-    type: ModificationType.UpdateWellboreObjects,
-    payload: { wellboreObjects, wellUid, wellboreUid, objectType }
-  });
-  if (setIsLoading) setIsLoading(false);
+  refreshObjectsQuery(queryClient, serverUrl, wellUid, wellboreUid, objectType);
 };
 
 export const onClickRefreshObject = async (
-  objectOnWellbore: ObjectOnWellbore,
-  objectType: ObjectType,
   dispatchOperation: DispatchOperation,
-  dispatchNavigation: DispatchNavigation
+  queryClient: QueryClient,
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  objectType: ObjectType,
+  objectUid: string
 ) => {
-  let freshObject = await ObjectService.getObject(
-    objectOnWellbore.wellUid,
-    objectOnWellbore.wellboreUid,
-    objectOnWellbore.uid,
-    objectType
-  );
-  const isDeleted = !freshObject;
-  if (isDeleted) {
-    freshObject = objectOnWellbore;
-  }
-  dispatchNavigation({
-    type: ModificationType.UpdateWellboreObject,
-    payload: { objectToUpdate: freshObject, objectType, isDeleted }
-  });
   dispatchOperation({ type: OperationType.HideContextMenu });
+  refreshObjectQuery(
+    queryClient,
+    serverUrl,
+    wellUid,
+    wellboreUid,
+    objectType,
+    objectUid
+  );
 };
 
 const displayDeleteModal = (

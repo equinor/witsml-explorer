@@ -41,6 +41,7 @@ export default class WellboreService {
     }
   }
 
+  // TODO: Is this method needed? It treats the response a bit different than the method above.
   public static async getWellboreFromServer(
     wellUid: string,
     wellboreUid: string,

@@ -1,6 +1,8 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -21,13 +23,15 @@ const TubularContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
   );
   const openInQueryView = useOpenInQueryView();
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   const onClickProperties = async () => {
     const tubularPropertiesModalProps = {
@@ -87,7 +91,8 @@ const TubularContextMenu = (
           ObjectType.Tubular,
           navigationState,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
+          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

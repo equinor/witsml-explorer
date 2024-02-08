@@ -1,8 +1,9 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React from "react";
-import { DispatchNavigation } from "../../contexts/navigationAction";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
+import { useQueryClient } from "@tanstack/react-query";
+import React, { useContext } from "react";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
@@ -28,8 +29,6 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
-  dispatchNavigation: DispatchNavigation;
-  dispatchOperation: DispatchOperation;
   tubular: Tubular;
   selectedServer: Server;
   servers: Server[];
@@ -38,17 +37,13 @@ export interface TubularComponentContextMenuProps {
 const TubularComponentContextMenu = (
   props: TubularComponentContextMenuProps
 ): React.ReactElement => {
-  const {
-    checkedTubularComponents,
-    dispatchNavigation,
-    dispatchOperation,
-    tubular,
-    selectedServer,
-    servers
-  } = props;
+  const { checkedTubularComponents, tubular, selectedServer, servers } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
   );
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   const onClickProperties = async () => {
     const tubularComponentPropertiesModalProps = {
@@ -79,10 +74,13 @@ const TubularComponentContextMenu = (
           key={"refresh"}
           onClick={() =>
             onClickRefreshObject(
-              tubular,
-              ObjectType.Tubular,
               dispatchOperation,
-              dispatchNavigation
+              queryClient,
+              authorizationState?.server?.url,
+              tubular.wellUid,
+              tubular.wellboreUid,
+              ObjectType.Tubular,
+              tubular.uid
             )
           }
         >

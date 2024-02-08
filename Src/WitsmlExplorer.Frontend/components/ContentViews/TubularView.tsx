@@ -33,7 +33,7 @@ export interface TubularComponentRow extends ContentTableRow {
 }
 
 export default function TubularView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { selectedServer, selectedObject, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const selectedTubular = selectedObject as Tubular;
@@ -56,8 +56,6 @@ export default function TubularView() {
   ) => {
     const contextMenuProps: TubularComponentContextMenuProps = {
       checkedTubularComponents,
-      dispatchNavigation,
-      dispatchOperation,
       tubular: selectedTubular,
       selectedServer,
       servers

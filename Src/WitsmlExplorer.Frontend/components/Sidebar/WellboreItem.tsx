@@ -1,5 +1,5 @@
 import { useTheme } from "@material-ui/core";
-import { MouseEvent, useContext, useState } from "react";
+import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
@@ -11,7 +11,6 @@ import OperationType from "../../contexts/operationType";
 import { useServers } from "../../contexts/serversContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
-import { WellboreItemProvider } from "../../contexts/wellboreItemContext";
 import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -62,7 +61,6 @@ export default function WellboreItem({
   const { dispatchNavigation } = useContext(NavigationContext);
   const { servers } = useServers();
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingCount, setIsFetchingCount] = useState(false);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const {
     operationState: { colors }
@@ -79,7 +77,7 @@ export default function WellboreItem({
     wellUid,
     wellboreUid
   );
-  const isFetching = isFetchingCount || isFetchingWell || isFetchingWellbore;
+  const isFetching = isFetchingWell || isFetchingWellbore;
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,
@@ -99,8 +97,7 @@ export default function WellboreItem({
 
   const onLogsContextMenu = (
     event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore,
-    setIsLoading: (arg: boolean) => void
+    wellbore: Wellbore
   ) => {
     preventContextMenuPropagation(event);
     const indexCurve = IndexCurve.Depth;
@@ -108,8 +105,7 @@ export default function WellboreItem({
       dispatchOperation,
       wellbore,
       servers,
-      indexCurve,
-      setIsLoading
+      indexCurve
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -123,15 +119,12 @@ export default function WellboreItem({
 
   const onRigsContextMenu = (
     event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore,
-    setIsLoading: (arg: boolean) => void
+    wellbore: Wellbore
   ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: RigsContextMenuProps = {
-      dispatchOperation,
       wellbore,
-      servers,
-      setIsLoading
+      servers
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -145,16 +138,12 @@ export default function WellboreItem({
 
   const onTubularsContextMenu = (
     event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore,
-    setIsLoading: (arg: boolean) => void
+    wellbore: Wellbore
   ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: TubularsContextMenuProps = {
-      dispatchNavigation,
-      dispatchOperation,
       wellbore,
-      servers,
-      setIsLoading
+      servers
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -168,15 +157,12 @@ export default function WellboreItem({
 
   const onTrajectoryContextMenu = (
     event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore,
-    setIsLoading: (arg: boolean) => void
+    wellbore: Wellbore
   ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: TrajectoriesContextMenuProps = {
-      dispatchOperation,
       wellbore,
-      servers,
-      setIsLoading
+      servers
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -222,127 +208,79 @@ export default function WellboreItem({
         onIconClick={onIconClick}
         isLoading={isFetching}
       >
-        <WellboreItemProvider
-          well={well}
-          wellbore={wellbore}
-          setIsFetchingCount={setIsFetchingCount}
-        >
-          <ObjectGroupItem
-            objectType={ObjectType.BhaRun}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.BhaRun
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.ChangeLog}
-            onGroupContextMenu={preventContextMenuPropagation}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.ChangeLog
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.FluidsReport}
-            ObjectContextMenu={FluidsReportContextMenu}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.FluidsReport
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.FormationMarker}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.FormationMarker
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.Log}
-            onGroupContextMenu={(event, _, setIsLoading) =>
-              onLogsContextMenu(event, wellbore, setIsLoading)
-            }
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.Log
-            }/logtypes`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.Message}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.Message
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.MudLog}
-            ObjectContextMenu={MudLogContextMenu}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.MudLog
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.Rig}
-            ObjectContextMenu={RigContextMenu}
-            onGroupContextMenu={(event, _, setIsLoading) =>
-              onRigsContextMenu(event, wellbore, setIsLoading)
-            }
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.Rig
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.Risk}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.Risk
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.Trajectory}
-            ObjectContextMenu={TrajectoryContextMenu}
-            onGroupContextMenu={(event, _, setIsLoading) =>
-              onTrajectoryContextMenu(event, wellbore, setIsLoading)
-            }
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.Trajectory
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.Tubular}
-            ObjectContextMenu={TubularContextMenu}
-            onGroupContextMenu={(event, _, setIsLoading) =>
-              onTubularsContextMenu(event, wellbore, setIsLoading)
-            }
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.Tubular
-            }/objects`}
-          />
-          <ObjectGroupItem
-            objectType={ObjectType.WbGeometry}
-            ObjectContextMenu={WbGeometryObjectContextMenu}
-            to={`servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-              ObjectType.WbGeometry
-            }/objects`}
-          />
-        </WellboreItemProvider>
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.BhaRun}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.ChangeLog}
+          onGroupContextMenu={preventContextMenuPropagation}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.FluidsReport}
+          ObjectContextMenu={FluidsReportContextMenu}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.FormationMarker}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.Log}
+          onGroupContextMenu={(event) => onLogsContextMenu(event, wellbore)}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.Message}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.MudLog}
+          ObjectContextMenu={MudLogContextMenu}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.Rig}
+          ObjectContextMenu={RigContextMenu}
+          onGroupContextMenu={(event) => onRigsContextMenu(event, wellbore)}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.Risk}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.Trajectory}
+          ObjectContextMenu={TrajectoryContextMenu}
+          onGroupContextMenu={(event) =>
+            onTrajectoryContextMenu(event, wellbore)
+          }
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.Tubular}
+          ObjectContextMenu={TubularContextMenu}
+          onGroupContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.WbGeometry}
+          ObjectContextMenu={WbGeometryObjectContextMenu}
+        />
       </TreeItem>
       <WellIndicator
         compactMode={isCompactMode}

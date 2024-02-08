@@ -1,6 +1,8 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -19,9 +21,11 @@ const FormationMarkerContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   const onClickModify = async () => {
     const modifyFormationMarkerProps: FormationMarkerPropertiesModalProps = {
@@ -58,7 +62,8 @@ const FormationMarkerContextMenu = (
           ObjectType.FormationMarker,
           navigationState,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
+          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()
