@@ -6,6 +6,7 @@ type Props = {
   message?: string;
 };
 
+// TODO: Change name to loading spinner
 const ProgressSpinner = ({ message }: Props): React.ReactElement => {
   return (
     <ProgressLayout>

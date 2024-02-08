@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useServers } from "../../contexts/serversContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbores } from "../../hooks/query/useGetWellbores";
 import Well from "../../models/well";
@@ -29,7 +29,7 @@ interface WellItemProps {
 
 export default function WellItem({ wellUid }: WellItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
-  const { servers } = useServers();
+  const { servers } = useGetServers();
   const { wellUid: urlWellUid, wellboreUid: urlWellboreUid } = useParams();
   const { authorizationState } = useAuthorizationState();
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();

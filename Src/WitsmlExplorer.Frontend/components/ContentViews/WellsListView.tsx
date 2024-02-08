@@ -5,7 +5,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useServers } from "../../contexts/serversContext";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWells } from "../../hooks/query/useGetWells";
 import Well from "../../models/well";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -28,7 +28,7 @@ export default function WellsListView() {
   const { wells, isFetching } = useGetWells(authorizationState?.server, {
     placeholderData: []
   });
-  const { servers } = useServers();
+  const { servers } = useGetServers();
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }

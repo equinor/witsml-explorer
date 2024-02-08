@@ -1,6 +1,4 @@
 import React, { useContext, useEffect } from "react";
-import ModificationType from "../../contexts/modificationType";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { Server } from "../../models/server";
@@ -14,7 +12,6 @@ import UserCredentialsModal, {
 
 const AuthorizationManager = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
 
   useEffect(() => {
     const unsubscribe =
@@ -31,10 +28,6 @@ const AuthorizationManager = (): React.ReactElement => {
             if (index !== -1) {
               server.usernames.splice(index, 1);
             }
-            dispatchNavigation({
-              type: ModificationType.UpdateServer,
-              payload: { server }
-            });
             showCredentialsModal(server);
             AuthorizationService.awaitServerAuthorization(server);
           } else if (
@@ -55,7 +48,7 @@ const AuthorizationManager = (): React.ReactElement => {
       server: server,
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(server, username, dispatchNavigation);
+        AuthorizationService.onAuthorized(server, username);
       }
     };
     dispatchOperation({

@@ -12,7 +12,6 @@ import { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
 import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
-import AuthorizationManager from "../components/Sidebar/AuthorizationManager";
 import Snackbar from "../components/Snackbar";
 import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
 import { FilterContextProvider } from "../contexts/filter";
@@ -33,7 +32,6 @@ import {
 } from "../contexts/operationStateReducer";
 import OperationType from "../contexts/operationType";
 import { QueryContextProvider } from "../contexts/queryContext";
-import { ServersProvider } from "../contexts/serversContext";
 import { SidebarProvider } from "../contexts/sidebarContext";
 import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
 import {
@@ -135,23 +133,21 @@ export default function Root() {
               <NavigationContext.Provider
                 value={{ navigationState, dispatchNavigation }}
               >
-                <ServersProvider>
-                  <SidebarProvider>
-                    <FilterContextProvider>
-                      <QueryContextProvider>
-                        {/* <Routing /> */}
-                        <AuthorizationManager />
-                        <RefreshHandler />
-                        <SnackbarProvider>
-                          <Snackbar />
-                        </SnackbarProvider>
-                        <PageLayout />
-                        <ContextMenuPresenter />
-                        <ModalPresenter />
-                      </QueryContextProvider>
-                    </FilterContextProvider>
-                  </SidebarProvider>
-                </ServersProvider>
+                <SidebarProvider>
+                  <FilterContextProvider>
+                    <QueryContextProvider>
+                      {/* <Routing /> */}
+                      {/* <AuthorizationManager /> */}
+                      <RefreshHandler />
+                      <SnackbarProvider>
+                        <Snackbar />
+                      </SnackbarProvider>
+                      <PageLayout />
+                      <ContextMenuPresenter />
+                      <ModalPresenter />
+                    </QueryContextProvider>
+                  </FilterContextProvider>
+                </SidebarProvider>
               </NavigationContext.Provider>
             </ThemeProvider>
           </AuthorizationStateProvider>
