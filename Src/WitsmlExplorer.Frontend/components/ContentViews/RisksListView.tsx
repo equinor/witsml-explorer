@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjects } from "../../hooks/useGetObjects";
 import { ObjectType } from "../../models/objectType";
 import RiskObject from "../../models/riskObject";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
@@ -36,11 +36,12 @@ export default function RisksListView() {
     wellboreUid
   );
 
-  const risks = useGetObjects(
+  const { objects: risks } = useGetObjects(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     ObjectType.Risk
-  ) as RiskObject[];
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Risk);
 

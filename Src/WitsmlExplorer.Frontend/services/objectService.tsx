@@ -18,12 +18,14 @@ export default class ObjectService {
     wellUid: string,
     wellboreUid: string,
     objectType: Key,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ObjectTypeToModel[Key][]> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
       `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}`,
-      abortSignal
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();
@@ -37,12 +39,14 @@ export default class ObjectService {
     wellboreUid: string,
     objectUid: string,
     objectType: Key,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ObjectTypeToModel[Key]> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
       `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}/${objectUid}`,
-      abortSignal
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();
@@ -51,6 +55,7 @@ export default class ObjectService {
     }
   }
 
+  // TODO: Is this method needed? It treats the response a bit different than the method above.
   public static async getObjectFromServer<Key extends ObjectType>(
     wellUid: string,
     wellboreUid: string,
@@ -135,12 +140,15 @@ export default class ObjectService {
   }
 
   public static async getExpandableObjectsCount(
-    wellbore: Wellbore,
-    abortSignal?: AbortSignal
+    wellUid: string,
+    wellboreUid: string,
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ExpandableObjectsCount> {
     const response = await ApiClient.get(
-      `/api/wells/${wellbore.wellUid}/wellbores/${wellbore.uid}/countexpandable`,
-      abortSignal
+      `/api/wells/${wellUid}/wellbores/${wellboreUid}/countexpandable`,
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();

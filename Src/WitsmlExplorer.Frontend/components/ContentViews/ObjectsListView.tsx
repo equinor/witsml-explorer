@@ -1,5 +1,9 @@
 import { ReactElement } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
+import { ObjectType, pluralizeObjectType } from "../../models/objectType";
+import ProgressSpinner from "../ProgressSpinner";
 import BhaRunsListView from "./BhaRunsListView";
 import ChangeLogsListView from "./ChangeLogsListView";
 import FluidsReportsListView from "./FluidsReportListView";
@@ -41,17 +45,32 @@ const objectGroupViews: Record<ObjectGroupUrlParams, ReactElement> = {
 };
 
 export function ObjectsListView() {
-  const { objectGroup } = useParams();
+  const { objectGroup, wellUid, wellboreUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
+  const { isFetching } = useGetObjects(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    objectGroup as ObjectType
+  );
 
-  const getObjectListView = (objectType: string) => {
-    const view = objectGroupViews[objectType as ObjectGroupUrlParams];
-    if (!view) {
-      throw new Error(
-        `No group view is implemented for item: ${JSON.stringify(objectType)}`
-      );
-    }
-    return view;
-  };
+  if (isFetching) {
+    return (
+      <ProgressSpinner
+        message={`Fetching ${pluralizeObjectType(objectGroup as ObjectType)}`}
+      />
+    );
+  }
 
   return getObjectListView(objectGroup);
 }
+
+const getObjectListView = (objectType: string) => {
+  const view = objectGroupViews[objectType as ObjectGroupUrlParams];
+  if (!view) {
+    throw new Error(
+      `No group view is implemented for item: ${JSON.stringify(objectType)}`
+    );
+  }
+  return view;
+};

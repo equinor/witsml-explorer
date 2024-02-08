@@ -1,29 +1,21 @@
-import {
-  ComponentType,
-  MouseEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState
-} from "react";
+import { ComponentType, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
-import { useWellboreItem } from "../../contexts/wellboreItemContext";
+import { useGetObjectCount } from "../../hooks/query/useGetObjectCount";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore, {
   calculateObjectNodeId
 } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Wellbore, {
-  calculateObjectGroupId,
-  getObjectsFromWellbore
-} from "../../models/wellbore";
-import ObjectService from "../../services/objectService";
+import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -38,80 +30,84 @@ import ObjectOnWellboreItem from "./ObjectOnWellboreItem";
 import TreeItem from "./TreeItem";
 
 interface ObjectGroupItemProps {
+  wellUid: string;
+  wellboreUid: string;
   objectType: ObjectType;
   ObjectContextMenu?: ComponentType<ObjectContextMenuProps>; //required only if objectsOnWellbore array is provided
   onGroupContextMenu?: (
     event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore,
-    setIsLoading: (arg: boolean) => void
+    wellbore: Wellbore
   ) => void;
-  to?: string;
 }
 
 export default function ObjectGroupItem({
+  wellUid,
+  wellboreUid,
   objectType,
   ObjectContextMenu,
-  onGroupContextMenu,
-  to
+  onGroupContextMenu
 }: ObjectGroupItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
-  const { wellbore, well, objectCount } = useWellboreItem();
   const { selectedFilter } = useContext(FilterContext);
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
-  const [groupObjects, setGroupObjects] = useState<any>(null);
+  const {
+    wellUid: urlWellUid,
+    wellboreUid: urlWellboreUid,
+    objectGroup
+  } = useParams();
+  const { authorizationState } = useAuthorizationState();
+  const { objectCount, isFetching: isFetchingCount } = useGetObjectCount(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    { enabled: isGroupObject(objectType) }
+  );
+  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
+  const { objects: groupObjects, isFetching: isFetchingObjects } =
+    useGetObjects(
+      authorizationState?.server,
+      wellUid,
+      wellboreUid,
+      objectType,
+      {
+        enabled: shouldFetchGroupObjects(
+          expandedTreeNodes,
+          wellbore,
+          objectType
+        )
+      }
+    );
+  const isFetching =
+    (isGroupObject(objectType) && isFetchingCount) ||
+    isFetchingWellbore ||
+    isFetchingObjects;
   let isActive = false;
   if (objectType === ObjectType.Log) {
     isActive =
       groupObjects && groupObjects.some((log: LogObject) => log.objectGrowing);
   }
-  const { wellUid, wellboreUid, objectGroup } = useParams();
 
-  const findExpandedNode = (): any => {
-    return expandedTreeNodes.includes(
-      calculateObjectGroupId(wellbore, objectType)
+  const onSelectObjectGroup = () => {
+    navigate(
+      `servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${objectType}/${
+        objectType === ObjectType.Log ? "logtypes" : "objects"
+      }`
     );
   };
 
-  const fetchObjects = async () => {
-    const objects = getObjectsFromWellbore(wellbore, objectType);
-    if (objects == null || objects.length == 0) {
-      setIsLoading(true);
-      const fetchedObjects = await ObjectService.getObjects(
-        wellbore.wellUid,
-        wellbore.uid,
-        objectType
-      );
-      setGroupObjects(fetchedObjects);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // TODO: Fix fetching when refreshing
-    if (
-      findExpandedNode() &&
-      !groupObjects &&
-      objectType !== ObjectType.BhaRun &&
-      objectType !== ObjectType.FormationMarker &&
-      objectType !== ObjectType.Message &&
-      objectType !== ObjectType.Risk
-    ) {
-      fetchObjects();
-    }
-  }, [wellUid, wellboreUid, objectGroup, expandedTreeNodes]);
-
-  const onSelectObjectGroup = useCallback(async () => {
-    if (to) navigate(to);
-  }, [well, wellbore, objectType]);
-
-  const toggleTreeNode = useCallback(async () => {
+  const toggleTreeNode = () => {
     dispatchSidebar({
       type: SidebarActionType.ToggleTreeNode,
       payload: { nodeId: calculateObjectGroupId(wellbore, objectType) }
     });
-  }, [well, wellbore, objectType]);
+  };
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
     return onGroupContextMenu == null
@@ -119,10 +115,9 @@ export default function ObjectGroupItem({
           event,
           objectType,
           wellbore,
-          dispatchOperation,
-          setIsLoading
+          dispatchOperation
         )
-      : onGroupContextMenu(event, wellbore, setIsLoading);
+      : onGroupContextMenu(event, wellbore);
   };
   const showStub =
     objectCount != null &&
@@ -137,19 +132,23 @@ export default function ObjectGroupItem({
         labelText={pluralize(objectType)}
         onLabelClick={onSelectObjectGroup}
         onContextMenu={onContextMenu}
-        isLoading={isLoading}
+        isLoading={isFetching}
         onIconClick={toggleTreeNode}
         isActive={isActive}
         selected={
           calculateObjectGroupId(wellbore, objectType) ===
           calculateObjectGroupId(
-            { wellUid, uid: wellboreUid },
+            { wellUid: urlWellUid, uid: urlWellboreUid },
             objectGroup as ObjectType
           )
         }
       >
         {objectType === ObjectType.Log ? (
-          <LogTypeItem logs={groupObjects} />
+          <LogTypeItem
+            logs={groupObjects}
+            wellUid={wellUid}
+            wellboreUid={wellboreUid}
+          />
         ) : (
           (wellbore &&
             groupObjects &&
@@ -160,6 +159,8 @@ export default function ObjectGroupItem({
                 objectOnWellbore={objectOnWellbore}
                 objectType={objectType}
                 ContextMenu={ObjectContextMenu}
+                wellUid={wellUid}
+                wellboreUid={wellboreUid}
               />
             ))) ||
           (showStub && ["", ""])
@@ -173,14 +174,12 @@ const onGenericGroupContextMenu = (
   event: MouseEvent<HTMLLIElement>,
   objectType: ObjectType,
   wellbore: Wellbore,
-  dispatchOperation: (action: OperationAction) => void,
-  setIsLoading: (arg: boolean) => void
+  dispatchOperation: (action: OperationAction) => void
 ) => {
   preventContextMenuPropagation(event);
   const contextMenuProps: ObjectsSidebarContextMenuProps = {
     wellbore,
-    objectType,
-    setIsLoading
+    objectType
   };
   const position = getContextMenuPosition(event);
   dispatchOperation({
@@ -190,4 +189,24 @@ const onGenericGroupContextMenu = (
       position
     }
   });
+};
+
+const shouldFetchGroupObjects = (
+  expandedTreeNodes: string[],
+  wellbore: Wellbore,
+  objectType: ObjectType
+) => {
+  const isExpanded = expandedTreeNodes.includes(
+    calculateObjectGroupId(wellbore, objectType)
+  );
+  return isExpanded && isGroupObject(objectType);
+};
+
+const isGroupObject = (objectType: ObjectType) => {
+  return (
+    objectType !== ObjectType.BhaRun &&
+    objectType !== ObjectType.FormationMarker &&
+    objectType !== ObjectType.Message &&
+    objectType !== ObjectType.Risk
+  );
 };

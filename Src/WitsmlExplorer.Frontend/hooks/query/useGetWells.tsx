@@ -16,13 +16,6 @@ export const getWellsQueryKey = (serverUrl: string) => {
   return [QUERY_KEY_WELLS, serverUrl?.toLowerCase()];
 };
 
-export const invalidateWellsQuery = (
-  queryClient: QueryClient,
-  serverUrl: string
-) => {
-  queryClient.invalidateQueries({ queryKey: getWellsQueryKey(serverUrl) });
-};
-
 // TODO: Investigate if this can cause any race conditions.
 const updateIndividualWells = (
   queryClient: QueryClient,

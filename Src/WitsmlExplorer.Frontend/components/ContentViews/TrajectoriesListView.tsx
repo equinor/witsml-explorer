@@ -3,9 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjects } from "../../hooks/useGetObjects";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import Trajectory from "../../models/trajectory";
@@ -29,11 +29,12 @@ export default function TrajectoriesListView() {
     wellboreUid
   );
 
-  const trajectories = useGetObjects(
+  const { objects: trajectories } = useGetObjects(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     ObjectType.Trajectory
-  ) as Trajectory[];
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 

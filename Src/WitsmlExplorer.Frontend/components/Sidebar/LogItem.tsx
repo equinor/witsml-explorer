@@ -1,10 +1,10 @@
 import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import LogObject from "../../models/logObject";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -15,8 +15,8 @@ import TreeItem from "./TreeItem";
 
 interface LogItemProps {
   log: LogObject;
-  well: Well;
-  wellbore: Wellbore;
+  wellUid: string;
+  wellboreUid: string;
   logGroup: string;
   logTypeGroup: string;
   selected: boolean;
@@ -27,7 +27,8 @@ interface LogItemProps {
 
 export default function LogItem({
   log: log,
-  wellbore,
+  wellUid,
+  wellboreUid,
   selected,
   nodeId,
   objectGrowing,
@@ -35,6 +36,12 @@ export default function LogItem({
 }: LogItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
+  const { authorizationState } = useAuthorizationState();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);

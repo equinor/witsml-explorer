@@ -1,8 +1,8 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { QueryClient } from "@tanstack/react-query";
 import React from "react";
 import { v4 as uuid } from "uuid";
-import { DispatchNavigation } from "../../contexts/navigationAction";
 import { NavigationState } from "../../contexts/navigationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import { OpenInQueryView } from "../../hooks/useOpenInQueryView";
@@ -38,7 +38,8 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   navigationState: NavigationState,
   dispatchOperation: DispatchOperation,
-  dispatchNavigation: DispatchNavigation,
+  queryClient: QueryClient,
+  serverUrl: string,
   openInQueryView: OpenInQueryView,
   wellbore: Wellbore,
   extraMenuItems: React.ReactElement[]
@@ -51,10 +52,13 @@ export const ObjectMenuItems = (
       key={"refresh"}
       onClick={() =>
         onClickRefreshObject(
-          checkedObjects[0],
-          objectType,
           dispatchOperation,
-          dispatchNavigation
+          queryClient,
+          serverUrl,
+          wellbore.wellUid,
+          wellbore.uid,
+          objectType,
+          checkedObjects[0].uid
         )
       }
       disabled={checkedObjects.length !== 1}

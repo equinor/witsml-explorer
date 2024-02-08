@@ -4,11 +4,10 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useWellboreItem } from "../../contexts/wellboreItemContext";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import LogObject from "../../models/logObject";
 import { calculateObjectNodeId } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
 import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeId,
@@ -33,25 +32,42 @@ import TreeItem from "./TreeItem";
 
 interface LogTypeItemProps {
   logs: LogObject[];
+  wellUid: string;
+  wellboreUid: string;
 }
 
-export default function LogTypeItem({ logs }: LogTypeItemProps) {
-  const { wellbore, well } = useWellboreItem();
+export default function LogTypeItem({
+  logs,
+  wellUid,
+  wellboreUid
+}: LogTypeItemProps) {
   const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { servers } = navigationState;
+  const { authorizationState } = useAuthorizationState();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
   const navigate = useNavigate();
-  const { authorizationState } = useAuthorizationState();
-  const { wellUid, wellboreUid, logType, objectUid } = useParams();
+  const {
+    wellUid: urlWellUid,
+    wellboreUid: urlWellboreUid,
+    logType,
+    objectUid
+  } = useParams();
 
   const onSelectType = (logTypeGroup: string) => {
     navigate(
-      `servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        well.uid
-      }/wellbores/${wellbore.uid}/objectgroups/${ObjectType.Log}/logtypes/${
+      `servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        ObjectType.Log
+      }/logtypes/${
         logTypeGroup === logTypeGroupDepth ? "depth" : "time"
       }/objects`
     );
@@ -89,7 +105,7 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
         log.uid
       ) ===
       calculateWellboreObjectNodeId(
-        { wellUid, uid: wellboreUid },
+        { wellUid: urlWellUid, uid: urlWellboreUid },
         logType === "depth"
           ? WITSML_INDEX_TYPE_MD
           : WITSML_INDEX_TYPE_DATE_TIME,
@@ -109,15 +125,17 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
         selected={
-          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
-          calculateLogTypeId(wellbore, "depth")
+          calculateLogTypeId(
+            { wellUid: urlWellUid, uid: urlWellboreUid },
+            logType
+          ) === calculateLogTypeId(wellbore, "depth")
         }
       >
         {listLogItemsByType(
           depthLogs,
           WITSML_INDEX_TYPE_MD,
-          well,
-          wellbore,
+          wellUid,
+          wellboreUid,
           logGroup,
           isSelected,
           authorizationState.server.url
@@ -132,15 +150,17 @@ export default function LogTypeItem({ logs }: LogTypeItemProps) {
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
         selected={
-          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
-          calculateLogTypeId(wellbore, "time")
+          calculateLogTypeId(
+            { wellUid: urlWellUid, uid: urlWellboreUid },
+            logType
+          ) === calculateLogTypeId(wellbore, "time")
         }
       >
         {listLogItemsByType(
           timeLogs,
           WITSML_INDEX_TYPE_DATE_TIME,
-          well,
-          wellbore,
+          wellUid,
+          wellboreUid,
           logGroup,
           isSelected,
           authorizationState.server.url
@@ -157,8 +177,8 @@ const filterLogsByType = (logs: LogObject[], logType: string) => {
 const listLogItemsByType = (
   logObjects: LogObject[],
   logType: string,
-  well: Well,
-  wellbore: Wellbore,
+  wellUid: string,
+  wellboreUid: string,
   logGroup: string,
   isSelected: (log: LogObject) => boolean,
   serverUrl: string
@@ -167,16 +187,21 @@ const listLogItemsByType = (
     <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
       <LogItem
         log={log}
-        well={well}
-        wellbore={wellbore}
+        wellUid={wellUid}
+        wellboreUid={wellboreUid}
         logGroup={logGroup}
-        logTypeGroup={calculateLogTypeId(wellbore, logType)}
+        logTypeGroup={calculateLogTypeId(
+          { wellUid, uid: wellboreUid },
+          logType
+        )}
         nodeId={calculateObjectNodeId(log, ObjectType.Log)}
         selected={isSelected(log)}
         objectGrowing={log.objectGrowing}
-        to={`servers/${encodeURIComponent(serverUrl)}/wells/${
-          well.uid
-        }/wellbores/${wellbore.uid}/objectgroups/${ObjectType.Log}/logtypes/${
+        to={`servers/${encodeURIComponent(
+          serverUrl
+        )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+          ObjectType.Log
+        }/logtypes/${
           logType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
         }/objects/${log.uid}`}
       />

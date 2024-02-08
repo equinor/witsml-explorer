@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useWellboreItem } from "../../contexts/wellboreItemContext";
+import { useGetWell } from "../../hooks/query/useGetWell";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { calculateObjectNodeId } from "../../models/wellbore";
@@ -19,18 +20,27 @@ interface ObjectOnWellboreItemProps {
   objectOnWellbore: ObjectOnWellbore;
   objectType: ObjectType;
   ContextMenu: ComponentType<ObjectContextMenuProps>;
+  wellUid: string;
+  wellboreUid: string;
 }
 
 export default function ObjectOnWellboreItem({
   nodeId,
   objectOnWellbore,
   objectType,
-  ContextMenu
+  ContextMenu,
+  wellUid,
+  wellboreUid
 }: ObjectOnWellboreItemProps) {
-  const { wellbore, well } = useWellboreItem();
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
+  const { wellbore } = useGetWellbore(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid
+  );
+  const { well } = useGetWell(authorizationState?.server, wellUid);
   const { objectGroup, objectUid } = useParams();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {

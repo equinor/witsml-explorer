@@ -1,7 +1,9 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
@@ -26,20 +28,20 @@ import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 export interface ObjectsSidebarContextMenuProps {
   wellbore: Wellbore;
   objectType: ObjectType;
-  setIsLoading?: (arg: boolean) => void;
 }
 
 const ObjectsSidebarContextMenu = (
   props: ObjectsSidebarContextMenuProps
 ): React.ReactElement => {
-  const { wellbore, objectType, setIsLoading } = props;
+  const { wellbore, objectType } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
   const {
     navigationState: { servers }
   } = useContext(NavigationContext);
   const objectReferences = useClipboardReferencesOfType(objectType);
   const openInQueryView = useOpenInQueryView();
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   return (
     <ContextMenu
@@ -49,11 +51,11 @@ const ObjectsSidebarContextMenu = (
           onClick={() =>
             onClickRefresh(
               dispatchOperation,
-              dispatchNavigation,
+              queryClient,
+              authorizationState?.server?.url,
               wellbore.wellUid,
               wellbore.uid,
-              objectType,
-              setIsLoading
+              objectType
             )
           }
         >

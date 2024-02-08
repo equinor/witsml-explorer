@@ -3,9 +3,9 @@ import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjects } from "../../hooks/useGetObjects";
 import FormationMarker from "../../models/formationMarker";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
@@ -38,11 +38,12 @@ export default function FormationMarkersListView() {
     wellboreUid
   );
 
-  const formationMarkers = useGetObjects(
+  const { objects: formationMarkers } = useGetObjects(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     ObjectType.FormationMarker
-  ) as FormationMarker[];
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FormationMarker);
 

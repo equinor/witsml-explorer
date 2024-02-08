@@ -1,6 +1,8 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -22,13 +24,15 @@ const MudLogContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { navigationState } = useContext(NavigationContext);
   const { servers } = navigationState;
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
   );
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   const onClickModify = async () => {
     const modifyMudLogProps: MudLogPropertiesModalProps = {
@@ -86,7 +90,8 @@ const MudLogContextMenu = (
           ObjectType.MudLog,
           navigationState,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
+          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

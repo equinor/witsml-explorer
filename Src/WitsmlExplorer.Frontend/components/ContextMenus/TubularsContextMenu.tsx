@@ -1,13 +1,10 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
-import { NavigationAction } from "../../contexts/navigationAction";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "../../contexts/operationStateReducer";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import OperationContext from "../../contexts/operationContext";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
@@ -21,27 +18,19 @@ import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TubularsContextMenuProps {
-  dispatchNavigation: (action: NavigationAction) => void;
-  dispatchOperation: (
-    action: HideModalAction | HideContextMenuAction | DisplayModalAction
-  ) => void;
   wellbore: Wellbore;
   servers?: Server[];
-  setIsLoading?: (arg: boolean) => void;
 }
 
 const TubularsContextMenu = (
   props: TubularsContextMenuProps
 ): React.ReactElement => {
-  const {
-    dispatchNavigation,
-    dispatchOperation,
-    wellbore,
-    servers,
-    setIsLoading
-  } = props;
+  const { wellbore, servers } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const tubularReferences = useClipboardReferencesOfType(ObjectType.Tubular);
   const openInQueryView = useOpenInQueryView();
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   return (
     <ContextMenu
@@ -51,11 +40,11 @@ const TubularsContextMenu = (
           onClick={() =>
             onClickRefresh(
               dispatchOperation,
-              dispatchNavigation,
+              queryClient,
+              authorizationState?.server?.url,
               wellbore.wellUid,
               wellbore.uid,
-              ObjectType.Tubular,
-              setIsLoading
+              ObjectType.Tubular
             )
           }
         >

@@ -46,9 +46,11 @@ export default function WellboreObjectTypesListView() {
 
   const onSelect = async (row: ObjectTypeRow) => {
     navigate(
-      `/servers/${encodeURIComponent(serverUrl)}
-      /wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${row.objectType}
-      /${row.objectType === ObjectType.Log ? "logtypes" : "objects"}`
+      `/servers/${encodeURIComponent(
+        serverUrl
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        row.objectType
+      }/${row.objectType === ObjectType.Log ? "logtypes" : "objects"}`
     );
   };
 

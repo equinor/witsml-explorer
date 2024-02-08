@@ -1,8 +1,9 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React, { useContext } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import React from "react";
 import { v4 as uuid } from "uuid";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
@@ -34,15 +35,14 @@ export interface LogsContextMenuProps {
   wellbore: Wellbore;
   servers: Server[];
   indexCurve: IndexCurve;
-  setIsLoading?: (arg: boolean) => void;
 }
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers, indexCurve, setIsLoading } =
-    props;
-  const { dispatchNavigation } = useContext(NavigationContext);
+  const { dispatchOperation, wellbore, servers, indexCurve } = props;
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
   const openInQueryView = useOpenInQueryView();
+  const { authorizationState } = useAuthorizationState();
+  const queryClient = useQueryClient();
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -70,27 +70,25 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        setIsLoading ? (
-          <MenuItem
-            key={"refresh"}
-            onClick={() =>
-              onClickRefresh(
-                dispatchOperation,
-                dispatchNavigation,
-                wellbore.wellUid,
-                wellbore.uid,
-                ObjectType.Log,
-                setIsLoading
-              )
-            }
-          >
-            <StyledIcon
-              name="refresh"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`Refresh Logs`}</Typography>
-          </MenuItem>
-        ) : null,
+        <MenuItem
+          key={"refresh"}
+          onClick={() =>
+            onClickRefresh(
+              dispatchOperation,
+              queryClient,
+              authorizationState?.server?.url,
+              wellbore.wellUid,
+              wellbore.uid,
+              ObjectType.Log
+            )
+          }
+        >
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>{`Refresh Logs`}</Typography>
+        </MenuItem>,
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>
