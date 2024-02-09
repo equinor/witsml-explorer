@@ -2,6 +2,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import ModificationType from "../contexts/modificationType";
 import {
+  refreshObjectQuery,
+  refreshObjectsQuery,
   refreshWellQuery,
   refreshWellboreQuery,
   refreshWellboresQuery,
@@ -106,13 +108,24 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   async function refreshWellboreObject(refreshAction: RefreshAction) {
-    // TODO: Invalidate the query for the specific object.
-    console.log(refreshAction);
+    refreshObjectQuery(
+      queryClient,
+      refreshAction.serverUrl.toString().toLowerCase(),
+      refreshAction.wellUid,
+      refreshAction.wellboreUid,
+      refreshAction.entityType as ObjectType,
+      refreshAction.objectUid
+    );
   }
 
   async function refreshWellboreObjects(refreshAction: RefreshAction) {
-    // TODO: Invalidate the query for the specific objects.
-    console.log(refreshAction);
+    refreshObjectsQuery(
+      queryClient,
+      refreshAction.serverUrl.toString().toLowerCase(),
+      refreshAction.wellUid,
+      refreshAction.wellboreUid,
+      refreshAction.entityType as ObjectType
+    );
   }
 
   return <></>;

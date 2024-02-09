@@ -54,7 +54,7 @@ const BhaRunContextMenu = (
           authorizationState?.server?.url,
           openInQueryView,
           wellbore,
-          null
+          []
         ),
         <Divider key={"divider"} />,
         <MenuItem

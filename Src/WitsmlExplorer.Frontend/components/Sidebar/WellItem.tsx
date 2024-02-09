@@ -34,9 +34,10 @@ export default function WellItem({ wellUid }: WellItemProps) {
   const { authorizationState } = useAuthorizationState();
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const { well, isFetching: isFetchingWell } = useGetWell(
+    // TODO: Note: This only works because each WellItem is not rendered while useGetWells is fetching. Otherwise, we would request all wells individually in parallel.
     authorizationState?.server,
     wellUid
-  ); // TODO: Note: This only works because each WellItem is not rendered while useGetWells is fetching. Otherwise, we would request all wells individually in parallel.
+  );
   const isExpanded = expandedTreeNodes.includes(calculateWellNodeId(wellUid));
   const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
     authorizationState?.server,

@@ -4,10 +4,7 @@ import { Fragment } from "react";
 import styled from "styled-components";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
-import {
-  refreshObjectQuery,
-  refreshObjectsQuery
-} from "../../hooks/query/queryRefreshHelpers";
+import { refreshObjectsQuery } from "../../hooks/query/queryRefreshHelpers";
 import { getParentType } from "../../models/componentType";
 import ComponentReferences from "../../models/jobs/componentReferences";
 import {
@@ -157,17 +154,13 @@ export const onClickRefreshObject = async (
   wellUid: string,
   wellboreUid: string,
   objectType: ObjectType,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   objectUid: string
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  refreshObjectQuery(
-    queryClient,
-    serverUrl,
-    wellUid,
-    wellboreUid,
-    objectType,
-    objectUid
-  );
+  // TODO: For now, we are refreshing the entire list. See comment for refreshObjectQuery in queryRefreshHelpers.tsx.
+  // If we find a solution, we should use refreshObjectQuery with the objectUid instead.
+  refreshObjectsQuery(queryClient, serverUrl, wellUid, wellboreUid, objectType);
 };
 
 const displayDeleteModal = (
