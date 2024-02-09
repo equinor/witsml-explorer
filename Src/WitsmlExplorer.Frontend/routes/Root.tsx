@@ -1,17 +1,16 @@
-import { SnackbarProvider } from "notistack";
-import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
-import ModalPresenter from "../components/Modals/ModalPresenter";
-import PageLayout from "../components/PageLayout";
-import RefreshHandler from "../components/RefreshHandler";
-// import Routing from "../components/Routing";
 import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
 import { ThemeProvider } from "@material-ui/core";
 import Head from "next/head";
+import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
+import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
 import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
+import ModalPresenter from "../components/Modals/ModalPresenter";
+import PageLayout from "../components/PageLayout";
+import RefreshHandler from "../components/RefreshHandler";
 import Snackbar from "../components/Snackbar";
 import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
 import { FilterContextProvider } from "../contexts/filter";
@@ -136,8 +135,6 @@ export default function Root() {
                 <SidebarProvider>
                   <FilterContextProvider>
                     <QueryContextProvider>
-                      {/* <Routing /> */}
-                      {/* <AuthorizationManager /> */}
                       <RefreshHandler />
                       <SnackbarProvider>
                         <Snackbar />

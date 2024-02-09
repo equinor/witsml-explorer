@@ -23,8 +23,12 @@ import Wellbore from "../../models/wellbore";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
+import { WITSML_INDEX_TYPE_MD } from "../Constants";
 import ConfirmModal from "../Modals/ConfirmModal";
-import { logTypeToQuery } from "../Routing";
+
+const logTypeToQuery = (logType: string) => {
+  return logType.includes(WITSML_INDEX_TYPE_MD) ? "depth" : "time";
+};
 
 export const StyledIcon = styled(Icon)`
   && {
