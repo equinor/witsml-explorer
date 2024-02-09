@@ -11,7 +11,7 @@ import GlobalStyles from "../components/GlobalStyles";
 import ModalPresenter from "../components/Modals/ModalPresenter";
 import PageLayout from "../components/PageLayout";
 import RefreshHandler from "../components/RefreshHandler";
-import Snackbar from "../components/Snackbar";
+import { Snackbar } from "../components/Snackbar";
 import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
 import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";

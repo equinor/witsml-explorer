@@ -1,11 +1,11 @@
 import { useSnackbar } from "notistack";
-import React, { useContext, useEffect } from "react";
-import NavigationContext from "../contexts/navigationContext";
+import { useEffect } from "react";
+import { useAuthorizationState } from "../contexts/authorizationStateContext";
 import NotificationService from "../services/notificationService";
 
-const Snackbar = (): React.ReactElement => {
+export function Snackbar() {
   const { enqueueSnackbar } = useSnackbar();
-  const { navigationState } = useContext(NavigationContext);
+  const { authorizationState } = useAuthorizationState();
 
   useEffect(() => {
     const unsubscribe =
@@ -13,7 +13,7 @@ const Snackbar = (): React.ReactElement => {
         (notification) => {
           const shouldNotify =
             notification.serverUrl.toString().toLowerCase() ===
-            navigationState.selectedServer?.url?.toLowerCase();
+            authorizationState?.server?.url?.toLowerCase();
           if (shouldNotify) {
             enqueueSnackbar(notification.message, {
               variant: notification.isSuccess ? "success" : "error"
@@ -25,9 +25,7 @@ const Snackbar = (): React.ReactElement => {
     return function cleanup() {
       unsubscribe();
     };
-  }, [navigationState.selectedServer]);
+  }, [authorizationState]);
 
   return <></>;
-};
-
-export default Snackbar;
+}

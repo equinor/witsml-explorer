@@ -93,6 +93,7 @@ class AuthorizationService {
     if (!server.usernames.includes(username)) {
       server.usernames.push(username);
     }
+    this.onServerStateChange(server);
     this._onAuthorizationChange.dispatch({
       server,
       status: AuthorizationStatus.Authorized
