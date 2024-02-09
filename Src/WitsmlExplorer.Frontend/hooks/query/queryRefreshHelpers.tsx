@@ -5,11 +5,18 @@ import {
   QUERY_KEY_COMPONENTS,
   QUERY_KEY_OBJECT,
   QUERY_KEY_OBJECTS,
+  QUERY_KEY_SERVERS,
   QUERY_KEY_WELL,
   QUERY_KEY_WELLBORE,
   QUERY_KEY_WELLBORES,
   QUERY_KEY_WELLS
 } from "./queryKeys";
+
+export const refreshServersQuery = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_SERVERS]
+  });
+};
 
 export const refreshWellsQuery = (
   queryClient: QueryClient,

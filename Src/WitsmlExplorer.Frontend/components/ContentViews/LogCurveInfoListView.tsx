@@ -5,9 +5,9 @@ import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useServers } from "../../contexts/serversContext";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { useGetObject } from "../../hooks/query/useGetObject";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
@@ -58,7 +58,7 @@ export default function LogCurveInfoListView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const { authorizationState } = useAuthorizationState();
-  const { servers } = useServers();
+  const { servers } = useGetServers();
   const { well, isFetching: isFetchingWell } = useGetWell(
     authorizationState?.server,
     wellUid

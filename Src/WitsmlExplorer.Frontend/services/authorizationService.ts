@@ -1,6 +1,4 @@
 import { SimpleEventDispatcher } from "ste-simple-events";
-import { UpdateServerAction } from "../contexts/modificationActions";
-import ModificationType from "../contexts/modificationType";
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
 import {
@@ -87,11 +85,7 @@ class AuthorizationService {
     }
   }
 
-  public onAuthorized(
-    server: Server,
-    username: string,
-    dispatchNavigation: (action: UpdateServerAction) => void
-  ) {
+  public onAuthorized(server: Server, username: string) {
     server.currentUsername = username;
     if (server.usernames == null) {
       server.usernames = [];
@@ -99,10 +93,7 @@ class AuthorizationService {
     if (!server.usernames.includes(username)) {
       server.usernames.push(username);
     }
-    dispatchNavigation({
-      type: ModificationType.UpdateServer,
-      payload: { server }
-    });
+    this.onServerStateChange(server);
     this._onAuthorizationChange.dispatch({
       server,
       status: AuthorizationStatus.Authorized

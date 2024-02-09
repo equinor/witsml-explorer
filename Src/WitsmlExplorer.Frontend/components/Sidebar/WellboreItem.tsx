@@ -8,9 +8,9 @@ import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useServers } from "../../contexts/serversContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -59,7 +59,7 @@ export default function WellboreItem({
   nodeId
 }: WellboreItemProps) {
   const { dispatchNavigation } = useContext(NavigationContext);
-  const { servers } = useServers();
+  const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const {

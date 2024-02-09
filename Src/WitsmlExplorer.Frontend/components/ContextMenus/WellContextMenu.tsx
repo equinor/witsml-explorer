@@ -2,8 +2,8 @@ import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
-import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
@@ -55,9 +55,9 @@ export interface WellContextMenuProps {
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
+  const { authorizationState } = useAuthorizationState();
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
-  const { serverUrl } = useParams();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -81,12 +81,12 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellQuery(queryClient, serverUrl, well.uid);
+    refreshWellQuery(queryClient, authorizationState.server.url, well.uid);
   };
 
   const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellsQuery(queryClient, serverUrl);
+    refreshWellsQuery(queryClient, authorizationState.server.url);
   };
 
   const onClickNewWellbore = () => {
@@ -212,14 +212,22 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshwell"} onClick={onClickRefresh}>
+        <MenuItem
+          key={"refreshwell"}
+          onClick={onClickRefresh}
+          disabled={!authorizationState?.server?.url}
+        >
           <StyledIcon
             name="refresh"
             color={colors.interactive.primaryResting}
           />
           <Typography color={"primary"}>Refresh well</Typography>
         </MenuItem>,
-        <MenuItem key={"refreshallwells"} onClick={onClickRefreshAll}>
+        <MenuItem
+          key={"refreshallwells"}
+          onClick={onClickRefreshAll}
+          disabled={!authorizationState?.server?.url}
+        >
           <StyledIcon
             name="refresh"
             color={colors.interactive.primaryResting}
