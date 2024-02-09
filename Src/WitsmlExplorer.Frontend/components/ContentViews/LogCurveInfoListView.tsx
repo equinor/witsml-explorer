@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetComponents } from "../../hooks/query/useGetComponents";
+import { useGetObject } from "../../hooks/query/useGetObject";
+import { useGetServers } from "../../hooks/query/useGetServers";
+import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
-import LogObject from "../../models/logObject";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
-import { truncateAbortHandler } from "../../services/apiClient";
-import ComponentService from "../../services/componentService";
-import ObjectService from "../../services/objectService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -24,6 +24,7 @@ import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "../ContextMenus/LogCurveInfoContextMenu";
 import formatDateString from "../DateFormatter";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -50,29 +51,44 @@ export interface LogCurveInfoRow extends ContentTableRow {
 
 export default function LogCurveInfoListView() {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { selectedCurveThreshold } = navigationState;
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const {
-    selectedServer,
-    selectedWell,
-    selectedObject,
-    selectedCurveThreshold,
-    servers
-  } = navigationState;
-  const selectedLog = selectedObject as LogObject;
   const { dispatchOperation } = useContext(OperationContext);
-  const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
-  const [logObject, setLogObject] = useState<LogObject>(null);
   const { authorizationState } = useAuthorizationState();
-  const { wellbore } = useGetWellbore(
+  const { servers } = useGetServers();
+  const { well, isFetching: isFetchingWell } = useGetWell(
+    authorizationState?.server,
+    wellUid
+  );
+  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
     authorizationState?.server,
     wellUid,
     wellboreUid
   );
+  const { object: logObject, isFetching: isFetchingLog } = useGetObject(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    ObjectType.Log,
+    objectUid
+  );
+  const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
+    useGetComponents(
+      authorizationState?.server,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.Mnemonic
+    );
+  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
+  const isFetching =
+    isFetchingWell ||
+    isFetchingWellbore ||
+    isFetchingLog ||
+    isFetchingLogCurveInfo;
 
   useExpandSidebarNodes(
     wellUid,
@@ -80,41 +96,6 @@ export default function LogCurveInfoListView() {
     ObjectType.Log,
     logType === "depth" ? WITSML_INDEX_TYPE_MD : WITSML_INDEX_TYPE_DATE_TIME
   );
-
-  useEffect(() => {
-    setIsFetchingData(true);
-    // TODO: Clean up this useEffect
-    // const controller = new AbortController();
-
-    const getLogCurveInfo = async () => {
-      const logCurveInfo = await ComponentService.getComponents(
-        wellUid,
-        wellboreUid,
-        objectUid,
-        ComponentType.Mnemonic,
-        undefined
-        // controller.signal
-      );
-      setLogCurveInfoList(logCurveInfo);
-
-      const fetchedLogObject = await ObjectService.getObject(
-        wellUid,
-        wellboreUid,
-        objectUid,
-        ObjectType.Log
-      );
-      setLogObject(fetchedLogObject);
-
-      setIsFetchingData(false);
-    };
-
-    // getLogCurveInfo().catch(truncateAbortHandler);
-    getLogCurveInfo().catch(truncateAbortHandler);
-
-    // return () => {
-    //   controller.abort();
-    // };
-  }, [wellUid, wellboreUid, logType, objectUid]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -125,9 +106,9 @@ export default function LogCurveInfoListView() {
       checkedLogCurveInfoRows,
       dispatchOperation,
       dispatchNavigation,
-      selectedLog,
-      selectedServer,
-      selectedWell,
+      selectedLog: logObject,
+      selectedServer: authorizationState?.server,
+      selectedWell: well,
       selectedWellbore: wellbore,
       servers
     };
@@ -249,23 +230,23 @@ export default function LogCurveInfoListView() {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Log.`} />;
+  }
+
   return (
-    !isFetchingData && (
-      <ContentTable
-        viewId={
-          isDepthIndex
-            ? "depthLogCurveInfoListView"
-            : "timeLogCurveInfoListView"
-        }
-        columns={columns}
-        data={getTableData()}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        // TODO: Fix downloadToCsvFileName, removed selectedLog.name
-        // downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
-        downloadToCsvFileName={`LogCurveInfo_${objectUid}`}
-      />
-    )
+    <ContentTable
+      viewId={
+        isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"
+      }
+      columns={columns}
+      data={getTableData()}
+      onContextMenu={onContextMenu}
+      checkableRows
+      showRefresh
+      // TODO: Fix downloadToCsvFileName, removed selectedLog.name
+      // downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
+      downloadToCsvFileName={`LogCurveInfo_${objectUid}`}
+    />
   );
 }

@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
@@ -15,6 +16,7 @@ import TrajectoryStationContextMenu, {
   TrajectoryStationContextMenuProps
 } from "../ContextMenus/TrajectoryStationContextMenu";
 import formatDateString from "../DateFormatter";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -42,14 +44,16 @@ export default function TrajectoryView() {
   const { dispatchOperation } = useContext(OperationContext);
   const selectedTrajectory = selectedObject as Trajectory;
   const { wellUid, wellboreUid, objectUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
 
-  const [trajectoryStations, isFetching] =
-    useGetObjectComponents<TrajectoryStation>(
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.TrajectoryStation
-    );
+  const { components: trajectoryStations, isFetching } = useGetComponents(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.TrajectoryStation,
+    { placeholderData: [] }
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
@@ -120,19 +124,21 @@ export default function TrajectoryView() {
     };
   });
 
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Trajectory.`} />;
+  }
+
   return (
-    !isFetching && (
-      <ContentTable
-        viewId="trajectoryView"
-        columns={columns}
-        data={trajectoryStationRows}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        // TODO: Fix downloadToCsvFilename, selectedTrajectory.name has been removed.
-        // downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
-        downloadToCsvFileName={`Trajectory_${objectUid}`}
-      />
-    )
+    <ContentTable
+      viewId="trajectoryView"
+      columns={columns}
+      data={trajectoryStationRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      showRefresh
+      // TODO: Fix downloadToCsvFilename, selectedTrajectory.name has been removed.
+      // downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
+      downloadToCsvFileName={`Trajectory_${objectUid}`}
+    />
   );
 }
