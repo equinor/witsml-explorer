@@ -62,6 +62,7 @@ const ServerManager = (): React.ReactElement => {
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
+        AuthorizationService.setSelectedServer(server);
         navigate(`servers/${encodeURIComponent(server.url)}/wells`);
       }
     };
