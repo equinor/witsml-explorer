@@ -57,12 +57,7 @@ export default function LogsListView() {
     allLogs,
     isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD
   );
-  useExpandSidebarNodes(
-    wellUid,
-    wellboreUid,
-    ObjectType.Log,
-    isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD
-  );
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
   const isFetching = isFetchingWellbore || isFetchingLogs;
 
   const onContextMenu = (

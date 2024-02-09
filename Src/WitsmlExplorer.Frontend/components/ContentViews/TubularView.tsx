@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import Tubular from "../../models/tubular";
@@ -13,6 +14,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
 } from "../ContextMenus/TubularComponentContextMenu";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -38,14 +40,16 @@ export default function TubularView() {
   const { dispatchOperation } = useContext(OperationContext);
   const selectedTubular = selectedObject as Tubular;
   const { wellUid, wellboreUid, objectUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
 
-  const [tubularComponents, isFetching] =
-    useGetObjectComponents<TubularComponent>(
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.TubularComponent
-    );
+  const { components: tubularComponents, isFetching } = useGetComponents(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.TubularComponent,
+    { placeholderData: [] }
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
@@ -114,18 +118,20 @@ export default function TubularView() {
     };
   });
 
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Tubular.`} />;
+  }
+
   return (
-    !isFetching && (
-      <ContentTable
-        viewId="tubularView"
-        columns={columns}
-        data={tubularComponentRows}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        // TODO: Fix selectedTubular.name
-        downloadToCsvFileName={`Tubular_${objectUid}`}
-      />
-    )
+    <ContentTable
+      viewId="tubularView"
+      columns={columns}
+      data={tubularComponentRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      showRefresh
+      // TODO: Fix selectedTubular.name
+      downloadToCsvFileName={`Tubular_${objectUid}`}
+    />
   );
 }

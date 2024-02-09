@@ -1,9 +1,10 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { measureToString } from "../../models/measure";
@@ -12,6 +13,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
   GeologyIntervalContextMenuProps
 } from "../ContextMenus/GeologyIntervalContextMenu";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -41,14 +43,16 @@ export interface GeologyIntervalRow extends ContentTableRow {
 export default function MudLogView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
 
-  const [geologyIntervals, isFetching] =
-    useGetObjectComponents<GeologyInterval>(
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.GeologyInterval
-    );
+  const { components: geologyIntervals, isFetching } = useGetComponents(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.GeologyInterval,
+    { placeholderData: [] }
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
@@ -124,26 +128,28 @@ export default function MudLogView() {
     }
   );
 
-  const insetColumns: ContentTableColumn[] = [
-    { property: "type", label: "type", type: ContentType.String },
-    { property: "codeLith", label: "codeLith", type: ContentType.Number },
-    { property: "lithPc", label: "lithPc %", type: ContentType.Number }
-  ];
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching MudLog.`} />;
+  }
 
   return (
-    !isFetching && (
-      <ContentTable
-        viewId="mudLogView"
-        columns={columns}
-        data={geologyIntervalRows}
-        onContextMenu={onContextMenu}
-        checkableRows
-        insetColumns={insetColumns}
-        showRefresh
-        // TODO: Fix downloadToCsvFilename, selectedMudlog.name has been removed.
-        // downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
-        downloadToCsvFileName={`MudLog_${objectUid}`}
-      />
-    )
+    <ContentTable
+      viewId="mudLogView"
+      columns={columns}
+      data={geologyIntervalRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      insetColumns={insetColumns}
+      showRefresh
+      // TODO: Fix downloadToCsvFilename, selectedMudlog.name has been removed.
+      // downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
+      downloadToCsvFileName={`MudLog_${objectUid}`}
+    />
   );
 }
+
+const insetColumns: ContentTableColumn[] = [
+  { property: "type", label: "type", type: ContentType.String },
+  { property: "codeLith", label: "codeLith", type: ContentType.Number },
+  { property: "lithPc", label: "lithPc %", type: ContentType.Number }
+];

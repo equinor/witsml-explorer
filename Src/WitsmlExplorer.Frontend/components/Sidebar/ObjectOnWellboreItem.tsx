@@ -55,6 +55,31 @@ export default function ObjectOnWellboreItem({
       payload: { component: <ContextMenu {...contextMenuProps} />, position }
     });
   };
+
+  const onLabelClick = () => {
+    if (
+      objectType === ObjectType.MudLog ||
+      objectType === ObjectType.Trajectory ||
+      objectType === ObjectType.Tubular ||
+      objectType === ObjectType.WbGeometry ||
+      objectType === ObjectType.FluidsReport
+    ) {
+      navigate(
+        `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+          well.uid
+        }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects/${
+          objectOnWellbore.uid
+        }`
+      );
+    } else {
+      navigate(
+        `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+          well.uid
+        }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects`
+      );
+    }
+  };
+
   return (
     <TreeItem
       nodeId={nodeId}
@@ -63,23 +88,7 @@ export default function ObjectOnWellboreItem({
         calculateObjectNodeId(wellbore, objectType, objectOnWellbore.uid) ===
         calculateObjectNodeId(wellbore, objectGroup, objectUid)
       }
-      onLabelClick={() => {
-        if (
-          objectType === ObjectType.MudLog ||
-          objectType === ObjectType.Trajectory ||
-          objectType === ObjectType.Tubular ||
-          objectType === ObjectType.WbGeometry ||
-          objectType === ObjectType.FluidsReport
-        ) {
-          navigate(
-            `/servers/${encodeURIComponent(
-              authorizationState.server.url
-            )}/wells/${well.uid}/wellbores/${
-              wellbore.uid
-            }/objectgroups/${objectType}/objects/${objectOnWellbore.uid}`
-          );
-        }
-      }}
+      onLabelClick={onLabelClick}
       onContextMenu={(event: MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );

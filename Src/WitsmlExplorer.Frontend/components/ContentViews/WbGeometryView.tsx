@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
@@ -14,6 +15,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
 } from "../ContextMenus/WbGeometrySectionContextMenu";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -31,14 +33,16 @@ export default function WbGeometryView() {
   const { dispatchOperation } = useContext(OperationContext);
   const selectedWbGeometry = selectedObject as WbGeometryObject;
   const { wellUid, wellboreUid, objectUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
 
-  const [wbGeometrySections, isFetching] =
-    useGetObjectComponents<WbGeometrySection>(
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.WbGeometrySection
-    );
+  const { components: wbGeometrySections, isFetching } = useGetComponents(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.WbGeometrySection,
+    { placeholderData: [] }
+  );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
@@ -115,18 +119,20 @@ export default function WbGeometryView() {
     };
   });
 
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching WbGeometry.`} />;
+  }
+
   return (
-    !isFetching && (
-      <ContentTable
-        viewId="wbGeometryView"
-        columns={columns}
-        data={wbGeometrySectionRows}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        // TODO: Fix downloadToCsvFileName
-        downloadToCsvFileName={`WbGeometry_${objectUid}`}
-      />
-    )
+    <ContentTable
+      viewId="wbGeometryView"
+      columns={columns}
+      data={wbGeometrySectionRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      showRefresh
+      // TODO: Fix downloadToCsvFileName
+      downloadToCsvFileName={`WbGeometry_${objectUid}`}
+    />
   );
 }

@@ -1,9 +1,10 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { useGetObjectComponents } from "../../hooks/useGetObjectComponents";
 import { ComponentType } from "../../models/componentType";
 import Fluid from "../../models/fluid";
 import { measureToString } from "../../models/measure";
@@ -12,6 +13,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "../ContextMenus/FluidContextMenu";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -30,12 +32,15 @@ interface FluidsRow extends ContentTableRow, FluidAsStrings {
 export default function FluidsView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
+  const { authorizationState } = useAuthorizationState();
 
-  const [fluids, isFetching] = useGetObjectComponents<Fluid>(
+  const { components: fluids, isFetching } = useGetComponents(
+    authorizationState?.server,
     wellUid,
     wellboreUid,
     objectUid,
-    ComponentType.Fluid
+    ComponentType.Fluid,
+    { placeholderData: [] }
   );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
@@ -251,20 +256,22 @@ export default function FluidsView() {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching FluidsReport.`} />;
+  }
+
   return (
-    !isFetching && (
-      <ContentTable
-        viewId="fluidView"
-        columns={columns}
-        data={fluidRows}
-        onContextMenu={onContextMenu}
-        checkableRows
-        insetColumns={insetColumns}
-        showRefresh
-        // TODO: Fix downloadToCsvFileName, selectedFluidReport.name has been removed.
-        // downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
-        downloadToCsvFileName={`FluidsReport_${objectUid}`}
-      />
-    )
+    <ContentTable
+      viewId="fluidView"
+      columns={columns}
+      data={fluidRows}
+      onContextMenu={onContextMenu}
+      checkableRows
+      insetColumns={insetColumns}
+      showRefresh
+      // TODO: Fix downloadToCsvFileName, selectedFluidReport.name has been removed.
+      // downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
+      downloadToCsvFileName={`FluidsReport_${objectUid}`}
+    />
   );
 }

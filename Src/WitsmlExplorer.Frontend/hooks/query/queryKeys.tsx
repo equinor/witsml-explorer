@@ -5,3 +5,4 @@ export const QUERY_KEY_WELLBORE = "wellbore";
 export const QUERY_KEY_OBJECT_COUNT = "objectCount";
 export const QUERY_KEY_OBJECTS = "objects";
 export const QUERY_KEY_OBJECT = "object";
+export const QUERY_KEY_COMPONENTS = "components";

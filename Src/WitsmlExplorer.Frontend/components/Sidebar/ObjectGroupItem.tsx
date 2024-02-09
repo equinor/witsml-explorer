@@ -120,6 +120,7 @@ export default function ObjectGroupItem({
       : onGroupContextMenu(event, wellbore);
   };
   const showStub =
+    isGroupObject(objectType) &&
     objectCount != null &&
     objectCount[objectType] != null &&
     objectCount[objectType] != 0;
@@ -163,7 +164,7 @@ export default function ObjectGroupItem({
                 wellboreUid={wellboreUid}
               />
             ))) ||
-          (showStub && ["", ""])
+          (showStub && ["", ""]) // TODO: Should BhaRun, FormtaionMarker, Message and Risk show the toggle icon? It is showing for them now, but not originally.
         )}
       </TreeItem>
     )

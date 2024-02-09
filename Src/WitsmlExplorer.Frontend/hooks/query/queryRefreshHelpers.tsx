@@ -1,6 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
+import { ComponentType, getParentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import {
+  QUERY_KEY_COMPONENTS,
   QUERY_KEY_OBJECT,
   QUERY_KEY_OBJECTS,
   QUERY_KEY_WELL,
@@ -22,7 +24,9 @@ export const refreshWellsQuery = (
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_OBJECTS, serverUrl.toLowerCase()]
   });
-  // TODO: Invalidate all queries of objects that are "children" of wells.
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_COMPONENTS, serverUrl.toLowerCase()]
+  });
 };
 
 export const refreshWellQuery = (
@@ -47,7 +51,13 @@ export const refreshWellQuery = (
       wellUid.toLowerCase()
     ]
   });
-  // TODO: Invalidate all queries of objects that are "children" of the well.
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase()
+    ]
+  });
 };
 
 export const refreshWellboresQuery = (
@@ -69,7 +79,13 @@ export const refreshWellboresQuery = (
       wellUid.toLowerCase()
     ]
   });
-  // TODO: Invalidate all queries of objects that are "children" of wellbores.
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase()
+    ]
+  });
 };
 
 export const refreshWellboreQuery = (
@@ -94,7 +110,14 @@ export const refreshWellboreQuery = (
       wellboreUid.toLowerCase()
     ]
   });
-  // TODO: Invalidate all queries of objects that are "children" of the wellbore.
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase(),
+      wellboreUid.toLowerCase()
+    ]
+  });
 };
 
 export const refreshObjectsQuery = (
@@ -113,7 +136,15 @@ export const refreshObjectsQuery = (
       objectType.toLowerCase()
     ]
   });
-  // TODO: Invalidate all queries of objects that are "children" of objects.
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase(),
+      wellboreUid.toLowerCase(),
+      objectType.toLowerCase()
+    ]
+  });
 };
 
 export const refreshObjectQuery = (
@@ -139,5 +170,35 @@ export const refreshObjectQuery = (
       objectUid.toLowerCase()
     ]
   });
-  // TODO: Invalidate all queries of objects that are "children" of the object.
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase(),
+      wellboreUid.toLowerCase(),
+      objectType.toLowerCase(),
+      objectUid.toLowerCase()
+    ]
+  });
+};
+
+export const refreshComponentsQuery = (
+  queryClient: QueryClient,
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  objectUid: string,
+  componentType: ComponentType
+) => {
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase(),
+      wellboreUid.toLowerCase(),
+      getParentType(componentType).toLowerCase(), // The object type of the parent object.
+      objectUid.toLowerCase(),
+      componentType.toLowerCase()
+    ]
+  });
 };
