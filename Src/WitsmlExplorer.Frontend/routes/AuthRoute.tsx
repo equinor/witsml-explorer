@@ -1,185 +1,81 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "../components/Modals/UserCredentialsModal";
 import { useAuthorizationState } from "../contexts/authorizationStateContext";
-import {
-  FilterContext,
-  VisibilityStatus,
-  allVisibleObjects
-} from "../contexts/filter";
-import { UpdateServerListAction } from "../contexts/modificationActions";
-import ModificationType from "../contexts/modificationType";
-import { SelectServerAction } from "../contexts/navigationActions";
-import NavigationContext from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
-import { useServers } from "../contexts/serversContext";
-import { useGetWells } from "../hooks/query/useGetWells";
-import { ObjectType } from "../models/objectType";
+import { useGetServers } from "../hooks/query/useGetServers";
 import { Server } from "../models/server";
 import { msalEnabled } from "../msal/MsalAuthProvider";
 import AuthorizationService, {
+  AuthorizationState,
   AuthorizationStatus
 } from "../services/authorizationService";
-import CapService from "../services/capService";
-import NotificationService from "../services/notificationService";
-import ServerService from "../services/serverService";
-import {
-  STORAGE_FILTER_HIDDENOBJECTS_KEY,
-  getLocalStorageItem
-} from "../tools/localStorageHelpers";
 
 export default function AuthRoute() {
-  const { dispatchNavigation, navigationState } = useContext(NavigationContext);
-  const { servers, selectedServer } = navigationState;
-  const { authorizationState, setAuthorizationState } = useAuthorizationState();
-  const { wells } = useGetWells(authorizationState?.server);
-  const [hasFetchedServers, setHasFetchedServers] = useState(false);
-  const { updateSelectedFilter } = useContext(FilterContext);
-  const isAuthenticated = !msalEnabled || useIsAuthenticated();
-  const { serverUrl } = useParams();
   const { dispatchOperation } = useContext(OperationContext);
-  const { setServers } = useServers();
+  const isAuthenticated = !msalEnabled || useIsAuthenticated();
+  const { servers } = useGetServers({ enabled: isAuthenticated });
+  const { authorizationState, setAuthorizationState } = useAuthorizationState();
+  const { serverUrl } = useParams();
 
   useEffect(() => {
-    const unsubscribeFromCredentialsEvents =
+    const unsubscribe =
       AuthorizationService.onAuthorizationChangeEvent.subscribe(
-        async (authorizationState) => {
+        async (authorizationState: AuthorizationState) => {
           setAuthorizationState(authorizationState);
+          const server = authorizationState.server;
+          if (
+            authorizationState.status == AuthorizationStatus.Unauthorized &&
+            !AuthorizationService.serverIsAwaitingAuthorization(server)
+          ) {
+            const index = server.usernames.findIndex(
+              (u) => u == server.currentUsername
+            );
+            if (index !== -1) {
+              server.usernames.splice(index, 1);
+            }
+            showCredentialsModal(server);
+            AuthorizationService.awaitServerAuthorization(server);
+          } else if (
+            authorizationState.status == AuthorizationStatus.Authorized ||
+            authorizationState.status == AuthorizationStatus.Cancel
+          ) {
+            AuthorizationService.finishServerAuthorization(server);
+          }
         }
       );
     return () => {
-      unsubscribeFromCredentialsEvents();
+      unsubscribe();
     };
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && !hasFetchedServers) {
-      const abortController = new AbortController();
-      const getServers = async () => {
-        const freshServers = await ServerService.getServers(
-          abortController.signal
-        );
-        setHasFetchedServers(true);
-        const action: UpdateServerListAction = {
-          type: ModificationType.UpdateServerList,
-          payload: { servers: freshServers }
-        };
-        dispatchNavigation(action);
-        setServers(freshServers);
-      };
-      getServers();
-
-      return () => {
-        abortController.abort();
-      };
+    if (
+      servers &&
+      authorizationState?.status !== AuthorizationStatus.Authorized
+    ) {
+      const server = servers.find((server) => server.url === serverUrl);
+      showCredentialsModal(server);
     }
-  }, [isAuthenticated, hasFetchedServers]);
+  }, [servers, authorizationState]);
 
-  useEffect(() => {
-    // update selected server when servers are fetched
-    if (servers.length !== 0) {
-      if (serverUrl == null) {
-        return;
+  const showCredentialsModal = (server: Server) => {
+    const userCredentialsModalProps: UserCredentialsModalProps = {
+      server: server,
+      onConnectionVerified: (username) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        AuthorizationService.onAuthorized(server, username);
       }
-      const server = servers.find(
-        (server: Server) => server.url.toLowerCase() === serverUrl.toLowerCase()
-      );
-      if (server && !selectedServer) {
-        const onSelectItem = async (server: Server) => {
-          if (server.id === selectedServer?.id) {
-            const action: SelectServerAction = {
-              type: NavigationType.SelectServer,
-              payload: { server: null }
-            };
-            dispatchNavigation(action);
-          } else {
-            const userCredentialsModalProps: UserCredentialsModalProps = {
-              server,
-              onConnectionVerified: (username) => {
-                dispatchOperation({ type: OperationType.HideModal });
-                AuthorizationService.onAuthorized(
-                  server,
-                  username,
-                  dispatchNavigation
-                );
-                const action: SelectServerAction = {
-                  type: NavigationType.SelectServer,
-                  payload: { server }
-                };
-                dispatchNavigation(action);
-              }
-            };
-            dispatchOperation({
-              type: OperationType.DisplayModal,
-              payload: <UserCredentialsModal {...userCredentialsModalProps} />
-            });
-          }
-        };
-
-        onSelectItem(server);
-      }
-    }
-  }, [servers]);
-
-  const updateVisibleObjects = (supportedObjects: string[]) => {
-    const updatedVisibility = { ...allVisibleObjects };
-    const hiddenItems = getLocalStorageItem<ObjectType[]>(
-      STORAGE_FILTER_HIDDENOBJECTS_KEY,
-      { defaultValue: [] }
-    );
-    hiddenItems.forEach(
-      (objectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden)
-    );
-    Object.values(ObjectType)
-      .filter(
-        (objectType) =>
-          !supportedObjects
-            .map((o) => o.toLowerCase())
-            .includes(objectType.toLowerCase())
-      )
-      .forEach(
-        (objectType) =>
-          (updatedVisibility[objectType] = VisibilityStatus.Disabled)
-      );
-    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <UserCredentialsModal {...userCredentialsModalProps} />
+    });
   };
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    const onCurrentLoginStateChange = async () => {
-      if (
-        selectedServer == null ||
-        (!!wells && wells.length !== 0) ||
-        (authorizationState &&
-          authorizationState.status != AuthorizationStatus.Authorized)
-      ) {
-        return;
-      }
-      try {
-        const supportedObjects = await CapService.getCapObjects();
-        updateVisibleObjects(supportedObjects);
-      } catch (error) {
-        NotificationService.Instance.alertDispatcher.dispatch({
-          serverUrl: new URL(selectedServer.url),
-          message: error.message,
-          isSuccess: false
-        });
-        dispatchNavigation({
-          type: NavigationType.SelectServer,
-          payload: { server: null }
-        });
-      }
-    };
-    onCurrentLoginStateChange();
-    return () => {
-      abortController.abort();
-    };
-  }, [msalEnabled, selectedServer, authorizationState]);
 
   if (
     authorizationState &&

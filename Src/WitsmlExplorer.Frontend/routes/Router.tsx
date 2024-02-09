@@ -12,7 +12,6 @@ import ServerManager from "../components/ContentViews/ServerManager";
 import WellboreObjectTypesListView from "../components/ContentViews/WellboreObjectTypesListView";
 import WellboresListView from "../components/ContentViews/WellboresListView";
 import WellsListView from "../components/ContentViews/WellsListView";
-import { wellsLoader } from "../hooks/query/useGetWells";
 import AuthRoute from "./AuthRoute";
 import Root from "./Root";
 
@@ -36,7 +35,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "wells",
-            loader: wellsLoader(queryClient),
+            // loader: wellsLoader(queryClient),
             element: <WellsListView />
           },
           {
