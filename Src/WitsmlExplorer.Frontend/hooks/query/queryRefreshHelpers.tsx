@@ -124,6 +124,11 @@ export const refreshObjectQuery = (
   objectType: ObjectType,
   objectUid: string
 ) => {
+  // TODO: NOTE: This will not work if we are trying to update the objects list, and the specific object is not actively used by the useGetObject hook.
+  // We can pre-fetch the query, but it would require access to the server object to use the current url/user combination.
+  // I'm not sure If I like either approach.
+  // queryClient.prefetchQuery(objectQuery(queryClient, server, wellUid, wellboreUid, objectType, objectUid, { staleTime: 0 })) // Note that the staleTime makes sure it is refetched even if it is already in the cache.
+  // TODO: This also applies to refreshWellboreQuery if the sidebar is closed.
   queryClient.invalidateQueries({
     queryKey: [
       QUERY_KEY_OBJECT,

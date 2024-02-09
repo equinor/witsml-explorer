@@ -51,6 +51,8 @@ export const wellsLoader =
   async ({ params }: LoaderFunctionArgs<WellsLoaderParams>): Promise<null> => {
     const { serverUrl } = params;
     // Not sure if creating a new server object will have any side-effects, or if it's just the url that's used anyway.
+    // Update: It does cause a problem as the username is not passed correctly, so you have to re-enter credentials if not authorized.
+    // If we are going to use the loader, we need to find a way to pass the full server object.
     const server: Server = { ...emptyServer(), url: serverUrl };
     const query = wellsQuery(queryClient, server);
     queryClient.prefetchQuery(query);

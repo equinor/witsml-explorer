@@ -1,16 +1,15 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import { MouseEvent, useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
-import ObjectService from "../../services/objectService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -19,6 +18,7 @@ import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import formatDateString from "../DateFormatter";
+import ProgressSpinner from "../ProgressSpinner";
 import LogsGraph from "./Charts/LogsGraph";
 import {
   ContentTable,
@@ -32,57 +32,38 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 }
 
 export default function LogsListView() {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedLogTypeGroup } = navigationState;
-
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const [logs, setLogs] = useState<LogObject[]>([]);
-  const [resetCheckedItems, setResetCheckedItems] = useState(false);
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid, logType } = useParams();
-  const { wellbore } = useGetWellbore(
+  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
     authorizationState?.server,
     wellUid,
     wellboreUid
   );
-
+  const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    ObjectType.Log
+  );
+  const isTimeIndexed = logType === "time";
+  const logs = filterLogsByType(
+    allLogs,
+    isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD
+  );
   useExpandSidebarNodes(
     wellUid,
     wellboreUid,
     ObjectType.Log,
-    logType === "depth" ? WITSML_INDEX_TYPE_MD : WITSML_INDEX_TYPE_DATE_TIME
+    isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD
   );
-
-  const filterLogsByType = (logs: LogObject[], logType: string) => {
-    return logs?.filter((log) => log.indexType === logType) ?? [];
-  };
-  useEffect(() => {
-    const fetchObjects = async () => {
-      const objects = await ObjectService.getObjects(
-        wellUid,
-        wellboreUid,
-        ObjectType.Log
-      );
-      if (logType === "depth") {
-        setLogs(filterLogsByType(objects, WITSML_INDEX_TYPE_MD));
-      } else if (logType === "time") {
-        setLogs(filterLogsByType(objects, WITSML_INDEX_TYPE_DATE_TIME));
-      } else {
-        throw Error(`logType=${logType} is not supported`);
-      }
-    };
-    fetchObjects();
-  }, [wellUid, wellboreUid, logType]);
-
-  const isTimeIndexed = () => {
-    return logType === "time";
-  };
+  const isFetching = isFetchingWellbore || isFetchingLogs;
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,
@@ -108,14 +89,12 @@ export default function LogsListView() {
       return {
         ...log,
         id: log.uid,
-        startIndex:
-          wellbore && isTimeIndexed()
-            ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
-            : log.startIndex,
-        endIndex:
-          wellbore && isTimeIndexed()
-            ? formatDateString(log.endIndex, timeZone, dateTimeFormat)
-            : log.endIndex,
+        startIndex: isTimeIndexed
+          ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
+          : log.startIndex,
+        endIndex: isTimeIndexed
+          ? formatDateString(log.endIndex, timeZone, dateTimeFormat)
+          : log.endIndex,
         dTimCreation: formatDateString(
           log.commonData.dTimCreation,
           timeZone,
@@ -136,14 +115,12 @@ export default function LogsListView() {
     {
       property: "startIndex",
       label: "startIndex",
-      type:
-        wellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure
+      type: isTimeIndexed ? ContentType.DateTime : ContentType.Measure
     },
     {
       property: "endIndex",
       label: "endIndex",
-      type:
-        wellbore && isTimeIndexed() ? ContentType.DateTime : ContentType.Measure
+      type: isTimeIndexed ? ContentType.DateTime : ContentType.Measure
     },
     { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
     {
@@ -178,51 +155,43 @@ export default function LogsListView() {
     );
   };
 
-  useEffect(() => {
-    if (resetCheckedItems) {
-      setResetCheckedItems(false);
-      setSelectedRows([]);
-    }
-  }, [resetCheckedItems]);
-
-  useEffect(() => {
-    setResetCheckedItems(true);
-  }, [wellbore, selectedLogTypeGroup]);
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Logs`} />;
+  }
 
   return (
-    !resetCheckedItems && (
-      <ContentContainer>
-        <CommonPanelContainer>
-          <Switch
-            checked={showGraph}
-            onChange={() => setShowGraph(!showGraph)}
-          />
-          <Typography>
-            Gantt view{selectedRows.length > 0 && " (selected logs only)"}
-          </Typography>
-        </CommonPanelContainer>
-        {showGraph ? (
-          <LogsGraph selectedLogs={selectedRows} />
-        ) : (
-          <ContentTable
-            viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
-            columns={columns}
-            onSelect={onSelect}
-            data={getTableData()}
-            onContextMenu={onContextMenu}
-            onRowSelectionChange={(rows) =>
-              setSelectedRows(rows as LogObjectRow[])
-            }
-            checkableRows
-            showRefresh
-            initiallySelectedRows={selectedRows}
-            downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
-          />
-        )}
-      </ContentContainer>
-    )
+    <ContentContainer>
+      <CommonPanelContainer>
+        <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
+        <Typography>
+          Gantt view{selectedRows.length > 0 && " (selected logs only)"}
+        </Typography>
+      </CommonPanelContainer>
+      {showGraph ? (
+        <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
+      ) : (
+        <ContentTable
+          viewId={isTimeIndexed ? "timeLogsListView" : "depthLogsListView"}
+          columns={columns}
+          onSelect={onSelect}
+          data={getTableData()}
+          onContextMenu={onContextMenu}
+          onRowSelectionChange={(rows) =>
+            setSelectedRows(rows as LogObjectRow[])
+          }
+          checkableRows
+          showRefresh
+          initiallySelectedRows={selectedRows}
+          downloadToCsvFileName={isTimeIndexed ? "TimeLogs" : "DepthLogs"}
+        />
+      )}
+    </ContentContainer>
   );
 }
+
+const filterLogsByType = (logs: LogObject[], logType: string) => {
+  return logs?.filter((log) => log.indexType === logType) ?? [];
+};
 
 const CommonPanelContainer = styled.div`
   display: flex;

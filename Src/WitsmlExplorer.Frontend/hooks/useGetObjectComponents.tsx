@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ComponentType } from "../models/componentType";
 import ComponentService from "../services/componentService";
 
-// TODO: Fix generic
+// TODO: Implement React Query for this hook, and move the file to query.
 export function useGetObjectComponents<T>(
   wellUid: string,
   wellboreUid: string,
