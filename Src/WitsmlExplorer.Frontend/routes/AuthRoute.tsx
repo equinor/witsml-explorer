@@ -69,6 +69,7 @@ export default function AuthRoute() {
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
+        AuthorizationService.setSelectedServer(server);
       }
     };
     dispatchOperation({
