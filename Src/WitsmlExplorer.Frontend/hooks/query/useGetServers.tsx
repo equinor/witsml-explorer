@@ -14,13 +14,8 @@ export const serversQuery = (options?: QueryOptions) => ({
     const servers = await ServerService.getServers();
     return servers;
   },
-  ...options,
-  enabled: !(options?.enabled === false)
+  ...options
 });
-
-export interface WellsLoaderParams {
-  serverUrl: string;
-}
 
 type ServersQueryResult = Omit<
   QueryObserverResult<Server[], unknown>,

@@ -102,9 +102,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   if (isFetching) {
-    return (
-      <ProgressSpinner message="Fetching servers. This may take some time." />
-    );
+    return <ProgressSpinner message="Fetching servers." />;
   }
 
   return (
