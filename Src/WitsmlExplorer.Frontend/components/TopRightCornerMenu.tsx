@@ -1,10 +1,8 @@
 import { Button } from "@equinor/eds-core-react";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../contexts/authorizationStateContext";
-import NavigationContext from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import useDocumentDimensions from "../hooks/useDocumentDimensions";
@@ -20,15 +18,13 @@ import ServerManagerButton from "./ServerManagerButton";
 
 export default function TopRightCornerMenu() {
   const {
-    navigationState: { selectedServer },
-    dispatchNavigation
-  } = useContext(NavigationContext);
-  const {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
   const { width: documentWidth } = useDocumentDimensions();
   const showLabels = documentWidth > 1180;
+  const { authorizationState } = useAuthorizationState();
+  const navigate = useNavigate();
 
   const openSettingsMenu = () => {
     dispatchOperation({
@@ -36,18 +32,13 @@ export default function TopRightCornerMenu() {
       payload: <SettingsModal />
     });
   };
-  const { authorizationState } = useAuthorizationState();
 
   const openCredentialsModal = () => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: selectedServer,
+      server: authorizationState?.server,
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(
-          selectedServer,
-          username,
-          dispatchNavigation
-        );
+        AuthorizationService.onAuthorized(authorizationState?.server, username);
       }
     };
     dispatchOperation({
@@ -57,46 +48,34 @@ export default function TopRightCornerMenu() {
   };
 
   const openQueryView = () => {
-    dispatchNavigation({ type: NavigationType.SelectQueryView, payload: {} });
+    navigate(
+      `servers/${encodeURIComponent(authorizationState?.server?.url)}/query`
+    );
   };
 
   return (
     <Layout>
-      {selectedServer?.currentUsername && (
+      {authorizationState?.server?.currentUsername && (
         <StyledButton
           colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
           onClick={openCredentialsModal}
         >
           <Icon name="person" />
-          {showLabels && selectedServer.currentUsername}
+          {showLabels && authorizationState?.server?.currentUsername}
         </StyledButton>
       )}
-      <Link to="/">
-        <ServerManagerButton showLabels={showLabels} />
-      </Link>
-      <Link
-        to={`servers/${encodeURIComponent(
-          authorizationState?.server?.url
-        )}/jobs`}
+      <ServerManagerButton showLabels={showLabels} />
+      <JobsButton showLabels={showLabels} />
+      <StyledButton
+        colors={colors}
+        variant={showLabels ? "ghost" : "ghost_icon"}
+        onClick={openQueryView}
+        disabled={!authorizationState?.server}
       >
-        <JobsButton showLabels={showLabels} />
-      </Link>
-      <Link
-        to={`servers/${encodeURIComponent(
-          authorizationState?.server?.url
-        )}/query`}
-      >
-        <StyledButton
-          colors={colors}
-          variant={showLabels ? "ghost" : "ghost_icon"}
-          onClick={openQueryView}
-          disabled={!selectedServer}
-        >
-          <Icon name="code" />
-          {showLabels && "Query"}
-        </StyledButton>
-      </Link>
+        <Icon name="code" />
+        {showLabels && "Query"}
+      </StyledButton>
       <StyledButton
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}

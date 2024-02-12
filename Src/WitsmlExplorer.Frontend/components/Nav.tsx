@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import {
   NavLink,
   NavigateFunction,
+  useMatch,
   useNavigate,
   useParams
 } from "react-router-dom";
@@ -26,6 +27,8 @@ export default function Nav() {
     operationState: { colors }
   } = useContext(OperationContext);
   const navigate = useNavigate();
+  const isJobsView = !!useMatch("servers/:serverUrl/jobs");
+  const isQueryView = !!useMatch("servers/:serverUrl/query");
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
@@ -43,8 +46,8 @@ export default function Nav() {
     });
     return [
       getServerCrumb(serverUrl, navigate),
-      getJobsCrumb(serverUrl, currentSelected, navigate),
-      getQueryCrumb(serverUrl, currentSelected, navigate),
+      getJobsCrumb(serverUrl, isJobsView, navigate),
+      getQueryCrumb(serverUrl, isQueryView, navigate),
       getSearchCrumb(currentSelected),
       getWellCrumb(serverUrl, wellUid, navigate),
       getWellboreCrumb(serverUrl, wellUid, wellboreUid, navigate),
@@ -71,7 +74,8 @@ export default function Nav() {
     objectGroup,
     objectUid,
     logType,
-    currentSelected
+    isJobsView,
+    isQueryView
   ]);
 
   return (
@@ -241,10 +245,10 @@ const getObjectCrumb = (
 
 const getJobsCrumb = (
   serverUrl: string,
-  currentSelected: Selectable,
+  isJobsView: boolean,
   navigate: NavigateFunction
 ) => {
-  return currentSelected === ViewFlags.Jobs
+  return isJobsView
     ? {
         name: "Jobs",
         onClick: () => {
@@ -256,10 +260,10 @@ const getJobsCrumb = (
 
 const getQueryCrumb = (
   serverUrl: string,
-  currentSelected: Selectable,
+  isQueryView: boolean,
   navigate: NavigateFunction
 ) => {
-  return currentSelected === ViewFlags.Query
+  return isQueryView
     ? {
         name: "Query",
         onClick: () => {
@@ -269,6 +273,7 @@ const getQueryCrumb = (
     : {};
 };
 
+// TODO: Fix search view breadcrumb
 const getSearchCrumb = (currentSelected: Selectable) => {
   return currentSelected === ViewFlags.ObjectSearchView
     ? {

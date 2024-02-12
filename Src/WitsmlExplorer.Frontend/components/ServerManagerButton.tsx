@@ -1,9 +1,8 @@
 import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../contexts/authorizationStateContext";
-import NavigationContext from "../contexts/navigationContext";
-import NavigationType from "../contexts/navigationType";
 import OperationContext from "../contexts/operationContext";
 import { AuthorizationStatus } from "../services/authorizationService";
 import { Colors } from "../styles/Colors";
@@ -16,17 +15,14 @@ export interface ServerManagerButtonProps {
 const ServerManagerButton = (
   props: ServerManagerButtonProps
 ): React.ReactElement => {
-  const { dispatchNavigation } = useContext(NavigationContext);
   const { authorizationState } = useAuthorizationState();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const navigate = useNavigate();
 
   const onClick = () => {
-    dispatchNavigation({
-      type: NavigationType.SelectServerManager,
-      payload: {}
-    });
+    navigate("/");
   };
 
   const connected =
