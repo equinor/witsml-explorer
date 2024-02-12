@@ -193,7 +193,9 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickShowOnServer = async (server: Server) => {
     const host = `${window.location.protocol}//${window.location.host}`;
-    const wellUrl = `${host}/?serverUrl=${server.url}&wellUid=${well.uid}`;
+    const wellUrl = `${host}/servers/${encodeURIComponent(server.url)}/wells/${
+      well.uid
+    }/wellbores`;
     window.open(wellUrl);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };
