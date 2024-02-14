@@ -23,7 +23,7 @@ export const getObjectsQueryKey = (
     serverUrl?.toLowerCase(),
     wellUid?.toLowerCase(),
     wellboreUid?.toLowerCase(),
-    objectType.toLowerCase()
+    objectType?.toLowerCase()
   ];
 };
 

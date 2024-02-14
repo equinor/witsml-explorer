@@ -103,6 +103,7 @@ const WbGeometrySectionContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.WbGeometrySection}
           componentsToCopy={checkedWbGeometrySections}
+          sourceParent={wbGeometry}
         />,
         <MenuItem
           key={"paste"}

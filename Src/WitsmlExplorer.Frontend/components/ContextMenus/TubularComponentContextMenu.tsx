@@ -5,6 +5,7 @@ import React, { useContext } from "react";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
 import { ObjectType } from "../../models/objectType";
@@ -30,14 +31,13 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
   tubular: Tubular;
-  selectedServer: Server;
-  servers: Server[];
 }
 
 const TubularComponentContextMenu = (
   props: TubularComponentContextMenuProps
 ): React.ReactElement => {
-  const { checkedTubularComponents, tubular, selectedServer, servers } = props;
+  const { checkedTubularComponents, tubular } = props;
+  const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
@@ -96,7 +96,7 @@ const TubularComponentContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              authorizationState?.server,
               checkedTubularComponents.map((ts) => ts.uid),
               tubular,
               dispatchOperation,
@@ -118,6 +118,7 @@ const TubularComponentContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.TubularComponent}
           componentsToCopy={checkedTubularComponents}
+          sourceParent={tubular}
         />,
         <MenuItem
           key={"paste"}

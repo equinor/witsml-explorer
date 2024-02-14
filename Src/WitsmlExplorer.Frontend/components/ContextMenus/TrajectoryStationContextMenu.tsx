@@ -1,9 +1,10 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
-import React from "react";
-import { DispatchNavigation } from "../../contexts/navigationAction";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
+import React, { useContext } from "react";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
 import { ObjectType } from "../../models/objectType";
@@ -27,23 +28,16 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
-  dispatchNavigation: DispatchNavigation;
-  dispatchOperation: DispatchOperation;
   trajectory: Trajectory;
-  selectedServer: Server;
-  servers: Server[];
 }
 
 const TrajectoryStationContextMenu = (
   props: TrajectoryStationContextMenuProps
 ): React.ReactElement => {
-  const {
-    checkedTrajectoryStations,
-    dispatchOperation,
-    trajectory,
-    selectedServer,
-    servers
-  } = props;
+  const { checkedTrajectoryStations, trajectory } = props;
+  const { dispatchOperation } = useContext(OperationContext);
+  const { servers } = useGetServers();
+  const { authorizationState } = useAuthorizationState();
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(
     ComponentType.TrajectoryStation
   );
@@ -77,7 +71,7 @@ const TrajectoryStationContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              authorizationState?.server,
               checkedTrajectoryStations.map((ts) => ts.uid),
               trajectory,
               dispatchOperation,
@@ -99,6 +93,7 @@ const TrajectoryStationContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.TrajectoryStation}
           componentsToCopy={checkedTrajectoryStations}
+          sourceParent={trajectory}
         />,
         <MenuItem
           key={"paste"}

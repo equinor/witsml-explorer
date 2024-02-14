@@ -1,10 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { Fragment, useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { ComponentType, getParentType } from "../../models/componentType";
 import ComponentReferences, {
   createComponentReferences
@@ -30,15 +31,16 @@ import NestedMenuItem from "./NestedMenuItem";
 export interface CopyComponentsToServerMenuItemProps {
   componentsToCopy: { uid: string }[];
   componentType: ComponentType;
+  sourceParent: ObjectOnWellbore;
 }
 
 export const CopyComponentsToServerMenuItem = (
   props: CopyComponentsToServerMenuItemProps
 ): React.ReactElement => {
-  const { componentsToCopy, componentType } = props;
-  const {
-    navigationState: { selectedServer, selectedObject, servers }
-  } = useContext(NavigationContext);
+  const { componentsToCopy, componentType, sourceParent } = props;
+  const { authorizationState } = useAuthorizationState();
+  const { servers } = useGetServers();
+
   const { dispatchOperation } = useContext(OperationContext);
 
   return (
@@ -51,18 +53,18 @@ export const CopyComponentsToServerMenuItem = (
       )} to server`}
       disabled={componentsToCopy.length < 1}
     >
-      {servers.map(
+      {servers?.map(
         (server: Server) =>
-          server.id !== selectedServer.id && (
+          server.id !== authorizationState?.server?.id && (
             <MenuItem
               key={server.name}
               onClick={() =>
                 copyComponentsToServer({
                   targetServer: server,
-                  sourceServer: selectedServer,
+                  sourceServer: authorizationState?.server,
                   componentsToCopy,
                   dispatchOperation,
-                  sourceParent: selectedObject,
+                  sourceParent,
                   componentType
                 })
               }

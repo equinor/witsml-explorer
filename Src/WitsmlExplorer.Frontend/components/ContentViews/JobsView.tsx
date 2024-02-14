@@ -6,10 +6,11 @@ import React, {
   useMemo,
   useState
 } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import JobInfo from "../../models/jobs/jobInfo";
 import BaseReport from "../../models/reports/BaseReport";
 import { Server } from "../../models/server";
@@ -33,12 +34,12 @@ import { ReportModal } from "../Modals/ReportModal";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export const JobsView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
   const {
     dispatchOperation,
     operationState: { timeZone, colors, dateTimeFormat }
   } = useContext(OperationContext);
-  const { servers, selectedServer } = navigationState;
+  const { serverUrl } = useParams();
+  const { servers } = useGetServers();
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [lastFetched, setLastFetched] = useState<string>(
     new Date().toLocaleTimeString()
@@ -67,7 +68,7 @@ export const JobsView = (): React.ReactElement => {
     const eventHandler = (notification: Notification) => {
       const shouldFetch =
         notification.serverUrl.toString().toLowerCase() ===
-        navigationState.selectedServer?.url?.toLowerCase();
+        serverUrl?.toLowerCase();
       if (shouldFetch) {
         setShouldRefresh(true);
       }
@@ -85,11 +86,11 @@ export const JobsView = (): React.ReactElement => {
       unsubscribeOnSnackbar();
       unsubscribeOnAlert();
     };
-  }, [navigationState.selectedServer]);
+  }, [serverUrl]);
 
   useEffect(() => {
     return setShouldRefresh(true);
-  }, [showAll, selectedServer]);
+  }, [showAll, serverUrl]);
 
   useEffect(() => {
     if (shouldRefresh) {

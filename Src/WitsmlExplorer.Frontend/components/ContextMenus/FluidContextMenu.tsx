@@ -69,6 +69,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
           key={"copyComponentToServer"}
           componentType={ComponentType.Fluid}
           componentsToCopy={checkedFluids}
+          sourceParent={selectedFluidsReport}
         />,
         <MenuItem
           key={"paste"}
