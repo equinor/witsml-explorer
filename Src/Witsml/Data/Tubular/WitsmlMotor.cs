@@ -61,7 +61,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("rotorCatcher")]
         public string RotorCatcherText
         {
-            get => RotorCatcher?.ToString(CultureInfo.InvariantCulture);
+            get => RotorCatcher.HasValue ? XmlConvert.ToString(RotorCatcher.Value) : null;
             set => RotorCatcher = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
@@ -70,7 +70,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("dumpValve")]
         public string DumpValveText
         {
-            get => DumpValve?.ToString(CultureInfo.InvariantCulture);
+            get => DumpValve.HasValue ? XmlConvert.ToString(DumpValve.Value) : null;
             set => DumpValve = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 
@@ -82,7 +82,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("rotatable")]
         public string RotatableText
         {
-            get => Rotatable?.ToString(CultureInfo.InvariantCulture);
+            get => Rotatable.HasValue ? XmlConvert.ToString(Rotatable.Value) : null;
             set => Rotatable = string.IsNullOrEmpty(value) ? default(bool?) : bool.Parse(value);
         }
 

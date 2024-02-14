@@ -23,7 +23,7 @@ namespace Witsml.Data
         [XmlElement("objectGrowing")]
         public string ObjectGrowingText
         {
-            get => ObjectGrowing?.ToString(CultureInfo.InvariantCulture);
+            get => ObjectGrowing.HasValue ? XmlConvert.ToString(ObjectGrowing.Value) : null;
             set => ObjectGrowing = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
 
