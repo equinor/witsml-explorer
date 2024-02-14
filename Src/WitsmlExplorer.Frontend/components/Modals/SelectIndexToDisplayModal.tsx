@@ -4,6 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
+import { ObjectType } from "../../models/objectType";
 import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -58,7 +59,9 @@ const SelectIndexToDisplayModal = (
     navigate({
       pathname: `/servers/${encodeURIComponent(
         authorizationState.server.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/logs/logtypes/${
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+        ObjectType.Log
+      }/logtypes/${
         log.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
       }/objects/${log.uid}/curvevalues`,
       search: searchParams.toString()
