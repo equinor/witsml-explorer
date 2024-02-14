@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid)
         {
-            return await GetLog(wellUid, wellboreUid, logUid, new OptionsIn(ReturnElements.All));
+            return await GetLog(wellUid, wellboreUid, logUid, new OptionsIn(ReturnElements.HeaderOnly));
         }
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions)
@@ -91,6 +91,8 @@ namespace WitsmlExplorer.Api.Services
                 ObjectGrowing = StringHelpers.ToBoolean(witsmlLog.ObjectGrowing),
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber,
+                Direction = LogObject.ConvertDirection(witsmlLog),
+                Mnemonics = witsmlLog.LogCurveInfo.Count,
                 CommonData = new()
                 {
                     DTimCreation = witsmlLog.CommonData.DTimCreation,

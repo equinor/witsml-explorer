@@ -19,6 +19,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetObject } from "../../hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import useExport from "../../hooks/useExport";
 import {
   DeleteLogCurveValuesJob,
@@ -79,7 +80,7 @@ export const CurveValuesView = (): React.ReactElement => {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
-  const { wellUid, wellboreUid, objectUid } = useParams();
+  const { wellUid, wellboreUid, objectUid, logType } = useParams();
   const [columns, setColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
   >([]);
@@ -92,6 +93,7 @@ export const CurveValuesView = (): React.ReactElement => {
     DEFAULT_REFRESH_DELAY
   );
   const [refreshFlag, setRefreshFlag] = useState<boolean>(null);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
   const controller = useRef(new AbortController());
   const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
   const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();

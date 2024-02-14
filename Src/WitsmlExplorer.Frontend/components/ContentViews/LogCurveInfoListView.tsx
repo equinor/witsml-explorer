@@ -15,10 +15,6 @@ import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
-import {
-  WITSML_INDEX_TYPE_DATE_TIME,
-  WITSML_INDEX_TYPE_MD
-} from "../Constants";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
@@ -90,12 +86,7 @@ export default function LogCurveInfoListView() {
     isFetchingLog ||
     isFetchingLogCurveInfo;
 
-  useExpandSidebarNodes(
-    wellUid,
-    wellboreUid,
-    ObjectType.Log,
-    logType === "depth" ? WITSML_INDEX_TYPE_MD : WITSML_INDEX_TYPE_DATE_TIME
-  );
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
