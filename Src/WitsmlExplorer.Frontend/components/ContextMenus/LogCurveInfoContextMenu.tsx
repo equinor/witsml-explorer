@@ -54,7 +54,6 @@ const LogCurveInfoContextMenu = (
   const {
     checkedLogCurveInfoRows,
     dispatchOperation,
-    dispatchNavigation,
     selectedLog,
     selectedServer,
     selectedWell,
@@ -65,12 +64,10 @@ const LogCurveInfoContextMenu = (
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const modalProps = {
-      selectedLogCurveInfoRow: checkedLogCurveInfoRows,
-      selectedLog,
-      selectedWell,
-      selectedWellbore,
-      dispatchOperation,
-      dispatchNavigation
+      wellUid: selectedWell.uid,
+      wellboreUid: selectedWellbore.uid,
+      log: selectedLog,
+      logCurveInfoRows: checkedLogCurveInfoRows
     };
     const displayModalAction: DisplayModalAction = {
       type: OperationType.DisplayModal,

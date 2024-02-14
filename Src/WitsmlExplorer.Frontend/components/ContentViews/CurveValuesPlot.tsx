@@ -321,11 +321,11 @@ const getChartOption = (
               : curve;
           let minValue = minMaxValue.minValue?.toFixed(3);
           let maxValue = minMaxValue.maxValue?.toFixed(3);
-          if (minValue.length > LABEL_NUMBER_MAX_LENGTH) {
+          if (minValue?.length > LABEL_NUMBER_MAX_LENGTH) {
             minValue =
               minValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
           }
-          if (maxValue.length > LABEL_NUMBER_MAX_LENGTH) {
+          if (maxValue?.length > LABEL_NUMBER_MAX_LENGTH) {
             maxValue =
               maxValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
           }

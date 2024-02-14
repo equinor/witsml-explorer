@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
@@ -18,11 +19,14 @@ import Root from "./Root";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: Infinity
+      staleTime: Infinity,
+      gcTime: 30 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // The duration unused items are kept in the cache before garbage collection.
     }
   }
 });
 
+// TODO: Handle navigating to not-existing objects.
+// TODO: Also make sure that we navigate to the parent if we are viewing a object, and then delete it.
 const router = createBrowserRouter([
   {
     path: "/",
