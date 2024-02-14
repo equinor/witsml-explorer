@@ -21,9 +21,9 @@ export const getComponentsQueryKey = (
     serverUrl?.toLowerCase(),
     wellUid?.toLowerCase(),
     wellboreUid?.toLowerCase(),
-    getParentType(componentType).toLowerCase(), // The object type of the parent object.
-    objectUid.toLowerCase(),
-    componentType.toLowerCase()
+    getParentType(componentType)?.toLowerCase(), // The object type of the parent object.
+    objectUid?.toLowerCase(),
+    componentType?.toLowerCase()
   ];
 };
 

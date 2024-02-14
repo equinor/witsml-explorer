@@ -10,10 +10,6 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
-import NavigationContext, {
-  Selectable,
-  ViewFlags
-} from "../contexts/navigationContext";
 import OperationContext from "../contexts/operationContext";
 import { ObjectType, pluralizeObjectType } from "../models/objectType";
 import { colors } from "../styles/Colors";
@@ -21,14 +17,13 @@ import Icon from "../styles/Icons";
 import TopRightCornerMenu from "./TopRightCornerMenu";
 
 export default function Nav() {
-  const { navigationState } = useContext(NavigationContext);
-  const { currentSelected } = navigationState;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const navigate = useNavigate();
   const isJobsView = !!useMatch("servers/:serverUrl/jobs");
   const isQueryView = !!useMatch("servers/:serverUrl/query");
+  const isSearchView = !!useMatch("servers/:serverUrl/search");
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
@@ -48,7 +43,7 @@ export default function Nav() {
       getServerCrumb(serverUrl, navigate),
       getJobsCrumb(serverUrl, isJobsView, navigate),
       getQueryCrumb(serverUrl, isQueryView, navigate),
-      getSearchCrumb(currentSelected),
+      getSearchCrumb(serverUrl, isSearchView, navigate),
       getWellCrumb(serverUrl, wellUid, navigate),
       getWellboreCrumb(serverUrl, wellUid, wellboreUid, navigate),
       ...groupCrumbs,
@@ -273,11 +268,17 @@ const getQueryCrumb = (
     : {};
 };
 
-// TODO: Fix search view breadcrumb
-const getSearchCrumb = (currentSelected: Selectable) => {
-  return currentSelected === ViewFlags.ObjectSearchView
+const getSearchCrumb = (
+  serverUrl: string,
+  isSearchView: boolean,
+  navigate: NavigateFunction
+) => {
+  return isSearchView
     ? {
-        name: "Search"
+        name: "Search",
+        onClick: () => {
+          navigate(`servers/${encodeURIComponent(serverUrl)}/search`);
+        }
       }
     : {};
 };

@@ -83,6 +83,7 @@ const GeologyIntervalContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.GeologyInterval}
           componentsToCopy={checkedGeologyIntervals}
+          sourceParent={selectedMudLog}
         />,
         <MenuItem
           key={"paste"}

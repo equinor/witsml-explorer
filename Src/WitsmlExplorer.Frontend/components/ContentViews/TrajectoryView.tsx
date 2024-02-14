@@ -1,15 +1,14 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
+import { useGetObject } from "../../hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
-import Trajectory from "../../models/trajectory";
 import TrajectoryStation from "../../models/trajectoryStation";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TrajectoryStationContextMenu, {
@@ -36,15 +35,19 @@ export interface TrajectoryStationRow extends ContentTableRow {
 }
 
 export default function TrajectoryView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { selectedServer, selectedObject, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const selectedTrajectory = selectedObject as Trajectory;
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { authorizationState } = useAuthorizationState();
+  const { object: trajectory } = useGetObject(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    ObjectType.Trajectory,
+    objectUid
+  );
 
   const { components: trajectoryStations, isFetching } = useGetComponents(
     authorizationState?.server,
@@ -64,11 +67,7 @@ export default function TrajectoryView() {
   ) => {
     const contextMenuProps: TrajectoryStationContextMenuProps = {
       checkedTrajectoryStations,
-      dispatchNavigation,
-      dispatchOperation,
-      trajectory: selectedTrajectory,
-      selectedServer,
-      servers
+      trajectory
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

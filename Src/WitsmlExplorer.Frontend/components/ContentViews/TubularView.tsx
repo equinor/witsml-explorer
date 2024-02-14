@@ -1,14 +1,13 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
+import { useGetObject } from "../../hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
-import Tubular from "../../models/tubular";
 import TubularComponent from "../../models/tubularComponent";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
@@ -35,12 +34,16 @@ export interface TubularComponentRow extends ContentTableRow {
 }
 
 export default function TubularView() {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedServer, selectedObject, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const selectedTubular = selectedObject as Tubular;
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { authorizationState } = useAuthorizationState();
+  const { object: tubular } = useGetObject(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    ObjectType.Tubular,
+    objectUid
+  );
 
   const { components: tubularComponents, isFetching } = useGetComponents(
     authorizationState?.server,
@@ -60,9 +63,7 @@ export default function TubularView() {
   ) => {
     const contextMenuProps: TubularComponentContextMenuProps = {
       checkedTubularComponents,
-      tubular: selectedTubular,
-      selectedServer,
-      servers
+      tubular
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -111,8 +112,8 @@ export default function TubularView() {
       len: `${tubularComponent.len?.value?.toFixed(4)} ${
         tubularComponent.len?.uom
       }`,
-      tubularName: selectedTubular?.name,
-      typeTubularAssy: selectedTubular?.typeTubularAssy,
+      tubularName: tubular?.name,
+      typeTubularAssy: tubular?.typeTubularAssy,
       uid: tubularComponent.uid,
       tubularComponent: tubularComponent
     };
