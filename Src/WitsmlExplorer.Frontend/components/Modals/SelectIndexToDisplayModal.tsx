@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
-import NavigationType from "../../contexts/navigationType";
-import { HideModalAction } from "../../contexts/operationStateReducer";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
 import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -19,67 +15,54 @@ import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
 
 export interface SelectIndexToDisplayModalProps {
-  dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
-  dispatchOperation: (action: HideModalAction) => void;
-  selectedLog: LogObject;
-  selectedWell: Well;
-  selectedWellbore: Wellbore;
-  selectedLogCurveInfoRow: LogCurveInfoRow[];
+  log: LogObject;
+  wellUid: string;
+  wellboreUid: string;
+  logCurveInfoRows: LogCurveInfoRow[];
 }
 
 const SelectIndexToDisplayModal = (
   props: SelectIndexToDisplayModalProps
 ): React.ReactElement => {
   const {
-    selectedLogCurveInfoRow,
-    dispatchNavigation,
-    dispatchOperation,
-    selectedWell,
-    selectedWellbore,
-    selectedLog
+    logCurveInfoRows: logCurveInfoRow,
+    wellUid,
+    wellboreUid,
+    log
   } = props;
-  const isTimeIndexed = selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-  const [log, setLog] = useState<LogObject>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+  const { dispatchOperation } = useContext(OperationContext);
   const [startIndex, setStartIndex] = useState<string | number>(
-    isTimeIndexed
-      ? selectedLog.startIndex
-      : indexToNumber(selectedLog.startIndex)
+    isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex)
   );
   const [endIndex, setEndIndex] = useState<string | number>(
-    isTimeIndexed ? selectedLog.endIndex : indexToNumber(selectedLog.endIndex)
+    isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex)
   );
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
   const navigate = useNavigate();
   const { authorizationState } = useAuthorizationState();
 
-  useEffect(() => {
-    setLog(selectedLog);
-  }, [selectedLog]);
-
   const onSubmit = async () => {
-    setIsLoading(true);
-    const logCurveInfoWithUpdatedIndex = selectedLogCurveInfoRow.map(
-      (logCurveInfo: LogCurveInfoRow) => {
-        return {
-          ...logCurveInfo,
-          minIndex: formatIndexValue(startIndex),
-          maxIndex: formatIndexValue(endIndex)
-        };
-      }
-    );
     dispatchOperation({ type: OperationType.HideModal });
-    dispatchNavigation({
-      type: NavigationType.ShowCurveValues,
-      payload: { logCurveInfo: logCurveInfoWithUpdatedIndex }
+    // TODO: JSON.stringify adds a lot of meta around the mnemonics. Are there better options?
+    // TODO: Handle max length of URL.
+    const searchParams = createSearchParams({
+      mnemonics: JSON.stringify(
+        logCurveInfoRow
+          .filter((row) => row.mnemonic !== log.indexCurve)
+          .map((row) => row.mnemonic)
+      ),
+      startIndex: formatIndexValue(startIndex),
+      endIndex: formatIndexValue(endIndex)
     });
-    navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        selectedWell.uid
-      }/wellbores/${selectedWellbore.uid}/objectgroups/logs/logtypes/${
-        selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
-      }/objects/${selectedLog.uid}/curvevalues`
-    );
+    navigate({
+      pathname: `/servers/${encodeURIComponent(
+        authorizationState.server.url
+      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/logs/logtypes/${
+        log.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
+      }/objects/${log.uid}/curvevalues`,
+      search: searchParams.toString()
+    });
   };
 
   const toggleConfirmDisabled = (isValid: boolean) => {
@@ -120,8 +103,8 @@ const SelectIndexToDisplayModal = (
               )}
             </>
           }
-          onSubmit={() => onSubmit()}
-          isLoading={isLoading}
+          onSubmit={onSubmit}
+          isLoading={false}
           confirmColor={"primary"}
           confirmText={"View curve values"}
           confirmDisabled={confirmDisabled}
