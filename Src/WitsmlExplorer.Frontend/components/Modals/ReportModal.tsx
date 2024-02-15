@@ -5,9 +5,9 @@ import {
   Icon,
   Typography
 } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import BaseReport, { createReport } from "../../models/reports/BaseReport";
@@ -135,7 +135,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 };
 
 export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
-  const { navigationState } = useContext(NavigationContext);
+  const { authorizationState } = useAuthorizationState();
   const [report, setReport] = useState<BaseReport>(null);
 
   if (!jobId) return null;
@@ -171,7 +171,7 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
       unsubscribeOnJobFinished();
       unsubscribeOnJobFailed();
     };
-  }, [navigationState.selectedServer, jobId]);
+  }, [authorizationState?.server, jobId]);
 
   return report;
 };

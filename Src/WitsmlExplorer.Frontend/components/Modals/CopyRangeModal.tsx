@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
@@ -18,25 +18,24 @@ import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
 
 export interface CopyRangeModalProps {
+  logObject: LogObject;
   mnemonics: string[];
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
-  const {
-    navigationState: { selectedServer, selectedObject }
-  } = useContext(NavigationContext);
+  const { authorizationState } = useAuthorizationState();
   const { dispatchOperation } = useContext(OperationContext);
   const [startIndex, setStartIndex] = useState<string | number>();
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
-  const selectedLog = selectedObject as LogObject;
+  const { logObject: selectedLog } = props;
 
   const onSubmit = async () => {
     const componentReferences: CopyRangeClipboard = createComponentReferences(
       props.mnemonics,
       selectedLog,
       ComponentType.Mnemonic,
-      selectedServer.url
+      authorizationState?.server?.url
     );
     componentReferences.startIndex = startIndex.toString();
     componentReferences.endIndex = endIndex.toString();

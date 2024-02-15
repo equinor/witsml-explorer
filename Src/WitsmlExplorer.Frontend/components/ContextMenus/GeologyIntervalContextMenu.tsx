@@ -40,7 +40,8 @@ const GeologyIntervalContextMenu = (
 
   const onClickProperties = async () => {
     const geologyIntervalPropertiesModalProps = {
-      geologyInterval: checkedGeologyIntervals[0]
+      geologyInterval: checkedGeologyIntervals[0],
+      mudLog
     };
     dispatchOperation({
       type: OperationType.DisplayModal,

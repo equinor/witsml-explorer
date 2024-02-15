@@ -78,6 +78,7 @@ const LogCurveInfoContextMenu = (
 
   const onClickCopyRange = () => {
     const copyRangeProps: CopyRangeModalProps = {
+      logObject: selectedLog,
       mnemonics: checkedLogCurveInfoRows.map((lc) => lc.mnemonic)
     };
     dispatchOperation({
