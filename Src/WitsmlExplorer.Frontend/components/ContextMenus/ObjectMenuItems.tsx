@@ -3,7 +3,6 @@ import { Divider, MenuItem } from "@material-ui/core";
 import { QueryClient } from "@tanstack/react-query";
 import React from "react";
 import { v4 as uuid } from "uuid";
-import { NavigationState } from "../../contexts/navigationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import { OpenInQueryView } from "../../hooks/useOpenInQueryView";
 import LogObject from "../../models/logObject";
@@ -36,16 +35,15 @@ export interface ObjectContextMenuProps {
 export const ObjectMenuItems = (
   checkedObjects: ObjectOnWellbore[],
   objectType: ObjectType,
-  navigationState: NavigationState,
+  selectedServer: Server,
+  servers: Server[],
   dispatchOperation: DispatchOperation,
   queryClient: QueryClient,
-  serverUrl: string,
   openInQueryView: OpenInQueryView,
   wellbore: Wellbore,
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
-  const { selectedServer, servers } = navigationState;
 
   return [
     <MenuItem
@@ -54,7 +52,7 @@ export const ObjectMenuItems = (
         onClickRefreshObject(
           dispatchOperation,
           queryClient,
-          serverUrl,
+          selectedServer.url,
           wellbore.wellUid,
           wellbore.uid,
           objectType,

@@ -3,9 +3,9 @@ import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import MessageObject from "../../models/messageObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
@@ -30,12 +30,11 @@ const MessageObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const { authorizationState } = useAuthorizationState();
   const queryClient = useQueryClient();
+  const { servers } = useGetServers();
 
   const onClickModify = async () => {
     const mode = PropertiesModalMode.Edit;
@@ -56,7 +55,7 @@ const MessageObjectContextMenu = (
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const props: MessageComparisonModalProps = {
         sourceMessage: checkedObjects[0] as MessageObject,
-        sourceServer: selectedServer,
+        sourceServer: authorizationState?.server,
         targetServer,
         targetObject,
         dispatchOperation
@@ -109,10 +108,10 @@ const MessageObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Message,
-          navigationState,
+          authorizationState?.server,
+          servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

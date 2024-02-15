@@ -92,10 +92,10 @@ const WbGeometryObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.WbGeometry,
-          navigationState,
+          authorizationState?.server,
+          servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

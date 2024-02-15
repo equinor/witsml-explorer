@@ -1,9 +1,10 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
@@ -23,20 +24,19 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 export interface GeologyIntervalContextMenuProps {
   checkedGeologyIntervals: GeologyInterval[];
+  mudLog: MudLog;
 }
 
 const GeologyIntervalContextMenu = (
   props: GeologyIntervalContextMenuProps
 ): React.ReactElement => {
-  const { checkedGeologyIntervals } = props;
+  const { checkedGeologyIntervals, mudLog } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const {
-    navigationState: { selectedServer, selectedObject, servers }
-  } = useContext(NavigationContext);
+  const { servers } = useGetServers();
+  const { authorizationState } = useAuthorizationState();
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
   );
-  const selectedMudLog = selectedObject as MudLog;
 
   const onClickProperties = async () => {
     const geologyIntervalPropertiesModalProps = {
@@ -55,7 +55,7 @@ const GeologyIntervalContextMenu = (
 
   const toDelete = createComponentReferences(
     checkedGeologyIntervals.map((gi) => gi.uid),
-    selectedMudLog,
+    mudLog,
     ComponentType.GeologyInterval
   );
   return (
@@ -65,9 +65,9 @@ const GeologyIntervalContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              authorizationState?.server,
               checkedGeologyIntervals.map((gi) => gi.uid),
-              selectedMudLog,
+              mudLog,
               dispatchOperation,
               ComponentType.GeologyInterval
             )
@@ -83,7 +83,7 @@ const GeologyIntervalContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.GeologyInterval}
           componentsToCopy={checkedGeologyIntervals}
-          sourceParent={selectedMudLog}
+          sourceParent={mudLog}
         />,
         <MenuItem
           key={"paste"}
@@ -92,7 +92,7 @@ const GeologyIntervalContextMenu = (
               servers,
               geologyIntervalReferences,
               dispatchOperation,
-              selectedMudLog
+              mudLog
             )
           }
           disabled={geologyIntervalReferences === null}

@@ -4,9 +4,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import CheckLogHeaderJob from "../../models/jobs/checkLogHeaderJob";
@@ -38,9 +38,7 @@ import ObjectPickerModal, {
 } from "../Modals/ObjectPickerModal";
 import { ReportModal } from "../Modals/ReportModal";
 import SpliceLogsModal from "../Modals/SpliceLogsModal";
-import TrimLogObjectModal, {
-  TrimLogObjectModalProps
-} from "../Modals/TrimLogObject/TrimLogObjectModal";
+import TrimLogObjectModal from "../Modals/TrimLogObject/TrimLogObjectModal";
 import ContextMenu from "./ContextMenu";
 import { StyledIcon, menuItemText } from "./ContextMenuUtils";
 import { onClickPaste } from "./CopyUtils";
@@ -52,13 +50,12 @@ const LogObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers, selectedServer } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const { authorizationState } = useAuthorizationState();
+  const { servers } = useGetServers();
   const queryClient = useQueryClient();
 
   const onClickProperties = () => {
@@ -77,14 +74,9 @@ const LogObjectContextMenu = (
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
-    const trimLogObjectProps: TrimLogObjectModalProps = {
-      dispatchNavigation,
-      dispatchOperation,
-      logObject
-    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <TrimLogObjectModal {...trimLogObjectProps} />
+      payload: <TrimLogObjectModal logObject={logObject} />
     });
   };
 
@@ -129,7 +121,7 @@ const LogObjectContextMenu = (
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const props: LogComparisonModalProps = {
         sourceLog: checkedObjects[0],
-        sourceServer: selectedServer,
+        sourceServer: authorizationState?.server,
         targetServer,
         targetObject,
         dispatchOperation
@@ -145,7 +137,7 @@ const LogObjectContextMenu = (
       onPicked
     };
     if (checkedObjects.length === 2) {
-      onPicked(checkedObjects[1], selectedServer);
+      onPicked(checkedObjects[1], authorizationState?.server);
     } else {
       dispatchOperation({
         type: OperationType.DisplayModal,
@@ -170,7 +162,7 @@ const LogObjectContextMenu = (
         JobType.CompareLogData,
         compareLogDataJob,
         targetServer,
-        selectedServer
+        authorizationState?.server
       );
       if (jobId) {
         const reportModalProps = { jobId };
@@ -187,7 +179,7 @@ const LogObjectContextMenu = (
       includeIndexDuplicatesOption: true
     };
     if (checkedObjects.length === 2) {
-      onPicked(checkedObjects[1], selectedServer, false);
+      onPicked(checkedObjects[1], authorizationState?.server, false);
     } else {
       dispatchOperation({
         type: OperationType.DisplayModal,
@@ -388,10 +380,10 @@ const LogObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Log,
-          navigationState,
+          authorizationState?.server,
+          servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

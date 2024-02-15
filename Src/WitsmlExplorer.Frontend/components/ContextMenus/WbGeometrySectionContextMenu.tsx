@@ -1,12 +1,10 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
-import React from "react";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "../../contexts/operationStateReducer";
+import React, { useContext } from "react";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { ComponentType } from "../../models/componentType";
 import { createComponentReferences } from "../../models/jobs/componentReferences";
 import { ObjectType } from "../../models/objectType";
@@ -30,27 +28,19 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 export interface WbGeometrySectionContextMenuProps {
   checkedWbGeometrySections: WbGeometrySection[];
-  dispatchOperation: (
-    action: DisplayModalAction | HideContextMenuAction | HideModalAction
-  ) => void;
   wbGeometry: WbGeometry;
-  selectedServer: Server;
-  servers: Server[];
 }
 
 const WbGeometrySectionContextMenu = (
   props: WbGeometrySectionContextMenuProps
 ): React.ReactElement => {
-  const {
-    checkedWbGeometrySections,
-    dispatchOperation,
-    wbGeometry,
-    selectedServer,
-    servers
-  } = props;
+  const { checkedWbGeometrySections, wbGeometry } = props;
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(
     ComponentType.WbGeometrySection
   );
+  const { dispatchOperation } = useContext(OperationContext);
+  const { servers } = useGetServers();
+  const { authorizationState } = useAuthorizationState();
 
   const onClickProperties = async () => {
     const wbGeometrySectionPropertiesModalProps = {
@@ -81,7 +71,7 @@ const WbGeometrySectionContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              authorizationState?.server,
               checkedWbGeometrySections.map((wbs) => wbs.uid),
               wbGeometry,
               dispatchOperation,

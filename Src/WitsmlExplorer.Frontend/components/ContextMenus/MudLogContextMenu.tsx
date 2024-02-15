@@ -88,10 +88,10 @@ const MudLogContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.MudLog,
-          navigationState,
+          authorizationState?.server,
+          servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

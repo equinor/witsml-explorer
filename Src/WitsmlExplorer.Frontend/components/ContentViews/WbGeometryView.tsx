@@ -1,15 +1,14 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
+import { useGetObject } from "../../hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
-import WbGeometryObject from "../../models/wbGeometry";
 import WbGeometrySection from "../../models/wbGeometrySection";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
@@ -28,12 +27,16 @@ interface WbGeometrySectionRow extends ContentTableRow {
 }
 
 export default function WbGeometryView() {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedObject, selectedServer, servers } = navigationState;
   const { dispatchOperation } = useContext(OperationContext);
-  const selectedWbGeometry = selectedObject as WbGeometryObject;
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { authorizationState } = useAuthorizationState();
+  const { object: wbGeometry } = useGetObject(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    ObjectType.WbGeometry,
+    objectUid
+  );
 
   const { components: wbGeometrySections, isFetching } = useGetComponents(
     authorizationState?.server,
@@ -55,10 +58,7 @@ export default function WbGeometryView() {
       checkedWbGeometrySections: checkedWbGeometrySections.map(
         (row) => row.wbGeometrySection
       ),
-      dispatchOperation,
-      wbGeometry: selectedWbGeometry,
-      selectedServer,
-      servers
+      wbGeometry
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
