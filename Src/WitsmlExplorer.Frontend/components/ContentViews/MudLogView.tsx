@@ -4,6 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
+import { useGetObject } from "../../hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
@@ -44,6 +45,13 @@ export default function MudLogView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { authorizationState } = useAuthorizationState();
+  const { object: mudLog } = useGetObject(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    ObjectType.MudLog,
+    objectUid
+  );
 
   const { components: geologyIntervals, isFetching } = useGetComponents(
     authorizationState?.server,
@@ -62,7 +70,8 @@ export default function MudLogView() {
     checkedRows: GeologyIntervalRow[]
   ) => {
     const contextMenuProps: GeologyIntervalContextMenuProps = {
-      checkedGeologyIntervals: checkedRows.map((row) => row.geologyInterval)
+      checkedGeologyIntervals: checkedRows.map((row) => row.geologyInterval),
+      mudLog
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

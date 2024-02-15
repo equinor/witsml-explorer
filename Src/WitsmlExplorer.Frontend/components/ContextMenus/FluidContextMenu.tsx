@@ -1,8 +1,9 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { ComponentType } from "../../models/componentType";
 import Fluid from "../../models/fluid";
 import FluidsReport from "../../models/fluidsReport";
@@ -25,22 +26,21 @@ import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentRe
 
 export interface FluidContextMenuProps {
   checkedFluids: Fluid[];
+  fluidsReport: FluidsReport;
 }
 
 const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
-  const { checkedFluids } = props;
+  const { checkedFluids, fluidsReport } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const {
-    navigationState: { selectedServer, selectedObject, servers }
-  } = useContext(NavigationContext);
   const fluidReferences = useClipboardComponentReferencesOfType(
     ComponentType.Fluid
   );
-  const selectedFluidsReport = selectedObject as FluidsReport;
+  const { authorizationState } = useAuthorizationState();
+  const { servers } = useGetServers();
 
   const toDelete = createComponentReferences(
     checkedFluids.map((fluid) => fluid.uid),
-    selectedFluidsReport,
+    fluidsReport,
     ComponentType.Fluid
   );
 
@@ -51,9 +51,9 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              authorizationState?.server,
               checkedFluids.map((fluid) => fluid.uid),
-              selectedFluidsReport,
+              fluidsReport,
               dispatchOperation,
               ComponentType.Fluid
             )
@@ -69,7 +69,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
           key={"copyComponentToServer"}
           componentType={ComponentType.Fluid}
           componentsToCopy={checkedFluids}
-          sourceParent={selectedFluidsReport}
+          sourceParent={fluidsReport}
         />,
         <MenuItem
           key={"paste"}
@@ -78,7 +78,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
               servers,
               fluidReferences,
               dispatchOperation,
-              selectedFluidsReport
+              fluidsReport
             )
           }
           disabled={fluidReferences === null}
@@ -115,7 +115,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
                 onClickShowObjectOnServer(
                   dispatchOperation,
                   server,
-                  selectedFluidsReport,
+                  fluidsReport,
                   ObjectType.FluidsReport
                 )
               }

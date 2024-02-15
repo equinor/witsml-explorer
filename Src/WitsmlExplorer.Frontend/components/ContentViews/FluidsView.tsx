@@ -4,6 +4,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
+import { useGetObject } from "../../hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import Fluid from "../../models/fluid";
@@ -33,6 +34,13 @@ export default function FluidsView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { authorizationState } = useAuthorizationState();
+  const { object: fluidsReport } = useGetObject(
+    authorizationState?.server,
+    wellUid,
+    wellboreUid,
+    ObjectType.FluidsReport,
+    objectUid
+  );
 
   const { components: fluids, isFetching } = useGetComponents(
     authorizationState?.server,
@@ -51,7 +59,8 @@ export default function FluidsView() {
     checkedRows: FluidsRow[]
   ) => {
     const contextMenuProps: FluidContextMenuProps = {
-      checkedFluids: checkedRows.map((row) => row.fluid)
+      checkedFluids: checkedRows.map((row) => row.fluid),
+      fluidsReport
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

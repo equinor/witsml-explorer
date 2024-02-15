@@ -3,9 +3,9 @@ import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import FormationMarker from "../../models/formationMarker";
 import { ObjectType } from "../../models/objectType";
@@ -21,11 +21,11 @@ const FormationMarkerContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const { authorizationState } = useAuthorizationState();
   const queryClient = useQueryClient();
+  const { servers } = useGetServers();
 
   const onClickModify = async () => {
     const modifyFormationMarkerProps: FormationMarkerPropertiesModalProps = {
@@ -60,10 +60,10 @@ const FormationMarkerContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.FormationMarker,
-          navigationState,
+          authorizationState?.server,
+          servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

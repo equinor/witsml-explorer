@@ -89,10 +89,10 @@ const TubularContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Tubular,
-          navigationState,
+          authorizationState?.server,
+          servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

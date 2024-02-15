@@ -92,10 +92,10 @@ const TrajectoryContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Trajectory,
-          navigationState,
+          authorizationState?.server,
+          servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()

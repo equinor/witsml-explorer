@@ -62,10 +62,10 @@ const RiskObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Risk,
-          navigationState,
+          authorizationState?.server,
+          navigationState.servers,
           dispatchOperation,
           queryClient,
-          authorizationState?.server?.url,
           openInQueryView,
           wellbore,
           extraMenuItems()
