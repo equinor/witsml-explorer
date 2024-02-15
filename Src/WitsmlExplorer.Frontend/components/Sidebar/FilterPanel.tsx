@@ -8,9 +8,8 @@
 import { Divider, Tooltip } from "@material-ui/core";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
+import { useCurveThreshold } from "../../contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import { ObjectType } from "../../models/objectType";
 import { Colors } from "../../styles/Colors";
@@ -20,8 +19,7 @@ import {
 } from "../../tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedCurveThreshold } = navigationState;
+  const { curveThreshold, setCurveThreshold } = useCurveThreshold();
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const {
     operationState: { colors }
@@ -139,17 +137,12 @@ const FilterPanel = (): React.ReactElement => {
               type="number"
               min={0}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                dispatchNavigation({
-                  type: NavigationType.SetCurveThreshold,
-                  payload: {
-                    curveThreshold: {
-                      ...selectedCurveThreshold,
-                      timeInMinutes: Number(event.target.value)
-                    }
-                  }
+                setCurveThreshold({
+                  ...curveThreshold,
+                  timeInMinutes: Number(event.target.value)
                 })
               }
-              value={selectedCurveThreshold.timeInMinutes}
+              value={curveThreshold.timeInMinutes}
               autoComplete={"off"}
               colors={colors}
             />
@@ -157,17 +150,12 @@ const FilterPanel = (): React.ReactElement => {
           <StyledCheckbox
             id="curveThreshold-hideInactive"
             onChange={(event) =>
-              dispatchNavigation({
-                type: NavigationType.SetCurveThreshold,
-                payload: {
-                  curveThreshold: {
-                    ...selectedCurveThreshold,
-                    hideInactiveCurves: event.target.checked
-                  }
-                }
+              setCurveThreshold({
+                ...curveThreshold,
+                hideInactiveCurves: event.target.checked
               })
             }
-            checked={selectedCurveThreshold.hideInactiveCurves}
+            checked={curveThreshold.hideInactiveCurves}
             value={"Hide inactive time curves"}
             color={"primary"}
             label={"Hide inactive time curves"}

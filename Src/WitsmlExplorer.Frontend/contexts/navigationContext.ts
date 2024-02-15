@@ -12,7 +12,6 @@ import Trajectory from "../models/trajectory";
 import WbGeometryObject from "../models/wbGeometry";
 import Well from "../models/well";
 import Wellbore from "../models/wellbore";
-import CurveThreshold, { DEFAULT_CURVE_THRESHOLD } from "./curveThreshold";
 import { NavigationAction } from "./navigationAction";
 
 interface NavigationContextProps {
@@ -56,7 +55,6 @@ export interface NavigationState {
   servers: Server[];
   currentSelected: Selectable;
   wells: Well[];
-  selectedCurveThreshold: CurveThreshold;
   expandedTreeNodes: string[];
   currentProperties: Map<string, string>;
 }
@@ -84,7 +82,6 @@ export const EMPTY_NAVIGATION_STATE: NavigationState = {
   servers: [],
   currentSelected: null,
   wells: [],
-  selectedCurveThreshold: DEFAULT_CURVE_THRESHOLD,
   expandedTreeNodes: [],
   currentProperties: new Map<string, string>()
 };
