@@ -3,9 +3,9 @@ import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
@@ -25,8 +25,7 @@ const WbGeometryObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects, wellbore } = props;
-  const { navigationState } = useContext(NavigationContext);
-  const { servers } = navigationState;
+  const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(
     ComponentType.WbGeometrySection

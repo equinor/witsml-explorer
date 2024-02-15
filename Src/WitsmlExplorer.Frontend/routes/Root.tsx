@@ -128,7 +128,6 @@ export default function Root() {
           <AuthorizationStateProvider>
             <ThemeProvider theme={getTheme(operationState.theme)}>
               <GlobalStyles colors={operationState.colors} />
-
               <NavigationContext.Provider
                 value={{ navigationState, dispatchNavigation }}
               >

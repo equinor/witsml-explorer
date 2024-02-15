@@ -55,11 +55,7 @@ export default function WellsListView() {
   ];
 
   const onSelect = (well: any) => {
-    navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        well.uid
-      }/wellbores`
-    );
+    navigate(`${well.uid}/wellbores`);
   };
 
   const onContextMenu = (

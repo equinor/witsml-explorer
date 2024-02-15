@@ -7,9 +7,9 @@ import {
 } from "@equinor/eds-core-react";
 import { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import MaxLength from "../../models/maxLength";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -37,9 +37,7 @@ const ObjectPickerModal = ({
   onPicked,
   includeIndexDuplicatesOption
 }: ObjectPickerProps): React.ReactElement => {
-  const {
-    navigationState: { servers }
-  } = useContext(NavigationContext);
+  const { servers } = useGetServers();
   const {
     operationState: { colors },
     dispatchOperation

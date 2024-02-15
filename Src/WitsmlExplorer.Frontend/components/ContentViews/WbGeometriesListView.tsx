@@ -76,13 +76,7 @@ export default function WbGeometriesListView() {
   };
 
   const onSelect = (wbGeometry: any) => {
-    navigate(
-      `/servers/${encodeURIComponent(
-        authorizationState.server.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        ObjectType.WbGeometry
-      }/objects/${wbGeometry.uid}`
-    );
+    navigate(wbGeometry.uid);
   };
 
   const columns: ContentTableColumn[] = [

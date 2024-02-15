@@ -56,13 +56,7 @@ export default function MudLogsListView() {
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onSelect = (mudLogRow: MudLogRow) => {
-    navigate(
-      `/servers/${encodeURIComponent(
-        authorizationState.server.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        ObjectType.MudLog
-      }/objects/${mudLogRow.mudLog.uid}`
-    );
+    navigate(mudLogRow.mudLog.uid);
   };
 
   const getTableData = (): MudLogRow[] => {

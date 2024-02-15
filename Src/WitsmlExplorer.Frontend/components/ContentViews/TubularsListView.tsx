@@ -74,13 +74,7 @@ export default function TubularsListView() {
   ];
 
   const onSelect = (tubular: any) => {
-    navigate(
-      `/servers/${encodeURIComponent(
-        authorizationState.server.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        ObjectType.Tubular
-      }/objects/${tubular.uid}`
-    );
+    navigate(tubular.uid);
   };
 
   const tubularRows = tubulars.map((tubular) => {

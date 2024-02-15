@@ -1,9 +1,9 @@
 import { Fragment, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import LogObject from "../../models/logObject";
 import { calculateObjectNodeId } from "../../models/objectOnWellbore";
@@ -41,9 +41,8 @@ export default function LogTypeItem({
   wellUid,
   wellboreUid
 }: LogTypeItemProps) {
-  const { navigationState } = useContext(NavigationContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { servers } = navigationState;
+  const { servers } = useGetServers();
   const { authorizationState } = useAuthorizationState();
   const { wellbore } = useGetWellbore(
     authorizationState?.server,

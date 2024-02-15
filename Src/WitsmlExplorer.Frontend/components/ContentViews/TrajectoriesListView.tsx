@@ -101,13 +101,7 @@ export default function TrajectoriesListView() {
   ];
 
   const onSelect = (trajectory: any) => {
-    navigate(
-      `/servers/${encodeURIComponent(
-        authorizationState.server.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        ObjectType.Trajectory
-      }/objects/${trajectory.uid}`
-    );
+    navigate(trajectory.uid);
   };
 
   const trajectoryRows = trajectories.map((trajectory) => {

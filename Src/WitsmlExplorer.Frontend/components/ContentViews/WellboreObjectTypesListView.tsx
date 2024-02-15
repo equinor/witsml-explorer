@@ -19,7 +19,7 @@ interface ObjectTypeRow extends ContentTableRow {
 export default function WellboreObjectTypesListView() {
   const { selectedFilter } = useContext(FilterContext);
   const navigate = useNavigate();
-  const { serverUrl, wellUid, wellboreUid } = useParams();
+  const { wellUid, wellboreUid } = useParams();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
@@ -46,11 +46,9 @@ export default function WellboreObjectTypesListView() {
 
   const onSelect = async (row: ObjectTypeRow) => {
     navigate(
-      `/servers/${encodeURIComponent(
-        serverUrl
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        row.objectType
-      }/${row.objectType === ObjectType.Log ? "logtypes" : "objects"}`
+      `${row.objectType}/${
+        row.objectType === ObjectType.Log ? "logtypes" : "objects"
+      }`
     );
   };
 

@@ -109,11 +109,7 @@ export default function WellboresListView() {
   };
 
   const onSelect = async (wellboreRow: any) => {
-    navigate(
-      `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
-        well.uid
-      }/wellbores/${wellboreRow.wellbore.uid}/objectgroups`
-    );
+    navigate(`${wellboreRow.wellbore.uid}/objectgroups`);
   };
 
   if (isFetching) {

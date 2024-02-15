@@ -4,8 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ObjectType } from "../../models/objectType";
 import Wellbore from "../../models/wellbore";
@@ -35,9 +35,7 @@ const ObjectsSidebarContextMenu = (
 ): React.ReactElement => {
   const { wellbore, objectType } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const {
-    navigationState: { servers }
-  } = useContext(NavigationContext);
+  const { servers } = useGetServers();
   const objectReferences = useClipboardReferencesOfType(objectType);
   const openInQueryView = useOpenInQueryView();
   const { authorizationState } = useAuthorizationState();

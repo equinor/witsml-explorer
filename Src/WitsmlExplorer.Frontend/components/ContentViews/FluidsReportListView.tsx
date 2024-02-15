@@ -96,13 +96,7 @@ export default function FluidsReportsListView() {
   ];
 
   const onSelect = (fluidsReportRow: FluidsReportRow) => {
-    navigate(
-      `/servers/${encodeURIComponent(
-        authorizationState.server.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        ObjectType.FluidsReport
-      }/objects/${fluidsReportRow.fluidsReport.uid}`
-    );
+    navigate(fluidsReportRow.fluidsReport.uid);
   };
 
   const onContextMenu = (
