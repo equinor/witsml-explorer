@@ -2,9 +2,8 @@ import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
-import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
-import NavigationContext from "../../contexts/navigationContext";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -47,6 +46,7 @@ import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferences } from "./UseClipboardReferences";
 
 export interface WellboreContextMenuProps {
+  servers: Server[];
   wellbore: Wellbore;
   well: Well;
   checkedWellboreRows?: WellboreRow[];
@@ -55,14 +55,11 @@ export interface WellboreContextMenuProps {
 const WellboreContextMenu = (
   props: WellboreContextMenuProps
 ): React.ReactElement => {
-  const { wellbore, well, checkedWellboreRows } = props;
-  const {
-    navigationState: { servers }
-  } = useContext(NavigationContext);
+  const { wellbore, well, checkedWellboreRows, servers } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
-  const { serverUrl } = useParams();
+  const { authorizationState } = useAuthorizationState();
   const queryClient = useQueryClient();
 
   const onClickNewWellbore = () => {
@@ -162,7 +159,12 @@ const WellboreContextMenu = (
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellboreQuery(queryClient, serverUrl, well.uid, wellbore.uid);
+    refreshWellboreQuery(
+      queryClient,
+      authorizationState?.server?.url,
+      well.uid,
+      wellbore.uid
+    );
   };
 
   const onClickMissingDataAgent = () => {
@@ -209,7 +211,9 @@ const WellboreContextMenu = (
 
   const onClickShowOnServer = async (server: Server) => {
     const host = `${window.location.protocol}//${window.location.host}`;
-    const wellboreUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}`;
+    const wellboreUrl = `${host}/servers/${encodeURIComponent(
+      server.url
+    )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups`;
     window.open(wellboreUrl);
     dispatchOperation({ type: OperationType.HideContextMenu });
   };

@@ -84,7 +84,11 @@ export default function WellboreItem({
     wellbore: Wellbore
   ) => {
     preventContextMenuPropagation(event);
-    const contextMenuProps: WellboreContextMenuProps = { wellbore, well };
+    const contextMenuProps: WellboreContextMenuProps = {
+      servers,
+      wellbore,
+      well
+    };
     const position = getContextMenuPosition(event);
     dispatchOperation({
       type: OperationType.DisplayContextMenu,

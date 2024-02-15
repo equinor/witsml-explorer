@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
+import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbores } from "../../hooks/query/useGetWellbores";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
@@ -25,6 +26,7 @@ export interface WellboreRow extends ContentTableRow, Wellbore {}
 export default function WellboresListView() {
   const { authorizationState } = useAuthorizationState();
   const { wellUid } = useParams();
+  const { servers } = useGetServers();
   const { well, isFetching: isFetchingWell } = useGetWell(
     authorizationState?.server,
     wellUid
@@ -69,6 +71,7 @@ export default function WellboresListView() {
     checkedWellboreRows: WellboreRow[]
   ) => {
     const contextMenuProps: WellboreContextMenuProps = {
+      servers,
       wellbore,
       well: well,
       checkedWellboreRows
