@@ -13,6 +13,7 @@ import PageLayout from "../components/PageLayout";
 import RefreshHandler from "../components/RefreshHandler";
 import { Snackbar } from "../components/Snackbar";
 import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
+import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
 import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
 import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
@@ -131,19 +132,21 @@ export default function Root() {
               <NavigationContext.Provider
                 value={{ navigationState, dispatchNavigation }}
               >
-                <SidebarProvider>
-                  <FilterContextProvider>
-                    <QueryContextProvider>
-                      <RefreshHandler />
-                      <SnackbarProvider>
-                        <Snackbar />
-                      </SnackbarProvider>
-                      <PageLayout />
-                      <ContextMenuPresenter />
-                      <ModalPresenter />
-                    </QueryContextProvider>
-                  </FilterContextProvider>
-                </SidebarProvider>
+                <CurveThresholdProvider>
+                  <SidebarProvider>
+                    <FilterContextProvider>
+                      <QueryContextProvider>
+                        <RefreshHandler />
+                        <SnackbarProvider>
+                          <Snackbar />
+                        </SnackbarProvider>
+                        <PageLayout />
+                        <ContextMenuPresenter />
+                        <ModalPresenter />
+                      </QueryContextProvider>
+                    </FilterContextProvider>
+                  </SidebarProvider>
+                </CurveThresholdProvider>
               </NavigationContext.Provider>
             </ThemeProvider>
           </AuthorizationStateProvider>

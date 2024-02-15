@@ -1,7 +1,10 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import { timeFromMinutesToMilliseconds } from "../../contexts/curveThreshold";
+import {
+  timeFromMinutesToMilliseconds,
+  useCurveThreshold
+} from "../../contexts/curveThresholdContext";
 import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -46,8 +49,8 @@ export interface LogCurveInfoRow extends ContentTableRow {
 }
 
 export default function LogCurveInfoListView() {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedCurveThreshold } = navigationState;
+  const { dispatchNavigation } = useContext(NavigationContext);
+  const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
@@ -120,7 +123,7 @@ export default function LogCurveInfoListView() {
     if (isDepthIndex) {
       return (
         maxDepth - parseFloat(logCurveInfo.maxDepthIndex) <
-        selectedCurveThreshold.depthInMeters
+        curveThreshold.depthInMeters
       );
     } else {
       const dateDifferenceInMilliseconds =
@@ -128,7 +131,7 @@ export default function LogCurveInfoListView() {
         new Date(logCurveInfo.maxDateTimeIndex).valueOf();
       return (
         dateDifferenceInMilliseconds <
-        timeFromMinutesToMilliseconds(selectedCurveThreshold.timeInMinutes)
+        timeFromMinutesToMilliseconds(curveThreshold.timeInMinutes)
       );
     }
   };
@@ -191,7 +194,7 @@ export default function LogCurveInfoListView() {
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
       if (isDepthIndex) return true;
-      return !(selectedCurveThreshold.hideInactiveCurves && !isActive);
+      return !(curveThreshold.hideInactiveCurves && !isActive);
     };
   };
 
