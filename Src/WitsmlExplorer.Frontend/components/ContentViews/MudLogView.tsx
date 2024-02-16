@@ -150,9 +150,7 @@ export default function MudLogView() {
       checkableRows
       insetColumns={insetColumns}
       showRefresh
-      // TODO: Fix downloadToCsvFilename, selectedMudlog.name has been removed.
-      // downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
-      downloadToCsvFileName={`MudLog_${objectUid}`}
+      downloadToCsvFileName={`MudLog_${mudLog.name}`}
     />
   );
 }

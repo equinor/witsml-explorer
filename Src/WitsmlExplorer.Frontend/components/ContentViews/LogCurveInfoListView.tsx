@@ -238,9 +238,7 @@ export default function LogCurveInfoListView() {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      // TODO: Fix downloadToCsvFileName, removed selectedLog.name
-      // downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
-      downloadToCsvFileName={`LogCurveInfo_${objectUid}`}
+      downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
     />
   );
 }
