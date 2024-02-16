@@ -134,7 +134,19 @@ const UserCredentialsModal = (
                 }}
               />
               <Button
-                onClick={() => props.onConnectionVerified(selectedUsername)}
+                onClick={async () => {
+                  try {
+                    await AuthorizationService.verifyuserisloggedin(
+                      server.url,
+                      selectedUsername
+                    );
+                    props.onConnectionVerified(selectedUsername);
+                  } catch {
+                    setErrorMessage(
+                      "Not able to authenticate to WITSML server with given credentials"
+                    );
+                  }
+                }}
               >
                 Switch user
               </Button>
