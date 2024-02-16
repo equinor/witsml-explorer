@@ -15,6 +15,7 @@ import Wellbore, {
   calculateObjectGroupId,
   calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "../../models/wellbore";
+import { RouterLogType } from "../../routes/routerConstants";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -67,7 +68,9 @@ export default function LogTypeItem({
       )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
         ObjectType.Log
       }/logtypes/${
-        logTypeGroup === logTypeGroupDepth ? "depth" : "time"
+        logTypeGroup === logTypeGroupDepth
+          ? RouterLogType.DEPTH
+          : RouterLogType.TIME
       }/objects`
     );
   };
@@ -105,7 +108,7 @@ export default function LogTypeItem({
       ) ===
       calculateWellboreObjectNodeId(
         { wellUid: urlWellUid, uid: urlWellboreUid },
-        logType === "depth"
+        logType === RouterLogType.DEPTH
           ? WITSML_INDEX_TYPE_MD
           : WITSML_INDEX_TYPE_DATE_TIME,
         objectUid
@@ -127,7 +130,7 @@ export default function LogTypeItem({
           calculateLogTypeId(
             { wellUid: urlWellUid, uid: urlWellboreUid },
             logType
-          ) === calculateLogTypeId(wellbore, "depth")
+          ) === calculateLogTypeId(wellbore, RouterLogType.DEPTH)
         }
       >
         {listLogItemsByType(
@@ -152,7 +155,7 @@ export default function LogTypeItem({
           calculateLogTypeId(
             { wellUid: urlWellUid, uid: urlWellboreUid },
             logType
-          ) === calculateLogTypeId(wellbore, "time")
+          ) === calculateLogTypeId(wellbore, RouterLogType.TIME)
         }
       >
         {listLogItemsByType(
@@ -201,7 +204,9 @@ const listLogItemsByType = (
         )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
           ObjectType.Log
         }/logtypes/${
-          logType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
+          logType === WITSML_INDEX_TYPE_DATE_TIME
+            ? RouterLogType.TIME
+            : RouterLogType.DEPTH
         }/objects/${log.uid}`}
       />
     </Fragment>

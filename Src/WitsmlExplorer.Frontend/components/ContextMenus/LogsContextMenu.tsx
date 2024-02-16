@@ -23,7 +23,12 @@ import LogPropertiesModal, {
 } from "../Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "../Modals/ModalParts";
 import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickRefresh,
+  onClickShowGroupOnServer
+} from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
 import NestedMenuItem from "./NestedMenuItem";
 import { useClipboardReferencesOfType } from "./UseClipboardReferences";
@@ -34,7 +39,7 @@ export interface LogsContextMenuProps {
   ) => void;
   wellbore: Wellbore;
   servers: Server[];
-  indexCurve: IndexCurve;
+  indexCurve?: IndexCurve;
 }
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
@@ -110,6 +115,24 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
             {menuItemText("paste", "log", logReferences?.objectUids)}
           </Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowGroupOnServer(
+                  dispatchOperation,
+                  server,
+                  wellbore,
+                  ObjectType.Log,
+                  indexCurve
+                )
+              }
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
             <MenuItem

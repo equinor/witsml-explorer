@@ -8,6 +8,7 @@ import OperationContext from "../../contexts/operationContext";
 import { useGetServers } from "../../hooks/query/useGetServers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
 import { ObjectType } from "../../models/objectType";
+import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
 import {
@@ -19,6 +20,7 @@ import {
   StyledIcon,
   menuItemText,
   onClickRefresh,
+  onClickShowGroupOnServer,
   pluralize
 } from "./ContextMenuUtils";
 import { pasteObjectOnWellbore } from "./CopyUtils";
@@ -82,6 +84,23 @@ const ObjectsSidebarContextMenu = (
             {menuItemText("paste", objectType, objectReferences?.objectUids)}
           </Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowGroupOnServer(
+                  dispatchOperation,
+                  server,
+                  wellbore,
+                  objectType
+                )
+              }
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
             <MenuItem

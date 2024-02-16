@@ -40,7 +40,6 @@ import WbGeometryObjectContextMenu from "../ContextMenus/WbGeometryContextMenu";
 import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "../ContextMenus/WellboreContextMenu";
-import { IndexCurve } from "../Modals/LogPropertiesModal";
 import ObjectGroupItem from "./ObjectGroupItem";
 import { WellIndicator } from "./Sidebar";
 import TreeItem from "./TreeItem";
@@ -104,12 +103,10 @@ export default function WellboreItem({
     wellbore: Wellbore
   ) => {
     preventContextMenuPropagation(event);
-    const indexCurve = IndexCurve.Depth;
     const contextMenuProps: LogsContextMenuProps = {
       dispatchOperation,
       wellbore,
-      servers,
-      indexCurve
+      servers
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

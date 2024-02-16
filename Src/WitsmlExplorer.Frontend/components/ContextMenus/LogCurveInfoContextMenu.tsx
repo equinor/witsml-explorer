@@ -17,12 +17,14 @@ import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import { JobType } from "../../services/jobService";
 import { colors } from "../../styles/Colors";
+import { WITSML_INDEX_TYPE_MD } from "../Constants";
 import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
 import AnalyzeGapModal, {
   AnalyzeGapModalProps
 } from "../Modals/AnalyzeGapModal";
 import CopyRangeModal, { CopyRangeModalProps } from "../Modals/CopyRangeModal";
 import LogCurveInfoPropertiesModal from "../Modals/LogCurveInfoPropertiesModal";
+import { IndexCurve } from "../Modals/LogPropertiesModal";
 import SelectIndexToDisplayModal from "../Modals/SelectIndexToDisplayModal";
 import ContextMenu from "./ContextMenu";
 import {
@@ -204,7 +206,10 @@ const LogCurveInfoContextMenu = (
                   dispatchOperation,
                   server,
                   selectedLog,
-                  ObjectType.Log
+                  ObjectType.Log,
+                  selectedLog.indexType === WITSML_INDEX_TYPE_MD
+                    ? IndexCurve.Depth
+                    : IndexCurve.Time
                 )
               }
             >
