@@ -7,7 +7,9 @@ import {
 } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled, { CSSProp } from "styled-components";
+import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import {
   FilterContext,
   FilterType,
@@ -15,12 +17,8 @@ import {
   filterTypeToProperty,
   getFilterTypeInformation,
   isObjectFilterType,
-  isWellFilterType,
-  isWellPropertyFilterType,
   objectFilterTypeToObjects
 } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ObjectSearchResult from "../../models/objectSearchResult";
@@ -40,10 +38,8 @@ const searchOptions = Object.values(FilterType);
 
 const SearchFilter = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedServer } = navigationState;
+  const { authorizationState } = useAuthorizationState();
   const [selectedOption, setSelectedOption] = useState<FilterType>(
     selectedFilter.filterType
   );
@@ -56,6 +52,7 @@ const SearchFilter = (): React.ReactElement => {
   const [genericSearchResults, setGenericSearchResults] =
     useState<boolean>(false);
   const textFieldRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const FilterPopup: CSSProp = {
     zIndex: 10,
@@ -123,7 +120,7 @@ const SearchFilter = (): React.ReactElement => {
         );
       } else {
         NotificationService.Instance.alertDispatcher.dispatch({
-          serverUrl: new URL(selectedServer.url),
+          serverUrl: new URL(authorizationState?.server?.url),
           message: errors.map((error) => error.message).join("\n"),
           isSuccess: false,
           severity: errors.length === objectTypes.length ? "error" : "info"
@@ -192,17 +189,10 @@ const SearchFilter = (): React.ReactElement => {
   };
 
   const openSearchView = (option: FilterType) => {
-    if (isWellFilterType(option) || isWellPropertyFilterType(option)) {
-      dispatchNavigation({
-        type: NavigationType.SelectServer,
-        payload: { server: selectedServer }
-      });
-    }
     if (isObjectFilterType(option)) {
-      dispatchNavigation({
-        type: NavigationType.SelectObjectOnWellboreView,
-        payload: {}
-      });
+      navigate(
+        `servers/${encodeURIComponent(authorizationState.server.url)}/search`
+      );
     }
   };
 
@@ -259,7 +249,7 @@ const SearchFilter = (): React.ReactElement => {
                   <SearchIconLayout>
                     <Button
                       variant="ghost_icon"
-                      disabled={!selectedServer || isLoading}
+                      disabled={!authorizationState?.server || isLoading}
                       onClick={openOptions}
                       aria-label="Show Search Options"
                     >

@@ -6,6 +6,7 @@ import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import LogsListView from "../components/ContentViews/LogsListView";
+import ObjectSearchListView from "../components/ContentViews/ObjectSearchListView";
 import { ObjectView } from "../components/ContentViews/ObjectView";
 import { ObjectsListView } from "../components/ContentViews/ObjectsListView";
 import QueryView from "../components/ContentViews/QueryView";
@@ -81,6 +82,10 @@ const router = createBrowserRouter([
           {
             path: "query",
             element: <QueryView />
+          },
+          {
+            path: "search",
+            element: <ObjectSearchListView />
           }
         ]
       }
