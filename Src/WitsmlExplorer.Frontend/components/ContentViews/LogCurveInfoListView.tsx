@@ -5,7 +5,6 @@ import {
   timeFromMinutesToMilliseconds,
   useCurveThreshold
 } from "../../contexts/curveThresholdContext";
-import NavigationContext from "../../contexts/navigationContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
@@ -49,7 +48,6 @@ export interface LogCurveInfoRow extends ContentTableRow {
 }
 
 export default function LogCurveInfoListView() {
-  const { dispatchNavigation } = useContext(NavigationContext);
   const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat }
@@ -99,7 +97,6 @@ export default function LogCurveInfoListView() {
     const contextMenuProps: LogCurveInfoContextMenuProps = {
       checkedLogCurveInfoRows,
       dispatchOperation,
-      dispatchNavigation,
       selectedLog: logObject,
       selectedServer: authorizationState?.server,
       selectedWell: well,

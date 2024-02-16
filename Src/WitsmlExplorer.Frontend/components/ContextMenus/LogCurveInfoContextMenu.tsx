@@ -1,7 +1,6 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React from "react";
-import { SelectLogCurveInfoAction } from "../../contexts/navigationActions";
 import {
   DisplayModalAction,
   HideContextMenuAction,
@@ -42,7 +41,6 @@ export interface LogCurveInfoContextMenuProps {
   dispatchOperation: (
     action: DisplayModalAction | HideContextMenuAction | HideModalAction
   ) => void;
-  dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
   selectedLog: LogObject;
   selectedServer: Server;
   selectedWell: Well;
