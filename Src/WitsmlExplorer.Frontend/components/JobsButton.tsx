@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../contexts/authorizationStateContext";
 import OperationContext from "../contexts/operationContext";
+import { AuthorizationStatus } from "../services/authorizationService";
 import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 
@@ -29,7 +30,7 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
-      disabled={!authorizationState?.server}
+      disabled={authorizationState?.status !== AuthorizationStatus.Authorized}
     >
       <Icon name="assignment" />
       {props.showLabels && "Jobs"}

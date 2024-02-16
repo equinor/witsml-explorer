@@ -115,7 +115,7 @@ export default function WellItem({ wellUid }: WellItemProps) {
             nodeId={calculateWellboreNodeId(wellbore)}
           />
         ))
-      ) : well.isEmpty ? null : (
+      ) : well?.isEmpty ? null : (
         <EmptyTreeItem />
       )}
     </TreeItem>

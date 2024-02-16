@@ -23,6 +23,7 @@ import {
 import { Server } from "../models/server";
 import Well from "../models/well";
 import Wellbore from "../models/wellbore";
+import { AuthorizationStatus } from "../services/authorizationService";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import TopRightCornerMenu from "./TopRightCornerMenu";
@@ -39,7 +40,9 @@ export default function Nav() {
     useParams();
   const { authorizationState } = useAuthorizationState();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
-  const { well } = useGetWell(authorizationState?.server, wellUid);
+  const { well } = useGetWell(authorizationState?.server, wellUid, {
+    enabled: authorizationState?.status === AuthorizationStatus.Authorized
+  });
   const { wellbore } = useGetWellbore(
     authorizationState?.server,
     wellUid,

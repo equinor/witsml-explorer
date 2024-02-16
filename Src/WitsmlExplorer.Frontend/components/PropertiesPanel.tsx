@@ -10,6 +10,7 @@ import { getObjectOnWellboreProperties } from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
 import { getWellProperties } from "../models/well";
 import { getWellboreProperties } from "../models/wellbore";
+import { AuthorizationStatus } from "../services/authorizationService";
 
 const PropertiesPanel = (): React.ReactElement => {
   const {
@@ -17,7 +18,9 @@ const PropertiesPanel = (): React.ReactElement => {
   } = useContext(OperationContext);
   const { authorizationState } = useAuthorizationState();
   const { wellUid, wellboreUid, objectGroup, objectUid } = useParams();
-  const { well } = useGetWell(authorizationState?.server, wellUid);
+  const { well } = useGetWell(authorizationState?.server, wellUid, {
+    enabled: authorizationState?.status === AuthorizationStatus.Authorized
+  });
   const { wellbore } = useGetWellbore(
     authorizationState?.server,
     wellUid,

@@ -9,6 +9,7 @@ import OperationContext from "../../contexts/operationContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { useGetWells } from "../../hooks/query/useGetWells";
 import Well from "../../models/well";
+import { AuthorizationStatus } from "../../services/authorizationService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import ProgressSpinner from "../ProgressSpinner";
@@ -18,7 +19,9 @@ import WellItem from "./WellItem";
 // TODO: We need to find a way to show the current well in the sidebar when first deep-linking even if it's not within the top x wells.
 export default function Sidebar() {
   const { authorizationState } = useAuthorizationState();
-  const { wells, isFetching } = useGetWells(authorizationState?.server);
+  const { wells, isFetching } = useGetWells(authorizationState?.server, {
+    enabled: authorizationState?.status === AuthorizationStatus.Authorized
+  });
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const {
@@ -32,54 +35,56 @@ export default function Sidebar() {
   return (
     <Fragment>
       <SearchFilter />
-      <SidebarTreeView>
-        {isFetching ? (
-          <ProgressSpinner message="Fetching wells. This may take some time." />
-        ) : (
-          filteredWells &&
-          (filteredWells.length === 0 ? (
-            <Typography style={{ paddingTop: "1rem" }}>
-              No wells match the current filter
-            </Typography>
+      {authorizationState?.status === AuthorizationStatus.Authorized && (
+        <SidebarTreeView>
+          {isFetching ? (
+            <ProgressSpinner message="Fetching wells. This may take some time." />
           ) : (
-            <TreeView
-              defaultCollapseIcon={
-                <Icon
-                  name="chevronDown"
-                  color={colors.interactive.primaryResting}
-                />
-              }
-              defaultExpandIcon={
-                <Icon
-                  name="chevronRight"
-                  color={colors.interactive.primaryResting}
-                />
-              }
-              defaultEndIcon={<div style={{ width: 24 }} />}
-              expanded={expandedTreeNodes}
-            >
-              {filteredWells.map((well: Well) => (
-                <Fragment key={well.uid}>
-                  <WellListing>
-                    <WellItem wellUid={well.uid} />
-                    <WellIndicator
-                      compactMode={isCompactMode}
-                      active={well.isActive}
-                      colors={colors}
-                    />
-                  </WellListing>
-                  <Divider
-                    style={{
-                      margin: "0px",
-                      backgroundColor: colors.interactive.disabledBorder
-                    }}
+            filteredWells &&
+            (filteredWells.length === 0 ? (
+              <Typography style={{ paddingTop: "1rem" }}>
+                No wells match the current filter
+              </Typography>
+            ) : (
+              <TreeView
+                defaultCollapseIcon={
+                  <Icon
+                    name="chevronDown"
+                    color={colors.interactive.primaryResting}
                   />
-                </Fragment>
-              ))}
-            </TreeView>
-          ))
-        )}
-      </SidebarTreeView>
+                }
+                defaultExpandIcon={
+                  <Icon
+                    name="chevronRight"
+                    color={colors.interactive.primaryResting}
+                  />
+                }
+                defaultEndIcon={<div style={{ width: 24 }} />}
+                expanded={expandedTreeNodes}
+              >
+                {filteredWells.map((well: Well) => (
+                  <Fragment key={well.uid}>
+                    <WellListing>
+                      <WellItem wellUid={well.uid} />
+                      <WellIndicator
+                        compactMode={isCompactMode}
+                        active={well.isActive}
+                        colors={colors}
+                      />
+                    </WellListing>
+                    <Divider
+                      style={{
+                        margin: "0px",
+                        backgroundColor: colors.interactive.disabledBorder
+                      }}
+                    />
+                  </Fragment>
+                ))}
+              </TreeView>
+            ))
+          )}
+        </SidebarTreeView>
+      )}
     </Fragment>
   );
 }
