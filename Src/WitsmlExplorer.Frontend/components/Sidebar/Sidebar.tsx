@@ -15,6 +15,7 @@ import ProgressSpinner from "../ProgressSpinner";
 import SearchFilter from "./SearchFilter";
 import WellItem from "./WellItem";
 
+// TODO: We need to find a way to show the current well in the sidebar when first deep-linking even if it's not within the top x wells.
 export default function Sidebar() {
   const { authorizationState } = useAuthorizationState();
   const { wells, isFetching } = useGetWells(authorizationState?.server);
