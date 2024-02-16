@@ -3,9 +3,6 @@ import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import { SelectWellboreAction } from "../../contexts/navigationActions";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useSidebar } from "../../contexts/sidebarContext";
@@ -57,7 +54,6 @@ export default function WellboreItem({
   selected,
   nodeId
 }: WellboreItemProps) {
-  const { dispatchNavigation } = useContext(NavigationContext);
   const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
@@ -176,11 +172,6 @@ export default function WellboreItem({
   };
 
   const onLabelClick = () => {
-    const selectWellbore: SelectWellboreAction = {
-      type: NavigationType.SelectWellbore,
-      payload: { well, wellbore }
-    };
-    dispatchNavigation(selectWellbore);
     navigate(
       `servers/${encodeURIComponent(
         authorizationState.server.url
