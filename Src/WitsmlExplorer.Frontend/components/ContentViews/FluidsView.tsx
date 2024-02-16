@@ -278,9 +278,7 @@ export default function FluidsView() {
       checkableRows
       insetColumns={insetColumns}
       showRefresh
-      // TODO: Fix downloadToCsvFileName, selectedFluidReport.name has been removed.
-      // downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
-      downloadToCsvFileName={`FluidsReport_${objectUid}`}
+      downloadToCsvFileName={`FluidsReport_${fluidsReport.name}`}
     />
   );
 }

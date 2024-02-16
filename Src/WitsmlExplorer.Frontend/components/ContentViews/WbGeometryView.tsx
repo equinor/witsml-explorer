@@ -131,8 +131,7 @@ export default function WbGeometryView() {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      // TODO: Fix downloadToCsvFileName
-      downloadToCsvFileName={`WbGeometry_${objectUid}`}
+      downloadToCsvFileName={`WbGeometry_${wbGeometry.name}`}
     />
   );
 }

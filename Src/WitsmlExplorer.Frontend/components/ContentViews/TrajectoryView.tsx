@@ -135,9 +135,7 @@ export default function TrajectoryView() {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      // TODO: Fix downloadToCsvFilename, selectedTrajectory.name has been removed.
-      // downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
-      downloadToCsvFileName={`Trajectory_${objectUid}`}
+      downloadToCsvFileName={`Trajectory_${trajectory.name}`}
     />
   );
 }

@@ -111,27 +111,27 @@ export function wellboreHasChanges(
 }
 
 export const calculateWellNodeId = (wellUid: string): string => {
-  return wellUid + "1289f745f72f47863ea2ee3515395097";
+  return `w=${wellUid};`;
 };
 
 export const calculateWellboreNodeId = (
   wellbore: Wellbore | { wellUid: string; uid: string }
 ): string => {
-  return calculateWellNodeId(wellbore.wellUid) + wellbore.uid;
+  return calculateWellNodeId(wellbore.wellUid) + `wb=${wellbore.uid};`;
 };
 
 export const calculateObjectGroupId = (
   wellbore: Wellbore | { wellUid: string; uid: string },
   objectType: ObjectType | string
 ): string => {
-  return calculateWellboreNodeId(wellbore) + objectType;
+  return calculateWellboreNodeId(wellbore) + `ot=${objectType};`;
 };
 
 export const calculateLogTypeId = (
   wellbore: Wellbore | { wellUid: string; uid: string },
   logType: string
 ): string => {
-  return calculateWellboreNodeId(wellbore) + logType;
+  return calculateWellboreNodeId(wellbore) + `lt=${logType};`;
 };
 
 export const calculateLogTypeDepthId = (
@@ -151,7 +151,7 @@ export const calculateObjectNodeId = (
   objectType: ObjectType | string,
   objectUid: string
 ): string => {
-  return calculateObjectGroupId(wellbore, objectType) + objectUid;
+  return calculateObjectGroupId(wellbore, objectType) + `o=${objectUid};`;
 };
 
 export const getWellboreProperties = (
