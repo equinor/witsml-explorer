@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import OperationContext from "../../../contexts/operationContext";
 import { DateTimeFormat } from "../../../contexts/operationStateReducer";
 import LogObject from "../../../models/logObject";
+import { RouterLogType } from "../../../routes/routerConstants";
 import formatDateString from "../../DateFormatter";
 import { ContentTableRow } from "../table";
 import { ReactEChartsProps, ReactLogChart } from "./ReactLogChart";
@@ -60,7 +61,7 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
   } = useContext(OperationContext);
   const { logType } = useParams();
 
-  const isTimeIndexed = logType === "time";
+  const isTimeIndexed = logType === RouterLogType.TIME;
 
   const getGraphData = (): LogItem[] => {
     return logs.map((log) => {

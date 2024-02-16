@@ -203,7 +203,7 @@ const shouldFetchGroupObjects = (
   return isExpanded && isGroupObject(objectType);
 };
 
-const isGroupObject = (objectType: ObjectType) => {
+export const isGroupObject = (objectType: ObjectType) => {
   return (
     objectType !== ObjectType.BhaRun &&
     objectType !== ObjectType.FormationMarker &&

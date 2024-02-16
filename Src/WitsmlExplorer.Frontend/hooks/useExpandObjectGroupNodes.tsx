@@ -12,6 +12,7 @@ import {
   calculateWellNodeId,
   calculateWellboreNodeId
 } from "../models/wellbore";
+import { RouterLogType } from "../routes/routerConstants";
 
 export function useExpandSidebarNodes(
   wellUid: string,
@@ -41,7 +42,7 @@ export function useExpandSidebarNodes(
       nodeIds.push(
         calculateLogTypeId(
           { wellUid, uid: wellboreUid },
-          logType === "depth"
+          logType === RouterLogType.DEPTH
             ? WITSML_INDEX_TYPE_MD
             : WITSML_INDEX_TYPE_DATE_TIME
         )

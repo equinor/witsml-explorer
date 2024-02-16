@@ -10,6 +10,7 @@ import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
+import { RouterLogType } from "../../routes/routerConstants";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -52,7 +53,7 @@ export default function LogsListView() {
     wellboreUid,
     ObjectType.Log
   );
-  const isTimeIndexed = logType === "time";
+  const isTimeIndexed = logType === RouterLogType.TIME;
   const logs = filterLogsByType(
     allLogs,
     isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD

@@ -28,6 +28,7 @@ import { useAuthorizationState } from "../../contexts/authorizationStateContext"
 import OperationContext from "../../contexts/operationContext";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { ComponentType } from "../../models/componentType";
+import { RouterLogType } from "../../routes/routerConstants";
 import { Colors, colors, dark } from "../../styles/Colors";
 import { formatIndexValue } from "../../tools/IndexHelpers";
 
@@ -54,7 +55,7 @@ const EditSelectedLogCurveInfo = (
     [mnemonicsSearchParams]
   );
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
-  const isTimeLog = logType === "time"; // TODO: The strings for logType should be constants.
+  const isTimeLog = logType === RouterLogType.TIME;
   const { authorizationState } = useAuthorizationState();
   const { components: logCurveInfo, isFetching: isFetchingMnemonics } =
     useGetComponents(

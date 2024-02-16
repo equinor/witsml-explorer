@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ObjectType } from "../../models/objectType";
+import { RouterLogType } from "../../routes/routerConstants";
 import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 interface LogType {
@@ -24,7 +25,9 @@ export default function LogTypeListView() {
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log);
 
   const onSelect = async (logType: any) => {
-    navigate(`${logType.uid === 0 ? "depth" : "time"}/objects`);
+    navigate(
+      `${logType.uid === 0 ? RouterLogType.DEPTH : RouterLogType.TIME}/objects`
+    );
   };
 
   return (

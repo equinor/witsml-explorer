@@ -11,16 +11,18 @@ import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import { colors } from "../../styles/Colors";
+import { WITSML_INDEX_TYPE_MD } from "../Constants";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction
 } from "../ContentViews/QueryViewUtils";
+import { IndexCurve } from "../Modals/LogPropertiesModal";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteObjects,
   onClickRefreshObject,
-  onClickShowGroupOnServer
+  onClickShowObjectOnServer
 } from "./ContextMenuUtils";
 import { onClickCopyToServer } from "./CopyToServer";
 import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
@@ -152,12 +154,15 @@ export const ObjectMenuItems = (
         <MenuItem
           key={server.name}
           onClick={() =>
-            onClickShowGroupOnServer(
+            onClickShowObjectOnServer(
               dispatchOperation,
               server,
-              wellbore,
+              checkedObjects[0],
               objectType,
-              (checkedObjects[0] as LogObject)?.indexType
+              (checkedObjects[0] as LogObject)?.indexType ===
+                WITSML_INDEX_TYPE_MD
+                ? IndexCurve.Depth
+                : IndexCurve.Time
             )
           }
           disabled={checkedObjects.length !== 1}

@@ -5,6 +5,7 @@ import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
+import { RouterLogType } from "../../routes/routerConstants";
 import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -62,7 +63,9 @@ const SelectIndexToDisplayModal = (
       )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
         ObjectType.Log
       }/logtypes/${
-        log.indexType === WITSML_INDEX_TYPE_DATE_TIME ? "time" : "depth"
+        log.indexType === WITSML_INDEX_TYPE_DATE_TIME
+          ? RouterLogType.TIME
+          : RouterLogType.DEPTH
       }/objects/${log.uid}/curvevalues`,
       search: searchParams.toString()
     });
