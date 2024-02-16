@@ -57,19 +57,29 @@ const ServerManager = (): React.ReactElement => {
   }, []);
 
   const onSelectItem = async (server: Server) => {
-    const userCredentialsModalProps: UserCredentialsModalProps = {
-      server,
-      onConnectionVerified: (username) => {
-        dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(server, username);
-        AuthorizationService.setSelectedServer(server);
-        navigate(`servers/${encodeURIComponent(server.url)}/wells`);
-      }
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <UserCredentialsModal {...userCredentialsModalProps} />
-    });
+    if (
+      server.id === authorizationState?.server?.id &&
+      authorizationState?.status === AuthorizationStatus.Authorized
+    ) {
+      AuthorizationService.onAuthorizationChangeDispatch({
+        server,
+        status: AuthorizationStatus.Unauthorized
+      });
+    } else {
+      const userCredentialsModalProps: UserCredentialsModalProps = {
+        server,
+        onConnectionVerified: (username) => {
+          dispatchOperation({ type: OperationType.HideModal });
+          AuthorizationService.onAuthorized(server, username);
+          AuthorizationService.setSelectedServer(server);
+          navigate(`servers/${encodeURIComponent(server.url)}/wells`);
+        }
+      };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <UserCredentialsModal {...userCredentialsModalProps} />
+      });
+    }
   };
 
   const onEditItem = (server: Server) => {

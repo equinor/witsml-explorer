@@ -40,7 +40,6 @@ const router = createBrowserRouter([
         children: [
           {
             path: "wells",
-            // loader: wellsLoader(queryClient),
             element: <WellsListView />
           },
           {

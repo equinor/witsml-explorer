@@ -6,7 +6,9 @@ import { useAuthorizationState } from "../contexts/authorizationStateContext";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import useDocumentDimensions from "../hooks/useDocumentDimensions";
-import AuthorizationService from "../services/authorizationService";
+import AuthorizationService, {
+  AuthorizationStatus
+} from "../services/authorizationService";
 import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import JobsButton from "./JobsButton";
@@ -55,7 +57,7 @@ export default function TopRightCornerMenu() {
 
   return (
     <Layout>
-      {authorizationState?.server?.currentUsername && (
+      {authorizationState?.status === AuthorizationStatus.Authorized && (
         <StyledButton
           colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
@@ -71,7 +73,7 @@ export default function TopRightCornerMenu() {
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openQueryView}
-        disabled={!authorizationState?.server}
+        disabled={authorizationState?.status !== AuthorizationStatus.Authorized}
       >
         <Icon name="code" />
         {showLabels && "Query"}
