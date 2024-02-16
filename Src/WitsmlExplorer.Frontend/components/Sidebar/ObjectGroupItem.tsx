@@ -62,7 +62,7 @@ export default function ObjectGroupItem({
     authorizationState?.server,
     wellUid,
     wellboreUid,
-    { enabled: isGroupObject(objectType) }
+    { enabled: isExpandableGroupObject(objectType) }
   );
   const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
     authorizationState?.server,
@@ -84,7 +84,7 @@ export default function ObjectGroupItem({
       }
     );
   const isFetching =
-    (isGroupObject(objectType) && isFetchingCount) ||
+    (isExpandableGroupObject(objectType) && isFetchingCount) ||
     isFetchingWellbore ||
     isFetchingObjects;
   let isActive = false;
@@ -121,7 +121,7 @@ export default function ObjectGroupItem({
       : onGroupContextMenu(event, wellbore);
   };
   const showStub =
-    isGroupObject(objectType) &&
+    isExpandableGroupObject(objectType) &&
     objectCount != null &&
     objectCount[objectType] != null &&
     objectCount[objectType] != 0;
@@ -154,6 +154,7 @@ export default function ObjectGroupItem({
         ) : (
           (wellbore &&
             groupObjects &&
+            isExpandableGroupObject(objectType) &&
             groupObjects.map((objectOnWellbore: ObjectOnWellbore) => (
               <ObjectOnWellboreItem
                 key={calculateObjectNodeId(objectOnWellbore, objectType)}
@@ -165,7 +166,7 @@ export default function ObjectGroupItem({
                 wellboreUid={wellboreUid}
               />
             ))) ||
-          (showStub && <EmptyTreeItem />) // TODO: Should BhaRun, FormtaionMarker, Message and Risk show the toggle icon? It is showing for them now, but not originally.
+          (showStub && <EmptyTreeItem />)
         )}
       </TreeItem>
     )
@@ -201,14 +202,17 @@ const shouldFetchGroupObjects = (
   const isExpanded = expandedTreeNodes.includes(
     calculateObjectGroupId(wellbore, objectType)
   );
-  return isExpanded && isGroupObject(objectType);
+  return isExpanded && isExpandableGroupObject(objectType);
 };
 
-export const isGroupObject = (objectType: ObjectType) => {
-  return (
-    objectType !== ObjectType.BhaRun &&
-    objectType !== ObjectType.FormationMarker &&
-    objectType !== ObjectType.Message &&
-    objectType !== ObjectType.Risk
-  );
+export const isExpandableGroupObject = (objectType: ObjectType) => {
+  const expandableGroupObject = [
+    ObjectType.FluidsReport,
+    ObjectType.MudLog,
+    ObjectType.Trajectory,
+    ObjectType.Tubular,
+    ObjectType.WbGeometry,
+    ObjectType.Log
+  ];
+  return !!expandableGroupObject.includes(objectType);
 };
