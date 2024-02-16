@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Services
 
     public class ObjectService : WitsmlService, IObjectService
     {
-        private readonly List<EntityType> _expandableObjects = new() { EntityType.FluidsReport, EntityType.MudLog, EntityType.Rig, EntityType.Trajectory, EntityType.Tubular, EntityType.WbGeometry };
+        private readonly List<EntityType> _expandableObjects = new() { EntityType.FluidsReport, EntityType.MudLog, EntityType.Trajectory, EntityType.Tubular, EntityType.WbGeometry };
         private readonly ILogger<ObjectService> _logger;
 
         public ObjectService(IWitsmlClientProvider witsmlClientProvider, ILogger<ObjectService> logger) : base(witsmlClientProvider)

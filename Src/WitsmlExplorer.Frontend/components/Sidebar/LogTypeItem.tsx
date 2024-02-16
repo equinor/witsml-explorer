@@ -54,12 +54,7 @@ export default function LogTypeItem({
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
   const navigate = useNavigate();
-  const {
-    wellUid: urlWellUid,
-    wellboreUid: urlWellboreUid,
-    logType,
-    objectUid
-  } = useParams();
+  const { logType, objectUid } = useParams();
 
   const onSelectType = (logTypeGroup: string) => {
     navigate(
@@ -107,7 +102,7 @@ export default function LogTypeItem({
         log.uid
       ) ===
       calculateWellboreObjectNodeId(
-        { wellUid: urlWellUid, uid: urlWellboreUid },
+        { wellUid, uid: wellboreUid },
         logType === RouterLogType.DEPTH
           ? WITSML_INDEX_TYPE_MD
           : WITSML_INDEX_TYPE_DATE_TIME,
@@ -127,10 +122,8 @@ export default function LogTypeItem({
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
         selected={
-          calculateLogTypeId(
-            { wellUid: urlWellUid, uid: urlWellboreUid },
-            logType
-          ) === calculateLogTypeId(wellbore, RouterLogType.DEPTH)
+          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
+          calculateLogTypeId(wellbore, RouterLogType.DEPTH)
         }
       >
         {listLogItemsByType(
@@ -152,10 +145,8 @@ export default function LogTypeItem({
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
         selected={
-          calculateLogTypeId(
-            { wellUid: urlWellUid, uid: urlWellboreUid },
-            logType
-          ) === calculateLogTypeId(wellbore, RouterLogType.TIME)
+          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
+          calculateLogTypeId(wellbore, RouterLogType.TIME)
         }
       >
         {listLogItemsByType(
