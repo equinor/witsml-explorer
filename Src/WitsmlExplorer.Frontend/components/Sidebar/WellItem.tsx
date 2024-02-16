@@ -20,6 +20,7 @@ import {
 import WellContextMenu, {
   WellContextMenuProps
 } from "../ContextMenus/WellContextMenu";
+import { EmptyTreeItem } from "./EmptyTreeItem";
 import TreeItem from "./TreeItem";
 import WellboreItem from "./WellboreItem";
 
@@ -95,24 +96,28 @@ export default function WellItem({ wellUid }: WellItemProps) {
       onIconClick={onIconClick}
       isLoading={isFetching}
     >
-      {wellbores?.map((wellbore: Wellbore) => (
-        <WellboreItem
-          wellUid={wellbore.wellUid}
-          wellboreUid={wellbore.uid}
-          selected={
-            calculateWellboreNodeId({
-              wellUid: wellUid,
-              uid: wellbore.uid
-            }) ===
-            calculateWellboreNodeId({
-              wellUid: urlWellUid,
-              uid: urlWellboreUid
-            })
-          }
-          key={calculateWellboreNodeId(wellbore)}
-          nodeId={calculateWellboreNodeId(wellbore)}
-        />
-      )) || ["", ""]}
+      {wellbores ? (
+        wellbores.map((wellbore: Wellbore) => (
+          <WellboreItem
+            wellUid={wellbore.wellUid}
+            wellboreUid={wellbore.uid}
+            selected={
+              calculateWellboreNodeId({
+                wellUid: wellUid,
+                uid: wellbore.uid
+              }) ===
+              calculateWellboreNodeId({
+                wellUid: urlWellUid,
+                uid: urlWellboreUid
+              })
+            }
+            key={calculateWellboreNodeId(wellbore)}
+            nodeId={calculateWellboreNodeId(wellbore)}
+          />
+        ))
+      ) : well.isEmpty ? null : (
+        <EmptyTreeItem />
+      )}
     </TreeItem>
   );
 }

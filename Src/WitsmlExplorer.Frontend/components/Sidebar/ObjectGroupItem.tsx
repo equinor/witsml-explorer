@@ -25,6 +25,7 @@ import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import ObjectsSidebarContextMenu, {
   ObjectsSidebarContextMenuProps
 } from "../ContextMenus/ObjectsSidebarContextMenu";
+import { EmptyTreeItem } from "./EmptyTreeItem";
 import LogTypeItem from "./LogTypeItem";
 import ObjectOnWellboreItem from "./ObjectOnWellboreItem";
 import TreeItem from "./TreeItem";
@@ -164,7 +165,7 @@ export default function ObjectGroupItem({
                 wellboreUid={wellboreUid}
               />
             ))) ||
-          (showStub && ["", ""]) // TODO: Should BhaRun, FormtaionMarker, Message and Risk show the toggle icon? It is showing for them now, but not originally.
+          (showStub && <EmptyTreeItem />) // TODO: Should BhaRun, FormtaionMarker, Message and Risk show the toggle icon? It is showing for them now, but not originally.
         )}
       </TreeItem>
     )
