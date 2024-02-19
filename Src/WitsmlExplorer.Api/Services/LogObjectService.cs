@@ -134,6 +134,8 @@ namespace WitsmlExplorer.Api.Services
                     Unit = logCurveInfo.Unit,
                     CurveDescription = logCurveInfo.CurveDescription,
                     TypeLogData = logCurveInfo.TypeLogData,
+                    TraceState = logCurveInfo.TraceState,
+                    NullValue = logCurveInfo.NullValue,
                     AxisDefinitions = logCurveInfo.AxisDefinitions?.Select(a => new AxisDefinition()
                     {
                         Uid = a.Uid,

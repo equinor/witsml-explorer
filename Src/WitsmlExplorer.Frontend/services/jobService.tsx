@@ -115,6 +115,7 @@ export enum JobType {
   MissingData = "MissingData",
   ModifyGeologyInterval = "ModifyGeologyInterval",
   ModifyLogCurveInfo = "ModifyLogCurveInfo",
+  BatchModifyLogCurveInfo = "BatchModifyLogCurveInfo",
   DeleteEmptyMnemonics = "DeleteEmptyMnemonics",
   ModifyTrajectoryStation = "ModifyTrajectoryStation",
   ModifyTubularComponent = "ModifyTubularComponent",

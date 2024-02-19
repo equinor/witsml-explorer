@@ -15,6 +15,33 @@ export default interface LogCurveInfo {
   typeLogData: string;
   mnemAlias: string;
   axisDefinitions: AxisDefinition[];
+  traceState: string;
+  nullValue: string;
+}
+
+export function EmptyLogCurveInfo(): LogCurveInfo {
+  return {
+    uid: "",
+    mnemonic: "",
+    minDateTimeIndex: null,
+    minDepthIndex: null,
+    maxDateTimeIndex: null,
+    maxDepthIndex: null,
+    classWitsml: null,
+    unit: null,
+    sensorOffset: null,
+    curveDescription: "",
+    typeLogData: "",
+    mnemAlias: "",
+    axisDefinitions: [],
+    traceState: null,
+    nullValue: ""
+  };
+}
+
+export interface LogCurveInfoBatchItem {
+  logCurveInfoUid: string;
+  logUid: string;
 }
 
 export const NULL_DEPTH_INDEX = "-999.25";
