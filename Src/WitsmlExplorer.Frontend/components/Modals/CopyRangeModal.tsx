@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { ComponentType } from "../../models/componentType";
@@ -23,7 +23,7 @@ export interface CopyRangeModalProps {
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useContext(OperationContext);
   const [startIndex, setStartIndex] = useState<string | number>();
   const [endIndex, setEndIndex] = useState<string | number>();
@@ -35,7 +35,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
       props.mnemonics,
       selectedLog,
       ComponentType.Mnemonic,
-      authorizationState?.server?.url
+      connectedServer?.url
     );
     componentReferences.startIndex = startIndex.toString();
     componentReferences.endIndex = endIndex.toString();

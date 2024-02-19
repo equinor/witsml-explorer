@@ -1,6 +1,6 @@
 import { MouseEvent, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetObjects } from "../../hooks/query/useGetObjects";
@@ -29,15 +29,11 @@ export default function RisksListView() {
     dispatchOperation
   } = useContext(OperationContext);
   const { wellUid, wellboreUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { connectedServer } = useConnectedServer();
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
 
   const { objects: risks } = useGetObjects(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Risk

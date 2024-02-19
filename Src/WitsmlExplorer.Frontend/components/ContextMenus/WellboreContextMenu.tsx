@@ -3,7 +3,7 @@ import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -59,7 +59,7 @@ const WellboreContextMenu = (
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
   const onClickNewWellbore = () => {
@@ -161,7 +161,7 @@ const WellboreContextMenu = (
     dispatchOperation({ type: OperationType.HideContextMenu });
     refreshWellboreQuery(
       queryClient,
-      authorizationState?.server?.url,
+      connectedServer?.url,
       well.uid,
       wellbore.uid
     );

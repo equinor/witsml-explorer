@@ -1,11 +1,11 @@
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import NotificationService from "../services/notificationService";
 
 export function Snackbar() {
   const { enqueueSnackbar } = useSnackbar();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
 
   useEffect(() => {
     const unsubscribe =
@@ -13,7 +13,7 @@ export function Snackbar() {
         (notification) => {
           const shouldNotify =
             notification.serverUrl.toString().toLowerCase() ===
-            authorizationState?.server?.url?.toLowerCase();
+            connectedServer?.url?.toLowerCase();
           if (shouldNotify) {
             enqueueSnackbar(notification.message, {
               variant: notification.isSuccess ? "success" : "error"
@@ -25,7 +25,7 @@ export function Snackbar() {
     return function cleanup() {
       unsubscribe();
     };
-  }, [authorizationState]);
+  }, [connectedServer]);
 
   return <></>;
 }

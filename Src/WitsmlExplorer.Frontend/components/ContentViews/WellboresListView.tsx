@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -24,15 +24,15 @@ import {
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
 export default function WellboresListView() {
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { wellUid } = useParams();
   const { servers } = useGetServers();
   const { well, isFetching: isFetchingWell } = useGetWell(
-    authorizationState?.server,
+    connectedServer,
     wellUid
   );
   const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
-    authorizationState?.server,
+    connectedServer,
     wellUid
   );
   const isFetching = isFetchingWell || isFetchingWellbores;

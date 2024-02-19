@@ -24,7 +24,7 @@ import {
   useSearchParams
 } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { ComponentType } from "../../models/componentType";
@@ -56,10 +56,10 @@ const EditSelectedLogCurveInfo = (
   );
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const isTimeLog = logType === RouterLogType.TIME;
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { components: logCurveInfo, isFetching: isFetchingMnemonics } =
     useGetComponents(
-      authorizationState?.server,
+      connectedServer,
       wellUid,
       wellboreUid,
       objectUid,

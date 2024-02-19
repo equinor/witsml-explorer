@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useSidebar } from "../../contexts/sidebarContext";
@@ -32,16 +32,16 @@ export default function WellItem({ wellUid }: WellItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const { servers } = useGetServers();
   const { wellUid: urlWellUid, wellboreUid: urlWellboreUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const { well, isFetching: isFetchingWell } = useGetWell(
     // TODO: Note: This only works because each WellItem is not rendered while useGetWells is fetching. Otherwise, we would request all wells individually in parallel.
-    authorizationState?.server,
+    connectedServer,
     wellUid
   );
   const isExpanded = expandedTreeNodes.includes(calculateWellNodeId(wellUid));
   const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     { enabled: isExpanded }
   );
@@ -78,46 +78,48 @@ export default function WellItem({ wellUid }: WellItemProps) {
   const onSelectWell = () => {
     navigate(
       `servers/${encodeURIComponent(
-        authorizationState.server.url
+        connectedServer?.url
       )}/wells/${wellUid}/wellbores`
     );
   };
 
   return (
-    <TreeItem
-      onContextMenu={(event) => onContextMenu(event, well)}
-      selected={
-        calculateWellNodeId(wellUid) === calculateWellNodeId(urlWellUid)
-      }
-      key={wellUid}
-      labelText={well?.name}
-      nodeId={calculateWellNodeId(wellUid)}
-      onLabelClick={onSelectWell}
-      onIconClick={onIconClick}
-      isLoading={isFetching}
-    >
-      {wellbores ? (
-        wellbores.map((wellbore: Wellbore) => (
-          <WellboreItem
-            wellUid={wellbore.wellUid}
-            wellboreUid={wellbore.uid}
-            selected={
-              calculateWellboreNodeId({
-                wellUid: wellUid,
-                uid: wellbore.uid
-              }) ===
-              calculateWellboreNodeId({
-                wellUid: urlWellUid,
-                uid: urlWellboreUid
-              })
-            }
-            key={calculateWellboreNodeId(wellbore)}
-            nodeId={calculateWellboreNodeId(wellbore)}
-          />
-        ))
-      ) : well?.isEmpty ? null : (
-        <EmptyTreeItem />
-      )}
-    </TreeItem>
+    well && (
+      <TreeItem
+        onContextMenu={(event) => onContextMenu(event, well)}
+        selected={
+          calculateWellNodeId(wellUid) === calculateWellNodeId(urlWellUid)
+        }
+        key={wellUid}
+        labelText={well?.name}
+        nodeId={calculateWellNodeId(wellUid)}
+        onLabelClick={onSelectWell}
+        onIconClick={onIconClick}
+        isLoading={isFetching}
+      >
+        {wellbores ? (
+          wellbores.map((wellbore: Wellbore) => (
+            <WellboreItem
+              wellUid={wellbore.wellUid}
+              wellboreUid={wellbore.uid}
+              selected={
+                calculateWellboreNodeId({
+                  wellUid: wellUid,
+                  uid: wellbore.uid
+                }) ===
+                calculateWellboreNodeId({
+                  wellUid: urlWellUid,
+                  uid: urlWellboreUid
+                })
+              }
+              key={calculateWellboreNodeId(wellbore)}
+              nodeId={calculateWellboreNodeId(wellbore)}
+            />
+          ))
+        ) : well?.isEmpty ? null : (
+          <EmptyTreeItem />
+        )}
+      </TreeItem>
+    )
   );
 }

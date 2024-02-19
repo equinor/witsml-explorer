@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
@@ -44,9 +44,9 @@ export interface GeologyIntervalRow extends ContentTableRow {
 export default function MudLogView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { object: mudLog } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.MudLog,
@@ -54,7 +54,7 @@ export default function MudLogView() {
   );
 
   const { components: geologyIntervals, isFetching } = useGetComponents(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectUid,

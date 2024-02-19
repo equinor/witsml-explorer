@@ -3,13 +3,12 @@ import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
 import { Fragment, useContext, useMemo } from "react";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { useGetWells } from "../../hooks/query/useGetWells";
 import Well from "../../models/well";
-import { AuthorizationStatus } from "../../services/authorizationService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import ProgressSpinner from "../ProgressSpinner";
@@ -18,9 +17,9 @@ import WellItem from "./WellItem";
 
 // TODO: We need to find a way to show the current well in the sidebar when first deep-linking even if it's not within the top x wells.
 export default function Sidebar() {
-  const { authorizationState } = useAuthorizationState();
-  const { wells, isFetching } = useGetWells(authorizationState?.server, {
-    enabled: authorizationState?.status === AuthorizationStatus.Authorized
+  const { connectedServer } = useConnectedServer();
+  const { wells, isFetching } = useGetWells(connectedServer, {
+    enabled: !!connectedServer
   });
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
@@ -35,7 +34,7 @@ export default function Sidebar() {
   return (
     <Fragment>
       <SearchFilter />
-      {authorizationState?.status === AuthorizationStatus.Authorized && (
+      {!!connectedServer && (
         <SidebarTreeView>
           {isFetching ? (
             <ProgressSpinner message="Fetching wells. This may take some time." />

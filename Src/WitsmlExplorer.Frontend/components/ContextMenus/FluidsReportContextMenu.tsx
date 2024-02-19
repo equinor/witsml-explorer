@@ -2,7 +2,7 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import { useGetServers } from "../../hooks/query/useGetServers";
 import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
@@ -25,7 +25,7 @@ const FluidsReportContextMenu = (
   const fluidReferences = useClipboardComponentReferencesOfType(
     ComponentType.Fluid
   );
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
   const extraMenuItems = (): React.ReactElement[] => {
@@ -56,7 +56,7 @@ const FluidsReportContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.FluidsReport,
-          authorizationState?.server,
+          connectedServer,
           servers,
           dispatchOperation,
           queryClient,

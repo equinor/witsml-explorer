@@ -4,7 +4,7 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import { capitalize } from "lodash";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import NotificationService from "../services/notificationService";
 import { Colors } from "../styles/Colors";
@@ -18,7 +18,7 @@ export type AlertSeverity = "error" | "info" | "success" | "warning";
 
 const Alerts = (): React.ReactElement => {
   const [alert, setAlert] = useState<AlertState>(null);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -43,7 +43,7 @@ const Alerts = (): React.ReactElement => {
           const shouldNotify =
             notification.serverUrl == null ||
             notification.serverUrl.toString().toLowerCase() ===
-              authorizationState?.server?.url?.toLowerCase();
+              connectedServer?.url?.toLowerCase();
           if (!shouldNotify) {
             return;
           }
@@ -94,7 +94,7 @@ const Alerts = (): React.ReactElement => {
       unsubscribeOnConnectionStateChanged();
       unsubscribeOnJobFinished();
     };
-  }, [authorizationState?.server]);
+  }, [connectedServer]);
 
   return (
     <Collapse in={!!alert}>

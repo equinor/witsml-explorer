@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { Fragment, useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import { DispatchOperation } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -38,7 +38,7 @@ export const CopyComponentsToServerMenuItem = (
   props: CopyComponentsToServerMenuItemProps
 ): React.ReactElement => {
   const { componentsToCopy, componentType, sourceParent } = props;
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
 
   const { dispatchOperation } = useContext(OperationContext);
@@ -55,13 +55,13 @@ export const CopyComponentsToServerMenuItem = (
     >
       {servers?.map(
         (server: Server) =>
-          server.id !== authorizationState?.server?.id && (
+          server.id !== connectedServer?.id && (
             <MenuItem
               key={server.name}
               onClick={() =>
                 copyComponentsToServer({
                   targetServer: server,
-                  sourceServer: authorizationState?.server,
+                  sourceServer: connectedServer,
                   componentsToCopy,
                   dispatchOperation,
                   sourceParent,

@@ -1,6 +1,6 @@
 import { ComponentType, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetWell } from "../../hooks/query/useGetWell";
@@ -34,13 +34,9 @@ export default function ObjectOnWellboreItem({
 }: ObjectOnWellboreItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
-  const { authorizationState } = useAuthorizationState();
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
-  const { well } = useGetWell(authorizationState?.server, wellUid);
+  const { connectedServer } = useConnectedServer();
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
+  const { well } = useGetWell(connectedServer, wellUid);
   const { objectGroup, objectUid } = useParams();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
@@ -65,7 +61,7 @@ export default function ObjectOnWellboreItem({
       objectType === ObjectType.FluidsReport
     ) {
       navigate(
-        `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
           well.uid
         }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects/${
           objectOnWellbore.uid
@@ -73,7 +69,7 @@ export default function ObjectOnWellboreItem({
       );
     } else {
       navigate(
-        `/servers/${encodeURIComponent(authorizationState.server.url)}/wells/${
+        `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
           well.uid
         }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects`
       );

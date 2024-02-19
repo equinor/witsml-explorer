@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import ProgressSpinner from "../ProgressSpinner";
@@ -46,9 +46,9 @@ const objectGroupViews: Record<ObjectGroupUrlParams, ReactElement> = {
 
 export function ObjectsListView() {
   const { objectGroup, wellUid, wellboreUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { isFetching } = useGetObjects(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectGroup as ObjectType

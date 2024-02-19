@@ -3,7 +3,7 @@ import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import { DisplayModalAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -38,7 +38,7 @@ const TrajectoriesContextMenu = (
     ObjectType.Trajectory
   );
   const openInQueryView = useOpenInQueryView();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
   const onClickNewTrajectory = () => {
@@ -79,7 +79,7 @@ const TrajectoriesContextMenu = (
             onClickRefresh(
               dispatchOperation,
               queryClient,
-              authorizationState?.server?.url,
+              connectedServer?.url,
               wellbore.wellUid,
               wellbore.uid,
               ObjectType.Trajectory

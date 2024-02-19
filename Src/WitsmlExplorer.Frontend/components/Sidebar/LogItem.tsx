@@ -1,6 +1,6 @@
 import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
@@ -36,12 +36,8 @@ export default function LogItem({
 }: LogItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
-  const { authorizationState } = useAuthorizationState();
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { connectedServer } = useConnectedServer();
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);

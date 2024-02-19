@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import { useGetObject } from "../hooks/query/useGetObject";
 import { useGetWell } from "../hooks/query/useGetWell";
@@ -10,24 +10,19 @@ import { getObjectOnWellboreProperties } from "../models/objectOnWellbore";
 import { ObjectType } from "../models/objectType";
 import { getWellProperties } from "../models/well";
 import { getWellboreProperties } from "../models/wellbore";
-import { AuthorizationStatus } from "../services/authorizationService";
 
 const PropertiesPanel = (): React.ReactElement => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid, objectGroup, objectUid } = useParams();
-  const { well } = useGetWell(authorizationState?.server, wellUid, {
-    enabled: authorizationState?.status === AuthorizationStatus.Authorized
+  const { well } = useGetWell(connectedServer, wellUid, {
+    enabled: !!connectedServer
   });
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { object } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectGroup as ObjectType,

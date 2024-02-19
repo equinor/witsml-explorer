@@ -3,7 +3,7 @@ import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
 import { v4 as uuid } from "uuid";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -54,7 +54,7 @@ const LogObjectContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
   const queryClient = useQueryClient();
 
@@ -121,7 +121,7 @@ const LogObjectContextMenu = (
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const props: LogComparisonModalProps = {
         sourceLog: checkedObjects[0],
-        sourceServer: authorizationState?.server,
+        sourceServer: connectedServer,
         targetServer,
         targetObject,
         dispatchOperation
@@ -137,7 +137,7 @@ const LogObjectContextMenu = (
       onPicked
     };
     if (checkedObjects.length === 2) {
-      onPicked(checkedObjects[1], authorizationState?.server);
+      onPicked(checkedObjects[1], connectedServer);
     } else {
       dispatchOperation({
         type: OperationType.DisplayModal,
@@ -162,7 +162,7 @@ const LogObjectContextMenu = (
         JobType.CompareLogData,
         compareLogDataJob,
         targetServer,
-        authorizationState?.server
+        connectedServer
       );
       if (jobId) {
         const reportModalProps = { jobId };
@@ -179,7 +179,7 @@ const LogObjectContextMenu = (
       includeIndexDuplicatesOption: true
     };
     if (checkedObjects.length === 2) {
-      onPicked(checkedObjects[1], authorizationState?.server, false);
+      onPicked(checkedObjects[1], connectedServer, false);
     } else {
       dispatchOperation({
         type: OperationType.DisplayModal,
@@ -380,7 +380,7 @@ const LogObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Log,
-          authorizationState?.server,
+          connectedServer,
           servers,
           dispatchOperation,
           queryClient,

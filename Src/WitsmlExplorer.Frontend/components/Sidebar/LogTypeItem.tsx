@@ -1,6 +1,6 @@
 import { Fragment, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -44,12 +44,8 @@ export default function LogTypeItem({
 }: LogTypeItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const { servers } = useGetServers();
-  const { authorizationState } = useAuthorizationState();
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { connectedServer } = useConnectedServer();
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
@@ -59,7 +55,7 @@ export default function LogTypeItem({
   const onSelectType = (logTypeGroup: string) => {
     navigate(
       `servers/${encodeURIComponent(
-        authorizationState.server.url
+        connectedServer?.url
       )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
         ObjectType.Log
       }/logtypes/${
@@ -133,7 +129,7 @@ export default function LogTypeItem({
           wellboreUid,
           logGroup,
           isSelected,
-          authorizationState.server.url
+          connectedServer?.url
         )}
       </TreeItem>
       <TreeItem
@@ -156,7 +152,7 @@ export default function LogTypeItem({
           wellboreUid,
           logGroup,
           isSelected,
-          authorizationState.server.url
+          connectedServer?.url
         )}
       </TreeItem>
     </>

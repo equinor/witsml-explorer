@@ -2,13 +2,11 @@ import { Button } from "@equinor/eds-core-react";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import useDocumentDimensions from "../hooks/useDocumentDimensions";
-import AuthorizationService, {
-  AuthorizationStatus
-} from "../services/authorizationService";
+import AuthorizationService from "../services/authorizationService";
 import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import JobsButton from "./JobsButton";
@@ -25,7 +23,7 @@ export default function TopRightCornerMenu() {
   } = useContext(OperationContext);
   const { width: documentWidth } = useDocumentDimensions();
   const showLabels = documentWidth > 1180;
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
 
   const openSettingsMenu = () => {
@@ -37,10 +35,10 @@ export default function TopRightCornerMenu() {
 
   const openCredentialsModal = () => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: authorizationState?.server,
+      server: connectedServer,
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(authorizationState?.server, username);
+        AuthorizationService.onAuthorized(connectedServer, username);
       }
     };
     dispatchOperation({
@@ -50,21 +48,20 @@ export default function TopRightCornerMenu() {
   };
 
   const openQueryView = () => {
-    navigate(
-      `servers/${encodeURIComponent(authorizationState?.server?.url)}/query`
-    );
+    navigate(`servers/${encodeURIComponent(connectedServer?.url)}/query`);
   };
 
+  const isConnected = !!connectedServer;
   return (
     <Layout>
-      {authorizationState?.status === AuthorizationStatus.Authorized && (
+      {isConnected && (
         <StyledButton
           colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
           onClick={openCredentialsModal}
         >
           <Icon name="person" />
-          {showLabels && authorizationState?.server?.currentUsername}
+          {showLabels && connectedServer?.currentUsername}
         </StyledButton>
       )}
       <ServerManagerButton showLabels={showLabels} />
@@ -73,7 +70,7 @@ export default function TopRightCornerMenu() {
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openQueryView}
-        disabled={authorizationState?.status !== AuthorizationStatus.Authorized}
+        disabled={!isConnected}
       >
         <Icon name="code" />
         {showLabels && "Query"}
