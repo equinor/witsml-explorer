@@ -68,6 +68,9 @@ namespace WitsmlExplorer.Api.Workers
                 _isDecreasing = sourceLog.Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
                 _isDepthLog = sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
 
+                // Set the logs shared index interval
+                (sourceLog, targetLog) = SetSharedIndexInterval(sourceLog, targetLog);
+
                 List<string> sourceLogMnemonics = GetLogMnemonics(sourceLog);
                 List<string> targetLogMnemonics = GetLogMnemonics(targetLog);
 
@@ -379,6 +382,52 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
             return newIndexes;
+        }
+
+        private (WitsmlLog, WitsmlLog) SetSharedIndexInterval(WitsmlLog sourceLog, WitsmlLog targetLog)
+        {
+            if (_isDepthLog)
+            {
+                if (sourceLog.StartIndex == null || sourceLog.EndIndex == null) throw new ArgumentException("The source log does not contain StartIndex or EndIndex.");
+                if (targetLog.StartIndex == null || targetLog.EndIndex == null) throw new ArgumentException("The target log does not contain StartIndex or EndIndex.");
+                double sourceLogStartIndex = StringHelpers.ToDouble(sourceLog.StartIndex.Value);
+                double sourceLogEndIndex = StringHelpers.ToDouble(sourceLog.EndIndex.Value);
+                double targetLogStartIndex = StringHelpers.ToDouble(targetLog.StartIndex.Value);
+                double targetLogEndIndex = StringHelpers.ToDouble(targetLog.EndIndex.Value);
+                double newStartIndex = _isDecreasing ? Math.Min(sourceLogStartIndex, targetLogStartIndex) : Math.Max(sourceLogStartIndex, targetLogStartIndex);
+                double newEndIndex = _isDecreasing ? Math.Max(sourceLogEndIndex, targetLogEndIndex) : Math.Min(sourceLogEndIndex, targetLogEndIndex);
+                bool containsSharedInterval = _isDecreasing ? newStartIndex >= newEndIndex : newStartIndex <= newEndIndex;
+
+                if (!containsSharedInterval) throw new ArgumentException("The logs do not have a shared index interval.");
+
+                sourceLog.StartIndex.Value = newStartIndex.ToString(CultureInfo.InvariantCulture);
+                sourceLog.EndIndex.Value = newEndIndex.ToString(CultureInfo.InvariantCulture);
+                targetLog.StartIndex.Value = newStartIndex.ToString(CultureInfo.InvariantCulture);
+                targetLog.EndIndex.Value = newEndIndex.ToString(CultureInfo.InvariantCulture);
+
+                return (sourceLog, targetLog);
+            }
+            else
+            {
+                if (sourceLog.StartDateTimeIndex == null || sourceLog.EndDateTimeIndex == null) throw new ArgumentException("The source log does not contain StartDateTimeIndex or EndDateTimeIndex.");
+                if (targetLog.StartDateTimeIndex == null || targetLog.EndDateTimeIndex == null) throw new ArgumentException("The target log does not contain StartDateTimeIndex or EndDateTimeIndex.");
+                var sourceLogStartDateTimeIndex = StringHelpers.ToDateTime(sourceLog.StartDateTimeIndex);
+                var sourceLogEndDateTimeIndex = StringHelpers.ToDateTime(sourceLog.EndDateTimeIndex);
+                var targetLogStartDateTimeIndex = StringHelpers.ToDateTime(targetLog.StartDateTimeIndex);
+                var targetLogEndDateTimeIndex = StringHelpers.ToDateTime(targetLog.EndDateTimeIndex);
+                var newStartDateTimeIndex = sourceLogStartDateTimeIndex >= targetLogStartDateTimeIndex ? sourceLogStartDateTimeIndex : targetLogStartDateTimeIndex;
+                var newEndDateTimeIndex = sourceLogEndDateTimeIndex <= targetLogEndDateTimeIndex ? sourceLogEndDateTimeIndex : targetLogEndDateTimeIndex;
+                bool containsSharedInterval = newStartDateTimeIndex <= newEndDateTimeIndex;
+
+                if (!containsSharedInterval) throw new ArgumentException("The logs do not have a shared time index interval.");
+
+                sourceLog.StartDateTimeIndex = newStartDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                sourceLog.EndDateTimeIndex = newEndDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                targetLog.StartDateTimeIndex = newStartDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                targetLog.EndDateTimeIndex = newEndDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+
+                return (sourceLog, targetLog);
+            }
         }
     }
 }
