@@ -197,6 +197,8 @@ const ServerManager = (): React.ReactElement => {
                       showDeleteServerModal(
                         server,
                         dispatchOperation,
+                        connectedServer,
+                        setConnectedServer,
                         queryClient
                       )
                     }

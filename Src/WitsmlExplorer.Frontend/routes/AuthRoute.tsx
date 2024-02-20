@@ -41,6 +41,7 @@ export default function AuthRoute() {
             if (index !== -1) {
               server.usernames.splice(index, 1);
             }
+            AuthorizationService.onServerStateChange(server);
             showCredentialsModal(server, false);
             AuthorizationService.awaitServerAuthorization(server);
           } else if (
@@ -69,8 +70,10 @@ export default function AuthRoute() {
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
-        AuthorizationService.setSelectedServer(server);
-        if (initialLogin) setConnectedServer(server);
+        if (initialLogin) {
+          AuthorizationService.setSelectedServer(server);
+          setConnectedServer(server);
+        }
       },
       onCancel: () => {
         AuthorizationService.onAuthorizationChangeDispatch({
