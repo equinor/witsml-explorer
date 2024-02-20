@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import { useGetObject } from "../hooks/query/useGetObject";
 import { useGetWell } from "../hooks/query/useGetWell";
@@ -23,7 +23,6 @@ import {
 import { Server } from "../models/server";
 import Well from "../models/well";
 import Wellbore from "../models/wellbore";
-import { AuthorizationStatus } from "../services/authorizationService";
 import { colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 import TopRightCornerMenu from "./TopRightCornerMenu";
@@ -38,18 +37,14 @@ export default function Nav() {
   const isSearchView = !!useMatch("servers/:serverUrl/search");
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
-  const { well } = useGetWell(authorizationState?.server, wellUid, {
-    enabled: authorizationState?.status === AuthorizationStatus.Authorized
+  const { well } = useGetWell(connectedServer, wellUid, {
+    enabled: !!connectedServer
   });
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { object } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectGroup as ObjectType,
@@ -67,7 +62,7 @@ export default function Nav() {
       );
     });
     return [
-      getServerCrumb(authorizationState?.server, navigate),
+      getServerCrumb(connectedServer, navigate),
       getJobsCrumb(serverUrl, isJobsView, navigate),
       getQueryCrumb(serverUrl, isQueryView, navigate),
       getSearchCrumb(serverUrl, isSearchView, navigate),
@@ -82,7 +77,7 @@ export default function Nav() {
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
   }, [
-    authorizationState?.server,
+    connectedServer,
     serverUrl,
     objectGroup,
     well,

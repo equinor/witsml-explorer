@@ -3,7 +3,7 @@ import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { v4 as uuid } from "uuid";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
@@ -55,7 +55,7 @@ export interface WellContextMenuProps {
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
 
@@ -81,12 +81,12 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellQuery(queryClient, authorizationState.server.url, well.uid);
+    refreshWellQuery(queryClient, connectedServer?.url, well.uid);
   };
 
   const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellsQuery(queryClient, authorizationState.server.url);
+    refreshWellsQuery(queryClient, connectedServer?.url);
   };
 
   const onClickNewWellbore = () => {
@@ -217,7 +217,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem
           key={"refreshwell"}
           onClick={onClickRefresh}
-          disabled={!authorizationState?.server?.url}
+          disabled={!connectedServer?.url}
         >
           <StyledIcon
             name="refresh"
@@ -228,7 +228,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem
           key={"refreshallwells"}
           onClick={onClickRefreshAll}
-          disabled={!authorizationState?.server?.url}
+          disabled={!connectedServer?.url}
         >
           <StyledIcon
             name="refresh"

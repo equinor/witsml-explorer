@@ -9,7 +9,7 @@ import { Divider, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled, { CSSProp } from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import {
   FilterContext,
   FilterType,
@@ -39,7 +39,7 @@ const searchOptions = Object.values(FilterType);
 const SearchFilter = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const [selectedOption, setSelectedOption] = useState<FilterType>(
     selectedFilter.filterType
   );
@@ -120,7 +120,7 @@ const SearchFilter = (): React.ReactElement => {
         );
       } else {
         NotificationService.Instance.alertDispatcher.dispatch({
-          serverUrl: new URL(authorizationState?.server?.url),
+          serverUrl: new URL(connectedServer?.url),
           message: errors.map((error) => error.message).join("\n"),
           isSuccess: false,
           severity: errors.length === objectTypes.length ? "error" : "info"
@@ -190,9 +190,7 @@ const SearchFilter = (): React.ReactElement => {
 
   const openSearchView = (option: FilterType) => {
     if (isObjectFilterType(option)) {
-      navigate(
-        `servers/${encodeURIComponent(authorizationState.server.url)}/search`
-      );
+      navigate(`servers/${encodeURIComponent(connectedServer?.url)}/search`);
     }
   };
 
@@ -249,7 +247,7 @@ const SearchFilter = (): React.ReactElement => {
                   <SearchIconLayout>
                     <Button
                       variant="ghost_icon"
-                      disabled={!authorizationState?.server || isLoading}
+                      disabled={!connectedServer || isLoading}
                       onClick={openOptions}
                       aria-label="Show Search Options"
                     >

@@ -13,6 +13,7 @@ import PageLayout from "../components/PageLayout";
 import RefreshHandler from "../components/RefreshHandler";
 import { Snackbar } from "../components/Snackbar";
 import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
+import { ConnectedServerProvider } from "../contexts/connectedServerContext";
 import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
 import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
@@ -132,21 +133,23 @@ export default function Root() {
               <NavigationContext.Provider
                 value={{ navigationState, dispatchNavigation }}
               >
-                <CurveThresholdProvider>
-                  <SidebarProvider>
-                    <FilterContextProvider>
-                      <QueryContextProvider>
-                        <RefreshHandler />
-                        <SnackbarProvider>
-                          <Snackbar />
-                        </SnackbarProvider>
-                        <PageLayout />
-                        <ContextMenuPresenter />
-                        <ModalPresenter />
-                      </QueryContextProvider>
-                    </FilterContextProvider>
-                  </SidebarProvider>
-                </CurveThresholdProvider>
+                <ConnectedServerProvider>
+                  <CurveThresholdProvider>
+                    <SidebarProvider>
+                      <FilterContextProvider>
+                        <QueryContextProvider>
+                          <RefreshHandler />
+                          <SnackbarProvider>
+                            <Snackbar />
+                          </SnackbarProvider>
+                          <PageLayout />
+                          <ContextMenuPresenter />
+                          <ModalPresenter />
+                        </QueryContextProvider>
+                      </FilterContextProvider>
+                    </SidebarProvider>
+                  </CurveThresholdProvider>
+                </ConnectedServerProvider>
               </NavigationContext.Provider>
             </ThemeProvider>
           </AuthorizationStateProvider>

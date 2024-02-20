@@ -1,7 +1,7 @@
 import { useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { QueryTemplatePreset } from "../components/ContentViews/QueryViewUtils";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import { QueryActionType, QueryContext } from "../contexts/queryContext";
@@ -11,7 +11,7 @@ export type OpenInQueryView = (templatePreset: QueryTemplatePreset) => void;
 export const useOpenInQueryView = () => {
   const { dispatchQuery } = useContext(QueryContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
 
   const openInQueryView = useCallback(
@@ -21,11 +21,9 @@ export const useOpenInQueryView = () => {
         type: QueryActionType.SetFromTemplatePreset,
         templatePreset
       });
-      navigate(
-        `servers/${encodeURIComponent(authorizationState?.server?.url)}/query`
-      );
+      navigate(`servers/${encodeURIComponent(connectedServer?.url)}/query`);
     },
-    [dispatchOperation, dispatchQuery, authorizationState]
+    [dispatchOperation, dispatchQuery, connectedServer]
   );
 
   return openInQueryView;

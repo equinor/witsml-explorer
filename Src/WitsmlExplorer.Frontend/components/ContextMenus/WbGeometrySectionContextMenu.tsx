@@ -1,7 +1,7 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -40,7 +40,7 @@ const WbGeometrySectionContextMenu = (
   );
   const { dispatchOperation } = useContext(OperationContext);
   const { servers } = useGetServers();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
 
   const onClickProperties = async () => {
     const wbGeometrySectionPropertiesModalProps = {
@@ -71,7 +71,7 @@ const WbGeometrySectionContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              authorizationState?.server,
+              connectedServer,
               checkedWbGeometrySections.map((wbs) => wbs.uid),
               wbGeometry,
               dispatchOperation,

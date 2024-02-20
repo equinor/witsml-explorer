@@ -1,6 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect, useState } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import {
   FilterContext,
   filterTypeToProperty,
@@ -40,8 +40,8 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
 
 export const ObjectSearchListView = (): React.ReactElement => {
   const { dispatchNavigation } = useContext(NavigationContext);
-  const { authorizationState } = useAuthorizationState();
-  const { wells } = useGetWells(authorizationState?.server);
+  const { connectedServer } = useConnectedServer();
+  const { wells } = useGetWells(connectedServer);
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedFilter } = useContext(FilterContext);
   const [rows, setRows] = useState<ObjectSearchRow[]>([]);

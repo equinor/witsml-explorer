@@ -2,7 +2,7 @@ import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -25,7 +25,7 @@ const RiskObjectContextMenu = (
   const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
   const onClickModify = async () => {
@@ -62,7 +62,7 @@ const RiskObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Risk,
-          authorizationState?.server,
+          connectedServer,
           servers,
           dispatchOperation,
           queryClient,

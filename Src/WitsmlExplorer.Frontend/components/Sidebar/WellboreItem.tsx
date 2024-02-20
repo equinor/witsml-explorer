@@ -2,7 +2,7 @@ import { useTheme } from "@material-ui/core";
 import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useSidebar } from "../../contexts/sidebarContext";
@@ -60,15 +60,15 @@ export default function WellboreItem({
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
   const { dispatchSidebar } = useSidebar();
   const { well, isFetching: isFetchingWell } = useGetWell(
-    authorizationState?.server,
+    connectedServer,
     wellUid
   );
   const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid
   );
@@ -174,7 +174,7 @@ export default function WellboreItem({
   const onLabelClick = () => {
     navigate(
       `servers/${encodeURIComponent(
-        authorizationState.server.url
+        connectedServer?.url
       )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups`
     );
   };

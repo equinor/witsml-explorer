@@ -3,7 +3,7 @@ import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { v4 as uuid } from "uuid";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
@@ -46,7 +46,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const { dispatchOperation, wellbore, servers, indexCurve } = props;
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
   const openInQueryView = useOpenInQueryView();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
   const onClickNewLog = () => {
@@ -81,7 +81,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
             onClickRefresh(
               dispatchOperation,
               queryClient,
-              authorizationState?.server?.url,
+              connectedServer?.url,
               wellbore.wellUid,
               wellbore.uid,
               ObjectType.Log

@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import {
   timeFromMinutesToMilliseconds,
   useCurveThreshold
@@ -54,19 +54,19 @@ export default function LogCurveInfoListView() {
   } = useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
   const { well, isFetching: isFetchingWell } = useGetWell(
-    authorizationState?.server,
+    connectedServer,
     wellUid
   );
   const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid
   );
   const { object: logObject, isFetching: isFetchingLog } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Log,
@@ -74,7 +74,7 @@ export default function LogCurveInfoListView() {
   );
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
-      authorizationState?.server,
+      connectedServer,
       wellUid,
       wellboreUid,
       objectUid,
@@ -98,7 +98,7 @@ export default function LogCurveInfoListView() {
       checkedLogCurveInfoRows,
       dispatchOperation,
       selectedLog: logObject,
-      selectedServer: authorizationState?.server,
+      selectedServer: connectedServer,
       selectedWell: well,
       selectedWellbore: wellbore,
       servers

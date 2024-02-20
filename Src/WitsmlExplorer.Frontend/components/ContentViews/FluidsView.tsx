@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
@@ -33,9 +33,9 @@ interface FluidsRow extends ContentTableRow, FluidAsStrings {
 export default function FluidsView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { object: fluidsReport } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.FluidsReport,
@@ -43,7 +43,7 @@ export default function FluidsView() {
   );
 
   const { components: fluids, isFetching } = useGetComponents(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectUid,

@@ -1,6 +1,6 @@
 import { ComponentType, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import { OperationAction } from "../../contexts/operationStateReducer";
@@ -57,32 +57,22 @@ export default function ObjectGroupItem({
     wellboreUid: urlWellboreUid,
     objectGroup
   } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { objectCount, isFetching: isFetchingCount } = useGetObjectCount(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     { enabled: isExpandableGroupObject(objectType) }
   );
   const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid
   );
   const { objects: groupObjects, isFetching: isFetchingObjects } =
-    useGetObjects(
-      authorizationState?.server,
-      wellUid,
-      wellboreUid,
-      objectType,
-      {
-        enabled: shouldFetchGroupObjects(
-          expandedTreeNodes,
-          wellbore,
-          objectType
-        )
-      }
-    );
+    useGetObjects(connectedServer, wellUid, wellboreUid, objectType, {
+      enabled: shouldFetchGroupObjects(expandedTreeNodes, wellbore, objectType)
+    });
   const isFetching =
     (isExpandableGroupObject(objectType) && isFetchingCount) ||
     isFetchingWellbore ||
@@ -96,7 +86,7 @@ export default function ObjectGroupItem({
   const onSelectObjectGroup = () => {
     navigate(
       `servers/${encodeURIComponent(
-        authorizationState.server.url
+        connectedServer?.url
       )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${objectType}/${
         objectType === ObjectType.Log ? "logtypes" : "objects"
       }`

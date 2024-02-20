@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -24,8 +24,8 @@ import {
 export interface WellRow extends ContentTableRow, Well {}
 
 export default function WellsListView() {
-  const { authorizationState } = useAuthorizationState();
-  const { wells, isFetching } = useGetWells(authorizationState?.server, {
+  const { connectedServer } = useConnectedServer();
+  const { wells, isFetching } = useGetWells(connectedServer, {
     placeholderData: []
   });
   const { servers } = useGetServers();
