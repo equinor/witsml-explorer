@@ -4,7 +4,6 @@ import { Outlet, useNavigate, useParams } from "react-router-dom";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "../components/Modals/UserCredentialsModal";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
 import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
@@ -20,7 +19,6 @@ export default function AuthRoute() {
   const { dispatchOperation } = useContext(OperationContext);
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   const { servers } = useGetServers({ enabled: isAuthenticated });
-  const { authorizationState, setAuthorizationState } = useAuthorizationState();
   const { serverUrl } = useParams();
   const { connectedServer, setConnectedServer } = useConnectedServer();
   const navigate = useNavigate();
@@ -29,7 +27,6 @@ export default function AuthRoute() {
     const unsubscribe =
       AuthorizationService.onAuthorizationChangeEvent.subscribe(
         async (authorizationState: AuthorizationState) => {
-          setAuthorizationState(authorizationState);
           const server = authorizationState.server;
           if (
             authorizationState.status == AuthorizationStatus.Unauthorized &&
@@ -58,7 +55,7 @@ export default function AuthRoute() {
   }, []);
 
   useEffect(() => {
-    if (servers && authorizationState === undefined) {
+    if (servers && !connectedServer) {
       const server = servers.find((server) => server.url === serverUrl);
       showCredentialsModal(server, true);
     }

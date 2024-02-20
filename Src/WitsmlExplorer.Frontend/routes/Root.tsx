@@ -12,7 +12,6 @@ import ModalPresenter from "../components/Modals/ModalPresenter";
 import PageLayout from "../components/PageLayout";
 import RefreshHandler from "../components/RefreshHandler";
 import { Snackbar } from "../components/Snackbar";
-import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
 import { ConnectedServerProvider } from "../contexts/connectedServerContext";
 import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
 import { FilterContextProvider } from "../contexts/filter";
@@ -127,32 +126,30 @@ export default function Root() {
         <OperationContext.Provider
           value={{ operationState, dispatchOperation }}
         >
-          <AuthorizationStateProvider>
-            <ThemeProvider theme={getTheme(operationState.theme)}>
-              <GlobalStyles colors={operationState.colors} />
-              <NavigationContext.Provider
-                value={{ navigationState, dispatchNavigation }}
-              >
-                <ConnectedServerProvider>
-                  <CurveThresholdProvider>
-                    <SidebarProvider>
-                      <FilterContextProvider>
-                        <QueryContextProvider>
-                          <RefreshHandler />
-                          <SnackbarProvider>
-                            <Snackbar />
-                          </SnackbarProvider>
-                          <PageLayout />
-                          <ContextMenuPresenter />
-                          <ModalPresenter />
-                        </QueryContextProvider>
-                      </FilterContextProvider>
-                    </SidebarProvider>
-                  </CurveThresholdProvider>
-                </ConnectedServerProvider>
-              </NavigationContext.Provider>
-            </ThemeProvider>
-          </AuthorizationStateProvider>
+          <ThemeProvider theme={getTheme(operationState.theme)}>
+            <GlobalStyles colors={operationState.colors} />
+            <NavigationContext.Provider
+              value={{ navigationState, dispatchNavigation }}
+            >
+              <ConnectedServerProvider>
+                <CurveThresholdProvider>
+                  <SidebarProvider>
+                    <FilterContextProvider>
+                      <QueryContextProvider>
+                        <RefreshHandler />
+                        <SnackbarProvider>
+                          <Snackbar />
+                        </SnackbarProvider>
+                        <PageLayout />
+                        <ContextMenuPresenter />
+                        <ModalPresenter />
+                      </QueryContextProvider>
+                    </FilterContextProvider>
+                  </SidebarProvider>
+                </CurveThresholdProvider>
+              </ConnectedServerProvider>
+            </NavigationContext.Provider>
+          </ThemeProvider>
         </OperationContext.Provider>
       </MsalProvider>
     </ErrorBoundary>
