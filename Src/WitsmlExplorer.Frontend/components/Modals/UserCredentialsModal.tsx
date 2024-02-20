@@ -13,7 +13,8 @@ import { Server } from "models/server";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import AuthorizationService, {
   AuthorizationStatus,
-  BasicServerCredentials
+  BasicServerCredentials,
+  ConnectionInformation
 } from "services/authorizationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -136,9 +137,12 @@ const UserCredentialsModal = (
               <Button
                 onClick={async () => {
                   try {
+                    const connectionInfo: ConnectionInformation = {
+                      url: server.url,
+                      userName: selectedUsername
+                    };
                     await AuthorizationService.verifyuserisloggedin(
-                      server,
-                      selectedUsername
+                      connectionInfo
                     );
                     props.onConnectionVerified(selectedUsername);
                   } catch {
