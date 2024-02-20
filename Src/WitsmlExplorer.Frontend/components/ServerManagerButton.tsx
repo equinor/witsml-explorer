@@ -30,6 +30,7 @@ const ServerManagerButton = (
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
+      disabled={!isConnected}
     >
       <Icon name={isConnected ? "cloudDownload" : "cloudOff"} />
       {props.showLabels &&

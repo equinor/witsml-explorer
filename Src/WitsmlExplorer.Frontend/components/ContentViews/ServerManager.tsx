@@ -6,10 +6,9 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -40,21 +39,8 @@ const ServerManager = (): React.ReactElement => {
     dispatchOperation
   } = useContext(OperationContext);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
-  const { setAuthorizationState } = useAuthorizationState();
   const navigate = useNavigate();
   const { connectedServer, setConnectedServer } = useConnectedServer();
-
-  useEffect(() => {
-    const unsubscribeFromCredentialsEvents =
-      AuthorizationService.onAuthorizationChangeEvent.subscribe(
-        async (authorizationState) => {
-          setAuthorizationState(authorizationState);
-        }
-      );
-    return () => {
-      unsubscribeFromCredentialsEvents();
-    };
-  }, []);
 
   const connectServer = async (server: Server) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
