@@ -96,7 +96,7 @@ namespace WitsmlExplorer.Api
 
             app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
             app.MapGet("/credentials/deauthorize", AuthorizeHandler.Deauthorize, useOAuth2);
-            app.MapGet("/credentials/verifyuserisloggedin/{serverUrl}/{userName}", AuthorizeHandler.VerifyUserIsLoggedIn, useOAuth2);
+            app.MapPost("/credentials/verifyuserisloggedin", AuthorizeHandler.VerifyUserIsLoggedIn, useOAuth2);
             if (useOAuth2)
             {
                 app.MapGet("/credentials/token", AuthorizeHandler.GenerateToken, useOAuth2);

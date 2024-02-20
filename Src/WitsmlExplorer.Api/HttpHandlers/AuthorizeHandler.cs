@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.HttpHandlers
@@ -60,10 +61,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static IResult VerifyUserIsLoggedIn(string serverUrl, string userName, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
+        public static IResult VerifyUserIsLoggedIn(Server server, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(httpContext?.Request);
-            var creds = credentialsService.GetCredentials(eh, WebUtility.UrlDecode(serverUrl), userName);
+            var creds = credentialsService.GetCredentials(eh, server.Url.ToString(), server.CurrentUserName);
             if (creds == null)
             {
                 return TypedResults.Unauthorized();

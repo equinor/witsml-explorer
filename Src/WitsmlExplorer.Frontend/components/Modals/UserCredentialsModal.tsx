@@ -137,7 +137,7 @@ const UserCredentialsModal = (
                 onClick={async () => {
                   try {
                     await AuthorizationService.verifyuserisloggedin(
-                      server.url,
+                      server,
                       selectedUsername
                     );
                     props.onConnectionVerified(selectedUsername);
