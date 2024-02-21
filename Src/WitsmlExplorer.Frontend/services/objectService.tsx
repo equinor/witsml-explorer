@@ -174,13 +174,15 @@ export default class ObjectService {
     type: ObjectType,
     propertyName: string,
     propertyValue: string,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ObjectSearchResult[]> {
     const response = await ApiClient.get(
       `/api/objects/${type}/${propertyName}/${encodeURIComponent(
         propertyValue
       )}`,
-      abortSignal
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();

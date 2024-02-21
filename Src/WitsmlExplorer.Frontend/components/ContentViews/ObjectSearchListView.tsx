@@ -1,29 +1,33 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
-import {
-  FilterContext,
-  filterTypeToProperty,
-  getFilterTypeInformation,
-  getSearchRegex,
-  isObjectFilterType,
-  isSitecomSyntax
-} from "../../contexts/filter";
+import { ObjectFilterType, filterTypeToProperty } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
-import { useGetWells } from "../../hooks/query/useGetWells";
+import { useGetObjectSearch } from "../../hooks/query/useGetObjectSearch";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
 import Wellbore, { calculateLogTypeId } from "../../models/wellbore";
+import NotificationService from "../../services/notificationService";
 import ObjectService from "../../services/objectService";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import { ObjectTypeToContextMenu } from "../ContextMenus/ContextMenuMapping";
+import { pluralize } from "../ContextMenus/ContextMenuUtils";
 import LoadingContextMenu from "../ContextMenus/LoadingContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
+import ConfirmModal from "../Modals/ConfirmModal";
+import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
@@ -38,42 +42,67 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
   objectType: ObjectType;
 }
 
-export const ObjectSearchListView = (): React.ReactElement => {
+export const ObjectSearchListView = (): ReactElement => {
   const { dispatchNavigation } = useContext(NavigationContext);
   const { connectedServer } = useConnectedServer();
-  const { wells } = useGetWells(connectedServer);
   const { dispatchOperation } = useContext(OperationContext);
-  const { selectedFilter } = useContext(FilterContext);
-  const [rows, setRows] = useState<ObjectSearchRow[]>([]);
+  const [searchParams] = useSearchParams();
+  const { filterType } = useParams<{ filterType: ObjectFilterType }>();
+  const value = searchParams.get("value");
+  const [fetchAllObjects, setFetchAllObjects] = useState(false);
+  const currentFilterType = useRef(filterType);
+  const { searchResult, isFetching, error, isError } = useGetObjectSearch(
+    connectedServer,
+    filterType,
+    value,
+    fetchAllObjects,
+    { enabled: filterType === currentFilterType.current }
+  );
 
   useEffect(() => {
-    if (isObjectFilterType(selectedFilter.filterType)) {
-      const regex = getSearchRegex(selectedFilter.name);
-      setRows(
-        selectedFilter.searchResults
-          .filter(
-            (searchResult) =>
-              isSitecomSyntax(selectedFilter.name) ||
-              regex.test(searchResult.searchProperty)
-          ) // If we later want to filter away empty results, use regex.test(searchResult.searchProperty ?? ""))
-          .map((searchResult) => {
-            const well = wells?.find((w) => w.uid == searchResult.wellUid);
-            const wellbore = well?.wellbores?.find(
-              (wb) => wb.uid == searchResult.wellboreUid
-            );
-            return {
-              id: searchResult.uid,
-              ...searchResult,
-              [filterTypeToProperty[selectedFilter.filterType]]:
-                searchResult.searchProperty,
-              object: searchResult,
-              well,
-              wellbore
-            };
-          })
-      );
+    currentFilterType.current = filterType;
+    setFetchAllObjects(false);
+  }, [filterType]);
+
+  useEffect(() => {
+    if (isError && !!error) {
+      const message = (error as Error).message;
+      if (
+        message.includes("The given search will fetch all") ||
+        message.includes("The server does not support to select")
+      ) {
+        const confirmation = (
+          <ConfirmModal
+            heading={"Warning: Seach might be slow!"}
+            content={
+              <>
+                <Typography style={{ whiteSpace: "pre-line" }}>
+                  {message}
+                </Typography>
+              </>
+            }
+            onConfirm={() => {
+              dispatchOperation({ type: OperationType.HideModal });
+              setFetchAllObjects(true);
+            }}
+            confirmColor={"danger"}
+            switchButtonPlaces={true}
+          />
+        );
+        dispatchOperation({
+          type: OperationType.DisplayModal,
+          payload: confirmation
+        });
+      } else {
+        NotificationService.Instance.alertDispatcher.dispatch({
+          serverUrl: new URL(connectedServer.url),
+          message: message,
+          isSuccess: false,
+          severity: "error"
+        });
+      }
     }
-  }, [selectedFilter]);
+  }, [error, isError]);
 
   const fetchSelectedObject = async (checkedObjectRow: ObjectSearchRow) => {
     return await ObjectService.getObject(
@@ -132,10 +161,10 @@ export const ObjectSearchListView = (): React.ReactElement => {
       { property: "wellUid", label: "wellUid", type: ContentType.String }
     ];
 
-    if (filterTypeToProperty[selectedFilter?.filterType] != "name") {
+    if (filterTypeToProperty[filterType] != "name") {
       columns.unshift({
-        property: filterTypeToProperty[selectedFilter?.filterType],
-        label: filterTypeToProperty[selectedFilter?.filterType],
+        property: "searchProperty",
+        label: filterTypeToProperty[filterType],
         type: ContentType.String
       });
     }
@@ -176,18 +205,22 @@ export const ObjectSearchListView = (): React.ReactElement => {
     }
   };
 
-  return rows.length == 0 ? (
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching ${pluralize(filterType)}.`} />;
+  }
+
+  return searchResult.length == 0 ? (
     <Typography style={{ padding: "1rem", whiteSpace: "pre-line" }}>
-      {getFilterTypeInformation(selectedFilter.filterType)}
+      {`No ${pluralize(filterType).toLowerCase()} match the current filter.`}
     </Typography>
   ) : (
     <ContentTable
       viewId="objectOnWellboreListView"
       columns={getColumns()}
       onSelect={onSelect}
-      data={rows}
+      data={searchResult}
       onContextMenu={onContextMenu}
-      downloadToCsvFileName={`${selectedFilter.filterType}_search`}
+      downloadToCsvFileName={`${filterType}_search`}
     />
   );
 };

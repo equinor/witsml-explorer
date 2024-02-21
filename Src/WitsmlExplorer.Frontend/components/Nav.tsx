@@ -34,7 +34,7 @@ export default function Nav() {
   const navigate = useNavigate();
   const isJobsView = !!useMatch("servers/:serverUrl/jobs");
   const isQueryView = !!useMatch("servers/:serverUrl/query");
-  const isSearchView = !!useMatch("servers/:serverUrl/search");
+  const isSearchView = !!useMatch("servers/:serverUrl/search/:filterType");
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
   const { connectedServer } = useConnectedServer();
@@ -65,7 +65,7 @@ export default function Nav() {
       getServerCrumb(connectedServer, navigate),
       getJobsCrumb(serverUrl, isJobsView, navigate),
       getQueryCrumb(serverUrl, isQueryView, navigate),
-      getSearchCrumb(serverUrl, isSearchView, navigate),
+      getSearchCrumb(isSearchView),
       getWellCrumb(serverUrl, well, navigate),
       getWellboreCrumb(serverUrl, wellbore, navigate),
       ...groupCrumbs,
@@ -279,17 +279,10 @@ const getQueryCrumb = (
     : {};
 };
 
-const getSearchCrumb = (
-  serverUrl: string,
-  isSearchView: boolean,
-  navigate: NavigateFunction
-) => {
+const getSearchCrumb = (isSearchView: boolean) => {
   return isSearchView
     ? {
-        name: "Search",
-        onClick: () => {
-          navigate(`servers/${encodeURIComponent(serverUrl)}/search`);
-        }
+        name: "Search"
       }
     : {};
 };
