@@ -1,10 +1,28 @@
-import { QueryObserverResult, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ObjectFilterType, filterTypeToProperty, getListedObjects, getSearchRegex, isSitecomSyntax, objectFilterTypeToObjects } from "../../contexts/filter";
+import {
+  QueryObserverResult,
+  useQuery,
+  useQueryClient
+} from "@tanstack/react-query";
+import {
+  MILLIS_IN_SECOND,
+  SECONDS_IN_MINUTE
+} from "../../components/Constants";
+import {
+  ObjectFilterType,
+  filterTypeToProperty,
+  getListedObjects,
+  getSearchRegex,
+  isSitecomSyntax,
+  objectFilterTypeToObjects
+} from "../../contexts/filter";
 import ObjectSearchResult from "../../models/objectSearchResult";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
-import { QUERY_KEY_OBJECT_SEARCH, QUERY_KEY_OBJECT_SEARCH_ALL } from "./queryKeys";
+import {
+  QUERY_KEY_OBJECT_SEARCH,
+  QUERY_KEY_OBJECT_SEARCH_ALL
+} from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
 
 export const getObjectSearchQueryKey = (
@@ -18,7 +36,7 @@ export const getObjectSearchQueryKey = (
     serverUrl?.toLowerCase(),
     filterType,
     fetchAllObjects ? QUERY_KEY_OBJECT_SEARCH_ALL : "",
-    (fetchAllObjects || needToFetchAllObjects(value)) ? "" : value
+    fetchAllObjects || needToFetchAllObjects(value) ? "" : value
   ];
 };
 
@@ -29,17 +47,26 @@ export const objectSearchQuery = (
   fetchAllObjects: boolean,
   options?: QueryOptions
 ) => ({
-  queryKey: getObjectSearchQueryKey(server?.url, filterType, value, fetchAllObjects),
+  queryKey: getObjectSearchQueryKey(
+    server?.url,
+    filterType,
+    value,
+    fetchAllObjects
+  ),
   queryFn: async () => {
-    const well = await fetchObjects(server, filterType, value, fetchAllObjects)
+    const well = await fetchObjects(server, filterType, value, fetchAllObjects);
     return well;
   },
   ...options,
   enabled: !!server && !!filterType && !(options?.enabled === false),
   retry: 0,
+  gcTime: 5 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // We don't want to cache unused search results for too long.
 });
 
-type ObjectSearchQueryResult = Omit<QueryObserverResult<ObjectSearchResult[], unknown>, "data"> & {
+type ObjectSearchQueryResult = Omit<
+  QueryObserverResult<ObjectSearchResult[], unknown>,
+  "data"
+> & {
   searchResult: ObjectSearchResult[];
 };
 
@@ -51,15 +78,28 @@ export const useGetObjectSearch = (
   options?: QueryOptions
 ): ObjectSearchQueryResult => {
   const queryClient = useQueryClient();
-  const cachedAllObjects = queryClient.getQueryData<ObjectSearchResult[]>(getObjectSearchQueryKey(server?.url, filterType, "", true));
+  const cachedAllObjects = queryClient.getQueryData<ObjectSearchResult[]>(
+    getObjectSearchQueryKey(server?.url, filterType, "", true)
+  );
   const { data, ...state } = useQuery<ObjectSearchResult[]>(
-    objectSearchQuery(server, filterType, value, (fetchAllObjects || !!cachedAllObjects), { ...options, enabled: !(options?.enabled === false) && !cachedAllObjects })
+    objectSearchQuery(
+      server,
+      filterType,
+      value,
+      fetchAllObjects || !!cachedAllObjects,
+      {
+        ...options,
+        enabled: !(options?.enabled === false) && !cachedAllObjects
+      }
+    )
   );
   const searchResult = cachedAllObjects ?? data ?? [];
   const filterData = (searchResult: ObjectSearchResult[]) => {
     const regex = getSearchRegex(value);
-    return searchResult.filter(result => isSitecomSyntax(value) || regex.test(result.searchProperty));
-  }
+    return searchResult.filter(
+      (result) => isSitecomSyntax(value) || regex.test(result.searchProperty)
+    );
+  };
 
   return { searchResult: filterData(searchResult), ...state };
 };
@@ -71,7 +111,11 @@ const fetchObjects = async (
   fetchAllObjects: boolean
 ): Promise<ObjectSearchResult[]> => {
   if (!fetchAllObjects && needToFetchAllObjects(value)) {
-    throw new Error(`The given search will fetch all ${getListedObjects(objectFilterType)}.\n\nDo you still want to proceed?`)
+    throw new Error(
+      `The given search will fetch all ${getListedObjects(
+        objectFilterType
+      )}.\n\nDo you still want to proceed?`
+    );
   }
   const searchResults: ObjectSearchResult[] = [];
   const errors: Error[] = [];
@@ -82,7 +126,7 @@ const fetchObjects = async (
       const objects = await ObjectService.getObjectsWithParamByType(
         objectType as ObjectType,
         filterTypeToProperty[objectFilterType],
-        (fetchAllObjects || needToFetchAllObjects(value)) ? "" : value,
+        fetchAllObjects || needToFetchAllObjects(value) ? "" : value,
         undefined,
         server
       );
@@ -95,11 +139,17 @@ const fetchObjects = async (
   await Promise.all(objectPromises);
 
   if (errors.length > 0) {
-    throw new Error(`${errors.join("\n")}\n\nThe search can still be performed by fetching all ${getListedObjects(objectFilterType)} before filtering.\n\nDo you still want to proceed?`);
+    throw new Error(
+      `${errors.join(
+        "\n"
+      )}\n\nThe search can still be performed by fetching all ${getListedObjects(
+        objectFilterType
+      )} before filtering.\n\nDo you still want to proceed?`
+    );
   }
-  return searchResults
+  return searchResults;
 };
 
 const needToFetchAllObjects = (value: string) => {
   return /^$|[*?]/.test(value);
-}
+};

@@ -1,5 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext, useEffect } from "react";
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { ObjectFilterType, filterTypeToProperty } from "../../contexts/filter";
@@ -36,20 +42,27 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
   objectType: ObjectType;
 }
 
-export const ObjectSearchListView = (): React.ReactElement => {
+export const ObjectSearchListView = (): ReactElement => {
   const { dispatchNavigation } = useContext(NavigationContext);
   const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useContext(OperationContext);
   const [searchParams] = useSearchParams();
   const { filterType } = useParams<{ filterType: ObjectFilterType }>();
   const value = searchParams.get("value");
-  const [fetchAllObjects, setFetchAllObjects] = React.useState(false);
+  const [fetchAllObjects, setFetchAllObjects] = useState(false);
+  const currentFilterType = useRef(filterType);
   const { searchResult, isFetching, error, isError } = useGetObjectSearch(
     connectedServer,
     filterType,
     value,
-    fetchAllObjects
+    fetchAllObjects,
+    { enabled: filterType === currentFilterType.current }
   );
+
+  useEffect(() => {
+    currentFilterType.current = filterType;
+    setFetchAllObjects(false);
+  }, [filterType]);
 
   useEffect(() => {
     if (isError && !!error) {
