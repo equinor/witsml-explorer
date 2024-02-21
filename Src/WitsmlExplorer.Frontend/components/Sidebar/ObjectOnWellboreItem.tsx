@@ -37,7 +37,12 @@ export default function ObjectOnWellboreItem({
   const { connectedServer } = useConnectedServer();
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { well } = useGetWell(connectedServer, wellUid);
-  const { objectGroup, objectUid } = useParams();
+  const {
+    wellUid: urlWellUid,
+    wellboreUid: urlWellboreUid,
+    objectGroup,
+    objectUid
+  } = useParams();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
@@ -82,7 +87,11 @@ export default function ObjectOnWellboreItem({
       labelText={objectOnWellbore.name}
       selected={
         calculateObjectNodeId(wellbore, objectType, objectOnWellbore.uid) ===
-        calculateObjectNodeId(wellbore, objectGroup, objectUid)
+        calculateObjectNodeId(
+          { wellUid: urlWellUid, uid: urlWellboreUid },
+          objectGroup,
+          objectUid
+        )
       }
       onLabelClick={onLabelClick}
       onContextMenu={(event: MouseEvent<HTMLLIElement>) => onContextMenu(event)}
