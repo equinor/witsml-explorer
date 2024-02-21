@@ -29,6 +29,11 @@ export interface AuthorizationState {
   status: AuthorizationStatus;
 }
 
+export interface ConnectionInformation {
+  serverUrl: string;
+  userName: string;
+}
+
 class AuthorizationService {
   private static _instance: AuthorizationService;
   private _onAuthorizationChange =
@@ -157,14 +162,12 @@ class AuthorizationService {
   }
 
   public async verifyuserisloggedin(
-    serverUrl: string,
-    userName: string,
+    connectionInfo: ConnectionInformation,
     abortSignal?: AbortSignal
   ): Promise<any> {
-    const response = await ApiClient.get(
-      `/api/credentials/verifyuserisloggedin/${encodeURIComponent(
-        serverUrl
-      )}/${userName}`,
+    const response = await ApiClient.post(
+      `/api/credentials/verifyuserisloggedin`,
+      JSON.stringify(connectionInfo),
       abortSignal
     );
     if (!response.ok) {
