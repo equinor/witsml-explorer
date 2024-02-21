@@ -1,6 +1,6 @@
 import { MouseEvent, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetObjects } from "../../hooks/query/useGetObjects";
@@ -30,16 +30,12 @@ export default function FormationMarkersListView() {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
 
   const { objects: formationMarkers } = useGetObjects(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.FormationMarker

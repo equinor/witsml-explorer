@@ -1,8 +1,15 @@
 import { Button, Label, TextField } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState
+} from "react";
 import styled from "styled-components";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import {
   DisplayModalAction,
@@ -36,6 +43,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [displayNameError, setDisplayServerNameError] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { connectedServer, setConnectedServer } = useConnectedServer();
 
   const isAddingNewServer = props.server.id === undefined;
   const labelStyle: CSSProperties = {
@@ -95,7 +103,13 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
 
   const showDeleteModal = () => {
     dispatchOperation({ type: OperationType.HideModal });
-    showDeleteServerModal(server, dispatchOperation, queryClient);
+    showDeleteServerModal(
+      server,
+      dispatchOperation,
+      connectedServer,
+      setConnectedServer,
+      queryClient
+    );
   };
 
   const runServerNameValidation = () => {
@@ -239,6 +253,8 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
 export const showDeleteServerModal = (
   server: Server,
   dispatchOperation: (action: HideModalAction | DisplayModalAction) => void,
+  connectedServer: Server,
+  setConnectedServer: Dispatch<SetStateAction<Server>>,
   queryClient: QueryClient
 ) => {
   const onCancel = () => {
@@ -248,6 +264,9 @@ export const showDeleteServerModal = (
     const abortController = new AbortController();
     try {
       await ServerService.removeServer(server.id, abortController.signal);
+      if (server.id === connectedServer?.id) {
+        setConnectedServer(null);
+      }
       refreshServersQuery(queryClient);
     } catch (error) {
       NotificationService.Instance.alertDispatcher.dispatch({

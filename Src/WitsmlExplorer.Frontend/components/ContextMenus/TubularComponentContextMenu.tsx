@@ -2,7 +2,7 @@ import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -42,7 +42,7 @@ const TubularComponentContextMenu = (
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
   );
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
   const onClickProperties = async () => {
@@ -76,7 +76,7 @@ const TubularComponentContextMenu = (
             onClickRefreshObject(
               dispatchOperation,
               queryClient,
-              authorizationState?.server?.url,
+              connectedServer?.url,
               tubular.wellUid,
               tubular.wellboreUid,
               ObjectType.Tubular,
@@ -96,7 +96,7 @@ const TubularComponentContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              authorizationState?.server,
+              connectedServer,
               checkedTubularComponents.map((ts) => ts.uid),
               tubular,
               dispatchOperation,

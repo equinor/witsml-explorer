@@ -1,6 +1,6 @@
 import { Fragment, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -44,27 +44,18 @@ export default function LogTypeItem({
 }: LogTypeItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const { servers } = useGetServers();
-  const { authorizationState } = useAuthorizationState();
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { connectedServer } = useConnectedServer();
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
   const navigate = useNavigate();
-  const {
-    wellUid: urlWellUid,
-    wellboreUid: urlWellboreUid,
-    logType,
-    objectUid
-  } = useParams();
+  const { logType, objectUid } = useParams();
 
   const onSelectType = (logTypeGroup: string) => {
     navigate(
       `servers/${encodeURIComponent(
-        authorizationState.server.url
+        connectedServer?.url
       )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
         ObjectType.Log
       }/logtypes/${
@@ -107,7 +98,7 @@ export default function LogTypeItem({
         log.uid
       ) ===
       calculateWellboreObjectNodeId(
-        { wellUid: urlWellUid, uid: urlWellboreUid },
+        { wellUid, uid: wellboreUid },
         logType === RouterLogType.DEPTH
           ? WITSML_INDEX_TYPE_MD
           : WITSML_INDEX_TYPE_DATE_TIME,
@@ -127,10 +118,8 @@ export default function LogTypeItem({
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
         selected={
-          calculateLogTypeId(
-            { wellUid: urlWellUid, uid: urlWellboreUid },
-            logType
-          ) === calculateLogTypeId(wellbore, RouterLogType.DEPTH)
+          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
+          calculateLogTypeId(wellbore, RouterLogType.DEPTH)
         }
       >
         {listLogItemsByType(
@@ -140,7 +129,7 @@ export default function LogTypeItem({
           wellboreUid,
           logGroup,
           isSelected,
-          authorizationState.server.url
+          connectedServer?.url
         )}
       </TreeItem>
       <TreeItem
@@ -152,10 +141,8 @@ export default function LogTypeItem({
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
         selected={
-          calculateLogTypeId(
-            { wellUid: urlWellUid, uid: urlWellboreUid },
-            logType
-          ) === calculateLogTypeId(wellbore, RouterLogType.TIME)
+          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
+          calculateLogTypeId(wellbore, RouterLogType.TIME)
         }
       >
         {listLogItemsByType(
@@ -165,7 +152,7 @@ export default function LogTypeItem({
           wellboreUid,
           logGroup,
           isSelected,
-          authorizationState.server.url
+          connectedServer?.url
         )}
       </TreeItem>
     </>

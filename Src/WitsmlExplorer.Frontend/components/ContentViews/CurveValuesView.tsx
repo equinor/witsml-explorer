@@ -15,7 +15,7 @@ import {
   useSearchParams
 } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetObject } from "../../hooks/query/useGetObject";
@@ -97,9 +97,9 @@ export const CurveValuesView = (): React.ReactElement => {
   const controller = useRef(new AbortController());
   const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
   const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { object: log, isFetching: isFetchingLog } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Log,

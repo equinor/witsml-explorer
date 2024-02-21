@@ -23,7 +23,7 @@ import JobService, { JobType } from "../../services/jobService";
 import Icon from "../../styles/Icons";
 import ConfirmModal from "../Modals/ConfirmModal";
 import { IndexCurve } from "../Modals/LogPropertiesModal";
-import { isGroupObject } from "../Sidebar/ObjectGroupItem";
+import { isExpandableGroupObject } from "../Sidebar/ObjectGroupItem";
 
 const indexCurveToQuery = (indexCurve: IndexCurve) => {
   if (!indexCurve) return "logtypes";
@@ -75,7 +75,9 @@ export const onClickShowObjectOnServer = async (
   const host = `${window.location.protocol}//${window.location.host}`;
   const objectTypeString =
     objectType === ObjectType.Log ? indexCurveToQuery(indexCurve) : "objects";
-  const objectString = isGroupObject(objectType) ? objectOnWellbore.uid : "";
+  const objectString = isExpandableGroupObject(objectType)
+    ? objectOnWellbore.uid
+    : "";
   const url = `${host}/servers/${encodeURIComponent(server.url)}/wells/${
     objectOnWellbore.wellUid
   }/wellbores/${

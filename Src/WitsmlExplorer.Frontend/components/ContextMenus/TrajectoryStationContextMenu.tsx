@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -37,7 +37,7 @@ const TrajectoryStationContextMenu = (
   const { checkedTrajectoryStations, trajectory } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const { servers } = useGetServers();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(
     ComponentType.TrajectoryStation
   );
@@ -71,7 +71,7 @@ const TrajectoryStationContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              authorizationState?.server,
+              connectedServer,
               checkedTrajectoryStations.map((ts) => ts.uid),
               trajectory,
               dispatchOperation,

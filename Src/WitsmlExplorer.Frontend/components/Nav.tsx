@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import { useGetObject } from "../hooks/query/useGetObject";
 import { useGetWell } from "../hooks/query/useGetWell";
@@ -37,16 +37,14 @@ export default function Nav() {
   const isSearchView = !!useMatch("servers/:serverUrl/search/:filterType");
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
-  const { well } = useGetWell(authorizationState?.server, wellUid);
-  const { wellbore } = useGetWellbore(
-    authorizationState?.server,
-    wellUid,
-    wellboreUid
-  );
+  const { well } = useGetWell(connectedServer, wellUid, {
+    enabled: !!connectedServer
+  });
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { object } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectGroup as ObjectType,
@@ -64,7 +62,7 @@ export default function Nav() {
       );
     });
     return [
-      getServerCrumb(authorizationState?.server, navigate),
+      getServerCrumb(connectedServer, navigate),
       getJobsCrumb(serverUrl, isJobsView, navigate),
       getQueryCrumb(serverUrl, isQueryView, navigate),
       getSearchCrumb(isSearchView),
@@ -79,7 +77,7 @@ export default function Nav() {
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
   }, [
-    authorizationState?.server,
+    connectedServer,
     serverUrl,
     objectGroup,
     well,
@@ -136,11 +134,11 @@ export default function Nav() {
 const getServerCrumb = (server: Server, navigate: NavigateFunction) => {
   return server
     ? {
-      name: server.name,
-      onClick: () => {
-        navigate(`servers/${encodeURIComponent(server.url)}/wells`);
+        name: server.name,
+        onClick: () => {
+          navigate(`servers/${encodeURIComponent(server.url)}/wells`);
+        }
       }
-    }
     : {};
 };
 
@@ -151,14 +149,15 @@ const getWellCrumb = (
 ) => {
   return serverUrl && well
     ? {
-      name: well.name,
-      onClick: () => {
-        navigate(
-          `servers/${encodeURIComponent(serverUrl)}/wells/${well.uid
-          }/wellbores`
-        );
+        name: well.name,
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(serverUrl)}/wells/${
+              well.uid
+            }/wellbores`
+          );
+        }
       }
-    }
     : {};
 };
 
@@ -169,14 +168,15 @@ const getWellboreCrumb = (
 ) => {
   return serverUrl && wellbore
     ? {
-      name: wellbore.name,
-      onClick: () => {
-        navigate(
-          `servers/${encodeURIComponent(serverUrl)}/wells/${wellbore.wellUid
-          }/wellbores/${wellbore.uid}/objectgroups`
-        );
+        name: wellbore.name,
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(serverUrl)}/wells/${
+              wellbore.wellUid
+            }/wellbores/${wellbore.uid}/objectgroups`
+          );
+        }
       }
-    }
     : {};
 };
 
@@ -190,15 +190,17 @@ const getObjectGroupCrumb = (
   const pluralizedObjectType = pluralizeObjectType(objectType);
   return serverUrl && wellbore && objectGroup === objectType
     ? {
-      name: pluralizedObjectType,
-      onClick: () => {
-        navigate(
-          `servers/${encodeURIComponent(serverUrl)}/wells/${wellbore.wellUid
-          }/wellbores/${wellbore.uid}/objectgroups/${objectGroup}/${objectGroup === ObjectType.Log ? "logtypes" : "objects"
-          }`
-        );
+        name: pluralizedObjectType,
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(serverUrl)}/wells/${
+              wellbore.wellUid
+            }/wellbores/${wellbore.uid}/objectgroups/${objectGroup}/${
+              objectGroup === ObjectType.Log ? "logtypes" : "objects"
+            }`
+          );
+        }
       }
-    }
     : {};
 };
 
@@ -210,15 +212,17 @@ const getLogTypeCrumb = (
 ) => {
   return serverUrl && wellbore && logType
     ? {
-      name: capitalize(logType),
-      onClick: () => {
-        navigate(
-          `servers/${encodeURIComponent(serverUrl)}/wells/${wellbore.wellUid
-          }/wellbores/${wellbore.uid}/objectgroups/${ObjectType.Log
-          }/logtypes/${logType}/objects`
-        );
+        name: capitalize(logType),
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(serverUrl)}/wells/${
+              wellbore.wellUid
+            }/wellbores/${wellbore.uid}/objectgroups/${
+              ObjectType.Log
+            }/logtypes/${logType}/objects`
+          );
+        }
       }
-    }
     : {};
 };
 
@@ -231,15 +235,17 @@ function getObjectCrumb<T extends ObjectType>(
 ) {
   return serverUrl && objectGroup && object
     ? {
-      name: object.name,
-      onClick: () => {
-        navigate(
-          `servers/${encodeURIComponent(serverUrl)}/wells/${object.wellUid
-          }/wellbores/${object.wellboreUid}/objectgroups/${objectGroup}/${logType ? `logtypes/${logType}/` : ""
-          }objects/${object.uid}`
-        );
+        name: object.name,
+        onClick: () => {
+          navigate(
+            `servers/${encodeURIComponent(serverUrl)}/wells/${
+              object.wellUid
+            }/wellbores/${object.wellboreUid}/objectgroups/${objectGroup}/${
+              logType ? `logtypes/${logType}/` : ""
+            }objects/${object.uid}`
+          );
+        }
       }
-    }
     : {};
 }
 
@@ -250,11 +256,11 @@ const getJobsCrumb = (
 ) => {
   return isJobsView
     ? {
-      name: "Jobs",
-      onClick: () => {
-        navigate(`servers/${encodeURIComponent(serverUrl)}/jobs`);
+        name: "Jobs",
+        onClick: () => {
+          navigate(`servers/${encodeURIComponent(serverUrl)}/jobs`);
+        }
       }
-    }
     : {};
 };
 
@@ -265,21 +271,19 @@ const getQueryCrumb = (
 ) => {
   return isQueryView
     ? {
-      name: "Query",
-      onClick: () => {
-        navigate(`servers/${encodeURIComponent(serverUrl)}/query`);
+        name: "Query",
+        onClick: () => {
+          navigate(`servers/${encodeURIComponent(serverUrl)}/query`);
+        }
       }
-    }
     : {};
 };
 
-const getSearchCrumb = (
-  isSearchView: boolean,
-) => {
+const getSearchCrumb = (isSearchView: boolean) => {
   return isSearchView
     ? {
-      name: "Search",
-    }
+        name: "Search"
+      }
     : {};
 };
 

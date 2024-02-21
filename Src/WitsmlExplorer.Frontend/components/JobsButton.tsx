@@ -2,7 +2,7 @@ import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
@@ -15,13 +15,11 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
 
   const onClick = () => {
-    navigate(
-      `servers/${encodeURIComponent(authorizationState?.server?.url)}/jobs`
-    );
+    navigate(`servers/${encodeURIComponent(connectedServer?.url)}/jobs`);
   };
 
   return (
@@ -29,7 +27,7 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
-      disabled={!authorizationState?.server}
+      disabled={!connectedServer}
     >
       <Icon name="assignment" />
       {props.showLabels && "Jobs"}

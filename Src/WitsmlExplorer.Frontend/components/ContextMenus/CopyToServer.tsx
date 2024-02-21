@@ -49,6 +49,8 @@ export const onClickCopyToServer = async (
     wellboreUid,
     targetServer
   );
+  // TODO: Temporary fix, to avoid displayCopyWellboreModal to be triggered when not authorized.
+  if (wellbore.uid === "") return;
   if (wellbore.uid !== wellboreUid) {
     const onConfirm = () => {
       dispatchOperation({ type: OperationType.HideModal });

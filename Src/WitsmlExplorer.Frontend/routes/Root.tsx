@@ -12,7 +12,7 @@ import ModalPresenter from "../components/Modals/ModalPresenter";
 import PageLayout from "../components/PageLayout";
 import RefreshHandler from "../components/RefreshHandler";
 import { Snackbar } from "../components/Snackbar";
-import { AuthorizationStateProvider } from "../contexts/authorizationStateContext";
+import { ConnectedServerProvider } from "../contexts/connectedServerContext";
 import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
 import { FilterContextProvider } from "../contexts/filter";
 import NavigationContext from "../contexts/navigationContext";
@@ -126,12 +126,12 @@ export default function Root() {
         <OperationContext.Provider
           value={{ operationState, dispatchOperation }}
         >
-          <AuthorizationStateProvider>
-            <ThemeProvider theme={getTheme(operationState.theme)}>
-              <GlobalStyles colors={operationState.colors} />
-              <NavigationContext.Provider
-                value={{ navigationState, dispatchNavigation }}
-              >
+          <ThemeProvider theme={getTheme(operationState.theme)}>
+            <GlobalStyles colors={operationState.colors} />
+            <NavigationContext.Provider
+              value={{ navigationState, dispatchNavigation }}
+            >
+              <ConnectedServerProvider>
                 <CurveThresholdProvider>
                   <SidebarProvider>
                     <FilterContextProvider>
@@ -147,9 +147,9 @@ export default function Root() {
                     </FilterContextProvider>
                   </SidebarProvider>
                 </CurveThresholdProvider>
-              </NavigationContext.Provider>
-            </ThemeProvider>
-          </AuthorizationStateProvider>
+              </ConnectedServerProvider>
+            </NavigationContext.Provider>
+          </ThemeProvider>
         </OperationContext.Provider>
       </MsalProvider>
     </ErrorBoundary>

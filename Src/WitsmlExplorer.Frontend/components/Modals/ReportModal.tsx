@@ -7,7 +7,7 @@ import {
 } from "@equinor/eds-core-react";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import BaseReport, { createReport } from "../../models/reports/BaseReport";
@@ -135,7 +135,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 };
 
 export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const [report, setReport] = useState<BaseReport>(null);
 
   if (!jobId) return null;
@@ -171,7 +171,7 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
       unsubscribeOnJobFinished();
       unsubscribeOnJobFailed();
     };
-  }, [authorizationState?.server, jobId]);
+  }, [connectedServer, jobId]);
 
   return report;
 };

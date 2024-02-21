@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
@@ -36,9 +36,9 @@ export interface TubularComponentRow extends ContentTableRow {
 export default function TubularView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { object: tubular } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Tubular,
@@ -46,7 +46,7 @@ export default function TubularView() {
   );
 
   const { components: tubularComponents, isFetching } = useGetComponents(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectUid,

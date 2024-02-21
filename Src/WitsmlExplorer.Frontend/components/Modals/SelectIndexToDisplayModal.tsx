@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import LogObject from "../../models/logObject";
@@ -42,7 +42,7 @@ const SelectIndexToDisplayModal = (
   );
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
   const navigate = useNavigate();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
 
   const onSubmit = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -59,7 +59,7 @@ const SelectIndexToDisplayModal = (
     });
     navigate({
       pathname: `/servers/${encodeURIComponent(
-        authorizationState.server.url
+        connectedServer?.url
       )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
         ObjectType.Log
       }/logtypes/${

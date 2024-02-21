@@ -1,10 +1,10 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useContext, useEffect } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "../components/Modals/UserCredentialsModal";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import { useGetServers } from "../hooks/query/useGetServers";
@@ -19,14 +19,14 @@ export default function AuthRoute() {
   const { dispatchOperation } = useContext(OperationContext);
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   const { servers } = useGetServers({ enabled: isAuthenticated });
-  const { authorizationState, setAuthorizationState } = useAuthorizationState();
   const { serverUrl } = useParams();
+  const { connectedServer, setConnectedServer } = useConnectedServer();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe =
       AuthorizationService.onAuthorizationChangeEvent.subscribe(
         async (authorizationState: AuthorizationState) => {
-          setAuthorizationState(authorizationState);
           const server = authorizationState.server;
           if (
             authorizationState.status == AuthorizationStatus.Unauthorized &&
@@ -38,7 +38,8 @@ export default function AuthRoute() {
             if (index !== -1) {
               server.usernames.splice(index, 1);
             }
-            showCredentialsModal(server);
+            AuthorizationService.onServerStateChange(server);
+            showCredentialsModal(server, false);
             AuthorizationService.awaitServerAuthorization(server);
           } else if (
             authorizationState.status == AuthorizationStatus.Authorized ||
@@ -54,22 +55,29 @@ export default function AuthRoute() {
   }, []);
 
   useEffect(() => {
-    if (
-      servers &&
-      authorizationState?.status !== AuthorizationStatus.Authorized
-    ) {
+    if (servers && !connectedServer) {
       const server = servers.find((server) => server.url === serverUrl);
-      showCredentialsModal(server);
+      showCredentialsModal(server, true);
     }
-  }, [servers, authorizationState]);
+  }, [servers]);
 
-  const showCredentialsModal = (server: Server) => {
+  const showCredentialsModal = (server: Server, initialLogin: boolean) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server: server,
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
-        AuthorizationService.setSelectedServer(server);
+        if (initialLogin) {
+          AuthorizationService.setSelectedServer(server);
+          setConnectedServer(server);
+        }
+      },
+      onCancel: () => {
+        AuthorizationService.onAuthorizationChangeDispatch({
+          server,
+          status: AuthorizationStatus.Cancel
+        });
+        if (initialLogin) navigate("/");
       }
     };
     dispatchOperation({
@@ -78,10 +86,7 @@ export default function AuthRoute() {
     });
   };
 
-  if (
-    authorizationState &&
-    authorizationState.status === AuthorizationStatus.Authorized
-  ) {
+  if (connectedServer) {
     return <Outlet />;
   }
   return null;

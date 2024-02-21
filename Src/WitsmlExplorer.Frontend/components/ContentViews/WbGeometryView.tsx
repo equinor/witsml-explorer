@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
@@ -29,9 +29,9 @@ interface WbGeometrySectionRow extends ContentTableRow {
 export default function WbGeometryView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { object: wbGeometry } = useGetObject(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.WbGeometry,
@@ -39,7 +39,7 @@ export default function WbGeometryView() {
   );
 
   const { components: wbGeometrySections, isFetching } = useGetComponents(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     objectUid,

@@ -1,11 +1,8 @@
 import { Typography } from "@equinor/eds-core-react";
 import React, { useContext, useEffect } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
-import {
-  ObjectFilterType,
-  filterTypeToProperty
-} from "../../contexts/filter";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
+import { ObjectFilterType, filterTypeToProperty } from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -41,13 +38,18 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
 
 export const ObjectSearchListView = (): React.ReactElement => {
   const { dispatchNavigation } = useContext(NavigationContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useContext(OperationContext);
   const [searchParams] = useSearchParams();
   const { filterType } = useParams<{ filterType: ObjectFilterType }>();
   const value = searchParams.get("value");
   const [fetchAllObjects, setFetchAllObjects] = React.useState(false);
-  const { searchResult, isFetching, error, isError } = useGetObjectSearch(authorizationState?.server, filterType, value, fetchAllObjects);
+  const { searchResult, isFetching, error, isError } = useGetObjectSearch(
+    connectedServer,
+    filterType,
+    value,
+    fetchAllObjects
+  );
 
   useEffect(() => {
     if (isError && !!error) {
@@ -61,7 +63,9 @@ export const ObjectSearchListView = (): React.ReactElement => {
             heading={"Warning: Seach might be slow!"}
             content={
               <>
-                <Typography style={{ whiteSpace: "pre-line" }}>{message}</Typography>
+                <Typography style={{ whiteSpace: "pre-line" }}>
+                  {message}
+                </Typography>
               </>
             }
             onConfirm={() => {
@@ -78,7 +82,7 @@ export const ObjectSearchListView = (): React.ReactElement => {
         });
       } else {
         NotificationService.Instance.alertDispatcher.dispatch({
-          serverUrl: new URL(authorizationState?.server.url),
+          serverUrl: new URL(connectedServer.url),
           message: message,
           isSuccess: false,
           severity: "error"
@@ -189,9 +193,7 @@ export const ObjectSearchListView = (): React.ReactElement => {
   };
 
   if (isFetching) {
-    return (
-      <ProgressSpinner message={`Fetching ${pluralize(filterType)}.`} />
-    );
+    return <ProgressSpinner message={`Fetching ${pluralize(filterType)}.`} />;
   }
 
   return searchResult.length == 0 ? (
@@ -211,4 +213,3 @@ export const ObjectSearchListView = (): React.ReactElement => {
 };
 
 export default ObjectSearchListView;
-

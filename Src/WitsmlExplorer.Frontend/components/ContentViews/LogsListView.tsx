@@ -2,7 +2,7 @@ import { Switch, Typography } from "@equinor/eds-core-react";
 import { MouseEvent, useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetObjects } from "../../hooks/query/useGetObjects";
@@ -40,15 +40,15 @@ export default function LogsListView() {
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const navigate = useNavigate();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid, logType } = useParams();
   const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid
   );
   const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
-    authorizationState?.server,
+    connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Log

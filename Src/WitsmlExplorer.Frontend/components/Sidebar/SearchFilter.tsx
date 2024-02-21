@@ -1,13 +1,9 @@
-import {
-  Button,
-  EdsProvider,
-  Icon
-} from "@equinor/eds-core-react";
+import { Button, EdsProvider, Icon } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import styled, { CSSProp } from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import {
   FilterContext,
   FilterType,
@@ -29,7 +25,7 @@ const searchOptions = Object.values(FilterType);
 const SearchFilter = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const [selectedOption, setSelectedOption] = useState<FilterType>(
     selectedFilter.filterType
   );
@@ -72,9 +68,11 @@ const SearchFilter = (): React.ReactElement => {
     if (isObjectFilterType(option)) {
       const searchParams = createSearchParams({
         value: nameFilter
-      })
+      });
       navigate({
-        pathname: `servers/${encodeURIComponent(authorizationState.server.url)}/search/${option}`,
+        pathname: `servers/${encodeURIComponent(
+          connectedServer.url
+        )}/search/${option}`,
         search: searchParams.toString()
       });
     }
@@ -125,13 +123,15 @@ const SearchFilter = (): React.ReactElement => {
               colors={colors}
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
-              onKeyDown={(e) => (e.key == "Enter" ? openSearchView(selectedOption) : null)}
+              onKeyDown={(e) =>
+                e.key == "Enter" ? openSearchView(selectedOption) : null
+              }
               InputProps={{
                 startAdornment: (
                   <SearchIconLayout>
                     <Button
                       variant="ghost_icon"
-                      disabled={!authorizationState?.server}
+                      disabled={!connectedServer}
                       onClick={openOptions}
                       aria-label="Show Search Options"
                     >
@@ -197,7 +197,7 @@ const SearchFilter = (): React.ReactElement => {
   );
 };
 
-const SearchField = styled(TextField) <{ colors: Colors }>`
+const SearchField = styled(TextField)<{ colors: Colors }>`
   &&& > div > fieldset {
     border-color: ${(props) => props.colors.interactive.primaryResting};
   }

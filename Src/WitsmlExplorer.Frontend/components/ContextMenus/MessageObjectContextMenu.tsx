@@ -2,7 +2,7 @@ import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -32,7 +32,7 @@ const MessageObjectContextMenu = (
   const { checkedObjects, wellbore } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
 
@@ -55,7 +55,7 @@ const MessageObjectContextMenu = (
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const props: MessageComparisonModalProps = {
         sourceMessage: checkedObjects[0] as MessageObject,
-        sourceServer: authorizationState?.server,
+        sourceServer: connectedServer,
         targetServer,
         targetObject,
         dispatchOperation
@@ -108,7 +108,7 @@ const MessageObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Message,
-          authorizationState?.server,
+          connectedServer,
           servers,
           dispatchOperation,
           queryClient,

@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import React, { useContext } from "react";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import { useGetServers } from "../../hooks/query/useGetServers";
 import { ComponentType } from "../../models/componentType";
@@ -35,7 +35,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
   const fluidReferences = useClipboardComponentReferencesOfType(
     ComponentType.Fluid
   );
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
 
   const toDelete = createComponentReferences(
@@ -51,7 +51,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
           key={"copy"}
           onClick={() =>
             copyComponents(
-              authorizationState?.server,
+              connectedServer,
               checkedFluids.map((fluid) => fluid.uid),
               fluidsReport,
               dispatchOperation,

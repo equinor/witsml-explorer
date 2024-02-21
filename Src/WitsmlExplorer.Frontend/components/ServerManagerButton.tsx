@@ -2,9 +2,8 @@ import { Button } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../contexts/authorizationStateContext";
+import { useConnectedServer } from "../contexts/connectedServerContext";
 import OperationContext from "../contexts/operationContext";
-import { AuthorizationStatus } from "../services/authorizationService";
 import { Colors } from "../styles/Colors";
 import Icon from "../styles/Icons";
 
@@ -15,7 +14,7 @@ export interface ServerManagerButtonProps {
 const ServerManagerButton = (
   props: ServerManagerButtonProps
 ): React.ReactElement => {
-  const { authorizationState } = useAuthorizationState();
+  const { connectedServer } = useConnectedServer();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -25,16 +24,17 @@ const ServerManagerButton = (
     navigate("/");
   };
 
-  const connected =
-    authorizationState?.status === AuthorizationStatus.Authorized;
+  const isConnected = !!connectedServer;
   return (
     <StyledButton
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
+      disabled={!isConnected}
     >
-      <Icon name={connected ? "cloudDownload" : "cloudOff"} />
-      {props.showLabels && (connected ? "Server Connections" : "No Connection")}
+      <Icon name={isConnected ? "cloudDownload" : "cloudOff"} />
+      {props.showLabels &&
+        (isConnected ? "Server Connections" : "No Connection")}
     </StyledButton>
   );
 };

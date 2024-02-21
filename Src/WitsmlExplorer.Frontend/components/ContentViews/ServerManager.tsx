@@ -6,10 +6,10 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAuthorizationState } from "../../contexts/authorizationStateContext";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -19,9 +19,7 @@ import {
   getUserAppRoles,
   msalEnabled
 } from "../../msal/MsalAuthProvider";
-import AuthorizationService, {
-  AuthorizationStatus
-} from "../../services/authorizationService";
+import AuthorizationService from "../../services/authorizationService";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
@@ -41,28 +39,17 @@ const ServerManager = (): React.ReactElement => {
     dispatchOperation
   } = useContext(OperationContext);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
-  const { authorizationState, setAuthorizationState } = useAuthorizationState();
   const navigate = useNavigate();
+  const { connectedServer, setConnectedServer } = useConnectedServer();
 
-  useEffect(() => {
-    const unsubscribeFromCredentialsEvents =
-      AuthorizationService.onAuthorizationChangeEvent.subscribe(
-        async (authorizationState) => {
-          setAuthorizationState(authorizationState);
-        }
-      );
-    return () => {
-      unsubscribeFromCredentialsEvents();
-    };
-  }, []);
-
-  const onSelectItem = async (server: Server) => {
+  const connectServer = async (server: Server) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
       server,
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
         AuthorizationService.setSelectedServer(server);
+        setConnectedServer(server);
         navigate(`servers/${encodeURIComponent(server.url)}/wells`);
       }
     };
@@ -70,6 +57,10 @@ const ServerManager = (): React.ReactElement => {
       type: OperationType.DisplayModal,
       payload: <UserCredentialsModal {...userCredentialsModalProps} />
     });
+  };
+
+  const disconnectServer = () => {
+    setConnectedServer(null);
   };
 
   const onEditItem = (server: Server) => {
@@ -94,12 +85,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const isConnected = (server: Server): boolean => {
-    return (
-      server &&
-      authorizationState?.server &&
-      server.id === authorizationState.server.id &&
-      authorizationState.status === AuthorizationStatus.Authorized
-    );
+    return server.id === connectedServer?.id;
   };
 
   if (isFetching) {
@@ -177,7 +163,11 @@ const ServerManager = (): React.ReactElement => {
                   <ConnectButton
                     colors={colors}
                     isConnected={isConnected(server)}
-                    onClick={() => onSelectItem(server)}
+                    onClick={
+                      isConnected(server)
+                        ? () => disconnectServer()
+                        : () => connectServer(server)
+                    }
                   />
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
@@ -193,6 +183,8 @@ const ServerManager = (): React.ReactElement => {
                       showDeleteServerModal(
                         server,
                         dispatchOperation,
+                        connectedServer,
+                        setConnectedServer,
                         queryClient
                       )
                     }
