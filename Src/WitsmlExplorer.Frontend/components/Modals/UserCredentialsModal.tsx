@@ -138,7 +138,7 @@ const UserCredentialsModal = (
                 onClick={async () => {
                   try {
                     const connectionInfo: ConnectionInformation = {
-                      url: server.url,
+                      serverUrl: server.url,
                       userName: selectedUsername
                     };
                     await AuthorizationService.verifyuserisloggedin(

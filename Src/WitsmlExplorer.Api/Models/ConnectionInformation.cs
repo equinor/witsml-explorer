@@ -6,8 +6,8 @@ namespace WitsmlExplorer.Api.Models
 {
     public class ConnectionInformation
     {
-        [JsonPropertyName("url")]
-        public Uri Url { get; init; }
+        [JsonPropertyName("serverUrl")]
+        public Uri ServerUrl { get; init; }
         [JsonPropertyName("userName")]
         public string UserName { get; init; }
 

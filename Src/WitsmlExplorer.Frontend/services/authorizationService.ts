@@ -30,7 +30,7 @@ export interface AuthorizationState {
 }
 
 export interface ConnectionInformation {
-  url: string;
+  serverUrl: string;
   userName: string;
 }
 

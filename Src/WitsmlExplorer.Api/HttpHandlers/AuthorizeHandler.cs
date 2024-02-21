@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static IResult VerifyUserIsLoggedIn(ConnectionInformation connectionInfo, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(httpContext?.Request);
-            var creds = credentialsService.GetCredentials(eh, connectionInfo.Url.ToString(), connectionInfo.UserName);
+            var creds = credentialsService.GetCredentials(eh, connectionInfo.ServerUrl.ToString(), connectionInfo.UserName);
             if (creds == null)
             {
                 return TypedResults.Unauthorized();
