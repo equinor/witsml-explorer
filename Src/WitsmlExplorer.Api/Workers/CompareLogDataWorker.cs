@@ -34,6 +34,7 @@ namespace WitsmlExplorer.Api.Workers
         private bool _isDecreasing;
         private bool _isDepthLog;
         private bool _includeIndexDuplicates;
+        private bool _compareAllIndexes;
 
         public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
@@ -59,6 +60,7 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLog sourceLog = await LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
             WitsmlLog targetLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
             _includeIndexDuplicates = job.IncludeIndexDuplicates;
+            _compareAllIndexes = job.CompareAllIndexes;
 
             try
             {
@@ -69,7 +71,10 @@ namespace WitsmlExplorer.Api.Workers
                 _isDepthLog = sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
 
                 // Set the logs shared index interval
-                (sourceLog, targetLog) = SetSharedIndexInterval(sourceLog, targetLog);
+                if (!_compareAllIndexes)
+                {
+                    (sourceLog, targetLog) = SetSharedIndexInterval(sourceLog, targetLog);
+                }
 
                 List<string> sourceLogMnemonics = GetLogMnemonics(sourceLog);
                 List<string> targetLogMnemonics = GetLogMnemonics(targetLog);

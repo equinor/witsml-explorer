@@ -29,16 +29,19 @@ export interface ObjectPickerProps {
   onPicked: (
     targetObject: ObjectOnWellbore,
     targetServer: Server,
-    includeIndexDuplicates?: boolean
+    includeIndexDuplicates?: boolean,
+    compareAllLogIndexes?: boolean
   ) => void;
   includeIndexDuplicatesOption?: boolean;
+  includeCompareAllLogIndexesOption?: boolean;
 }
 
 const ObjectPickerModal = ({
   sourceObject,
   objectType,
   onPicked,
-  includeIndexDuplicatesOption
+  includeIndexDuplicatesOption,
+  includeCompareAllLogIndexesOption
 }: ObjectPickerProps): React.ReactElement => {
   const {
     navigationState: { servers }
@@ -57,6 +60,8 @@ const ObjectPickerModal = ({
   const [fetchError, setFetchError] = useState("");
   const objectReference = useClipboardReferencesOfType(objectType, 100);
   const [checkedIncludeIndexDuplicates, setCheckedIncludeIndexDuplicates] =
+    useState(false);
+  const [checkedCompareAllLogIndexes, setCheckedCompareAllLogIndexes] =
     useState(false);
 
   const onClear = () => {
@@ -98,8 +103,13 @@ const ObjectPickerModal = ({
       );
       if (targetObject?.uid === objectUid) {
         dispatchOperation({ type: OperationType.HideModal });
-        checkedIncludeIndexDuplicates
-          ? onPicked(targetObject, targetServer, checkedIncludeIndexDuplicates)
+        checkedIncludeIndexDuplicates || checkedCompareAllLogIndexes
+          ? onPicked(
+              targetObject,
+              targetServer,
+              checkedIncludeIndexDuplicates,
+              checkedCompareAllLogIndexes
+            )
           : onPicked(targetObject, targetServer);
       } else {
         setFetchError(`The target ${objectType} was not found`);
@@ -198,16 +208,29 @@ const ObjectPickerModal = ({
             >
               Paste
             </Button>
-            {includeIndexDuplicatesOption && (
-              <StyledCheckbox
-                colors={colors}
-                label="Include index duplicates"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setCheckedIncludeIndexDuplicates(e.target.checked);
-                }}
-                checked={checkedIncludeIndexDuplicates}
-              />
-            )}
+            <>
+              {includeIndexDuplicatesOption && (
+                <StyledCheckbox
+                  colors={colors}
+                  label="Include index duplicates"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setCheckedIncludeIndexDuplicates(e.target.checked);
+                  }}
+                  checked={checkedIncludeIndexDuplicates}
+                />
+              )}
+              {objectType === ObjectType.Log &&
+                includeCompareAllLogIndexesOption && (
+                  <StyledCheckbox
+                    colors={colors}
+                    label="Compare all log indexes"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setCheckedCompareAllLogIndexes(e.target.checked);
+                    }}
+                    checked={checkedCompareAllLogIndexes}
+                  />
+                )}
+            </>
           </ButtonsContainer>
           {checkedIncludeIndexDuplicates && (
             <StyledBanner colors={colors}>
@@ -221,6 +244,18 @@ const ObjectPickerModal = ({
                 result in unnecessary mismatches. This feature should only be
                 used in special cases that require investigation of anomalies in
                 the index duplicates.
+              </Banner.Message>
+            </StyledBanner>
+          )}
+          {checkedCompareAllLogIndexes && (
+            <StyledBanner colors={colors}>
+              <Banner.Icon variant="warning">
+                <Icon name="infoCircle" />
+              </Banner.Icon>
+              <Banner.Message>
+                Compare all log indexes: By default, logs are compared within
+                their shared log index interval. Comparing logs outside their
+                shared index interval should be unnecessary.
               </Banner.Message>
             </StyledBanner>
           )}
