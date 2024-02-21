@@ -148,8 +148,10 @@ export default function LogTypeItem({
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
         selected={
-          calculateLogTypeId({ wellUid, uid: wellboreUid }, logType) ===
-          calculateLogTypeId(wellbore, RouterLogType.TIME)
+          calculateLogTypeId(
+            { wellUid: urlWellUid, uid: urlWellboreUid },
+            logType
+          ) === calculateLogTypeId(wellbore, RouterLogType.TIME)
         }
       >
         {listLogItemsByType(
