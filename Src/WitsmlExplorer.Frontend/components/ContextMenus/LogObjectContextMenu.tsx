@@ -16,6 +16,7 @@ import { useClipboardComponentReferencesOfType } from "components/ContextMenus/U
 import AnalyzeGapModal, {
   AnalyzeGapModalProps
 } from "components/Modals/AnalyzeGapModal";
+import CompareLogDataModal from "components/Modals/CompareLogDataModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -164,12 +165,14 @@ const LogObjectContextMenu = (
     const onPicked = async (
       targetObject: ObjectOnWellbore,
       targetServer: Server,
-      includeIndexDuplicates: boolean
+      includeIndexDuplicates: boolean,
+      compareAllIndexes: boolean
     ) => {
       const compareLogDataJob: CompareLogDataJob = {
         sourceLog: checkedObjects[0],
         targetLog: targetObject,
-        includeIndexDuplicates
+        includeIndexDuplicates,
+        compareAllIndexes
       };
       const jobId = await JobService.orderJobAtServer(
         JobType.CompareLogData,
@@ -185,15 +188,25 @@ const LogObjectContextMenu = (
         });
       }
     };
-    const props: ObjectPickerProps = {
-      sourceObject: checkedObjects[0],
-      objectType: ObjectType.Log,
-      onPicked,
-      includeIndexDuplicatesOption: true
-    };
     if (checkedObjects.length === 2) {
-      onPicked(checkedObjects[1], selectedServer, false);
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: (
+          <CompareLogDataModal
+            targetObject={checkedObjects[1]}
+            targetServer={selectedServer}
+            onPicked={onPicked}
+          />
+        )
+      });
     } else {
+      const props: ObjectPickerProps = {
+        sourceObject: checkedObjects[0],
+        objectType: ObjectType.Log,
+        onPicked,
+        includeIndexDuplicatesOption: true,
+        includeCompareAllLogIndexesOption: true
+      };
       dispatchOperation({
         type: OperationType.DisplayModal,
         payload: <ObjectPickerModal {...props} />

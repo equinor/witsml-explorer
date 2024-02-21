@@ -672,19 +672,106 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedMismatchItem2.TargetValue, resultReportItems[1].TargetValue);
         }
 
-        private CompareLogDataJob SetupTest(TestLog sourceLog, TestLog targetLog, bool includeIndexDuplicates = false)
+        [Fact]
+        public async Task CompareLogData_DepthSharedIndexInterval_ReturnsMismatchInSharedIntervalOnly()
         {
-            CompareLogDataJob job = CreateCompareLogDataJob(includeIndexDuplicates);
+            SetupWorker(0, 0);
+            string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
+            TestLog sourceLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "1",
+                EndIndex = "3",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
+                Data = new() { "1,11", "2,21", "3,31" }
+            };
+
+            TestLog targetLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "2",
+                EndIndex = "4",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
+                Data = new() { "2,22", "3,32", "4,42" }
+            };
+
+            var job = SetupTest(sourceLog, targetLog, false, false, indexType);
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+            List<CompareLogDataItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
+            Console.WriteLine(resultReportItems);
+
+
+            int expectedNumberOfMismatches = 2;
+            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("2", "Curve1", "21", "22");
+            CompareLogDataItem expectedMismatchItem2 = CreateCompareLogDataItem("3", "Curve1", "31", "32");
+
+            Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
+
+            Assert.Equal(expectedMismatchItem1.Index, resultReportItems[0].Index);
+            Assert.Equal(expectedMismatchItem1.Mnemonic, resultReportItems[0].Mnemonic);
+            Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
+            Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
+
+            Assert.Equal(expectedMismatchItem2.Index, resultReportItems[1].Index);
+            Assert.Equal(expectedMismatchItem2.Mnemonic, resultReportItems[1].Mnemonic);
+            Assert.Equal(expectedMismatchItem2.SourceValue, resultReportItems[1].SourceValue);
+            Assert.Equal(expectedMismatchItem2.TargetValue, resultReportItems[1].TargetValue);
+        }
+
+        [Fact]
+        public async Task CompareLogData_TimeSharedIndexInterval_ReturnsMismatchInSharedIntervalOnly()
+        {
+            SetupWorker(0, 0);
+            string indexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME;
+            TestLog sourceLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "2023-09-28T08:10:00Z",
+                EndIndex = "2023-09-28T08:11:00Z",
+                LogCurveInfo = new() { ("IndexCurve", "DateTime"), ("Curve1", "Unit1") },
+                Data = new() { "2023-09-28T08:10:00Z,0", "2023-09-28T08:11:00Z,0" }
+            };
+
+            TestLog targetLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "2023-09-28T08:11:00Z",
+                EndIndex = "2023-09-28T08:12:00Z",
+                LogCurveInfo = new() { ("IndexCurve", "DateTime"), ("Curve1", "Unit1") },
+                Data = new() { "2023-09-28T08:11:00Z,1", "2023-09-28T08:12:00Z,1" }
+            };
+
+            var job = SetupTest(sourceLog, targetLog, false, false, indexType);
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+            List<CompareLogDataItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
+            Console.WriteLine(resultReportItems);
+
+
+            int expectedNumberOfMismatches = 1;
+            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("2023-09-28T08:11:00Z", "Curve1", "0", "1");
+
+            Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
+
+            Assert.Equal(expectedMismatchItem1.Index, resultReportItems[0].Index);
+            Assert.Equal(expectedMismatchItem1.Mnemonic, resultReportItems[0].Mnemonic);
+            Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
+            Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
+        }
+
+        private CompareLogDataJob SetupTest(TestLog sourceLog, TestLog targetLog, bool includeIndexDuplicates = false, bool compareAllIndexes = true, string indexType = null)
+        {
+            CompareLogDataJob job = CreateCompareLogDataJob(includeIndexDuplicates, compareAllIndexes);
             WitsmlLogs sourceLogHeader = CreateSampleLogHeaders(_sourceWellUid, _sourceWellboreUid, _sourceLogUid, sourceLog);
             WitsmlLogs targetLogHeader = CreateSampleLogHeaders(_targetWellUid, _targetWellboreUid, _targetLogUid, targetLog);
             WitsmlLogs sourceLogData = CreateSampleLogData(_sourceWellUid, _sourceWellboreUid, _sourceLogUid, sourceLog);
             WitsmlLogs targetLogData = CreateSampleLogData(_targetWellUid, _targetWellboreUid, _targetLogUid, targetLog);
-            SetupClient(_witsmlSourceClient, sourceLogHeader, sourceLogData);
-            SetupClient(_witsmlTargetClient, targetLogHeader, targetLogData);
+            SetupClient(_witsmlSourceClient, sourceLogHeader, sourceLogData, compareAllIndexes, indexType);
+            SetupClient(_witsmlTargetClient, targetLogHeader, targetLogData, compareAllIndexes, indexType);
             return job;
         }
 
-        private void SetupClient(Mock<IWitsmlClient> witsmlClient, WitsmlLogs logHeaders, WitsmlLogs logData)
+
+        private void SetupClient(Mock<IWitsmlClient> witsmlClient, WitsmlLogs logHeaders, WitsmlLogs logData, bool compareAllIndexes, string indexType)
         {
             int getDataCount = 0;
             // Mock fetching log
@@ -714,7 +801,30 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         string mnemonicData = dataRow.Split(CommonConstants.DataSeparator)[mnemonicIndex];
                         if (!string.IsNullOrEmpty(mnemonicData))
                         {
-                            dataForCurve.Add($"{index},{mnemonicData}");
+                            if (!compareAllIndexes && indexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+                            {
+                                double currentIndexValue = StringHelpers.ToDouble(index);
+                                double startIndexValue = StringHelpers.ToDouble(logs.Logs.First().StartIndex.Value);
+                                double endIndexValue = StringHelpers.ToDouble(logs.Logs.First().EndIndex.Value);
+                                if (currentIndexValue >= startIndexValue && currentIndexValue <= endIndexValue)
+                                {
+                                    dataForCurve.Add($"{index},{mnemonicData}");
+                                }
+                            }
+                            else if (!compareAllIndexes && indexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
+                            {
+                                var currentDateTimeIndex = StringHelpers.ToDateTime(index);
+                                var startDateTimeIndex = StringHelpers.ToDateTime(logs.Logs.First().StartDateTimeIndex);
+                                var endDateTimeIndex = StringHelpers.ToDateTime(logs.Logs.First().EndDateTimeIndex);
+                                if (currentDateTimeIndex >= startDateTimeIndex && currentDateTimeIndex <= endDateTimeIndex)
+                                {
+                                    dataForCurve.Add($"{index},{mnemonicData}");
+                                }
+                            }
+                            else
+                            {
+                                dataForCurve.Add($"{index},{mnemonicData}");
+                            }
                         }
                     }
                     WitsmlLogs newLogData = new()
@@ -870,7 +980,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private CompareLogDataJob CreateCompareLogDataJob(bool includeIndexDuplicates = false)
+        private CompareLogDataJob CreateCompareLogDataJob(bool includeIndexDuplicates = false, bool compareAllIndexes = true)
         {
             return new CompareLogDataJob
             {
@@ -893,6 +1003,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Name = _targetLogUid
                 },
                 IncludeIndexDuplicates = includeIndexDuplicates,
+                CompareAllIndexes = compareAllIndexes,
                 JobInfo = new()
             };
         }
