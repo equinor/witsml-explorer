@@ -21,6 +21,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: Infinity,
+      refetchOnWindowFocus: false,
       gcTime: 30 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // The duration unused items are kept in the cache before garbage collection.
     }
   }
@@ -84,7 +85,7 @@ const router = createBrowserRouter([
             element: <QueryView />
           },
           {
-            path: "search",
+            path: "search/:filterType",
             element: <ObjectSearchListView />
           }
         ]

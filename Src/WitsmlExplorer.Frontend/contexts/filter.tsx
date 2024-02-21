@@ -167,6 +167,13 @@ export function FilterContextProvider({
   );
 }
 
+export const getListedObjects = (objectFilterType: ObjectFilterType): string => {
+  const lf = new Intl.ListFormat("en-US");
+  const pluralizedObjectTypes = objectFilterTypeToObjects[objectFilterType].map((o) => pluralize(o));
+  return lf.format(pluralizedObjectTypes);
+};
+
+
 export interface FilterOptions {
   filterWellbores?: boolean; // Filter the wellbores (if the well itself doesn't match). Setting this to true will remove wellbores that don't match.
   dispatchSidebar?: (action: SidebarAction) => void; //A function to dispatch an action to expand tree nodes every time the filter changes.
@@ -229,8 +236,8 @@ const filterOnName = (
     const filteredObjects = isSitecomSyntax(name)
       ? searchResults
       : searchResults.filter((object) =>
-          regex.test(object[property as keyof ObjectSearchResult])
-        );
+        regex.test(object[property as keyof ObjectSearchResult])
+      );
     const filteredWellUids = filteredObjects.map((object) => object.wellUid);
     const filteredWellAndWellboreUids = filteredObjects.map((object) =>
       [object.wellUid, object.wellboreUid].join(",")
@@ -282,18 +289,14 @@ export const getSearchRegex = (str: string): RegExp => {
   return new RegExp(newStr, "i");
 };
 
-function filterOnIsActive(wells: Well[], filterOnIsActive: boolean) {
+function filterWellsOnIsActive(wells: Well[], filterOnIsActive: boolean) {
   if (!filterOnIsActive) return wells;
+  return wells.filter((well: Well) => well.isActive);
+}
 
-  wells = wells.filter((well: Well) =>
-    well.wellbores.some((wellbore) => wellbore.isActive)
-  );
-  return wells.map((well) => {
-    return {
-      ...well,
-      wellbores: [...well.wellbores.filter((wellbore) => wellbore.isActive)]
-    };
-  });
+function filterWellboresOnIsActive(wellbores: Wellbore[], filterOnIsActive: boolean) {
+  if (!filterOnIsActive) return wellbores;
+  return wellbores.filter((wellbore: Wellbore) => wellbore.isActive);
 }
 
 function filterOnObjectGrowing(wells: Well[], filterOnObjectGrowing: boolean) {
@@ -308,10 +311,10 @@ function filterOnObjectGrowing(wells: Well[], filterOnObjectGrowing: boolean) {
             ...wellbore,
             logs: wellbore.logs
               ? [
-                  ...wellbore.logs.filter(
-                    (logObject) => logObject.objectGrowing
-                  )
-                ]
+                ...wellbore.logs.filter(
+                  (logObject) => logObject.objectGrowing
+                )
+              ]
               : wellbore.logs
           };
         })
@@ -333,7 +336,7 @@ export const filterWells = (
 
   if (filter && wells?.length > 0) {
     filteredWells = filterOnName(filteredWells, filter, filterOptions);
-    filteredWells = filterOnIsActive(filteredWells, filter.isActive);
+    filteredWells = filterWellsOnIsActive(filteredWells, filter.isActive);
     filteredWells = filterOnObjectGrowing(filteredWells, filter.objectGrowing);
     filteredWells = filterOnWellLimit(filteredWells, filter.wellLimit);
   }
