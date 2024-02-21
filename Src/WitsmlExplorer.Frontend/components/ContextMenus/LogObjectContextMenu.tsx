@@ -45,8 +45,6 @@ import { ComponentType } from "models/componentType";
 import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
 import CompareLogDataJob from "models/jobs/compareLogData";
 import { CopyRangeClipboard } from "models/jobs/componentReferences";
-import { CopyComponentsJob } from "models/jobs/copyJobs";
-import ObjectReference from "models/jobs/objectReference";
 import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -55,6 +53,11 @@ import React, { useContext } from "react";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import ObjectReference from "../../models/jobs/objectReference";
+import { CopyComponentsJob } from "../../models/jobs/copyJobs";
+import CopyMnemonicsModal, {
+  CopyMnemonicsModalProps
+} from "../Modals/CopyMnemonicsModal";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -117,13 +120,32 @@ const LogObjectContextMenu = (
     const targetReference: ObjectReference = toObjectReference(
       checkedObjects[0]
     );
-    const copyJob: CopyComponentsJob = {
-      source: logCurvesReference,
-      target: targetReference,
-      startIndex: logCurvesReference.startIndex,
-      endIndex: logCurvesReference.endIndex
-    };
-    JobService.orderJob(JobType.CopyLogData, copyJob);
+
+    if (
+      logCurvesReference.serverUrl?.toLowerCase() ===
+      selectedServer.url.toLowerCase()
+    ) {
+      const copyJob: CopyComponentsJob = {
+        source: logCurvesReference,
+        target: targetReference,
+        startIndex: logCurvesReference.startIndex,
+        endIndex: logCurvesReference.endIndex
+      };
+      JobService.orderJob(JobType.CopyLogData, copyJob);
+    } else {
+      const copyMnemonicsModalProps: CopyMnemonicsModalProps = {
+        sourceReferences: logCurvesReference,
+        targetReference: targetReference,
+        startIndex: logCurvesReference.startIndex,
+        endIndex: logCurvesReference.endIndex,
+        targetServer: selectedServer
+      };
+      const action: DisplayModalAction = {
+        type: OperationType.DisplayModal,
+        payload: <CopyMnemonicsModal {...copyMnemonicsModalProps} />
+      };
+      dispatchOperation(action);
+    }
   };
 
   const onClickCompareHeader = () => {
