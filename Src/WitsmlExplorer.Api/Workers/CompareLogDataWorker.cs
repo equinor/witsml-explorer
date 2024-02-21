@@ -113,9 +113,9 @@ namespace WitsmlExplorer.Api.Workers
             }
             catch (ArgumentException e)
             {
-                string message = $"CompareLogDataJob failed. Description: {job.Description()}. Error: {e.Message}";
+                string message = $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'";
                 Logger.LogError(message);
-                return (new WorkerResult(GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message), null);
+                return (new WorkerResult(GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message, e.Message, jobId: job.JobInfo.Id), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
@@ -279,15 +279,22 @@ namespace WitsmlExplorer.Api.Workers
                 mnemonicsMismatchCountResult += keyValues.Value >= 500 ? $"\n{keyValues.Key}: {keyValues.Value:n0} or more" : $"\n{keyValues.Key}: {keyValues.Value:n0}";
             }
 
+            string indexRange = _compareAllIndexes ? "" : GetSharedIntervalReportFormat(sourceLog, targetLog);
+
             return new BaseReport
             {
                 Title = $"Log data comparison",
                 Summary = _compareLogDataReportItems.Count > 0
-                ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult
-                : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.",
+                ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':{indexRange}" + mnemonicsMismatchCountResult
+                : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'{indexRange}.",
                 ReportItems = _compareLogDataReportItems,
                 WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"When finding {MaxMismatchesLimit:n0} mismatches while searching through data indexes for any mnemonic, we stop comparing the log data for that particular mnemonic. This is because {MaxMismatchesLimit:n0} is the maximum limit for mismatches during the search for each mnemonic. It indicates that there might be an issue with the compare log setup. However, you can still access the report for the comparison performed below." : null,
             };
+        }
+
+        private string GetSharedIntervalReportFormat(WitsmlLog sourceLog, WitsmlLog targetLog)
+        {
+            return _isDepthLog ? $"\nIndex interval: {sourceLog.StartIndex.Value} - {sourceLog.EndIndex.Value}" : $"\nIndex interval: {sourceLog.StartDateTimeIndex} - {sourceLog.EndDateTimeIndex}";
         }
 
         private List<string> GetLogMnemonics(WitsmlLog log)
