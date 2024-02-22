@@ -11,10 +11,12 @@ import { ObjectView } from "../components/ContentViews/ObjectView";
 import { ObjectsListView } from "../components/ContentViews/ObjectsListView";
 import QueryView from "../components/ContentViews/QueryView";
 import ServerManager from "../components/ContentViews/ServerManager";
+import { ViewNotFound } from "../components/ContentViews/ViewNotFound";
 import WellboreObjectTypesListView from "../components/ContentViews/WellboreObjectTypesListView";
 import WellboresListView from "../components/ContentViews/WellboresListView";
 import WellsListView from "../components/ContentViews/WellsListView";
 import AuthRoute from "./AuthRoute";
+import { PageNotFound } from "./PageNotFound";
 import Root from "./Root";
 
 const queryClient = new QueryClient({
@@ -86,8 +88,16 @@ const router = createBrowserRouter([
           {
             path: "search/:filterType",
             element: <ObjectSearchListView />
+          },
+          {
+            path: "*",
+            element: <ViewNotFound />
           }
         ]
+      },
+      {
+        path: "*",
+        element: <PageNotFound />
       }
     ]
   }
