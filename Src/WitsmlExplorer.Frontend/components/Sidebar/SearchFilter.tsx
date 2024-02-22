@@ -26,9 +26,7 @@ const SearchFilter = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const { connectedServer } = useConnectedServer();
-  const [selectedOption, setSelectedOption] = useState<FilterType>(
-    selectedFilter.filterType
-  );
+  const selectedOption = selectedFilter?.filterType;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -79,12 +77,12 @@ const SearchFilter = (): React.ReactElement => {
   };
 
   const handleOptionChange = async (newValue: FilterType) => {
-    setSelectedOption(newValue);
     updateSelectedFilter({
-      name: nameFilter,
+      name: "",
       filterType: newValue,
       searchResults: []
     });
+    setNameFilter("");
   };
 
   const openOptions = () => {

@@ -26,6 +26,7 @@ const FilterPanel = (): React.ReactElement => {
   } = useContext(OperationContext);
 
   const switchObjectVisibility = (objectType: ObjectType) => {
+    // TODO: Create a custom hook with react query for objectVisibilityStatus, and remove it from the filter context.
     const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
     if (updatedVisibility[objectType] === VisibilityStatus.Visible) {
       updatedVisibility[objectType] = VisibilityStatus.Hidden;

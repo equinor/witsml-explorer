@@ -2,9 +2,6 @@
 import { pluralize } from "../components/ContextMenus/ContextMenuUtils";
 import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType } from "../models/objectType";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
-import { SidebarAction, SidebarActionType } from "./sidebarReducer";
 
 export interface Filter {
   name: string;
@@ -22,11 +19,12 @@ export enum VisibilityStatus {
   Disabled
 }
 
-// Filter by wells and/or wellbores
+// Filter by well names
 export enum WellFilterType {
-  Well = "Well",
-  WellOrWellbore = "Wells / Wellbores"
+  Well = "Well"
 }
+
+// TODO: Add filtering of wellbores. It should be supported in the search view.
 
 // Filter by properties already fetched for wells
 export enum WellPropertyFilterType {
@@ -56,7 +54,6 @@ export const objectFilterTypeToObjects = {
 // For ObjectFilterType, the property can be any string property under an object.
 export const filterTypeToProperty = {
   [WellFilterType.Well]: "name",
-  [WellFilterType.WellOrWellbore]: "name",
   [WellPropertyFilterType.Field]: "field",
   [WellPropertyFilterType.License]: "numLicense",
   [ObjectFilterType.Log]: "name",
@@ -167,109 +164,14 @@ export function FilterContextProvider({
   );
 }
 
-export const getListedObjects = (objectFilterType: ObjectFilterType): string => {
+export const getListedObjects = (
+  objectFilterType: ObjectFilterType
+): string => {
   const lf = new Intl.ListFormat("en-US");
-  const pluralizedObjectTypes = objectFilterTypeToObjects[objectFilterType].map((o) => pluralize(o));
+  const pluralizedObjectTypes = objectFilterTypeToObjects[objectFilterType].map(
+    (o) => pluralize(o)
+  );
   return lf.format(pluralizedObjectTypes);
-};
-
-
-export interface FilterOptions {
-  filterWellbores?: boolean; // Filter the wellbores (if the well itself doesn't match). Setting this to true will remove wellbores that don't match.
-  dispatchSidebar?: (action: SidebarAction) => void; //A function to dispatch an action to expand tree nodes every time the filter changes.
-}
-
-export const DEFAULT_FILTER_OPTIONS: FilterOptions = {
-  filterWellbores: false
-};
-
-const filterOnName = (
-  wells: Well[],
-  filter: Filter,
-  filterOptions: FilterOptions
-) => {
-  const { name, filterType, searchResults } = filter;
-  const { filterWellbores, dispatchSidebar } = filterOptions;
-  const isObjectFilter = isObjectFilterType(filterType);
-  const isWellPropertyFilter = isWellPropertyFilterType(filterType);
-  const isWellFilter = isWellFilterType(filterType);
-  const property = isObjectFilter
-    ? "searchProperty"
-    : filterTypeToProperty[filterType];
-
-  if (!name) {
-    if (filterOptions.dispatchSidebar) {
-      dispatchSidebar({
-        type: SidebarActionType.CollapseTreeNodes,
-        payload: null
-      });
-    }
-    if (isWellFilter) {
-      return wells;
-    }
-  }
-
-  const regex = getSearchRegex(name);
-
-  const filteredWells: Well[] = [];
-  const treeNodesToExpand: string[] = [];
-
-  if (isWellFilter || isWellPropertyFilter) {
-    for (const well of wells) {
-      const wellPropertyValue = well[property as keyof Well];
-      if (regex.test(wellPropertyValue ? (wellPropertyValue as string) : "")) {
-        filteredWells.push(well);
-      } else if (filterType === WellFilterType.WellOrWellbore) {
-        const matchingWellbores = well.wellbores.filter((wellbore) =>
-          regex.test(wellbore[property as keyof Wellbore] as string)
-        );
-        if (matchingWellbores.length > 0) {
-          filteredWells.push({
-            ...well,
-            wellbores: filterWellbores ? matchingWellbores : well.wellbores
-          });
-          treeNodesToExpand.push(well.uid);
-        }
-      }
-    }
-  } else if (isObjectFilter) {
-    const filteredObjects = isSitecomSyntax(name)
-      ? searchResults
-      : searchResults.filter((object) =>
-        regex.test(object[property as keyof ObjectSearchResult])
-      );
-    const filteredWellUids = filteredObjects.map((object) => object.wellUid);
-    const filteredWellAndWellboreUids = filteredObjects.map((object) =>
-      [object.wellUid, object.wellboreUid].join(",")
-    );
-
-    for (const well of wells) {
-      if (filteredWellUids.includes(well.uid)) {
-        if (filterWellbores) {
-          const filteredWellbores = well.wellbores.filter((wellbore) =>
-            filteredWellAndWellboreUids.includes(
-              [well.uid, wellbore.uid].join(",")
-            )
-          );
-          filteredWells.push({
-            ...well,
-            wellbores: filteredWellbores
-          });
-        } else {
-          filteredWells.push(well);
-        }
-      }
-    }
-  }
-
-  if (filterOptions.dispatchSidebar) {
-    dispatchSidebar({
-      type: SidebarActionType.ExpandTreeNodes,
-      payload: { nodeIds: treeNodesToExpand }
-    });
-  }
-
-  return filteredWells;
 };
 
 export const isSitecomSyntax = (str: string) => {
@@ -287,106 +189,4 @@ export const getSearchRegex = (str: string): RegExp => {
       .replace(/\?/g, "."); // Replace ? with . to match any single character
   }
   return new RegExp(newStr, "i");
-};
-
-function filterWellsOnIsActive(wells: Well[], filterOnIsActive: boolean) {
-  if (!filterOnIsActive) return wells;
-  return wells.filter((well: Well) => well.isActive);
-}
-
-function filterWellboresOnIsActive(wellbores: Wellbore[], filterOnIsActive: boolean) {
-  if (!filterOnIsActive) return wellbores;
-  return wellbores.filter((wellbore: Wellbore) => wellbore.isActive);
-}
-
-function filterOnObjectGrowing(wells: Well[], filterOnObjectGrowing: boolean) {
-  if (!filterOnObjectGrowing) return wells;
-
-  return wells.map((well) => {
-    return {
-      ...well,
-      wellbores: [
-        ...well.wellbores.map((wellbore) => {
-          return {
-            ...wellbore,
-            logs: wellbore.logs
-              ? [
-                ...wellbore.logs.filter(
-                  (logObject) => logObject.objectGrowing
-                )
-              ]
-              : wellbore.logs
-          };
-        })
-      ]
-    };
-  });
-}
-
-function filterOnWellLimit(wells: Well[], wellLimit: number) {
-  return wellLimit && wellLimit > 0 ? wells.slice(0, wellLimit) : wells;
-}
-
-export const filterWells = (
-  wells: Well[],
-  filter: Filter,
-  filterOptions: FilterOptions
-): Well[] => {
-  let filteredWells: Well[] = wells;
-
-  if (filter && wells?.length > 0) {
-    filteredWells = filterOnName(filteredWells, filter, filterOptions);
-    filteredWells = filterWellsOnIsActive(filteredWells, filter.isActive);
-    filteredWells = filterOnObjectGrowing(filteredWells, filter.objectGrowing);
-    filteredWells = filterOnWellLimit(filteredWells, filter.wellLimit);
-  }
-
-  return filteredWells;
-};
-
-/**
- * Custom hook to filter an array of wells based on a provided filter object.
- * The returned filtered wells will be updated if wells, filter or options changes.
- *
- * @param wells - The array of wells to filter.
- * @param options - Additional options for filtering (optional).
- *                  - filterWellbores: If true, filter the wellbores of the wells that don't match. Default: false.
- *                  - dispatchNavigation: A function to dispatch an action to expand tree nodes every time the filter changes (optional).
- * @returns The filtered array of wells based on the provided filter criteria.
- */
-export const useWellFilter = (
-  wells: Well[],
-  options?: FilterOptions
-): Well[] => {
-  const { selectedFilter } = React.useContext(FilterContext);
-  const [filteredWells, setFilteredWells] = React.useState<Well[]>([]);
-  let filterOptions = React.useMemo(
-    () => ({ ...DEFAULT_FILTER_OPTIONS, ...options }),
-    [options]
-  );
-  const prevFilter = React.useRef<Filter>(selectedFilter);
-
-  React.useEffect(() => {
-    if (
-      prevFilter.current.filterType === selectedFilter.filterType &&
-      prevFilter.current.name == selectedFilter.name
-    ) {
-      // Treenodes should only toggle expand state if the filter type or name has changed
-      filterOptions = { ...filterOptions, dispatchSidebar: null };
-    }
-    prevFilter.current = selectedFilter;
-
-    setFilteredWells(filterWells(wells, selectedFilter, filterOptions));
-  }, [
-    wells,
-    filterOptions,
-    selectedFilter.filterType,
-    selectedFilter.isActive,
-    selectedFilter.name,
-    selectedFilter.objectGrowing,
-    selectedFilter.searchResults,
-    selectedFilter.wellLimit
-  ]);
-
-  return filteredWells;
 };

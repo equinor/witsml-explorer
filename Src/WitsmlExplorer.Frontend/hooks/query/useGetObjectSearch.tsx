@@ -3,6 +3,7 @@ import {
   useQuery,
   useQueryClient
 } from "@tanstack/react-query";
+import { useMemo } from "react";
 import {
   MILLIS_IN_SECOND,
   SECONDS_IN_MINUTE
@@ -67,7 +68,7 @@ type ObjectSearchQueryResult = Omit<
   QueryObserverResult<ObjectSearchResult[], unknown>,
   "data"
 > & {
-  searchResult: ObjectSearchResult[];
+  searchResults: ObjectSearchResult[];
 };
 
 export const useGetObjectSearch = (
@@ -93,15 +94,20 @@ export const useGetObjectSearch = (
       }
     )
   );
-  const searchResult = cachedAllObjects ?? data ?? [];
-  const filterData = (searchResult: ObjectSearchResult[]) => {
+
+  const dataToFilter = useMemo(
+    () => cachedAllObjects ?? data ?? [],
+    [data, cachedAllObjects]
+  );
+
+  const filteredData = useMemo(() => {
     const regex = getSearchRegex(value);
-    return searchResult.filter(
+    return dataToFilter.filter(
       (result) => isSitecomSyntax(value) || regex.test(result.searchProperty)
     );
-  };
+  }, [dataToFilter, value]);
 
-  return { searchResult: filterData(searchResult), ...state };
+  return { searchResults: filteredData, ...state };
 };
 
 const fetchObjects = async (

@@ -8,6 +8,7 @@ import { SidebarActionType } from "../../contexts/sidebarReducer";
 import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbores } from "../../hooks/query/useGetWellbores";
+import { useWellboreFilter } from "../../hooks/useWellboreFilter";
 import Well from "../../models/well";
 import Wellbore, {
   calculateWellNodeId,
@@ -45,6 +46,7 @@ export default function WellItem({ wellUid }: WellItemProps) {
     wellUid,
     { enabled: isExpanded }
   );
+  const filteredWellbores = useWellboreFilter(wellbores);
   const isFetching = isFetchingWell || isFetchingWellbores;
   const navigate = useNavigate();
 
@@ -97,8 +99,8 @@ export default function WellItem({ wellUid }: WellItemProps) {
         onIconClick={onIconClick}
         isLoading={isFetching}
       >
-        {wellbores ? (
-          wellbores.map((wellbore: Wellbore) => (
+        {filteredWellbores ? (
+          filteredWellbores.map((wellbore: Wellbore) => (
             <WellboreItem
               wellUid={wellbore.wellUid}
               wellboreUid={wellbore.uid}

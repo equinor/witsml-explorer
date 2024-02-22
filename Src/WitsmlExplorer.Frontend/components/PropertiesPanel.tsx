@@ -17,9 +17,7 @@ const PropertiesPanel = (): React.ReactElement => {
   } = useContext(OperationContext);
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid, objectGroup, objectUid } = useParams();
-  const { well } = useGetWell(connectedServer, wellUid, {
-    enabled: !!connectedServer
-  });
+  const { well } = useGetWell(connectedServer, wellUid);
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { object } = useGetObject(
     connectedServer,

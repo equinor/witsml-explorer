@@ -39,9 +39,7 @@ export default function Nav() {
     useParams();
   const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
-  const { well } = useGetWell(connectedServer, wellUid, {
-    enabled: !!connectedServer
-  });
+  const { well } = useGetWell(connectedServer, wellUid);
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { object } = useGetObject(
     connectedServer,

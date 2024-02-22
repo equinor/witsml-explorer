@@ -2,7 +2,6 @@ import { Typography } from "@equinor/eds-core-react";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
-import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetServers } from "../../hooks/query/useGetServers";
@@ -33,7 +32,6 @@ export default function WellsListView() {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const filteredWells = useWellFilter(wells);
   const navigate = useNavigate();
 
   const columns: ContentTableColumn[] = [
@@ -77,7 +75,7 @@ export default function WellsListView() {
   };
 
   const getTableData = () => {
-    return filteredWells.map((well) => {
+    return wells.map((well) => {
       return {
         ...well,
         id: well.uid,
@@ -103,10 +101,8 @@ export default function WellsListView() {
     );
   }
 
-  return wells.length > 0 && filteredWells.length == 0 ? (
-    <Typography style={{ padding: "1rem" }}>
-      No wells match the current filter
-    </Typography>
+  return wells?.length === 0 ? (
+    <Typography style={{ padding: "1rem" }}>No wells found.</Typography>
   ) : (
     <ContentTable
       viewId="wellsListView"
