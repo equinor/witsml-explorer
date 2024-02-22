@@ -41,7 +41,6 @@ export function sidebarReducer(
   }
 }
 
-// TODO: Do we need new nodeIds to be added at the end of the expandedNodeTree to have selected styling?
 const expandTreeNodes = (
   state: string[],
   { payload }: ExpandTreeNodesAction
