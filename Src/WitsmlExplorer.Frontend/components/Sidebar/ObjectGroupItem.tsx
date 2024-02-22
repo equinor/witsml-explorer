@@ -1,7 +1,14 @@
 import { ComponentType, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
-import { FilterContext, VisibilityStatus } from "../../contexts/filter";
+import {
+  Filter,
+  FilterContext,
+  ObjectFilterType,
+  VisibilityStatus,
+  isObjectFilterType,
+  objectFilterTypeToObjects
+} from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -10,6 +17,7 @@ import { SidebarActionType } from "../../contexts/sidebarReducer";
 import { useGetObjectCount } from "../../hooks/query/useGetObjectCount";
 import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
+import { useObjectFilter } from "../../hooks/useObjectFilter";
 import LogObject from "../../models/logObject";
 import ObjectOnWellbore, {
   calculateObjectNodeId
@@ -73,6 +81,7 @@ export default function ObjectGroupItem({
     useGetObjects(connectedServer, wellUid, wellboreUid, objectType, {
       enabled: shouldFetchGroupObjects(expandedTreeNodes, wellbore, objectType)
     });
+  const filteredGroupObjects = useObjectFilter(groupObjects, objectType);
   const isFetching =
     (isExpandableGroupObject(objectType) && isFetchingCount) ||
     isFetchingWellbore ||
@@ -118,7 +127,8 @@ export default function ObjectGroupItem({
 
   return (
     selectedFilter.objectVisibilityStatus[objectType] ===
-      VisibilityStatus.Visible && (
+      VisibilityStatus.Visible &&
+    !isExcludedBySearch(selectedFilter, objectType) && (
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, objectType)}
         labelText={pluralize(objectType)}
@@ -137,15 +147,15 @@ export default function ObjectGroupItem({
       >
         {objectType === ObjectType.Log ? (
           <LogTypeItem
-            logs={groupObjects}
+            logs={filteredGroupObjects}
             wellUid={wellUid}
             wellboreUid={wellboreUid}
           />
         ) : (
           (wellbore &&
-            groupObjects &&
+            filteredGroupObjects &&
             isExpandableGroupObject(objectType) &&
-            groupObjects.map((objectOnWellbore: ObjectOnWellbore) => (
+            filteredGroupObjects.map((objectOnWellbore: ObjectOnWellbore) => (
               <ObjectOnWellboreItem
                 key={calculateObjectNodeId(objectOnWellbore, objectType)}
                 nodeId={calculateObjectNodeId(objectOnWellbore, objectType)}
@@ -205,4 +215,13 @@ export const isExpandableGroupObject = (objectType: ObjectType) => {
     ObjectType.Log
   ];
   return !!expandableGroupObject.includes(objectType);
+};
+
+const isExcludedBySearch = (selectedFilter: Filter, objectType: ObjectType) => {
+  return (
+    isObjectFilterType(selectedFilter.filterType) &&
+    !objectFilterTypeToObjects[
+      selectedFilter.filterType as ObjectFilterType
+    ].includes(objectType)
+  );
 };

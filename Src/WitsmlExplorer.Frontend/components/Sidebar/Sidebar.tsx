@@ -1,13 +1,13 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
-import { Fragment, useContext, useMemo } from "react";
+import { Fragment, useContext } from "react";
 import styled from "styled-components";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
-import { useWellFilter } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { useGetWells } from "../../hooks/query/useGetWells";
+import { useWellFilter } from "../../hooks/useWellFilter";
 import Well from "../../models/well";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
@@ -18,18 +18,13 @@ import WellItem from "./WellItem";
 // TODO: We need to find a way to show the current well in the sidebar when first deep-linking even if it's not within the top x wells.
 export default function Sidebar() {
   const { connectedServer } = useConnectedServer();
-  const { wells, isFetching } = useGetWells(connectedServer, {
-    enabled: !!connectedServer
-  });
+  const { wells, isFetching } = useGetWells(connectedServer);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
-  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
+  const { expandedTreeNodes } = useSidebar();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-  const filteredWells = useWellFilter(
-    wells,
-    useMemo(() => ({ dispatchSidebar }), [])
-  );
+  const filteredWells = useWellFilter(wells);
 
   return (
     <Fragment>

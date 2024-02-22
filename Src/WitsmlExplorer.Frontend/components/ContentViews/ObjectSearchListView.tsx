@@ -8,7 +8,11 @@ import React, {
 } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
-import { ObjectFilterType, filterTypeToProperty } from "../../contexts/filter";
+import {
+  FilterContext,
+  ObjectFilterType,
+  filterTypeToProperty
+} from "../../contexts/filter";
 import NavigationContext from "../../contexts/navigationContext";
 import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
@@ -46,18 +50,29 @@ export const ObjectSearchListView = (): ReactElement => {
   const { dispatchNavigation } = useContext(NavigationContext);
   const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useContext(OperationContext);
+  const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const [searchParams] = useSearchParams();
   const { filterType } = useParams<{ filterType: ObjectFilterType }>();
   const value = searchParams.get("value");
   const [fetchAllObjects, setFetchAllObjects] = useState(false);
   const currentFilterType = useRef(filterType);
-  const { searchResult, isFetching, error, isError } = useGetObjectSearch(
+  const { searchResults, isFetching, error, isError } = useGetObjectSearch(
     connectedServer,
     filterType,
     value,
     fetchAllObjects,
     { enabled: filterType === currentFilterType.current }
   );
+
+  useEffect(() => {
+    if (
+      !isFetching &&
+      !isError &&
+      searchResults !== selectedFilter.searchResults
+    ) {
+      updateSelectedFilter({ searchResults, filterType, name: value });
+    }
+  }, [searchResults]);
 
   useEffect(() => {
     currentFilterType.current = filterType;
@@ -209,7 +224,7 @@ export const ObjectSearchListView = (): ReactElement => {
     return <ProgressSpinner message={`Fetching ${pluralize(filterType)}.`} />;
   }
 
-  return searchResult.length == 0 ? (
+  return searchResults.length == 0 ? (
     <Typography style={{ padding: "1rem", whiteSpace: "pre-line" }}>
       {`No ${pluralize(filterType).toLowerCase()} match the current filter.`}
     </Typography>
@@ -218,7 +233,7 @@ export const ObjectSearchListView = (): ReactElement => {
       viewId="objectOnWellboreListView"
       columns={getColumns()}
       onSelect={onSelect}
-      data={searchResult}
+      data={searchResults}
       onContextMenu={onContextMenu}
       downloadToCsvFileName={`${filterType}_search`}
     />
