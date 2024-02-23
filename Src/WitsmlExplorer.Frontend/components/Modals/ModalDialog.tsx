@@ -5,6 +5,8 @@ import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { Colors, dark, light } from "styles/Colors";
 import Icons from "styles/Icons";
+import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
+import { ErrorMessage } from "../StyledComponents/ErrorMessage";
 
 interface ModalDialogProps {
   heading: string;
@@ -187,11 +189,7 @@ const HeadTitle = styled.div<{ colors?: Colors }>`
   border-bottom: 2px solid ${(props) => props.colors.interactive.disabledBorder};
 `;
 
-export const ModalContentLayout = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-`;
+export { ModalContentLayout };
 
 export enum ControlButtonPosition {
   TOP = "top",
@@ -279,12 +277,6 @@ const StyledButton = styled(Button)<{
     ${({ align }) =>
       align === "right" ? `margin-left: auto;` : "margin: 0.5em;"};
   }
-`;
-
-const ErrorMessage = styled.div`
-  margin-top: 0.5em;
-  color: red;
-  line-break: auto;
 `;
 
 const DialogHeader = styled(Dialog.Header)<{ colors: Colors }>`

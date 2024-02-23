@@ -7,6 +7,7 @@ import OperationType from "contexts/operationType";
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import { colors } from "styles/Colors";
+import { TooltipLayout } from "../StyledComponents/Tooltip";
 
 export interface OptionsContextMenuProps {
   dispatchOperation: (action: HideModalAction) => void;
@@ -58,10 +59,6 @@ const OptionLayout = styled.div`
   justify-content: space-between;
   width: 100%;
   gap: 8px;
-`;
-
-export const TooltipLayout = styled.div`
-  white-space: pre-line;
 `;
 
 export default OptionsContextMenu;

@@ -1,7 +1,7 @@
 import { Icon, Label, TextField } from "@equinor/eds-core-react";
 import { Tooltip } from "@material-ui/core";
 import { StyledButton } from "components/ContentViews/EditSelectedLogCurveInfo";
-import { TooltipLayout } from "components/ContextMenus/OptionsContextMenu";
+import { TooltipLayout } from "../StyledComponents/Tooltip";
 import OperationContext from "contexts/operationContext";
 import { ChangeEvent, ReactElement, useContext, useState } from "react";
 import styled from "styled-components";

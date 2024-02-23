@@ -1,8 +1,5 @@
 import { Accordion, TextField, Typography } from "@equinor/eds-core-react";
-import {
-  Draggable,
-  DummyDrop
-} from "components/ContentViews/table/ColumnOptionsMenu";
+import { Draggable, DummyDrop } from "../StyledComponents/DragDropTable";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { validText } from "components/Modals/ModalParts";
