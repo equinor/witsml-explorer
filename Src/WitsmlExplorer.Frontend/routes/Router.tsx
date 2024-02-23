@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
+import { ErrorView } from "../components/ContentViews/ErrorView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
@@ -16,6 +17,7 @@ import WellboreObjectTypesListView from "../components/ContentViews/WellboreObje
 import WellboresListView from "../components/ContentViews/WellboresListView";
 import WellsListView from "../components/ContentViews/WellsListView";
 import AuthRoute from "./AuthRoute";
+import { ErrorPage } from "./ErrorPage";
 import { PageNotFound } from "./PageNotFound";
 import Root from "./Root";
 
@@ -35,59 +37,77 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
+    errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <ServerManager /> },
+      {
+        index: true,
+        element: <ServerManager />,
+        errorElement: <ErrorView />
+      },
       {
         path: "servers/:serverUrl",
         element: <AuthRoute />,
+        errorElement: <ErrorView />,
         children: [
           {
             path: "wells",
-            element: <WellsListView />
+            element: <WellsListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores",
-            element: <WellboresListView />
+            element: <WellboresListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups",
-            element: <WellboreObjectTypesListView />
+            element: <WellboreObjectTypesListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects",
-            element: <ObjectsListView />
+            element: <ObjectsListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects/:objectUid",
-            element: <ObjectView />
+            element: <ObjectView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/",
-            element: <LogTypeListView />
+            element: <LogTypeListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects",
-            element: <LogsListView />
+            element: <LogsListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects/:objectUid",
-            element: <LogCurveInfoListView />
+            element: <LogCurveInfoListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects/:objectUid/curvevalues",
-            element: <CurveValuesView />
+            element: <CurveValuesView />,
+            errorElement: <ErrorView />
           },
           {
             path: "jobs",
-            element: <JobsView />
+            element: <JobsView />,
+            errorElement: <ErrorView />
           },
           {
             path: "query",
-            element: <QueryView />
+            element: <QueryView />,
+            errorElement: <ErrorView />
           },
           {
             path: "search/:filterType",
-            element: <ObjectSearchListView />
+            element: <ObjectSearchListView />,
+            errorElement: <ErrorView />
           },
           {
             path: "*",
