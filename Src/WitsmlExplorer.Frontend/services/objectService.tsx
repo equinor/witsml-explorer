@@ -49,35 +49,10 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json();
+      return response.json().catch(() => null);
     } else {
       return null;
     }
-  }
-
-  // TODO: Is this method needed? It treats the response a bit different than the method above.
-  public static async getObjectFromServer<Key extends ObjectType>(
-    wellUid: string,
-    wellboreUid: string,
-    objectUid: string,
-    objectType: Key,
-    server: Server,
-    abortSignal?: AbortSignal
-  ): Promise<ObjectTypeToModel[Key]> {
-    const typeRoute = pluralizeObjectType(objectType).toLowerCase();
-    const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}/${objectUid}`,
-      abortSignal,
-      server
-    );
-    if (response.ok) {
-      // the route returns null if the object was not found so we need to check for it
-      const text = await response.text();
-      if (text.length) {
-        return JSON.parse(text);
-      }
-    }
-    return null;
   }
 
   public static async getObjectsIdOnly(

@@ -1,6 +1,6 @@
 import { ErrorDetails } from "../models/errorDetails";
 import { Server } from "../models/server";
-import Wellbore, { emptyWellbore } from "../models/wellbore";
+import Wellbore from "../models/wellbore";
 import { ApiClient, throwError } from "./apiClient";
 
 export default class WellboreService {
@@ -35,33 +35,10 @@ export default class WellboreService {
       server
     );
     if (response.ok) {
-      return response.json();
+      return response.json().catch(() => null);
     } else {
-      return emptyWellbore();
-    }
-  }
-
-  // TODO: Is this method needed? It treats the response a bit different than the method above.
-  public static async getWellboreFromServer(
-    wellUid: string,
-    wellboreUid: string,
-    server: Server,
-    abortSignal?: AbortSignal
-  ): Promise<Wellbore> {
-    const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}`,
-      abortSignal,
-      server
-    );
-    if (response.ok) {
-      const text = await response.text();
-      if (text.length) {
-        return JSON.parse(text);
-      } else {
-        return emptyWellbore();
-      }
-    } else {
-      return emptyWellbore();
+      const { message }: ErrorDetails = await response.json();
+      throwError(response.status, message);
     }
   }
 }
