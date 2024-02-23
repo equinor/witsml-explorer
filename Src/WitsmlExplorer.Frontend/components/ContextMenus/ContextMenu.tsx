@@ -24,7 +24,6 @@ export const getContextMenuPosition = (
   return { mouseX: event.clientX - 2, mouseY: event.clientY - 2 };
 };
 
-// TODO: double-check that the context menus does not use useParams, as the selected object is not necessarily the same as the object in the URL.
 const ContextMenu = (props: ContextMenuProps): React.ReactElement => {
   const { operationState, dispatchOperation } = useContext(OperationContext);
   const { contextMenu, colors } = operationState;

@@ -58,27 +58,13 @@ export default function ObjectOnWellboreItem({
   };
 
   const onLabelClick = () => {
-    if (
-      objectType === ObjectType.MudLog ||
-      objectType === ObjectType.Trajectory ||
-      objectType === ObjectType.Tubular ||
-      objectType === ObjectType.WbGeometry ||
-      objectType === ObjectType.FluidsReport
-    ) {
-      navigate(
-        `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
-          well.uid
-        }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects/${
-          objectOnWellbore.uid
-        }`
-      );
-    } else {
-      navigate(
-        `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
-          well.uid
-        }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects`
-      );
-    }
+    navigate(
+      `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
+        well.uid
+      }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects/${
+        objectOnWellbore.uid
+      }`
+    );
   };
 
   return (

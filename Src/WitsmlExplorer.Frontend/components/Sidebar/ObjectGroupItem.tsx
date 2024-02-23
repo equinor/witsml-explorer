@@ -14,6 +14,7 @@ import { OperationAction } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { useSidebar } from "../../contexts/sidebarContext";
 import { SidebarActionType } from "../../contexts/sidebarReducer";
+import { useGetCapObjects } from "../../hooks/query/useGetCapObjects";
 import { useGetObjectCount } from "../../hooks/query/useGetObjectCount";
 import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
@@ -66,6 +67,9 @@ export default function ObjectGroupItem({
     objectGroup
   } = useParams();
   const { connectedServer } = useConnectedServer();
+  const { capObjects } = useGetCapObjects(connectedServer, {
+    placeholderData: Object.entries(ObjectType)
+  });
   const { objectCount, isFetching: isFetchingCount } = useGetObjectCount(
     connectedServer,
     wellUid,
@@ -128,6 +132,7 @@ export default function ObjectGroupItem({
   return (
     selectedFilter.objectVisibilityStatus[objectType] ===
       VisibilityStatus.Visible &&
+    capObjects.includes(objectType) &&
     !isExcludedBySearch(selectedFilter, objectType) && (
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, objectType)}

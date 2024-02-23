@@ -9,3 +9,4 @@ export const QUERY_KEY_OBJECT_SEARCH_ALL = "allobjects";
 export const QUERY_KEY_OBJECTS = "objects";
 export const QUERY_KEY_OBJECT = "object";
 export const QUERY_KEY_COMPONENTS = "components";
+export const QUERY_KEY_CAP_OBJECTS = "capObjects";

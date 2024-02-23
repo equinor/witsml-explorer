@@ -7,5 +7,3 @@ const Router = dynamic(() => import("../routes/Router"), {
 export default function Index() {
   return <Router />;
 }
-
-// TODO: Find all the places where we fetch data. Are all necessary, or can the fetching be moved to the component with a use of hooks instead?

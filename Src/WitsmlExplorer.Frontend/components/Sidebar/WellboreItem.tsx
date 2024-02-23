@@ -186,8 +186,6 @@ export default function WellboreItem({
     });
   };
 
-  // TODO: Continue passing down only the uids (remove the provider?) to make the components more independent, and so they can calculate their own loading states.
-
   return (
     <WellboreLayout>
       <TreeItem

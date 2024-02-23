@@ -15,8 +15,7 @@ export interface Filter {
 
 export enum VisibilityStatus {
   Visible,
-  Hidden,
-  Disabled
+  Hidden
 }
 
 // Filter by well names

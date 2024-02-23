@@ -8,9 +8,11 @@
 import { Divider, Tooltip } from "@material-ui/core";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { useCurveThreshold } from "../../contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import OperationContext from "../../contexts/operationContext";
+import { useGetCapObjects } from "../../hooks/query/useGetCapObjects";
 import { ObjectType } from "../../models/objectType";
 import { Colors } from "../../styles/Colors";
 import {
@@ -24,9 +26,12 @@ const FilterPanel = (): React.ReactElement => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const { connectedServer } = useConnectedServer();
+  const { capObjects } = useGetCapObjects(connectedServer, {
+    placeholderData: Object.entries(ObjectType)
+  });
 
   const switchObjectVisibility = (objectType: ObjectType) => {
-    // TODO: Create a custom hook with react query for objectVisibilityStatus, and remove it from the filter context.
     const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
     if (updatedVisibility[objectType] === VisibilityStatus.Visible) {
       updatedVisibility[objectType] = VisibilityStatus.Hidden;
@@ -190,13 +195,10 @@ const FilterPanel = (): React.ReactElement => {
               <StyledCheckbox
                 label={objectType}
                 checked={
-                  selectedFilter.objectVisibilityStatus[objectType] ==
-                  VisibilityStatus.Visible
+                  selectedFilter.objectVisibilityStatus[objectType] ===
+                    VisibilityStatus.Visible && capObjects.includes(objectType)
                 }
-                disabled={
-                  selectedFilter.objectVisibilityStatus[objectType] ==
-                  VisibilityStatus.Disabled
-                }
+                disabled={!capObjects.includes(objectType)}
                 key={objectType}
                 colors={colors}
                 onChange={() => switchObjectVisibility(objectType)}

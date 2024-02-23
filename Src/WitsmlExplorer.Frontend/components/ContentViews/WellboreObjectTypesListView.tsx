@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
+import { useGetCapObjects } from "../../hooks/query/useGetCapObjects";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import {
@@ -20,6 +22,10 @@ export default function WellboreObjectTypesListView() {
   const { selectedFilter } = useContext(FilterContext);
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { capObjects } = useGetCapObjects(connectedServer, {
+    placeholderData: Object.entries(ObjectType)
+  });
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
@@ -32,7 +38,7 @@ export default function WellboreObjectTypesListView() {
       .filter(
         (objectType) =>
           selectedFilter.objectVisibilityStatus[objectType] ==
-          VisibilityStatus.Visible
+            VisibilityStatus.Visible && capObjects.includes(objectType)
       )
       .map((objectType) => {
         return {
