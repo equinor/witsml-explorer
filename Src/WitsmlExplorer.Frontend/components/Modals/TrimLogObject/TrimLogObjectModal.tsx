@@ -34,7 +34,6 @@ const TrimLogObjectModal = (
     const trimLogObjectJob = createTrimLogObjectJob(log, startIndex, endIndex);
     JobService.orderJob(JobType.TrimLogObject, trimLogObjectJob);
     dispatchOperation({ type: OperationType.HideModal });
-    // TODO: Check that the job returns a RefreshAction. Previously, this modal manually updated the object, but now it should be done through the job.
   };
 
   const toggleConfirmDisabled = (isValid: boolean) => {

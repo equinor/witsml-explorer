@@ -16,7 +16,6 @@ import { Server } from "../../models/server";
 import Well from "../../models/well";
 import Wellbore from "../../models/wellbore";
 import JobService, { JobType } from "../../services/jobService";
-import WellboreService from "../../services/wellboreService";
 import { colors } from "../../styles/Colors";
 import {
   ObjectTypeToTemplateObject,
@@ -192,15 +191,9 @@ const WellboreContextMenu = (
   };
 
   const onClickProperties = async () => {
-    const controller = new AbortController();
-    const detailedWellbore = await WellboreService.getWellbore(
-      wellbore.wellUid,
-      wellbore.uid,
-      controller.signal
-    );
     const wellborePropertiesModalProps: WellborePropertiesModalProps = {
       mode: PropertiesModalMode.Edit,
-      wellbore: detailedWellbore,
+      wellbore,
       dispatchOperation
     };
     dispatchOperation({

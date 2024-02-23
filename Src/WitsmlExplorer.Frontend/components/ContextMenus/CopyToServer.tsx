@@ -17,6 +17,7 @@ import ObjectOnWellbore, {
 } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
+import Wellbore from "../../models/wellbore";
 import AuthorizationService from "../../services/authorizationService";
 import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
@@ -44,14 +45,20 @@ export const onClickCopyToServer = async (
     wellboreName: wellboreName
   };
 
-  const wellbore = await WellboreService.getWellboreFromServer(
-    wellUid,
-    wellboreUid,
-    targetServer
-  );
-  // TODO: Temporary fix, to avoid displayCopyWellboreModal to be triggered when not authorized.
-  if (wellbore.uid === "") return;
-  if (wellbore.uid !== wellboreUid) {
+  let wellbore: Wellbore;
+  try {
+    wellbore = await WellboreService.getWellbore(
+      wellUid,
+      wellboreUid,
+      null,
+      targetServer
+    );
+  } catch {
+    return; // Cancel the operation if unable to authorize to the target server.
+  }
+
+  if (!wellbore) {
+    // The wellbore was not found on the target server.
     const onConfirm = () => {
       dispatchOperation({ type: OperationType.HideModal });
       const copyWithParentJob = createCopyWithParentJob(
@@ -95,11 +102,12 @@ const confirmedCopyToServer = async (
   dispatchOperation: DispatchOperation
 ) => {
   const queries = toCopy.map((objectOnWellbore) =>
-    ObjectService.getObjectFromServer(
+    ObjectService.getObject(
       wellUid,
       wellboreUid,
       objectOnWellbore.uid,
       objectType,
+      null,
       targetServer
     )
   );
