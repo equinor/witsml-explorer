@@ -32,7 +32,7 @@ if (builder.Environment.IsDevelopment())
 if (StringHelpers.ToBoolean(builder.Configuration[ConfigConstants.OAuth2Enabled]))
 {
     builder.Configuration.AddAzureWitsmlServerCreds();
-    builder.Configuration[ConfigConstants.NotificationsKey] = Base64UrlEncoder.Encode(RandomNumberGenerator.GetBytes(20));
+    builder.Configuration[ConfigConstants.NotificationsKey] = Base64UrlEncoder.Encode(RandomNumberGenerator.GetBytes(32));
 }
 builder.Logging.ClearProviders();
 string appName = builder.Configuration["Witsml:ClientCapabilities:Name"] ?? "Witsml Explorer";
