@@ -6,7 +6,6 @@ import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
 import { AssetsLoader } from "../components/AssetsLoader";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
-import { ErrorBoundary, ErrorFallback } from "../components/ErrorBoundary";
 import GlobalStyles from "../components/GlobalStyles";
 import ModalPresenter from "../components/Modals/ModalPresenter";
 import PageLayout from "../components/PageLayout";
@@ -111,7 +110,7 @@ export default function Root() {
   }, []);
 
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <>
       <Head>
         <title>WITSML Explorer</title>
         <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
@@ -152,6 +151,6 @@ export default function Root() {
           </ThemeProvider>
         </OperationContext.Provider>
       </MsalProvider>
-    </ErrorBoundary>
+    </>
   );
 }
