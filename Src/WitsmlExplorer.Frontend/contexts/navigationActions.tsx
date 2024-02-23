@@ -1,4 +1,5 @@
 import CurveThreshold from "contexts/curveThreshold";
+import GeologyInterval from "../models/geologyInterval";
 import NavigationType from "contexts/navigationType";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -75,7 +76,7 @@ export interface SelectLogCurveInfoAction extends Action {
 export interface SelectObjectAction extends Action {
   type: NavigationType.SelectObject;
   payload: {
-    object: ObjectOnWellbore;
+    object: ObjectOnWellbore | GeologyInterval;
     well: Well;
     wellbore: Wellbore;
     objectType: ObjectType;

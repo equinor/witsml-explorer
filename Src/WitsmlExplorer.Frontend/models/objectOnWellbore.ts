@@ -1,14 +1,18 @@
 import ObjectReference from "models/jobs/objectReference";
+import GeologyInterval from "./geologyInterval";
 import ObjectReferences from "models/jobs/objectReferences";
 import { ObjectType } from "models/objectType";
+import Wellbore from "./wellbore";
 
 export default interface ObjectOnWellbore {
+  typeLithology?: any;
   uid: string;
   wellboreUid: string;
   wellUid: string;
   name: string;
   wellboreName: string;
   wellName: string;
+  mudloguid?: string;
 }
 
 export function toObjectReference(
@@ -53,15 +57,33 @@ export const calculateObjectNodeId = (
 };
 
 export const getObjectOnWellboreProperties = (
-  objectOnWellbore: ObjectOnWellbore,
-  objectType: ObjectType
+  objectOnWellbore: ObjectOnWellbore | GeologyInterval,
+  objectType: ObjectType,
+  wellbore: Wellbore
 ): Map<string, string> => {
-  return new Map([
-    ["Well", objectOnWellbore.wellName],
-    ["UID Well", objectOnWellbore.wellUid],
-    ["Wellbore", objectOnWellbore.wellboreName],
-    ["UID Wellbore", objectOnWellbore.wellboreUid],
-    [objectType.toString(), objectOnWellbore.name],
-    [`UID ${objectType.toString()}`, objectOnWellbore.uid]
-  ]);
+  const selectedwellboreData = wellbore?.mudLogs?.filter(
+    (mudlogs) => mudlogs.uid == objectOnWellbore?.mudloguid
+  );
+  return new Map(
+    objectType === ObjectType.geologyInterval
+      ? [
+          ["Well", selectedwellboreData[0]?.wellName],
+          ["UID Well", selectedwellboreData[0]?.wellUid],
+          ["Wellbore", selectedwellboreData[0]?.wellboreName],
+          ["UID Wellbore", selectedwellboreData[0]?.wellboreUid],
+          [objectType.toString(), objectOnWellbore?.typeLithology],
+          [`UID ${objectType.toString()}`, objectOnWellbore?.uid]
+        ]
+      : [
+          ["Well", (objectOnWellbore as ObjectOnWellbore)?.wellName],
+          ["UID Well", (objectOnWellbore as ObjectOnWellbore)?.wellUid],
+          ["Wellbore", (objectOnWellbore as ObjectOnWellbore)?.wellboreName],
+          ["UID Wellbore", (objectOnWellbore as ObjectOnWellbore)?.wellboreUid],
+          [objectType.toString(), (objectOnWellbore as ObjectOnWellbore)?.name],
+          [
+            `UID ${objectType.toString()}`,
+            (objectOnWellbore as ObjectOnWellbore)?.uid
+          ]
+        ]
+  );
 };

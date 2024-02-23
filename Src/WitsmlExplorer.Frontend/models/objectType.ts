@@ -3,6 +3,7 @@ import ChangeLog from "models/changeLog";
 import FluidsReport from "models/fluidsReport";
 import FormationMarker from "models/formationMarker";
 import LogObject from "models/logObject";
+import geologyintervalObject from "./geologyLog";
 import MessageObject from "models/messageObject";
 import MudLog from "models/mudLog";
 import Rig from "models/rig";
@@ -23,7 +24,8 @@ export enum ObjectType {
   Risk = "Risk",
   Trajectory = "Trajectory",
   Tubular = "Tubular",
-  WbGeometry = "WbGeometry"
+  WbGeometry = "WbGeometry",
+  geologyInterval = "geologyInterval"
 }
 
 export const pluralizeObjectType = (objectType: ObjectType) => {
@@ -45,4 +47,5 @@ export type ObjectTypeToModel = {
   [ObjectType.Trajectory]: Trajectory;
   [ObjectType.Tubular]: Tubular;
   [ObjectType.WbGeometry]: WbGeometryObject;
+  [ObjectType.geologyInterval]: geologyintervalObject;
 };

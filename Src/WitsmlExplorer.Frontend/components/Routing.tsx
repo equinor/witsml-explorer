@@ -7,13 +7,15 @@ import {
   SelectObjectGroupAction,
   SelectServerAction,
   SelectWellAction,
-  SelectWellboreAction
+  SelectWellboreAction,
+  ToggleTreeNodeAction
 } from "contexts/navigationActions";
 import NavigationContext, { NavigationState } from "contexts/navigationContext";
 import NavigationType from "contexts/navigationType";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Well from "models/well";
+import GeologyInterval from "../models/geologyInterval";
 import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeTimeId,
@@ -25,6 +27,7 @@ import { ParsedUrlQuery } from "querystring";
 import React, { useContext, useEffect, useState } from "react";
 import { truncateAbortHandler } from "services/apiClient";
 import NotificationService from "services/notificationService";
+import { calculateObjectNodeId } from "../models/objectOnWellbore";
 import ObjectService from "services/objectService";
 
 const Routing = (): React.ReactElement => {
@@ -200,7 +203,10 @@ const Routing = (): React.ReactElement => {
   const [isFetchingObjects, setIsFetchingObjects] = useState(false);
   useEffect(() => {
     if (isSyncingUrlAndState && selectedWellbore && !isFetchingObjects) {
-      const group = urlParams?.group as ObjectType;
+      const group =
+        urlParams?.group === ObjectType.geologyInterval
+          ? ObjectType.MudLog
+          : (urlParams?.group as ObjectType);
       const objectUid = urlParams?.objectUid;
       if (
         group != null &&
@@ -244,7 +250,7 @@ const Routing = (): React.ReactElement => {
         };
         dispatchNavigation(action);
         setIsSyncingUrlAndState(false);
-      } else if (objectUid != null) {
+      } else if (objectUid != null && !urlParams.mudloguid) {
         const object = getObjectFromWellbore(
           selectedWellbore,
           objectUid,
@@ -271,6 +277,38 @@ const Routing = (): React.ReactElement => {
         setIsSyncingUrlAndState(false);
       } else {
         setIsSyncingUrlAndState(false);
+      }
+    } else if (
+      urlParams?.mudloguid &&
+      selectedObjectGroup === ObjectType.MudLog
+    ) {
+      if (selectedWellbore.mudLogs) {
+        setIsFetchingObjects(true);
+        const object = selectedWellbore.mudLogs.filter(
+          (mudlogid) => mudlogid.uid == urlParams.mudloguid
+        )[0];
+        let geologyData: any;
+        if (object?.geologyInterval) {
+          geologyData = object?.geologyInterval.filter(
+            (geology: GeologyInterval) => geology.uid == urlParams.objectUid
+          )[0];
+        }
+        const action: SelectObjectAction = {
+          type: NavigationType.SelectObject,
+          payload: {
+            object: geologyData,
+            well: selectedWell,
+            wellbore: selectedWellbore,
+            objectType: urlParams.group as ObjectType
+          }
+        };
+        dispatchNavigation(action);
+        const toggleTreeNode: ToggleTreeNodeAction = {
+          type: NavigationType.ToggleTreeNode,
+          payload: { nodeId: calculateObjectNodeId(object, ObjectType.MudLog) }
+        };
+        dispatchNavigation(toggleTreeNode);
+        setIsFetchingObjects(false);
       }
     }
   }, [selectedWellbore]);
@@ -309,7 +347,9 @@ export const getQueryParamsFromState = (
     ...(state.selectedLogTypeGroup && {
       logType: logTypeToQuery(state.selectedLogTypeGroup)
     }),
-    ...(state.selectedObject && { objectUid: state.selectedObject.uid })
+    ...(state.selectedObject && { objectUid: state.selectedObject.uid }),
+    ...(state.selectedObject && { mudloguid: state.selectedObject.mudloguid }),
+    ...(state.selectedObjectGroup && { group: state.selectedObjectGroup })
   };
 };
 
@@ -320,7 +360,8 @@ export const getQueryParamsFromUrl = (query: ParsedUrlQuery): QueryParams => {
     ...(query.wellboreUid && { wellboreUid: query.wellboreUid.toString() }),
     ...(query.group && { group: query.group.toString() }),
     ...(query.logType && { logType: query.logType.toString() }),
-    ...(query.objectUid && { objectUid: query.objectUid.toString() })
+    ...(query.objectUid && { objectUid: query.objectUid.toString() }),
+    ...(query.mudloguid && { mudloguid: query.mudloguid?.toString() })
   };
 };
 
@@ -328,9 +369,10 @@ export interface QueryParams {
   serverUrl: string;
   wellUid?: string;
   wellboreUid?: string;
-  group?: string;
+  group?: string | undefined;
   logType?: string;
   objectUid?: string;
+  mudloguid?: string;
 }
 
 export default Routing;

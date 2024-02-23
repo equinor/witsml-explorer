@@ -106,7 +106,8 @@ const WellboreContextMenu = (
       wellName: wellbore.wellName,
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
-      indexCurve: IndexCurve.Depth
+      indexCurve: IndexCurve.Depth,
+      typeLithology: ""
     };
     const logPropertiesModalProps: LogPropertiesModalInterface = {
       mode: PropertiesModalMode.New,

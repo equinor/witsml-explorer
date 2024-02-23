@@ -3,6 +3,7 @@ import TopRightCornerMenu from "components/TopRightCornerMenu";
 import { NavigationAction } from "contexts/navigationAction";
 import {
   SelectLogTypeAction,
+  SelectObjectAction,
   SelectObjectGroupAction,
   SelectServerAction,
   SelectWellAction,
@@ -16,6 +17,7 @@ import NavigationContext, {
 import NavigationType from "contexts/navigationType";
 import OperationContext from "contexts/operationContext";
 import { ObjectType, pluralizeObjectType } from "models/objectType";
+import GeologyInterval from "../models/geologyInterval";
 import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore, { calculateLogTypeDepthId } from "models/wellbore";
@@ -50,6 +52,12 @@ const Nav = (): React.ReactElement => {
         dispatchNavigation
       );
     });
+    const geologyIntervalNav = getGelogyGroupCrumb(
+      navigationState,
+      selectedWell,
+      selectedWellbore,
+      dispatchNavigation
+    );
     return [
       getServerCrumb(selectedServer, dispatchNavigation),
       getJobsCrumb(currentSelected),
@@ -63,6 +71,8 @@ const Nav = (): React.ReactElement => {
         selectedWellbore,
         dispatchNavigation
       ),
+      geologyIntervalNav[0] || {},
+      geologyIntervalNav[1] || {},
       getObjectCrumb(navigationState, dispatchNavigation)
     ].filter((item) => item.name);
   };
@@ -168,9 +178,13 @@ const getObjectGroupCrumb = (
   selectedWellbore: Wellbore,
   dispatch: (action: SelectObjectGroupAction) => void
 ) => {
-  return selectedObjectGroup === objectType
+  const updatedObjectGroup =
+    selectedObjectGroup === ObjectType.geologyInterval
+      ? ObjectType.MudLog
+      : selectedObjectGroup;
+  return updatedObjectGroup === objectType
     ? {
-        name: pluralizeObjectType(objectType),
+        name: pluralizeObjectType(objectType ? objectType : null),
         onClick: () =>
           dispatch({
             type: NavigationType.SelectObjectGroup,
@@ -208,6 +222,55 @@ const getLogTypeCrumb = (
           })
       }
     : {};
+};
+const getGelogyGroupCrumb = (
+  navigationState: NavigationState,
+  selectedWell: Well,
+  selectedWellbore: Wellbore,
+  dispatch: (action: SelectObjectAction) => void
+) => {
+  const object = selectedWellbore?.mudLogs?.filter(
+    (mudlogid) => mudlogid.uid == navigationState.selectedObject?.mudloguid
+  )[0];
+  let geologyData: GeologyInterval;
+  if (object?.geologyInterval) {
+    geologyData = object?.geologyInterval?.filter(
+      (geology: GeologyInterval) =>
+        geology.uid == navigationState.selectedObject.uid
+    )[0];
+  }
+
+  return navigationState.selectedWellbore?.mudLogs &&
+    navigationState.selectedObjectGroup == ObjectType.geologyInterval
+    ? [
+        {
+          name: object?.name,
+          onClick: () =>
+            dispatch({
+              type: NavigationType.SelectObject,
+              payload: {
+                object: object,
+                wellbore: selectedWellbore,
+                well: selectedWell,
+                objectType: ObjectType.MudLog
+              }
+            })
+        },
+        {
+          name: geologyData?.typeLithology,
+          onClick: () =>
+            dispatch({
+              type: NavigationType.SelectObject,
+              payload: {
+                object: geologyData,
+                wellbore: selectedWellbore,
+                well: selectedWell,
+                objectType: ObjectType.geologyInterval
+              }
+            })
+        }
+      ]
+    : [];
 };
 
 const getObjectCrumb = (

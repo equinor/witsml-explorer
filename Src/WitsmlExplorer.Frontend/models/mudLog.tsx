@@ -1,5 +1,6 @@
 import CommonData from "models/commonData";
 import MeasureWithDatum from "models/measureWithDatum";
+import GeologyInterval from "./geologyInterval";
 import ObjectOnWellbore from "models/objectOnWellbore";
 
 export default interface MudLog extends ObjectOnWellbore {
@@ -9,4 +10,5 @@ export default interface MudLog extends ObjectOnWellbore {
   startMd: MeasureWithDatum;
   endMd: MeasureWithDatum;
   commonData: CommonData;
+  geologyInterval: GeologyInterval[];
 }

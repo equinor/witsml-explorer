@@ -7,6 +7,7 @@ import ChangeLog from "models/changeLog";
 import FluidsReport from "models/fluidsReport";
 import FormationMarker from "models/formationMarker";
 import LogObject from "models/logObject";
+import GeologyInterval from "./geologyInterval";
 import Measure from "models/measure";
 import MessageObject from "models/messageObject";
 import MudLog from "models/mudLog";
@@ -113,7 +114,7 @@ export function wellboreHasChanges(
 export const calculateWellboreNodeId = (
   wellbore: Wellbore | { wellUid: string; uid: string }
 ): string => {
-  return wellbore.wellUid + wellbore.uid;
+  return wellbore?.wellUid + wellbore?.uid;
 };
 
 export const calculateObjectGroupId = (
@@ -155,7 +156,6 @@ export function objectTypeToWellboreObjects(
   return (objectType.charAt(0).toLowerCase() +
     pluralizeObjectType(objectType).slice(1)) as keyof WellboreObjects;
 }
-
 export function getObjectsFromWellbore<Key extends ObjectType>(
   wellbore: Wellbore,
   objectType: Key
@@ -163,6 +163,24 @@ export function getObjectsFromWellbore<Key extends ObjectType>(
   return wellbore[
     objectTypeToWellboreObjects(objectType)
   ] as ObjectTypeToModel[Key][];
+}
+
+export function getGeologyIntervalLength(
+  wellbore: Wellbore,
+  objectType: string
+): GeologyInterval[] | null {
+  const geologylength = wellbore?.mudLogs?.filter(
+    (mudlogIndex) => mudlogIndex.uid === objectType
+  );
+  if (
+    geologylength?.length &&
+    geologylength[0]?.geologyInterval &&
+    geologylength[0]?.geologyInterval?.length
+  ) {
+    return geologylength[0]?.geologyInterval;
+  } else {
+    return null;
+  }
 }
 
 export function getObjectFromWellbore<Key extends ObjectType>(
