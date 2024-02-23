@@ -6,15 +6,13 @@ import React, {
   useRef,
   useState
 } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
 import {
   FilterContext,
   ObjectFilterType,
   filterTypeToProperty
 } from "../../contexts/filter";
-import NavigationContext from "../../contexts/navigationContext";
-import NavigationType from "../../contexts/navigationType";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import { useGetObjectSearch } from "../../hooks/query/useGetObjectSearch";
@@ -22,9 +20,11 @@ import LogObject from "../../models/logObject";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
 import Well from "../../models/well";
-import Wellbore, { calculateLogTypeId } from "../../models/wellbore";
+import Wellbore from "../../models/wellbore";
+import { RouterLogType } from "../../routes/routerConstants";
 import NotificationService from "../../services/notificationService";
 import ObjectService from "../../services/objectService";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import { ObjectTypeToContextMenu } from "../ContextMenus/ContextMenuMapping";
 import { pluralize } from "../ContextMenus/ContextMenuUtils";
@@ -32,6 +32,7 @@ import LoadingContextMenu from "../ContextMenus/LoadingContextMenu";
 import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
 import ConfirmModal from "../Modals/ConfirmModal";
 import ProgressSpinner from "../ProgressSpinner";
+import { isExpandableGroupObject } from "../Sidebar/ObjectGroupItem";
 import {
   ContentTable,
   ContentTableColumn,
@@ -47,7 +48,6 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
 }
 
 export const ObjectSearchListView = (): ReactElement => {
-  const { dispatchNavigation } = useContext(NavigationContext);
   const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useContext(OperationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
@@ -63,6 +63,7 @@ export const ObjectSearchListView = (): ReactElement => {
     fetchAllObjects,
     { enabled: filterType === currentFilterType.current }
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (
@@ -188,35 +189,37 @@ export const ObjectSearchListView = (): ReactElement => {
   };
 
   const onSelect = async (row: ObjectSearchRow) => {
-    const objects = await ObjectService.getObjects(
-      row.wellUid,
-      row.wellboreUid,
-      row.objectType
-    );
-    if (row.objectType == ObjectType.Log) {
-      const logTypeGroup = calculateLogTypeId(
-        row.wellbore,
-        (objects.find((o) => o.uid == row.uid) as LogObject)?.indexType
+    const objectType = row.objectType;
+    if (objectType == ObjectType.Log) {
+      // TODO: Is there any better way to navigate to the correct logType than to fetch the log?
+      const fetchedLog = (await fetchSelectedObject(row)) as LogObject;
+      navigate(
+        `/servers/${encodeURIComponent(connectedServer.url)}/wells/${
+          row.wellUid
+        }/wellbores/${row.wellboreUid}/objectgroups/${
+          ObjectType.Log
+        }/logtypes/${
+          fetchedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
+            ? RouterLogType.TIME
+            : RouterLogType.DEPTH
+        }/objects/${row.uid}`
       );
-      row.wellbore.logs = objects;
-      dispatchNavigation({
-        type: NavigationType.SelectLogType,
-        payload: {
-          well: row.well,
-          wellbore: row.wellbore,
-          logTypeGroup: logTypeGroup
-        }
-      });
     } else {
-      dispatchNavigation({
-        type: NavigationType.SelectObjectGroup,
-        payload: {
-          objectType: row.objectType,
-          wellUid: row.wellUid,
-          wellboreUid: row.wellboreUid,
-          objects
-        }
-      });
+      if (isExpandableGroupObject(objectType)) {
+        navigate(
+          `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
+            row.wellUid
+          }/wellbores/${row.wellboreUid}/objectgroups/${objectType}/objects/${
+            row.uid
+          }`
+        );
+      } else {
+        navigate(
+          `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
+            row.wellUid
+          }/wellbores/${row.wellboreUid}/objectgroups/${objectType}/objects`
+        );
+      }
     }
   };
 
