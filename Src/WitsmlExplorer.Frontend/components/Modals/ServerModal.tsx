@@ -59,6 +59,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     try {
       if (isAddingNewServer) {
         // TODO: Do not return added server?
+        // - Create own issue for this TODO and the one below.
         const freshServer = await ServerService.addServer(
           server,
           abortController.signal
@@ -66,6 +67,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
         if (freshServer) refreshServersQuery(queryClient);
       } else {
         // TODO: Do not return updated server?
+        // - Create own issue for this TODO and the one above.
         const freshServer = await ServerService.updateServer(
           server,
           abortController.signal

@@ -4,8 +4,7 @@ import {
   useQuery,
   useQueryClient
 } from "@tanstack/react-query";
-import { LoaderFunctionArgs } from "react-router-dom";
-import { Server, emptyServer } from "../../models/server";
+import { Server } from "../../models/server";
 import Well from "../../models/well";
 import WellService from "../../services/wellService";
 import { QUERY_KEY_WELL } from "./queryKeys";
@@ -26,6 +25,7 @@ const updatePartialWells = (
   );
   if (existingWells) {
     // TODO: If the well has been deleted, we should remove it from the list.
+    // - Must be fixed
     const existingWellIndex = existingWells.findIndex(
       (w) => w.uid === well.uid
     );
@@ -52,22 +52,6 @@ export const wellQuery = (
   ...options,
   enabled: !!server && !!wellUid && !(options?.enabled === false)
 });
-
-export interface WellLoaderParams {
-  serverUrl: string;
-  wellUid: string;
-}
-
-export const wellLoader =
-  (queryClient: QueryClient) =>
-  async ({ params }: LoaderFunctionArgs<WellLoaderParams>): Promise<null> => {
-    const { serverUrl, wellUid } = params;
-    // Not sure if creating a new server object will have any side-effects, or if it's just the url that's used anyway.
-    const server: Server = { ...emptyServer(), url: serverUrl };
-    const query = wellQuery(queryClient, server, wellUid);
-    queryClient.prefetchQuery(query);
-    return null;
-  };
 
 type WellQueryResult = Omit<QueryObserverResult<Well, unknown>, "data"> & {
   well: Well;

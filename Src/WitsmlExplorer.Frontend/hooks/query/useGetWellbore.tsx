@@ -4,8 +4,7 @@ import {
   useQuery,
   useQueryClient
 } from "@tanstack/react-query";
-import { LoaderFunctionArgs } from "react-router-dom";
-import { Server, emptyServer } from "../../models/server";
+import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
 import { QUERY_KEY_WELLBORE } from "./queryKeys";
@@ -67,24 +66,6 @@ export const wellboreQuery = (
   enabled:
     !!server && !!wellUid && !!wellboreUid && !(options?.enabled === false)
 });
-
-export interface WellboreLoaderParams {
-  serverUrl: string;
-  wellboreUid: string;
-}
-
-export const wellboreLoader =
-  (queryClient: QueryClient) =>
-  async ({
-    params
-  }: LoaderFunctionArgs<WellboreLoaderParams>): Promise<null> => {
-    const { serverUrl, wellUid, wellboreUid } = params;
-    // Not sure if creating a new server object will have any side-effects, or if it's just the url that's used anyway.
-    const server: Server = { ...emptyServer(), url: serverUrl };
-    const query = wellboreQuery(queryClient, server, wellUid, wellboreUid);
-    queryClient.prefetchQuery(query);
-    return null;
-  };
 
 type WellboreQueryResult = Omit<
   QueryObserverResult<Wellbore, unknown>,

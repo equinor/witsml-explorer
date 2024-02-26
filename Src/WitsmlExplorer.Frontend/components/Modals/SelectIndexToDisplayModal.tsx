@@ -47,7 +47,10 @@ const SelectIndexToDisplayModal = (
   const onSubmit = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     // TODO: JSON.stringify adds a lot of meta around the mnemonics. Are there better options?
+    // - Create own issue to optimize this.
+
     // TODO: Handle max length of URL.
+    // - Must be fixed
     const searchParams = createSearchParams({
       mnemonics: JSON.stringify(
         logCurveInfoRow

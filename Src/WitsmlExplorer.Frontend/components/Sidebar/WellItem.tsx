@@ -36,7 +36,6 @@ export default function WellItem({ wellUid }: WellItemProps) {
   const { connectedServer } = useConnectedServer();
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const { well, isFetching: isFetchingWell } = useGetWell(
-    // TODO: Note: This only works because each WellItem is not rendered while useGetWells is fetching. Otherwise, we would request all wells individually in parallel.
     connectedServer,
     wellUid
   );

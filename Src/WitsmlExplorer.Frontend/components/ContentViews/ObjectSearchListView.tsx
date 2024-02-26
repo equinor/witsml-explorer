@@ -191,7 +191,6 @@ export const ObjectSearchListView = (): ReactElement => {
   const onSelect = async (row: ObjectSearchRow) => {
     const objectType = row.objectType;
     if (objectType == ObjectType.Log) {
-      // TODO: Is there any better way to navigate to the correct logType than to fetch the log?
       const fetchedLog = (await fetchSelectedObject(row)) as LogObject;
       navigate(
         `/servers/${encodeURIComponent(connectedServer.url)}/wells/${
