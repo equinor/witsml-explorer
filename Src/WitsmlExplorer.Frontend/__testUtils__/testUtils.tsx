@@ -1,13 +1,12 @@
 import { ThemeProvider } from "@material-ui/core";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import { SnackbarProvider } from "notistack";
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
+import { ConnectedServerProvider } from "../contexts/connectedServerContext";
+import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
 import { Filter, FilterContextProvider } from "../contexts/filter";
-import NavigationContext, {
-  EMPTY_NAVIGATION_STATE,
-  NavigationState
-} from "../contexts/navigationContext";
-import { reducer as navigationReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import {
   DateTimeFormat,
@@ -19,6 +18,7 @@ import {
   reducer as operationReducer
 } from "../contexts/operationStateReducer";
 import { QueryContextProvider, QueryState } from "../contexts/queryContext";
+import { SidebarProvider } from "../contexts/sidebarContext";
 import AxisDefinition from "../models/AxisDefinition";
 import BhaRun from "../models/bhaRun";
 import ChangeLog from "../models/changeLog";
@@ -50,7 +50,6 @@ import { light } from "../styles/Colors";
 import { getTheme } from "../styles/material-eds";
 
 interface RenderWithContextsOptions {
-  initialNavigationState?: Partial<NavigationState>;
   initialOperationState?: Partial<OperationState>;
   initialFilter?: Partial<Filter>;
   initialQueryState?: Partial<QueryState>;
@@ -59,7 +58,6 @@ interface RenderWithContextsOptions {
 export function renderWithContexts(
   ui: React.ReactElement,
   {
-    initialNavigationState,
     initialOperationState,
     initialFilter,
     initialQueryState,
@@ -81,25 +79,32 @@ export function renderWithContexts(
         ...initialOperationState
       }
     );
-    const [navigationState, dispatchNavigation] = React.useReducer(
-      navigationReducer,
-      { ...EMPTY_NAVIGATION_STATE, ...initialNavigationState }
-    );
+    const queryClient = new QueryClient();
 
     return (
-      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
-        <ThemeProvider theme={getTheme(operationState.theme)}>
-          <NavigationContext.Provider
-            value={{ navigationState, dispatchNavigation }}
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <OperationContext.Provider
+            value={{ operationState, dispatchOperation }}
           >
-            <FilterContextProvider initialFilter={initialFilter}>
-              <QueryContextProvider initialQueryState={initialQueryState}>
-                <SnackbarProvider>{children}</SnackbarProvider>
-              </QueryContextProvider>
-            </FilterContextProvider>
-          </NavigationContext.Provider>
-        </ThemeProvider>
-      </OperationContext.Provider>
+            <ConnectedServerProvider>
+              <CurveThresholdProvider>
+                <SidebarProvider>
+                  <ThemeProvider theme={getTheme(operationState.theme)}>
+                    <FilterContextProvider initialFilter={initialFilter}>
+                      <QueryContextProvider
+                        initialQueryState={initialQueryState}
+                      >
+                        <SnackbarProvider>{children}</SnackbarProvider>
+                      </QueryContextProvider>
+                    </FilterContextProvider>
+                  </ThemeProvider>
+                </SidebarProvider>
+              </CurveThresholdProvider>
+            </ConnectedServerProvider>
+          </OperationContext.Provider>
+        </QueryClientProvider>
+      </MemoryRouter>
     );
   };
 

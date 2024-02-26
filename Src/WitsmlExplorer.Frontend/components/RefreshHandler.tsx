@@ -1,6 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-import ModificationType from "../contexts/modificationType";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -12,7 +11,8 @@ import {
 import EntityType from "../models/entityType";
 import { ObjectType } from "../models/objectType";
 import NotificationService, {
-  RefreshAction
+  RefreshAction,
+  RefreshType
 } from "../services/notificationService";
 
 const RefreshHandler = (): React.ReactElement => {
@@ -23,17 +23,12 @@ const RefreshHandler = (): React.ReactElement => {
       NotificationService.Instance.refreshDispatcher.subscribe(
         async (refreshAction: RefreshAction) => {
           try {
-            const modificationType: ModificationType =
-              // @ts-ignore
-              ModificationType[
-                `${refreshAction.refreshType}${refreshAction.entityType}`
-              ];
             switch (refreshAction.entityType) {
               case EntityType.Well:
-                await refreshWell(refreshAction, modificationType);
+                await refreshWell(refreshAction);
                 break;
               case EntityType.Wellbore:
-                await refreshWellbore(refreshAction, modificationType);
+                await refreshWellbore(refreshAction);
                 break;
               default:
                 if (
@@ -65,11 +60,8 @@ const RefreshHandler = (): React.ReactElement => {
     };
   }, []);
 
-  async function refreshWell(
-    refreshAction: RefreshAction,
-    modificationType: ModificationType
-  ) {
-    if (modificationType === ModificationType.UpdateWell) {
+  async function refreshWell(refreshAction: RefreshAction) {
+    if (refreshAction.refreshType === RefreshType.Update) {
       refreshWellQuery(
         queryClient,
         refreshAction.serverUrl.toString().toLowerCase(),
@@ -89,11 +81,8 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshWellbore(
-    refreshAction: RefreshAction,
-    modificationType: ModificationType
-  ) {
-    if (modificationType === ModificationType.UpdateWellbore) {
+  async function refreshWellbore(refreshAction: RefreshAction) {
+    if (refreshAction.refreshType === RefreshType.Update) {
       refreshWellboreQuery(
         queryClient,
         refreshAction.serverUrl.toString().toLowerCase(),

@@ -25,6 +25,7 @@ const filterWellsOnWellProperty = (
   property: string,
   value: string
 ) => {
+  if (!value) return wells;
   const regex = getSearchRegex(value);
   return wells.filter((well) => {
     const wellPropertyValue = well[property as keyof Well];
