@@ -14,8 +14,6 @@ import { Snackbar } from "../components/Snackbar";
 import { ConnectedServerProvider } from "../contexts/connectedServerContext";
 import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
 import { FilterContextProvider } from "../contexts/filter";
-import NavigationContext from "../contexts/navigationContext";
-import { initNavigationStateReducer } from "../contexts/navigationStateReducer";
 import OperationContext from "../contexts/operationContext";
 import {
   DateTimeFormat,
@@ -51,7 +49,6 @@ import {
 
 export default function Root() {
   const [operationState, dispatchOperation] = initOperationStateReducer();
-  const [navigationState, dispatchNavigation] = initNavigationStateReducer();
 
   useEffect(() => {
     if (typeof localStorage != "undefined") {
@@ -127,27 +124,23 @@ export default function Root() {
         >
           <ThemeProvider theme={getTheme(operationState.theme)}>
             <GlobalStyles colors={operationState.colors} />
-            <NavigationContext.Provider
-              value={{ navigationState, dispatchNavigation }}
-            >
-              <ConnectedServerProvider>
-                <CurveThresholdProvider>
-                  <SidebarProvider>
-                    <FilterContextProvider>
-                      <QueryContextProvider>
-                        <RefreshHandler />
-                        <SnackbarProvider>
-                          <Snackbar />
-                        </SnackbarProvider>
-                        <PageLayout />
-                        <ContextMenuPresenter />
-                        <ModalPresenter />
-                      </QueryContextProvider>
-                    </FilterContextProvider>
-                  </SidebarProvider>
-                </CurveThresholdProvider>
-              </ConnectedServerProvider>
-            </NavigationContext.Provider>
+            <ConnectedServerProvider>
+              <CurveThresholdProvider>
+                <SidebarProvider>
+                  <FilterContextProvider>
+                    <QueryContextProvider>
+                      <RefreshHandler />
+                      <SnackbarProvider>
+                        <Snackbar />
+                      </SnackbarProvider>
+                      <PageLayout />
+                      <ContextMenuPresenter />
+                      <ModalPresenter />
+                    </QueryContextProvider>
+                  </FilterContextProvider>
+                </SidebarProvider>
+              </CurveThresholdProvider>
+            </ConnectedServerProvider>
           </ThemeProvider>
         </OperationContext.Provider>
       </MsalProvider>
