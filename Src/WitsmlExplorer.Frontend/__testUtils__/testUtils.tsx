@@ -53,6 +53,7 @@ interface RenderWithContextsOptions {
   initialOperationState?: Partial<OperationState>;
   initialFilter?: Partial<Filter>;
   initialQueryState?: Partial<QueryState>;
+  initialConnectedServer?: Server;
 }
 
 export function renderWithContexts(
@@ -61,6 +62,7 @@ export function renderWithContexts(
     initialOperationState,
     initialFilter,
     initialQueryState,
+    initialConnectedServer,
     ...options
   }: RenderWithContextsOptions = {}
 ) {
@@ -87,7 +89,9 @@ export function renderWithContexts(
           <OperationContext.Provider
             value={{ operationState, dispatchOperation }}
           >
-            <ConnectedServerProvider>
+            <ConnectedServerProvider
+              initialConnectedServer={initialConnectedServer}
+            >
               <CurveThresholdProvider>
                 <SidebarProvider>
                   <ThemeProvider theme={getTheme(operationState.theme)}>
@@ -109,6 +113,18 @@ export function renderWithContexts(
   };
 
   return render(ui, { wrapper: Wrapper, ...options });
+}
+
+export class MockResizeObserver {
+  observe() {
+    /**/
+  }
+  unobserve() {
+    /**/
+  }
+  disconnect() {
+    /**/
+  }
 }
 
 interface Deferred<T> {
