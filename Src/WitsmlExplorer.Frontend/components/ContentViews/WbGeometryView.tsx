@@ -10,6 +10,7 @@ import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import WbGeometrySection from "../../models/wbGeometrySection";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
@@ -121,6 +122,10 @@ export default function WbGeometryView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching WbGeometry.`} />;
+  }
+
+  if (!isFetching && !wbGeometry) {
+    return <ItemNotFound itemType={ObjectType.WbGeometry} />;
   }
 
   return (

@@ -10,6 +10,7 @@ import { ComponentType } from "../../models/componentType";
 import GeologyInterval from "../../models/geologyInterval";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
   GeologyIntervalContextMenuProps
@@ -139,6 +140,10 @@ export default function MudLogView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching MudLog.`} />;
+  }
+
+  if (!isFetching && !mudLog) {
+    return <ItemNotFound itemType={ObjectType.MudLog} />;
   }
 
   return (

@@ -2,7 +2,9 @@ import { ReactElement } from "react";
 import { useParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { useGetObjects } from "../../hooks/query/useGetObjects";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import ProgressSpinner from "../ProgressSpinner";
 import BhaRunsListView from "./BhaRunsListView";
 import ChangeLogsListView from "./ChangeLogsListView";
@@ -47,6 +49,11 @@ const objectGroupViews: Record<ObjectGroupUrlParams, ReactElement> = {
 export function ObjectsListView() {
   const { objectGroup, wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
+  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
+    connectedServer,
+    wellUid,
+    wellboreUid
+  );
   const { isFetching } = useGetObjects(
     connectedServer,
     wellUid,
@@ -59,6 +66,12 @@ export function ObjectsListView() {
       <ProgressSpinner
         message={`Fetching ${pluralizeObjectType(objectGroup as ObjectType)}`}
       />
+    );
+  }
+
+  if (!isFetchingWellbore && !wellbore) {
+    return (
+      <ItemNotFound itemType={pluralizeObjectType(objectGroup as ObjectType)} />
     );
   }
 

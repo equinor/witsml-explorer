@@ -10,6 +10,7 @@ import { ComponentType } from "../../models/componentType";
 import Fluid from "../../models/fluid";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
@@ -269,6 +270,10 @@ export default function FluidsView() {
     return <ProgressSpinner message={`Fetching FluidsReport.`} />;
   }
 
+  if (!isFetching && !fluidsReport) {
+    return <ItemNotFound itemType={ObjectType.FluidsReport} />;
+  }
+
   return (
     <ContentTable
       viewId="fluidView"
@@ -278,7 +283,7 @@ export default function FluidsView() {
       checkableRows
       insetColumns={insetColumns}
       showRefresh
-      downloadToCsvFileName={`FluidsReport_${fluidsReport.name}`}
+      downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
     />
   );
 }

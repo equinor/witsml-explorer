@@ -7,7 +7,9 @@ import { useGetServers } from "../../hooks/query/useGetServers";
 import { useGetWell } from "../../hooks/query/useGetWell";
 import { useGetWellbores } from "../../hooks/query/useGetWellbores";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
+import EntityType from "../../models/entityType";
 import Wellbore from "../../models/wellbore";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WellboreContextMenu, {
   WellboreContextMenuProps
@@ -114,6 +116,10 @@ export default function WellboresListView() {
 
   if (isFetching) {
     return <ProgressSpinner message="Fetching wellbores." />;
+  }
+
+  if (!isFetchingWell && !well) {
+    return <ItemNotFound itemType={EntityType.Well} />;
   }
 
   return (

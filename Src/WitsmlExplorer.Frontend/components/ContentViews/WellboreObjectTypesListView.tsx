@@ -3,8 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
 import { FilterContext, VisibilityStatus } from "../../contexts/filter";
 import { useGetCapObjects } from "../../hooks/query/useGetCapObjects";
+import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
+import EntityType from "../../models/entityType";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import {
   ContentTable,
   ContentTableColumn,
@@ -23,6 +26,11 @@ export default function WellboreObjectTypesListView() {
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
+  const { wellbore, isFetching } = useGetWellbore(
+    connectedServer,
+    wellUid,
+    wellboreUid
+  );
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
   });
@@ -57,6 +65,10 @@ export default function WellboreObjectTypesListView() {
       }`
     );
   };
+
+  if (!isFetching && !wellbore) {
+    return <ItemNotFound itemType={EntityType.Wellbore} />;
+  }
 
   return (
     <ContentTable
