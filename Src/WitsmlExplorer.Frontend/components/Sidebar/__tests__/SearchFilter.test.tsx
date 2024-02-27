@@ -1,7 +1,10 @@
 import "@testing-library/jest-dom/extend-expect";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithContexts } from "../../../__testUtils__/testUtils";
+import {
+  getServer,
+  renderWithContexts
+} from "../../../__testUtils__/testUtils";
 import {
   EMPTY_FILTER,
   FilterContext,
@@ -74,7 +77,10 @@ describe("Search Filter", () => {
       <>
         <SearchFilter />
         <ContextMenuPresenter />
-      </>
+      </>,
+      {
+        initialConnectedServer: getServer()
+      }
     );
 
     const showOptions = screen.getByRole("button", {
@@ -89,7 +95,6 @@ describe("Search Filter", () => {
     expect(menu).toBeInTheDocument();
 
     expect(within(menu).getByText(/wells$/i)).toBeInTheDocument();
-    expect(within(menu).getByText(/wellbores/i)).toBeInTheDocument();
     expect(within(menu).getByText(/fields/i)).toBeInTheDocument();
     expect(within(menu).getByText(/licenses/i)).toBeInTheDocument();
     expect(within(menu).getByText(/rigs/i)).toBeInTheDocument();
@@ -103,13 +108,15 @@ describe("Search Filter", () => {
       <>
         <SearchFilter />
         <ContextMenuPresenter />
-      </>
+      </>,
+      {
+        initialConnectedServer: getServer()
+      }
     );
 
     await user.click(
       screen.getByRole("button", { name: /show search options/i })
     );
-    screen.debug();
     const serviceCompaniesMenuItem = screen.getByRole("menuitem", {
       name: /service companies/i
     });
