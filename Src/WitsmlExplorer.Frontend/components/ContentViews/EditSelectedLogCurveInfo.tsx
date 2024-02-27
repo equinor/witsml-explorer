@@ -15,24 +15,23 @@ import {
   SetStateAction,
   useContext,
   useEffect,
-  useMemo,
   useState
 } from "react";
-import {
-  createSearchParams,
-  useParams,
-  useSearchParams
-} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
 import OperationContext from "../../contexts/operationContext";
 import { useGetComponents } from "../../hooks/query/useGetComponents";
 import { ComponentType } from "../../models/componentType";
 import { RouterLogType } from "../../routes/routerConstants";
+import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
+import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
 import { Colors, colors, dark } from "../../styles/Colors";
-import { formatIndexValue } from "../../tools/IndexHelpers";
 
 interface EditSelectedLogCurveInfoProps {
+  startIndex: string;
+  endIndex: string;
+  mnemonics: string[];
   disabled?: boolean;
   overrideStartIndex?: string;
   overrideEndIndex?: string;
@@ -44,16 +43,17 @@ const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 const EditSelectedLogCurveInfo = (
   props: EditSelectedLogCurveInfoProps
 ): React.ReactElement => {
-  const { disabled, overrideStartIndex, overrideEndIndex, onClickRefresh } =
-    props;
+  const {
+    startIndex,
+    endIndex,
+    mnemonics,
+    disabled,
+    overrideStartIndex,
+    overrideEndIndex,
+    onClickRefresh
+  } = props;
   const { operationState } = useContext(OperationContext);
   const { theme, colors } = operationState;
-  const [searchParams, setSearchParams] = useSearchParams();
-  const mnemonicsSearchParams = searchParams.get("mnemonics");
-  const mnemonics = useMemo(
-    () => JSON.parse(mnemonicsSearchParams) ?? [],
-    [mnemonicsSearchParams]
-  );
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const isTimeLog = logType === RouterLogType.TIME;
   const { connectedServer } = useConnectedServer();
@@ -68,14 +68,16 @@ const EditSelectedLogCurveInfo = (
   const [selectedMnemonics, setSelectedMnemonics] =
     useState<string[]>(mnemonics);
   const [selectedStartIndex, setSelectedStartIndex] = useState<string>(
-    getParsedValue(searchParams.get("startIndex"), isTimeLog)
+    getParsedValue(startIndex, isTimeLog)
   );
   const [selectedEndIndex, setSelectedEndIndex] = useState<string>(
-    getParsedValue(searchParams.get("endIndex"), isTimeLog)
+    getParsedValue(endIndex, isTimeLog)
   );
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (overrideStartIndex)
@@ -85,13 +87,29 @@ const EditSelectedLogCurveInfo = (
   }, [overrideStartIndex, overrideEndIndex]);
 
   const submitLogCurveInfo = () => {
-    const newSearchParams = createSearchParams({
-      mnemonics: JSON.stringify(selectedMnemonics),
-      startIndex: formatIndexValue(selectedStartIndex),
-      endIndex: formatIndexValue(selectedEndIndex)
-    });
     if (isEdited) {
-      setSearchParams(newSearchParams);
+      const newSearchParams = createLogCurveValuesSearchParams(
+        selectedStartIndex,
+        selectedEndIndex,
+        selectedMnemonics
+      );
+      const isUrlTooLong = checkIsUrlTooLong(
+        location.pathname,
+        newSearchParams
+      );
+      navigate(
+        {
+          pathname: location.pathname,
+          search: isUrlTooLong
+            ? createLogCurveValuesSearchParams(startIndex, endIndex).toString()
+            : newSearchParams.toString()
+        },
+        {
+          state: {
+            mnemonics: JSON.stringify(selectedMnemonics)
+          }
+        }
+      );
     } else {
       onClickRefresh?.();
     }
