@@ -26,12 +26,13 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: Infinity,
       refetchOnWindowFocus: false,
+      retry: 0,
       gcTime: 30 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // The duration unused items are kept in the cache before garbage collection.
     }
   }
 });
 
-// TODO: Handle navigating to not-existing objects.
+// TODO: Find a good way to use navigate.
 // TODO: Also make sure that we navigate to the parent if we are viewing a object, and then delete it.
 const router = createBrowserRouter([
   {

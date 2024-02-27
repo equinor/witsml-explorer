@@ -10,6 +10,7 @@ import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import TrajectoryStation from "../../models/trajectoryStation";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TrajectoryStationContextMenu, {
   TrajectoryStationContextMenuProps
@@ -41,7 +42,7 @@ export default function TrajectoryView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: trajectory } = useGetObject(
+  const { object: trajectory, isFetched: isFetchedTrajectory } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -125,6 +126,10 @@ export default function TrajectoryView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching Trajectory.`} />;
+  }
+
+  if (isFetchedTrajectory && !trajectory) {
+    return <ItemNotFound itemType={ObjectType.Trajectory} />;
   }
 
   return (

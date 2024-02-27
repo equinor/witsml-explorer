@@ -9,6 +9,7 @@ import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import TubularComponent from "../../models/tubularComponent";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
@@ -37,7 +38,7 @@ export default function TubularView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: tubular } = useGetObject(
+  const { object: tubular, isFetched: isFetchedTubular } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -121,6 +122,10 @@ export default function TubularView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching Tubular.`} />;
+  }
+
+  if (isFetchedTubular && !tubular) {
+    return <ItemNotFound itemType={ObjectType.Tubular} />;
   }
 
   return (

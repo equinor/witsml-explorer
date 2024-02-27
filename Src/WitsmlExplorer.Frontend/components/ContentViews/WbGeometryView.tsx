@@ -10,6 +10,7 @@ import { ComponentType } from "../../models/componentType";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
 import WbGeometrySection from "../../models/wbGeometrySection";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
@@ -30,7 +31,7 @@ export default function WbGeometryView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: wbGeometry } = useGetObject(
+  const { object: wbGeometry, isFetched: isFetchedWbGeometry } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -121,6 +122,10 @@ export default function WbGeometryView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching WbGeometry.`} />;
+  }
+
+  if (isFetchedWbGeometry && !wbGeometry) {
+    return <ItemNotFound itemType={ObjectType.WbGeometry} />;
   }
 
   return (

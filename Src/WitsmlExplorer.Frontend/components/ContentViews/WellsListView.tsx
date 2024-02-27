@@ -102,6 +102,8 @@ export default function WellsListView() {
     );
   }
 
+  // TODO: We need to fix the errors if you try to navigate to a server that does not exist.
+
   return wells?.length === 0 ? (
     <Typography style={{ padding: "1rem" }}>No wells found.</Typography>
   ) : (

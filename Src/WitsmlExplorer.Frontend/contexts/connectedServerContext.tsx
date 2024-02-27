@@ -17,12 +17,16 @@ const ConnectedServerContext = createContext<ConnectedServerContextType>(null);
 
 interface ConnectedServerProviderProps {
   children: ReactNode;
+  initialConnectedServer?: Server;
 }
 
 export function ConnectedServerProvider({
-  children
+  children,
+  initialConnectedServer
 }: ConnectedServerProviderProps) {
-  const [connectedServer, setConnectedServer] = useState(null);
+  const [connectedServer, setConnectedServer] = useState(
+    initialConnectedServer
+  );
 
   return (
     <ConnectedServerContext.Provider

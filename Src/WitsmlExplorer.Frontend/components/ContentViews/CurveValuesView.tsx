@@ -30,6 +30,7 @@ import { CurveSpecification, LogData, LogDataRow } from "../../models/logData";
 import LogObject, { indexToNumber } from "../../models/logObject";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { truncateAbortHandler } from "../../services/apiClient";
 import LogObjectService from "../../services/logObjectService";
 import { formatIndexValue } from "../../tools/IndexHelpers";
@@ -100,7 +101,11 @@ export const CurveValuesView = (): React.ReactElement => {
   const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
   const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
   const { connectedServer } = useConnectedServer();
-  const { object: log, isFetching: isFetchingLog } = useGetObject(
+  const {
+    object: log,
+    isFetching: isFetchingLog,
+    isFetched: isFetchedLog
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -461,6 +466,10 @@ export const CurveValuesView = (): React.ReactElement => {
 
   if (isFetchingLog) {
     return <ProgressSpinner message="Fetching Log." />;
+  }
+
+  if (isFetchedLog && !log) {
+    return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (

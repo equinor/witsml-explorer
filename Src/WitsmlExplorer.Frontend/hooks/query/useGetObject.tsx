@@ -43,8 +43,6 @@ const updatePartialObjects = <T extends ObjectType>(
   const existingObjects =
     queryClient.getQueryData<ObjectTypeToModel[T][]>(objectsQueryKey);
   if (existingObjects) {
-    // TODO: If the object has been deleted, we should remove it from the list.
-    // - Must be fixed
     const existingObjectIndex = existingObjects.findIndex(
       (o) => o.uid === object.uid
     );

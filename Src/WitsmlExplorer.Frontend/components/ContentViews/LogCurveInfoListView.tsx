@@ -17,6 +17,7 @@ import { ComponentType } from "../../models/componentType";
 import LogCurveInfo from "../../models/logCurveInfo";
 import { measureToString } from "../../models/measure";
 import { ObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
@@ -65,7 +66,11 @@ export default function LogCurveInfoListView() {
     wellUid,
     wellboreUid
   );
-  const { object: logObject, isFetching: isFetchingLog } = useGetObject(
+  const {
+    object: logObject,
+    isFetching: isFetchingLog,
+    isFetched: isFetchedLog
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -223,6 +228,10 @@ export default function LogCurveInfoListView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching Log.`} />;
+  }
+
+  if (isFetchedLog && !logObject) {
+    return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (

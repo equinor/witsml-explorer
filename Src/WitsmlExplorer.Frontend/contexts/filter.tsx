@@ -1,7 +1,10 @@
-﻿import React from "react";
+﻿import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { pluralize } from "../components/ContextMenus/ContextMenuUtils";
+import { useGetWell } from "../hooks/query/useGetWell";
 import ObjectSearchResult from "../models/objectSearchResult";
 import { ObjectType } from "../models/objectType";
+import { useConnectedServer } from "./connectedServerContext";
 
 export interface Filter {
   name: string;
@@ -134,6 +137,12 @@ export function FilterContextProvider({
   initialFilter,
   children
 }: FilterContextProviderProps) {
+  const { wellUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const isDeepLink = React.useRef<boolean>(!!wellUid);
+  const { well } = useGetWell(connectedServer, wellUid, {
+    enabled: isDeepLink.current
+  });
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>({
     ...EMPTY_FILTER,
     ...initialFilter
@@ -148,6 +157,15 @@ export function FilterContextProvider({
     },
     []
   );
+
+  useEffect(() => {
+    // This useEffect is used to set the well name in the search bar to ensure that the well is shown in the sidebar.
+    // If we later implement Tanstack Virtual for the sidebar, we should rather scroll to the well when using deeplinks.
+    if (isDeepLink.current && well) {
+      isDeepLink.current = false;
+      updateSelectedFilter({ name: well?.name || "" });
+    }
+  }, [well]);
 
   const contextValue: FilterContextProps = React.useMemo(
     () => ({

@@ -24,8 +24,6 @@ const updatePartialWells = (
     getWellsQueryKey(server?.url)
   );
   if (existingWells) {
-    // TODO: If the well has been deleted, we should remove it from the list.
-    // - Must be fixed
     const existingWellIndex = existingWells.findIndex(
       (w) => w.uid === well.uid
     );

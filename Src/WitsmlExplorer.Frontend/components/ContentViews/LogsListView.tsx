@@ -10,6 +10,7 @@ import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { RouterLogType } from "../../routes/routerConstants";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -42,11 +43,11 @@ export default function LogsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid, logType } = useParams();
-  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
-    connectedServer,
-    wellUid,
-    wellboreUid
-  );
+  const {
+    wellbore,
+    isFetching: isFetchingWellbore,
+    isFetched: isFetchedWellbore
+  } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
     connectedServer,
     wellUid,
@@ -145,6 +146,10 @@ export default function LogsListView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching Logs`} />;
+  }
+
+  if (isFetchedWellbore && !wellbore) {
+    return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (
