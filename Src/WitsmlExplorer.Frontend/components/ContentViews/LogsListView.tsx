@@ -10,6 +10,7 @@ import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
 import LogObject from "../../models/logObject";
 import { ObjectType } from "../../models/objectType";
+import { ItemNotFound } from "../../routes/ItemNotFound";
 import { RouterLogType } from "../../routes/routerConstants";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -145,6 +146,10 @@ export default function LogsListView() {
 
   if (isFetching) {
     return <ProgressSpinner message={`Fetching Logs`} />;
+  }
+
+  if (!isFetchingWellbore && !wellbore) {
+    return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (
