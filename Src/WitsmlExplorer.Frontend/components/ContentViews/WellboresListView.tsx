@@ -29,10 +29,11 @@ export default function WellboresListView() {
   const { connectedServer } = useConnectedServer();
   const { wellUid } = useParams();
   const { servers } = useGetServers();
-  const { well, isFetching: isFetchingWell } = useGetWell(
-    connectedServer,
-    wellUid
-  );
+  const {
+    well,
+    isFetching: isFetchingWell,
+    isFetched: isFetchedWell
+  } = useGetWell(connectedServer, wellUid);
   const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
     connectedServer,
     wellUid
@@ -118,7 +119,7 @@ export default function WellboresListView() {
     return <ProgressSpinner message="Fetching wellbores." />;
   }
 
-  if (!isFetchingWell && !well) {
+  if (isFetchedWell && !well) {
     return <ItemNotFound itemType={EntityType.Well} />;
   }
 

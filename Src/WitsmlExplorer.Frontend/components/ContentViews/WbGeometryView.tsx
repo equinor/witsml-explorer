@@ -31,7 +31,7 @@ export default function WbGeometryView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: wbGeometry } = useGetObject(
+  const { object: wbGeometry, isFetched: isFetchedWbGeometry } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -124,7 +124,7 @@ export default function WbGeometryView() {
     return <ProgressSpinner message={`Fetching WbGeometry.`} />;
   }
 
-  if (!isFetching && !wbGeometry) {
+  if (isFetchedWbGeometry && !wbGeometry) {
     return <ItemNotFound itemType={ObjectType.WbGeometry} />;
   }
 

@@ -49,7 +49,7 @@ const objectGroupViews: Record<ObjectGroupUrlParams, ReactElement> = {
 export function ObjectsListView() {
   const { objectGroup, wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
+  const { wellbore, isFetched: isFetchedWellbore } = useGetWellbore(
     connectedServer,
     wellUid,
     wellboreUid
@@ -69,7 +69,7 @@ export function ObjectsListView() {
     );
   }
 
-  if (!isFetchingWellbore && !wellbore) {
+  if (isFetchedWellbore && !wellbore) {
     return (
       <ItemNotFound itemType={pluralizeObjectType(objectGroup as ObjectType)} />
     );

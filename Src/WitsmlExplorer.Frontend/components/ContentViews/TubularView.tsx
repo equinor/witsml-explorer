@@ -38,7 +38,7 @@ export default function TubularView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: tubular } = useGetObject(
+  const { object: tubular, isFetched: isFetchedTubular } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -124,7 +124,7 @@ export default function TubularView() {
     return <ProgressSpinner message={`Fetching Tubular.`} />;
   }
 
-  if (!isFetching && !tubular) {
+  if (isFetchedTubular && !tubular) {
     return <ItemNotFound itemType={ObjectType.Tubular} />;
   }
 

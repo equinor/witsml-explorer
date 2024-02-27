@@ -46,7 +46,7 @@ export default function MudLogView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: mudLog } = useGetObject(
+  const { object: mudLog, isFetched: isFetchedMudLog } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -142,7 +142,7 @@ export default function MudLogView() {
     return <ProgressSpinner message={`Fetching MudLog.`} />;
   }
 
-  if (!isFetching && !mudLog) {
+  if (isFetchedMudLog && !mudLog) {
     return <ItemNotFound itemType={ObjectType.MudLog} />;
   }
 

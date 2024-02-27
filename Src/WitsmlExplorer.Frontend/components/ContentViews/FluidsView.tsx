@@ -43,7 +43,11 @@ export default function FluidsView() {
     objectUid
   );
 
-  const { components: fluids, isFetching } = useGetComponents(
+  const {
+    components: fluids,
+    isFetching,
+    isFetched
+  } = useGetComponents(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -270,7 +274,7 @@ export default function FluidsView() {
     return <ProgressSpinner message={`Fetching FluidsReport.`} />;
   }
 
-  if (!isFetching && !fluidsReport) {
+  if (isFetched && !fluidsReport) {
     return <ItemNotFound itemType={ObjectType.FluidsReport} />;
   }
 

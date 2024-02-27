@@ -26,7 +26,7 @@ export default function WellboreObjectTypesListView() {
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { wellbore, isFetching } = useGetWellbore(
+  const { wellbore, isFetched } = useGetWellbore(
     connectedServer,
     wellUid,
     wellboreUid
@@ -66,7 +66,7 @@ export default function WellboreObjectTypesListView() {
     );
   };
 
-  if (!isFetching && !wellbore) {
+  if (isFetched && !wellbore) {
     return <ItemNotFound itemType={EntityType.Wellbore} />;
   }
 

@@ -99,7 +99,11 @@ export const CurveValuesView = (): React.ReactElement => {
   const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
   const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
   const { connectedServer } = useConnectedServer();
-  const { object: log, isFetching: isFetchingLog } = useGetObject(
+  const {
+    object: log,
+    isFetching: isFetchingLog,
+    isFetched: isFetchedLog
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -452,7 +456,7 @@ export const CurveValuesView = (): React.ReactElement => {
     return <ProgressSpinner message="Fetching Log." />;
   }
 
-  if (!isFetchingLog && !log) {
+  if (isFetchedLog && !log) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
