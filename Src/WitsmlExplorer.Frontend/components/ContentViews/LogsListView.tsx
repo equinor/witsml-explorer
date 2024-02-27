@@ -43,11 +43,11 @@ export default function LogsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid, logType } = useParams();
-  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
-    connectedServer,
-    wellUid,
-    wellboreUid
-  );
+  const {
+    wellbore,
+    isFetching: isFetchingWellbore,
+    isFetched: isFetchedWellbore
+  } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
     connectedServer,
     wellUid,
@@ -148,7 +148,7 @@ export default function LogsListView() {
     return <ProgressSpinner message={`Fetching Logs`} />;
   }
 
-  if (!isFetchingWellbore && !wellbore) {
+  if (isFetchedWellbore && !wellbore) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 

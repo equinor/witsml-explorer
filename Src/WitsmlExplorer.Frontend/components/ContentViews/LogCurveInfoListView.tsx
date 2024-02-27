@@ -66,7 +66,11 @@ export default function LogCurveInfoListView() {
     wellUid,
     wellboreUid
   );
-  const { object: logObject, isFetching: isFetchingLog } = useGetObject(
+  const {
+    object: logObject,
+    isFetching: isFetchingLog,
+    isFetched: isFetchedLog
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -226,7 +230,7 @@ export default function LogCurveInfoListView() {
     return <ProgressSpinner message={`Fetching Log.`} />;
   }
 
-  if (!isFetchingLog && !logObject) {
+  if (isFetchedLog && !logObject) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 

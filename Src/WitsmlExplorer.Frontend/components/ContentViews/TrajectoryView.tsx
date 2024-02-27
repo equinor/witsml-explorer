@@ -42,7 +42,7 @@ export default function TrajectoryView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: trajectory } = useGetObject(
+  const { object: trajectory, isFetched: isFetchedTrajectory } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -128,7 +128,7 @@ export default function TrajectoryView() {
     return <ProgressSpinner message={`Fetching Trajectory.`} />;
   }
 
-  if (!isFetching && !trajectory) {
+  if (isFetchedTrajectory && !trajectory) {
     return <ItemNotFound itemType={ObjectType.Trajectory} />;
   }
 
