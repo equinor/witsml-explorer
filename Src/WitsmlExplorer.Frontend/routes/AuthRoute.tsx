@@ -1,6 +1,7 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useContext, useEffect } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "../components/Modals/UserCredentialsModal";
@@ -57,7 +58,7 @@ export default function AuthRoute() {
   useEffect(() => {
     if (servers && !connectedServer) {
       const server = servers.find((server) => server.url === serverUrl);
-      showCredentialsModal(server, true);
+      if (server) showCredentialsModal(server, true);
     }
   }, [servers]);
 
@@ -85,6 +86,10 @@ export default function AuthRoute() {
       payload: <UserCredentialsModal {...userCredentialsModalProps} />
     });
   };
+
+  if (servers && !servers.find((server) => server.url === serverUrl)) {
+    return <ItemNotFound itemType="Server" />;
+  }
 
   if (connectedServer) {
     return <Outlet />;
