@@ -1,5 +1,5 @@
-import Measure from "./measure";
-import MeasureWithDatum from "./measureWithDatum";
+import Measure from "models/measure";
+import MeasureWithDatum from "models/measureWithDatum";
 
 export default interface WbGeometrySection {
   uid: string;

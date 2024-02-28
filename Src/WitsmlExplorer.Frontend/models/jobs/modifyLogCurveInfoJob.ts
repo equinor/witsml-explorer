@@ -1,5 +1,5 @@
-import ObjectReference from "./objectReference";
-import LogCurveInfo from "../logCurveInfo";
+import ObjectReference from "models/jobs/objectReference";
+import LogCurveInfo from "models/logCurveInfo";
 
 export default interface ModifyLogCurveInfoJob {
   logReference: ObjectReference;

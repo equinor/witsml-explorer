@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task RenameTrajectory_EmptyName_ThrowsException()
         {
             var expectedMessage = "Name cannot be empty";
-            ModifyObjectOnWellboreJob job = CreateJobTemplate(TrajectoryUid, "");
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(TrajectoryUid, string.Empty);
 
             var (workerResult, _) = await _worker.Execute(job);
 

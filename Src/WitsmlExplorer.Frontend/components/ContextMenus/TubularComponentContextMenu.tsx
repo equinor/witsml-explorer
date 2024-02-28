@@ -1,32 +1,35 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { ComponentType } from "../../models/componentType";
-import { createComponentReferences } from "../../models/jobs/componentReferences";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Tubular from "../../models/tubular";
-import { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
-import { TubularComponentRow } from "../ContentViews/TubularView";
-import TubularComponentPropertiesModal from "../Modals/TubularComponentPropertiesModal";
-import ContextMenu from "./ContextMenu";
+import { TubularComponentRow } from "components/ContentViews/TubularView";
+import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteComponents,
   onClickRefreshObject,
   onClickShowObjectOnServer
-} from "./ContextMenuUtils";
-import { CopyComponentsToServerMenuItem } from "./CopyComponentsToServer";
-import { copyComponents, pasteComponents } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+} from "components/ContextMenus/ContextMenuUtils";
+import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
+import {
+  copyComponents,
+  pasteComponents
+} from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
+import TubularComponentPropertiesModal from "components/Modals/TubularComponentPropertiesModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { ComponentType } from "models/componentType";
+import { createComponentReferences } from "models/jobs/componentReferences";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Tubular from "models/tubular";
+import React, { useContext } from "react";
+import { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
 
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
@@ -46,6 +49,7 @@ const TubularComponentContextMenu = (
   const queryClient = useQueryClient();
 
   const onClickProperties = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const tubularComponentPropertiesModalProps = {
       tubularComponent: checkedTubularComponents[0].tubularComponent,
       tubular,
@@ -59,7 +63,6 @@ const TubularComponentContextMenu = (
         />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const toDelete = createComponentReferences(

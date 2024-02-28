@@ -6,19 +6,19 @@
   Typography
 } from "@equinor/eds-core-react";
 import { Divider, Tooltip } from "@material-ui/core";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import { useCurveThreshold } from "contexts/curveThresholdContext";
+import { FilterContext, VisibilityStatus } from "contexts/filter";
+import OperationContext from "contexts/operationContext";
+import { useGetCapObjects } from "hooks/query/useGetCapObjects";
+import { ObjectType } from "models/objectType";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import { useCurveThreshold } from "../../contexts/curveThresholdContext";
-import { FilterContext, VisibilityStatus } from "../../contexts/filter";
-import OperationContext from "../../contexts/operationContext";
-import { useGetCapObjects } from "../../hooks/query/useGetCapObjects";
-import { ObjectType } from "../../models/objectType";
-import { Colors } from "../../styles/Colors";
+import { Colors } from "styles/Colors";
 import {
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
   setLocalStorageItem
-} from "../../tools/localStorageHelpers";
+} from "tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
   const { curveThreshold, setCurveThreshold } = useCurveThreshold();

@@ -1,35 +1,35 @@
-import { Fragment, MouseEvent, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import LogObject from "../../models/logObject";
-import { calculateObjectNodeId } from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "components/ContextMenus/ContextMenu";
+import LogsContextMenu, {
+  LogsContextMenuProps
+} from "components/ContextMenus/LogsContextMenu";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import LogItem from "components/Sidebar/LogItem";
+import TreeItem from "components/Sidebar/TreeItem";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import LogObject from "models/logObject";
+import { calculateObjectNodeId } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
 import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeId,
   calculateLogTypeTimeId,
   calculateObjectGroupId,
   calculateObjectNodeId as calculateWellboreObjectNodeId
-} from "../../models/wellbore";
-import { RouterLogType } from "../../routes/routerConstants";
-import {
-  WITSML_INDEX_TYPE_DATE_TIME,
-  WITSML_INDEX_TYPE_MD
-} from "../Constants";
-import {
-  getContextMenuPosition,
-  preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
-import LogsContextMenu, {
-  LogsContextMenuProps
-} from "../ContextMenus/LogsContextMenu";
-import { IndexCurve } from "../Modals/LogPropertiesModal";
-import LogItem from "./LogItem";
-import TreeItem from "./TreeItem";
+} from "models/wellbore";
+import { Fragment, MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
 
 interface LogTypeItemProps {
   logs: LogObject[];

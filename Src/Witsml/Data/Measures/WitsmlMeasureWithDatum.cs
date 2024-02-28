@@ -10,9 +10,9 @@ namespace Witsml.Data.Measures
         {
             return new()
             {
-                Uom = "",
-                Value = "",
-                Datum = ""
+                Uom = string.Empty,
+                Value = string.Empty,
+                Datum = string.Empty
             };
         }
     }

@@ -1,24 +1,30 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { ComponentType } from "../../models/componentType";
-import MudLog from "../../models/mudLog";
-import { ObjectType } from "../../models/objectType";
-import { colors } from "../../styles/Colors";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText
+} from "components/ContextMenus/ContextMenuUtils";
+import { pasteComponents } from "components/ContextMenus/CopyUtils";
+import {
+  ObjectContextMenuProps,
+  ObjectMenuItems
+} from "components/ContextMenus/ObjectMenuItems";
+import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import MudLogPropertiesModal, {
   MudLogPropertiesModalProps
-} from "../Modals/MudLogPropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
-import { pasteComponents } from "./CopyUtils";
-import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
-import { useClipboardComponentReferencesOfType } from "./UseClipboardComponentReferences";
+} from "components/Modals/MudLogPropertiesModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { ComponentType } from "models/componentType";
+import MudLog from "models/mudLog";
+import { ObjectType } from "models/objectType";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 
 const MudLogContextMenu = (
   props: ObjectContextMenuProps
@@ -34,6 +40,7 @@ const MudLogContextMenu = (
   const queryClient = useQueryClient();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const modifyMudLogProps: MudLogPropertiesModalProps = {
       mudLog: checkedObjects[0] as MudLog
     };
@@ -41,7 +48,6 @@ const MudLogContextMenu = (
       type: OperationType.DisplayModal,
       payload: <MudLogPropertiesModal {...modifyMudLogProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {

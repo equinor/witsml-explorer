@@ -6,27 +6,25 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { Server, emptyServer } from "../../models/server";
-import {
-  adminRole,
-  getUserAppRoles,
-  msalEnabled
-} from "../../msal/MsalAuthProvider";
-import AuthorizationService from "../../services/authorizationService";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
-import ServerModal, { showDeleteServerModal } from "../Modals/ServerModal";
+import ServerModal, {
+  showDeleteServerModal
+} from "components/Modals/ServerModal";
 import UserCredentialsModal, {
   UserCredentialsModalProps
-} from "../Modals/UserCredentialsModal";
-import ProgressSpinner from "../ProgressSpinner";
+} from "components/Modals/UserCredentialsModal";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { Server, emptyServer } from "models/server";
+import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthorizationService from "services/authorizationService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 const NEW_SERVER_ID = "1";
 

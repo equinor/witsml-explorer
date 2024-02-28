@@ -1,15 +1,15 @@
 ﻿import { Autocomplete } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
+import { DateTimeField } from "components/Modals/DateTimeField";
+import ModalDialog from "components/Modals/ModalDialog";
+import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ObjectType } from "models/objectType";
+import Trajectory, { aziRefValues } from "models/trajectory";
 import React, { useContext, useEffect, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { ObjectType } from "../../models/objectType";
-import Trajectory, { aziRefValues } from "../../models/trajectory";
-import JobService, { JobType } from "../../services/jobService";
-import { DateTimeField } from "./DateTimeField";
-import ModalDialog from "./ModalDialog";
-import { PropertiesModalMode, validText } from "./ModalParts";
+import JobService, { JobType } from "services/jobService";
 export interface TrajectoryPropertiesModalProps {
   mode: PropertiesModalMode;
   trajectory: Trajectory;

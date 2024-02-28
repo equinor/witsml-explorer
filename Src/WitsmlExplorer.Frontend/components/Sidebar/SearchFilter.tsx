@@ -1,24 +1,24 @@
 import { Button, EdsProvider, Icon } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { createSearchParams, useNavigate } from "react-router-dom";
-import styled, { CSSProp } from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
+import OptionsContextMenu, {
+  OptionsContextMenuProps
+} from "components/ContextMenus/OptionsContextMenu";
+import FilterPanel from "components/Sidebar/FilterPanel";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   FilterContext,
   FilterType,
   getFilterTypeInformation,
   isObjectFilterType
-} from "../../contexts/filter";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { Colors } from "../../styles/Colors";
-import Icons from "../../styles/Icons";
-import { pluralize } from "../ContextMenus/ContextMenuUtils";
-import OptionsContextMenu, {
-  OptionsContextMenuProps
-} from "../ContextMenus/OptionsContextMenu";
-import FilterPanel from "./FilterPanel";
+} from "contexts/filter";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import styled, { CSSProp } from "styled-components";
+import { Colors } from "styles/Colors";
+import Icons from "styles/Icons";
 
 const searchOptions = Object.values(FilterType);
 

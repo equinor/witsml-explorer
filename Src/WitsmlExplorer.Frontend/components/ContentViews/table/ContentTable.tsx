@@ -14,19 +14,13 @@ import {
   useReactTable
 } from "@tanstack/react-table";
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
-import * as React from "react";
-import { Fragment, useContext, useEffect, useMemo, useState } from "react";
-import OperationContext from "../../../contexts/operationContext";
-import { indexToNumber } from "../../../models/logObject";
-import { Colors } from "../../../styles/Colors";
-import Icon from "../../../styles/Icons";
-import { useColumnDef } from "./ColumnDef";
-import Panel from "./Panel";
+import { useColumnDef } from "components/ContentViews/table/ColumnDef";
+import Panel from "components/ContentViews/table/Panel";
 import {
   initializeColumnVisibility,
   useStoreVisibilityEffect,
   useStoreWidthsEffect
-} from "./contentTableStorage";
+} from "components/ContentViews/table/contentTableStorage";
 import {
   StyledResizer,
   StyledTable,
@@ -34,7 +28,7 @@ import {
   StyledTh,
   StyledTr,
   TableContainer
-} from "./contentTableStyles";
+} from "components/ContentViews/table/contentTableStyles";
 import {
   calculateHorizontalSpace,
   calculateRowHeight,
@@ -45,9 +39,18 @@ import {
   measureSortingFn,
   selectId,
   toggleRow,
-  useInitActiveCurveFiltering
-} from "./contentTableUtils";
-import { ContentTableColumn, ContentTableProps } from "./tableParts";
+  useInitFilterFns
+} from "components/ContentViews/table/contentTableUtils";
+import {
+  ContentTableColumn,
+  ContentTableProps
+} from "components/ContentViews/table/tableParts";
+import OperationContext from "contexts/operationContext";
+import { indexToNumber } from "models/logObject";
+import * as React from "react";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -135,6 +138,7 @@ export const ContentTable = React.memo(
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
+      getRowId: (originalRow, index) => originalRow.id ?? index,
       getRowCanExpand:
         insetColumns != null
           ? (row) => !!row.original.inset?.length
@@ -151,7 +155,7 @@ export const ContentTable = React.memo(
           newRowSelection = rowSelection;
         setRowSelection(newRowSelection);
         onRowSelectionChange?.(
-          data.filter((_, index) => newRowSelection[index])
+          data.filter((dataRow, index) => newRowSelection[dataRow.id ?? index])
         );
       },
       meta: {
@@ -166,7 +170,7 @@ export const ContentTable = React.memo(
 
     useStoreWidthsEffect(viewId, table);
     useStoreVisibilityEffect(viewId, columnVisibility);
-    useInitActiveCurveFiltering(table);
+    useInitFilterFns(table);
 
     const tableContainerRef = React.useRef<HTMLDivElement>(null);
     const { rows } = table.getRowModel();
@@ -237,7 +241,7 @@ export const ContentTable = React.memo(
         onContextMenu(
           e,
           row.original,
-          table.getSelectedRowModel().flatRows.map((r) => r.original)
+          table.getFilteredSelectedRowModel().flatRows.map((r) => r.original)
         );
       }
     };
@@ -260,7 +264,9 @@ export const ContentTable = React.memo(
           <Panel
             checkableRows={checkableRows}
             panelElements={panelElements}
-            numberOfCheckedItems={Object.keys(rowSelection).length}
+            numberOfCheckedItems={
+              table.getFilteredSelectedRowModel().flatRows.length
+            }
             numberOfItems={data?.length}
             table={table}
             viewId={viewId}

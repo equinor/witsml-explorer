@@ -1,8 +1,8 @@
-import { DateTimeFormat, TimeZone } from "../../contexts/operationStateReducer";
 import formatDateString, {
   getOffsetFromTimeZone,
   validateIsoDateString
-} from "../DateFormatter";
+} from "components/DateFormatter";
+import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 
 it("Should replace +00:00 with Z when TimeZone is Raw", () => {
   const actual = formatDateString(

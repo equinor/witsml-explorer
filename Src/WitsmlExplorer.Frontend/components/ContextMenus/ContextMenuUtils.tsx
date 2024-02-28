@@ -1,29 +1,24 @@
 import { TextField } from "@equinor/eds-core-react";
 import { QueryClient } from "@tanstack/react-query";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import { isExpandableGroupObject } from "components/Sidebar/ObjectGroupItem";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { refreshObjectsQuery } from "hooks/query/queryRefreshHelpers";
+import { getParentType } from "models/componentType";
+import ComponentReferences from "models/jobs/componentReferences";
+import { DeleteComponentsJob, DeleteObjectsJob } from "models/jobs/deleteJobs";
+import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
 import { Fragment } from "react";
+import { RouterLogType } from "routes/routerConstants";
+import AuthorizationService from "services/authorizationService";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { refreshObjectsQuery } from "../../hooks/query/queryRefreshHelpers";
-import { getParentType } from "../../models/componentType";
-import ComponentReferences from "../../models/jobs/componentReferences";
-import {
-  DeleteComponentsJob,
-  DeleteObjectsJob
-} from "../../models/jobs/deleteJobs";
-import ObjectOnWellbore, {
-  toObjectReferences
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import { RouterLogType } from "../../routes/routerConstants";
-import AuthorizationService from "../../services/authorizationService";
-import JobService, { JobType } from "../../services/jobService";
-import Icon from "../../styles/Icons";
-import ConfirmModal from "../Modals/ConfirmModal";
-import { IndexCurve } from "../Modals/LogPropertiesModal";
-import { isExpandableGroupObject } from "../Sidebar/ObjectGroupItem";
+import Icon from "styles/Icons";
 
 const indexCurveToQuery = (indexCurve: IndexCurve) => {
   if (!indexCurve) return "logtypes";
@@ -72,6 +67,7 @@ export const onClickShowObjectOnServer = async (
   objectType: ObjectType,
   indexCurve: IndexCurve = null
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
   const objectTypeString =
     objectType === ObjectType.Log ? indexCurveToQuery(indexCurve) : "objects";
@@ -84,7 +80,6 @@ export const onClickShowObjectOnServer = async (
     objectOnWellbore.wellboreUid
   }/objectgroups/${objectType}/${objectTypeString}/${objectString}`;
   window.open(url);
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 export const onClickShowGroupOnServer = async (
@@ -94,6 +89,7 @@ export const onClickShowGroupOnServer = async (
   objectType: ObjectType,
   indexCurve: IndexCurve = null
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
   const objectTypeString =
     objectType === ObjectType.Log ? indexCurveToQuery(indexCurve) : "objects";
@@ -101,7 +97,6 @@ export const onClickShowGroupOnServer = async (
     wellbore.wellUid
   }/wellbores/${wellbore.uid}/objectgroups/${objectType}/${objectTypeString}`;
   window.open(url);
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 export const onClickDeleteObjects = async (
@@ -109,6 +104,7 @@ export const onClickDeleteObjects = async (
   objectsOnWellbore: ObjectOnWellbore[],
   objectType: ObjectType
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const pluralizedName = pluralizeIfMultiple(objectType, objectsOnWellbore);
   const orderDeleteJob = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -116,7 +112,6 @@ export const onClickDeleteObjects = async (
       toDelete: toObjectReferences(objectsOnWellbore, objectType)
     };
     await JobService.orderJob(JobType.DeleteObjects, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
   displayDeleteModal(
     pluralizedName,
@@ -132,6 +127,7 @@ export const onClickDeleteComponents = async (
   componentReferences: ComponentReferences,
   jobType: JobType
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const pluralizedName = pluralizeIfMultiple(
     componentReferences.componentType,
     componentReferences.componentUids
@@ -142,7 +138,6 @@ export const onClickDeleteComponents = async (
       toDelete: componentReferences
     };
     await JobService.orderJob(jobType, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
   displayDeleteModal(
     pluralizedName,

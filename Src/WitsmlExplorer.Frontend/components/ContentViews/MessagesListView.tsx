@@ -1,23 +1,23 @@
-import { MouseEvent, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetObjects } from "../../hooks/query/useGetObjects";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import MessageObject from "../../models/messageObject";
-import { ObjectType } from "../../models/objectType";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import MessageObjectContextMenu from "../ContextMenus/MessageObjectContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import MessageObjectContextMenu from "components/ContextMenus/MessageObjectContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import formatDateString from "components/DateFormatter";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import MessageObject from "models/messageObject";
+import { ObjectType } from "models/objectType";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 export interface MessageObjectRow extends ContentTableRow {
   message: MessageObject;

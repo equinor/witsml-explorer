@@ -7,8 +7,12 @@ import {
   TextField,
   Typography
 } from "@equinor/eds-core-react";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { ComponentType } from "models/componentType";
 import {
   CSSProperties,
   Dispatch,
@@ -18,15 +22,11 @@ import {
   useState
 } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import { useGetComponents } from "../../hooks/query/useGetComponents";
-import { ComponentType } from "../../models/componentType";
-import { RouterLogType } from "../../routes/routerConstants";
-import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
+import { Colors, colors, dark } from "styles/Colors";
 import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
-import { Colors, colors, dark } from "../../styles/Colors";
 
 interface EditSelectedLogCurveInfoProps {
   startIndex: string;

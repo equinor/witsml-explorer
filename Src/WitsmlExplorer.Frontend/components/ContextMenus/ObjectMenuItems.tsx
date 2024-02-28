@@ -1,33 +1,36 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { QueryClient } from "@tanstack/react-query";
-import React from "react";
-import { v4 as uuid } from "uuid";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import { OpenInQueryView } from "../../hooks/useOpenInQueryView";
-import LogObject from "../../models/logObject";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import { colors } from "../../styles/Colors";
-import { WITSML_INDEX_TYPE_MD } from "../Constants";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction
-} from "../ContentViews/QueryViewUtils";
-import { IndexCurve } from "../Modals/LogPropertiesModal";
+} from "components/ContentViews/QueryViewUtils";
 import {
   StyledIcon,
   menuItemText,
   onClickDeleteObjects,
   onClickRefreshObject,
   onClickShowObjectOnServer
-} from "./ContextMenuUtils";
-import { onClickCopyToServer } from "./CopyToServer";
-import { copyObjectOnWellbore, pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
+} from "components/ContextMenus/ContextMenuUtils";
+import { onClickCopyToServer } from "components/ContextMenus/CopyToServer";
+import {
+  copyObjectOnWellbore,
+  pasteObjectOnWellbore
+} from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import { OpenInQueryView } from "hooks/useOpenInQueryView";
+import LogObject from "models/logObject";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
+import React from "react";
+import { colors } from "styles/Colors";
+import { v4 as uuid } from "uuid";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];

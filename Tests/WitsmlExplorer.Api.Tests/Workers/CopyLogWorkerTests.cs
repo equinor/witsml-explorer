@@ -104,7 +104,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             const string errorReason = "test";
             CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
             _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
-                .ReturnsAsync((new WorkerResult(null, false, "", errorReason), null));
+                .ReturnsAsync((new WorkerResult(null, false, string.Empty, errorReason), null));
 
             (WorkerResult Result, RefreshAction) copyTask = await _copyLogWorker.Execute(copyLogJob);
 

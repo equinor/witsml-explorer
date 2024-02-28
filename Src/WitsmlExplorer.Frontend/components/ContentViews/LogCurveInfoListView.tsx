@@ -1,35 +1,39 @@
-import React, { useContext } from "react";
-import { useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import {
-  timeFromMinutesToMilliseconds,
-  useCurveThreshold
-} from "../../contexts/curveThresholdContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetComponents } from "../../hooks/query/useGetComponents";
-import { useGetObject } from "../../hooks/query/useGetObject";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useGetWell } from "../../hooks/query/useGetWell";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { ComponentType } from "../../models/componentType";
-import LogCurveInfo from "../../models/logCurveInfo";
-import { measureToString } from "../../models/measure";
-import { ObjectType } from "../../models/objectType";
-import { ItemNotFound } from "../../routes/ItemNotFound";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import LogCurveInfoContextMenu, {
-  LogCurveInfoContextMenuProps
-} from "../ContextMenus/LogCurveInfoContextMenu";
-import formatDateString from "../DateFormatter";
-import ProgressSpinner from "../ProgressSpinner";
+import { Switch, Typography } from "@equinor/eds-core-react";
+import { CommonPanelContainer } from "components/ContentViews/CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import LogCurveInfoContextMenu, {
+  LogCurveInfoContextMenuProps
+} from "components/ContextMenus/LogCurveInfoContextMenu";
+import formatDateString from "components/DateFormatter";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import {
+  timeFromMinutesToMilliseconds,
+  useCurveThreshold
+} from "contexts/curveThresholdContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWell } from "hooks/query/useGetWell";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ComponentType } from "models/componentType";
+import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
+import { truncateAbortHandler } from "services/apiClient";
+import LogCurvePriorityService from "services/logCurvePriorityService";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -94,6 +98,27 @@ export default function LogCurveInfoListView() {
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
 
+  const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
+  const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
+    useState<boolean>(false);
+  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (logObject) {
+      const getLogCurvePriority = async () => {
+        const prioritizedCurves =
+          await LogCurvePriorityService.getPrioritizedCurves(
+            wellUid,
+            wellboreUid
+          );
+        setPrioritizedCurves(prioritizedCurves);
+      };
+
+      getLogCurvePriority().catch(truncateAbortHandler);
+      setShowOnlyPrioritizedCurves(false);
+    }
+  }, [logObject]);
+
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
     {},
@@ -106,7 +131,9 @@ export default function LogCurveInfoListView() {
       selectedServer: connectedServer,
       selectedWell: well,
       selectedWellbore: wellbore,
-      servers
+      servers,
+      prioritizedCurves,
+      setPrioritizedCurves
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -142,6 +169,7 @@ export default function LogCurveInfoListView() {
     const maxDepth = Math.max(
       ...logCurveInfoList.map((x) => parseFloat(x.maxDepthIndex))
     );
+
     return logCurveInfoList
       .map((logCurveInfo) => {
         const isActive =
@@ -174,6 +202,8 @@ export default function LogCurveInfoListView() {
           wellboreUid: logObject.wellboreUid,
           wellName: logObject.wellName,
           wellboreName: logObject.wellboreName,
+          traceState: logCurveInfo.traceState,
+          nullValue: logCurveInfo.nullValue,
           isActive: isActive,
           isVisibleFunction: isVisibleFunction(isActive),
           logCurveInfo
@@ -204,11 +234,27 @@ export default function LogCurveInfoListView() {
     ...(!isDepthIndex
       ? [{ property: "isActive", label: "active", type: ContentType.String }]
       : []),
-    { property: "mnemonic", label: "mnemonic", type: ContentType.String },
+    {
+      property: "mnemonic",
+      label: "mnemonic",
+      type: ContentType.String,
+      filterFn: (row) => {
+        return (
+          !showOnlyPrioritizedCurves ||
+          prioritizedCurves.includes(row.original.mnemonic) ||
+          row.original.mnemonic === logObject.indexCurve // Always show index curve
+        );
+      }
+    },
     {
       property: "minIndex",
       label: "minIndex",
-      type: isDepthIndex ? ContentType.Number : ContentType.DateTime
+      type: isDepthIndex ? ContentType.Number : ContentType.DateTime,
+      filterFn: (row) => {
+        return (
+          !hideEmptyMnemonics || !isNullOrEmptyIndex(row.original.minIndex)
+        );
+      }
     },
     {
       property: "maxIndex",
@@ -223,6 +269,8 @@ export default function LogCurveInfoListView() {
       type: ContentType.Measure
     },
     { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
+    { property: "traceState", label: "traceState", type: ContentType.String },
+    { property: "nullValue", label: "nullValue", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
@@ -234,17 +282,42 @@ export default function LogCurveInfoListView() {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
+  const panelElements = [
+    <CommonPanelContainer key="hideEmptyMnemonics">
+      <Switch
+        checked={hideEmptyMnemonics}
+        onChange={() => setHideEmptyMnemonics(!hideEmptyMnemonics)}
+      />
+      <Typography>Hide Empty Curves</Typography>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="showPriority">
+      <Switch
+        checked={showOnlyPrioritizedCurves}
+        disabled={prioritizedCurves.length === 0 && !showOnlyPrioritizedCurves}
+        onChange={() =>
+          setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
+        }
+      />
+      <Typography>Show Only Prioritized Curves</Typography>
+    </CommonPanelContainer>
+  ];
+
   return (
-    <ContentTable
-      viewId={
-        isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"
-      }
-      columns={columns}
-      data={getTableData()}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
-    />
+    logObject && (
+      <ContentTable
+        viewId={
+          isDepthIndex
+            ? "depthLogCurveInfoListView"
+            : "timeLogCurveInfoListView"
+        }
+        panelElements={panelElements}
+        columns={columns}
+        data={getTableData()}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
+      />
+    )
   );
 }

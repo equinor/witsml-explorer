@@ -1,27 +1,30 @@
 import { TextField, Typography } from "@equinor/eds-core-react";
-import { useContext, useEffect, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import MessageObject from "../../models/messageObject";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import ObjectService from "../../services/objectService";
 import SortableEdsTable, {
   Column
-} from "../ContentViews/table/SortableEdsTable";
-import formatDateString from "../DateFormatter";
-import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
-import ProgressSpinner from "../ProgressSpinner";
+} from "components/ContentViews/table/SortableEdsTable";
+import formatDateString from "components/DateFormatter";
 import {
   ComparisonCell,
   LabelsLayout,
   StyledTypography,
   TableLayout
-} from "./ComparisonModalStyles";
-import { markDateTimeStringDifferences } from "./LogComparisonUtils";
-import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
+} from "components/Modals/ComparisonModalStyles";
+import { markDateTimeStringDifferences } from "components/Modals/LogComparisonUtils";
+import { displayMissingObjectModal } from "components/Modals/MissingObjectModals";
+import ModalDialog, {
+  ModalContentLayout,
+  ModalWidth
+} from "components/Modals/ModalDialog";
+import ProgressSpinner from "components/ProgressSpinner";
+import OperationContext from "contexts/operationContext";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import MessageObject from "models/messageObject";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import { useContext, useEffect, useState } from "react";
+import ObjectService from "services/objectService";
 
 export interface MessageComparisonModalProps {
   sourceMessage: MessageObject;

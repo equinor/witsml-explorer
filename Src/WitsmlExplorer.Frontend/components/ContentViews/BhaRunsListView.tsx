@@ -1,23 +1,23 @@
-import { MouseEvent, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetObjects } from "../../hooks/query/useGetObjects";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import BhaRun from "../../models/bhaRun";
-import { ObjectType } from "../../models/objectType";
-import BhaRunContextMenu from "../ContextMenus/BhaRunContextMenu";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import formatDateString from "../DateFormatter";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import BhaRunContextMenu from "components/ContextMenus/BhaRunContextMenu";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import formatDateString from "components/DateFormatter";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import BhaRun from "models/bhaRun";
+import { ObjectType } from "models/objectType";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 export interface BhaRunRow extends ContentTableRow, BhaRun {
   bhaRun: BhaRun;

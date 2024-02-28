@@ -1,29 +1,27 @@
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
+import { displayCopyWellboreModal } from "components/Modals/CopyWellboreModal";
+import { displayReplaceModal } from "components/Modals/ReplaceModal";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
 import {
   CopyObjectsJob,
   CopyWellboreJob,
   CopyWellJob,
   CopyWithParentJob
-} from "../../models/jobs/copyJobs";
-import { DeleteObjectsJob } from "../../models/jobs/deleteJobs";
-import ObjectReferences from "../../models/jobs/objectReferences";
-import { ReplaceObjectsJob } from "../../models/jobs/replaceObjectsJob";
-import WellboreReference from "../../models/jobs/wellboreReference";
-import WellReference from "../../models/jobs/wellReference";
-import LogObject from "../../models/logObject";
-import ObjectOnWellbore, {
-  toObjectReferences
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import AuthorizationService from "../../services/authorizationService";
-import JobService, { JobType } from "../../services/jobService";
-import ObjectService from "../../services/objectService";
-import WellboreService from "../../services/wellboreService";
-import { displayCopyWellboreModal } from "../Modals/CopyWellboreModal";
-import { displayReplaceModal } from "../Modals/ReplaceModal";
+} from "models/jobs/copyJobs";
+import { DeleteObjectsJob } from "models/jobs/deleteJobs";
+import ObjectReferences from "models/jobs/objectReferences";
+import { ReplaceObjectsJob } from "models/jobs/replaceObjectsJob";
+import WellboreReference from "models/jobs/wellboreReference";
+import WellReference from "models/jobs/wellReference";
+import LogObject from "models/logObject";
+import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
+import AuthorizationService from "services/authorizationService";
+import JobService, { JobType } from "services/jobService";
+import ObjectService from "services/objectService";
+import WellboreService from "services/wellboreService";
 
 export const onClickCopyToServer = async (
   targetServer: Server,
@@ -219,6 +217,7 @@ const replaceObjects = async (
   objectType: ObjectType,
   dispatchOperation: DispatchOperation
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   dispatchOperation({ type: OperationType.HideModal });
   const deleteJob: DeleteObjectsJob = {
     toDelete: toObjectReferences(toDelete, objectType)
@@ -236,7 +235,6 @@ const replaceObjects = async (
     targetServer,
     sourceServer
   );
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 function printObject(

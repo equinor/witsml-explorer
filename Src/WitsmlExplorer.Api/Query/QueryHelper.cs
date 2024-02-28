@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
+using Witsml;
+
 using WitsmlExplorer.Api.Extensions;
 
 namespace WitsmlExplorer.Api.Query
@@ -37,9 +39,9 @@ namespace WitsmlExplorer.Api.Query
         public static T AddPropertyToObject<T>(T obj, string property, object propertyValue = null)
         {
             string childProperty = null;
-            if (property.Contains('.'))
+            if (property.Contains(CommonConstants.PropertySeparator))
             {
-                var propertyParts = property.Split(".", 2);
+                var propertyParts = property.Split(CommonConstants.PropertySeparator, 2);
                 property = propertyParts[0];
                 childProperty = propertyParts[1];
             }
@@ -95,7 +97,7 @@ namespace WitsmlExplorer.Api.Query
         /// <returns>The value of the specified property.</returns>
         public static object GetPropertyFromObject(object obj, string property)
         {
-            var propertyParts = property.Split(".");
+            var propertyParts = property.Split(CommonConstants.PropertySeparator);
             foreach (var propertyPart in propertyParts)
             {
                 obj = obj?.GetType().GetProperty(propertyPart.CapitalizeFirstLetter())?.GetValue(obj, null);

@@ -1,13 +1,17 @@
+import {
+  ContentType,
+  ExportableContentTableColumn
+} from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import { ContentViewDimensionsContext } from "components/PageLayout";
+import OperationContext from "contexts/operationContext";
+import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
+import { CurveSpecification } from "models/logData";
+import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { DateTimeFormat, TimeZone } from "../../contexts/operationStateReducer";
-import { CurveSpecification } from "../../models/logData";
-import { Colors } from "../../styles/Colors";
-import formatDateString from "../DateFormatter";
-import { ContentViewDimensionsContext } from "../PageLayout";
-import { ContentType, ExportableContentTableColumn } from "./table/tableParts";
+import { Colors } from "styles/Colors";
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
@@ -29,7 +33,16 @@ interface CurveValuesPlotProps {
 
 export const CurveValuesPlot = React.memo(
   (props: CurveValuesPlotProps): React.ReactElement => {
-    const { data, columns, name, autoRefresh, isDescending = false } = props;
+    const {
+      data,
+      columns: rawColumns,
+      name,
+      autoRefresh,
+      isDescending = false
+    } = props;
+    const columns = rawColumns.filter(
+      (col, index) => col.type === ContentType.Number || index === 0
+    );
     const {
       operationState: { colors, dateTimeFormat }
     } = useContext(OperationContext);
@@ -42,7 +55,9 @@ export const CurveValuesPlot = React.memo(
     const { width: contentViewWidth } = useContext(
       ContentViewDimensionsContext
     );
-    const extraWidth = getExtraWidth(data, columns, dateTimeFormat);
+    const router = useRouter();
+    const isTimeLog = router.query.logType === "time";
+    const extraWidth = getExtraWidth(data, columns, dateTimeFormat, isTimeLog);
     const width =
       Math.min(maxColumns, columns.length - 1) * COLUMN_WIDTH + extraWidth;
     const [controlledTooltip, setControlledTooltip] =
@@ -73,7 +88,8 @@ export const CurveValuesPlot = React.memo(
       selectedLabels.current,
       scrollIndex.current,
       horizontalZoom.current,
-      verticalZoom.current
+      verticalZoom.current,
+      isTimeLog
     );
 
     const onMouseOver = (e: any) => {
@@ -223,7 +239,8 @@ const getChartOption = (
   selectedLabels: Record<string, boolean>,
   scrollIndex: number,
   horizontalZoom: [number, number],
-  verticalZoom: [number, number]
+  verticalZoom: [number, number],
+  isTimeLog: boolean
 ) => {
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
@@ -232,7 +249,6 @@ const getChartOption = (
   if (autoRefresh) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
-  const isTimeLog = columns[0].type == ContentType.DateTime;
   const dataColumns = columns.filter((col) => col.property != indexCurve);
   const minMaxValues = columns
     .map((col) => col.columnOf.mnemonic)
@@ -319,9 +335,9 @@ const getChartOption = (
             curve.length > LABEL_MAXIMUM_LENGHT
               ? curve.substring(0, LABEL_MAXIMUM_LENGHT) + "..."
               : curve;
-          let minValue = minMaxValue.minValue?.toFixed(3);
-          let maxValue = minMaxValue.maxValue?.toFixed(3);
-          if (minValue?.length > LABEL_NUMBER_MAX_LENGTH) {
+          let minValue = minMaxValue.minValue?.toFixed(3) ?? "NaN";
+          let maxValue = minMaxValue.maxValue?.toFixed(3) ?? "NaN";
+          if (minValue.length > LABEL_NUMBER_MAX_LENGTH) {
             minValue =
               minValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
           }
@@ -445,16 +461,16 @@ const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
 };
 
 const depthFormatter = (params: number, indexUnit: string) => {
-  return `${params.toFixed(2)} ${indexUnit}`;
+  return `${params?.toFixed(2)} ${indexUnit}`;
 };
 
 const getExtraWidth = (
   data: any[],
   columns: ExportableContentTableColumn<CurveSpecification>[],
-  dateTimeFormat: DateTimeFormat
+  dateTimeFormat: DateTimeFormat,
+  isTimeLog: boolean
 ) => {
   // Estimate the width of the x-axis labels and the grid margin (everything in content view except for the data columns itself)
-  const isTimeLog = columns[0].type == ContentType.DateTime;
   const indexUnit = columns[0].columnOf.unit;
   const indexCurve = columns[0].columnOf.mnemonic;
   const maxIndex = data.slice(-1)[0][indexCurve];

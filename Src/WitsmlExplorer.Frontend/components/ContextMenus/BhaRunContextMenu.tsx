@@ -1,22 +1,25 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import BhaRun from "../../models/bhaRun";
-import { ObjectType } from "../../models/objectType";
-import { colors } from "../../styles/Colors";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
+import {
+  ObjectContextMenuProps,
+  ObjectMenuItems
+} from "components/ContextMenus/ObjectMenuItems";
 import BhaRunPropertiesModal, {
   BhaRunPropertiesModalProps
-} from "../Modals/BhaRunPropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
-import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
+} from "components/Modals/BhaRunPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import BhaRun from "models/bhaRun";
+import { ObjectType } from "models/objectType";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 
 const BhaRunContextMenu = (
   props: ObjectContextMenuProps
@@ -29,6 +32,7 @@ const BhaRunContextMenu = (
   const queryClient = useQueryClient();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyBhaRunProps: BhaRunPropertiesModalProps = {
       mode,
@@ -39,7 +43,6 @@ const BhaRunContextMenu = (
       type: OperationType.DisplayModal,
       payload: <BhaRunPropertiesModal {...modifyBhaRunProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   return (

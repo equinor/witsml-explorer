@@ -1,5 +1,5 @@
-import { CopyComponentsJob } from "./copyJobs";
-import { DeleteComponentsJob } from "./deleteJobs";
+import { CopyComponentsJob } from "models/jobs/copyJobs";
+import { DeleteComponentsJob } from "models/jobs/deleteJobs";
 
 export interface ReplaceComponentsJob {
   deleteJob: DeleteComponentsJob;

@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Repositories
         {
             var filter = Builders<TDocument>.Filter.Eq("_id", id);
             var documents = await _collection.FindAsync(filter);
-            return documents.First();
+            return documents.FirstOrDefault();
         }
 
         public async Task<ICollection<TDocument>> GetDocumentsAsync()

@@ -1,19 +1,12 @@
 import "@testing-library/jest-dom/extend-expect";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {
-  getServer,
-  renderWithContexts
-} from "../../../__testUtils__/testUtils";
-import {
-  EMPTY_FILTER,
-  FilterContext,
-  ObjectFilterType
-} from "../../../contexts/filter";
-import ContextMenuPresenter from "../../ContextMenus/ContextMenuPresenter";
-import SearchFilter from "../SearchFilter";
+import { getServer, renderWithContexts } from "__testUtils__/testUtils";
+import ContextMenuPresenter from "components/ContextMenus/ContextMenuPresenter";
+import SearchFilter from "components/Sidebar/SearchFilter";
+import { EMPTY_FILTER, FilterContext, ObjectFilterType } from "contexts/filter";
 
-jest.mock("../../../services/objectService");
+jest.mock("services/objectService");
 
 describe("Search Filter", () => {
   it("A search filter should show a searchable field", () => {

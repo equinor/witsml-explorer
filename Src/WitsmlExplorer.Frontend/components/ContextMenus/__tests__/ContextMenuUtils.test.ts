@@ -1,4 +1,4 @@
-import { menuItemText } from "../ContextMenuUtils";
+import { menuItemText } from "components/ContextMenus/ContextMenuUtils";
 
 const ARRAY_LENGTH_2 = ["", ""];
 const ARRAY_LENGTH_1 = [""];

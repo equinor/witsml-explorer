@@ -1,17 +1,17 @@
-import { MouseEvent, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import LogObject from "../../models/logObject";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
-import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import TreeItem from "./TreeItem";
+} from "components/ContextMenus/ContextMenu";
+import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import TreeItem from "components/Sidebar/TreeItem";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import LogObject from "models/logObject";
+import { MouseEvent, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface LogItemProps {
   log: LogObject;

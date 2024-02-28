@@ -4,8 +4,12 @@ import userEvent from "@testing-library/user-event";
 import {
   MockResizeObserver,
   renderWithContexts
-} from "../../../__testUtils__/testUtils";
-import { ContentTable, ContentTableRow, ContentType } from "../table";
+} from "__testUtils__/testUtils";
+import { ContentTable } from "components/ContentViews/table/ContentTable";
+import {
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table/tableParts";
 
 describe("<ContentTable />", () => {
   //mock ResizeObserver to enable testing virtualized components

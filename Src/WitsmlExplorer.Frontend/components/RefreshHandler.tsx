@@ -1,5 +1,4 @@
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useEffect } from "react";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -7,13 +6,14 @@ import {
   refreshWellboreQuery,
   refreshWellboresQuery,
   refreshWellsQuery
-} from "../hooks/query/queryRefreshHelpers";
-import EntityType from "../models/entityType";
-import { ObjectType } from "../models/objectType";
+} from "hooks/query/queryRefreshHelpers";
+import EntityType from "models/entityType";
+import { ObjectType } from "models/objectType";
+import React, { useEffect } from "react";
 import NotificationService, {
   RefreshAction,
   RefreshType
-} from "../services/notificationService";
+} from "services/notificationService";
 
 const RefreshHandler = (): React.ReactElement => {
   const queryClient = useQueryClient();

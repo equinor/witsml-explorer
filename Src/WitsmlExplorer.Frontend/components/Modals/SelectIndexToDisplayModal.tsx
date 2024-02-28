@@ -1,26 +1,26 @@
 import { Banner } from "@equinor/eds-core-react";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_LOG_ORDERTYPE_DECREASING
+} from "components/Constants";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
 import styled from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
-import { RouterLogType } from "../../routes/routerConstants";
+import { indexToNumber } from "tools/IndexHelpers";
 import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
 import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
-import { indexToNumber } from "../../tools/IndexHelpers";
-import {
-  WITSML_INDEX_TYPE_DATE_TIME,
-  WITSML_LOG_ORDERTYPE_DECREASING
-} from "../Constants";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import ModalDialog from "./ModalDialog";
-import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
 
 export interface SelectIndexToDisplayModalProps {
   log: LogObject;

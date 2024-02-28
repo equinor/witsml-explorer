@@ -243,15 +243,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     Uid = "Depth",
                     Mnemonic = "Depth",
-                    MinIndex = new WitsmlIndex(new DepthIndex(-999.25)),
-                    MaxIndex = new WitsmlIndex(new DepthIndex(-999.25))
+                    MinIndex = new WitsmlIndex(new DepthIndex(CommonConstants.DepthIndex.NullValue)),
+                    MaxIndex = new WitsmlIndex(new DepthIndex(CommonConstants.DepthIndex.NullValue))
                 },
                 WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => new WitsmlLogCurveInfo
                 {
                     Uid = "Time",
                     Mnemonic = "Time",
-                    MinDateTimeIndex = "1900-01-01T00:00:00.000Z",
-                    MaxDateTimeIndex = "1900-01-01T00:00:00.000Z"
+                    MinDateTimeIndex = CommonConstants.DateTimeIndex.NullValue,
+                    MaxDateTimeIndex = CommonConstants.DateTimeIndex.NullValue
                 },
                 _ => null
             };
@@ -268,12 +268,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             switch (indexType)
             {
                 case WitsmlLog.WITSML_INDEX_TYPE_MD:
-                    witsmlLog.StartIndex = new WitsmlIndex(new DepthIndex(DepthIndex.NullValue));
-                    witsmlLog.EndIndex = new WitsmlIndex(new DepthIndex(DepthIndex.NullValue));
+                    witsmlLog.StartIndex = new WitsmlIndex(new DepthIndex(CommonConstants.DepthIndex.NullValue));
+                    witsmlLog.EndIndex = new WitsmlIndex(new DepthIndex(CommonConstants.DepthIndex.NullValue));
                     break;
                 case WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME:
-                    witsmlLog.StartDateTimeIndex = DateTimeIndex.NullValue;
-                    witsmlLog.EndDateTimeIndex = DateTimeIndex.NullValue;
+                    witsmlLog.StartDateTimeIndex = CommonConstants.DateTimeIndex.NullValue;
+                    witsmlLog.EndDateTimeIndex = CommonConstants.DateTimeIndex.NullValue;
                     break;
                 default:
                     break;
@@ -401,8 +401,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     Logs = new WitsmlLog
                     {
-                        StartIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.First().Data.Split(",")[0]))),
-                        EndIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.Last().Data.Split(",")[0]))),
+                        StartIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.First().Data.Split(CommonConstants.DataSeparator)[0]))),
+                        EndIndex = new WitsmlIndex(new DepthIndex(StringHelpers.ToDouble(data.Last().Data.Split(CommonConstants.DataSeparator)[0]))),
                         IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
                         LogData = new WitsmlLogData
                         {

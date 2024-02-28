@@ -1,8 +1,8 @@
-import { ErrorDetails } from "../models/errorDetails";
-import { LogData } from "../models/logData";
-import { ApiClient } from "./apiClient";
-import AuthorizationService from "./authorizationService";
-import NotificationService from "./notificationService";
+import { ErrorDetails } from "models/errorDetails";
+import { LogData } from "models/logData";
+import { ApiClient } from "services/apiClient";
+import AuthorizationService from "services/authorizationService";
+import NotificationService from "services/notificationService";
 
 export default class LogObjectService {
   public static async getLogData(
@@ -13,13 +13,15 @@ export default class LogObjectService {
     startIndexIsInclusive: boolean,
     startIndex: string,
     endIndex: string,
+    loadAllData: boolean,
     abortSignal: AbortSignal
   ): Promise<LogData> {
     if (mnemonics.length === 0) return;
     const params = [
       `startIndex=${encodeURIComponent(startIndex)}`,
       `endIndex=${encodeURIComponent(endIndex)}`,
-      `startIndexIsInclusive=${startIndexIsInclusive}`
+      `startIndexIsInclusive=${startIndexIsInclusive}`,
+      `loadAllData=${loadAllData}`
     ];
     const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join(
       "&"

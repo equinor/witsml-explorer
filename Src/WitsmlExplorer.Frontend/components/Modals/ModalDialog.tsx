@@ -1,10 +1,10 @@
 import { Button, Dialog, Progress, Typography } from "@equinor/eds-core-react";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { Colors, dark, light } from "../../styles/Colors";
-import Icons from "../../styles/Icons";
+import { Colors, dark, light } from "styles/Colors";
+import Icons from "styles/Icons";
 
 interface ModalDialogProps {
   heading: string;
@@ -202,29 +202,6 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
   margin-top: 0.5em;
   max-height: 75vh;
   overflow-y: auto;
-
-  color: ${(props) => props.colors.text.staticIconsDefault};
-  --track-color: #dddddd;
-  --thumb-color: #bbbbbb;
-  scrollbar-color: var(--track-color) var(--thumb-color);
-
-  //For firefox
-  scrollbar-width: thin;
-  padding-bottom: 8px;
-
-  // For Google Chrome/Safari/Edge
-  & ::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  & ::-webkit-scrollbar-thumb {
-    background: var(--thumb-color);
-    border-radius: 8px;
-  }
-
-  & ::-webkit-scrollbar-track {
-    background: var(--track-color);
-  }
 
   div[class*="InputWrapper__Container"] {
     label.dHhldd {

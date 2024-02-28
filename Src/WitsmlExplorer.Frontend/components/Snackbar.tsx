@@ -1,7 +1,7 @@
+import { useConnectedServer } from "contexts/connectedServerContext";
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
-import { useConnectedServer } from "../contexts/connectedServerContext";
-import NotificationService from "../services/notificationService";
+import NotificationService from "services/notificationService";
 
 export function Snackbar() {
   const { enqueueSnackbar } = useSnackbar();

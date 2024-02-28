@@ -1,4 +1,37 @@
 import { Typography } from "@equinor/eds-core-react";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "components/Constants";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table";
+import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
+import ContextMenu, {
+  getContextMenuPosition
+} from "components/ContextMenus/ContextMenu";
+import { ObjectTypeToContextMenu } from "components/ContextMenus/ContextMenuMapping";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
+import LoadingContextMenu from "components/ContextMenus/LoadingContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import ProgressSpinner from "components/ProgressSpinner";
+import { isExpandableGroupObject } from "components/Sidebar/ObjectGroupItem";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import {
+  FilterContext,
+  ObjectFilterType,
+  filterTypeToProperty
+} from "contexts/filter";
+import OperationContext from "contexts/operationContext";
+import { MousePosition } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { useGetObjectSearch } from "hooks/query/useGetObjectSearch";
+import LogObject from "models/logObject";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 import React, {
   ReactElement,
   useContext,
@@ -7,38 +40,9 @@ import React, {
   useState
 } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import {
-  FilterContext,
-  ObjectFilterType,
-  filterTypeToProperty
-} from "../../contexts/filter";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetObjectSearch } from "../../hooks/query/useGetObjectSearch";
-import LogObject from "../../models/logObject";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
-import { RouterLogType } from "../../routes/routerConstants";
-import NotificationService from "../../services/notificationService";
-import ObjectService from "../../services/objectService";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "../Constants";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectTypeToContextMenu } from "../ContextMenus/ContextMenuMapping";
-import { pluralize } from "../ContextMenus/ContextMenuUtils";
-import LoadingContextMenu from "../ContextMenus/LoadingContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import ConfirmModal from "../Modals/ConfirmModal";
-import ProgressSpinner from "../ProgressSpinner";
-import { isExpandableGroupObject } from "../Sidebar/ObjectGroupItem";
-import {
-  ContentTable,
-  ContentTableColumn,
-  ContentTableRow,
-  ContentType
-} from "./table";
+import { RouterLogType } from "routes/routerConstants";
+import NotificationService from "services/notificationService";
+import ObjectService from "services/objectService";
 
 export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
   object: ObjectOnWellbore;
@@ -129,24 +133,20 @@ export const ObjectSearchListView = (): ReactElement => {
     );
   };
 
-  const onContextMenu = async (
-    event: React.MouseEvent<HTMLLIElement>,
-    {},
-    checkedObjectRows: ObjectSearchRow[]
+  const onContextMenuSingleObject = async (
+    checkedObjectRow: ObjectSearchRow,
+    position: MousePosition
   ) => {
-    const position = getContextMenuPosition(event);
     dispatchOperation({
       type: OperationType.DisplayContextMenu,
       payload: { component: <LoadingContextMenu />, position }
     });
-    const wellbore = checkedObjectRows[0].wellbore;
-    const objectType = checkedObjectRows[0].objectType;
-    const fetchedObject = await fetchSelectedObject(checkedObjectRows[0]);
+    const fetchedObject = await fetchSelectedObject(checkedObjectRow);
     const contextProps: ObjectContextMenuProps = {
       checkedObjects: [fetchedObject],
-      wellbore
+      wellbore: checkedObjectRow.wellbore
     };
-    const component = ObjectTypeToContextMenu[objectType];
+    const component = ObjectTypeToContextMenu[checkedObjectRow.objectType];
     if (component) {
       dispatchOperation({
         type: OperationType.DisplayContextMenu,
@@ -155,6 +155,51 @@ export const ObjectSearchListView = (): ReactElement => {
           position
         }
       });
+    }
+  };
+
+  const onContextMenuMultipleObjects = async (
+    checkedObjectRows: ObjectSearchRow[],
+    position: MousePosition
+  ) => {
+    const onlyOneObjectType = checkedObjectRows.every(
+      (row) => row.objectType === checkedObjectRows[0].objectType
+    );
+    if (!onlyOneObjectType) {
+      return;
+    }
+    const objectType = checkedObjectRows[0].objectType;
+
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: (
+          <ContextMenu
+            menuItems={[
+              <BatchModifyMenuItem
+                key="batchModify"
+                checkedObjects={checkedObjectRows}
+                objectType={objectType}
+              />
+            ]}
+          />
+        ),
+        position
+      }
+    });
+  };
+
+  const onContextMenu = async (
+    event: React.MouseEvent<HTMLLIElement>,
+    {},
+    checkedObjectRows: ObjectSearchRow[]
+  ) => {
+    const position = getContextMenuPosition(event);
+    // If only one object is selected, show the normal context menu for that object. Otherwise, show the batch menu.
+    if (checkedObjectRows.length === 1) {
+      await onContextMenuSingleObject(checkedObjectRows[0], position);
+    } else {
+      await onContextMenuMultipleObjects(checkedObjectRows, position);
     }
   };
 
@@ -233,6 +278,7 @@ export const ObjectSearchListView = (): ReactElement => {
   ) : (
     <ContentTable
       viewId="objectOnWellboreListView"
+      checkableRows
       columns={getColumns()}
       onSelect={onSelect}
       data={searchResults}

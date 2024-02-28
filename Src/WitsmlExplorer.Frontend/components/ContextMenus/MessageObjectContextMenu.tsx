@@ -1,30 +1,36 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import MessageObject from "../../models/messageObject";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import { colors } from "../../styles/Colors";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText
+} from "components/ContextMenus/ContextMenuUtils";
+import {
+  ObjectContextMenuProps,
+  ObjectMenuItems
+} from "components/ContextMenus/ObjectMenuItems";
 import MessageComparisonModal, {
   MessageComparisonModalProps
-} from "../Modals/MessageComparisonModal";
+} from "components/Modals/MessageComparisonModal";
 import MessagePropertiesModal, {
   MessagePropertiesModalProps
-} from "../Modals/MessagePropertiesModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
+} from "components/Modals/MessagePropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
-} from "../Modals/ObjectPickerModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
-import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
+} from "components/Modals/ObjectPickerModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import MessageObject from "models/messageObject";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 
 const MessageObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -37,6 +43,7 @@ const MessageObjectContextMenu = (
   const { servers } = useGetServers();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const mode = PropertiesModalMode.Edit;
     const modifyMessageObjectProps: MessagePropertiesModalProps = {
       mode,
@@ -47,7 +54,6 @@ const MessageObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <MessagePropertiesModal {...modifyMessageObjectProps} />
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickCompare = () => {

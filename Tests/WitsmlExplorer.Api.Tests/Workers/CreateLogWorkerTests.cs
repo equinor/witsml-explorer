@@ -67,7 +67,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(WellName, createdLog.NameWell);
             WitsmlLogCurveInfo indexLogCurve = createdLog.LogCurveInfo.First();
             Assert.Equal("Depth", indexLogCurve.Mnemonic);
-            Assert.Equal("m", indexLogCurve.Unit);
+            Assert.Equal(CommonConstants.Unit.Meter, indexLogCurve.Unit);
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(WellName, createdLog.NameWell);
             WitsmlLogCurveInfo indexLogCurve = createdLog.LogCurveInfo.First();
             Assert.Equal("Time", indexLogCurve.Mnemonic);
-            Assert.Equal("s", indexLogCurve.Unit);
+            Assert.Equal(CommonConstants.Unit.Second, indexLogCurve.Unit);
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLog createdLog = createdLogs.First().Logs.First();
             WitsmlLogCurveInfo indexLogCurve = createdLog.LogCurveInfo.First();
             Assert.Equal("Time", indexLogCurve.Mnemonic);
-            Assert.Equal("s", indexLogCurve.Unit);
+            Assert.Equal(CommonConstants.Unit.Second, indexLogCurve.Unit);
         }
 
         private static CreateLogJob CreateJobTemplate(string indexCurve = "Depth")

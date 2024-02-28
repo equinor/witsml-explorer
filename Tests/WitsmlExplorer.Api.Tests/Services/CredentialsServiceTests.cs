@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
@@ -51,7 +52,14 @@ namespace WitsmlExplorer.Api.Tests.Services
                 new ServerCredentials() {
                     Host = new Uri("http://some.url.com"),
                     UserId = "systemuser",
-                    Password = "systempassword"
+                    Password = "systempassword",
+                    CredentialId = "systemCredentialId1"
+                },
+                new ServerCredentials() {
+                    Host = new Uri("http://some.url.com"),
+                    UserId = "systemuser2",
+                    Password = "systempassword2",
+                    CredentialId = "systemCredentialId2"
                 }
             });
             // Configuration DB
@@ -62,6 +70,22 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Url = new Uri("http://some.url.com"),
                     Description = "Testserver for SystemCreds testing",
                     Roles = new List<string>() {"validrole","developer"}
+                },
+                new Server()
+                {
+                    Name = "Test Server 2",
+                    Url = new Uri("http://some.url.without.its.own.keyvault.secret.com"),
+                    Description = "Testserver that does not have its url specified in a keyvault secret",
+                    Roles = new List<string>() {"validrole","developer"},
+                    CredentialIds = new List<string> { "systemCredentialId1", "systemCredentialId2" }
+                },
+                new Server()
+                {
+                    Name = "Test Server 3",
+                    Url = new Uri("http://url3.com"),
+                    Description = "Testserver with invalid credentialId and without its url specified in a keyvault secret",
+                    Roles = new List<string>() {"validrole","developer"},
+                    CredentialIds = new List<string> { "invalidSystemCredentialId" }
                 }
             });
 
@@ -105,9 +129,72 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
+        public async Task GetLoggedInUsernames_ValidTokenValidRolesValidURLValidUsername_ReturnMultipleUsernames()
+        {
+            // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.com" and role: ["validrole"]
+            // 2. CONFIG:   There exist system credentials in keyvault for server with URL: "http://some.url.com"
+            // 3. REQUEST:  User provide token and valid roles in token
+            // 4. REQUEST:  Header WitsmlTargetServer Header with URL: "http://some.url.com"
+            // 5. RESPONSE: System usernames should be returned because server-roles and user-roles overlap
+            string server = "http://some.url.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+
+            string[] usernames = await _oauthCredentialsService.GetLoggedInUsernames(eh, new Uri(server));
+            Assert.Contains("systemuser", usernames);
+            Assert.Contains("systemuser2", usernames);
+            _oauthCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
+        public async Task GetLoggedInUsernames_AllValidWithCredentialIds_ReturnUsernames()
+        {
+            // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.without.its.own.keyvault.secret.com" and role: ["validrole"]
+            // 2. CONFIG:   There does NOT exist system credentials in keyvault for server with URL: "http://some.url.without.its.own.keyvault.secret.com"
+            // 3. CONFIG:   There exist system credentials in keyvault with credential Id: "systemCredentialId1"
+            // 4. REQUEST:  User provide token and valid roles in token
+            // 5. REQUEST:  Header WitsmlTargetServer Header with URL: "http://some.url.without.its.own.keyvault.secret.com"
+            // 6. RESPONSE: System usernames should be returned because server-roles and user-roles overlap
+            string server = "http://some.url.without.its.own.keyvault.secret.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+
+            string[] usernames = await _oauthCredentialsService.GetLoggedInUsernames(eh, new Uri(server));
+            Assert.Contains("systemuser", usernames);
+            Assert.Contains("systemuser2", usernames);
+            _oauthCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
+        public async Task GetLoggedInUsernames_AllValidWithInvalidCredentialId_ReturnEmpty()
+        {
+            // 1. CONFIG:   There is a server config in DB with URL: "http://some.url.without.its.own.keyvault.secret.com" and role: ["validrole"]
+            // 2. CONFIG:   There does NOT exist system credentials in keyvault for server with URL: "http://some.url.without.its.own.keyvault.secret.com"
+            // 3. CONFIG:   There exist system credentials in keyvault with credential Id: "systemCredentialId1"
+            // 4. REQUEST:  User provide token and valid roles in token
+            // 5. REQUEST:  Header WitsmlTargetServer Header with URL: "http://some.url.without.its.own.keyvault.secret.com"
+            // 6. RESPONSE: System usernames should be returned because server-roles and user-roles overlap
+            string server = "http://url3.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+
+            string[] usernames = await _oauthCredentialsService.GetLoggedInUsernames(eh, new Uri(server));
+            Assert.Empty(usernames);
+            _oauthCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
         public void GetCredentials_ValidTokenValidRolesInvalidURL_ReturnNull()
         {
             string server = "http://some.invalidurl.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+
+            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
+            Assert.Null(creds);
+            _oauthCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
+        public void GetCredentials_ValidTokenValidRolesValidURLInvalidCredentialId_ReturnNull()
+        {
+            string server = "http://url3.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
             ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");

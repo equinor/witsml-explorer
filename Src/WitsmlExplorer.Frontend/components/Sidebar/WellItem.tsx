@@ -1,29 +1,29 @@
-import React, { useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useSidebar } from "../../contexts/sidebarContext";
-import { SidebarActionType } from "../../contexts/sidebarReducer";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useGetWell } from "../../hooks/query/useGetWell";
-import { useGetWellbores } from "../../hooks/query/useGetWellbores";
-import { useWellboreFilter } from "../../hooks/useWellboreFilter";
-import Well from "../../models/well";
-import Wellbore, {
-  calculateWellNodeId,
-  calculateWellboreNodeId
-} from "../../models/wellbore";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
+} from "components/ContextMenus/ContextMenu";
 import WellContextMenu, {
   WellContextMenuProps
-} from "../ContextMenus/WellContextMenu";
-import { EmptyTreeItem } from "./EmptyTreeItem";
-import TreeItem from "./TreeItem";
-import WellboreItem from "./WellboreItem";
+} from "components/ContextMenus/WellContextMenu";
+import { EmptyTreeItem } from "components/Sidebar/EmptyTreeItem";
+import TreeItem from "components/Sidebar/TreeItem";
+import WellboreItem from "components/Sidebar/WellboreItem";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useSidebar } from "contexts/sidebarContext";
+import { SidebarActionType } from "contexts/sidebarReducer";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWell } from "hooks/query/useGetWell";
+import { useGetWellbores } from "hooks/query/useGetWellbores";
+import { useWellboreFilter } from "hooks/useWellboreFilter";
+import Well from "models/well";
+import Wellbore, {
+  calculateWellNodeId,
+  calculateWellboreNodeId
+} from "models/wellbore";
+import React, { useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface WellItemProps {
   wellUid: string;
