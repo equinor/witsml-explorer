@@ -85,8 +85,8 @@ const EditSelectedLogCurveInfo = (
 
   useEffect(() => {
     setSelectedMnemonics(getMnemonics());
-    setSelectedStartIndex(startIndex);
-    setSelectedEndIndex(endIndex);
+    setSelectedStartIndex(getParsedValue(startIndex, isTimeLog));
+    setSelectedEndIndex(getParsedValue(endIndex, isTimeLog));
   }, [mnemonicsSearchParams, startIndex, endIndex, location?.state?.mnemonics]);
 
   function getMnemonics() {

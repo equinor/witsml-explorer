@@ -15,6 +15,7 @@ import { ObjectType } from "models/objectType";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
+import { getLogCurveValuesViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { indexToNumber } from "tools/IndexHelpers";
 import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
@@ -53,15 +54,18 @@ const SelectIndexToDisplayModal = (
   );
 
   function getToPathname() {
-    return `/servers/${encodeURIComponent(
-      connectedServer?.url
-    )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-      ObjectType.Log
-    }/logtypes/${
+    const logType =
       log.indexType === WITSML_INDEX_TYPE_DATE_TIME
         ? RouterLogType.TIME
-        : RouterLogType.DEPTH
-    }/objects/${log.uid}/curvevalues`;
+        : RouterLogType.DEPTH;
+    return getLogCurveValuesViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      ObjectType.Log,
+      logType,
+      log.uid
+    );
   }
 
   function getMnemonics() {

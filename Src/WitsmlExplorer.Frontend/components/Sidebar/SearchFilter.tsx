@@ -16,6 +16,7 @@ import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
+import { getSearchViewPath } from "routes/utils/pathBuilder";
 import styled, { CSSProp } from "styled-components";
 import { Colors } from "styles/Colors";
 import Icons from "styles/Icons";
@@ -68,9 +69,7 @@ const SearchFilter = (): React.ReactElement => {
         value: nameFilter
       });
       navigate({
-        pathname: `servers/${encodeURIComponent(
-          connectedServer.url
-        )}/search/${option}`,
+        pathname: getSearchViewPath(connectedServer.url, option),
         search: searchParams.toString()
       });
     }

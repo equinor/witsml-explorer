@@ -39,6 +39,7 @@ import { ObjectType } from "models/objectType";
 import Wellbore from "models/wellbore";
 import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 
 interface WellboreItemProps {
@@ -173,9 +174,7 @@ export default function WellboreItem({
 
   const onLabelClick = () => {
     navigate(
-      `servers/${encodeURIComponent(
-        connectedServer?.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups`
+      getObjectGroupsViewPath(connectedServer?.url, wellUid, wellboreUid)
     );
   };
 

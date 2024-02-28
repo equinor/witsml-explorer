@@ -22,6 +22,7 @@ import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
+import { OBJECT_GROUPS_PATH } from "routes/routerConstants";
 
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
@@ -112,7 +113,7 @@ export default function WellboresListView() {
   };
 
   const onSelect = async (wellboreRow: any) => {
-    navigate(`${wellboreRow.wellbore.uid}/objectgroups`);
+    navigate(`${wellboreRow.wellbore.uid}/${OBJECT_GROUPS_PATH}`);
   };
 
   if (isFetching) {

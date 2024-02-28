@@ -38,6 +38,10 @@ import { ObjectType } from "models/objectType";
 import Wellbore, { calculateObjectGroupId } from "models/wellbore";
 import { ComponentType, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  getLogTypesViewPath,
+  getObjectsViewPath
+} from "routes/utils/pathBuilder";
 
 interface ObjectGroupItemProps {
   wellUid: string;
@@ -98,11 +102,19 @@ export default function ObjectGroupItem({
 
   const onSelectObjectGroup = () => {
     navigate(
-      `servers/${encodeURIComponent(
-        connectedServer?.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${objectType}/${
-        objectType === ObjectType.Log ? "logtypes" : "objects"
-      }`
+      objectType === ObjectType.Log
+        ? getLogTypesViewPath(
+            connectedServer?.url,
+            wellUid,
+            wellboreUid,
+            objectType
+          )
+        : getObjectsViewPath(
+            connectedServer?.url,
+            wellUid,
+            wellboreUid,
+            objectType
+          )
     );
   };
 

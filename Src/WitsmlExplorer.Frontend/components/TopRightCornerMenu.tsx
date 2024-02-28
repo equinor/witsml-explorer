@@ -11,6 +11,7 @@ import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { getQueryViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -48,7 +49,7 @@ export default function TopRightCornerMenu() {
   };
 
   const openQueryView = () => {
-    navigate(`servers/${encodeURIComponent(connectedServer?.url)}/query`);
+    navigate(getQueryViewPath(connectedServer?.url));
   };
 
   const isConnected = !!connectedServer;

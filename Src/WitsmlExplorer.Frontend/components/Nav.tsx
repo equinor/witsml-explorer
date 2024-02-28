@@ -22,6 +22,19 @@ import {
   useNavigate,
   useParams
 } from "react-router-dom";
+import {
+  getJobsViewPath,
+  getLogObjectViewPath,
+  getLogObjectsViewPath,
+  getLogTypesViewPath,
+  getObjectGroupsViewPath,
+  getObjectViewPath,
+  getObjectsViewPath,
+  getQueryViewPath,
+  getSearchViewPath,
+  getWellboresViewPath,
+  getWellsViewPath
+} from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { colors } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -35,8 +48,15 @@ export default function Nav() {
   const isJobsView = !!useMatch("servers/:serverUrl/jobs");
   const isQueryView = !!useMatch("servers/:serverUrl/query");
   const isSearchView = !!useMatch("servers/:serverUrl/search/:filterType");
-  const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
-    useParams();
+  const {
+    serverUrl,
+    wellUid,
+    wellboreUid,
+    objectGroup,
+    objectUid,
+    logType,
+    filterType
+  } = useParams();
   const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
   const { well } = useGetWell(connectedServer, wellUid);
@@ -63,7 +83,7 @@ export default function Nav() {
       getServerCrumb(connectedServer, navigate),
       getJobsCrumb(serverUrl, isJobsView, navigate),
       getQueryCrumb(serverUrl, isQueryView, navigate),
-      getSearchCrumb(isSearchView),
+      getSearchCrumb(serverUrl, filterType, isSearchView, navigate),
       getWellCrumb(serverUrl, well, navigate),
       getWellboreCrumb(serverUrl, wellbore, navigate),
       ...groupCrumbs,
@@ -77,6 +97,7 @@ export default function Nav() {
   }, [
     connectedServer,
     serverUrl,
+    filterType,
     objectGroup,
     well,
     wellbore,
@@ -134,7 +155,7 @@ const getServerCrumb = (server: Server, navigate: NavigateFunction) => {
     ? {
         name: server.name,
         onClick: () => {
-          navigate(`servers/${encodeURIComponent(server.url)}/wells`);
+          navigate(getWellsViewPath(server.url));
         }
       }
     : {};
@@ -149,11 +170,7 @@ const getWellCrumb = (
     ? {
         name: well.name,
         onClick: () => {
-          navigate(
-            `servers/${encodeURIComponent(serverUrl)}/wells/${
-              well.uid
-            }/wellbores`
-          );
+          navigate(getWellboresViewPath(serverUrl, well.uid));
         }
       }
     : {};
@@ -169,9 +186,7 @@ const getWellboreCrumb = (
         name: wellbore.name,
         onClick: () => {
           navigate(
-            `servers/${encodeURIComponent(serverUrl)}/wells/${
-              wellbore.wellUid
-            }/wellbores/${wellbore.uid}/objectgroups`
+            getObjectGroupsViewPath(serverUrl, wellbore.wellUid, wellbore.uid)
           );
         }
       }
@@ -191,11 +206,19 @@ const getObjectGroupCrumb = (
         name: pluralizedObjectType,
         onClick: () => {
           navigate(
-            `servers/${encodeURIComponent(serverUrl)}/wells/${
-              wellbore.wellUid
-            }/wellbores/${wellbore.uid}/objectgroups/${objectGroup}/${
-              objectGroup === ObjectType.Log ? "logtypes" : "objects"
-            }`
+            objectGroup === ObjectType.Log
+              ? getLogTypesViewPath(
+                  serverUrl,
+                  wellbore.wellUid,
+                  wellbore.uid,
+                  objectGroup
+                )
+              : getObjectsViewPath(
+                  serverUrl,
+                  wellbore.wellUid,
+                  wellbore.uid,
+                  objectGroup
+                )
           );
         }
       }
@@ -213,11 +236,13 @@ const getLogTypeCrumb = (
         name: capitalize(logType),
         onClick: () => {
           navigate(
-            `servers/${encodeURIComponent(serverUrl)}/wells/${
-              wellbore.wellUid
-            }/wellbores/${wellbore.uid}/objectgroups/${
-              ObjectType.Log
-            }/logtypes/${logType}/objects`
+            getLogObjectsViewPath(
+              serverUrl,
+              wellbore.wellUid,
+              wellbore.uid,
+              ObjectType.Log,
+              logType
+            )
           );
         }
       }
@@ -236,11 +261,22 @@ function getObjectCrumb<T extends ObjectType>(
         name: object.name,
         onClick: () => {
           navigate(
-            `servers/${encodeURIComponent(serverUrl)}/wells/${
-              object.wellUid
-            }/wellbores/${object.wellboreUid}/objectgroups/${objectGroup}/${
-              logType ? `logtypes/${logType}/` : ""
-            }objects/${object.uid}`
+            logType
+              ? getLogObjectViewPath(
+                  serverUrl,
+                  object.wellUid,
+                  object.wellboreUid,
+                  objectGroup,
+                  logType,
+                  object.uid
+                )
+              : getObjectViewPath(
+                  serverUrl,
+                  object.wellUid,
+                  object.wellboreUid,
+                  objectGroup,
+                  object.uid
+                )
           );
         }
       }
@@ -256,7 +292,7 @@ const getJobsCrumb = (
     ? {
         name: "Jobs",
         onClick: () => {
-          navigate(`servers/${encodeURIComponent(serverUrl)}/jobs`);
+          navigate(getJobsViewPath(serverUrl));
         }
       }
     : {};
@@ -271,16 +307,24 @@ const getQueryCrumb = (
     ? {
         name: "Query",
         onClick: () => {
-          navigate(`servers/${encodeURIComponent(serverUrl)}/query`);
+          navigate(getQueryViewPath(serverUrl));
         }
       }
     : {};
 };
 
-const getSearchCrumb = (isSearchView: boolean) => {
+const getSearchCrumb = (
+  serverUrl: string,
+  filterType: string,
+  isSearchView: boolean,
+  navigate: NavigateFunction
+) => {
   return isSearchView
     ? {
-        name: "Search"
+        name: "Search",
+        onClick: () => {
+          navigate(getSearchViewPath(serverUrl, filterType));
+        }
       }
     : {};
 };

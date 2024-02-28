@@ -41,6 +41,11 @@ import React, {
 } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getObjectViewPath,
+  getObjectsViewPath
+} from "routes/utils/pathBuilder";
 import NotificationService from "services/notificationService";
 import ObjectService from "services/objectService";
 
@@ -237,31 +242,39 @@ export const ObjectSearchListView = (): ReactElement => {
     const objectType = row.objectType;
     if (objectType == ObjectType.Log) {
       const fetchedLog = (await fetchSelectedObject(row)) as LogObject;
+      const logType =
+        fetchedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
+          ? RouterLogType.TIME
+          : RouterLogType.DEPTH;
       navigate(
-        `/servers/${encodeURIComponent(connectedServer.url)}/wells/${
-          row.wellUid
-        }/wellbores/${row.wellboreUid}/objectgroups/${
-          ObjectType.Log
-        }/logtypes/${
-          fetchedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
-            ? RouterLogType.TIME
-            : RouterLogType.DEPTH
-        }/objects/${row.uid}`
+        getLogObjectViewPath(
+          connectedServer?.url,
+          row.wellUid,
+          row.wellboreUid,
+          ObjectType.Log,
+          logType,
+          row.uid
+        )
       );
     } else {
       if (isExpandableGroupObject(objectType)) {
         navigate(
-          `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
-            row.wellUid
-          }/wellbores/${row.wellboreUid}/objectgroups/${objectType}/objects/${
+          getObjectViewPath(
+            connectedServer?.url,
+            row.wellUid,
+            row.wellboreUid,
+            objectType,
             row.uid
-          }`
+          )
         );
       } else {
         navigate(
-          `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
-            row.wellUid
-          }/wellbores/${row.wellboreUid}/objectgroups/${objectType}/objects`
+          getObjectsViewPath(
+            connectedServer?.url,
+            row.wellUid,
+            row.wellboreUid,
+            objectType
+          )
         );
       }
     }

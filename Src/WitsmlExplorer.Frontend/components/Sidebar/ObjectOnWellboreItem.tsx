@@ -14,6 +14,7 @@ import { ObjectType } from "models/objectType";
 import { calculateObjectNodeId } from "models/wellbore";
 import { ComponentType, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 interface ObjectOnWellboreItemProps {
   nodeId: string;
@@ -59,11 +60,13 @@ export default function ObjectOnWellboreItem({
 
   const onLabelClick = () => {
     navigate(
-      `/servers/${encodeURIComponent(connectedServer?.url)}/wells/${
-        well.uid
-      }/wellbores/${wellbore.uid}/objectgroups/${objectType}/objects/${
+      getObjectViewPath(
+        connectedServer?.url,
+        well.uid,
+        wellbore.uid,
+        objectType,
         objectOnWellbore.uid
-      }`
+      )
     );
   };
 

@@ -24,6 +24,7 @@ import Wellbore, {
 } from "models/wellbore";
 import React, { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getWellboresViewPath } from "routes/utils/pathBuilder";
 
 interface WellItemProps {
   wellUid: string;
@@ -77,11 +78,7 @@ export default function WellItem({ wellUid }: WellItemProps) {
   };
 
   const onSelectWell = () => {
-    navigate(
-      `servers/${encodeURIComponent(
-        connectedServer?.url
-      )}/wells/${wellUid}/wellbores`
-    );
+    navigate(getWellboresViewPath(connectedServer?.url, wellUid));
   };
 
   return (

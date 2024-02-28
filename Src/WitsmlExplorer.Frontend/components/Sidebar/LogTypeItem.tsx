@@ -30,6 +30,10 @@ import Wellbore, {
 import { Fragment, MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getLogObjectsViewPath
+} from "routes/utils/pathBuilder";
 
 interface LogTypeItemProps {
   logs: LogObject[];
@@ -58,16 +62,18 @@ export default function LogTypeItem({
   } = useParams();
 
   const onSelectType = (logTypeGroup: string) => {
+    const logTypePath =
+      logTypeGroup === logTypeGroupDepth
+        ? RouterLogType.DEPTH
+        : RouterLogType.TIME;
     navigate(
-      `servers/${encodeURIComponent(
-        connectedServer?.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        ObjectType.Log
-      }/logtypes/${
-        logTypeGroup === logTypeGroupDepth
-          ? RouterLogType.DEPTH
-          : RouterLogType.TIME
-      }/objects`
+      getLogObjectsViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.Log,
+        logTypePath
+      )
     );
   };
 
@@ -181,6 +187,10 @@ const listLogItemsByType = (
   isSelected: (log: LogObject) => boolean,
   serverUrl: string
 ) => {
+  const logTypePath =
+    logType === WITSML_INDEX_TYPE_DATE_TIME
+      ? RouterLogType.TIME
+      : RouterLogType.DEPTH;
   return logObjects?.map((log) => (
     <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
       <LogItem
@@ -195,15 +205,14 @@ const listLogItemsByType = (
         nodeId={calculateObjectNodeId(log, ObjectType.Log)}
         selected={isSelected(log)}
         objectGrowing={log.objectGrowing}
-        to={`servers/${encodeURIComponent(
-          serverUrl
-        )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-          ObjectType.Log
-        }/logtypes/${
-          logType === WITSML_INDEX_TYPE_DATE_TIME
-            ? RouterLogType.TIME
-            : RouterLogType.DEPTH
-        }/objects/${log.uid}`}
+        to={getLogObjectViewPath(
+          serverUrl,
+          wellUid,
+          wellboreUid,
+          ObjectType.Log,
+          logTypePath,
+          log.uid
+        )}
       />
     </Fragment>
   ));
