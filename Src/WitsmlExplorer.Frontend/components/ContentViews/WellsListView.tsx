@@ -94,9 +94,6 @@ export default function WellsListView() {
   };
 
   if (isFetching) {
-    // TODO: For this and the other list views:
-    // Do we really want to show a spinner instead of everything else? Would it be better to show the table with the "old" data until it is updated, and show the loading state elsewhere?
-    // - Create own issue, needs grooming!
     return (
       <ProgressSpinner message="Fetching wells. This may take some time." />
     );
