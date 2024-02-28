@@ -87,7 +87,7 @@ const EditSelectedLogCurveInfo = (
     setSelectedMnemonics(getMnemonics());
     setSelectedStartIndex(startIndex);
     setSelectedEndIndex(endIndex);
-  }, [mnemonicsSearchParams, startIndex, endIndex]);
+  }, [mnemonicsSearchParams, startIndex, endIndex, location?.state?.mnemonics]);
 
   function getMnemonics() {
     if (mnemonicsSearchParams) {
@@ -121,7 +121,10 @@ const EditSelectedLogCurveInfo = (
         {
           pathname: location.pathname,
           search: isUrlTooLong
-            ? createLogCurveValuesSearchParams(startIndex, endIndex).toString()
+            ? createLogCurveValuesSearchParams(
+                selectedStartIndex,
+                selectedEndIndex
+              ).toString()
             : newSearchParams.toString()
         },
         {
