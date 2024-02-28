@@ -1,17 +1,17 @@
 import { InputAdornment, TextField } from "@material-ui/core";
+import formatDateString from "components/DateFormatter";
+import { DateTimeField } from "components/Modals/DateTimeField";
+import ModalDialog from "components/Modals/ModalDialog";
+import OperationContext from "contexts/operationContext";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import ObjectReference from "models/jobs/objectReference";
+import { measureToString } from "models/measure";
+import { toObjectReference } from "models/objectOnWellbore";
+import Trajectory from "models/trajectory";
+import TrajectoryStation from "models/trajectoryStation";
 import React, { useContext, useEffect, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import ObjectReference from "../../models/jobs/objectReference";
-import { measureToString } from "../../models/measure";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import Trajectory from "../../models/trajectory";
-import TrajectoryStation from "../../models/trajectoryStation";
-import JobService, { JobType } from "../../services/jobService";
-import formatDateString from "../DateFormatter";
-import { DateTimeField } from "./DateTimeField";
-import ModalDialog from "./ModalDialog";
+import JobService, { JobType } from "services/jobService";
 
 export interface TrajectoryStationPropertiesModalInterface {
   trajectoryStation: TrajectoryStation;

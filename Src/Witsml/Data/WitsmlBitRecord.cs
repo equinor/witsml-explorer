@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -42,7 +43,7 @@ namespace Witsml.Data
         [XmlElement("condInitInner")]
         public string CondInitInnerText
         {
-            get => CondInitInner.HasValue ? XmlConvert.ToString(CondInitInner.Value) : null;
+            get => CondInitInner?.ToString(CultureInfo.InvariantCulture);
             set => CondInitInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
@@ -51,7 +52,7 @@ namespace Witsml.Data
         [XmlElement("condInitOuter")]
         public string CondInitOuterText
         {
-            get => CondInitOuter.HasValue ? XmlConvert.ToString(CondInitOuter.Value) : null;
+            get => CondInitOuter?.ToString(CultureInfo.InvariantCulture);
             set => CondInitOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
@@ -78,7 +79,7 @@ namespace Witsml.Data
         [XmlElement("condFinalInner")]
         public string CondFinalInnerText
         {
-            get => CondFinalInner.HasValue ? XmlConvert.ToString(CondFinalInner.Value) : null;
+            get => CondFinalInner?.ToString(CultureInfo.InvariantCulture);
             set => CondFinalInner = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 
@@ -87,7 +88,7 @@ namespace Witsml.Data
         [XmlElement("condFinalOuter")]
         public string CondFinalOuterText
         {
-            get => CondFinalOuter.HasValue ? XmlConvert.ToString(CondFinalOuter.Value) : null;
+            get => CondFinalOuter?.ToString(CultureInfo.InvariantCulture);
             set => CondFinalOuter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 

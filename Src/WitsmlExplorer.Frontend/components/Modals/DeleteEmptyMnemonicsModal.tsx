@@ -1,37 +1,43 @@
-import Wellbore from "../../models/wellbore";
-import Well from "../../models/well";
-import JobService, { JobType } from "../../services/jobService";
+import { Checkbox, Icon, Tooltip, Typography } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
-import OperationType from "../../contexts/operationType";
+import { DateTimeField } from "components/Modals/DateTimeField";
+import ModalDialog from "components/Modals/ModalDialog";
+import { ReportModal } from "components/Modals/ReportModal";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { DeleteEmptyMnemonicsJob } from "models/jobs/deleteEmptyMnemonicsJob";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 import { useContext, useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import { DeleteEmptyMnemonicsJob } from "../../models/jobs/deleteEmptyMnemonicsJob";
-import ModalDialog from "./ModalDialog";
-import OperationContext from "../../contexts/operationContext";
-import { DateTimeField } from "./DateTimeField";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
 export interface DeleteEmptyMnemonicsModalProps {
   wells?: Well[];
   wellbores?: Wellbore[];
-  dispatchOperation: (action: HideModalAction) => void;
+  logs?: LogObject[];
 }
 
 const DeleteEmptyMnemonicsModal = (
   props: DeleteEmptyMnemonicsModalProps
 ): React.ReactElement => {
-  const { wells, wellbores, dispatchOperation } = props;
+  const { wells, wellbores, logs } = props;
   const {
-    operationState: { timeZone }
+    dispatchOperation,
+    operationState: { timeZone, colors }
   } = useContext(OperationContext);
   const [nullDepthValue, setNullDepthValue] = useState<number>(-999.25);
   const [nullTimeValue, setNullTimeValue] = useState<string>(
     "1900-01-01T00:00:00.000Z"
   );
+  const [deleteNullIndex, setDeleteNullIndex] = useState<boolean>(false);
   const [nullTimeValueValid, setNullTimeValueValid] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit = async (nullDepthValue: number, nullTimeValue: string) => {
+    dispatchOperation({ type: OperationType.HideModal });
     setIsLoading(true);
 
     const job: DeleteEmptyMnemonicsJob = {
@@ -46,15 +52,22 @@ const DeleteEmptyMnemonicsModal = (
           wellName: x.wellName
         };
       }),
+      logs: logs?.map((log) => toObjectReference(log)),
       nullDepthValue: nullDepthValue,
-      nullTimeValue: nullTimeValue
+      nullTimeValue: nullTimeValue,
+      deleteNullIndex: deleteNullIndex
     };
 
-    await JobService.orderJob(JobType.DeleteEmptyMnemonics, job);
+    const jobId = await JobService.orderJob(JobType.DeleteEmptyMnemonics, job);
 
     setIsLoading(false);
 
-    dispatchOperation({ type: OperationType.HideModal });
+    if (jobId) {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ReportModal jobId={jobId} />
+      });
+    }
   };
 
   return (
@@ -80,6 +93,22 @@ const DeleteEmptyMnemonicsModal = (
               value={nullDepthValue}
               onChange={(e: any) => setNullDepthValue(+e.target.value)}
             />
+            <CheckboxLayout>
+              <Checkbox
+                checked={deleteNullIndex}
+                onChange={() => setDeleteNullIndex(!deleteNullIndex)}
+              />
+              <Typography>
+                Delete mnemonics with missing minIndex and maxIndex
+              </Typography>
+              <Tooltip title="This will also delete mnemonics where the minIndex and maxIndex in LogCurveInfo are not returned from the server. These properties normally contains the null value.">
+                <Icon
+                  name="infoCircle"
+                  color={colors.interactive.primaryResting}
+                  size={18}
+                />
+              </Tooltip>
+            </CheckboxLayout>
           </ContentLayout>
         }
         confirmDisabled={!nullTimeValueValid}
@@ -94,6 +123,13 @@ const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+`;
+
+const CheckboxLayout = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: center;
 `;
 
 export default DeleteEmptyMnemonicsModal;

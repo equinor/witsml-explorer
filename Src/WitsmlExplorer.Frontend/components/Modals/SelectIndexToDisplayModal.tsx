@@ -1,20 +1,20 @@
-import React, { useContext, useState } from "react";
-import { createSearchParams, useNavigate } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
-import { RouterLogType } from "../../routes/routerConstants";
-import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
-} from "../Constants";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import ModalDialog from "./ModalDialog";
-import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
+} from "components/Constants";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
+import React, { useContext, useState } from "react";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
 
 export interface SelectIndexToDisplayModalProps {
   log: LogObject;

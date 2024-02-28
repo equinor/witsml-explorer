@@ -1,19 +1,19 @@
-import { useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import { FilterContext, VisibilityStatus } from "../../contexts/filter";
-import { useGetCapObjects } from "../../hooks/query/useGetCapObjects";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import EntityType from "../../models/entityType";
-import { ObjectType, pluralizeObjectType } from "../../models/objectType";
-import { ItemNotFound } from "../../routes/ItemNotFound";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import { FilterContext, VisibilityStatus } from "contexts/filter";
+import { useGetCapObjects } from "hooks/query/useGetCapObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import EntityType from "models/entityType";
+import { ObjectType, pluralizeObjectType } from "models/objectType";
+import { useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 interface ObjectTypeRow extends ContentTableRow {
   uid: string;

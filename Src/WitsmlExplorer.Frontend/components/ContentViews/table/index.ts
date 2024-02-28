@@ -1,2 +1,2 @@
-export * from "./ContentTable";
-export * from "./tableParts";
+export * from "components/ContentViews/table/ContentTable";
+export * from "components/ContentViews/table/tableParts";

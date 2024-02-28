@@ -5,17 +5,18 @@ import {
   TextField,
   Typography
 } from "@equinor/eds-core-react";
+import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
+import { validText } from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { Server } from "models/server";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { Server } from "../../models/server";
 import AuthorizationService, {
-  BasicServerCredentials
-} from "../../services/authorizationService";
-import { Colors } from "../../styles/Colors";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
-import { validText } from "./ModalParts";
+  BasicServerCredentials,
+  ConnectionInformation
+} from "services/authorizationService";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
 
 export interface UserCredentialsModalProps {
   server: Server;
@@ -133,7 +134,22 @@ const UserCredentialsModal = (
                 }}
               />
               <Button
-                onClick={() => props.onConnectionVerified(selectedUsername)}
+                onClick={async () => {
+                  try {
+                    const connectionInfo: ConnectionInformation = {
+                      serverUrl: server.url,
+                      userName: selectedUsername
+                    };
+                    await AuthorizationService.verifyuserisloggedin(
+                      connectionInfo
+                    );
+                    props.onConnectionVerified(selectedUsername);
+                  } catch {
+                    setErrorMessage(
+                      "Not able to authenticate to WITSML server with given credentials"
+                    );
+                  }
+                }}
               >
                 Switch user
               </Button>

@@ -1,17 +1,17 @@
 ﻿import { Accordion, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@material-ui/core";
 import { CloudUpload } from "@material-ui/icons";
+import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
+import ModalDialog from "components/Modals/ModalDialog";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import ImportLogDataJob from "models/jobs/importLogDataJob";
+import ObjectReference from "models/jobs/objectReference";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import React, { useCallback, useContext, useState } from "react";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import ImportLogDataJob from "../../models/jobs/importLogDataJob";
-import ObjectReference from "../../models/jobs/objectReference";
-import LogObject from "../../models/logObject";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import JobService, { JobType } from "../../services/jobService";
-import { StyledAccordionHeader } from "./LogComparisonModal";
-import ModalDialog from "./ModalDialog";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;

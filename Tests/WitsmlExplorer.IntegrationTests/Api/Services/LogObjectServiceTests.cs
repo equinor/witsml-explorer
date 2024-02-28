@@ -35,7 +35,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
 
             var log = await _logObjectService.GetLog(wellUid, wellboreUid, logUid);
 
-            var logData = await _logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics, true, log.StartIndex, log.EndIndex);
+            var logData = await _logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics, true, log.StartIndex, log.EndIndex, false);
             _output.WriteLine($"Start: {logData.StartIndex}\tEnd: {logData.EndIndex}\tItems: {logData.Data.Count()}");
         }
 
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Services
             var logUid = "5fe185a1-dae3-478d-84e2-b44af1559dae";
             var mnemonics = new List<string> { "Depth", "BIT_RPM_AVG", "FLOWIN", "FLOWOUT", "HKLD_AVG" };
             var log = await _logObjectService.GetLog(wellUid, wellboreUid, logUid);
-            var logData = await _logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics, true, log.StartIndex, log.EndIndex);
+            var logData = await _logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics, true, log.StartIndex, log.EndIndex, false);
             _output.WriteLine($"Start: {logData.StartIndex}\tEnd: {logData.EndIndex}\tItems: {logData.Data.Count()}");
         }
     }

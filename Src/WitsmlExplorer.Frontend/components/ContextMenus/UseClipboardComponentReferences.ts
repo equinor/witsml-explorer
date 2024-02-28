@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { ComponentType } from "../../models/componentType";
-import ComponentReferences from "../../models/jobs/componentReferences";
+import { ComponentType } from "models/componentType";
+import ComponentReferences from "models/jobs/componentReferences";
 
 const useClipboardComponentReferences: () => ComponentReferences | null =
   () => {

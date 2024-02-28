@@ -1,4 +1,4 @@
-import LogCurveInfo from "../../models/logCurveInfo";
+import LogCurveInfo from "models/logCurveInfo";
 
 export interface Indexes {
   mnemonic: string;

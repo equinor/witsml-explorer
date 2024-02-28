@@ -1,7 +1,7 @@
 import { Row, Table } from "@tanstack/react-table";
 import { VirtualItem } from "@tanstack/react-virtual";
+import { ContentType } from "components/ContentViews/table";
 import React, { useEffect } from "react";
-import { ContentType } from "./tableParts";
 
 export const selectId = "select";
 export const expanderId = "expander";
@@ -15,8 +15,8 @@ export const constantTableOptions = {
   enableMultiRowSelection: true,
   enableSorting: true,
   enableSortingRemoval: true,
-  enableColumnFilters: false,
-  enableFilters: false,
+  enableColumnFilters: true,
+  enableFilters: true,
   enableGlobalFilter: false,
   enableGrouping: false,
   enableMultiRemove: false,
@@ -79,7 +79,7 @@ export const toggleRow = (
     const toIndex = Math.max(sortedPreviousIndex, sortedCurrentIndex);
     const newSelections: { [index: string]: boolean } = {};
     for (let i = fromIndex; i <= toIndex; i++) {
-      newSelections[sortedRows[i].index] = true;
+      newSelections[sortedRows[i].id ?? sortedRows[i].index] = true;
     }
     table.setRowSelection({
       ...newSelections,
@@ -114,12 +114,12 @@ export function calculateRowHeight(
   return cellHeight;
 }
 
-export const useInitActiveCurveFiltering = (table: Table<any>) => {
+export const useInitFilterFns = (table: Table<any>) => {
   useEffect(() => {
     table
       .getVisibleLeafColumns()
-      .find((col) => col.columnDef.id == activeId)
-      ?.setFilterValue(false);
+      .filter((col) => col.columnDef.filterFn != null)
+      ?.forEach((col) => col.setFilterValue(null));
   }, [table]);
 };
 

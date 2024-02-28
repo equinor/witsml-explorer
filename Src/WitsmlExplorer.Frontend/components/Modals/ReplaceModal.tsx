@@ -1,6 +1,7 @@
-import { DispatchOperation } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import ConfirmModal from "./ConfirmModal";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import { DispatchOperation } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { ComponentType } from "models/componentType";
 
 export function displayReplaceModal(
   existingObjects: any[],
@@ -15,11 +16,15 @@ export function displayReplaceModal(
     objectsToCopy.length > 1
       ? `${existingObjects.length} out of the ${objectsToCopy.length} ${toCopyType}s to copy already`
       : `The ${toCopyType} you are trying to copy already`;
+  const indexCurveInfo =
+    toCopyType === ComponentType.Mnemonic
+      ? " Index curves will not be deleted."
+      : "";
   const content =
     existingObjects.length > 1 ? (
       <span>
         {contentIntro} exist on the target {targetType}. Do you want to delete
-        and replace them?
+        and replace them?{indexCurveInfo}
         <br />
         Existing {toCopyType}s:
         {existingObjects.map((object) => printObject(object))}
@@ -27,7 +32,7 @@ export function displayReplaceModal(
     ) : (
       <span>
         {contentIntro} exists on the target {targetType}. Do you want to delete
-        and replace it?
+        and replace it?{indexCurveInfo}
         <br />
         Existing {toCopyType}:{printObject(existingObjects[0])}
       </span>

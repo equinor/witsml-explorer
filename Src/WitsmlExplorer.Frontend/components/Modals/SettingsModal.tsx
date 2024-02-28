@@ -1,23 +1,22 @@
 import { Button, Radio, TextField } from "@equinor/eds-core-react";
 import { Typography } from "@material-ui/core";
-import React, { CSSProperties, useContext, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
+import { getOffsetFromTimeZone } from "components/DateFormatter";
+import ModalDialog from "components/Modals/ModalDialog";
+import { StyledNativeSelect } from "components/Select";
+import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,
   DecimalPreference,
   TimeZone,
   UserTheme
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import {
-  getAccountInfo,
-  msalEnabled,
-  signOut
-} from "../../msal/MsalAuthProvider";
-import AuthorizationService from "../../services/authorizationService";
-import { dark, light } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { getAccountInfo, msalEnabled, signOut } from "msal/MsalAuthProvider";
+import React, { CSSProperties, useContext, useState } from "react";
+import AuthorizationService from "services/authorizationService";
+import styled from "styled-components";
+import { dark, light } from "styles/Colors";
+import Icon from "styles/Icons";
 import {
   STORAGE_DATETIMEFORMAT_KEY,
   STORAGE_DECIMAL_KEY,
@@ -25,10 +24,7 @@ import {
   STORAGE_THEME_KEY,
   STORAGE_TIMEZONE_KEY,
   setLocalStorageItem
-} from "../../tools/localStorageHelpers";
-import { getOffsetFromTimeZone } from "../DateFormatter";
-import { StyledNativeSelect } from "../Select";
-import ModalDialog from "./ModalDialog";
+} from "tools/localStorageHelpers";
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,

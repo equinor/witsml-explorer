@@ -1,27 +1,27 @@
-import React, { useContext } from "react";
-import { useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetComponents } from "../../hooks/query/useGetComponents";
-import { useGetObject } from "../../hooks/query/useGetObject";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { ComponentType } from "../../models/componentType";
-import { measureToString } from "../../models/measure";
-import { ObjectType } from "../../models/objectType";
-import WbGeometrySection from "../../models/wbGeometrySection";
-import { ItemNotFound } from "../../routes/ItemNotFound";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import WbGeometrySectionContextMenu, {
-  WbGeometrySectionContextMenuProps
-} from "../ContextMenus/WbGeometrySectionContextMenu";
-import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import WbGeometrySectionContextMenu, {
+  WbGeometrySectionContextMenuProps
+} from "components/ContextMenus/WbGeometrySectionContextMenu";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ComponentType } from "models/componentType";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import WbGeometrySection from "models/wbGeometrySection";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 interface WbGeometrySectionRow extends ContentTableRow {
   wbGeometrySection: WbGeometrySection;

@@ -19,5 +19,13 @@ namespace WitsmlExplorer.Api.Models
         public List<AxisDefinition> AxisDefinitions { get; init; }
         public string CurveDescription { get; init; }
         public string TypeLogData { get; init; }
+        public string TraceState { get; init; }
+        public string NullValue { get; init; }
+    }
+
+    public class LogCurveInfoBatchItem
+    {
+        public string LogUid { get; init; }
+        public string LogCurveInfoUid { get; init; }
     }
 }

@@ -1,21 +1,24 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import FormationMarker from "../../models/formationMarker";
-import { ObjectType } from "../../models/objectType";
-import { colors } from "../../styles/Colors";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
+import {
+  ObjectContextMenuProps,
+  ObjectMenuItems
+} from "components/ContextMenus/ObjectMenuItems";
 import FormationMarkerPropertiesModal, {
   FormationMarkerPropertiesModalProps
-} from "../Modals/FormationMarkerPropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon } from "./ContextMenuUtils";
-import { ObjectContextMenuProps, ObjectMenuItems } from "./ObjectMenuItems";
+} from "components/Modals/FormationMarkerPropertiesModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import FormationMarker from "models/formationMarker";
+import { ObjectType } from "models/objectType";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 
 const FormationMarkerContextMenu = (
   props: ObjectContextMenuProps
@@ -28,6 +31,7 @@ const FormationMarkerContextMenu = (
   const { servers } = useGetServers();
 
   const onClickModify = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const modifyFormationMarkerProps: FormationMarkerPropertiesModalProps = {
       formationMarker: checkedObjects[0] as FormationMarker
     };
@@ -37,7 +41,6 @@ const FormationMarkerContextMenu = (
         <FormationMarkerPropertiesModal {...modifyFormationMarkerProps} />
       )
     });
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const extraMenuItems = (): React.ReactElement[] => {

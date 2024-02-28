@@ -1,7 +1,7 @@
-import { ErrorDetails } from "../models/errorDetails";
-import { Server } from "../models/server";
-import Wellbore from "../models/wellbore";
-import { ApiClient, throwError } from "./apiClient";
+import { ErrorDetails } from "models/errorDetails";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
+import { ApiClient, throwError } from "services/apiClient";
 
 export default class WellboreService {
   public static async getWellbores(

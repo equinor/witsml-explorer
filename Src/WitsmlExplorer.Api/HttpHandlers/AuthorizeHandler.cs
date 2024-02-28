@@ -1,5 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.Configuration;
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.HttpHandlers
@@ -57,6 +60,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public static IResult VerifyUserIsLoggedIn(ConnectionInformation connectionInfo, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
+        {
+            EssentialHeaders eh = new(httpContext?.Request);
+            var creds = credentialsService.GetCredentials(eh, connectionInfo.ServerUrl.ToString(), connectionInfo.UserName);
+            if (creds == null)
+            {
+                return TypedResults.Unauthorized();
+            }
+            return TypedResults.Ok();
         }
     }
 }

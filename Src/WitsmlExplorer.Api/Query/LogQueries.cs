@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Extensions;
@@ -82,7 +83,7 @@ namespace WitsmlExplorer.Api.Query
                 LogCurveInfo = new List<WitsmlLogCurveInfo>(),
                 LogData = new WitsmlLogData
                 {
-                    MnemonicList = string.Join(",", mnemonics)
+                    MnemonicList = string.Join(CommonConstants.DataSeparator, mnemonics)
                 }
             };
 

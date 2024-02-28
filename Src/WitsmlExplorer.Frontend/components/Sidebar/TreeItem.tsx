@@ -3,13 +3,13 @@ import { Tooltip } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import { TreeItem } from "@material-ui/lab";
 import { TreeItemProps } from "@material-ui/lab/TreeItem";
+import OperationContext from "contexts/operationContext";
+import { useSidebar } from "contexts/sidebarContext";
+import { SidebarActionType } from "contexts/sidebarReducer";
 import React, { useContext } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import { useSidebar } from "../../contexts/sidebarContext";
-import { SidebarActionType } from "../../contexts/sidebarReducer";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;

@@ -1,5 +1,5 @@
 import { Fragment, ReactElement, useContext } from "react";
-import OperationContext from "../../contexts/operationContext";
+import OperationContext from "contexts/operationContext";
 
 const ModalPresenter = (): ReactElement => {
   const { operationState } = useContext(OperationContext);

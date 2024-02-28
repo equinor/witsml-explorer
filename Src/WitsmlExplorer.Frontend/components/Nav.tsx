@@ -1,5 +1,19 @@
 import { Breadcrumbs } from "@equinor/eds-core-react";
+import TopRightCornerMenu from "components/TopRightCornerMenu";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useGetWell } from "hooks/query/useGetWell";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { capitalize } from "lodash";
+import {
+  ObjectType,
+  ObjectTypeToModel,
+  pluralizeObjectType
+} from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 import { useContext, useEffect, useState } from "react";
 import {
   NavLink,
@@ -9,23 +23,9 @@ import {
   useParams
 } from "react-router-dom";
 import styled from "styled-components";
+import { colors } from "styles/Colors";
+import Icon from "styles/Icons";
 import { v4 as uuid } from "uuid";
-import { useConnectedServer } from "../contexts/connectedServerContext";
-import OperationContext from "../contexts/operationContext";
-import { useGetObject } from "../hooks/query/useGetObject";
-import { useGetWell } from "../hooks/query/useGetWell";
-import { useGetWellbore } from "../hooks/query/useGetWellbore";
-import {
-  ObjectType,
-  ObjectTypeToModel,
-  pluralizeObjectType
-} from "../models/objectType";
-import { Server } from "../models/server";
-import Well from "../models/well";
-import Wellbore from "../models/wellbore";
-import { colors } from "../styles/Colors";
-import Icon from "../styles/Icons";
-import TopRightCornerMenu from "./TopRightCornerMenu";
 
 export default function Nav() {
   const {

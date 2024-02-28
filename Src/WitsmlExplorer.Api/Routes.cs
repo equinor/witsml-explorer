@@ -38,6 +38,9 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}/{objectUid}", ObjectHandler.GetObjectIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
 
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedCurves, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedCurves, useOAuth2);
+
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);
 
@@ -94,6 +97,7 @@ namespace WitsmlExplorer.Api
 
             app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
             app.MapGet("/credentials/deauthorize", AuthorizeHandler.Deauthorize, useOAuth2);
+            app.MapPost("/credentials/verifyuserisloggedin", AuthorizeHandler.VerifyUserIsLoggedIn, useOAuth2);
             if (useOAuth2)
             {
                 app.MapGet("/credentials/token", AuthorizeHandler.GenerateToken, useOAuth2);

@@ -52,7 +52,7 @@ public class CreateRigWorkerTests
         CreateRigJob job = CreateJobTemplate(uid: null);
         InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
         Assert.Equal("Uid cannot be empty", exception.Message);
-        job = CreateJobTemplate(uid: "");
+        job = CreateJobTemplate(uid: string.Empty);
         exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
         Assert.Equal("Uid cannot be empty", exception.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlRigs>()), Times.Never);
@@ -64,7 +64,7 @@ public class CreateRigWorkerTests
         CreateRigJob job = CreateJobTemplate(name: null);
         InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
         Assert.Equal("Name cannot be empty", exception.Message);
-        job = CreateJobTemplate(name: "");
+        job = CreateJobTemplate(name: string.Empty);
         exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
         Assert.Equal("Name cannot be empty", exception.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlRigs>()), Times.Never);

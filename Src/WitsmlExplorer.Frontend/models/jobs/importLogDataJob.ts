@@ -1,4 +1,4 @@
-import ObjectReference from "./objectReference";
+import ObjectReference from "models/jobs/objectReference";
 
 export default interface ImportLogDataJob {
   targetLog: ObjectReference;

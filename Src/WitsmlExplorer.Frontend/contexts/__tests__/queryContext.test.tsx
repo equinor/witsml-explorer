@@ -1,13 +1,17 @@
-import { v4 as uuid } from "uuid";
 import {
   QueryTemplatePreset,
   ReturnElements,
   StoreFunction,
   TemplateObjects
-} from "../../components/ContentViews/QueryViewUtils";
-import { QueryActionType, QueryState, queryReducer } from "../queryContext";
+} from "components/ContentViews/QueryViewUtils";
+import {
+  QueryActionType,
+  QueryState,
+  queryReducer
+} from "contexts/queryContext";
+import { v4 as uuid } from "uuid";
 
-jest.mock("../../templates/templates", () => ({
+jest.mock("templates/templates", () => ({
   templates: {
     log: LOG_QUERY
   }

@@ -1,8 +1,10 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
+using System.ServiceModel.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,10 +30,20 @@ namespace Witsml
             InnerHandler = handler;
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             request.Headers.Add("user-agent", "witsml-explorer");
-            return base.SendAsync(request, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken);
+
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.InternalServerError:
+                    throw new WitsmlRemoteServerRequestCrashedException("WITSML remote request failed on the server.");
+                case HttpStatusCode.Unauthorized:
+                case HttpStatusCode.Forbidden:
+                    throw new MessageSecurityException("Not able to authenticate to WITSML server with given credentials");
+            }
+            return response;
         }
     }
 }

@@ -1,18 +1,18 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { mockEdsCoreReact } from "../../../__testUtils__/mocks/EDSMocks";
+import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
 import {
   getAxisDefinition,
   getLogCurveInfo,
   getLogObject
-} from "../../../__testUtils__/testUtils";
-import JobService from "../../../services/jobService";
+} from "__testUtils__/testUtils";
 import LogCurveInfoPropertiesModal, {
   LogCurveInfoPropertiesModalProps
-} from "../LogCurveInfoPropertiesModal";
+} from "components/Modals/LogCurveInfoPropertiesModal";
+import JobService from "services/jobService";
 
-jest.mock("../../../services/jobService");
+jest.mock("services/jobService");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
 const simpleProps: LogCurveInfoPropertiesModalProps = {

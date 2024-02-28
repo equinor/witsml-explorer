@@ -1,7 +1,7 @@
-import Measure from "./measure";
-import StnTrajCorUsed from "./stnTrajCorUsed";
-import StnTrajValid from "./stnTrajValid";
-import TrajRawData from "./trajRawData";
+import Measure from "models/measure";
+import StnTrajCorUsed from "models/stnTrajCorUsed";
+import StnTrajValid from "models/stnTrajValid";
+import TrajRawData from "models/trajRawData";
 
 export default interface TrajectoryStation {
   uid: string;

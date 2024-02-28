@@ -31,7 +31,7 @@ public class WitsmlClientOptions
     /// <summary>
     /// The timeout interval to be used when communicating with the WITSML server. Default is 00:01:00 minutes
     /// </summary>
-    public TimeSpan RequestTimeOut { get; set; } = TimeSpan.FromMinutes(1);
+    public TimeSpan RequestTimeOut { get; set; } = TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
 
     /// <summary>
     /// Enable logging all queries to a file (queries.log) in the current directory

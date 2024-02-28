@@ -1,20 +1,20 @@
 import { Autocomplete } from "@equinor/eds-core-react";
 import { InputAdornment, TextField } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
-import OperationContext from "../../contexts/operationContext";
+import formatDateString from "components/DateFormatter";
+import { DateTimeField } from "components/Modals/DateTimeField";
+import ModalDialog from "components/Modals/ModalDialog";
+import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
+import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,
   HideModalAction
-} from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import BhaRun from "../../models/bhaRun";
-import { itemStateTypes } from "../../models/itemStateTypes";
-import { ObjectType } from "../../models/objectType";
-import JobService, { JobType } from "../../services/jobService";
-import formatDateString from "../DateFormatter";
-import { DateTimeField } from "./DateTimeField";
-import ModalDialog from "./ModalDialog";
-import { PropertiesModalMode, validText } from "./ModalParts";
+} from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import BhaRun from "models/bhaRun";
+import { itemStateTypes } from "models/itemStateTypes";
+import { ObjectType } from "models/objectType";
+import React, { useContext, useEffect, useState } from "react";
+import JobService, { JobType } from "services/jobService";
 
 const typesOfBhaStatus = ["final", "progress", "plan", "unknown"];
 

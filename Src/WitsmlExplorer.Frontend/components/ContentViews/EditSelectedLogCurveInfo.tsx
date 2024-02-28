@@ -7,8 +7,12 @@ import {
   TextField,
   Typography
 } from "@equinor/eds-core-react";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { ComponentType } from "models/componentType";
 import {
   CSSProperties,
   Dispatch,
@@ -23,14 +27,10 @@ import {
   useParams,
   useSearchParams
 } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
 import styled from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import { useGetComponents } from "../../hooks/query/useGetComponents";
-import { ComponentType } from "../../models/componentType";
-import { RouterLogType } from "../../routes/routerConstants";
-import { Colors, colors, dark } from "../../styles/Colors";
-import { formatIndexValue } from "../../tools/IndexHelpers";
+import { Colors, colors, dark } from "styles/Colors";
+import { formatIndexValue } from "tools/IndexHelpers";
 
 interface EditSelectedLogCurveInfoProps {
   disabled?: boolean;

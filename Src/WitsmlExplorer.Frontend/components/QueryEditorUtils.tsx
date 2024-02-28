@@ -1,6 +1,6 @@
 import { Ace } from "ace-builds";
-import { templates } from "../templates/templates";
-import { TemplateObjects } from "./ContentViews/QueryViewUtils";
+import { TemplateObjects } from "components/ContentViews/QueryViewUtils";
+import { templates } from "templates/templates";
 
 /**
  * Custom commands for QueryEditor.

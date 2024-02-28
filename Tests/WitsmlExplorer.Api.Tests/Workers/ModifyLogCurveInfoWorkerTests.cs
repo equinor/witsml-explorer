@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async void MnemonicEmpty_ModifyLogCurveInfo_ShouldThrowException()
         {
-            ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Mnemonic = "" } };
+            ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Mnemonic = string.Empty } };
 
             Task ExecuteWorker()
             {
@@ -106,7 +106,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             var originalUid = "Mnemonic1";
             var expectedMnemonic = "NewMnemonic";
-            var expectedUnit = "m";
+            var expectedUnit = CommonConstants.Unit.Meter;
 
             ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Uid = originalUid, Mnemonic = expectedMnemonic, Unit = expectedUnit } };
 
@@ -144,14 +144,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         UidWellbore = WellboreUid,
                         Uid = LogUid,
                         IndexCurve = new WitsmlIndexCurve() { Value = "Depth" },
-                        StartIndex = new WitsmlIndex(new DepthIndex(81, "m")),
-                        EndIndex = new WitsmlIndex(new DepthIndex(88, "m")),
+                        StartIndex = new WitsmlIndex(new DepthIndex(81, CommonConstants.Unit.Meter)),
+                        EndIndex = new WitsmlIndex(new DepthIndex(88, CommonConstants.Unit.Meter)),
                         IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
                         LogCurveInfo = new List<WitsmlLogCurveInfo>
                         {
-                            new() { Uid = "Depth", Mnemonic = "Depth", Unit = "m" },
-                            new() { Uid = "Mnemonic1", Mnemonic = "Mnemonic1", Unit = "m" },
-                            new() { Uid = "Mnemonic2", Mnemonic = "Mnemonic2", Unit = "ft" }
+                            new() { Uid = "Depth", Mnemonic = "Depth", Unit = CommonConstants.Unit.Meter },
+                            new() { Uid = "Mnemonic1", Mnemonic = "Mnemonic1", Unit = CommonConstants.Unit.Meter },
+                            new() { Uid = "Mnemonic2", Mnemonic = "Mnemonic2", Unit = CommonConstants.Unit.Feet }
                         }
                     }
                 }

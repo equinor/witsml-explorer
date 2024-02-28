@@ -21,6 +21,8 @@ namespace WitsmlExplorer.Api.Models
         public string Description { get; init; }
         [JsonPropertyName("roles")]
         public IList<string> Roles { get; init; }
+        [JsonPropertyName("credentialIds")]
+        public IList<string> CredentialIds { get; init; }
         [JsonPropertyName("depthLogDecimals")]
         public int DepthLogDecimals { get; init; }
 

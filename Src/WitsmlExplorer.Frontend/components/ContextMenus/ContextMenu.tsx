@@ -1,10 +1,10 @@
 import { Menu } from "@material-ui/core";
+import OperationContext from "contexts/operationContext";
+import { MousePosition } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
 import React, { ReactElement, useContext } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import { MousePosition } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { Colors } from "../../styles/Colors";
+import { Colors } from "styles/Colors";
 
 interface ContextMenuProps {
   menuItems: ReactElement[];

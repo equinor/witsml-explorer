@@ -1,7 +1,7 @@
 import { Icon } from "@equinor/eds-core-react";
+import { getTag } from "components/QueryEditorUtils";
 import { createRoot } from "react-dom/client";
 import styled from "styled-components";
-import { getTag } from "./QueryEditorUtils";
 
 /**
  * Handles the click event for opening a tag in the QueryEditor.
