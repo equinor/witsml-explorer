@@ -32,21 +32,28 @@ const updatePartialObjects = <T extends ObjectType>(
   queryClient: QueryClient,
   server: Server,
   objectType: ObjectType,
+  wellUid: string,
+  wellboreUid: string,
+  objectUid: string,
   object: ObjectTypeToModel[T]
 ) => {
   const objectsQueryKey = getObjectsQueryKey(
     server?.url,
-    object.wellUid,
-    object.wellboreUid,
+    wellUid,
+    wellboreUid,
     objectType
   );
   const existingObjects =
     queryClient.getQueryData<ObjectTypeToModel[T][]>(objectsQueryKey);
   if (existingObjects) {
     const existingObjectIndex = existingObjects.findIndex(
-      (o) => o.uid === object.uid
+      (o) => o.uid === objectUid
     );
-    existingObjects[existingObjectIndex] = object;
+    if (object) {
+      existingObjects[existingObjectIndex] = object;
+    } else {
+      existingObjects.splice(existingObjectIndex, 1);
+    }
     queryClient.setQueryData<ObjectTypeToModel[T][]>(
       objectsQueryKey,
       existingObjects
@@ -79,7 +86,15 @@ export const objectQuery = <T extends ObjectType>(
       null,
       server
     );
-    updatePartialObjects(queryClient, server, objectType, object);
+    updatePartialObjects(
+      queryClient,
+      server,
+      objectType,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      object
+    );
     return object;
   },
   ...options,

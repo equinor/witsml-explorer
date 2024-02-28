@@ -55,7 +55,3 @@ export function useExpandSidebarNodes(
     });
   }, [wellUid, wellboreUid, objectType, logType]);
 }
-
-// TODO: Do we always want to expand all the nodes when this is used?
-// What about when we navigate to a wellbore, then manually close the well, and then continue to the objects, and we have to close it again.
-// Should we only expand the nodes on deep-linking and if the parent is opened?

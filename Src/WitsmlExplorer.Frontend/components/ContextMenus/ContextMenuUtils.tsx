@@ -173,9 +173,6 @@ export const onClickRefreshObject = async (
   objectUid: string
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  // TODO: For now, we are refreshing the entire list. See comment for refreshObjectQuery in queryRefreshHelpers.tsx.
-  // If we find a solution, we should use refreshObjectQuery with the objectUid instead.
-  // - Create own issue, remember to include TODO in RefreshHandler.tsx
   refreshObjectsQuery(queryClient, serverUrl, wellUid, wellboreUid, objectType);
 };
 

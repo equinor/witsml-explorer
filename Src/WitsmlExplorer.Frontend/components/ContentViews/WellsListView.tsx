@@ -95,15 +95,10 @@ export default function WellsListView() {
   };
 
   if (isFetching) {
-    // TODO: For this and the other list views:
-    // Do we really want to show a spinner instead of everything else? Would it be better to show the table with the "old" data until it is updated, and show the loading state elsewhere?
-    // - Create own issue, needs grooming!
     return (
       <ProgressSpinner message="Fetching wells. This may take some time." />
     );
   }
-
-  // TODO: We need to fix the errors if you try to navigate to a server that does not exist.
 
   return wells?.length === 0 ? (
     <Typography style={{ padding: "1rem" }}>No wells found.</Typography>
