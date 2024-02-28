@@ -145,6 +145,15 @@ export const refreshObjectsQuery = (
   });
   queryClient.invalidateQueries({
     queryKey: [
+      QUERY_KEY_OBJECT,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase(),
+      wellboreUid.toLowerCase(),
+      objectType.toLowerCase()
+    ]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [
       QUERY_KEY_COMPONENTS,
       serverUrl.toLowerCase(),
       wellUid.toLowerCase(),
