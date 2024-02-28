@@ -55,13 +55,11 @@ const SelectIndexToDisplayModal = (
   function getToPathname() {
     return `/servers/${encodeURIComponent(
       connectedServer?.url
-    )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-      ObjectType.Log
-    }/logtypes/${
-      log.indexType === WITSML_INDEX_TYPE_DATE_TIME
+    )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${ObjectType.Log
+      }/logtypes/${log.indexType === WITSML_INDEX_TYPE_DATE_TIME
         ? RouterLogType.TIME
         : RouterLogType.DEPTH
-    }/objects/${log.uid}/curvevalues`;
+      }/objects/${log.uid}/curvevalues`;
   }
 
   function getMnemonics() {
@@ -72,8 +70,6 @@ const SelectIndexToDisplayModal = (
 
   const onSubmit = async () => {
     dispatchOperation({ type: OperationType.HideModal });
-    // TODO: JSON.stringify adds a lot of meta around the mnemonics. Are there better options?
-    // - Create own issue to optimize this.
 
     const searchParams = isUrlTooLong
       ? createLogCurveValuesSearchParams(startIndex, endIndex)
@@ -153,7 +149,7 @@ const SelectIndexToDisplayModal = (
 
 export default SelectIndexToDisplayModal;
 
-const StyledBanner = styled(Banner)<{ colors: Colors }>`
+const StyledBanner = styled(Banner) <{ colors: Colors }>`
   background-color: ${(props) => props.colors.ui.backgroundDefault};
   span {
     background-color: ${(props) => props.colors.ui.backgroundDefault};

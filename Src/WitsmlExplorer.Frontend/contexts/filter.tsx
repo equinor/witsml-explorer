@@ -26,9 +26,6 @@ export enum WellFilterType {
   Well = "Well"
 }
 
-// TODO: Add filtering of wellbores. It should be supported in the search view.
-// Create own issue, remember to include needs grooming. Thomas should attend this grooming?
-
 // Filter by properties already fetched for wells
 export enum WellPropertyFilterType {
   Field = "Field",

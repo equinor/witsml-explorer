@@ -73,11 +73,6 @@ const RefreshHandler = (): React.ReactElement => {
         queryClient,
         refreshAction.serverUrl.toString().toLowerCase()
       );
-      // TODO: See if we can find a way to only re-fetch the well, and add/remove it from the complete list. If we just run the refreshWellQuery it would work, but only if a component is actively using the query.
-      // TODO: Do the same for the wellbores/objects.
-      // - Connected to  TODO: For now, we are refreshing the entire list. See comment for refreshObjectQuery in queryRefreshHelpers.tsx.
-      // If we find a solution, we should use refreshObjectQuery with the objectUid instead.
-      // - Create own issue, connecting both TODOs
     }
   }
 
