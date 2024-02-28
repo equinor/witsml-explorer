@@ -475,30 +475,6 @@ export const CurveValuesView = (): React.ReactElement => {
     });
   };
 
-  const displayDownloadProgress = (dispatchOperation: DispatchOperation) => {
-    const dowloadProgress = (
-      <ConfirmModal
-        heading={"Download of data in progress"}
-        content={
-          <>
-            You can close that window. File will be available in the jobs view
-            when ready.
-          </>
-        }
-        onConfirm={() => {
-          dispatchOperation({ type: OperationType.HideModal });
-        }}
-        confirmText={"OK"}
-        showCancelButton={false}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: dowloadProgress
-    });
-  };
-
   const getLogData = async (startIndex: string, endIndex: string) => {
     const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
     const startIndexIsInclusive = !autoRefresh;

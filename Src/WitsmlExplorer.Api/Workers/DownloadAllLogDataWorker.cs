@@ -42,12 +42,11 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
     public override async Task<(WorkerResult, RefreshAction)> Execute(DownloadAllLogDataJob job)
     {
         Logger.LogInformation("Downloading of all data started. {jobDescription}", job.Description());
-        var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true);        
+        var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true);
         return DownloadAllLogDataResult(job, logData.Data, job.LogReference.Uid);
     }
 
-
-    private (WorkerResult, RefreshAction) DownloadAllLogDataResult(DownloadAllLogDataJob job, ICollection<Dictionary<string, LogDataValue>>  reportItems, string logUid)
+    private (WorkerResult, RefreshAction) DownloadAllLogDataResult(DownloadAllLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, string logUid)
     {
         Logger.LogInformation("Download of all data is done. {jobDescription}", job.Description());
         job.JobInfo.Report = DownloadAllLogDataReport(reportItems, job.LogReference);
@@ -56,14 +55,14 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
     }
 
     private DownloadAllLogDataReport DownloadAllLogDataReport(ICollection<Dictionary<string, LogDataValue>> reportItems, LogObject logReference)
-    {       
+    {
         return new DownloadAllLogDataReport
         {
             Title = $"{logReference.WellboreName} - {logReference.Name}",
             Summary = "You can download the report as csv file",
             LogReference = logReference,
             ReportItems = reportItems,
-            DownloadImmediately= true
+            DownloadImmediately = true
         };
     }
 }
