@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -15,7 +16,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("numCutter")]
         public string NumCutterText
         {
-            get => NumCutter.HasValue ? XmlConvert.ToString(NumCutter.Value) : null;
+            get => NumCutter?.ToString(CultureInfo.InvariantCulture);
             set => NumCutter = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 

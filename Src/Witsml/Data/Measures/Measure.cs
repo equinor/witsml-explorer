@@ -11,8 +11,8 @@ namespace Witsml.Data.Measures
         {
             return new()
             {
-                Uom = "",
-                Value = ""
+                Uom = string.Empty,
+                Value = string.Empty
             };
         }
     }

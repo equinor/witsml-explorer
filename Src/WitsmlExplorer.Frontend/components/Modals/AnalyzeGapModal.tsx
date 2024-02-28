@@ -1,19 +1,19 @@
-import React, { useContext, useState } from "react";
-import LogObject from "../../models/logObject";
-import JobService, { JobType } from "../../services/jobService";
+import { TextField } from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD,
   WITSML_LOG_ORDERTYPE_DECREASING
-} from "../Constants";
-import ModalDialog from "./ModalDialog";
-import { TextField } from "@equinor/eds-core-react";
-import OperationType from "../../contexts/operationType";
-import { ReportModal } from "./ReportModal";
-import OperationContext from "../../contexts/operationContext";
-import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./TrimLogObject/AdjustNumberRangeModal";
-import { formatIndexValue, indexToNumber } from "../../tools/IndexHelpers";
+} from "components/Constants";
+import ModalDialog from "components/Modals/ModalDialog";
+import { ReportModal } from "components/Modals/ReportModal";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import LogObject from "models/logObject";
+import React, { useContext, useState } from "react";
+import JobService, { JobType } from "services/jobService";
+import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
 
 export interface AnalyzeGapModalProps {
   logObject: LogObject;

@@ -1,28 +1,28 @@
-import React, { useContext } from "react";
-import { useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetComponents } from "../../hooks/query/useGetComponents";
-import { useGetObject } from "../../hooks/query/useGetObject";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { ComponentType } from "../../models/componentType";
-import { measureToString } from "../../models/measure";
-import { ObjectType } from "../../models/objectType";
-import TrajectoryStation from "../../models/trajectoryStation";
-import { ItemNotFound } from "../../routes/ItemNotFound";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TrajectoryStationContextMenu, {
-  TrajectoryStationContextMenuProps
-} from "../ContextMenus/TrajectoryStationContextMenu";
-import formatDateString from "../DateFormatter";
-import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import TrajectoryStationContextMenu, {
+  TrajectoryStationContextMenuProps
+} from "components/ContextMenus/TrajectoryStationContextMenu";
+import formatDateString from "components/DateFormatter";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ComponentType } from "models/componentType";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import TrajectoryStation from "models/trajectoryStation";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 export interface TrajectoryStationRow extends ContentTableRow {
   uid: string;

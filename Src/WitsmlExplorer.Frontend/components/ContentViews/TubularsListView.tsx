@@ -1,18 +1,22 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
+import formatDateString from "components/DateFormatter";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ObjectType } from "models/objectType";
+import Tubular from "models/tubular";
 import { MouseEvent, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetObjects } from "../../hooks/query/useGetObjects";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { ObjectType } from "../../models/objectType";
-import Tubular from "../../models/tubular";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import TubularContextMenu from "../ContextMenus/TubularContextMenu";
-import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export default function TubularsListView() {
   const {

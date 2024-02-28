@@ -104,8 +104,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLogData newLogData = newLogDataHeader.LogData;
             IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
             IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
-            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
-            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(CommonConstants.DataSeparator);
             IEnumerable<string> expectedData = logData.Logs.First().LogData.Data.Select(d => d.Data);
             IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
 
@@ -139,8 +139,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLogData newLogData = newLogDataHeader.LogData;
             IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
             IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
-            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
-            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(CommonConstants.DataSeparator);
             IEnumerable<string> expectedDataFirst5Rows = logData.Logs.First().LogData.Data.Select(d => d.Data);
             IEnumerable<string> expectedDataLast5Rows = logData.Logs.Last().LogData.Data.Select(d => d.Data);
             IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
@@ -176,8 +176,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLogData newLogData = newLogDataHeader.LogData;
             IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
             IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
-            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
-            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(CommonConstants.DataSeparator);
             IEnumerable<string> expectedDataFirst10Rows = logData.Logs.First().LogData.Data.Select(d => d.Data);
             IEnumerable<string> expectedDataLast5Rows = logData.Logs.Last().LogData.Data.Select(d => d.Data).TakeLast(5);
             IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
@@ -213,8 +213,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLogData newLogData = newLogDataHeader.LogData;
             IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
             IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
-            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
-            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(CommonConstants.DataSeparator);
             IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
 
             Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
@@ -241,9 +241,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             var (job, logHeaders, logData) = SetupTest(logUids, indexType, startIndexNum, endIndexNum, (log) => capturedLogHeader = log, (log) => capturedLogData = log);
 
-            var data = logData.Logs.First().LogData.Data.Last().Data.Split(',');
-            data[1] = "";
-            logData.Logs.First().LogData.Data.Last().Data = string.Join(',', data);
+            var data = logData.Logs.First().LogData.Data.Last().Data.Split(CommonConstants.DataSeparator);
+            data[1] = string.Empty;
+            logData.Logs.First().LogData.Data.Last().Data = string.Join(CommonConstants.DataSeparator, data);
 
             var expectedMnemonics = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Mnemonic);
             var expectedUnits = logHeaders.Logs.First().LogCurveInfo.Select(lci => lci.Unit);
@@ -255,15 +255,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLogData newLogData = newLogDataHeader.LogData;
             IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
             IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
-            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
-            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(CommonConstants.DataSeparator);
             IEnumerable<string> expectedDataFirst8Rows = logData.Logs.First().LogData.Data.Select(d => d.Data).Take(8);
             IEnumerable<string> expectedDataLast5Rows = logData.Logs.Last().LogData.Data.Select(d => d.Data).TakeLast(5);
             IEnumerable<string> newLogDataData = newLogData.Data.Select(d => d.Data);
-            var log1Value = logData.Logs.First().LogData.Data.Select(d => d.Data).ToArray().Last().Split(',');
-            var log2Value = logData.Logs.Last().LogData.Data.Select(d => d.Data).ToArray().First().Split(',');
+            var log1Value = logData.Logs.First().LogData.Data.Select(d => d.Data).ToArray().Last().Split(CommonConstants.DataSeparator);
+            var log2Value = logData.Logs.Last().LogData.Data.Select(d => d.Data).ToArray().First().Split(CommonConstants.DataSeparator);
             log1Value[1] = log2Value[1];
-            string expectedDataRow10 = string.Join(',', log1Value);
+            string expectedDataRow10 = string.Join(CommonConstants.DataSeparator, log1Value);
 
             Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
             Assert.Equal(expectedUnits, newLogHeaderUnits);
@@ -292,9 +292,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 Mnemonic = "ExtraCurve",
                 Unit = "Unit3",
-                MinIndex = isDepthLog ? new WitsmlIndex() { Value = "0", Uom = "m" } : null,
+                MinIndex = isDepthLog ? new WitsmlIndex() { Value = "0", Uom = CommonConstants.Unit.Meter } : null,
                 MinDateTimeIndex = isDepthLog ? null : _baseDateTime.ToISODateTimeString(),
-                MaxIndex = isDepthLog ? new WitsmlIndex() { Value = "10", Uom = "m" } : null,
+                MaxIndex = isDepthLog ? new WitsmlIndex() { Value = "10", Uom = CommonConstants.Unit.Meter } : null,
                 MaxDateTimeIndex = isDepthLog ? null : _baseDateTime.AddMinutes(10).ToISODateTimeString()
             });
 
@@ -315,12 +315,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLogData newLogData = newLogDataHeader.LogData;
             IEnumerable<string> newLogHeaderMnemonics = newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic);
             IEnumerable<string> newLogHeaderUnits = newLogHeader.LogCurveInfo.Select(lci => lci.Unit);
-            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(',');
-            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(',');
+            IEnumerable<string> newLogDataMnemonics = newLogData.MnemonicList.Split(CommonConstants.DataSeparator);
+            IEnumerable<string> newLogDataUnits = newLogData.UnitList.Split(CommonConstants.DataSeparator);
             IEnumerable<string> expectedDataExceptLastMnemonic = logData.Logs.First().LogData.Data.Select(d => d.Data);
-            IEnumerable<string> expectedDataLastMnemonic = logData.Logs.Last().LogData.Data.Select(d => d.Data.Split(',').Last());
-            IEnumerable<string> newLogDataWithoutLastMnemonic = newLogData.Data.Select(d => string.Join(',', d.Data.Split(',').SkipLast(1)));
-            IEnumerable<string> newLogDataLastMnemonic = newLogData.Data.Select(d => d.Data.Split(',').Last());
+            IEnumerable<string> expectedDataLastMnemonic = logData.Logs.Last().LogData.Data.Select(d => d.Data.Split(CommonConstants.DataSeparator).Last());
+            IEnumerable<string> newLogDataWithoutLastMnemonic = newLogData.Data.Select(d => string.Join(CommonConstants.DataSeparator, d.Data.Split(CommonConstants.DataSeparator).SkipLast(1)));
+            IEnumerable<string> newLogDataLastMnemonic = newLogData.Data.Select(d => d.Data.Split(CommonConstants.DataSeparator).Last());
 
             Assert.Equal(expectedMnemonics, newLogHeaderMnemonics);
             Assert.Equal(expectedUnits, newLogHeaderUnits);
@@ -381,7 +381,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             // When Log Curve Info varies between logs, the Log Curve Info of the last log is prioritized.
             Assert.Equal("IndexCurve2", newLogHeader.IndexCurve.Value);
             Assert.Equal("IndexCurve2", newLogHeader.LogCurveInfo.First().Mnemonic);
-            Assert.Equal("IndexCurve2", newLogDataHeader.LogData.MnemonicList.Split(',')[0]);
+            Assert.Equal("IndexCurve2", newLogDataHeader.LogData.MnemonicList.Split(CommonConstants.DataSeparator)[0]);
         }
 
         private (SpliceLogsJob, WitsmlLogs, WitsmlLogs) SetupTest(string[] logUids, string indexType, int[] startIndexNum, int[] endIndexNum, Action<WitsmlLogs> logHeaderCallback, Action<WitsmlLogs> logDataCallback, string[] indexCurves = null)
@@ -424,9 +424,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     UidWellbore = _wellboreUid,
                     Direction = WitsmlLog.WITSML_DIRECTION_INCREASING,
                     IndexType = indexType,
-                    StartIndex = isDepthLog ? new WitsmlIndex() { Value = startIndexNum[i].ToString(), Uom = "m" } : null,
+                    StartIndex = isDepthLog ? new WitsmlIndex() { Value = startIndexNum[i].ToString(), Uom = CommonConstants.Unit.Meter } : null,
                     StartDateTimeIndex = isDepthLog ? null : _baseDateTime.AddMinutes(startIndexNum[i]).ToISODateTimeString(),
-                    EndIndex = isDepthLog ? new WitsmlIndex() { Value = (endIndexNum[i]).ToString(), Uom = "m" } : null,
+                    EndIndex = isDepthLog ? new WitsmlIndex() { Value = (endIndexNum[i]).ToString(), Uom = CommonConstants.Unit.Meter } : null,
                     EndDateTimeIndex = isDepthLog ? null : _baseDateTime.AddMinutes(endIndexNum[i]).ToISODateTimeString(),
                     IndexCurve = new WitsmlIndexCurve() { Value = indexCurves != null ? indexCurves[i] : "IndexCurve" },
                     LogCurveInfo = GetLogCurveInfo(logUids, uid, indexType, startIndexNum, endIndexNum, indexCurves)
@@ -467,16 +467,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             var uidNum = logUids.ToList().FindIndex(i => i == uid);
             var isDepthLog = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
-            var minIndex = isDepthLog ? new WitsmlIndex() { Value = startIndexNum[uidNum].ToString(), Uom = "m" } : null;
+            var minIndex = isDepthLog ? new WitsmlIndex() { Value = startIndexNum[uidNum].ToString(), Uom = CommonConstants.Unit.Meter } : null;
             var minDateTimeIndex = isDepthLog ? null : _baseDateTime.AddMinutes(startIndexNum[uidNum]).ToISODateTimeString();
-            var maxIndex = isDepthLog ? new WitsmlIndex() { Value = (endIndexNum[uidNum]).ToString(), Uom = "m" } : null;
+            var maxIndex = isDepthLog ? new WitsmlIndex() { Value = (endIndexNum[uidNum]).ToString(), Uom = CommonConstants.Unit.Meter } : null;
             var maxDateTimeIndex = isDepthLog ? null : _baseDateTime.AddMinutes(endIndexNum[uidNum]).ToISODateTimeString();
             return new()
             {
                 new WitsmlLogCurveInfo
                 {
                     Mnemonic = indexCurves != null ? indexCurves[uidNum] : "IndexCurve",
-                    Unit = isDepthLog ? "m" : "DateTime",
+                    Unit = isDepthLog ? CommonConstants.Unit.Meter : "DateTime",
                     MinIndex = minIndex,
                     MinDateTimeIndex = minDateTimeIndex,
                     MaxIndex = maxIndex,
@@ -524,9 +524,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     string uid = logs.Logs.First().Uid;
                     WitsmlLog log = logData.Logs.Find(l => l.Uid == uid);
                     IEnumerable<string> data = log.LogData.Data.Select(d => d.Data);
-                    string mnemonic = logs.Logs.First().LogData.MnemonicList.Split(',')[1];
-                    int mnemonicIndex = log.LogData.MnemonicList.Split(',').ToList().FindIndex(m => m == mnemonic);
-                    IEnumerable<string> dataForCurve = data.Select(dataRow => $"{dataRow.Split(',')[0]},{dataRow.Split(',')[mnemonicIndex]}");
+                    string mnemonic = logs.Logs.First().LogData.MnemonicList.Split(CommonConstants.DataSeparator)[1];
+                    int mnemonicIndex = log.LogData.MnemonicList.Split(CommonConstants.DataSeparator).ToList().FindIndex(m => m == mnemonic);
+                    IEnumerable<string> dataForCurve = data.Select(dataRow => $"{dataRow.Split(CommonConstants.DataSeparator)[0]},{dataRow.Split(CommonConstants.DataSeparator)[mnemonicIndex]}");
                     WitsmlLogs newLogData = new()
                     {
                         Logs = new WitsmlLog()

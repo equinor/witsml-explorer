@@ -1,11 +1,11 @@
 import { Button } from "@equinor/eds-core-react";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useConnectedServer } from "../contexts/connectedServerContext";
-import OperationContext from "../contexts/operationContext";
-import { Colors } from "../styles/Colors";
-import Icon from "../styles/Icons";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export interface JobsButtonProps {
   showLabels: boolean;

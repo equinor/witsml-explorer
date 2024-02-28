@@ -1,12 +1,16 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ObjectType } from "models/objectType";
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import { useGetObjects } from "../../hooks/query/useGetObjects";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { ObjectType } from "../../models/objectType";
-import formatDateString from "../DateFormatter";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
 
 export default function ChangeLogsListView() {
   const {

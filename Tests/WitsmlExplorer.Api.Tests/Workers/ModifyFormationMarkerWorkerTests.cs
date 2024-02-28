@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_EmptyNewName_ThrowsException()
         {
-            ModifyObjectOnWellboreJob job = CreateJobTemplate(FormationMarkerUid, "");
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(FormationMarkerUid, string.Empty);
 
             var (workerResult, _) = await _worker.Execute(job);
 

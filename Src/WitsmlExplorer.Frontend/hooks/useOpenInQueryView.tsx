@@ -1,10 +1,10 @@
+import { QueryTemplatePreset } from "components/ContentViews/QueryViewUtils";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { QueryTemplatePreset } from "../components/ContentViews/QueryViewUtils";
-import { useConnectedServer } from "../contexts/connectedServerContext";
-import OperationContext from "../contexts/operationContext";
-import OperationType from "../contexts/operationType";
-import { QueryActionType, QueryContext } from "../contexts/queryContext";
 
 export type OpenInQueryView = (templatePreset: QueryTemplatePreset) => void;
 

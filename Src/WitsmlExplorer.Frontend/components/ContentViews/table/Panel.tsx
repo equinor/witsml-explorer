@@ -1,19 +1,19 @@
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
-import React, { useCallback, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import styled from "styled-components";
-import { ContentTableColumn } from ".";
+import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
   refreshWellQuery,
   refreshWellsQuery
-} from "../../../hooks/query/queryRefreshHelpers";
-import useExport, { encloseCell } from "../../../hooks/useExport";
-import { ObjectType } from "../../../models/objectType";
-import { ColumnOptionsMenu } from "./ColumnOptionsMenu";
+} from "hooks/query/queryRefreshHelpers";
+import useExport, { encloseCell } from "hooks/useExport";
+import { ObjectType } from "models/objectType";
+import React, { useCallback, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import styled from "styled-components";
+import { ContentTableColumn } from ".";
 
 export interface PanelProps {
   checkableRows: boolean;

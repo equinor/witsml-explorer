@@ -1,6 +1,6 @@
-import ComponentReferences from "./componentReferences";
-import ObjectReferences from "./objectReferences";
-import WellboreReference from "./wellboreReference";
+import ComponentReferences from "models/jobs/componentReferences";
+import ObjectReferences from "models/jobs/objectReferences";
+import WellboreReference from "models/jobs/wellboreReference";
 
 export interface DeleteObjectsJob {
   toDelete: ObjectReferences;

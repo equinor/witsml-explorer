@@ -1,26 +1,26 @@
-import React, { useContext } from "react";
-import { useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetComponents } from "../../hooks/query/useGetComponents";
-import { useGetObject } from "../../hooks/query/useGetObject";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { ComponentType } from "../../models/componentType";
-import { ObjectType } from "../../models/objectType";
-import TubularComponent from "../../models/tubularComponent";
-import { ItemNotFound } from "../../routes/ItemNotFound";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import TubularComponentContextMenu, {
-  TubularComponentContextMenuProps
-} from "../ContextMenus/TubularComponentContextMenu";
-import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import TubularComponentContextMenu, {
+  TubularComponentContextMenuProps
+} from "components/ContextMenus/TubularComponentContextMenu";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ComponentType } from "models/componentType";
+import { ObjectType } from "models/objectType";
+import TubularComponent from "models/tubularComponent";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 export interface TubularComponentRow extends ContentTableRow {
   uid: string;

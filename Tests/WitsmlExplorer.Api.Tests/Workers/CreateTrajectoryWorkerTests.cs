@@ -64,7 +64,7 @@ public class CreateTrajectoryWorkerTests
         var job = CreateJobTemplate(name: null);
         InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
         Assert.Equal("Name cannot be empty", exception.Message);
-        job = CreateJobTemplate(name: "");
+        job = CreateJobTemplate(name: string.Empty);
         exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
         Assert.Equal("Name cannot be empty", exception.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlTrajectories>()), Times.Never);

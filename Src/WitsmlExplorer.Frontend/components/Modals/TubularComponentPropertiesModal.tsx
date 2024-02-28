@@ -1,16 +1,16 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
+import ModalDialog from "components/Modals/ModalDialog";
+import { validText } from "components/Modals/ModalParts";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
 import { isInteger } from "lodash";
+import ObjectReference from "models/jobs/objectReference";
+import { toObjectReference } from "models/objectOnWellbore";
+import Tubular from "models/tubular";
+import TubularComponent from "models/tubularComponent";
+import { tubularComponentTypes } from "models/tubularComponentTypes";
 import React, { useEffect, useState } from "react";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import ObjectReference from "../../models/jobs/objectReference";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import Tubular from "../../models/tubular";
-import TubularComponent from "../../models/tubularComponent";
-import { tubularComponentTypes } from "../../models/tubularComponentTypes";
-import JobService, { JobType } from "../../services/jobService";
-import ModalDialog from "./ModalDialog";
-import { validText } from "./ModalParts";
+import JobService, { JobType } from "services/jobService";
 
 export interface TubularComponentPropertiesModalInterface {
   tubularComponent: TubularComponent;

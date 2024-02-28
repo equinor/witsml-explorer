@@ -1,48 +1,51 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { v4 as uuid } from "uuid";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import { DisplayModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { refreshWellboreQuery } from "../../hooks/query/queryRefreshHelpers";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { DeleteWellboreJob } from "../../models/jobs/deleteJobs";
-import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Well from "../../models/well";
-import Wellbore from "../../models/wellbore";
-import JobService, { JobType } from "../../services/jobService";
-import { colors } from "../../styles/Colors";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction,
   TemplateObjects
-} from "../ContentViews/QueryViewUtils";
-import { WellboreRow } from "../ContentViews/WellboresListView";
-import ConfirmModal from "../Modals/ConfirmModal";
+} from "components/ContentViews/QueryViewUtils";
+import { WellboreRow } from "components/ContentViews/WellboresListView";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText
+} from "components/ContextMenus/ContextMenuUtils";
+import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardReferences } from "components/ContextMenus/UseClipboardReferences";
+import ConfirmModal from "components/Modals/ConfirmModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
-} from "../Modals/DeleteEmptyMnemonicsModal";
+} from "components/Modals/DeleteEmptyMnemonicsModal";
 import LogPropertiesModal, {
   IndexCurve,
   LogPropertiesModalInterface
-} from "../Modals/LogPropertiesModal";
+} from "components/Modals/LogPropertiesModal";
 import MissingDataAgentModal, {
   MissingDataAgentModalProps
-} from "../Modals/MissingDataAgentModal";
-import { PropertiesModalMode } from "../Modals/ModalParts";
+} from "components/Modals/MissingDataAgentModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
 import WellborePropertiesModal, {
   WellborePropertiesModalProps
-} from "../Modals/WellborePropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText } from "./ContextMenuUtils";
-import { pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferences } from "./UseClipboardReferences";
+} from "components/Modals/WellborePropertiesModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import { DisplayModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { DeleteWellboreJob } from "models/jobs/deleteJobs";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
+import React, { useContext } from "react";
+import JobService, { JobType } from "services/jobService";
+import { colors } from "styles/Colors";
+import { v4 as uuid } from "uuid";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -109,6 +112,7 @@ const WellboreContextMenu = (
   };
 
   const deleteWellbore = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
       toDelete: {
@@ -119,7 +123,6 @@ const WellboreContextMenu = (
       }
     };
     await JobService.orderJob(JobType.DeleteWellbore, job);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   const onClickDelete = async () => {
@@ -146,8 +149,7 @@ const WellboreContextMenu = (
 
   const onClickDeleteEmptyMnemonics = async () => {
     const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = {
-      wellbores: [wellbore],
-      dispatchOperation: dispatchOperation
+      wellbores: [wellbore]
     };
     const action: DisplayModalAction = {
       type: OperationType.DisplayModal,
@@ -203,12 +205,12 @@ const WellboreContextMenu = (
   };
 
   const onClickShowOnServer = async (server: Server) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const host = `${window.location.protocol}//${window.location.host}`;
     const wellboreUrl = `${host}/servers/${encodeURIComponent(
       server.url
     )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups`;
     window.open(wellboreUrl);
-    dispatchOperation({ type: OperationType.HideContextMenu });
   };
 
   return (

@@ -1,18 +1,18 @@
-import React, { useContext, useState } from "react";
-import OperationContext from "../../../contexts/operationContext";
-import OperationType from "../../../contexts/operationType";
-import { createTrimLogObjectJob } from "../../../models/jobs/trimLogObjectJob";
-import LogObject, { indexToNumber } from "../../../models/logObject";
-import JobService, { JobType } from "../../../services/jobService";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD,
   WITSML_LOG_ORDERTYPE_DECREASING
-} from "../../Constants";
-import WarningBar from "../../WarningBar";
-import ModalDialog from "../ModalDialog";
-import AdjustDateTimeModal from "./AdjustDateTimeModal";
-import AdjustNumberRangeModal from "./AdjustNumberRangeModal";
+} from "components/Constants";
+import ModalDialog from "components/Modals/ModalDialog";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import WarningBar from "components/WarningBar";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { createTrimLogObjectJob } from "models/jobs/trimLogObjectJob";
+import LogObject, { indexToNumber } from "models/logObject";
+import React, { useContext, useState } from "react";
+import JobService, { JobType } from "services/jobService";
 
 export interface TrimLogObjectModalProps {
   logObject: LogObject;

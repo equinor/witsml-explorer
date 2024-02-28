@@ -18,6 +18,7 @@ namespace WitsmlExplorer.Api.Models
         ModifyLogCurveInfo,
         DeleteEmptyMnemonics,
         ModifyObjectOnWellbore,
+        BatchModifyObjectsOnWellbore,
         ModifyGeologyInterval,
         ModifyTrajectoryStation,
         ModifyTubularComponent,
@@ -42,5 +43,6 @@ namespace WitsmlExplorer.Api.Models
         SpliceLogs,
         CompareLogData,
         CountLogDataRows,
+        BatchModifyLogCurveInfo
     }
 }

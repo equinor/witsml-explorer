@@ -5,20 +5,23 @@ import {
   Checkbox,
   TextField
 } from "@equinor/eds-core-react";
+import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import ModalDialog, {
+  ModalContentLayout,
+  ModalWidth
+} from "components/Modals/ModalDialog";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import MaxLength from "models/maxLength";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
 import { ChangeEvent, useContext, useState } from "react";
+import ObjectService from "services/objectService";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import MaxLength from "../../models/maxLength";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import ObjectService from "../../services/objectService";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
-import { useClipboardReferencesOfType } from "../ContextMenus/UseClipboardReferences";
-import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export interface ObjectPickerProps {
   sourceObject: ObjectOnWellbore;
@@ -26,16 +29,19 @@ export interface ObjectPickerProps {
   onPicked: (
     targetObject: ObjectOnWellbore,
     targetServer: Server,
-    includeIndexDuplicates?: boolean
+    includeIndexDuplicates?: boolean,
+    compareAllLogIndexes?: boolean
   ) => void;
   includeIndexDuplicatesOption?: boolean;
+  includeCompareAllLogIndexesOption?: boolean;
 }
 
 const ObjectPickerModal = ({
   sourceObject,
   objectType,
   onPicked,
-  includeIndexDuplicatesOption
+  includeIndexDuplicatesOption,
+  includeCompareAllLogIndexesOption
 }: ObjectPickerProps): React.ReactElement => {
   const { servers } = useGetServers();
   const {
@@ -52,6 +58,8 @@ const ObjectPickerModal = ({
   const [fetchError, setFetchError] = useState("");
   const objectReference = useClipboardReferencesOfType(objectType, 100);
   const [checkedIncludeIndexDuplicates, setCheckedIncludeIndexDuplicates] =
+    useState(false);
+  const [checkedCompareAllLogIndexes, setCheckedCompareAllLogIndexes] =
     useState(false);
 
   const onClear = () => {
@@ -93,8 +101,13 @@ const ObjectPickerModal = ({
       );
       if (targetObject?.uid === objectUid) {
         dispatchOperation({ type: OperationType.HideModal });
-        checkedIncludeIndexDuplicates
-          ? onPicked(targetObject, targetServer, checkedIncludeIndexDuplicates)
+        checkedIncludeIndexDuplicates || checkedCompareAllLogIndexes
+          ? onPicked(
+              targetObject,
+              targetServer,
+              checkedIncludeIndexDuplicates,
+              checkedCompareAllLogIndexes
+            )
           : onPicked(targetObject, targetServer);
       } else {
         setFetchError(`The target ${objectType} was not found`);
@@ -193,16 +206,29 @@ const ObjectPickerModal = ({
             >
               Paste
             </Button>
-            {includeIndexDuplicatesOption && (
-              <StyledCheckbox
-                colors={colors}
-                label="Include index duplicates"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setCheckedIncludeIndexDuplicates(e.target.checked);
-                }}
-                checked={checkedIncludeIndexDuplicates}
-              />
-            )}
+            <>
+              {includeIndexDuplicatesOption && (
+                <StyledCheckbox
+                  colors={colors}
+                  label="Include index duplicates"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setCheckedIncludeIndexDuplicates(e.target.checked);
+                  }}
+                  checked={checkedIncludeIndexDuplicates}
+                />
+              )}
+              {objectType === ObjectType.Log &&
+                includeCompareAllLogIndexesOption && (
+                  <StyledCheckbox
+                    colors={colors}
+                    label="Compare all log indexes"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setCheckedCompareAllLogIndexes(e.target.checked);
+                    }}
+                    checked={checkedCompareAllLogIndexes}
+                  />
+                )}
+            </>
           </ButtonsContainer>
           {checkedIncludeIndexDuplicates && (
             <StyledBanner colors={colors}>
@@ -216,6 +242,18 @@ const ObjectPickerModal = ({
                 result in unnecessary mismatches. This feature should only be
                 used in special cases that require investigation of anomalies in
                 the index duplicates.
+              </Banner.Message>
+            </StyledBanner>
+          )}
+          {checkedCompareAllLogIndexes && (
+            <StyledBanner colors={colors}>
+              <Banner.Icon variant="warning">
+                <Icon name="infoCircle" />
+              </Banner.Icon>
+              <Banner.Message>
+                Compare all log indexes: By default, logs are compared within
+                their shared log index interval. Comparing logs outside their
+                shared index interval should be unnecessary.
               </Banner.Message>
             </StyledBanner>
           )}

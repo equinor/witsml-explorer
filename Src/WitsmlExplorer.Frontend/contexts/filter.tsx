@@ -1,10 +1,10 @@
-﻿import React, { useEffect } from "react";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import { useGetWell } from "hooks/query/useGetWell";
+import ObjectSearchResult from "models/objectSearchResult";
+import { ObjectType } from "models/objectType";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { pluralize } from "../components/ContextMenus/ContextMenuUtils";
-import { useGetWell } from "../hooks/query/useGetWell";
-import ObjectSearchResult from "../models/objectSearchResult";
-import { ObjectType } from "../models/objectType";
-import { useConnectedServer } from "./connectedServerContext";
 
 export interface Filter {
   name: string;

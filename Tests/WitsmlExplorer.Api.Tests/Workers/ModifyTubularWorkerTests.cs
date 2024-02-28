@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task RenameTubular_EmptyName_ThrowsException()
         {
-            ModifyObjectOnWellboreJob job = CreateJobTemplate(TubularUid, "");
+            ModifyObjectOnWellboreJob job = CreateJobTemplate(TubularUid, string.Empty);
 
             var (workerResult, _) = await _worker.Execute(job);
 

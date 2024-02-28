@@ -1,14 +1,14 @@
 import { TextField, Typography } from "@material-ui/core";
+import ModalDialog from "components/Modals/ModalDialog";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import ModifyLogCurveInfoJob from "models/jobs/modifyLogCurveInfoJob";
+import LogCurveInfo from "models/logCurveInfo";
+import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import React, { useEffect, useState } from "react";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import ModifyLogCurveInfoJob from "../../models/jobs/modifyLogCurveInfoJob";
-import LogCurveInfo from "../../models/logCurveInfo";
-import LogObject from "../../models/logObject";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import JobService, { JobType } from "../../services/jobService";
-import ModalDialog from "./ModalDialog";
 
 export interface LogCurveInfoPropertiesModalProps {
   logCurveInfo: LogCurveInfo;

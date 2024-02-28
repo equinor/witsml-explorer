@@ -1,5 +1,5 @@
-import CommonData from "./commonData";
-import ObjectOnWellbore from "./objectOnWellbore";
+import CommonData from "models/commonData";
+import ObjectOnWellbore from "models/objectOnWellbore";
 
 export default interface LogObject extends ObjectOnWellbore {
   indexType?: string;

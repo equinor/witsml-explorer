@@ -1,24 +1,24 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useGetWells } from "../../hooks/query/useGetWells";
-import Well from "../../models/well";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import WellContextMenu, {
-  WellContextMenuProps
-} from "../ContextMenus/WellContextMenu";
-import formatDateString from "../DateFormatter";
-import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import WellContextMenu, {
+  WellContextMenuProps
+} from "components/ContextMenus/WellContextMenu";
+import formatDateString from "components/DateFormatter";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWells } from "hooks/query/useGetWells";
+import Well from "models/well";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 export interface WellRow extends ContentTableRow, Well {}
 

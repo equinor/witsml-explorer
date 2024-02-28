@@ -1,6 +1,6 @@
+import OperationType from "contexts/operationType";
 import { Dispatch, ReactElement, useReducer } from "react";
-import { Colors, light } from "../styles/Colors";
-import OperationType from "./operationType";
+import { Colors, light } from "styles/Colors";
 
 export enum UserTheme {
   Compact = "compact",

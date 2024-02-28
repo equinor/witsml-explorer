@@ -46,7 +46,7 @@ namespace Witsml
                 options.Hostname = hostname;
                 options.Credentials = new WitsmlCredentials(username, password);
                 options.ClientCapabilities = clientCapabilities;
-                options.RequestTimeOut = requestTimeout ?? TimeSpan.FromMinutes(1);
+                options.RequestTimeOut = requestTimeout ?? TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                 options.LogQueries = logQueries;
             })
         { }
@@ -263,7 +263,7 @@ namespace Witsml
             WMLS_AddToStoreRequest request = new()
             {
                 WMLtypeIn = type,
-                OptionsIn = optionsIn?.GetKeywords() ?? "",
+                OptionsIn = optionsIn?.GetKeywords() ?? string.Empty,
                 XMLin = query,
                 CapabilitiesIn = _clientCapabilities
             };
@@ -317,7 +317,7 @@ namespace Witsml
             WMLS_UpdateInStoreRequest request = new()
             {
                 WMLtypeIn = type,
-                OptionsIn = optionsIn?.GetKeywords() ?? "",
+                OptionsIn = optionsIn?.GetKeywords() ?? string.Empty,
                 XMLin = query,
                 CapabilitiesIn = _clientCapabilities
             };
@@ -371,7 +371,7 @@ namespace Witsml
             WMLS_DeleteFromStoreRequest request = new()
             {
                 WMLtypeIn = type,
-                OptionsIn = optionsIn?.GetKeywords() ?? "",
+                OptionsIn = optionsIn?.GetKeywords() ?? string.Empty,
                 QueryIn = query,
                 CapabilitiesIn = _clientCapabilities
             };
@@ -396,7 +396,7 @@ namespace Witsml
             }
 
             // Spec requires a comma-seperated list of supported versions without spaces
-            var versions = response.Result.Split(',');
+            var versions = response.Result.Split(CommonConstants.DataSeparator);
             if (versions.All(v => v != "1.4.1.1"))
                 throw new Exception("Error while testing connection: Server does not indicate support for WITSML 1.4.1.1");
 

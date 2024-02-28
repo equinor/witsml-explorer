@@ -1,12 +1,12 @@
 import { TextField } from "@equinor/eds-core-react";
-import { formatInTimeZone } from "date-fns-tz";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import Icon from "../../styles/Icons";
 import {
   dateTimeFormatNoOffset,
   validateIsoDateStringNoOffset
-} from "../DateFormatter";
+} from "components/DateFormatter";
+import { formatInTimeZone } from "date-fns-tz";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import Icon from "styles/Icons";
 
 interface DateTimeFieldProps {
   value: string;

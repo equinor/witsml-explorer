@@ -1,21 +1,24 @@
 import { Button, Icon, Menu, Typography } from "@equinor/eds-core-react";
 import { Checkbox, useTheme } from "@material-ui/core";
 import { Table } from "@tanstack/react-table";
-import { useContext, useState } from "react";
-import styled from "styled-components";
-import OperationContext from "../../../contexts/operationContext";
-import { useLocalStorageState } from "../../../hooks/useLocalStorageState";
-import { Colors } from "../../../styles/Colors";
-import {
-  STORAGE_CONTENTTABLE_ORDER_KEY,
-  removeLocalStorageItem
-} from "../../../tools/localStorageHelpers";
 import {
   calculateColumnWidth,
   expanderId,
   selectId
-} from "./contentTableUtils";
-import { ContentTableColumn, ContentType } from "./tableParts";
+} from "components/ContentViews/table/contentTableUtils";
+import {
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table/tableParts";
+import OperationContext from "contexts/operationContext";
+import { useLocalStorageState } from "hooks/useLocalStorageState";
+import { useContext, useState } from "react";
+import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import {
+  STORAGE_CONTENTTABLE_ORDER_KEY,
+  removeLocalStorageItem
+} from "tools/localStorageHelpers";
 
 const lastId = "dummyLastId";
 

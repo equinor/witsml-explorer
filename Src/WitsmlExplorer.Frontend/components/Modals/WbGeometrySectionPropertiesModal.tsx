@@ -1,16 +1,16 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
+import ModalDialog from "components/Modals/ModalDialog";
+import { HideModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { holeCasingTypes } from "models/holeCasingTypes";
+import ObjectReference from "models/jobs/objectReference";
+import Measure from "models/measure";
+import { toObjectReference } from "models/objectOnWellbore";
+import WbGeometryObject from "models/wbGeometry";
+import WbGeometrySection from "models/wbGeometrySection";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import { HideModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { holeCasingTypes } from "../../models/holeCasingTypes";
-import ObjectReference from "../../models/jobs/objectReference";
-import Measure from "../../models/measure";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import WbGeometryObject from "../../models/wbGeometry";
-import WbGeometrySection from "../../models/wbGeometrySection";
-import JobService, { JobType } from "../../services/jobService";
-import ModalDialog from "./ModalDialog";
 
 export interface WbGeometrySectionPropertiesModalInterface {
   wbGeometrySection: WbGeometrySection;

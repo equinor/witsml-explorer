@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -57,6 +58,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             try
             {
+                VerifyNormalSourceMnemonicsDoesNotMatchIndexCurveOnTarget(sourceLog, targetLog, mnemonicsToCopy);
                 VerifyMatchingIndexTypes(sourceLog, targetLog);
                 VerifyValidInterval(sourceLog);
                 VerifyIndexCurveIsIncludedInMnemonics(sourceLog, newMnemonicsInTarget, existingMnemonicsInTarget);
@@ -65,7 +67,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             catch (Exception e)
             {
                 string errorMessage = "Failed to copy log data.";
-                Logger.LogError("{errorMessage} - {Description}", errorMessage, job.Description());
+                Logger.LogError("{errorMessage} - {error} - {Description}", errorMessage, e.Message, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, e.Message), null);
             }
 
@@ -204,7 +206,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await GetSourceWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), Logger);
                 WitsmlLog sourceLogWithData = sourceData?.Logs?.FirstOrDefault();
 
-                if (sourceLogWithData == null)
+                if (sourceLogWithData?.LogData == null)
                 {
                     break;
                 }
@@ -218,7 +220,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 double targetIndex = double.MinValue;
                 foreach (WitsmlData row in data)
                 {
-                    string[] split = row.Data.Split(",");
+                    string[] split = row.Data.Split(CommonConstants.DataSeparator);
                     lastSourceRowIndex = StringHelpers.ToDouble(split[0]);
                     double nextTargetIndex = Math.Round(lastSourceRowIndex, targetDepthLogDecimals, MidpointRounding.AwayFromZero);
                     if (Math.Abs(targetIndex - nextTargetIndex) > difference)
@@ -263,48 +265,65 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 for (int j = 0; j < oldRows.Count; j++)
                 {
-                    if (oldRows[j][i] != "")
+                    if (oldRows[j][i] != string.Empty)
                     {
                         newRow[i] = oldRows[j][i];
                         break;
                     }
                 }
             }
-            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + "," + string.Join(",", newRow) };
+            return new() { Data = index.ToString(CultureInfo.InvariantCulture) + CommonConstants.DataSeparator + string.Join(CommonConstants.DataSeparator, newRow) };
         }
 
         private async Task VerifyTargetHasRequiredLogCurveInfos(WitsmlLog sourceLog, IEnumerable<string> sourceMnemonics, WitsmlLog targetLog)
         {
-            List<WitsmlLogCurveInfo> newLogCurveInfos = new();
-            foreach (string mnemonic in sourceMnemonics.Where(mnemonic =>
-            !string.Equals(targetLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(sourceLog.IndexCurve.Value, mnemonic, StringComparison.OrdinalIgnoreCase)))
+            List<WitsmlLogCurveInfo> logCurveInfosToUpdate = new();
+            foreach (string mnemonic in sourceMnemonics)
             {
-                if (targetLog.LogCurveInfo.All(lci => !string.Equals(lci.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase)))
+                bool isIndexCurve = string.Equals(mnemonic, sourceLog.IndexCurve.Value, StringComparison.OrdinalIgnoreCase);
+                string targetIndexCurveMnemonic = targetLog.IndexCurve.Value;
+
+                var sourceLogCurveInfo = sourceLog.LogCurveInfo.Find(lci => string.Equals(lci.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
+                var targetLogCurveInfo = targetLog.LogCurveInfo.Find(lci => string.Equals(lci.Mnemonic, isIndexCurve ? targetIndexCurveMnemonic : mnemonic, StringComparison.OrdinalIgnoreCase));
+
+                if (targetLogCurveInfo == null || !LogCurveInfosAreEqual(sourceLogCurveInfo, targetLogCurveInfo))
                 {
-                    newLogCurveInfos.Add(sourceLog.LogCurveInfo.Find(lci => lci.Mnemonic == mnemonic));
+                    if (isIndexCurve)
+                    {
+                        // We should not copy the uid or mnemonic of the index curve.
+                        sourceLogCurveInfo.Uid = targetLogCurveInfo.Uid;
+                        sourceLogCurveInfo.Mnemonic = targetLogCurveInfo.Mnemonic;
+                    }
+                    logCurveInfosToUpdate.Add(sourceLogCurveInfo);
                 }
             }
 
-            if (newLogCurveInfos.Any())
+            if (logCurveInfosToUpdate.Any())
             {
-                targetLog.LogCurveInfo.AddRange(newLogCurveInfos);
-                WitsmlLogs query = new() { Logs = new List<WitsmlLog> { targetLog } };
+                WitsmlLogs query = LogQueries.GetWitsmlLogById(targetLog.UidWell, targetLog.UidWellbore, targetLog.Uid);
+                query.Logs.First().LogCurveInfo = logCurveInfosToUpdate;
 
                 QueryResult result = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
                 if (!result.IsSuccessful)
                 {
-                    string newMnemonics = string.Join(",", newLogCurveInfos.Select(lci => lci.Mnemonic));
-                    Logger.LogError("Failed to update LogCurveInfo for wellbore during copy data. Mnemonics: {Mnemonics}. " +
+                    string newMnemonics = string.Join(CommonConstants.DataSeparator, logCurveInfosToUpdate.Select(lci => lci.Mnemonic));
+                    Logger.LogError("Failed to update LogCurveInfo for log during copy data. Mnemonics: {Mnemonics}. " +
                               "Target: UidWell: {TargetWellUid}, UidWellbore: {TargetWellboreUid}, Uid: {TargetLogUid}. ",
                         newMnemonics, targetLog.UidWell, targetLog.UidWellbore, targetLog.Uid);
                 }
             }
         }
 
+        private bool LogCurveInfosAreEqual(WitsmlLogCurveInfo source, WitsmlLogCurveInfo target)
+        {
+            var sourceJson = JsonSerializer.Serialize(source);
+            var targetJson = JsonSerializer.Serialize(target);
+            return sourceJson == targetJson;
+        }
+
         private static WitsmlLogs CreateCopyQuery(WitsmlLog targetLog, WitsmlLogData logData)
         {
-            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(",", StringComparison.InvariantCulture)..];
+            logData.MnemonicList = targetLog.IndexCurve.Value + logData.MnemonicList[logData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
             return new()
             {
                 Logs = new List<WitsmlLog> {
@@ -316,6 +335,18 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     }
                 }
             };
+        }
+
+        private static void VerifyNormalSourceMnemonicsDoesNotMatchIndexCurveOnTarget(WitsmlLog sourceLog, WitsmlLog targetLog, IEnumerable<string> mnemonics)
+        {
+            foreach (string mnemonic in mnemonics)
+            {
+                if (!string.Equals(mnemonic, sourceLog.IndexCurve.Value, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(mnemonic, targetLog.IndexCurve.Value, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new Exception($"The source log mnemonic '{mnemonic}' is not the index curve of the source log, but still has the same name as the target log index curve '{targetLog.IndexCurve.Value}'.");
+                }
+            }
         }
 
         private static void VerifyMatchingIndexTypes(WitsmlLog sourceLog, WitsmlLog targetLog)

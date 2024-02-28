@@ -1,9 +1,9 @@
+import { DataItem } from "components/ContentViews/Charts/LogsGraph";
 import type { ECharts, EChartsOption, SetOptionOpts } from "echarts";
 import { getInstanceByDom, init } from "echarts";
 import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { DataItem } from "./LogsGraph";
 
 export interface ReactEChartsProps {
   option: EChartsOption;

@@ -59,17 +59,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             new WitsmlLogCurveInfo
                             {
                                 Mnemonic="Depth",
-                                Unit="m"
+                                Unit = CommonConstants.Unit.Meter
                             },
                             new WitsmlLogCurveInfo
                             {
                                 Mnemonic="mnemo1",
-                                Unit="unitless"
+                                Unit = CommonConstants.Unit.Unitless
                             },
                             new WitsmlLogCurveInfo
                             {
                                 Mnemonic="mnemo2",
-                                Unit="unitless"
+                                Unit = CommonConstants.Unit.Unitless
                             }
                         }
                     }
@@ -108,12 +108,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
                             new WitsmlLogCurveInfo
                             {
                                 Mnemonic="mnemo1",
-                                Unit="unitless"
+                                Unit = CommonConstants.Unit.Unitless
                             },
                             new WitsmlLogCurveInfo
                             {
                                 Mnemonic="mnemo2",
-                                Unit="unitless"
+                                Unit = CommonConstants.Unit.Unitless
                             }
                         }
                     }
@@ -144,7 +144,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private static ImportLogDataJob CreateDepthJobTemplate()
         {
             List<string> mnemonics = new() { "Depth", "mnemo1", "mnemo2" };
-            List<string> units = new() { "m", "unitless", "unitless" };
+            List<string> units = new() { CommonConstants.Unit.Meter, CommonConstants.Unit.Unitless, CommonConstants.Unit.Unitless };
             ICollection<ICollection<string>> dataRows = new List<ICollection<string>>
             {
                 new List<string> { "1", "something", "something2" },
@@ -168,7 +168,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private static ImportLogDataJob CreateTimeJobTemplate()
         {
             List<string> mnemonics = new() { "Time", "mnemo1", "mnemo2" };
-            List<string> units = new() { "date time", "unitless", "unitless" };
+            List<string> units = new() { "date time", CommonConstants.Unit.Unitless, CommonConstants.Unit.Unitless };
             ICollection<ICollection<string>> dataRows = new List<ICollection<string>>
             {
                 new List<string> { "2018-01-21T12:24:30.000Z", "something", "something2" },

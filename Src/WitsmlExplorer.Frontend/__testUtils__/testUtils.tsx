@@ -1,13 +1,10 @@
 import { ThemeProvider } from "@material-ui/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
-import { SnackbarProvider } from "notistack";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
-import { ConnectedServerProvider } from "../contexts/connectedServerContext";
-import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
-import { Filter, FilterContextProvider } from "../contexts/filter";
-import OperationContext from "../contexts/operationContext";
+import { ConnectedServerProvider } from "contexts/connectedServerContext";
+import { CurveThresholdProvider } from "contexts/curveThresholdContext";
+import { Filter, FilterContextProvider } from "contexts/filter";
+import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,
   DecimalPreference,
@@ -16,38 +13,41 @@ import {
   TimeZone,
   UserTheme,
   reducer as operationReducer
-} from "../contexts/operationStateReducer";
-import { QueryContextProvider, QueryState } from "../contexts/queryContext";
-import { SidebarProvider } from "../contexts/sidebarContext";
-import AxisDefinition from "../models/AxisDefinition";
-import BhaRun from "../models/bhaRun";
-import ChangeLog from "../models/changeLog";
-import CommonData from "../models/commonData";
-import FluidsReport from "../models/fluidsReport";
-import FormationMarker from "../models/formationMarker";
-import JobInfo from "../models/jobs/jobInfo";
-import LogCurveInfo from "../models/logCurveInfo";
-import LogObject from "../models/logObject";
-import Measure from "../models/measure";
-import MeasureWithDatum from "../models/measureWithDatum";
-import MessageObject from "../models/messageObject";
-import MudLog from "../models/mudLog";
-import ObjectOnWellbore from "../models/objectOnWellbore";
-import ObjectSearchResult from "../models/objectSearchResult";
-import { ObjectType, ObjectTypeToModel } from "../models/objectType";
-import RefNameString from "../models/refNameString";
-import Rig from "../models/rig";
-import RiskObject from "../models/riskObject";
-import { Server } from "../models/server";
-import StratigraphicStruct from "../models/stratigraphicStruct";
-import Trajectory from "../models/trajectory";
-import Tubular from "../models/tubular";
-import WbGeometryObject from "../models/wbGeometry";
-import Well, { emptyWell } from "../models/well";
-import Wellbore, { emptyWellbore } from "../models/wellbore";
-import { Notification } from "../services/notificationService";
-import { light } from "../styles/Colors";
-import { getTheme } from "../styles/material-eds";
+} from "contexts/operationStateReducer";
+import { QueryContextProvider, QueryState } from "contexts/queryContext";
+import { SidebarProvider } from "contexts/sidebarContext";
+import AxisDefinition from "models/AxisDefinition";
+import BhaRun from "models/bhaRun";
+import ChangeLog from "models/changeLog";
+import CommonData from "models/commonData";
+import FluidsReport from "models/fluidsReport";
+import FormationMarker from "models/formationMarker";
+import JobInfo from "models/jobs/jobInfo";
+import LogCurveInfo from "models/logCurveInfo";
+import LogObject from "models/logObject";
+import Measure from "models/measure";
+import MeasureWithDatum from "models/measureWithDatum";
+import MessageObject from "models/messageObject";
+import MudLog from "models/mudLog";
+import ObjectOnWellbore from "models/objectOnWellbore";
+import ObjectSearchResult from "models/objectSearchResult";
+import { ObjectType, ObjectTypeToModel } from "models/objectType";
+import RefNameString from "models/refNameString";
+import Rig from "models/rig";
+import RiskObject from "models/riskObject";
+import { Server } from "models/server";
+import StratigraphicStruct from "models/stratigraphicStruct";
+import Trajectory from "models/trajectory";
+import Tubular from "models/tubular";
+import WbGeometryObject from "models/wbGeometry";
+import Well, { emptyWell } from "models/well";
+import Wellbore, { emptyWellbore } from "models/wellbore";
+import { SnackbarProvider } from "notistack";
+import React from "react";
+import { MemoryRouter } from "react-router-dom";
+import { Notification } from "services/notificationService";
+import { light } from "styles/Colors";
+import { getTheme } from "styles/material-eds";
 
 interface RenderWithContextsOptions {
   initialOperationState?: Partial<OperationState>;
@@ -150,6 +150,7 @@ export function getServer(overrides?: Partial<Server>): Server {
     description: "serverDescription",
     url: "serverUrl",
     roles: [],
+    credentialIds: [],
     depthLogDecimals: 0,
     ...overrides
   };
@@ -470,6 +471,8 @@ export function getLogCurveInfo(
     curveDescription: "curveDescription",
     typeLogData: "typeLogData",
     sensorOffset: getMeasure(),
+    nullValue: "123",
+    traceState: "raw",
     ...overrides
   };
 }

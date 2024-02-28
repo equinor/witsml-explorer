@@ -1,19 +1,19 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
+import ProgressSpinner from "components/ProgressSpinner";
+import SearchFilter from "components/Sidebar/SearchFilter";
+import WellItem from "components/Sidebar/WellItem";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import { useSidebar } from "contexts/sidebarContext";
+import { useGetWells } from "hooks/query/useGetWells";
+import { useWellFilter } from "hooks/useWellFilter";
+import Well from "models/well";
 import { Fragment, useContext } from "react";
 import styled from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import { useSidebar } from "../../contexts/sidebarContext";
-import { useGetWells } from "../../hooks/query/useGetWells";
-import { useWellFilter } from "../../hooks/useWellFilter";
-import Well from "../../models/well";
-import { Colors } from "../../styles/Colors";
-import Icon from "../../styles/Icons";
-import ProgressSpinner from "../ProgressSpinner";
-import SearchFilter from "./SearchFilter";
-import WellItem from "./WellItem";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 
 export default function Sidebar() {
   const { connectedServer } = useConnectedServer();

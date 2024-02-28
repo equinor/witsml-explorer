@@ -50,7 +50,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("pressLossFact")]
         public string PressLossFactText
         {
-            get => PressLossFact.HasValue ? XmlConvert.ToString(PressLossFact.Value) : null;
+            get => PressLossFact?.ToString(CultureInfo.InvariantCulture);
             set => PressLossFact = string.IsNullOrEmpty(value) ? default(double?) : double.Parse(value, CultureInfo.InvariantCulture);
         }
 
@@ -59,7 +59,7 @@ namespace Witsml.Data.Tubular
         [XmlElement("padCount")]
         public string PadCountText
         {
-            get => PadCount.HasValue ? XmlConvert.ToString(PadCount.Value) : null;
+            get => PadCount?.ToString(CultureInfo.InvariantCulture);
             set => PadCount = string.IsNullOrEmpty(value) ? default(int?) : int.Parse(value);
         }
 

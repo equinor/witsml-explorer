@@ -1,21 +1,28 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  StoreFunction,
+  TemplateObjects
+} from "components/ContentViews/QueryViewUtils";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickRefresh
+} from "components/ContextMenus/ContextMenuUtils";
+import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
+import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { ObjectType } from "../../models/objectType";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import { colors } from "../../styles/Colors";
-import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
-import { pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
 
 export interface TubularsContextMenuProps {
   wellbore: Wellbore;

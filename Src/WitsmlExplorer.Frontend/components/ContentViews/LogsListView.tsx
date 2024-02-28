@@ -1,33 +1,34 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import { MouseEvent, useContext, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import styled from "styled-components";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetObjects } from "../../hooks/query/useGetObjects";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import LogObject from "../../models/logObject";
-import { ObjectType } from "../../models/objectType";
-import { ItemNotFound } from "../../routes/ItemNotFound";
-import { RouterLogType } from "../../routes/routerConstants";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
-} from "../Constants";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import LogObjectContextMenu from "../ContextMenus/LogObjectContextMenu";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import formatDateString from "../DateFormatter";
-import ProgressSpinner from "../ProgressSpinner";
-import LogsGraph from "./Charts/LogsGraph";
+} from "components/Constants";
+import LogsGraph from "components/ContentViews/Charts/LogsGraph";
+import { CommonPanelContainer } from "components/ContentViews/CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import formatDateString from "components/DateFormatter";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import LogObject from "models/logObject";
+import { ObjectType } from "models/objectType";
+import { MouseEvent, useContext, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
+import { RouterLogType } from "routes/routerConstants";
+import styled from "styled-components";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -185,16 +186,6 @@ export default function LogsListView() {
 const filterLogsByType = (logs: LogObject[], logType: string) => {
   return logs?.filter((log) => log.indexType === logType) ?? [];
 };
-
-const CommonPanelContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  > p {
-    margin-left: -1rem;
-  }
-`;
 
 const ContentContainer = styled.div`
   display: flex;

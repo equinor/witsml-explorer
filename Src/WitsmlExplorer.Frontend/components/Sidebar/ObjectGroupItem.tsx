@@ -1,6 +1,17 @@
-import { ComponentType, MouseEvent, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
+import {
+  getContextMenuPosition,
+  preventContextMenuPropagation
+} from "components/ContextMenus/ContextMenu";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import ObjectsSidebarContextMenu, {
+  ObjectsSidebarContextMenuProps
+} from "components/ContextMenus/ObjectsSidebarContextMenu";
+import { EmptyTreeItem } from "components/Sidebar/EmptyTreeItem";
+import LogTypeItem from "components/Sidebar/LogTypeItem";
+import ObjectOnWellboreItem from "components/Sidebar/ObjectOnWellboreItem";
+import TreeItem from "components/Sidebar/TreeItem";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   Filter,
   FilterContext,
@@ -8,36 +19,25 @@ import {
   VisibilityStatus,
   isObjectFilterType,
   objectFilterTypeToObjects
-} from "../../contexts/filter";
-import OperationContext from "../../contexts/operationContext";
-import { OperationAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { useSidebar } from "../../contexts/sidebarContext";
-import { SidebarActionType } from "../../contexts/sidebarReducer";
-import { useGetCapObjects } from "../../hooks/query/useGetCapObjects";
-import { useGetObjectCount } from "../../hooks/query/useGetObjectCount";
-import { useGetObjects } from "../../hooks/query/useGetObjects";
-import { useGetWellbore } from "../../hooks/query/useGetWellbore";
-import { useObjectFilter } from "../../hooks/useObjectFilter";
-import LogObject from "../../models/logObject";
+} from "contexts/filter";
+import OperationContext from "contexts/operationContext";
+import { OperationAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { useSidebar } from "contexts/sidebarContext";
+import { SidebarActionType } from "contexts/sidebarReducer";
+import { useGetCapObjects } from "hooks/query/useGetCapObjects";
+import { useGetObjectCount } from "hooks/query/useGetObjectCount";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useObjectFilter } from "hooks/useObjectFilter";
+import LogObject from "models/logObject";
 import ObjectOnWellbore, {
   calculateObjectNodeId
-} from "../../models/objectOnWellbore";
-import { ObjectType } from "../../models/objectType";
-import Wellbore, { calculateObjectGroupId } from "../../models/wellbore";
-import {
-  getContextMenuPosition,
-  preventContextMenuPropagation
-} from "../ContextMenus/ContextMenu";
-import { pluralize } from "../ContextMenus/ContextMenuUtils";
-import { ObjectContextMenuProps } from "../ContextMenus/ObjectMenuItems";
-import ObjectsSidebarContextMenu, {
-  ObjectsSidebarContextMenuProps
-} from "../ContextMenus/ObjectsSidebarContextMenu";
-import { EmptyTreeItem } from "./EmptyTreeItem";
-import LogTypeItem from "./LogTypeItem";
-import ObjectOnWellboreItem from "./ObjectOnWellboreItem";
-import TreeItem from "./TreeItem";
+} from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import Wellbore, { calculateObjectGroupId } from "models/wellbore";
+import { ComponentType, MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface ObjectGroupItemProps {
   wellUid: string;

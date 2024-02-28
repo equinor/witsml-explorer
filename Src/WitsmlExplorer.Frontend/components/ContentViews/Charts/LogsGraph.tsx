@@ -5,15 +5,18 @@ import {
   CustomSeriesRenderItemParams
 } from "echarts";
 
+import {
+  ReactEChartsProps,
+  ReactLogChart
+} from "components/ContentViews/Charts/ReactLogChart";
+import { ContentTableRow } from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import OperationContext from "contexts/operationContext";
+import { DateTimeFormat } from "contexts/operationStateReducer";
+import LogObject from "models/logObject";
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
-import OperationContext from "../../../contexts/operationContext";
-import { DateTimeFormat } from "../../../contexts/operationStateReducer";
-import LogObject from "../../../models/logObject";
-import { RouterLogType } from "../../../routes/routerConstants";
-import formatDateString from "../../DateFormatter";
-import { ContentTableRow } from "../table";
-import { ReactEChartsProps, ReactLogChart } from "./ReactLogChart";
+import { RouterLogType } from "routes/routerConstants";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;

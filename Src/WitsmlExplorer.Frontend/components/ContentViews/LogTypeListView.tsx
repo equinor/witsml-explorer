@@ -1,8 +1,12 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentType
+} from "components/ContentViews/table";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import { ObjectType } from "../../models/objectType";
-import { RouterLogType } from "../../routes/routerConstants";
-import { ContentTable, ContentTableColumn, ContentType } from "./table";
+import { RouterLogType } from "routes/routerConstants";
 
 interface LogType {
   uid: number;

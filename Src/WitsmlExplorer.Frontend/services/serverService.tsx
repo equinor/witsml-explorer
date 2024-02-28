@@ -1,6 +1,6 @@
-import { ErrorDetails } from "../models/errorDetails";
-import { Server } from "../models/server";
-import { ApiClient, throwError } from "./apiClient";
+import { ErrorDetails } from "models/errorDetails";
+import { Server } from "models/server";
+import { ApiClient, throwError } from "services/apiClient";
 
 export default class ServerService {
   public static async getServers(abortSignal?: AbortSignal): Promise<Server[]> {

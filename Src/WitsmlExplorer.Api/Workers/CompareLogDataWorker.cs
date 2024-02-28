@@ -26,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers
         public JobType JobType => JobType.CompareLogData;
         private List<ICompareLogDataItem> _compareLogDataReportItems;
         private Dictionary<string, int> _mnemonicsMismatchCount;
-        private const int MaxMismatchesLimit = 10000;
+        private const int MaxMismatchesLimit = 500;
         private int _sourceDepthLogDecimals;
         private int _targetDepthLogDecimals;
         private int _smallestDepthLogDecimals;
@@ -34,6 +34,7 @@ namespace WitsmlExplorer.Api.Workers
         private bool _isDecreasing;
         private bool _isDepthLog;
         private bool _includeIndexDuplicates;
+        private bool _compareAllIndexes;
 
         public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
@@ -59,6 +60,7 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLog sourceLog = await LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
             WitsmlLog targetLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
             _includeIndexDuplicates = job.IncludeIndexDuplicates;
+            _compareAllIndexes = job.CompareAllIndexes;
 
             try
             {
@@ -67,6 +69,12 @@ namespace WitsmlExplorer.Api.Workers
                 // Check log type
                 _isDecreasing = sourceLog.Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
                 _isDepthLog = sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
+
+                // Set the logs shared index interval
+                if (!_compareAllIndexes)
+                {
+                    (sourceLog, targetLog) = SetSharedIndexInterval(sourceLog, targetLog);
+                }
 
                 List<string> sourceLogMnemonics = GetLogMnemonics(sourceLog);
                 List<string> targetLogMnemonics = GetLogMnemonics(targetLog);
@@ -81,7 +89,6 @@ namespace WitsmlExplorer.Api.Workers
                 {
 
                     _mnemonicsMismatchCount[mnemonic] = 0;
-                    if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
                     if (sharedMnemonics.Contains(mnemonic))
                     {
                         await AddSharedMnemonicData(sourceLog, targetLog, mnemonic);
@@ -106,9 +113,9 @@ namespace WitsmlExplorer.Api.Workers
             }
             catch (ArgumentException e)
             {
-                string message = $"CompareLogDataJob failed. Description: {job.Description()}. Error: {e.Message}";
+                string message = $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'";
                 Logger.LogError(message);
-                return (new WorkerResult(GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message), null);
+                return (new WorkerResult(GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message, e.Message, jobId: job.JobInfo.Id), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
@@ -139,9 +146,9 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
             {
-                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
 
-                var data = dataRow.Split(',');
+                var data = dataRow.Split(CommonConstants.DataSeparator);
                 var index = data.First();
                 var value = data.Last();
 
@@ -183,7 +190,7 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string index in indexes)
             {
-                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
 
                 if (sourceData.ContainsKey(index) && targetData.ContainsKey(index))
                 {
@@ -228,7 +235,7 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (string index in allIndexes)
             {
-                if (_compareLogDataReportItems.Count >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
 
                 string roundedIndex = RoundStringDouble(index, _smallestDepthLogDecimals);
 
@@ -269,18 +276,25 @@ namespace WitsmlExplorer.Api.Workers
             string mnemonicsMismatchCountResult = "\nNumber of mismatches for each mnemonic:";
             foreach (KeyValuePair<string, int> keyValues in sortedMnemonicsMismatchCount)
             {
-                mnemonicsMismatchCountResult += $"\n{keyValues.Key}: {keyValues.Value:n0}";
+                mnemonicsMismatchCountResult += keyValues.Value >= 500 ? $"\n{keyValues.Key}: {keyValues.Value:n0} or more" : $"\n{keyValues.Key}: {keyValues.Value:n0}";
             }
+
+            string indexRange = _compareAllIndexes ? "" : GetSharedIntervalReportFormat(sourceLog, targetLog);
 
             return new BaseReport
             {
                 Title = $"Log data comparison",
                 Summary = _compareLogDataReportItems.Count > 0
-                ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':" + mnemonicsMismatchCountResult
-                : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'.",
+                ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':{indexRange}" + mnemonicsMismatchCountResult
+                : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'{indexRange}.",
                 ReportItems = _compareLogDataReportItems,
-                WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"After finding {MaxMismatchesLimit:n0} mismatches in the data indexes, we stopped comparing logs since this is the maximum limit for mismatches during the search. Something is likely wrong with the compare log setup. However, the report for the comparison so far can be found below." : null,
+                WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"When finding {MaxMismatchesLimit:n0} mismatches while searching through data indexes for any mnemonic, we stop comparing the log data for that particular mnemonic. This is because {MaxMismatchesLimit:n0} is the maximum limit for mismatches during the search for each mnemonic. It indicates that there might be an issue with the compare log setup. However, you can still access the report for the comparison performed below." : null,
             };
+        }
+
+        private string GetSharedIntervalReportFormat(WitsmlLog sourceLog, WitsmlLog targetLog)
+        {
+            return _isDepthLog ? $"\nIndex interval: {sourceLog.StartIndex.Value} - {sourceLog.EndIndex.Value}" : $"\nIndex interval: {sourceLog.StartDateTimeIndex} - {sourceLog.EndDateTimeIndex}";
         }
 
         private List<string> GetLogMnemonics(WitsmlLog log)
@@ -342,7 +356,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private Dictionary<string, string> WitsmlLogDataToDictionary(WitsmlLogData logData)
         {
-            return logData.Data?.ToDictionary(row => row.Data.Split(',').First(), row => row.Data.Split(',').Last());
+            return logData.Data?.ToDictionary(row => row.Data.Split(CommonConstants.DataSeparator).First(), row => row.Data.Split(CommonConstants.DataSeparator).Last());
         }
 
         private void VerifyLogs(WitsmlLog sourceLog, WitsmlLog targetLog)
@@ -380,6 +394,52 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
             return newIndexes;
+        }
+
+        private (WitsmlLog, WitsmlLog) SetSharedIndexInterval(WitsmlLog sourceLog, WitsmlLog targetLog)
+        {
+            if (_isDepthLog)
+            {
+                if (sourceLog.StartIndex == null || sourceLog.EndIndex == null) throw new ArgumentException("The source log does not contain StartIndex or EndIndex.");
+                if (targetLog.StartIndex == null || targetLog.EndIndex == null) throw new ArgumentException("The target log does not contain StartIndex or EndIndex.");
+                double sourceLogStartIndex = StringHelpers.ToDouble(sourceLog.StartIndex.Value);
+                double sourceLogEndIndex = StringHelpers.ToDouble(sourceLog.EndIndex.Value);
+                double targetLogStartIndex = StringHelpers.ToDouble(targetLog.StartIndex.Value);
+                double targetLogEndIndex = StringHelpers.ToDouble(targetLog.EndIndex.Value);
+                double newStartIndex = _isDecreasing ? Math.Min(sourceLogStartIndex, targetLogStartIndex) : Math.Max(sourceLogStartIndex, targetLogStartIndex);
+                double newEndIndex = _isDecreasing ? Math.Max(sourceLogEndIndex, targetLogEndIndex) : Math.Min(sourceLogEndIndex, targetLogEndIndex);
+                bool containsSharedInterval = _isDecreasing ? newStartIndex >= newEndIndex : newStartIndex <= newEndIndex;
+
+                if (!containsSharedInterval) throw new ArgumentException("The logs do not have a shared index interval.");
+
+                sourceLog.StartIndex.Value = newStartIndex.ToString(CultureInfo.InvariantCulture);
+                sourceLog.EndIndex.Value = newEndIndex.ToString(CultureInfo.InvariantCulture);
+                targetLog.StartIndex.Value = newStartIndex.ToString(CultureInfo.InvariantCulture);
+                targetLog.EndIndex.Value = newEndIndex.ToString(CultureInfo.InvariantCulture);
+
+                return (sourceLog, targetLog);
+            }
+            else
+            {
+                if (sourceLog.StartDateTimeIndex == null || sourceLog.EndDateTimeIndex == null) throw new ArgumentException("The source log does not contain StartDateTimeIndex or EndDateTimeIndex.");
+                if (targetLog.StartDateTimeIndex == null || targetLog.EndDateTimeIndex == null) throw new ArgumentException("The target log does not contain StartDateTimeIndex or EndDateTimeIndex.");
+                var sourceLogStartDateTimeIndex = StringHelpers.ToDateTime(sourceLog.StartDateTimeIndex);
+                var sourceLogEndDateTimeIndex = StringHelpers.ToDateTime(sourceLog.EndDateTimeIndex);
+                var targetLogStartDateTimeIndex = StringHelpers.ToDateTime(targetLog.StartDateTimeIndex);
+                var targetLogEndDateTimeIndex = StringHelpers.ToDateTime(targetLog.EndDateTimeIndex);
+                var newStartDateTimeIndex = sourceLogStartDateTimeIndex >= targetLogStartDateTimeIndex ? sourceLogStartDateTimeIndex : targetLogStartDateTimeIndex;
+                var newEndDateTimeIndex = sourceLogEndDateTimeIndex <= targetLogEndDateTimeIndex ? sourceLogEndDateTimeIndex : targetLogEndDateTimeIndex;
+                bool containsSharedInterval = newStartDateTimeIndex <= newEndDateTimeIndex;
+
+                if (!containsSharedInterval) throw new ArgumentException("The logs do not have a shared time index interval.");
+
+                sourceLog.StartDateTimeIndex = newStartDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                sourceLog.EndDateTimeIndex = newEndDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                targetLog.StartDateTimeIndex = newStartDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                targetLog.EndDateTimeIndex = newEndDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+
+                return (sourceLog, targetLog);
+            }
         }
     }
 }

@@ -1,28 +1,35 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useContext } from "react";
-import { v4 as uuid } from "uuid";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import { DisplayModalAction } from "../../contexts/operationStateReducer";
-import OperationType from "../../contexts/operationType";
-import { useOpenInQueryView } from "../../hooks/useOpenInQueryView";
-import { ObjectType } from "../../models/objectType";
-import Rig from "../../models/rig";
-import { Server } from "../../models/server";
-import Wellbore from "../../models/wellbore";
-import { colors } from "../../styles/Colors";
-import { StoreFunction, TemplateObjects } from "../ContentViews/QueryViewUtils";
-import { PropertiesModalMode } from "../Modals/ModalParts";
+import {
+  StoreFunction,
+  TemplateObjects
+} from "components/ContentViews/QueryViewUtils";
+import ContextMenu from "components/ContextMenus/ContextMenu";
+import {
+  StyledIcon,
+  menuItemText,
+  onClickRefresh
+} from "components/ContextMenus/ContextMenuUtils";
+import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
+import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
+import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
 import RigPropertiesModal, {
   RigPropertiesModalProps
-} from "../Modals/RigPropertiesModal";
-import ContextMenu from "./ContextMenu";
-import { StyledIcon, menuItemText, onClickRefresh } from "./ContextMenuUtils";
-import { pasteObjectOnWellbore } from "./CopyUtils";
-import NestedMenuItem from "./NestedMenuItem";
-import { useClipboardReferencesOfType } from "./UseClipboardReferences";
+} from "components/Modals/RigPropertiesModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import { DisplayModalAction } from "contexts/operationStateReducer";
+import OperationType from "contexts/operationType";
+import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { ObjectType } from "models/objectType";
+import Rig from "models/rig";
+import { Server } from "models/server";
+import Wellbore from "models/wellbore";
+import React, { useContext } from "react";
+import { colors } from "styles/Colors";
+import { v4 as uuid } from "uuid";
 
 export interface RigsContextMenuProps {
   wellbore: Wellbore;
@@ -46,20 +53,20 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
       airGap: null,
-      approvals: "",
+      approvals: null,
       commonData: null,
-      classRig: "",
-      dTimEndOp: "",
-      dTimStartOp: "",
-      emailAddress: "",
-      faxNumber: "",
-      manufacturer: "",
-      nameContact: "",
-      owner: "",
+      classRig: null,
+      dTimEndOp: null,
+      dTimStartOp: null,
+      emailAddress: null,
+      faxNumber: null,
+      manufacturer: null,
+      nameContact: null,
+      owner: null,
       ratingDrillDepth: null,
       ratingWaterDepth: null,
-      registration: "",
-      telNumber: "",
+      registration: null,
+      telNumber: null,
       typeRig: "unknown",
       yearEntService: null
     };

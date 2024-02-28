@@ -1,27 +1,27 @@
-import React, { useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useConnectedServer } from "../../contexts/connectedServerContext";
-import OperationContext from "../../contexts/operationContext";
-import OperationType from "../../contexts/operationType";
-import { useGetServers } from "../../hooks/query/useGetServers";
-import { useGetWell } from "../../hooks/query/useGetWell";
-import { useGetWellbores } from "../../hooks/query/useGetWellbores";
-import { useExpandSidebarNodes } from "../../hooks/useExpandObjectGroupNodes";
-import EntityType from "../../models/entityType";
-import Wellbore from "../../models/wellbore";
-import { ItemNotFound } from "../../routes/ItemNotFound";
-import { getContextMenuPosition } from "../ContextMenus/ContextMenu";
-import WellboreContextMenu, {
-  WellboreContextMenuProps
-} from "../ContextMenus/WellboreContextMenu";
-import formatDateString from "../DateFormatter";
-import ProgressSpinner from "../ProgressSpinner";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
-} from "./table";
+} from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import WellboreContextMenu, {
+  WellboreContextMenuProps
+} from "components/ContextMenus/WellboreContextMenu";
+import formatDateString from "components/DateFormatter";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWell } from "hooks/query/useGetWell";
+import { useGetWellbores } from "hooks/query/useGetWellbores";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import EntityType from "models/entityType";
+import Wellbore from "models/wellbore";
+import React, { useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
