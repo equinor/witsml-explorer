@@ -1,3 +1,4 @@
+import { Banner } from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
@@ -12,9 +13,14 @@ import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useState } from "react";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
-import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
+import styled from "styled-components";
+import { indexToNumber } from "tools/IndexHelpers";
+import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
+import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
+import { Colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
 
 export interface SelectIndexToDisplayModalProps {
   log: LogObject;
@@ -26,14 +32,12 @@ export interface SelectIndexToDisplayModalProps {
 const SelectIndexToDisplayModal = (
   props: SelectIndexToDisplayModalProps
 ): React.ReactElement => {
+  const { logCurveInfoRows, wellUid, wellboreUid, log } = props;
   const {
-    logCurveInfoRows: logCurveInfoRow,
-    wellUid,
-    wellboreUid,
-    log
-  } = props;
+    operationState: { colors },
+    dispatchOperation
+  } = useContext(OperationContext);
   const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-  const { dispatchOperation } = useContext(OperationContext);
   const [startIndex, setStartIndex] = useState<string | number>(
     isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex)
   );
@@ -43,35 +47,45 @@ const SelectIndexToDisplayModal = (
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
+  const isUrlTooLong = checkIsUrlTooLong(
+    getToPathname(),
+    createLogCurveValuesSearchParams(startIndex, endIndex, getMnemonics())
+  );
+
+  function getToPathname() {
+    return `/servers/${encodeURIComponent(
+      connectedServer?.url
+    )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
+      ObjectType.Log
+    }/logtypes/${
+      log.indexType === WITSML_INDEX_TYPE_DATE_TIME
+        ? RouterLogType.TIME
+        : RouterLogType.DEPTH
+    }/objects/${log.uid}/curvevalues`;
+  }
+
+  function getMnemonics() {
+    return logCurveInfoRows
+      .filter((row) => row.mnemonic !== log.indexCurve)
+      .map((row) => row.mnemonic);
+  }
 
   const onSubmit = async () => {
     dispatchOperation({ type: OperationType.HideModal });
     // TODO: JSON.stringify adds a lot of meta around the mnemonics. Are there better options?
     // - Create own issue to optimize this.
 
-    // TODO: Handle max length of URL.
-    // - Must be fixed
-    const searchParams = createSearchParams({
-      mnemonics: JSON.stringify(
-        logCurveInfoRow
-          .filter((row) => row.mnemonic !== log.indexCurve)
-          .map((row) => row.mnemonic)
-      ),
-      startIndex: formatIndexValue(startIndex),
-      endIndex: formatIndexValue(endIndex)
-    });
-    navigate({
-      pathname: `/servers/${encodeURIComponent(
-        connectedServer?.url
-      )}/wells/${wellUid}/wellbores/${wellboreUid}/objectgroups/${
-        ObjectType.Log
-      }/logtypes/${
-        log.indexType === WITSML_INDEX_TYPE_DATE_TIME
-          ? RouterLogType.TIME
-          : RouterLogType.DEPTH
-      }/objects/${log.uid}/curvevalues`,
-      search: searchParams.toString()
-    });
+    const searchParams = isUrlTooLong
+      ? createLogCurveValuesSearchParams(startIndex, endIndex)
+      : createLogCurveValuesSearchParams(startIndex, endIndex, getMnemonics());
+    navigate(
+      { pathname: getToPathname(), search: searchParams.toString() },
+      {
+        state: {
+          mnemonics: JSON.stringify(getMnemonics())
+        }
+      }
+    );
   };
 
   const toggleConfirmDisabled = (isValid: boolean) => {
@@ -110,6 +124,20 @@ const SelectIndexToDisplayModal = (
                   onValidChange={toggleConfirmDisabled}
                 />
               )}
+              {isUrlTooLong && (
+                <StyledBanner colors={colors}>
+                  <Banner.Icon variant="warning">
+                    <Icon name="infoCircle" />
+                  </Banner.Icon>
+                  <Banner.Message>
+                    The selected number of mnemonics is too large to be saved in
+                    the URL because the URL exceeds the maximum length of 2000
+                    characters. Therefore, it will not be possible to share this
+                    URL with others to open the chosen mnemonics on the given
+                    log.
+                  </Banner.Message>
+                </StyledBanner>
+              )}
             </>
           }
           onSubmit={onSubmit}
@@ -124,3 +152,20 @@ const SelectIndexToDisplayModal = (
 };
 
 export default SelectIndexToDisplayModal;
+
+const StyledBanner = styled(Banner)<{ colors: Colors }>`
+  background-color: ${(props) => props.colors.ui.backgroundDefault};
+  span {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  div {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
+  p {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  hr {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
+`;

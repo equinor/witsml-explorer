@@ -49,6 +49,7 @@ import React, {
 } from "react";
 import {
   createSearchParams,
+  useLocation,
   useParams,
   useSearchParams
 } from "react-router-dom";
@@ -77,14 +78,15 @@ export const CurveValuesView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const mnemonicsSearchParams = searchParams.get("mnemonics");
-  const mnemonics = useMemo(
-    () => JSON.parse(mnemonicsSearchParams),
-    [mnemonicsSearchParams]
-  );
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
+  const mnemonics = useMemo(
+    () => getMnemonics(),
+    [mnemonicsSearchParams, location]
+  );
   const {
     operationState: { colors },
     dispatchOperation
@@ -129,6 +131,16 @@ export const CurveValuesView = (): React.ReactElement => {
     const enumToString = selectedValue as DownloadOptions;
     downloadOptions = enumToString;
   };
+
+  function getMnemonics() {
+    if (mnemonicsSearchParams) {
+      return JSON.parse(mnemonicsSearchParams);
+    } else if (location?.state?.mnemonics) {
+      return JSON.parse(location.state.mnemonics);
+    } else {
+      return [];
+    }
+  }
 
   const onRowSelectionChange = useCallback(
     (rows: CurveValueRow[]) => setSelectedRows(rows),
