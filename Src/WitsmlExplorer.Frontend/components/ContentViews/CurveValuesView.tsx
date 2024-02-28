@@ -618,9 +618,6 @@ export const CurveValuesView = (): React.ReactElement => {
       <ContentContainer>
         <CommonPanelContainer>
           <EditSelectedLogCurveInfo
-            startIndex={startIndex}
-            endIndex={endIndex}
-            mnemonics={mnemonics}
             disabled={autoRefresh}
             key="editSelectedLogCurveInfo"
             overrideStartIndex={autoRefresh ? getCurrentMinIndex() : null}

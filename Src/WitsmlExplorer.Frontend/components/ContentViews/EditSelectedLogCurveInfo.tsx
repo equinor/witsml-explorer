@@ -19,9 +19,15 @@ import {
   SetStateAction,
   useContext,
   useEffect,
+  useMemo,
   useState
 } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams
+} from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
@@ -29,9 +35,6 @@ import { Colors, colors, dark } from "styles/Colors";
 import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
 
 interface EditSelectedLogCurveInfoProps {
-  startIndex: string;
-  endIndex: string;
-  mnemonics: string[];
   disabled?: boolean;
   overrideStartIndex?: string;
   overrideEndIndex?: string;
@@ -43,15 +46,8 @@ const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 const EditSelectedLogCurveInfo = (
   props: EditSelectedLogCurveInfoProps
 ): React.ReactElement => {
-  const {
-    startIndex,
-    endIndex,
-    mnemonics,
-    disabled,
-    overrideStartIndex,
-    overrideEndIndex,
-    onClickRefresh
-  } = props;
+  const { disabled, overrideStartIndex, overrideEndIndex, onClickRefresh } =
+    props;
   const { operationState } = useContext(OperationContext);
   const { theme, colors } = operationState;
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
@@ -65,6 +61,16 @@ const EditSelectedLogCurveInfo = (
       objectUid,
       ComponentType.Mnemonic
     );
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mnemonicsSearchParams = searchParams.get("mnemonics");
+  const startIndex = searchParams.get("startIndex");
+  const endIndex = searchParams.get("endIndex");
+  const mnemonics = useMemo(
+    () => getMnemonics(),
+    [mnemonicsSearchParams, location]
+  );
   const [selectedMnemonics, setSelectedMnemonics] =
     useState<string[]>(mnemonics);
   const [selectedStartIndex, setSelectedStartIndex] = useState<string>(
@@ -76,8 +82,22 @@ const EditSelectedLogCurveInfo = (
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
-  const location = useLocation();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    setSelectedMnemonics(getMnemonics());
+    setSelectedStartIndex(startIndex);
+    setSelectedEndIndex(endIndex);
+  }, [mnemonicsSearchParams, startIndex, endIndex]);
+
+  function getMnemonics() {
+    if (mnemonicsSearchParams) {
+      return JSON.parse(mnemonicsSearchParams);
+    } else if (location?.state?.mnemonics) {
+      return JSON.parse(location.state.mnemonics);
+    } else {
+      return [];
+    }
+  }
 
   useEffect(() => {
     if (overrideStartIndex)
