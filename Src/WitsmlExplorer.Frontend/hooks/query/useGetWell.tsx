@@ -48,7 +48,8 @@ export const wellQuery = (
     return well;
   },
   ...options,
-  enabled: !!server && !!wellUid && !(options?.enabled === false)
+  enabled: !!server && !!wellUid && !(options?.enabled === false),
+  gcTime: Infinity // We don't want to garbage collect wells
 });
 
 type WellQueryResult = Omit<QueryObserverResult<Well, unknown>, "data"> & {
