@@ -27,14 +27,12 @@ import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import Wellbore from "models/wellbore";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
-  wellbore: Wellbore;
 }
 
 export const ObjectMenuItems = (
@@ -45,7 +43,6 @@ export const ObjectMenuItems = (
   dispatchOperation: DispatchOperation,
   queryClient: QueryClient,
   openInQueryView: OpenInQueryView,
-  wellbore: Wellbore,
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
@@ -58,8 +55,8 @@ export const ObjectMenuItems = (
           dispatchOperation,
           queryClient,
           selectedServer.url,
-          wellbore.wellUid,
-          wellbore.uid,
+          checkedObjects[0].wellUid,
+          checkedObjects[0].wellboreUid,
           objectType,
           checkedObjects[0].uid
         )
@@ -118,12 +115,12 @@ export const ObjectMenuItems = (
     <MenuItem
       key={"pasteObject"}
       onClick={() =>
-        pasteObjectOnWellbore(
-          servers,
-          objectReferences,
-          dispatchOperation,
-          wellbore
-        )
+        pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, {
+          wellUid: checkedObjects[0].wellUid,
+          wellboreUid: checkedObjects[0].wellboreUid,
+          wellName: checkedObjects[0].wellName,
+          wellboreName: checkedObjects[0].wellboreName
+        })
       }
       disabled={objectReferences === null}
     >
@@ -183,8 +180,8 @@ export const ObjectMenuItems = (
             openInQueryView({
               templateObject: ObjectTypeToTemplateObject[objectType],
               storeFunction: StoreFunction.GetFromStore,
-              wellUid: wellbore.wellUid,
-              wellboreUid: wellbore.uid,
+              wellUid: checkedObjects[0].wellUid,
+              wellboreUid: checkedObjects[0].wellboreUid,
               objectUid: checkedObjects[0].uid
             })
           }
@@ -202,8 +199,8 @@ export const ObjectMenuItems = (
             openInQueryView({
               templateObject: ObjectTypeToTemplateObject[objectType],
               storeFunction: StoreFunction.AddToStore,
-              wellUid: wellbore.wellUid,
-              wellboreUid: wellbore.uid,
+              wellUid: checkedObjects[0].wellUid,
+              wellboreUid: checkedObjects[0].wellboreUid,
               objectUid: uuid()
             })
           }

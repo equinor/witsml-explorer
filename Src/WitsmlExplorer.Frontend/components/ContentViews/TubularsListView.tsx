@@ -11,7 +11,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ObjectType } from "models/objectType";
 import Tubular from "models/tubular";
@@ -26,8 +25,6 @@ export default function TubularsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-
   const { objects: tubulars } = useGetObjects(
     connectedServer,
     wellUid,
@@ -43,8 +40,7 @@ export default function TubularsListView() {
     tubulars: Tubular[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: tubulars,
-      wellbore: wellbore
+      checkedObjects: tubulars
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

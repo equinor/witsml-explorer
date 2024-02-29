@@ -30,7 +30,7 @@ import { colors } from "styles/Colors";
 const TrajectoryContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
+  const { checkedObjects } = props;
   const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(
@@ -102,7 +102,6 @@ const TrajectoryContextMenu = (
           dispatchOperation,
           queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

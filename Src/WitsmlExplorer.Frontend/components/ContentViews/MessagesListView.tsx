@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import MessageObject from "models/messageObject";
 import { ObjectType } from "models/objectType";
@@ -30,8 +29,6 @@ export default function MessagesListView() {
   } = useContext(OperationContext);
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-
   const { objects: messages } = useGetObjects(
     connectedServer,
     wellUid,
@@ -103,8 +100,7 @@ export default function MessagesListView() {
     checkedMessageObjectRows: MessageObjectRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedMessageObjectRows.map((row) => row.message),
-      wellbore
+      checkedObjects: checkedMessageObjectRows.map((row) => row.message)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

@@ -59,7 +59,7 @@ import { v4 as uuid } from "uuid";
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
+  const { checkedObjects } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
@@ -429,7 +429,6 @@ const LogObjectContextMenu = (
           dispatchOperation,
           queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

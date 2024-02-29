@@ -37,6 +37,7 @@ import OperationType from "contexts/operationType";
 import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
@@ -236,7 +237,7 @@ const WellboreContextMenu = (
               servers,
               objectReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={objectReferences === null}

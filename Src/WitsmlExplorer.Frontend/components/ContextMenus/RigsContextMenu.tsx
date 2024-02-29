@@ -23,6 +23,7 @@ import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
 import { Server } from "models/server";
@@ -115,7 +116,7 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
               servers,
               rigReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={rigReferences === null}

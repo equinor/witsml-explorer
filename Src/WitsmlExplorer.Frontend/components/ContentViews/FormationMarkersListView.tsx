@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import FormationMarker from "models/formationMarker";
 import { measureToString } from "models/measure";
@@ -32,8 +31,6 @@ export default function FormationMarkersListView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-
   const { objects: formationMarkers } = useGetObjects(
     connectedServer,
     wellUid,
@@ -93,8 +90,7 @@ export default function FormationMarkersListView() {
     checkedRows: FormationMarkerRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedRows.map((row) => row.formationMarker),
-      wellbore
+      checkedObjects: checkedRows.map((row) => row.formationMarker)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

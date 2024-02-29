@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { measureToString } from "models/measure";
 import MudLog from "models/mudLog";
@@ -40,8 +39,6 @@ export default function MudLogsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-
   const { objects: mudLogs } = useGetObjects(
     connectedServer,
     wellUid,
@@ -119,8 +116,7 @@ export default function MudLogsListView() {
     checkedRows: MudLogRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedRows.map((row) => row.mudLog),
-      wellbore
+      checkedObjects: checkedRows.map((row) => row.mudLog)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

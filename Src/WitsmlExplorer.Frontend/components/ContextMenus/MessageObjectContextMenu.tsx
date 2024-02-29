@@ -35,7 +35,7 @@ import { colors } from "styles/Colors";
 const MessageObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
+  const { checkedObjects } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
@@ -119,7 +119,6 @@ const MessageObjectContextMenu = (
           dispatchOperation,
           queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

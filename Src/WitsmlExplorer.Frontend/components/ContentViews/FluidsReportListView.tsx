@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import FluidsReport from "models/fluidsReport";
 import { measureToString } from "models/measure";
@@ -31,9 +30,7 @@ export default function FluidsReportsListView() {
   } = useContext(OperationContext);
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const navigate = useNavigate();
-
   const { objects: fluidsReports } = useGetObjects(
     connectedServer,
     wellUid,
@@ -101,8 +98,7 @@ export default function FluidsReportsListView() {
     checkedFluidsReportRows: FluidsReportRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedFluidsReportRows.map((row) => row.fluidsReport),
-      wellbore
+      checkedObjects: checkedFluidsReportRows.map((row) => row.fluidsReport)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

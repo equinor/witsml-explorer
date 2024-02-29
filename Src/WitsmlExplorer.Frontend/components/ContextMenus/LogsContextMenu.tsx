@@ -28,6 +28,7 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
@@ -108,7 +109,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               servers,
               logReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={logReferences === null}

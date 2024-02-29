@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
@@ -30,8 +29,6 @@ export default function RigsListView() {
   } = useContext(OperationContext);
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-
   const { objects: rigs } = useGetObjects(
     connectedServer,
     wellUid,
@@ -141,8 +138,7 @@ export default function RigsListView() {
     checkedRigRows: RigRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedRigRows.map((row) => row.rig),
-      wellbore
+      checkedObjects: checkedRigRows.map((row) => row.rig)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
