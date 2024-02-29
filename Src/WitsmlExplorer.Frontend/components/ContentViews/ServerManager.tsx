@@ -59,6 +59,7 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const disconnectServer = () => {
+    AuthorizationService.setSelectedServer(null);
     setConnectedServer(null);
   };
 
