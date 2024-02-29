@@ -40,7 +40,6 @@ import { DeleteWellboreJob } from "models/jobs/deleteJobs";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
 import JobService, { JobType } from "services/jobService";
@@ -50,14 +49,13 @@ import { v4 as uuid } from "uuid";
 export interface WellboreContextMenuProps {
   servers: Server[];
   wellbore: Wellbore;
-  well: Well;
   checkedWellboreRows?: WellboreRow[];
 }
 
 const WellboreContextMenu = (
   props: WellboreContextMenuProps
 ): React.ReactElement => {
-  const { wellbore, well, checkedWellboreRows, servers } = props;
+  const { wellbore, checkedWellboreRows, servers } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
@@ -163,7 +161,7 @@ const WellboreContextMenu = (
     refreshWellboreQuery(
       queryClient,
       connectedServer?.url,
-      well.uid,
+      wellbore.wellUid,
       wellbore.uid
     );
   };
@@ -209,7 +207,7 @@ const WellboreContextMenu = (
     const host = `${window.location.protocol}//${window.location.host}`;
     const wellboreUrl = `${host}/servers/${encodeURIComponent(
       server.url
-    )}/wells/${well.uid}/wellbores/${wellbore.uid}/objectgroups`;
+    )}/wells/${wellbore.wellUid}/wellbores/${wellbore.uid}/objectgroups`;
     window.open(wellboreUrl);
   };
 
@@ -287,7 +285,7 @@ const WellboreContextMenu = (
                 openInQueryView({
                   templateObject: TemplateObjects.Wellbore,
                   storeFunction: StoreFunction.GetFromStore,
-                  wellUid: well.uid,
+                  wellUid: wellbore.wellUid,
                   wellboreUid: wellbore.uid
                 })
               }
@@ -304,7 +302,7 @@ const WellboreContextMenu = (
                 openInQueryView({
                   templateObject: TemplateObjects.Wellbore,
                   storeFunction: StoreFunction.AddToStore,
-                  wellUid: well.uid,
+                  wellUid: wellbore.wellUid,
                   wellboreUid: uuid()
                 })
               }
@@ -327,7 +325,7 @@ const WellboreContextMenu = (
                     openInQueryView({
                       templateObject: ObjectTypeToTemplateObject[objectType],
                       storeFunction: StoreFunction.AddToStore,
-                      wellUid: well.uid,
+                      wellUid: wellbore.wellUid,
                       wellboreUid: wellbore.uid,
                       objectUid: uuid()
                     })

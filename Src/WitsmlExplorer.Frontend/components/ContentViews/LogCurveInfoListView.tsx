@@ -22,8 +22,6 @@ import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
-import { useGetWell } from "hooks/query/useGetWell";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
 import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
@@ -61,15 +59,6 @@ export default function LogCurveInfoListView() {
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
-  const { well, isFetching: isFetchingWell } = useGetWell(
-    connectedServer,
-    wellUid
-  );
-  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
-    connectedServer,
-    wellUid,
-    wellboreUid
-  );
   const {
     object: logObject,
     isFetching: isFetchingLog,
@@ -90,11 +79,7 @@ export default function LogCurveInfoListView() {
       ComponentType.Mnemonic
     );
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
-  const isFetching =
-    isFetchingWell ||
-    isFetchingWellbore ||
-    isFetchingLog ||
-    isFetchingLogCurveInfo;
+  const isFetching = isFetchingLog || isFetchingLogCurveInfo;
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
 
@@ -129,8 +114,6 @@ export default function LogCurveInfoListView() {
       dispatchOperation,
       selectedLog: logObject,
       selectedServer: connectedServer,
-      selectedWell: well,
-      selectedWellbore: wellbore,
       servers,
       prioritizedCurves,
       setPrioritizedCurves

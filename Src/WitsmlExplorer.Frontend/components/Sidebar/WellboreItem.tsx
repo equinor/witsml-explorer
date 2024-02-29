@@ -33,7 +33,6 @@ import OperationType from "contexts/operationType";
 import { useSidebar } from "contexts/sidebarContext";
 import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetServers } from "hooks/query/useGetServers";
-import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { ObjectType } from "models/objectType";
 import Wellbore from "models/wellbore";
@@ -64,16 +63,11 @@ export default function WellboreItem({
   const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
   const { dispatchSidebar } = useSidebar();
-  const { well, isFetching: isFetchingWell } = useGetWell(
-    connectedServer,
-    wellUid
-  );
-  const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
+  const { wellbore, isFetching } = useGetWellbore(
     connectedServer,
     wellUid,
     wellboreUid
   );
-  const isFetching = isFetchingWell || isFetchingWellbore;
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,
@@ -82,8 +76,7 @@ export default function WellboreItem({
     preventContextMenuPropagation(event);
     const contextMenuProps: WellboreContextMenuProps = {
       servers,
-      wellbore,
-      well
+      wellbore
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

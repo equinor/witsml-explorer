@@ -7,7 +7,6 @@ import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -37,7 +36,6 @@ export default function ObjectOnWellboreItem({
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-  const { well } = useGetWell(connectedServer, wellUid);
   const {
     wellUid: urlWellUid,
     wellboreUid: urlWellboreUid,
@@ -62,8 +60,8 @@ export default function ObjectOnWellboreItem({
     navigate(
       getObjectViewPath(
         connectedServer?.url,
-        well.uid,
-        wellbore.uid,
+        wellUid,
+        wellboreUid,
         objectType,
         objectOnWellbore.uid
       )
