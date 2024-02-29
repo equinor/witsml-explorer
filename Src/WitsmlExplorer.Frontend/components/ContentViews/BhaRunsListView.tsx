@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import BhaRun from "models/bhaRun";
 import { ObjectType } from "models/objectType";
@@ -30,8 +29,6 @@ export default function BhaRunsListView() {
   } = useContext(OperationContext);
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-
   const { objects: bhaRuns } = useGetObjects(
     connectedServer,
     wellUid,
@@ -114,8 +111,7 @@ export default function BhaRunsListView() {
     checkedBhaRunRows: BhaRunRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedBhaRunRows.map((row) => row.bhaRun),
-      wellbore
+      checkedObjects: checkedBhaRunRows.map((row) => row.bhaRun)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

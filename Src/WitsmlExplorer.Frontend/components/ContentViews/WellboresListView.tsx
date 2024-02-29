@@ -77,7 +77,6 @@ export default function WellboresListView() {
     const contextMenuProps: WellboreContextMenuProps = {
       servers,
       wellbore,
-      well: well,
       checkedWellboreRows
     };
     const position = getContextMenuPosition(event);

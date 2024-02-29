@@ -30,7 +30,7 @@ import { colors } from "styles/Colors";
 const WbGeometryObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
+  const { checkedObjects } = props;
   const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(
@@ -102,7 +102,6 @@ const WbGeometryObjectContextMenu = (
           dispatchOperation,
           queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

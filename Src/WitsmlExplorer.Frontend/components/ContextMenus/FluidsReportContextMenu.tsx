@@ -24,7 +24,7 @@ import { colors } from "styles/Colors";
 const FluidsReportContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
+  const { checkedObjects } = props;
   const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
@@ -67,7 +67,6 @@ const FluidsReportContextMenu = (
           dispatchOperation,
           queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

@@ -24,7 +24,6 @@ import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeId,
   calculateLogTypeTimeId,
-  calculateObjectGroupId,
   calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "models/wellbore";
 import { Fragment, MouseEvent, useContext } from "react";
@@ -50,7 +49,6 @@ export default function LogTypeItem({
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-  const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
   const navigate = useNavigate();
@@ -140,7 +138,6 @@ export default function LogTypeItem({
           WITSML_INDEX_TYPE_MD,
           wellUid,
           wellboreUid,
-          logGroup,
           isSelected,
           connectedServer?.url
         )}
@@ -165,7 +162,6 @@ export default function LogTypeItem({
           WITSML_INDEX_TYPE_DATE_TIME,
           wellUid,
           wellboreUid,
-          logGroup,
           isSelected,
           connectedServer?.url
         )}
@@ -183,7 +179,6 @@ const listLogItemsByType = (
   logType: string,
   wellUid: string,
   wellboreUid: string,
-  logGroup: string,
   isSelected: (log: LogObject) => boolean,
   serverUrl: string
 ) => {
@@ -195,13 +190,6 @@ const listLogItemsByType = (
     <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
       <LogItem
         log={log}
-        wellUid={wellUid}
-        wellboreUid={wellboreUid}
-        logGroup={logGroup}
-        logTypeGroup={calculateLogTypeId(
-          { wellUid, uid: wellboreUid },
-          logType
-        )}
         nodeId={calculateObjectNodeId(log, ObjectType.Log)}
         selected={isSelected(log)}
         objectGrowing={log.objectGrowing}

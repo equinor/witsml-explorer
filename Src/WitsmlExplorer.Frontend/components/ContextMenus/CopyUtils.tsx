@@ -14,7 +14,6 @@ import ObjectOnWellbore, {
 } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import Wellbore from "models/wellbore";
 import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 
@@ -36,16 +35,10 @@ export const pasteObjectOnWellbore = async (
   servers: Server[],
   objectReferences: ObjectReferences,
   dispatchOperation: DispatchOperation,
-  wellbore: Wellbore
+  wellboreReference: WellboreReference
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const orderCopyJob = () => {
-    const wellboreReference: WellboreReference = {
-      wellUid: wellbore.wellUid,
-      wellboreUid: wellbore.uid,
-      wellName: wellbore.wellName,
-      wellboreName: wellbore.name
-    };
     const copyJob: CopyObjectsJob = {
       source: objectReferences,
       target: wellboreReference

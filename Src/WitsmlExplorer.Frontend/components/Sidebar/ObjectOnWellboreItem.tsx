@@ -7,8 +7,6 @@ import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { useGetWell } from "hooks/query/useGetWell";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { calculateObjectNodeId } from "models/wellbore";
@@ -36,8 +34,6 @@ export default function ObjectOnWellboreItem({
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-  const { well } = useGetWell(connectedServer, wellUid);
   const {
     wellUid: urlWellUid,
     wellboreUid: urlWellboreUid,
@@ -48,8 +44,7 @@ export default function ObjectOnWellboreItem({
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: ObjectContextMenuProps = {
-      checkedObjects: [objectOnWellbore],
-      wellbore
+      checkedObjects: [objectOnWellbore]
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -62,8 +57,8 @@ export default function ObjectOnWellboreItem({
     navigate(
       getObjectViewPath(
         connectedServer?.url,
-        well.uid,
-        wellbore.uid,
+        wellUid,
+        wellboreUid,
         objectType,
         objectOnWellbore.uid
       )
@@ -75,7 +70,11 @@ export default function ObjectOnWellboreItem({
       nodeId={nodeId}
       labelText={objectOnWellbore.name}
       selected={
-        calculateObjectNodeId(wellbore, objectType, objectOnWellbore.uid) ===
+        calculateObjectNodeId(
+          { wellUid, uid: wellboreUid },
+          objectType,
+          objectOnWellbore.uid
+        ) ===
         calculateObjectNodeId(
           { wellUid: urlWellUid, uid: urlWellboreUid },
           objectGroup,

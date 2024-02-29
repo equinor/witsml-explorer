@@ -24,7 +24,7 @@ import { colors } from "styles/Colors";
 const BhaRunContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
+  const { checkedObjects } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const { servers } = useGetServers();
@@ -56,7 +56,6 @@ const BhaRunContextMenu = (
           dispatchOperation,
           queryClient,
           openInQueryView,
-          wellbore,
           []
         ),
         <Divider key={"divider"} />,

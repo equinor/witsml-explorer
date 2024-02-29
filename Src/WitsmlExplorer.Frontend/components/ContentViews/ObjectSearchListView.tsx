@@ -148,8 +148,7 @@ export const ObjectSearchListView = (): ReactElement => {
     });
     const fetchedObject = await fetchSelectedObject(checkedObjectRow);
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: [fetchedObject],
-      wellbore: checkedObjectRow.wellbore
+      checkedObjects: [fetchedObject]
     };
     const component = ObjectTypeToContextMenu[checkedObjectRow.objectType];
     if (component) {

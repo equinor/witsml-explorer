@@ -37,10 +37,10 @@ import OperationType from "contexts/operationType";
 import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
@@ -51,14 +51,13 @@ import { v4 as uuid } from "uuid";
 export interface WellboreContextMenuProps {
   servers: Server[];
   wellbore: Wellbore;
-  well: Well;
   checkedWellboreRows?: WellboreRow[];
 }
 
 const WellboreContextMenu = (
   props: WellboreContextMenuProps
 ): React.ReactElement => {
-  const { wellbore, well, checkedWellboreRows, servers } = props;
+  const { wellbore, checkedWellboreRows, servers } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
@@ -164,7 +163,7 @@ const WellboreContextMenu = (
     refreshWellboreQuery(
       queryClient,
       connectedServer?.url,
-      well.uid,
+      wellbore.wellUid,
       wellbore.uid
     );
   };
@@ -210,7 +209,7 @@ const WellboreContextMenu = (
     const host = `${window.location.protocol}//${window.location.host}`;
     const objectGroupsViewPath = getObjectGroupsViewPath(
       server.url,
-      well.uid,
+      wellbore.wellUid,
       wellbore.uid
     );
     window.open(`${host}${objectGroupsViewPath}`);
@@ -241,7 +240,7 @@ const WellboreContextMenu = (
               servers,
               objectReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={objectReferences === null}
@@ -290,7 +289,7 @@ const WellboreContextMenu = (
                 openInQueryView({
                   templateObject: TemplateObjects.Wellbore,
                   storeFunction: StoreFunction.GetFromStore,
-                  wellUid: well.uid,
+                  wellUid: wellbore.wellUid,
                   wellboreUid: wellbore.uid
                 })
               }
@@ -307,7 +306,7 @@ const WellboreContextMenu = (
                 openInQueryView({
                   templateObject: TemplateObjects.Wellbore,
                   storeFunction: StoreFunction.AddToStore,
-                  wellUid: well.uid,
+                  wellUid: wellbore.wellUid,
                   wellboreUid: uuid()
                 })
               }
@@ -330,7 +329,7 @@ const WellboreContextMenu = (
                     openInQueryView({
                       templateObject: ObjectTypeToTemplateObject[objectType],
                       storeFunction: StoreFunction.AddToStore,
-                      wellUid: well.uid,
+                      wellUid: wellbore.wellUid,
                       wellboreUid: wellbore.uid,
                       objectUid: uuid()
                     })

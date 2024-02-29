@@ -36,8 +36,6 @@ import { createComponentReferences } from "models/jobs/componentReferences";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import Well from "models/well";
-import Wellbore from "models/wellbore";
 import React from "react";
 import { JobType } from "services/jobService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
@@ -51,8 +49,6 @@ export interface LogCurveInfoContextMenuProps {
   ) => void;
   selectedLog: LogObject;
   selectedServer: Server;
-  selectedWell: Well;
-  selectedWellbore: Wellbore;
   servers: Server[];
   prioritizedCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
@@ -66,8 +62,6 @@ const LogCurveInfoContextMenu = (
     dispatchOperation,
     selectedLog,
     selectedServer,
-    selectedWell,
-    selectedWellbore,
     servers,
     prioritizedCurves,
     setPrioritizedCurves
@@ -87,8 +81,8 @@ const LogCurveInfoContextMenu = (
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const modalProps = {
-      wellUid: selectedWell.uid,
-      wellboreUid: selectedWellbore.uid,
+      wellUid: selectedLog.wellUid,
+      wellboreUid: selectedLog.wellboreUid,
       log: selectedLog,
       logCurveInfoRows: checkedLogCurveInfoRows
     };

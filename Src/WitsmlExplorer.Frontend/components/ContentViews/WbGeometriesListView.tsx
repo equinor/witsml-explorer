@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
@@ -32,8 +31,6 @@ export default function WbGeometriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-
   const { objects: wbGeometries } = useGetObjects(
     connectedServer,
     wellUid,
@@ -104,8 +101,7 @@ export default function WbGeometriesListView() {
     checkedWbGeometryObjectRows: WbGeometryObjectRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedWbGeometryObjectRows.map((row) => row.wbGeometry),
-      wellbore
+      checkedObjects: checkedWbGeometryObjectRows.map((row) => row.wbGeometry)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

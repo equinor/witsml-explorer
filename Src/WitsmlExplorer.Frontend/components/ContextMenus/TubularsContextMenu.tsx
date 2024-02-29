@@ -17,6 +17,7 @@ import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboa
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
@@ -68,7 +69,7 @@ const TubularsContextMenu = (
               servers,
               tubularReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={tubularReferences === null}

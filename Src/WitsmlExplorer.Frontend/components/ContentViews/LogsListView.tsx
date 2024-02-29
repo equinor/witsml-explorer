@@ -69,8 +69,7 @@ export default function LogsListView() {
     checkedLogObjectRows: LogObjectRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedLogObjectRows.map((row) => row.logObject),
-      wellbore
+      checkedObjects: checkedLogObjectRows.map((row) => row.logObject)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

@@ -29,7 +29,7 @@ import { colors } from "styles/Colors";
 const MudLogContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
+  const { checkedObjects } = props;
   const { servers } = useGetServers();
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
@@ -98,7 +98,6 @@ const MudLogContextMenu = (
           dispatchOperation,
           queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

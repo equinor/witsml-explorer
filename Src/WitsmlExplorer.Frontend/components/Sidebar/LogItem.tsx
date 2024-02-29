@@ -5,20 +5,14 @@ import {
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TreeItem from "components/Sidebar/TreeItem";
-import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import LogObject from "models/logObject";
 import { MouseEvent, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface LogItemProps {
   log: LogObject;
-  wellUid: string;
-  wellboreUid: string;
-  logGroup: string;
-  logTypeGroup: string;
   selected: boolean;
   nodeId: string;
   objectGrowing: boolean;
@@ -26,9 +20,7 @@ interface LogItemProps {
 }
 
 export default function LogItem({
-  log: log,
-  wellUid,
-  wellboreUid,
+  log,
   selected,
   nodeId,
   objectGrowing,
@@ -36,14 +28,11 @@ export default function LogItem({
 }: LogItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
   const navigate = useNavigate();
-  const { connectedServer } = useConnectedServer();
-  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: [log],
-      wellbore
+      checkedObjects: [log]
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
