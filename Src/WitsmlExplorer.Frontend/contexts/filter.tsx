@@ -195,7 +195,7 @@ export const isSitecomSyntax = (str: string) => {
 
 export const getSearchRegex = (str: string): RegExp => {
   let newStr = str;
-  if (str == "") {
+  if (!str) {
     newStr = ".+"; // Any string that is not empty
   } else {
     newStr = str

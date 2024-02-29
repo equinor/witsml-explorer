@@ -23,15 +23,12 @@ import {
   useParams
 } from "react-router-dom";
 import {
-  getJobsViewPath,
   getLogObjectViewPath,
   getLogObjectsViewPath,
   getLogTypesViewPath,
   getObjectGroupsViewPath,
   getObjectViewPath,
   getObjectsViewPath,
-  getQueryViewPath,
-  getSearchViewPath,
   getWellboresViewPath,
   getWellsViewPath
 } from "routes/utils/pathBuilder";
@@ -81,9 +78,9 @@ export default function Nav() {
     });
     return [
       getServerCrumb(connectedServer, navigate),
-      getJobsCrumb(serverUrl, isJobsView, navigate),
-      getQueryCrumb(serverUrl, isQueryView, navigate),
-      getSearchCrumb(serverUrl, filterType, isSearchView, navigate),
+      getJobsCrumb(isJobsView),
+      getQueryCrumb(isQueryView),
+      getSearchCrumb(isSearchView),
       getWellCrumb(serverUrl, well, navigate),
       getWellboreCrumb(serverUrl, wellbore, navigate),
       ...groupCrumbs,
@@ -283,48 +280,26 @@ function getObjectCrumb<T extends ObjectType>(
     : {};
 }
 
-const getJobsCrumb = (
-  serverUrl: string,
-  isJobsView: boolean,
-  navigate: NavigateFunction
-) => {
+const getJobsCrumb = (isJobsView: boolean) => {
   return isJobsView
     ? {
-        name: "Jobs",
-        onClick: () => {
-          navigate(getJobsViewPath(serverUrl));
-        }
+        name: "Jobs"
       }
     : {};
 };
 
-const getQueryCrumb = (
-  serverUrl: string,
-  isQueryView: boolean,
-  navigate: NavigateFunction
-) => {
+const getQueryCrumb = (isQueryView: boolean) => {
   return isQueryView
     ? {
-        name: "Query",
-        onClick: () => {
-          navigate(getQueryViewPath(serverUrl));
-        }
+        name: "Query"
       }
     : {};
 };
 
-const getSearchCrumb = (
-  serverUrl: string,
-  filterType: string,
-  isSearchView: boolean,
-  navigate: NavigateFunction
-) => {
+const getSearchCrumb = (isSearchView: boolean) => {
   return isSearchView
     ? {
-        name: "Search",
-        onClick: () => {
-          navigate(getSearchViewPath(serverUrl, filterType));
-        }
+        name: "Search"
       }
     : {};
 };

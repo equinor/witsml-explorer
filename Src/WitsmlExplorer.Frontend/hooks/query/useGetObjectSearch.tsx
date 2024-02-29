@@ -37,7 +37,7 @@ export const getObjectSearchQueryKey = (
     serverUrl?.toLowerCase(),
     filterType,
     fetchAllObjects ? QUERY_KEY_OBJECT_SEARCH_ALL : "",
-    fetchAllObjects || needToFetchAllObjects(value) ? "" : value
+    fetchAllObjects || needToFetchAllObjects(value) ? "" : value?.toLowerCase()
   ];
 };
 
@@ -59,7 +59,11 @@ export const objectSearchQuery = (
     return well;
   },
   ...options,
-  enabled: !!server && !!filterType && !(options?.enabled === false),
+  enabled:
+    !!server &&
+    !!filterType &&
+    !(value === null || value === undefined) &&
+    !(options?.enabled === false),
   retry: 0,
   gcTime: 5 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // We don't want to cache unused search results for too long.
 });
