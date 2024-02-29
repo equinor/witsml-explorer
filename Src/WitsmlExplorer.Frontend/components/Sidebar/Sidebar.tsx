@@ -11,8 +11,8 @@ import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
 import styled, { CSSProp } from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import { WellIndicator } from "../StyledComponents/WellIndicator";
 
 const Sidebar = (): React.ReactElement => {
   const { navigationState, dispatchNavigation } = useContext(NavigationContext);
@@ -107,22 +107,6 @@ const SidebarTreeView = styled.div`
       }
     }
   }
-`;
-
-export const WellIndicator = styled.div<{
-  compactMode: boolean;
-  active: boolean;
-  colors: Colors;
-}>`
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  margin: ${(props) =>
-    props.compactMode ? "0.625rem 0 0 0.5rem" : "1.125rem 0 0 0.5rem"};
-  ${(props) =>
-    props.active
-      ? `background-color: ${props.colors.interactive.successHover};`
-      : `border: 2px solid ${props.colors.text.staticIconsTertiary};`}
 `;
 
 export default Sidebar;
