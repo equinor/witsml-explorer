@@ -74,10 +74,6 @@ export default function AuthRoute() {
         }
       },
       onCancel: () => {
-        AuthorizationService.onAuthorizationChangeDispatch({
-          server,
-          status: AuthorizationStatus.Cancel
-        });
         if (initialLogin) navigate("/");
       }
     };
