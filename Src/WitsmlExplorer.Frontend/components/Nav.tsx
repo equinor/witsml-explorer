@@ -45,15 +45,8 @@ export default function Nav() {
   const isJobsView = !!useMatch("servers/:serverUrl/jobs");
   const isQueryView = !!useMatch("servers/:serverUrl/query");
   const isSearchView = !!useMatch("servers/:serverUrl/search/:filterType");
-  const {
-    serverUrl,
-    wellUid,
-    wellboreUid,
-    objectGroup,
-    objectUid,
-    logType,
-    filterType
-  } = useParams();
+  const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
+    useParams();
   const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
   const { well } = useGetWell(connectedServer, wellUid);
@@ -94,7 +87,6 @@ export default function Nav() {
   }, [
     connectedServer,
     serverUrl,
-    filterType,
     objectGroup,
     well,
     wellbore,
