@@ -46,6 +46,7 @@ import React from "react";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import { getWellboresViewPath } from "witsml-explorer-frontend/routes/utils/pathBuilder";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -196,10 +197,8 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const host = `${window.location.protocol}//${window.location.host}`;
-    const wellUrl = `${host}/servers/${encodeURIComponent(server.url)}/wells/${
-      well.uid
-    }/wellbores`;
-    window.open(wellUrl);
+    const wellboresViewPath = getWellboresViewPath(server.url, well.uid);
+    window.open(`${host}${wellboresViewPath}`);
   };
 
   const onClickBatchUpdate = () => {
