@@ -1,6 +1,5 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
 import LogsGraph from "components/ContentViews/Charts/LogsGraph";
-import { CommonPanelContainer } from "components/ContentViews/CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
@@ -19,7 +18,10 @@ import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { calculateLogTypeId, calculateLogTypeTimeId } from "models/wellbore";
 import React, { useContext, useEffect, useState } from "react";
-import styled from "styled-components";
+import {
+  ContentContainer,
+  CommonPanelContainer
+} from "../StyledComponents/Container";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -195,11 +197,5 @@ export const LogsListView = (): React.ReactElement => {
     <></>
   );
 };
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`;
 
 export default LogsListView;

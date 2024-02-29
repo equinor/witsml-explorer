@@ -8,7 +8,7 @@ import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
 import React, { useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
-import styled from "styled-components";
+import { Layout } from "../StyledComponents/Layout";
 
 export interface LogCurveInfoPropertiesModalProps {
   logCurveInfo: LogCurveInfo;
@@ -166,11 +166,5 @@ const LogCurveInfoPropertiesModal = (
     </>
   );
 };
-
-const Layout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(1, auto);
-  gap: 1rem;
-`;
 
 export default LogCurveInfoPropertiesModal;

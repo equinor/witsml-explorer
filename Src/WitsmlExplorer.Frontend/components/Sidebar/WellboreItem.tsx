@@ -27,7 +27,7 @@ import WellboreContextMenu, {
 import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import LogTypeItem from "components/Sidebar/LogTypeItem";
 import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
-import { WellIndicator } from "components/Sidebar/Sidebar";
+import { WellIndicator } from "../StyledComponents/WellIndicator";
 import TreeItem from "components/Sidebar/TreeItem";
 import ModificationType from "contexts/modificationType";
 import {

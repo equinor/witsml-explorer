@@ -14,7 +14,7 @@ import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
-import styled from "styled-components";
+import { Layout } from "../StyledComponents/Layout";
 
 export interface MudLogPropertiesModalProps {
   mudLog: MudLog;
@@ -228,11 +228,5 @@ const EditableTextField = (
     />
   );
 };
-
-const Layout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(1, auto);
-  gap: 1rem;
-`;
 
 export default MudLogPropertiesModal;

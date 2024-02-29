@@ -51,6 +51,10 @@ import { truncateAbortHandler } from "services/apiClient";
 import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
+import {
+  ContentContainer,
+  CommonPanelContainer
+} from "../StyledComponents/Container";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -677,22 +681,6 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
       return ContentType.Number;
   }
 };
-
-export const CommonPanelContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  > p {
-    margin-left: -1rem;
-  }
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`;
 
 const alignLayout: CSSProperties = {
   display: "flex",
