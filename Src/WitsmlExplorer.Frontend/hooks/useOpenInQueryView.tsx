@@ -5,6 +5,7 @@ import OperationType from "contexts/operationType";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { getQueryViewPath } from "routes/utils/pathBuilder";
 
 export type OpenInQueryView = (templatePreset: QueryTemplatePreset) => void;
 
@@ -21,7 +22,7 @@ export const useOpenInQueryView = () => {
         type: QueryActionType.SetFromTemplatePreset,
         templatePreset
       });
-      navigate(`servers/${encodeURIComponent(connectedServer?.url)}/query`);
+      navigate(getQueryViewPath(connectedServer?.url));
     },
     [dispatchOperation, dispatchQuery, connectedServer]
   );

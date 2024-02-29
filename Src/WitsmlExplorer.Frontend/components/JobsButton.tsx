@@ -3,6 +3,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { getJobsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -19,7 +20,7 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
   const navigate = useNavigate();
 
   const onClick = () => {
-    navigate(`servers/${encodeURIComponent(connectedServer?.url)}/jobs`);
+    navigate(getJobsViewPath(connectedServer?.url));
   };
 
   return (

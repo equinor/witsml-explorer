@@ -19,6 +19,7 @@ import { useGetWells } from "hooks/query/useGetWells";
 import Well from "models/well";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { WELLBORES_PATH } from "routes/routerConstants";
 
 export interface WellRow extends ContentTableRow, Well {}
 
@@ -53,7 +54,7 @@ export default function WellsListView() {
   ];
 
   const onSelect = (well: any) => {
-    navigate(`${well.uid}/wellbores`);
+    navigate(`${well.uid}/${WELLBORES_PATH}`);
   };
 
   const onContextMenu = (

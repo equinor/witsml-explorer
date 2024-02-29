@@ -21,6 +21,7 @@ import { Server, emptyServer } from "models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { getWellsViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -48,7 +49,7 @@ const ServerManager = (): React.ReactElement => {
         AuthorizationService.onAuthorized(server, username);
         AuthorizationService.setSelectedServer(server);
         setConnectedServer(server);
-        navigate(`servers/${encodeURIComponent(server.url)}/wells`);
+        navigate(getWellsViewPath(server.url));
       }
     };
     dispatchOperation({
@@ -131,11 +132,7 @@ const ServerManager = (): React.ReactElement => {
                 <Table.Cell style={CellStyle}>
                   {isConnected(server) ? (
                     <StyledLink
-                      onClick={() =>
-                        navigate(
-                          `servers/${encodeURIComponent(server.url)}/wells`
-                        )
-                      }
+                      onClick={() => navigate(getWellsViewPath(server.url))}
                     >
                       {server.name}
                     </StyledLink>

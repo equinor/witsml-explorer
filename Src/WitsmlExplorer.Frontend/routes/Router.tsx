@@ -1,5 +1,20 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  JOBS_VIEW_ROUTE_PATH,
+  LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
+  LOG_OBJECTS_VIEW_ROUTE_PATH,
+  LOG_OBJECT_VIEW_ROUTE_PATH,
+  LOG_TYPES_VIEW_ROUTE_PATH,
+  OBJECTS_VIEW_ROUTE_PATH,
+  OBJECT_GROUPS_VIEW_ROUTE_PATH,
+  OBJECT_VIEW_ROUTE_PATH,
+  QUERY_VIEW_ROUTE_PATH,
+  SEARCH_VIEW_ROUTE_PATH,
+  SERVER_ROUTE_PATH,
+  WELLSBORES_VIEW_ROUTE_PATH,
+  WELLS_VIEW_ROUTE_PATH
+} from "routes/routerConstants";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import { ErrorView } from "../components/ContentViews/ErrorView";
@@ -32,8 +47,6 @@ const queryClient = new QueryClient({
   }
 });
 
-// TODO: Find a good way to use navigate.
-// TODO: Also make sure that we navigate to the parent if we are viewing a object, and then delete it.
 const router = createBrowserRouter([
   {
     path: "/",
@@ -46,67 +59,67 @@ const router = createBrowserRouter([
         errorElement: <ErrorView />
       },
       {
-        path: "servers/:serverUrl",
+        path: SERVER_ROUTE_PATH,
         element: <AuthRoute />,
         errorElement: <ErrorView />,
         children: [
           {
-            path: "wells",
+            path: WELLS_VIEW_ROUTE_PATH,
             element: <WellsListView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores",
+            path: WELLSBORES_VIEW_ROUTE_PATH,
             element: <WellboresListView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups",
+            path: OBJECT_GROUPS_VIEW_ROUTE_PATH,
             element: <WellboreObjectTypesListView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects",
+            path: OBJECTS_VIEW_ROUTE_PATH,
             element: <ObjectsListView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/objects/:objectUid",
+            path: OBJECT_VIEW_ROUTE_PATH,
             element: <ObjectView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/",
+            path: LOG_TYPES_VIEW_ROUTE_PATH,
             element: <LogTypeListView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects",
+            path: LOG_OBJECTS_VIEW_ROUTE_PATH,
             element: <LogsListView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects/:objectUid",
+            path: LOG_OBJECT_VIEW_ROUTE_PATH,
             element: <LogCurveInfoListView />,
             errorElement: <ErrorView />
           },
           {
-            path: "wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/objects/:objectUid/curvevalues",
+            path: LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
             element: <CurveValuesView />,
             errorElement: <ErrorView />
           },
           {
-            path: "jobs",
+            path: JOBS_VIEW_ROUTE_PATH,
             element: <JobsView />,
             errorElement: <ErrorView />
           },
           {
-            path: "query",
+            path: QUERY_VIEW_ROUTE_PATH,
             element: <QueryView />,
             errorElement: <ErrorView />
           },
           {
-            path: "search/:filterType",
+            path: SEARCH_VIEW_ROUTE_PATH,
             element: <ObjectSearchListView />,
             errorElement: <ErrorView />
           },
