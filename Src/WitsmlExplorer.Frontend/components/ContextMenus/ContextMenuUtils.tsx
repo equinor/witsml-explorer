@@ -15,17 +15,17 @@ import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import { Fragment } from "react";
 import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getLogObjectsViewPath,
+  getLogTypesViewPath,
+  getObjectViewPath,
+  getObjectsViewPath
+} from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
-
-const indexCurveToQuery = (indexCurve: IndexCurve) => {
-  if (!indexCurve) return "logtypes";
-  return indexCurve === IndexCurve.Depth
-    ? `logtypes/${RouterLogType.DEPTH}/objects`
-    : `logtypes/${RouterLogType.TIME}/objects`;
-};
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -69,17 +69,37 @@ export const onClickShowObjectOnServer = async (
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
-  const objectTypeString =
-    objectType === ObjectType.Log ? indexCurveToQuery(indexCurve) : "objects";
-  const objectString = isExpandableGroupObject(objectType)
-    ? objectOnWellbore.uid
-    : "";
-  const url = `${host}/servers/${encodeURIComponent(server.url)}/wells/${
-    objectOnWellbore.wellUid
-  }/wellbores/${
-    objectOnWellbore.wellboreUid
-  }/objectgroups/${objectType}/${objectTypeString}/${objectString}`;
-  window.open(url);
+  let url = "";
+  if (objectType === ObjectType.Log) {
+    const logTypePath =
+      indexCurve === IndexCurve.Depth
+        ? RouterLogType.DEPTH
+        : RouterLogType.TIME;
+    url = getLogObjectViewPath(
+      server.url,
+      objectOnWellbore.wellUid,
+      objectOnWellbore.wellboreUid,
+      objectType,
+      logTypePath,
+      objectOnWellbore.uid
+    );
+  } else if (isExpandableGroupObject(objectType)) {
+    url = getObjectViewPath(
+      server.url,
+      objectOnWellbore.wellUid,
+      objectOnWellbore.wellboreUid,
+      objectType,
+      objectOnWellbore.uid
+    );
+  } else {
+    url = getObjectsViewPath(
+      server.url,
+      objectOnWellbore.wellUid,
+      objectOnWellbore.wellboreUid,
+      objectType
+    );
+  }
+  window.open(`${host}${url}`);
 };
 
 export const onClickShowGroupOnServer = async (
@@ -91,12 +111,35 @@ export const onClickShowGroupOnServer = async (
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
-  const objectTypeString =
-    objectType === ObjectType.Log ? indexCurveToQuery(indexCurve) : "objects";
-  const url = `${host}/servers/${encodeURIComponent(server.url)}/wells/${
-    wellbore.wellUid
-  }/wellbores/${wellbore.uid}/objectgroups/${objectType}/${objectTypeString}`;
-  window.open(url);
+  let url = "";
+  if (objectType === ObjectType.Log && indexCurve) {
+    const logTypePath =
+      indexCurve === IndexCurve.Depth
+        ? RouterLogType.DEPTH
+        : RouterLogType.TIME;
+    url = getLogObjectsViewPath(
+      server.url,
+      wellbore.wellUid,
+      wellbore.uid,
+      objectType,
+      logTypePath
+    );
+  } else if (objectType === ObjectType.Log) {
+    url = getLogTypesViewPath(
+      server.url,
+      wellbore.wellUid,
+      wellbore.uid,
+      objectType
+    );
+  } else {
+    url = getObjectsViewPath(
+      server.url,
+      wellbore.wellUid,
+      wellbore.uid,
+      objectType
+    );
+  }
+  window.open(`${host}${url}`);
 };
 
 export const onClickDeleteObjects = async (
