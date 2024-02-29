@@ -43,10 +43,10 @@ import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React from "react";
+import { getWellboresViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
-import { getWellboresViewPath } from "witsml-explorer-frontend/routes/utils/pathBuilder";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
