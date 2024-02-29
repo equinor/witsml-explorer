@@ -12,6 +12,7 @@ import OperationType from "contexts/operationType";
 import { Server } from "models/server";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import AuthorizationService, {
+  AuthorizationStatus,
   BasicServerCredentials,
   ConnectionInformation
 } from "services/authorizationService";
@@ -169,6 +170,10 @@ const UserCredentialsModal = (
       confirmText={confirmText ?? "Login"}
       onSubmit={onVerifyConnection}
       onCancel={() => {
+        AuthorizationService.onAuthorizationChangeDispatch({
+          server,
+          status: AuthorizationStatus.Cancel
+        });
         dispatchOperation({ type: OperationType.HideModal });
         if (props.onCancel) {
           props.onCancel();
