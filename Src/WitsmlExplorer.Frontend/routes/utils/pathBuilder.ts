@@ -39,8 +39,8 @@ export function getQueryViewPath(serverUrl: string) {
 export function getSearchViewPath(serverUrl: string, filterType: string) {
   const searchViewPath = SEARCH_VIEW_NAVIGATION_PATH.replace(
     SERVER_URL_PARAM,
-    encodeURIComponent(serverUrl).replace(FILTER_TYPE_PARAM, filterType)
-  );
+    encodeURIComponent(serverUrl)
+  ).replace(FILTER_TYPE_PARAM, filterType);
   return searchViewPath;
 }
 
