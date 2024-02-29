@@ -23,6 +23,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
 import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
+import { ReportModal } from "components/Modals/ReportModal";
 import ProgressSpinner from "components/ProgressSpinner";
 import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
@@ -34,6 +35,7 @@ import {
   DeleteLogCurveValuesJob,
   IndexRange
 } from "models/jobs/deleteLogCurveValuesJob";
+import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
@@ -46,6 +48,7 @@ import React, {
   useState
 } from "react";
 import { truncateAbortHandler } from "services/apiClient";
+import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
 
@@ -196,7 +199,6 @@ export const CurveValuesView = (): React.ReactElement => {
     switch (downloadOptions) {
       case DownloadOptions.All:
         exportAll();
-        displayDownloadProgress(dispatchOperation);
         break;
       case DownloadOptions.IntervalOfData:
         exportSelectedIndexRange();
@@ -204,52 +206,8 @@ export const CurveValuesView = (): React.ReactElement => {
       case DownloadOptions.SelectedIndexValues:
         exportSelectedDataPoints();
     }
+    downloadOptions = DownloadOptions.IntervalOfData;
   };
-
-  const exportAll = useCallback(async () => {
-    const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
-    const startIndexIsInclusive = !autoRefresh;
-    controller.current = new AbortController();
-
-    const logData: LogData = await LogObjectService.getLogData(
-      selectedWell.uid,
-      selectedWellbore.uid,
-      selectedLog.uid,
-      mnemonics,
-      startIndexIsInclusive,
-      selectedLog.startIndex,
-      selectedLog.endIndex,
-      true,
-      controller.current.signal
-    );
-
-    const logDataRows = logData.data.map((data) => {
-      const row: CurveValueRow = {
-        id: String(data[selectedLog.indexCurve]),
-        ...data
-      };
-      return row;
-    });
-    const exportColumns = columns
-      .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
-      .join(exportOptions.separator);
-
-    const data = orderBy(logDataRows, getComparatorByColumn(columns[0]), [
-      Order.Ascending,
-      Order.Ascending
-    ]) //Sorted because order is important when importing data
-      .map((row) =>
-        columns
-          .map((col) => row[col.columnOf.mnemonic] as string)
-          .join(exportOptions.separator)
-      )
-      .join(exportOptions.newLineCharacter);
-    exportData(
-      `${selectedWellbore.name}-${selectedLog.name}`,
-      exportColumns,
-      data
-    );
-  }, [columns]);
 
   const exportSelectedIndexRange = useCallback(() => {
     const exportColumns = columns
@@ -441,6 +399,29 @@ export const CurveValuesView = (): React.ReactElement => {
     }
   };
 
+  const exportAll = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logReference: LogObject = selectedLog;
+    const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
+    const startIndexIsInclusive = !autoRefresh;
+    const downloadAllLogDataJob: DownloadAllLogDataJob = {
+      logReference,
+      mnemonics,
+      startIndexIsInclusive
+    };
+    const jobId = await JobService.orderJob(
+      JobType.DownloadAllLogData,
+      downloadAllLogDataJob
+    );
+    if (jobId) {
+      const reportModalProps = { jobId };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ReportModal {...reportModalProps} />
+      });
+    }
+  };
+
   const displayConfirmation = (dispatchOperation: DispatchOperation) => {
     const confirmation = (
       <ConfirmModal
@@ -448,6 +429,7 @@ export const CurveValuesView = (): React.ReactElement => {
         content={
           <>
             <span>Choose download option?</span>
+
             <label style={alignLayout}>
               <Radio
                 name="group"
@@ -490,30 +472,6 @@ export const CurveValuesView = (): React.ReactElement => {
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: confirmation
-    });
-  };
-
-  const displayDownloadProgress = (dispatchOperation: DispatchOperation) => {
-    const dowloadProgress = (
-      <ConfirmModal
-        heading={"Download of data in progress"}
-        content={
-          <>
-            You can close that window. File will be available in the jobs view
-            when ready.
-          </>
-        }
-        onConfirm={() => {
-          dispatchOperation({ type: OperationType.HideModal });
-        }}
-        confirmText={"OK"}
-        showCancelButton={false}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: dowloadProgress
     });
   };
 

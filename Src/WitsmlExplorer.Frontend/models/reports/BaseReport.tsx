@@ -3,18 +3,21 @@ export default interface BaseReport {
   summary: string;
   reportItems: any[];
   warningMessage?: string;
+  downloadImmediately?: boolean;
 }
 
 export const createReport = (
   title = "",
   summary = "",
   reportItems: any[] = [],
-  warningMessage: string = null
+  warningMessage: string = null,
+  downloadImmediately: boolean = null
 ): BaseReport => {
   return {
     title,
     summary,
     reportItems,
-    warningMessage
+    warningMessage,
+    downloadImmediately
   };
 };
