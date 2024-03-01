@@ -140,7 +140,7 @@ export default function TrajectoryView() {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      downloadToCsvFileName={`Trajectory_${trajectory.name}`}
+      downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
     />
   );
 }

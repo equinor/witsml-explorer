@@ -136,7 +136,7 @@ export default function TubularView() {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      downloadToCsvFileName={`Tubular_${tubular.name}`}
+      downloadToCsvFileName={`Tubular_${tubular?.name}`}
     />
   );
 }
