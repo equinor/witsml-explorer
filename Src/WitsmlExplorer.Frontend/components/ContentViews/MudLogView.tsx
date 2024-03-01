@@ -155,7 +155,7 @@ export default function MudLogView() {
       checkableRows
       insetColumns={insetColumns}
       showRefresh
-      downloadToCsvFileName={`MudLog_${mudLog.name}`}
+      downloadToCsvFileName={`MudLog_${mudLog?.name}`}
     />
   );
 }
