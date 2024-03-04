@@ -26,7 +26,7 @@ import React, {
   useState
 } from "react";
 import JobService, { JobType } from "services/jobService";
-import styled from "styled-components";
+import { Layout } from "../StyledComponents/Layout";
 
 export interface GeologyIntervalPropertiesModalInterface {
   geologyInterval: GeologyInterval;
@@ -426,11 +426,5 @@ const MeasureField = (props: MeasureFieldProps): React.ReactElement => {
     />
   );
 };
-
-const Layout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(1, auto);
-  gap: 1rem;
-`;
 
 export default GeologyIntervalPropertiesModal;

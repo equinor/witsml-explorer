@@ -26,6 +26,7 @@ import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
+import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -232,7 +233,7 @@ const displayDeleteModal = (
     <ConfirmModal
       heading={`Delete ${toDeleteTypeName}?`}
       content={
-        <Layout>
+        <ModalContentLayout>
           <TextField
             readOnly
             id="server"
@@ -270,7 +271,7 @@ const displayDeleteModal = (
               })}
             </strong>
           </span>
-        </Layout>
+        </ModalContentLayout>
       }
       onConfirm={onDelete}
       confirmColor={"danger"}
@@ -282,9 +283,3 @@ const displayDeleteModal = (
     payload: confirmation
   });
 };
-
-const Layout = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-`;

@@ -1,5 +1,5 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import { CommonPanelContainer } from "components/ContentViews/CurveValuesView";
+import { CommonPanelContainer } from "components/StyledComponents/Container";
 import {
   ContentTable,
   ContentTableColumn,

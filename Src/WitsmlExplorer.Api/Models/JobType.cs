@@ -43,6 +43,7 @@ namespace WitsmlExplorer.Api.Models
         SpliceLogs,
         CompareLogData,
         CountLogDataRows,
-        BatchModifyLogCurveInfo
+        BatchModifyLogCurveInfo,
+        DownloadAllLogData
     }
 }

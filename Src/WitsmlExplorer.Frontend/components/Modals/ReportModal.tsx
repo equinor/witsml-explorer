@@ -15,6 +15,7 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import useExport from "hooks/useExport";
 import BaseReport, { createReport } from "models/reports/BaseReport";
 import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
@@ -100,7 +101,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
               ) : (
                 <Typography>{report.summary}</Typography>
               )}
-              {columns.length > 0 && (
+              {columns.length > 0 && report.downloadImmediately !== true && (
                 <ContentTable
                   columns={columns}
                   data={report.reportItems}
@@ -137,8 +138,38 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
   const { connectedServer } = useConnectedServer();
   const [report, setReport] = useState<BaseReport>(null);
+  const { exportData, exportOptions } = useExport();
 
   if (!jobId) return null;
+
+  const downloadData = (reportItems: any[], reportTitle: string) => {
+    if (reportItems === null) {
+      return;
+    }
+
+    const columns: ContentTableColumn[] =
+      reportItems.length > 0
+        ? Object.keys(reportItems[0]).map((key) => ({
+            property: key,
+            label: key,
+            type: ContentType.String
+          }))
+        : [];
+
+    const exportColumns = columns
+      .map((column) => `${column.property}]`)
+      .join(exportOptions.separator);
+
+    const data = reportItems
+      .map((row) =>
+        columns
+          .map((col) => row[col.property] as string)
+          .join(exportOptions.separator)
+      )
+      .join(exportOptions.newLineCharacter);
+
+    exportData(reportTitle, exportColumns, data);
+  };
 
   useEffect(() => {
     const unsubscribeOnJobFinished =
@@ -154,6 +185,9 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
               );
             } else {
               setReport(jobInfo.report);
+              if (jobInfo.report.downloadImmediately === true) {
+                downloadData(jobInfo.report.reportItems, jobInfo.report.title);
+              }
             }
           }
         }
