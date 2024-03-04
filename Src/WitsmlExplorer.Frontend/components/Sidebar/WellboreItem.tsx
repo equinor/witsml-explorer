@@ -25,7 +25,7 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
 import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
-import { WellIndicator } from "components/Sidebar/Sidebar";
+import { WellIndicator } from "../StyledComponents/WellIndicator";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";

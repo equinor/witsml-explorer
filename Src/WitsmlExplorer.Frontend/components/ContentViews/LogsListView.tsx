@@ -4,7 +4,6 @@ import {
   WITSML_INDEX_TYPE_MD
 } from "components/Constants";
 import LogsGraph from "components/ContentViews/Charts/LogsGraph";
-import { CommonPanelContainer } from "components/ContentViews/CurveValuesView";
 import {
   ContentTable,
   ContentTableColumn,
@@ -28,7 +27,10 @@ import { MouseEvent, useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
-import styled from "styled-components";
+import {
+  CommonPanelContainer,
+  ContentContainer
+} from "../StyledComponents/Container";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -185,9 +187,3 @@ export default function LogsListView() {
 const filterLogsByType = (logs: LogObject[], logType: string) => {
   return logs?.filter((log) => log.indexType === logType) ?? [];
 };
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`;
