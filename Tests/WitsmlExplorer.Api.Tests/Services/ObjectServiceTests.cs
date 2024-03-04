@@ -127,16 +127,14 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             SetupReturnsObjectList(EntityType.FluidsReport, 0);
             SetupReturnsObjectList(EntityType.MudLog, 2);
-            SetupReturnsObjectList(EntityType.Rig, 3);
             SetupReturnsObjectList(EntityType.Trajectory, 4);
             SetupReturnsObjectList(EntityType.Tubular, 5);
             SetupReturnsObjectList(EntityType.WbGeometry, 6);
 
             Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
-            Assert.Equal(6, result.Count);
+            Assert.Equal(5, result.Count);
             Assert.Equal(0, result[EntityType.FluidsReport]);
             Assert.Equal(2, result[EntityType.MudLog]);
-            Assert.Equal(3, result[EntityType.Rig]);
             Assert.Equal(4, result[EntityType.Trajectory]);
             Assert.Equal(5, result[EntityType.Tubular]);
             Assert.Equal(6, result[EntityType.WbGeometry]);

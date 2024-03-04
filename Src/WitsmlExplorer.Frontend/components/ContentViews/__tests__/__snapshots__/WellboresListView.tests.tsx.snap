@@ -233,7 +233,7 @@ exports[`Should render when selected well is not set 1`] = `
       id=":r1:"
     >
       <div
-        class="Paper__StyledPaper-sc-6ncnv9-0 fxxOOu Menu__MenuPaper-sc-1vlnqcj-0 uVmMH ColumnOptionsMenu__StyledMenu-sc-1qppr5x-7 hgoRm"
+        class="Paper__StyledPaper-sc-6ncnv9-0 fxxOOu Menu__MenuPaper-sc-1vlnqcj-0 uVmMH ColumnOptionsMenu__StyledMenu-sc-1qppr5x-5 dfYBUI"
         style="position: absolute; top: 0px; left: 0px;"
         tabindex="-1"
       >
@@ -369,7 +369,7 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <div
-                class="ColumnOptionsMenu__Draggable-sc-1qppr5x-4 ixRREp"
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
                 draggable="true"
               >
                 <p
@@ -463,7 +463,7 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <div
-                class="ColumnOptionsMenu__Draggable-sc-1qppr5x-4 ixRREp"
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
                 draggable="true"
               >
                 <p
@@ -557,7 +557,7 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <div
-                class="ColumnOptionsMenu__Draggable-sc-1qppr5x-4 ixRREp"
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
                 draggable="true"
               >
                 <p
@@ -651,7 +651,7 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <div
-                class="ColumnOptionsMenu__Draggable-sc-1qppr5x-4 ixRREp"
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
                 draggable="true"
               >
                 <p
@@ -745,7 +745,7 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <div
-                class="ColumnOptionsMenu__Draggable-sc-1qppr5x-4 ixRREp"
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
                 draggable="true"
               >
                 <p
@@ -840,7 +840,7 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <div
-                class="ColumnOptionsMenu__Draggable-sc-1qppr5x-4 ixRREp"
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
                 draggable="true"
               >
                 <p
@@ -851,7 +851,7 @@ exports[`Should render when selected well is not set 1`] = `
               </div>
             </div>
             <div
-              class="ColumnOptionsMenu__DummyDrop-sc-1qppr5x-3 viRxK"
+              class="DragDropTable__DummyDrop-sc-fss4ac-0 eOnFAg"
               style="margin-left: 70px;"
             >
               <div
@@ -860,10 +860,10 @@ exports[`Should render when selected well is not set 1`] = `
             </div>
           </div>
           <div
-            class="ColumnOptionsMenu__ResetContainer-sc-1qppr5x-5 bVjGBh"
+            class="ColumnOptionsMenu__ResetContainer-sc-1qppr5x-3 ilxnKL"
           >
             <button
-              class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi ColumnOptionsMenu__ResetButton-sc-1qppr5x-6 iaqhBe"
+              class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi ColumnOptionsMenu__ResetButton-sc-1qppr5x-4 fifnQA"
               tabindex="0"
               type="button"
             >
@@ -874,7 +874,7 @@ exports[`Should render when selected well is not set 1`] = `
               </span>
             </button>
             <button
-              class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi ColumnOptionsMenu__ResetButton-sc-1qppr5x-6 iaqhBe"
+              class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi ColumnOptionsMenu__ResetButton-sc-1qppr5x-4 fifnQA"
               tabindex="0"
               type="button"
             >
