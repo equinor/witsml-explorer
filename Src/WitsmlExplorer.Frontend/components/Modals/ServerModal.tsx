@@ -31,6 +31,7 @@ import React, {
   useContext,
   useState
 } from "react";
+import AuthorizationService from "services/authorizationService";
 import NotificationService from "services/notificationService";
 import ServerService from "services/serverService";
 import styled from "styled-components";
@@ -77,7 +78,10 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
           server,
           abortController.signal
         );
-        if (freshServer) refreshServersQuery(queryClient);
+        if (freshServer) {
+          refreshServersQuery(queryClient);
+          AuthorizationService.onServerStateChange(server);
+        }
       }
     } catch (error) {
       NotificationService.Instance.alertDispatcher.dispatch({
