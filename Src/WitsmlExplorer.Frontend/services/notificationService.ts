@@ -25,7 +25,8 @@ export interface RefreshAction {
   entityType: string;
   refreshType?: RefreshType;
   serverUrl: URL;
-  wellUid: string;
+  wellUid?: string;
+  wellUids?: string[];
   wellboreUid?: string;
   objectUid?: string;
 }

@@ -5,6 +5,10 @@ import ObjectSearchResult from "models/objectSearchResult";
 import { ObjectType } from "models/objectType";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import {
+  STORAGE_FILTER_HIDDENOBJECTS_KEY,
+  getLocalStorageItem
+} from "tools/localStorageHelpers";
 
 export interface Filter {
   name: string;
@@ -164,6 +168,19 @@ export function FilterContextProvider({
     }
   }, [well]);
 
+  useEffect(() => {
+    // This useEffect is used to set the visibility of the objects in the filter to hidden if they are stored in the local storage.
+    const hiddenItems = getLocalStorageItem<ObjectType[]>(
+      STORAGE_FILTER_HIDDENOBJECTS_KEY,
+      { defaultValue: [] }
+    );
+    const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
+    hiddenItems.forEach((objectType) => {
+      updatedVisibility[objectType] = VisibilityStatus.Hidden;
+    });
+    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+  }, []);
+
   const contextValue: FilterContextProps = React.useMemo(
     () => ({
       selectedFilter,
@@ -193,7 +210,7 @@ export const isSitecomSyntax = (str: string) => {
   return /^sel\(.*\)$/.test(str);
 };
 
-export const getSearchRegex = (str: string): RegExp => {
+export const getSearchRegex = (str: string, exact = false): RegExp => {
   let newStr = str;
   if (!str) {
     newStr = ".+"; // Any string that is not empty
@@ -203,5 +220,10 @@ export const getSearchRegex = (str: string): RegExp => {
       .replace(/\*/g, ".*") // Replace * with .* to match any characters
       .replace(/\?/g, "."); // Replace ? with . to match any single character
   }
+
+  if (exact) {
+    newStr = `^${newStr}$`;
+  }
+
   return new RegExp(newStr, "i");
 };
