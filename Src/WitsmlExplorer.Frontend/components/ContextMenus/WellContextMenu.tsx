@@ -283,6 +283,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
                   wellUid: well.uid
                 })
               }
+              disabled={checkedWellRows?.length !== 1}
             >
               <StyledIcon
                 name="textField"
