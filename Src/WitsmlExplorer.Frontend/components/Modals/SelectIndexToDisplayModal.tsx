@@ -95,61 +95,56 @@ const SelectIndexToDisplayModal = (
   };
 
   return (
-    <>
-      {log && (
-        <ModalDialog
-          heading={`Display curve values within selected index range for ${log.name}`}
-          content={
-            <>
-              {isTimeIndexed ? (
-                <>
-                  <AdjustDateTimeModal
-                    minDate={log.startIndex}
-                    maxDate={log.endIndex}
-                    isDescending={
-                      log.direction == WITSML_LOG_ORDERTYPE_DECREASING
-                    }
-                    onStartDateChanged={setStartIndex}
-                    onEndDateChanged={setEndIndex}
-                    onValidChange={toggleConfirmDisabled}
-                  />
-                </>
-              ) : (
-                <AdjustNumberRangeModal
-                  minValue={indexToNumber(log.startIndex)}
-                  maxValue={indexToNumber(log.endIndex)}
+    log && (
+      <ModalDialog
+        heading={`Display curve values within selected index range for ${log.name}`}
+        content={
+          <>
+            {isTimeIndexed ? (
+              <>
+                <AdjustDateTimeModal
+                  minDate={log.startIndex}
+                  maxDate={log.endIndex}
                   isDescending={
                     log.direction == WITSML_LOG_ORDERTYPE_DECREASING
                   }
-                  onStartValueChanged={setStartIndex}
-                  onEndValueChanged={setEndIndex}
+                  onStartDateChanged={setStartIndex}
+                  onEndDateChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}
                 />
-              )}
-              {isUrlTooLong && (
-                <StyledBanner colors={colors}>
-                  <Banner.Icon variant="warning">
-                    <Icon name="infoCircle" />
-                  </Banner.Icon>
-                  <Banner.Message>
-                    The selected number of mnemonics is too large to be saved in
-                    the URL because the URL exceeds the maximum length of 2000
-                    characters. Therefore, it will not be possible to share this
-                    URL with others to open the chosen mnemonics on the given
-                    log.
-                  </Banner.Message>
-                </StyledBanner>
-              )}
-            </>
-          }
-          onSubmit={onSubmit}
-          isLoading={false}
-          confirmColor={"primary"}
-          confirmText={"View curve values"}
-          confirmDisabled={confirmDisabled}
-        />
-      )}
-    </>
+              </>
+            ) : (
+              <AdjustNumberRangeModal
+                minValue={indexToNumber(log.startIndex)}
+                maxValue={indexToNumber(log.endIndex)}
+                isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                onStartValueChanged={setStartIndex}
+                onEndValueChanged={setEndIndex}
+                onValidChange={toggleConfirmDisabled}
+              />
+            )}
+            {isUrlTooLong && (
+              <StyledBanner colors={colors}>
+                <Banner.Icon variant="warning">
+                  <Icon name="infoCircle" />
+                </Banner.Icon>
+                <Banner.Message>
+                  The selected number of mnemonics is too large to be saved in
+                  the URL because the URL exceeds the maximum length of 2000
+                  characters. Therefore, it will not be possible to share this
+                  URL with others to open the chosen mnemonics on the given log.
+                </Banner.Message>
+              </StyledBanner>
+            )}
+          </>
+        }
+        onSubmit={onSubmit}
+        isLoading={false}
+        confirmColor={"primary"}
+        confirmText={"View curve values"}
+        confirmDisabled={confirmDisabled}
+      />
+    )
   );
 };
 
