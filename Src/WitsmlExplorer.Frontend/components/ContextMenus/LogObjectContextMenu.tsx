@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -33,13 +34,12 @@ import ObjectPickerModal, {
 } from "components/Modals/ObjectPickerModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import SpliceLogsModal from "components/Modals/SpliceLogsModal";
-import TrimLogObjectModal, {
-  TrimLogObjectModalProps
-} from "components/Modals/TrimLogObject/TrimLogObjectModal";
-import NavigationContext from "contexts/navigationContext";
+import TrimLogObjectModal from "components/Modals/TrimLogObject/TrimLogObjectModal";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { ComponentType } from "models/componentType";
 import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
@@ -59,13 +59,14 @@ import { v4 as uuid } from "uuid";
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers, selectedServer } = navigationState;
+  const { checkedObjects } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
+  const { connectedServer } = useConnectedServer();
+  const { servers } = useGetServers();
+  const queryClient = useQueryClient();
 
   const onClickProperties = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -83,14 +84,9 @@ const LogObjectContextMenu = (
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
-    const trimLogObjectProps: TrimLogObjectModalProps = {
-      dispatchNavigation,
-      dispatchOperation,
-      logObject
-    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <TrimLogObjectModal {...trimLogObjectProps} />
+      payload: <TrimLogObjectModal logObject={logObject} />
     });
   };
 
@@ -135,7 +131,7 @@ const LogObjectContextMenu = (
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const props: LogComparisonModalProps = {
         sourceLog: checkedObjects[0],
-        sourceServer: selectedServer,
+        sourceServer: connectedServer,
         targetServer,
         targetObject,
         dispatchOperation
@@ -151,7 +147,7 @@ const LogObjectContextMenu = (
       onPicked
     };
     if (checkedObjects.length === 2) {
-      onPicked(checkedObjects[1], selectedServer);
+      onPicked(checkedObjects[1], connectedServer);
     } else {
       dispatchOperation({
         type: OperationType.DisplayModal,
@@ -178,7 +174,7 @@ const LogObjectContextMenu = (
         JobType.CompareLogData,
         compareLogDataJob,
         targetServer,
-        selectedServer
+        connectedServer
       );
       if (jobId) {
         const reportModalProps = { jobId };
@@ -194,7 +190,7 @@ const LogObjectContextMenu = (
         payload: (
           <CompareLogDataModal
             targetObject={checkedObjects[1]}
-            targetServer={selectedServer}
+            targetServer={connectedServer}
             onPicked={onPicked}
           />
         )
@@ -428,11 +424,11 @@ const LogObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Log,
-          navigationState,
+          connectedServer,
+          servers,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

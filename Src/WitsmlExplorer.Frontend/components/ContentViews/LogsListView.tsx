@@ -1,4 +1,8 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
 import LogsGraph from "components/ContentViews/Charts/LogsGraph";
 import {
   ContentTable,
@@ -10,61 +14,64 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import { calculateLogTypeId, calculateLogTypeTimeId } from "models/wellbore";
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
+import { RouterLogType } from "routes/routerConstants";
 import {
-  ContentContainer,
-  CommonPanelContainer
+  CommonPanelContainer,
+  ContentContainer
 } from "../StyledComponents/Container";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
 }
 
-export const LogsListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWellbore, selectedWell, selectedLogTypeGroup } =
-    navigationState;
-
+export default function LogsListView() {
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const [logs, setLogs] = useState<LogObject[]>([]);
-  const [resetCheckedItems, setResetCheckedItems] = useState(false);
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
-
-  useEffect(() => {
-    if (selectedWellbore?.logs) {
-      setLogs(
-        selectedWellbore.logs.filter(
-          (log) =>
-            calculateLogTypeId(selectedWellbore, log.indexType) ===
-            selectedLogTypeGroup
-        )
-      );
-    }
-  }, [selectedLogTypeGroup, selectedWellbore]);
-
-  const isTimeIndexed = () => {
-    return selectedLogTypeGroup === calculateLogTypeTimeId(selectedWellbore);
-  };
+  const navigate = useNavigate();
+  const { connectedServer } = useConnectedServer();
+  const { wellUid, wellboreUid, logType } = useParams();
+  const {
+    wellbore,
+    isFetching: isFetchingWellbore,
+    isFetched: isFetchedWellbore
+  } = useGetWellbore(connectedServer, wellUid, wellboreUid);
+  const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Log
+  );
+  const isTimeIndexed = logType === RouterLogType.TIME;
+  const logs = filterLogsByType(
+    allLogs,
+    isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD
+  );
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
+  const isFetching = isFetchingWellbore || isFetchingLogs;
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedLogObjectRows: LogObjectRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedLogObjectRows.map((row) => row.logObject),
-      wellbore: selectedWellbore
+      checkedObjects: checkedLogObjectRows.map((row) => row.logObject)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -81,14 +88,12 @@ export const LogsListView = (): React.ReactElement => {
       return {
         ...log,
         id: log.uid,
-        startIndex:
-          selectedWellbore && isTimeIndexed()
-            ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
-            : log.startIndex,
-        endIndex:
-          selectedWellbore && isTimeIndexed()
-            ? formatDateString(log.endIndex, timeZone, dateTimeFormat)
-            : log.endIndex,
+        startIndex: isTimeIndexed
+          ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
+          : log.startIndex,
+        endIndex: isTimeIndexed
+          ? formatDateString(log.endIndex, timeZone, dateTimeFormat)
+          : log.endIndex,
         dTimCreation: formatDateString(
           log.commonData.dTimCreation,
           timeZone,
@@ -109,18 +114,12 @@ export const LogsListView = (): React.ReactElement => {
     {
       property: "startIndex",
       label: "startIndex",
-      type:
-        selectedWellbore && isTimeIndexed()
-          ? ContentType.DateTime
-          : ContentType.Measure
+      type: isTimeIndexed ? ContentType.DateTime : ContentType.Measure
     },
     {
       property: "endIndex",
       label: "endIndex",
-      type:
-        selectedWellbore && isTimeIndexed()
-          ? ContentType.DateTime
-          : ContentType.Measure
+      type: isTimeIndexed ? ContentType.DateTime : ContentType.Measure
     },
     { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
     {
@@ -144,29 +143,18 @@ export const LogsListView = (): React.ReactElement => {
   ];
 
   const onSelect = (log: LogObjectRow) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        object: log.logObject,
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        objectType: ObjectType.Log
-      }
-    });
+    navigate(log.uid);
   };
 
-  useEffect(() => {
-    if (resetCheckedItems) {
-      setResetCheckedItems(false);
-      setSelectedRows([]);
-    }
-  }, [resetCheckedItems]);
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Logs`} />;
+  }
 
-  useEffect(() => {
-    setResetCheckedItems(true);
-  }, [selectedWellbore, selectedLogTypeGroup]);
+  if (isFetchedWellbore && !wellbore) {
+    return <ItemNotFound itemType={ObjectType.Log} />;
+  }
 
-  return selectedWellbore && !resetCheckedItems ? (
+  return (
     <ContentContainer>
       <CommonPanelContainer>
         <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
@@ -175,10 +163,10 @@ export const LogsListView = (): React.ReactElement => {
         </Typography>
       </CommonPanelContainer>
       {showGraph ? (
-        <LogsGraph selectedLogs={selectedRows} />
+        <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
       ) : (
         <ContentTable
-          viewId={isTimeIndexed() ? "timeLogsListView" : "depthLogsListView"}
+          viewId={isTimeIndexed ? "timeLogsListView" : "depthLogsListView"}
           columns={columns}
           onSelect={onSelect}
           data={getTableData()}
@@ -189,13 +177,13 @@ export const LogsListView = (): React.ReactElement => {
           checkableRows
           showRefresh
           initiallySelectedRows={selectedRows}
-          downloadToCsvFileName={isTimeIndexed() ? "TimeLogs" : "DepthLogs"}
+          downloadToCsvFileName={isTimeIndexed ? "TimeLogs" : "DepthLogs"}
         />
       )}
     </ContentContainer>
-  ) : (
-    <></>
   );
-};
+}
 
-export default LogsListView;
+const filterLogsByType = (logs: LogObject[], logType: string) => {
+  return logs?.filter((log) => log.indexType === logType) ?? [];
+};

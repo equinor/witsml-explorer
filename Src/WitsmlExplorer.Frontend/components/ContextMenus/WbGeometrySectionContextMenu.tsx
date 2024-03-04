@@ -15,45 +15,35 @@ import {
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import WbGeometrySectionPropertiesModal from "components/Modals/WbGeometrySectionPropertiesModal";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "contexts/operationStateReducer";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import WbGeometry from "models/wbGeometry";
 import WbGeometrySection from "models/wbGeometrySection";
-import React from "react";
+import React, { useContext } from "react";
 import { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface WbGeometrySectionContextMenuProps {
   checkedWbGeometrySections: WbGeometrySection[];
-  dispatchOperation: (
-    action: DisplayModalAction | HideContextMenuAction | HideModalAction
-  ) => void;
   wbGeometry: WbGeometry;
-  selectedServer: Server;
-  servers: Server[];
 }
 
 const WbGeometrySectionContextMenu = (
   props: WbGeometrySectionContextMenuProps
 ): React.ReactElement => {
-  const {
-    checkedWbGeometrySections,
-    dispatchOperation,
-    wbGeometry,
-    selectedServer,
-    servers
-  } = props;
+  const { checkedWbGeometrySections, wbGeometry } = props;
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(
     ComponentType.WbGeometrySection
   );
+  const { dispatchOperation } = useContext(OperationContext);
+  const { servers } = useGetServers();
+  const { connectedServer } = useConnectedServer();
 
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -84,7 +74,7 @@ const WbGeometrySectionContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              connectedServer,
               checkedWbGeometrySections.map((wbs) => wbs.uid),
               wbGeometry,
               dispatchOperation,
@@ -106,6 +96,7 @@ const WbGeometrySectionContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.WbGeometrySection}
           componentsToCopy={checkedWbGeometrySections}
+          sourceParent={wbGeometry}
         />,
         <MenuItem
           key={"paste"}

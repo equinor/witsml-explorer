@@ -1,5 +1,6 @@
 ﻿import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
@@ -11,9 +12,10 @@ import { PropertiesModalMode } from "components/Modals/ModalParts";
 import RigPropertiesModal, {
   RigPropertiesModalProps
 } from "components/Modals/RigPropertiesModal";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
@@ -21,10 +23,12 @@ import React, { useContext } from "react";
 import { colors } from "styles/Colors";
 
 const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { checkedObjects } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
+  const { servers } = useGetServers();
 
   const onClickModify = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -65,11 +69,11 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Rig,
-          navigationState,
+          connectedServer,
+          servers,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

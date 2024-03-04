@@ -10,9 +10,9 @@ import ModalDialog, {
   ModalContentLayout,
   ModalWidth
 } from "components/Modals/ModalDialog";
-import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import MaxLength from "models/maxLength";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -43,9 +43,7 @@ const ObjectPickerModal = ({
   includeIndexDuplicatesOption,
   includeCompareAllLogIndexesOption
 }: ObjectPickerProps): React.ReactElement => {
-  const {
-    navigationState: { servers }
-  } = useContext(NavigationContext);
+  const { servers } = useGetServers();
   const {
     operationState: { colors },
     dispatchOperation

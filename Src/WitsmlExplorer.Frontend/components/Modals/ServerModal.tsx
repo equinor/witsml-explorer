@@ -6,6 +6,7 @@ import {
   Tooltip
 } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import ModalDialog, {
   ControlButtonPosition,
   ModalWidth
@@ -13,20 +14,24 @@ import ModalDialog, {
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
-import { RemoveWitsmlServerAction } from "contexts/modificationActions";
-import ModificationType from "contexts/modificationType";
-import { SelectServerAction } from "contexts/navigationActions";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import {
   DisplayModalAction,
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
 import { Server } from "models/server";
 import { msalEnabled } from "msal/MsalAuthProvider";
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState
+} from "react";
+import AuthorizationService from "services/authorizationService";
 import NotificationService from "services/notificationService";
 import ServerService from "services/serverService";
 import styled from "styled-components";
@@ -39,10 +44,7 @@ export interface ServerModalProps {
 }
 
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
-  const {
-    navigationState: { selectedServer },
-    dispatchNavigation
-  } = useContext(NavigationContext);
+  const queryClient = useQueryClient();
   const { operationState, dispatchOperation } = useContext(OperationContext);
   const { colors } = operationState;
   const [server, setServer] = useState<Server>(props.server);
@@ -51,6 +53,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [displayNameError, setDisplayServerNameError] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { connectedServer, setConnectedServer } = useConnectedServer();
 
   const isAddingNewServer = props.server.id === undefined;
   const labelStyle: CSSProperties = {
@@ -69,19 +72,16 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
           server,
           abortController.signal
         );
-        dispatchNavigation({
-          type: ModificationType.AddServer,
-          payload: { server: freshServer }
-        });
+        if (freshServer) refreshServersQuery(queryClient);
       } else {
         const freshServer = await ServerService.updateServer(
           server,
           abortController.signal
         );
-        dispatchNavigation({
-          type: ModificationType.UpdateServer,
-          payload: { server: freshServer }
-        });
+        if (freshServer) {
+          refreshServersQuery(queryClient);
+          AuthorizationService.onServerStateChange(server);
+        }
       }
     } catch (error) {
       NotificationService.Instance.alertDispatcher.dispatch({
@@ -117,8 +117,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     showDeleteServerModal(
       server,
       dispatchOperation,
-      dispatchNavigation,
-      selectedServer
+      connectedServer,
+      setConnectedServer,
+      queryClient
     );
   };
 
@@ -291,10 +292,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
 export const showDeleteServerModal = (
   server: Server,
   dispatchOperation: (action: HideModalAction | DisplayModalAction) => void,
-  dispatchNavigation: (
-    action: SelectServerAction | RemoveWitsmlServerAction
-  ) => void,
-  selectedServer: Server
+  connectedServer: Server,
+  setConnectedServer: Dispatch<SetStateAction<Server>>,
+  queryClient: QueryClient
 ) => {
   const onCancel = () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -303,17 +303,10 @@ export const showDeleteServerModal = (
     const abortController = new AbortController();
     try {
       await ServerService.removeServer(server.id, abortController.signal);
-      dispatchNavigation({
-        type: ModificationType.RemoveServer,
-        payload: { serverUid: server.id }
-      });
-      if (server.id === selectedServer?.id) {
-        const action: SelectServerAction = {
-          type: NavigationType.SelectServer,
-          payload: { server: null }
-        };
-        dispatchNavigation(action);
+      if (server.id === connectedServer?.id) {
+        setConnectedServer(null);
       }
+      refreshServersQuery(queryClient);
     } catch (error) {
       NotificationService.Instance.alertDispatcher.dispatch({
         serverUrl: new URL(server.url),

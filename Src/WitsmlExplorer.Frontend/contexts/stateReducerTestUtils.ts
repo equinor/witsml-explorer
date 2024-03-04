@@ -1,8 +1,4 @@
 import { getMeasureWithDatum } from "__testUtils__/testUtils";
-import {
-  EMPTY_NAVIGATION_STATE,
-  NavigationState
-} from "contexts/navigationContext";
 import BhaRun from "models/bhaRun";
 import ChangeLog from "models/changeLog";
 import FormationMarker from "models/formationMarker";
@@ -72,7 +68,6 @@ export const WELLBORE_3: Wellbore = {
 export const WELL_1: Well = {
   uid: "well1",
   name: "Well 1",
-  wellbores: [WELLBORE_1],
   field: "",
   operator: "",
   country: ""
@@ -80,7 +75,6 @@ export const WELL_1: Well = {
 export const WELL_2: Well = {
   uid: "well2",
   name: "Well 2",
-  wellbores: [WELLBORE_2],
   field: "",
   operator: "",
   country: ""
@@ -88,7 +82,6 @@ export const WELL_2: Well = {
 export const WELL_3: Well = {
   uid: "well3",
   name: "Well 3",
-  wellbores: [WELLBORE_3],
   field: "",
   operator: "",
   country: ""
@@ -197,18 +190,4 @@ export const WBGEOMETRY_1 = {
   wellUid: "",
   wellboreName: "",
   wellboreUid: ""
-};
-
-export const getInitialState = (): NavigationState => {
-  const well1 = { ...WELL_1, wellbores: [{ ...WELLBORE_1 }] };
-  const well2 = { ...WELL_2, wellbores: [{ ...WELLBORE_2 }] };
-  const well3 = { ...WELL_3, wellbores: [{ ...WELLBORE_3 }] };
-  const wells = [well1, well2, well3];
-  const servers = [SERVER_1];
-  return {
-    ...EMPTY_NAVIGATION_STATE,
-    selectedServer: SERVER_1,
-    wells,
-    servers
-  };
 };

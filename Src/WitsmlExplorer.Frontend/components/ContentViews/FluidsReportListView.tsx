@@ -8,33 +8,37 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import FluidsReport from "models/fluidsReport";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export interface FluidsReportRow extends ContentTableRow, FluidsReport {
   fluidsReport: FluidsReport;
 }
 
-export const FluidsReportsListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+export default function FluidsReportsListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
-  const [fluidsReports, setFluidsReports] = useState<FluidsReport[]>([]);
+  const { connectedServer } = useConnectedServer();
+  const { wellUid, wellboreUid } = useParams();
+  const navigate = useNavigate();
+  const { objects: fluidsReports } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.FluidsReport
+  );
 
-  useEffect(() => {
-    if (selectedWellbore?.fluidsReports) {
-      setFluidsReports(selectedWellbore.fluidsReports);
-    }
-  }, [selectedWellbore]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   const getTableData = () => {
     return fluidsReports.map((fluidsReport) => {
@@ -85,25 +89,16 @@ export const FluidsReportsListView = (): React.ReactElement => {
   ];
 
   const onSelect = (fluidsReportRow: FluidsReportRow) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        object: fluidsReportRow.fluidsReport,
-        objectType: ObjectType.FluidsReport
-      }
-    });
+    navigate(fluidsReportRow.fluidsReport.uid);
   };
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedFluidsReportRows: FluidsReportRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedFluidsReportRows.map((row) => row.fluidsReport),
-      wellbore: selectedWellbore
+      checkedObjects: checkedFluidsReportRows.map((row) => row.fluidsReport)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -116,7 +111,7 @@ export const FluidsReportsListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.fluidsReports, fluidsReports) && (
+    fluidsReports && (
       <ContentTable
         viewId="fluidsReportsListView"
         columns={columns}
@@ -129,6 +124,4 @@ export const FluidsReportsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default FluidsReportsListView;
+}

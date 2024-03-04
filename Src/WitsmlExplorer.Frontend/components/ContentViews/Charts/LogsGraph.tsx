@@ -11,12 +11,12 @@ import {
 } from "components/ContentViews/Charts/ReactLogChart";
 import { ContentTableRow } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
 import { DateTimeFormat } from "contexts/operationStateReducer";
 import LogObject from "models/logObject";
-import { calculateLogTypeId, calculateLogTypeTimeId } from "models/wellbore";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -46,7 +46,7 @@ const depthNullValue = -999.25;
 const timeNullValue = +new Date("1900-01-01T00:00:00.000Z");
 
 interface LogsGraphProps {
-  selectedLogs: LogObjectRow[];
+  logs: LogObject[];
 }
 
 export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
@@ -55,66 +55,33 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
   const dimEnd = 2;
   const data: DataItem[] = [];
   const categories: number[] = [];
-  const { navigationState } = useContext(NavigationContext);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-  const { selectedWellbore, selectedLogTypeGroup } = navigationState;
-
-  // dedicated colors for items containing specific names
-  const reservedColours: Map<string, string> = new Map([
-    ["#0088DD", "surface"],
-    ["#DD2222", "downhole"],
-    ["#DDBB00", "memory"]
-  ]);
-
+  const { logs } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const [logs, setLogs] = useState<LogObject[]>([]);
-  const [resetCheckedItems] = useState(false);
+  const { logType } = useParams();
 
-  useEffect(() => {
-    if (selectedWellbore?.logs) {
-      const filteredLogs = selectedWellbore.logs.filter(
-        (log) =>
-          calculateLogTypeId(selectedWellbore, log.indexType) ===
-          selectedLogTypeGroup
-      );
-      if (props.selectedLogs.length > 0) {
-        setLogs(
-          filteredLogs.filter((log) =>
-            props.selectedLogs.find((selectedLog) => selectedLog.uid == log.uid)
-          )
-        );
-      } else {
-        setLogs(filteredLogs);
-      }
-    }
-  }, [selectedLogTypeGroup, selectedWellbore]);
-
-  const isTimeIndexed = () => {
-    return selectedLogTypeGroup === calculateLogTypeTimeId(selectedWellbore);
-  };
+  const isTimeIndexed = logType === RouterLogType.TIME;
 
   const getGraphData = (): LogItem[] => {
     return logs.map((log) => {
-      const start =
-        selectedWellbore && isTimeIndexed()
-          ? +new Date(
-              formatDateString(log.startIndex, timeZone, DateTimeFormat.Raw)
-            )
-          : log.startIndex === null
-          ? 0
-          : +log.startIndex?.replace("m", "");
-      const end =
-        selectedWellbore && isTimeIndexed()
-          ? +new Date(
-              formatDateString(log.endIndex, timeZone, DateTimeFormat.Raw)
-            )
-          : log.endIndex === null
-          ? 0
-          : +log.endIndex?.replace("m", "");
+      const start = isTimeIndexed
+        ? +new Date(
+            formatDateString(log.startIndex, timeZone, DateTimeFormat.Raw)
+          )
+        : log.startIndex === null
+        ? 0
+        : +log.startIndex?.replace("m", "");
+      const end = isTimeIndexed
+        ? +new Date(
+            formatDateString(log.endIndex, timeZone, DateTimeFormat.Raw)
+          )
+        : log.endIndex === null
+        ? 0
+        : +log.endIndex?.replace("m", "");
       return {
         name: log.name + (log.runNumber != null ? ` (${log.runNumber})` : ""),
         start: start < end ? start : end,
@@ -133,7 +100,7 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
   });
 
   // set the position of empty logs to the start of the first log with data
-  const nullValue = isTimeIndexed() ? timeNullValue : depthNullValue;
+  const nullValue = isTimeIndexed ? timeNullValue : depthNullValue;
   let lowestNonNullStart = nullValue;
   for (let i = 0; i < sortedLogs.length; i++) {
     if (sortedLogs[i].start != nullValue) {
@@ -184,10 +151,10 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     const log = sortedLogs[i];
     const start = log.start;
     const end = log.end;
-    const startRaw = isTimeIndexed()
+    const startRaw = isTimeIndexed
       ? formatDateString(log.startRaw, timeZone, dateTimeFormat)
       : log.startRaw;
-    const endRaw = isTimeIndexed()
+    const endRaw = isTimeIndexed
       ? formatDateString(log.endRaw, timeZone, dateTimeFormat)
       : log.endRaw;
     categories.push(i);
@@ -325,7 +292,7 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
       show: true
     },
     xAxis: {
-      type: isTimeIndexed() ? "time" : "value",
+      type: isTimeIndexed ? "time" : "value",
       position: "bottom",
       splitLine: {
         show: true,
@@ -361,11 +328,18 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
     ]
   };
 
-  return selectedWellbore && !resetCheckedItems ? (
+  return logs?.length > 0 ? (
     <ReactLogChart option={option} width="100%" height="700px"></ReactLogChart>
   ) : (
     <></>
   );
 };
+
+// dedicated colors for items containing specific names
+const reservedColours: Map<string, string> = new Map([
+  ["#0088DD", "surface"],
+  ["#DD2222", "downhole"],
+  ["#DDBB00", "memory"]
+]);
 
 export default LogsGraph;

@@ -8,56 +8,47 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
 } from "components/ContextMenus/WbGeometrySectionContextMenu";
-import NavigationContext from "contexts/navigationContext";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
 import { measureToString } from "models/measure";
-import WbGeometryObject from "models/wbGeometry";
+import { ObjectType } from "models/objectType";
 import WbGeometrySection from "models/wbGeometrySection";
-import React, { useContext, useEffect, useState } from "react";
-import ComponentService from "services/componentService";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 interface WbGeometrySectionRow extends ContentTableRow {
   wbGeometrySection: WbGeometrySection;
 }
 
-export const WbGeometryView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedObject, selectedServer, servers } = navigationState;
-  const [wbGeometrySections, setWbGeometrySections] = useState<
-    WbGeometrySection[]
-  >([]);
+export default function WbGeometryView() {
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const selectedWbGeometry = selectedObject as WbGeometryObject;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { object: wbGeometry, isFetched: isFetchedWbGeometry } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.WbGeometry,
+    objectUid
+  );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    if (selectedWbGeometry) {
-      const abortController = new AbortController();
+  const { components: wbGeometrySections, isFetching } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.WbGeometrySection,
+    { placeholderData: [] }
+  );
 
-      const getWbGeometry = async () => {
-        setWbGeometrySections(
-          await ComponentService.getComponents(
-            selectedWbGeometry.wellUid,
-            selectedWbGeometry.wellboreUid,
-            selectedWbGeometry.uid,
-            ComponentType.WbGeometrySection,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getWbGeometry();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedWbGeometry]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -68,10 +59,7 @@ export const WbGeometryView = (): React.ReactElement => {
       checkedWbGeometrySections: checkedWbGeometrySections.map(
         (row) => row.wbGeometrySection
       ),
-      dispatchOperation,
-      wbGeometry: selectedWbGeometry,
-      selectedServer,
-      servers
+      wbGeometry
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -132,7 +120,15 @@ export const WbGeometryView = (): React.ReactElement => {
     };
   });
 
-  return selectedWbGeometry && !isFetchingData ? (
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching WbGeometry.`} />;
+  }
+
+  if (isFetchedWbGeometry && !wbGeometry) {
+    return <ItemNotFound itemType={ObjectType.WbGeometry} />;
+  }
+
+  return (
     <ContentTable
       viewId="wbGeometryView"
       columns={columns}
@@ -140,11 +136,7 @@ export const WbGeometryView = (): React.ReactElement => {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      downloadToCsvFileName={`WbGeometry_${selectedWbGeometry.name}`}
+      downloadToCsvFileName={`WbGeometry_${wbGeometry?.name}`}
     />
-  ) : (
-    <></>
   );
-};
-
-export default WbGeometryView;
+}

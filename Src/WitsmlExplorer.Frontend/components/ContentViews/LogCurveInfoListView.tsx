@@ -11,17 +11,26 @@ import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
 import formatDateString from "components/DateFormatter";
-import { timeFromMinutesToMilliseconds } from "contexts/curveThreshold";
-import NavigationContext from "contexts/navigationContext";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import {
+  timeFromMinutesToMilliseconds,
+  useCurveThreshold
+} from "contexts/curveThresholdContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
 import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
-import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
-import ComponentService from "services/componentService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 
 export interface LogCurveInfoRow extends ContentTableRow {
@@ -40,66 +49,60 @@ export interface LogCurveInfoRow extends ContentTableRow {
   isActive: boolean;
   logCurveInfo: LogCurveInfo;
 }
-export const LogCurveInfoListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+
+export default function LogCurveInfoListView() {
+  const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const {
-    selectedServer,
-    selectedWell,
-    selectedWellbore,
-    selectedObject,
-    selectedCurveThreshold,
-    servers
-  } = navigationState;
-  const selectedLog = selectedObject as LogObject;
   const { dispatchOperation } = useContext(OperationContext);
-  const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
+  const { wellUid, wellboreUid, logType, objectUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { servers } = useGetServers();
+  const {
+    object: logObject,
+    isFetching: isFetchingLog,
+    isFetched: isFetchedLog
+  } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Log,
+    objectUid
+  );
+  const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
+    useGetComponents(
+      connectedServer,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.Mnemonic
+    );
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
+  const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
+
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
 
   useEffect(() => {
-    setIsFetchingData(true);
-    if (selectedLog) {
-      const controller = new AbortController();
-
-      const getLogCurveInfo = async () => {
-        const logCurveInfo = await ComponentService.getComponents(
-          selectedWell.uid,
-          selectedWellbore.uid,
-          selectedLog.uid,
-          ComponentType.Mnemonic,
-          undefined,
-          controller.signal
-        );
-        setLogCurveInfoList(logCurveInfo);
-        setIsFetchingData(false);
-      };
-
+    if (logObject) {
       const getLogCurvePriority = async () => {
         const prioritizedCurves =
           await LogCurvePriorityService.getPrioritizedCurves(
-            selectedWell.uid,
-            selectedWellbore.uid,
-            controller.signal
+            wellUid,
+            wellboreUid
           );
         setPrioritizedCurves(prioritizedCurves);
       };
 
-      getLogCurveInfo().catch(truncateAbortHandler);
       getLogCurvePriority().catch(truncateAbortHandler);
       setShowOnlyPrioritizedCurves(false);
-
-      return () => {
-        controller.abort();
-      };
     }
-  }, [selectedLog]);
+  }, [logObject]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -109,9 +112,8 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     const contextMenuProps: LogCurveInfoContextMenuProps = {
       checkedLogCurveInfoRows,
       dispatchOperation,
-      dispatchNavigation,
-      selectedLog,
-      selectedServer,
+      selectedLog: logObject,
+      selectedServer: connectedServer,
       servers,
       prioritizedCurves,
       setPrioritizedCurves
@@ -133,7 +135,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     if (isDepthIndex) {
       return (
         maxDepth - parseFloat(logCurveInfo.maxDepthIndex) <
-        selectedCurveThreshold.depthInMeters
+        curveThreshold.depthInMeters
       );
     } else {
       const dateDifferenceInMilliseconds =
@@ -141,7 +143,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         new Date(logCurveInfo.maxDateTimeIndex).valueOf();
       return (
         dateDifferenceInMilliseconds <
-        timeFromMinutesToMilliseconds(selectedCurveThreshold.timeInMinutes)
+        timeFromMinutesToMilliseconds(curveThreshold.timeInMinutes)
       );
     }
   };
@@ -154,10 +156,10 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     return logCurveInfoList
       .map((logCurveInfo) => {
         const isActive =
-          selectedLog.objectGrowing &&
+          logObject.objectGrowing &&
           calculateIsCurveActive(logCurveInfo, maxDepth);
         return {
-          id: `${selectedLog.uid}-${logCurveInfo.mnemonic}`,
+          id: `${objectUid}-${logCurveInfo.mnemonic}`,
           uid: logCurveInfo.uid,
           mnemonic: logCurveInfo.mnemonic,
           minIndex: isDepthIndex
@@ -178,13 +180,13 @@ export const LogCurveInfoListView = (): React.ReactElement => {
           unit: logCurveInfo.unit,
           sensorOffset: measureToString(logCurveInfo.sensorOffset),
           mnemAlias: logCurveInfo.mnemAlias,
+          logUid: objectUid,
+          wellUid: logObject.wellUid,
+          wellboreUid: logObject.wellboreUid,
+          wellName: logObject.wellName,
+          wellboreName: logObject.wellboreName,
           traceState: logCurveInfo.traceState,
           nullValue: logCurveInfo.nullValue,
-          logUid: selectedLog.uid,
-          wellUid: selectedWell.uid,
-          wellboreUid: selectedWellbore.uid,
-          wellName: selectedWell.name,
-          wellboreName: selectedWellbore.name,
           isActive: isActive,
           isVisibleFunction: isVisibleFunction(isActive),
           logCurveInfo
@@ -192,12 +194,11 @@ export const LogCurveInfoListView = (): React.ReactElement => {
       })
       .sort((curve, curve2) => {
         if (
-          curve.mnemonic.toLowerCase() === selectedLog.indexCurve?.toLowerCase()
+          curve.mnemonic.toLowerCase() === logObject.indexCurve?.toLowerCase()
         ) {
           return -1;
         } else if (
-          curve2.mnemonic.toLowerCase() ===
-          selectedLog.indexCurve?.toLowerCase()
+          curve2.mnemonic.toLowerCase() === logObject.indexCurve?.toLowerCase()
         ) {
           return 1;
         }
@@ -208,7 +209,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
       if (isDepthIndex) return true;
-      return !(selectedCurveThreshold.hideInactiveCurves && !isActive);
+      return !(curveThreshold.hideInactiveCurves && !isActive);
     };
   };
 
@@ -224,7 +225,7 @@ export const LogCurveInfoListView = (): React.ReactElement => {
         return (
           !showOnlyPrioritizedCurves ||
           prioritizedCurves.includes(row.original.mnemonic) ||
-          row.original.mnemonic === selectedLog.indexCurve // Always show index curve
+          row.original.mnemonic === logObject.indexCurve // Always show index curve
         );
       }
     },
@@ -256,6 +257,14 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Log.`} />;
+  }
+
+  if (isFetchedLog && !logObject) {
+    return <ItemNotFound itemType={ObjectType.Log} />;
+  }
+
   const panelElements = [
     <CommonPanelContainer key="hideEmptyMnemonics">
       <Switch
@@ -276,22 +285,22 @@ export const LogCurveInfoListView = (): React.ReactElement => {
     </CommonPanelContainer>
   ];
 
-  return selectedLog && !isFetchingData ? (
-    <ContentTable
-      viewId={
-        isDepthIndex ? "depthLogCurveInfoListView" : "timeLogCurveInfoListView"
-      }
-      panelElements={panelElements}
-      columns={columns}
-      data={getTableData()}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`LogCurveInfo_${selectedLog.name}`}
-    />
-  ) : (
-    <></>
+  return (
+    logObject && (
+      <ContentTable
+        viewId={
+          isDepthIndex
+            ? "depthLogCurveInfoListView"
+            : "timeLogCurveInfoListView"
+        }
+        panelElements={panelElements}
+        columns={columns}
+        data={getTableData()}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
+      />
+    )
   );
-};
-
-export default LogCurveInfoListView;
+}

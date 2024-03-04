@@ -1,5 +1,6 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -22,8 +23,8 @@ import {
   LogCurvePriorityModal,
   LogCurvePriorityModalProps
 } from "components/Modals/LogCurvePriorityModal";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import SelectIndexToDisplayModal from "components/Modals/SelectIndexToDisplayModal";
-import { SelectLogCurveInfoAction } from "contexts/navigationActions";
 import {
   DisplayModalAction,
   HideContextMenuAction,
@@ -46,7 +47,6 @@ export interface LogCurveInfoContextMenuProps {
   dispatchOperation: (
     action: DisplayModalAction | HideContextMenuAction | HideModalAction
   ) => void;
-  dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
   selectedLog: LogObject;
   selectedServer: Server;
   servers: Server[];
@@ -60,7 +60,6 @@ const LogCurveInfoContextMenu = (
   const {
     checkedLogCurveInfoRows,
     dispatchOperation,
-    dispatchNavigation,
     selectedLog,
     selectedServer,
     servers,
@@ -82,10 +81,10 @@ const LogCurveInfoContextMenu = (
   const onClickOpen = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const modalProps = {
-      selectedLogCurveInfoRow: checkedLogCurveInfoRows,
-      selectedLog,
-      dispatchOperation,
-      dispatchNavigation
+      wellUid: selectedLog.wellUid,
+      wellboreUid: selectedLog.wellboreUid,
+      log: selectedLog,
+      logCurveInfoRows: checkedLogCurveInfoRows
     };
     const displayModalAction: DisplayModalAction = {
       type: OperationType.DisplayModal,
@@ -96,6 +95,7 @@ const LogCurveInfoContextMenu = (
 
   const onClickCopyRange = () => {
     const copyRangeProps: CopyRangeModalProps = {
+      logObject: selectedLog,
       mnemonics: checkedLogCurveInfoRows.map((lc) => lc.mnemonic)
     };
     dispatchOperation({
@@ -250,12 +250,14 @@ const LogCurveInfoContextMenu = (
           key={"copyComponentToServerWithRange"}
           componentType={ComponentType.Mnemonic}
           componentsToCopy={checkedLogCurveInfoRows}
+          sourceParent={selectedLog}
           withRange
         />,
         <CopyComponentsToServerMenuItem
           key={"copyComponentToServer"}
           componentType={ComponentType.Mnemonic}
           componentsToCopy={checkedLogCurveInfoRows}
+          sourceParent={selectedLog}
           componentsToPreserve={checkedLogCurveInfoRows.filter(
             (lci) => lci.mnemonic === selectedLog.indexCurve
           )}
@@ -292,7 +294,10 @@ const LogCurveInfoContextMenu = (
                   dispatchOperation,
                   server,
                   selectedLog,
-                  ObjectType.Log
+                  ObjectType.Log,
+                  selectedLog.indexType === WITSML_INDEX_TYPE_MD
+                    ? IndexCurve.Depth
+                    : IndexCurve.Time
                 )
               }
             >

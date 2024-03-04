@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction,
@@ -29,49 +30,43 @@ import { PropertiesModalMode } from "components/Modals/ModalParts";
 import WellborePropertiesModal, {
   WellborePropertiesModalProps
 } from "components/Modals/WellborePropertiesModal";
-import ModificationType from "contexts/modificationType";
-import NavigationContext from "contexts/navigationContext";
-import { treeNodeIsExpanded } from "contexts/navigationStateReducer";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
+import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import Well from "models/well";
-import Wellbore, { calculateWellboreNodeId } from "models/wellbore";
+import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
+import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
-import ObjectService from "services/objectService";
-import WellboreService from "services/wellboreService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
 export interface WellboreContextMenuProps {
+  servers: Server[];
   wellbore: Wellbore;
-  well: Well;
   checkedWellboreRows?: WellboreRow[];
 }
 
 const WellboreContextMenu = (
   props: WellboreContextMenuProps
 ): React.ReactElement => {
-  const { wellbore, well, checkedWellboreRows } = props;
-  const {
-    dispatchNavigation,
-    navigationState: {
-      servers,
-      expandedTreeNodes,
-      selectedWell,
-      selectedWellbore
-    }
-  } = useContext(NavigationContext);
+  const { wellbore, checkedWellboreRows, servers } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
+  const { capObjects } = useGetCapObjects(connectedServer, {
+    placeholderData: Object.entries(ObjectType)
+  });
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -169,34 +164,12 @@ const WellboreContextMenu = (
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    // toggle the wellbore node and navigate to parent wellbore to reset the sidebar and content view
-    //   because we do not load in objects that have been loaded in before the refresh
-    const nodeId = calculateWellboreNodeId(wellbore);
-    if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
-      dispatchNavigation({
-        type: NavigationType.CollapseTreeNodeChildren,
-        payload: { nodeId }
-      });
-    }
-    if (
-      selectedWell?.uid == well.uid &&
-      selectedWellbore?.uid == wellbore.uid
-    ) {
-      dispatchNavigation({
-        type: NavigationType.SelectWellbore,
-        payload: { well, wellbore }
-      });
-    }
-
-    const refreshedWellbore = await WellboreService.getWellbore(
+    refreshWellboreQuery(
+      queryClient,
+      connectedServer?.url,
       wellbore.wellUid,
       wellbore.uid
     );
-    const objectCount = await ObjectService.getExpandableObjectsCount(wellbore);
-    dispatchNavigation({
-      type: ModificationType.UpdateWellbore,
-      payload: { wellbore: { ...refreshedWellbore, objectCount } }
-    });
   };
 
   const onClickMissingDataAgent = () => {
@@ -224,15 +197,9 @@ const WellboreContextMenu = (
   };
 
   const onClickProperties = async () => {
-    const controller = new AbortController();
-    const detailedWellbore = await WellboreService.getWellbore(
-      wellbore.wellUid,
-      wellbore.uid,
-      controller.signal
-    );
     const wellborePropertiesModalProps: WellborePropertiesModalProps = {
       mode: PropertiesModalMode.Edit,
-      wellbore: detailedWellbore,
+      wellbore,
       dispatchOperation
     };
     dispatchOperation({
@@ -244,8 +211,12 @@ const WellboreContextMenu = (
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const host = `${window.location.protocol}//${window.location.host}`;
-    const wellboreUrl = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}`;
-    window.open(wellboreUrl);
+    const objectGroupsViewPath = getObjectGroupsViewPath(
+      server.url,
+      wellbore.wellUid,
+      wellbore.uid
+    );
+    window.open(`${host}${objectGroupsViewPath}`);
   };
 
   return (
@@ -273,7 +244,7 @@ const WellboreContextMenu = (
               servers,
               objectReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={objectReferences === null}
@@ -322,10 +293,11 @@ const WellboreContextMenu = (
                 openInQueryView({
                   templateObject: TemplateObjects.Wellbore,
                   storeFunction: StoreFunction.GetFromStore,
-                  wellUid: well.uid,
+                  wellUid: wellbore.wellUid,
                   wellboreUid: wellbore.uid
                 })
               }
+              disabled={checkedWellboreRows?.length !== 1}
             >
               <StyledIcon
                 name="textField"
@@ -339,7 +311,7 @@ const WellboreContextMenu = (
                 openInQueryView({
                   templateObject: TemplateObjects.Wellbore,
                   storeFunction: StoreFunction.AddToStore,
-                  wellUid: well.uid,
+                  wellUid: wellbore.wellUid,
                   wellboreUid: uuid()
                 })
               }
@@ -355,28 +327,30 @@ const WellboreContextMenu = (
               label={"New object"}
               icon={"add"}
             >
-              {Object.values(ObjectType).map((objectType) => (
-                <MenuItem
-                  key={objectType}
-                  onClick={() =>
-                    openInQueryView({
-                      templateObject: ObjectTypeToTemplateObject[objectType],
-                      storeFunction: StoreFunction.AddToStore,
-                      wellUid: well.uid,
-                      wellboreUid: wellbore.uid,
-                      objectUid: uuid()
-                    })
-                  }
-                >
-                  <StyledIcon
-                    name="add"
-                    color={colors.interactive.primaryResting}
-                  />
-                  <Typography
-                    color={"primary"}
-                  >{`New ${objectType}`}</Typography>
-                </MenuItem>
-              ))}
+              {Object.values(ObjectType)
+                .filter((objectType) => capObjects.includes(objectType))
+                .map((objectType) => (
+                  <MenuItem
+                    key={objectType}
+                    onClick={() =>
+                      openInQueryView({
+                        templateObject: ObjectTypeToTemplateObject[objectType],
+                        storeFunction: StoreFunction.AddToStore,
+                        wellUid: wellbore.wellUid,
+                        wellboreUid: wellbore.uid,
+                        objectUid: uuid()
+                      })
+                    }
+                  >
+                    <StyledIcon
+                      name="add"
+                      color={colors.interactive.primaryResting}
+                    />
+                    <Typography
+                      color={"primary"}
+                    >{`New ${objectType}`}</Typography>
+                  </MenuItem>
+                ))}
             </NestedMenuItem>
           ]}
         </NestedMenuItem>,

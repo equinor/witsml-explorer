@@ -1,4 +1,3 @@
-import { Typography } from "@equinor/eds-core-react";
 import {
   ContentTable,
   ContentTableColumn,
@@ -10,29 +9,44 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
 import formatDateString from "components/DateFormatter";
-import { useWellFilter } from "contexts/filter";
-import ModificationType from "contexts/modificationType";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWell } from "hooks/query/useGetWell";
+import { useGetWellbores } from "hooks/query/useGetWellbores";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import EntityType from "models/entityType";
 import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
-import ObjectService from "services/objectService";
+import { useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
+import { OBJECT_GROUPS_PATH } from "routes/routerConstants";
 
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
-export const WellboresListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell } = navigationState;
-  const [selectedWellFiltered] = useWellFilter(
-    React.useMemo(() => (selectedWell ? [selectedWell] : []), [selectedWell]),
-    React.useMemo(() => ({ filterWellbores: true }), [])
+export default function WellboresListView() {
+  const { connectedServer } = useConnectedServer();
+  const { wellUid } = useParams();
+  const { servers } = useGetServers();
+  const {
+    well,
+    isFetching: isFetchingWell,
+    isFetched: isFetchedWell
+  } = useGetWell(connectedServer, wellUid);
+  const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
+    connectedServer,
+    wellUid
   );
+  const isFetching = isFetchingWell || isFetchingWellbores;
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
+  const navigate = useNavigate();
+
+  useExpandSidebarNodes(wellUid);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
@@ -61,8 +75,8 @@ export const WellboresListView = (): React.ReactElement => {
     checkedWellboreRows: WellboreRow[]
   ) => {
     const contextMenuProps: WellboreContextMenuProps = {
+      servers,
       wellbore,
-      well: selectedWell,
       checkedWellboreRows
     };
     const position = getContextMenuPosition(event);
@@ -77,7 +91,7 @@ export const WellboresListView = (): React.ReactElement => {
 
   const getTableData = () => {
     return (
-      selectedWellFiltered?.wellbores?.map((wellbore) => {
+      wellbores?.map((wellbore) => {
         return {
           ...wellbore,
           id: wellbore.uid,
@@ -98,45 +112,27 @@ export const WellboresListView = (): React.ReactElement => {
   };
 
   const onSelect = async (wellboreRow: any) => {
-    const wellbore: Wellbore = wellboreRow.wellbore;
-    dispatchNavigation({
-      type: NavigationType.SelectWellbore,
-      payload: { well: selectedWell, wellbore }
-    });
-    if (wellbore.objectCount == null) {
-      const objectCount = await ObjectService.getExpandableObjectsCount(
-        wellbore
-      );
-      dispatchNavigation({
-        type: ModificationType.UpdateWellborePartial,
-        payload: {
-          wellboreUid: wellbore.uid,
-          wellUid: wellbore.wellUid,
-          wellboreProperties: { objectCount }
-        }
-      });
-    }
+    navigate(`${wellboreRow.wellbore.uid}/${OBJECT_GROUPS_PATH}`);
   };
 
-  return (
-    selectedWell &&
-    (selectedWell.wellbores.length > 0 && !selectedWellFiltered?.wellbores ? (
-      <Typography style={{ padding: "1rem" }}>
-        No wellbores match the current filter
-      </Typography>
-    ) : (
-      <ContentTable
-        viewId="wellboresListView"
-        columns={columns}
-        data={getTableData()}
-        onSelect={onSelect}
-        onContextMenu={onContextMenu}
-        downloadToCsvFileName="Wellbores"
-        checkableRows
-        showRefresh
-      />
-    ))
-  );
-};
+  if (isFetching) {
+    return <ProgressSpinner message="Fetching wellbores." />;
+  }
 
-export default WellboresListView;
+  if (isFetchedWell && !well) {
+    return <ItemNotFound itemType={EntityType.Well} />;
+  }
+
+  return (
+    <ContentTable
+      viewId="wellboresListView"
+      columns={columns}
+      data={getTableData()}
+      onSelect={onSelect}
+      onContextMenu={onContextMenu}
+      downloadToCsvFileName="Wellbores"
+      checkableRows
+      showRefresh
+    />
+  );
+}

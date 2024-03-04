@@ -1,7 +1,7 @@
 import { Collapse, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { Alert, AlertTitle } from "@material-ui/lab";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { capitalize } from "lodash";
 import React, { useContext, useEffect, useState } from "react";
@@ -18,7 +18,7 @@ export type AlertSeverity = "error" | "info" | "success" | "warning";
 
 const Alerts = (): React.ReactElement => {
   const [alert, setAlert] = useState<AlertState>(null);
-  const { navigationState } = useContext(NavigationContext);
+  const { connectedServer } = useConnectedServer();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -43,7 +43,7 @@ const Alerts = (): React.ReactElement => {
           const shouldNotify =
             notification.serverUrl == null ||
             notification.serverUrl.toString().toLowerCase() ===
-              navigationState.selectedServer?.url?.toLowerCase();
+              connectedServer?.url?.toLowerCase();
           if (!shouldNotify) {
             return;
           }
@@ -94,7 +94,7 @@ const Alerts = (): React.ReactElement => {
       unsubscribeOnConnectionStateChanged();
       unsubscribeOnJobFinished();
     };
-  }, [navigationState.selectedServer]);
+  }, [connectedServer]);
 
   return (
     <Collapse in={!!alert}>

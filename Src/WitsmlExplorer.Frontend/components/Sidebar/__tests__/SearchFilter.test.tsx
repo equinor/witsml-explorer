@@ -1,17 +1,10 @@
 import "@testing-library/jest-dom/extend-expect";
-import { act, screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {
-  deferred,
-  getObjectSearchResult,
-  getServer,
-  renderWithContexts
-} from "__testUtils__/testUtils";
+import { getServer, renderWithContexts } from "__testUtils__/testUtils";
 import ContextMenuPresenter from "components/ContextMenus/ContextMenuPresenter";
 import SearchFilter from "components/Sidebar/SearchFilter";
 import { EMPTY_FILTER, FilterContext, ObjectFilterType } from "contexts/filter";
-import ObjectSearchResult from "models/objectSearchResult";
-import ObjectService from "services/objectService";
 
 jest.mock("services/objectService");
 
@@ -78,7 +71,9 @@ describe("Search Filter", () => {
         <SearchFilter />
         <ContextMenuPresenter />
       </>,
-      { initialNavigationState: { selectedServer: getServer() } }
+      {
+        initialConnectedServer: getServer()
+      }
     );
 
     const showOptions = screen.getByRole("button", {
@@ -93,7 +88,6 @@ describe("Search Filter", () => {
     expect(menu).toBeInTheDocument();
 
     expect(within(menu).getByText(/wells$/i)).toBeInTheDocument();
-    expect(within(menu).getByText(/wellbores/i)).toBeInTheDocument();
     expect(within(menu).getByText(/fields/i)).toBeInTheDocument();
     expect(within(menu).getByText(/licenses/i)).toBeInTheDocument();
     expect(within(menu).getByText(/rigs/i)).toBeInTheDocument();
@@ -108,7 +102,9 @@ describe("Search Filter", () => {
         <SearchFilter />
         <ContextMenuPresenter />
       </>,
-      { initialNavigationState: { selectedServer: getServer() } }
+      {
+        initialConnectedServer: getServer()
+      }
     );
 
     await user.click(
@@ -134,59 +130,4 @@ describe("Search Filter", () => {
       Use wildcard * for x unknown characters."
     `);
   });
-
-  it("Options should be closed, and loading dots displayed while fetching an object", async () => {
-    const { promise, resolve } = deferred<ObjectSearchResult[]>();
-    const user = userEvent.setup();
-
-    jest
-      .spyOn(ObjectService, "getObjectsWithParamByType")
-      .mockImplementation(() => promise);
-
-    renderWithContexts(
-      <>
-        <SearchFilter />
-        <ContextMenuPresenter />
-      </>,
-      { initialNavigationState: { selectedServer: getServer() } }
-    );
-
-    const showOptions = screen.getByRole("button", {
-      name: /show search options/i
-    });
-    expect(showOptions).toBeEnabled();
-
-    await user.click(showOptions);
-
-    const menu = screen.getByRole("menu");
-
-    await user.click(within(menu).getByText(/rigs/i));
-    await user.type(
-      screen.getByRole("textbox", { name: /search/i }),
-      "testRig{enter}"
-    );
-
-    expect(
-      screen.getByRole("progressbar", { name: /loading options/i })
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
-    expect(ObjectService.getObjectsWithParamByType).toHaveBeenCalledTimes(1);
-
-    // Resolve and return from the mocked getObjectsWithParamByType
-    await act(async () => {
-      resolve(SEARCH_RESULT_RIGS);
-    });
-
-    expect(
-      screen.queryByRole("progressbar", { name: /loading options/i })
-    ).not.toBeInTheDocument();
-  });
 });
-
-const SEARCH_RESULT_RIGS = [
-  getObjectSearchResult({
-    searchProperty: "testRig",
-    wellUid: "well1",
-    wellboreUid: "wellbore1"
-  })
-];

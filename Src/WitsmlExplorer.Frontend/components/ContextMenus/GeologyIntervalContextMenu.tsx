@@ -13,9 +13,10 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import GeologyIntervalPropertiesModal from "components/Modals/GeologyIntervalPropertiesModal";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { ComponentType } from "models/componentType";
 import GeologyInterval from "models/geologyInterval";
 import { createComponentReferences } from "models/jobs/componentReferences";
@@ -26,25 +27,25 @@ import { colors } from "styles/Colors";
 
 export interface GeologyIntervalContextMenuProps {
   checkedGeologyIntervals: GeologyInterval[];
+  mudLog: MudLog;
 }
 
 const GeologyIntervalContextMenu = (
   props: GeologyIntervalContextMenuProps
 ): React.ReactElement => {
-  const { checkedGeologyIntervals } = props;
+  const { checkedGeologyIntervals, mudLog } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const {
-    navigationState: { selectedServer, selectedObject, servers }
-  } = useContext(NavigationContext);
+  const { servers } = useGetServers();
+  const { connectedServer } = useConnectedServer();
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
   );
-  const selectedMudLog = selectedObject as MudLog;
 
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const geologyIntervalPropertiesModalProps = {
-      geologyInterval: checkedGeologyIntervals[0]
+      geologyInterval: checkedGeologyIntervals[0],
+      mudLog
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
@@ -58,7 +59,7 @@ const GeologyIntervalContextMenu = (
 
   const toDelete = createComponentReferences(
     checkedGeologyIntervals.map((gi) => gi.uid),
-    selectedMudLog,
+    mudLog,
     ComponentType.GeologyInterval
   );
   return (
@@ -68,9 +69,9 @@ const GeologyIntervalContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              connectedServer,
               checkedGeologyIntervals.map((gi) => gi.uid),
-              selectedMudLog,
+              mudLog,
               dispatchOperation,
               ComponentType.GeologyInterval
             )
@@ -86,6 +87,7 @@ const GeologyIntervalContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.GeologyInterval}
           componentsToCopy={checkedGeologyIntervals}
+          sourceParent={mudLog}
         />,
         <MenuItem
           key={"paste"}
@@ -94,7 +96,7 @@ const GeologyIntervalContextMenu = (
               servers,
               geologyIntervalReferences,
               dispatchOperation,
-              selectedMudLog
+              mudLog
             )
           }
           disabled={geologyIntervalReferences === null}

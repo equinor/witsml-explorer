@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { TubularComponentRow } from "components/ContentViews/TubularView";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -17,41 +18,35 @@ import {
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import TubularComponentPropertiesModal from "components/Modals/TubularComponentPropertiesModal";
-import { DispatchNavigation } from "contexts/navigationAction";
-import { DispatchOperation } from "contexts/operationStateReducer";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Tubular from "models/tubular";
-import React from "react";
+import React, { useContext } from "react";
 import { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface TubularComponentContextMenuProps {
   checkedTubularComponents: TubularComponentRow[];
-  dispatchNavigation: DispatchNavigation;
-  dispatchOperation: DispatchOperation;
   tubular: Tubular;
-  selectedServer: Server;
-  servers: Server[];
 }
 
 const TubularComponentContextMenu = (
   props: TubularComponentContextMenuProps
 ): React.ReactElement => {
-  const {
-    checkedTubularComponents,
-    dispatchNavigation,
-    dispatchOperation,
-    tubular,
-    selectedServer,
-    servers
-  } = props;
+  const { checkedTubularComponents, tubular } = props;
+  const { servers } = useGetServers();
+  const { dispatchOperation } = useContext(OperationContext);
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
   );
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
 
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -82,10 +77,13 @@ const TubularComponentContextMenu = (
           key={"refresh"}
           onClick={() =>
             onClickRefreshObject(
-              tubular,
-              ObjectType.Tubular,
               dispatchOperation,
-              dispatchNavigation
+              queryClient,
+              connectedServer?.url,
+              tubular.wellUid,
+              tubular.wellboreUid,
+              ObjectType.Tubular,
+              tubular.uid
             )
           }
         >
@@ -101,7 +99,7 @@ const TubularComponentContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              connectedServer,
               checkedTubularComponents.map((ts) => ts.uid),
               tubular,
               dispatchOperation,
@@ -123,6 +121,7 @@ const TubularComponentContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.TubularComponent}
           componentsToCopy={checkedTubularComponents}
+          sourceParent={tubular}
         />,
         <MenuItem
           key={"paste"}

@@ -1,10 +1,11 @@
 import { TextField } from "@equinor/eds-core-react";
+import { QueryClient } from "@tanstack/react-query";
 import ConfirmModal from "components/Modals/ConfirmModal";
-import { logTypeToQuery } from "components/Routing";
-import ModificationType from "contexts/modificationType";
-import { DispatchNavigation } from "contexts/navigationAction";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import { isExpandableGroupObject } from "components/Sidebar/ObjectGroupItem";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { refreshObjectsQuery } from "hooks/query/queryRefreshHelpers";
 import { getParentType } from "models/componentType";
 import ComponentReferences from "models/jobs/componentReferences";
 import { DeleteComponentsJob, DeleteObjectsJob } from "models/jobs/deleteJobs";
@@ -13,9 +14,16 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import { Fragment } from "react";
+import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getLogObjectsViewPath,
+  getLogTypesViewPath,
+  getObjectViewPath,
+  getObjectsViewPath
+} from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
-import ObjectService from "services/objectService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
@@ -57,12 +65,42 @@ export const onClickShowObjectOnServer = async (
   dispatchOperation: DispatchOperation,
   server: Server,
   objectOnWellbore: ObjectOnWellbore,
-  objectType: ObjectType
+  objectType: ObjectType,
+  indexCurve: IndexCurve = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
-  const url = `${host}/?serverUrl=${server.url}&wellUid=${objectOnWellbore.wellUid}&wellboreUid=${objectOnWellbore.wellboreUid}&group=${objectType}&objectUid=${objectOnWellbore.uid}`;
-  window.open(url);
+  let url = "";
+  if (objectType === ObjectType.Log) {
+    const logTypePath =
+      indexCurve === IndexCurve.Depth
+        ? RouterLogType.DEPTH
+        : RouterLogType.TIME;
+    url = getLogObjectViewPath(
+      server.url,
+      objectOnWellbore.wellUid,
+      objectOnWellbore.wellboreUid,
+      objectType,
+      logTypePath,
+      objectOnWellbore.uid
+    );
+  } else if (isExpandableGroupObject(objectType)) {
+    url = getObjectViewPath(
+      server.url,
+      objectOnWellbore.wellUid,
+      objectOnWellbore.wellboreUid,
+      objectType,
+      objectOnWellbore.uid
+    );
+  } else {
+    url = getObjectsViewPath(
+      server.url,
+      objectOnWellbore.wellUid,
+      objectOnWellbore.wellboreUid,
+      objectType
+    );
+  }
+  window.open(`${host}${url}`);
 };
 
 export const onClickShowGroupOnServer = async (
@@ -70,15 +108,39 @@ export const onClickShowGroupOnServer = async (
   server: Server,
   wellbore: Wellbore,
   objectType: ObjectType,
-  logTypeGroup: string = null
+  indexCurve: IndexCurve = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const host = `${window.location.protocol}//${window.location.host}`;
-  let url = `${host}/?serverUrl=${server.url}&wellUid=${wellbore.wellUid}&wellboreUid=${wellbore.uid}&group=${objectType}`;
-  if (objectType === ObjectType.Log && logTypeGroup != null) {
-    url += `&logType=${logTypeToQuery(logTypeGroup)}`;
+  let url = "";
+  if (objectType === ObjectType.Log && indexCurve) {
+    const logTypePath =
+      indexCurve === IndexCurve.Depth
+        ? RouterLogType.DEPTH
+        : RouterLogType.TIME;
+    url = getLogObjectsViewPath(
+      server.url,
+      wellbore.wellUid,
+      wellbore.uid,
+      objectType,
+      logTypePath
+    );
+  } else if (objectType === ObjectType.Log) {
+    url = getLogTypesViewPath(
+      server.url,
+      wellbore.wellUid,
+      wellbore.uid,
+      objectType
+    );
+  } else {
+    url = getObjectsViewPath(
+      server.url,
+      wellbore.wellUid,
+      wellbore.uid,
+      objectType
+    );
   }
-  window.open(url);
+  window.open(`${host}${url}`);
 };
 
 export const onClickDeleteObjects = async (
@@ -134,47 +196,28 @@ export const onClickDeleteComponents = async (
 
 export const onClickRefresh = async (
   dispatchOperation: DispatchOperation,
-  dispatchNavigation: DispatchNavigation,
+  queryClient: QueryClient,
+  serverUrl: string,
   wellUid: string,
   wellboreUid: string,
-  objectType: ObjectType,
-  setIsLoading?: (arg: boolean) => void
+  objectType: ObjectType
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  if (setIsLoading) setIsLoading(true);
-  const wellboreObjects = await ObjectService.getObjects(
-    wellUid,
-    wellboreUid,
-    objectType
-  );
-  dispatchNavigation({
-    type: ModificationType.UpdateWellboreObjects,
-    payload: { wellboreObjects, wellUid, wellboreUid, objectType }
-  });
-  if (setIsLoading) setIsLoading(false);
+  refreshObjectsQuery(queryClient, serverUrl, wellUid, wellboreUid, objectType);
 };
 
 export const onClickRefreshObject = async (
-  objectOnWellbore: ObjectOnWellbore,
-  objectType: ObjectType,
   dispatchOperation: DispatchOperation,
-  dispatchNavigation: DispatchNavigation
+  queryClient: QueryClient,
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  objectType: ObjectType,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  objectUid: string
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  let freshObject = await ObjectService.getObject(
-    objectOnWellbore.wellUid,
-    objectOnWellbore.wellboreUid,
-    objectOnWellbore.uid,
-    objectType
-  );
-  const isDeleted = !freshObject;
-  if (isDeleted) {
-    freshObject = objectOnWellbore;
-  }
-  dispatchNavigation({
-    type: ModificationType.UpdateWellboreObject,
-    payload: { objectToUpdate: freshObject, objectType, isDeleted }
-  });
+  refreshObjectsQuery(queryClient, serverUrl, wellUid, wellboreUid, objectType);
 };
 
 const displayDeleteModal = (

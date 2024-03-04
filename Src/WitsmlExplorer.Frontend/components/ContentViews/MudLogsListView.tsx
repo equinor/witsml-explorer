@@ -8,14 +8,16 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MudLogContextMenu from "components/ContextMenus/MudLogContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { measureToString } from "models/measure";
 import MudLog from "models/mudLog";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export interface MudLogRow extends ContentTableRow {
   mudLog: MudLog;
@@ -29,31 +31,25 @@ export interface MudLogRow extends ContentTableRow {
   uid: string;
 }
 
-export const MudLogsListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+export default function MudLogsListView() {
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
-  const [mudLogs, setMudLogs] = useState<MudLog[]>([]);
+  const navigate = useNavigate();
+  const { connectedServer } = useConnectedServer();
+  const { wellUid, wellboreUid } = useParams();
+  const { objects: mudLogs } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.MudLog
+  );
 
-  useEffect(() => {
-    if (selectedWellbore?.mudLogs) {
-      setMudLogs(selectedWellbore.mudLogs);
-    }
-  }, [selectedWellbore]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onSelect = (mudLogRow: MudLogRow) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        object: mudLogRow.mudLog,
-        objectType: ObjectType.MudLog
-      }
-    });
+    navigate(mudLogRow.mudLog.uid);
   };
 
   const getTableData = (): MudLogRow[] => {
@@ -115,13 +111,12 @@ export const MudLogsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedRows: MudLogRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedRows.map((row) => row.mudLog),
-      wellbore: selectedWellbore
+      checkedObjects: checkedRows.map((row) => row.mudLog)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -131,7 +126,7 @@ export const MudLogsListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.mudLogs, mudLogs) && (
+    mudLogs && (
       <ContentTable
         viewId="mudLogsListView"
         columns={columns}
@@ -144,6 +139,4 @@ export const MudLogsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default MudLogsListView;
+}

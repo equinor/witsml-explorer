@@ -10,7 +10,6 @@ import {
 import { CurveValuesPlot } from "components/ContentViews/CurveValuesPlot";
 import EditNumber from "components/ContentViews/EditNumber";
 import EditSelectedLogCurveInfo from "components/ContentViews/EditSelectedLogCurveInfo";
-import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
 import {
   ContentTable,
   ContentTableColumn,
@@ -25,10 +24,12 @@ import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import ProgressSpinner from "components/ProgressSpinner";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import useExport from "hooks/useExport";
 import orderBy from "lodash/orderBy";
 import {
@@ -39,6 +40,7 @@ import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
 import React, {
   useCallback,
   useContext,
@@ -47,13 +49,21 @@ import React, {
   useRef,
   useState
 } from "react";
+import {
+  createSearchParams,
+  useLocation,
+  useParams,
+  useSearchParams
+} from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
 import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
+import { formatIndexValue } from "tools/IndexHelpers";
 import {
-  ContentContainer,
-  CommonPanelContainer
+  CommonPanelContainer,
+  ContentContainer
 } from "../StyledComponents/Container";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
@@ -75,17 +85,20 @@ export const CurveValuesView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { navigationState } = useContext(NavigationContext);
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const mnemonicsSearchParams = searchParams.get("mnemonics");
+  const startIndex = searchParams.get("startIndex");
+  const endIndex = searchParams.get("endIndex");
+  const mnemonics = useMemo(
+    () => getMnemonics(),
+    [mnemonicsSearchParams, location]
+  );
   const {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
-  const {
-    selectedWell,
-    selectedWellbore,
-    selectedObject,
-    selectedLogCurveInfo
-  } = navigationState;
+  const { wellUid, wellboreUid, objectUid, logType } = useParams();
   const [columns, setColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
   >([]);
@@ -98,11 +111,24 @@ export const CurveValuesView = (): React.ReactElement => {
     DEFAULT_REFRESH_DELAY
   );
   const [refreshFlag, setRefreshFlag] = useState<boolean>(null);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
   const controller = useRef(new AbortController());
   const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
   const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
-  const selectedLog = selectedObject as LogObject;
+  const { connectedServer } = useConnectedServer();
+  const {
+    object: log,
+    isFetching: isFetchingLog,
+    isFetched: isFetchedLog
+  } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Log,
+    objectUid
+  );
   const { exportData, exportOptions } = useExport();
+  const justFinishedStreaming = useRef(false);
   let downloadOptions: DownloadOptions = DownloadOptions.IntervalOfData;
 
   const onChangeDownloadOption = (
@@ -112,6 +138,16 @@ export const CurveValuesView = (): React.ReactElement => {
     const enumToString = selectedValue as DownloadOptions;
     downloadOptions = enumToString;
   };
+
+  function getMnemonics() {
+    if (mnemonicsSearchParams) {
+      return JSON.parse(mnemonicsSearchParams);
+    } else if (location?.state?.mnemonics) {
+      return JSON.parse(location.state.mnemonics);
+    } else {
+      return [];
+    }
+  }
 
   const onRowSelectionChange = useCallback(
     (rows: CurveValueRow[]) => setSelectedRows(rows),
@@ -153,7 +189,9 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [autoRefresh]);
 
   const stopAutoRefreshTimerCallback = () => {
+    justFinishedStreaming.current = true;
     setAutoRefresh(false);
+    updateSearchParamsAfterStreaming();
     const confirmation = (
       <ConfirmModal
         heading={"Stream stopped"}
@@ -175,7 +213,7 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const getDeleteLogCurveValuesJob = useCallback(
     (
-      currentSelected: LogCurveInfoRow[],
+      mnemonics: string[],
       checkedContentItems: CurveValueRow[],
       selectedLog: LogObject,
       tableData: CurveValueRow[]
@@ -184,9 +222,6 @@ export const CurveValuesView = (): React.ReactElement => {
         checkedContentItems,
         tableData,
         selectedLog
-      );
-      const mnemonics = currentSelected.map(
-        (logCurveInfoRow) => logCurveInfoRow.mnemonic
       );
 
       const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
@@ -227,11 +262,7 @@ export const CurveValuesView = (): React.ReactElement => {
           .join(exportOptions.separator)
       )
       .join(exportOptions.newLineCharacter);
-    exportData(
-      `${selectedWellbore.name}-${selectedLog.name}`,
-      exportColumns,
-      data
-    );
+    exportData(log.name, exportColumns, data);
   }, [columns, tableData]);
 
   const exportSelectedDataPoints = useCallback(() => {
@@ -248,11 +279,7 @@ export const CurveValuesView = (): React.ReactElement => {
           .join(exportOptions.separator)
       )
       .join(exportOptions.newLineCharacter);
-    exportData(
-      `${selectedWellbore.name}-${selectedLog.name}`,
-      exportColumns,
-      data
-    );
+    exportData(log.name, exportColumns, data);
   }, [columns, selectedRows]);
 
   const onContextMenu = useCallback(
@@ -265,9 +292,9 @@ export const CurveValuesView = (): React.ReactElement => {
         checkedContentItems.map((c) => c.id).includes(data.id)
       );
       const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(
-        selectedLogCurveInfo,
+        mnemonics,
         originalTableData,
-        selectedLog,
+        log,
         tableData
       );
       const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
@@ -281,8 +308,8 @@ export const CurveValuesView = (): React.ReactElement => {
       });
     },
     [
-      selectedLogCurveInfo,
-      selectedLog,
+      mnemonics,
+      log,
       getDeleteLogCurveValuesJob,
       dispatchOperation,
       getContextMenuPosition,
@@ -325,31 +352,47 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [tableData, columns, timeZone, dateTimeFormat]);
 
   useEffect(() => {
+    if (!justFinishedStreaming.current) {
+      // This is to prevent refreshing after the search params has been updated after the steam is stopped.
+      refreshData();
+    } else {
+      justFinishedStreaming.current = false;
+    }
+    return () => controller.current?.abort();
+  }, [startIndex, endIndex, mnemonics, log]);
+
+  const refreshData = () => {
     setTableData([]);
     setIsLoading(true);
     setAutoRefresh(false);
 
-    if (selectedLogCurveInfo) {
-      getLogData(
-        String(selectedLogCurveInfo[0].minIndex),
-        String(selectedLogCurveInfo[0].maxIndex)
-      )
+    if (log) {
+      getLogData(startIndex, endIndex)
         .catch(truncateAbortHandler)
         .then(() => setIsLoading(false));
     }
+  };
 
-    return () => controller.current?.abort();
-  }, [selectedLogCurveInfo, selectedLog]);
+  const updateSearchParamsAfterStreaming = () => {
+    const newSearchParams = createSearchParams({
+      mnemonics: JSON.stringify(mnemonics),
+      startIndex: formatIndexValue(getCurrentMinIndex()),
+      endIndex: formatIndexValue(getCurrentMaxIndex())
+    });
+    setSearchParams(newSearchParams);
+  };
 
   const onClickAutoRefresh = () => {
     if (autoRefresh) {
+      justFinishedStreaming.current = true;
       setAutoRefresh(false);
+      updateSearchParamsAfterStreaming();
     } else {
       // First fetch the latest data, then start streaming
-      const isTimeLog = selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+      const isTimeLog = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
       const currentEndIndex = isTimeLog
-        ? selectedLog.endIndex
-        : selectedLog.endIndex.replace(/[^0-9.]/g, "");
+        ? log.endIndex
+        : log.endIndex.replace(/[^0-9.]/g, "");
       const startIndex = getOffsetIndex(
         currentEndIndex,
         -TIME_INDEX_START_OFFSET,
@@ -367,20 +410,20 @@ export const CurveValuesView = (): React.ReactElement => {
   };
 
   const getCurrentMinIndex = (): string => {
-    const indexCurve = selectedLog.indexCurve;
+    const indexCurve = log.indexCurve;
     const minIndex =
       tableData.length > 0 && indexCurve in tableData[0]
         ? tableData[0][indexCurve as keyof LogDataRow]
-        : selectedLogCurveInfo[0].minIndex;
+        : startIndex;
     return String(minIndex);
   };
 
   const getCurrentMaxIndex = (): string => {
-    const indexCurve = selectedLog.indexCurve;
+    const indexCurve = log.indexCurve;
     const maxIndex =
       tableData.length > 0 && indexCurve in tableData[0]
         ? tableData.slice(-1)[0][indexCurve as keyof LogDataRow]
-        : selectedLogCurveInfo[0].maxIndex;
+        : endIndex;
     return String(maxIndex);
   };
 
@@ -389,9 +432,8 @@ export const CurveValuesView = (): React.ReactElement => {
     timeOffset: number,
     depthOffset: number
   ) => {
-    const isTimeLog = selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-    const isDescending =
-      selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING;
+    const isTimeLog = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+    const isDescending = log.direction == WITSML_LOG_ORDERTYPE_DECREASING;
     if (isTimeLog) {
       const endTime = new Date(baseIndex);
       endTime.setSeconds(
@@ -405,8 +447,7 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const exportAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const logReference: LogObject = selectedLog;
-    const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
+    const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
     const downloadAllLogDataJob: DownloadAllLogDataJob = {
       logReference,
@@ -480,14 +521,13 @@ export const CurveValuesView = (): React.ReactElement => {
   };
 
   const getLogData = async (startIndex: string, endIndex: string) => {
-    const mnemonics = selectedLogCurveInfo.map((lci) => lci.mnemonic);
     const startIndexIsInclusive = !autoRefresh;
     controller.current = new AbortController();
 
     const logData: LogData = await LogObjectService.getLogData(
-      selectedWell.uid,
-      selectedWellbore.uid,
-      selectedLog.uid,
+      wellUid,
+      wellboreUid,
+      objectUid,
       mnemonics,
       startIndexIsInclusive,
       startIndex,
@@ -500,7 +540,7 @@ export const CurveValuesView = (): React.ReactElement => {
 
       const logDataRows = logData.data.map((data) => {
         const row: CurveValueRow = {
-          id: String(data[selectedLog.indexCurve]),
+          id: String(data[log.indexCurve]),
           ...data
         };
         return row;
@@ -531,10 +571,16 @@ export const CurveValuesView = (): React.ReactElement => {
     ]
   );
 
-  if (!selectedLog || !selectedLogCurveInfo) return null;
+  if (isFetchingLog) {
+    return <ProgressSpinner message="Fetching Log." />;
+  }
+
+  if (isFetchedLog && !log) {
+    return <ItemNotFound itemType={ObjectType.Log} />;
+  }
+
   return (
     <>
-      {selectedRows.length}
       <ContentContainer>
         <CommonPanelContainer>
           <EditSelectedLogCurveInfo
@@ -542,10 +588,11 @@ export const CurveValuesView = (): React.ReactElement => {
             key="editSelectedLogCurveInfo"
             overrideStartIndex={autoRefresh ? getCurrentMinIndex() : null}
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
+            onClickRefresh={() => refreshData()}
           />
           <Switch checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
           <Typography>Show Plot</Typography>
-          {selectedLog?.objectGrowing && (
+          {log?.objectGrowing && (
             <>
               <Switch checked={autoRefresh} onChange={onClickAutoRefresh} />
               <Typography>Stream</Typography>
@@ -577,10 +624,8 @@ export const CurveValuesView = (): React.ReactElement => {
             <CurveValuesPlot
               data={tableData}
               columns={columns}
-              name={selectedLog?.name}
-              isDescending={
-                selectedLog?.direction == WITSML_LOG_ORDERTYPE_DECREASING
-              }
+              name={log?.name}
+              isDescending={log?.direction == WITSML_LOG_ORDERTYPE_DECREASING}
               autoRefresh={autoRefresh}
             />
           ) : (

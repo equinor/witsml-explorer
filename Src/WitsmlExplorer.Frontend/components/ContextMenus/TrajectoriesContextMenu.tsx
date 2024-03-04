@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   StoreFunction,
   TemplateObjects
@@ -17,14 +18,12 @@ import { PropertiesModalMode } from "components/Modals/ModalParts";
 import TrajectoryPropertiesModal, {
   TrajectoryPropertiesModalProps
 } from "components/Modals/TrajectoryPropertiesModal";
-import NavigationContext from "contexts/navigationContext";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "contexts/operationStateReducer";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
+import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Trajectory from "models/trajectory";
@@ -34,23 +33,21 @@ import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
 export interface TrajectoriesContextMenuProps {
-  dispatchOperation: (
-    action: DisplayModalAction | HideModalAction | HideContextMenuAction
-  ) => void;
   wellbore: Wellbore;
   servers: Server[];
-  setIsLoading?: (arg: boolean) => void;
 }
 
 const TrajectoriesContextMenu = (
   props: TrajectoriesContextMenuProps
 ): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers, setIsLoading } = props;
-  const { dispatchNavigation } = useContext(NavigationContext);
+  const { wellbore, servers } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const trajectoryReferences = useClipboardReferencesOfType(
     ObjectType.Trajectory
   );
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
 
   const onClickNewTrajectory = () => {
     const newTrajectory: Trajectory = {
@@ -84,27 +81,25 @@ const TrajectoriesContextMenu = (
   return (
     <ContextMenu
       menuItems={[
-        setIsLoading ? (
-          <MenuItem
-            key={"refresh"}
-            onClick={() =>
-              onClickRefresh(
-                dispatchOperation,
-                dispatchNavigation,
-                wellbore.wellUid,
-                wellbore.uid,
-                ObjectType.Trajectory,
-                setIsLoading
-              )
-            }
-          >
-            <StyledIcon
-              name="refresh"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`Refresh Trajectories`}</Typography>
-          </MenuItem>
-        ) : null,
+        <MenuItem
+          key={"refresh"}
+          onClick={() =>
+            onClickRefresh(
+              dispatchOperation,
+              queryClient,
+              connectedServer?.url,
+              wellbore.wellUid,
+              wellbore.uid,
+              ObjectType.Trajectory
+            )
+          }
+        >
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>{`Refresh Trajectories`}</Typography>
+        </MenuItem>,
         <MenuItem key={"newTrajectory"} onClick={onClickNewTrajectory}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Trajectory</Typography>
@@ -116,7 +111,7 @@ const TrajectoriesContextMenu = (
               servers,
               trajectoryReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={trajectoryReferences === null}

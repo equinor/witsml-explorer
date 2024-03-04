@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.Helpers;
 using Witsml.ServiceReference;
 
@@ -29,17 +30,85 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IList<Well>> GetWells()
         {
-            Task<IList<Wellbore>> getWellbores = _wellboreService.GetWellbores();
-            Task<IList<Well>> getWells = GetWellsInformation();
-            await Task.WhenAll(getWellbores, getWells);
+            IList<Well> wells = await GetWellsInformation();
+            wells = await SetWellIsActive(wells);
+            wells = await SetWellIsEmpty(wells);
+            return wells.OrderBy(well => well.Name).ToList();
+        }
 
-            List<Well> wells = getWells.Result.OrderBy(well => well.Name).ToList();
+        private async Task<IList<Well>> SetWellIsActive(IList<Well> wells) // Sets the IsActive property of each well to true if any of its wellbores are active
+        {
+            var query = new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    IsActive = "true"
+                }.AsItemInList()
+            };
+            WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            foreach (WitsmlWellbore wellbore in wellbores.Wellbores)
+            {
+                Well well = wells.FirstOrDefault(well => well.Uid == wellbore.UidWell);
+                if (well != null)
+                {
+                    well.IsActive = true;
+                }
+            };
+            return wells;
+        }
+
+        private async Task<Well> SetWellIsActive(Well well) // Sets the IsActive property of the well to true if any of its wellbores are active
+        {
+            var query = new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    UidWell = well.Uid,
+                    IsActive = "true"
+                }.AsItemInList()
+            };
+
+            WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            if (wellbores.Wellbores.Any())
+            {
+                well.IsActive = true;
+            }
+            return well;
+        }
+
+        private async Task<IList<Well>> SetWellIsEmpty(IList<Well> wells) // Sets the IsEmpty property of each well to true if the well does not have any wellbores.
+        {
+            var query = new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    Uid = "",
+                    UidWell = "",
+                }.AsItemInList()
+            };
+            WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             foreach (Well well in wells)
             {
-                well.Wellbores = getWellbores.Result.Where(wb => wb.WellUid == well.Uid).ToList();
-            }
-
+                WitsmlWellbore wellbore = wellbores.Wellbores.FirstOrDefault(wellbore => wellbore.UidWell == well.Uid);
+                well.IsEmpty = wellbore == null;
+            };
             return wells;
+        }
+
+        private async Task<Well> SetWellIsEmpty(Well well) // Sets the IsEmpty property of each well to true if the well does not have any wellbores.
+        {
+            var query = new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    Uid = "",
+                    UidWell = well.Uid,
+                }.AsItemInList()
+            };
+            WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+            WitsmlWellbore wellbore = wellbores.Wellbores.FirstOrDefault(wellbore => wellbore.UidWell == well.Uid);
+            well.IsEmpty = wellbore == null;
+            return well;
         }
 
         private async Task<IList<Well>> GetWellsInformation(string wellUid = null)
@@ -72,18 +141,17 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<Well> GetWell(string wellUid)
         {
-            Task<IList<Wellbore>> getWellbores = _wellboreService.GetWellbores(wellUid);
-            Task<IList<Well>> getWell = GetWellsInformation(wellUid);
-            await Task.WhenAll(getWellbores, getWell);
+            IList<Well> wells = await GetWellsInformation(wellUid);
 
-            Well well = getWell.Result.FirstOrDefault();
+            Well well = wells.FirstOrDefault();
 
             if (well == null)
             {
                 return null;
             }
 
-            well.Wellbores = getWellbores.Result;
+            well = await SetWellIsActive(well);
+            well = await SetWellIsEmpty(well);
             return well;
         }
     }

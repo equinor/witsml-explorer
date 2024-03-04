@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
@@ -19,9 +20,10 @@ import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import MessageObject from "models/messageObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
@@ -33,11 +35,12 @@ import { colors } from "styles/Colors";
 const MessageObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer } = navigationState;
+  const { checkedObjects } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
+  const { servers } = useGetServers();
 
   const onClickModify = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -58,7 +61,7 @@ const MessageObjectContextMenu = (
     const onPicked = (targetObject: ObjectOnWellbore, targetServer: Server) => {
       const props: MessageComparisonModalProps = {
         sourceMessage: checkedObjects[0] as MessageObject,
-        sourceServer: selectedServer,
+        sourceServer: connectedServer,
         targetServer,
         targetObject,
         dispatchOperation
@@ -111,11 +114,11 @@ const MessageObjectContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Message,
-          navigationState,
+          connectedServer,
+          servers,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

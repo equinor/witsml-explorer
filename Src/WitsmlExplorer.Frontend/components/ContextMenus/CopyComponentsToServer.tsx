@@ -5,11 +5,13 @@ import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import CopyRangeModal, {
   CopyRangeModalProps
 } from "components/Modals/CopyRangeModal";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { ComponentType } from "models/componentType";
 import LogCurveInfo from "models/logCurveInfo";
+import ObjectOnWellbore from "models/objectOnWellbore";
 import { Server } from "models/server";
 import { useContext } from "react";
 import { copyComponentsToServer } from "./CopyComponentsToServerUtils";
@@ -17,6 +19,7 @@ import { copyComponentsToServer } from "./CopyComponentsToServerUtils";
 export interface CopyComponentsToServerMenuItemProps {
   componentsToCopy: { uid: string }[] | LogCurveInfo[];
   componentType: ComponentType;
+  sourceParent: ObjectOnWellbore;
   withRange?: boolean;
   componentsToPreserve?: { uid: string }[] | LogCurveInfo[];
 }
@@ -24,11 +27,15 @@ export interface CopyComponentsToServerMenuItemProps {
 export const CopyComponentsToServerMenuItem = (
   props: CopyComponentsToServerMenuItemProps
 ): React.ReactElement => {
-  const { componentsToCopy, componentType, withRange, componentsToPreserve } =
-    props;
   const {
-    navigationState: { selectedServer, selectedObject, servers }
-  } = useContext(NavigationContext);
+    componentsToCopy,
+    componentType,
+    withRange,
+    componentsToPreserve,
+    sourceParent
+  } = props;
+  const { connectedServer } = useConnectedServer();
+  const { servers } = useGetServers();
   const { dispatchOperation } = useContext(OperationContext);
   const menuComponents = menuItemText("copy", componentType, componentsToCopy);
   const menuText =
@@ -39,16 +46,17 @@ export const CopyComponentsToServerMenuItem = (
   const onClickHandler = (server: Server) => {
     if (withRange === true) {
       const copyRangeModalProps: CopyRangeModalProps = {
+        logObject: sourceParent,
         mnemonics: [],
         infoMessage:
           "This will replace all data in your selected range on the target with data from the source. Data outside this range will be preserved on target.",
         onSubmit(startIndex, endIndex) {
           copyComponentsToServer({
             targetServer: server,
-            sourceServer: selectedServer,
+            sourceServer: connectedServer,
             componentsToCopy,
             dispatchOperation,
-            sourceParent: selectedObject,
+            sourceParent,
             componentType: componentType,
             startIndex: startIndex.toString(),
             endIndex: endIndex.toString()
@@ -62,10 +70,10 @@ export const CopyComponentsToServerMenuItem = (
     } else {
       copyComponentsToServer({
         targetServer: server,
-        sourceServer: selectedServer,
+        sourceServer: connectedServer,
         componentsToCopy,
         dispatchOperation,
-        sourceParent: selectedObject,
+        sourceParent,
         componentType,
         componentsToPreserve
       });
@@ -78,9 +86,9 @@ export const CopyComponentsToServerMenuItem = (
       label={menuText}
       disabled={componentsToCopy.length < 1}
     >
-      {servers.map(
+      {servers?.map(
         (server: Server) =>
-          server.id !== selectedServer.id && (
+          server.id !== connectedServer?.id && (
             <MenuItem
               key={server.name}
               onClick={() => {

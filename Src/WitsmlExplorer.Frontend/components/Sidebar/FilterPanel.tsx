@@ -6,10 +6,11 @@
   Typography
 } from "@equinor/eds-core-react";
 import { Divider, Tooltip } from "@material-ui/core";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import { useCurveThreshold } from "contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "contexts/filter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
 import OperationContext from "contexts/operationContext";
+import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { ObjectType } from "models/objectType";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
@@ -20,12 +21,15 @@ import {
 } from "tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedCurveThreshold } = navigationState;
+  const { curveThreshold, setCurveThreshold } = useCurveThreshold();
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const { connectedServer } = useConnectedServer();
+  const { capObjects } = useGetCapObjects(connectedServer, {
+    placeholderData: Object.entries(ObjectType)
+  });
 
   const switchObjectVisibility = (objectType: ObjectType) => {
     const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
@@ -139,17 +143,12 @@ const FilterPanel = (): React.ReactElement => {
               type="number"
               min={0}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                dispatchNavigation({
-                  type: NavigationType.SetCurveThreshold,
-                  payload: {
-                    curveThreshold: {
-                      ...selectedCurveThreshold,
-                      timeInMinutes: Number(event.target.value)
-                    }
-                  }
+                setCurveThreshold({
+                  ...curveThreshold,
+                  timeInMinutes: Number(event.target.value)
                 })
               }
-              value={selectedCurveThreshold.timeInMinutes}
+              value={curveThreshold.timeInMinutes}
               autoComplete={"off"}
               colors={colors}
             />
@@ -157,17 +156,12 @@ const FilterPanel = (): React.ReactElement => {
           <StyledCheckbox
             id="curveThreshold-hideInactive"
             onChange={(event) =>
-              dispatchNavigation({
-                type: NavigationType.SetCurveThreshold,
-                payload: {
-                  curveThreshold: {
-                    ...selectedCurveThreshold,
-                    hideInactiveCurves: event.target.checked
-                  }
-                }
+              setCurveThreshold({
+                ...curveThreshold,
+                hideInactiveCurves: event.target.checked
               })
             }
-            checked={selectedCurveThreshold.hideInactiveCurves}
+            checked={curveThreshold.hideInactiveCurves}
             value={"Hide inactive time curves"}
             color={"primary"}
             label={"Hide inactive time curves"}
@@ -201,13 +195,10 @@ const FilterPanel = (): React.ReactElement => {
               <StyledCheckbox
                 label={objectType}
                 checked={
-                  selectedFilter.objectVisibilityStatus[objectType] ==
-                  VisibilityStatus.Visible
+                  selectedFilter.objectVisibilityStatus[objectType] ===
+                    VisibilityStatus.Visible && capObjects.includes(objectType)
                 }
-                disabled={
-                  selectedFilter.objectVisibilityStatus[objectType] ==
-                  VisibilityStatus.Disabled
-                }
+                disabled={!capObjects.includes(objectType)}
                 key={objectType}
                 colors={colors}
                 onChange={() => switchObjectVisibility(objectType)}

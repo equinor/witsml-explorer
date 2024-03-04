@@ -2,6 +2,7 @@ import "@testing-library/jest-dom/extend-expect";
 import { act, screen, within } from "@testing-library/react";
 import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
 import {
+  MockResizeObserver,
   deferred,
   getJobInfo,
   getNotification,
@@ -17,21 +18,9 @@ jest.mock("services/objectService");
 jest.mock("@microsoft/signalr");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
-class ResizeObserver {
-  observe() {
-    /**/
-  }
-  unobserve() {
-    /**/
-  }
-  disconnect() {
-    /**/
-  }
-}
-
 describe("Report Modal", () => {
   //mock ResizeObserver to enable testing virtualized components
-  window.ResizeObserver = ResizeObserver;
+  window.ResizeObserver = MockResizeObserver;
 
   describe("Report Modal with report", () => {
     it("Should show a basic report", () => {

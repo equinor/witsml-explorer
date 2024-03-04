@@ -7,7 +7,6 @@ import {
   invalidStringInput,
   undefinedOnUnchagedEmptyString
 } from "components/Modals/PropertiesModalUtils";
-import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import GeologyInterval from "models/geologyInterval";
@@ -31,6 +30,7 @@ import { Layout } from "../StyledComponents/Layout";
 
 export interface GeologyIntervalPropertiesModalInterface {
   geologyInterval: GeologyInterval;
+  mudLog: MudLog;
 }
 
 type PropertyFlags<Type> = {
@@ -73,17 +73,13 @@ type InvalidProperties = PropertyFlags<EditableGeologyInterval>;
 const GeologyIntervalPropertiesModal = (
   props: GeologyIntervalPropertiesModalInterface
 ): React.ReactElement => {
-  const { geologyInterval } = props;
+  const { geologyInterval, mudLog: selectedMudLog } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const {
-    navigationState: { selectedObject }
-  } = useContext(NavigationContext);
   const [editable, setEditable] = useState<EditableGeologyInterval>({});
   const [editableLithologies, setEditableLithologies] = useState<
     Record<string, EditableLithology>
   >({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const selectedMudLog = selectedObject as MudLog;
 
   useEffect(() => {
     if (geologyInterval != null) {

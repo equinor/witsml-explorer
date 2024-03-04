@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   StoreFunction,
   TemplateObjects
@@ -25,24 +26,25 @@ import WellPropertiesModal, {
 import WellborePropertiesModal, {
   WellborePropertiesModalProps
 } from "components/Modals/WellborePropertiesModal";
-import ModificationType from "contexts/modificationType";
-import NavigationContext from "contexts/navigationContext";
-import { treeNodeIsExpanded } from "contexts/navigationStateReducer";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import {
+  refreshWellQuery,
+  refreshWellsQuery
+} from "hooks/query/queryRefreshHelpers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { DeleteWellJob } from "models/jobs/deleteJobs";
 import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
+import { getWellboresViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
-import WellService from "services/wellService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -57,11 +59,9 @@ export interface WellContextMenuProps {
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
-  const {
-    dispatchNavigation,
-    navigationState: { expandedTreeNodes, selectedServer, selectedWell }
-  } = useContext(NavigationContext);
+  const { connectedServer } = useConnectedServer();
   const openInQueryView = useOpenInQueryView();
+  const queryClient = useQueryClient();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -85,38 +85,12 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const nodeId = well.uid;
-    if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
-      dispatchNavigation({
-        type: NavigationType.CollapseTreeNodeChildren,
-        payload: { nodeId }
-      });
-    }
-    if (selectedWell?.uid == well.uid) {
-      dispatchNavigation({
-        type: NavigationType.SelectWell,
-        payload: { well }
-      });
-    }
-
-    const updatedWell = await WellService.getWell(well.uid);
-    dispatchNavigation({
-      type: ModificationType.UpdateWell,
-      payload: { well: updatedWell, overrideWellbores: true }
-    });
+    refreshWellQuery(queryClient, connectedServer?.url, well.uid);
   };
 
   const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const updatedWells = await WellService.getWells();
-    dispatchNavigation({
-      type: ModificationType.UpdateWells,
-      payload: { wells: updatedWells }
-    });
-    dispatchNavigation({
-      type: NavigationType.SelectServer,
-      payload: { server: selectedServer }
-    });
+    refreshWellsQuery(queryClient, connectedServer?.url);
   };
 
   const onClickNewWellbore = () => {
@@ -223,8 +197,8 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const host = `${window.location.protocol}//${window.location.host}`;
-    const wellUrl = `${host}/?serverUrl=${server.url}&wellUid=${well.uid}`;
-    window.open(wellUrl);
+    const wellboresViewPath = getWellboresViewPath(server.url, well.uid);
+    window.open(`${host}${wellboresViewPath}`);
   };
 
   const onClickBatchUpdate = () => {
@@ -241,14 +215,22 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshwell"} onClick={onClickRefresh}>
+        <MenuItem
+          key={"refreshwell"}
+          onClick={onClickRefresh}
+          disabled={!connectedServer?.url}
+        >
           <StyledIcon
             name="refresh"
             color={colors.interactive.primaryResting}
           />
           <Typography color={"primary"}>Refresh well</Typography>
         </MenuItem>,
-        <MenuItem key={"refreshallwells"} onClick={onClickRefreshAll}>
+        <MenuItem
+          key={"refreshallwells"}
+          onClick={onClickRefreshAll}
+          disabled={!connectedServer?.url}
+        >
           <StyledIcon
             name="refresh"
             color={colors.interactive.primaryResting}
@@ -301,6 +283,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
                   wellUid: well.uid
                 })
               }
+              disabled={checkedWellRows?.length !== 1}
             >
               <StyledIcon
                 name="textField"

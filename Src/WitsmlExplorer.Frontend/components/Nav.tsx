@@ -1,83 +1,111 @@
 import { Breadcrumbs } from "@equinor/eds-core-react";
 import TopRightCornerMenu from "components/TopRightCornerMenu";
-import { NavigationAction } from "contexts/navigationAction";
-import {
-  SelectLogTypeAction,
-  SelectObjectGroupAction,
-  SelectServerAction,
-  SelectWellAction,
-  SelectWellboreAction
-} from "contexts/navigationActions";
-import NavigationContext, {
-  NavigationState,
-  Selectable,
-  ViewFlags
-} from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
-import { ObjectType, pluralizeObjectType } from "models/objectType";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useGetWell } from "hooks/query/useGetWell";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { capitalize } from "lodash";
+import {
+  ObjectType,
+  ObjectTypeToModel,
+  pluralizeObjectType
+} from "models/objectType";
 import { Server } from "models/server";
 import Well from "models/well";
-import Wellbore, { calculateLogTypeDepthId } from "models/wellbore";
-import React, { useContext, useEffect, useState } from "react";
+import Wellbore from "models/wellbore";
+import { useContext, useEffect, useState } from "react";
+import {
+  NavLink,
+  NavigateFunction,
+  useMatch,
+  useNavigate,
+  useParams
+} from "react-router-dom";
+import {
+  getLogObjectViewPath,
+  getLogObjectsViewPath,
+  getLogTypesViewPath,
+  getObjectGroupsViewPath,
+  getObjectViewPath,
+  getObjectsViewPath,
+  getWellboresViewPath,
+  getWellsViewPath
+} from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { colors } from "styles/Colors";
 import Icon from "styles/Icons";
 import { v4 as uuid } from "uuid";
 
-const Nav = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const {
-    selectedServer,
-    selectedWell,
-    selectedWellbore,
-    selectedLogTypeGroup,
-    selectedObjectGroup,
-    currentSelected
-  } = navigationState;
+export default function Nav() {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
-
+  const navigate = useNavigate();
+  const isJobsView = !!useMatch("servers/:serverUrl/jobs");
+  const isQueryView = !!useMatch("servers/:serverUrl/query");
+  const isSearchView = !!useMatch("servers/:serverUrl/search/:filterType");
+  const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
+    useParams();
+  const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
+  const { well } = useGetWell(connectedServer, wellUid);
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
+  const { object } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectGroup as ObjectType,
+    objectUid
+  );
+
   const createBreadcrumbContent = () => {
     const groupCrumbs = Object.keys(ObjectType).map((key) => {
       return getObjectGroupCrumb(
         key as ObjectType,
-        selectedObjectGroup,
-        selectedWell,
-        selectedWellbore,
-        dispatchNavigation
+        serverUrl,
+        wellbore,
+        objectGroup,
+        navigate
       );
     });
     return [
-      getServerCrumb(selectedServer, dispatchNavigation),
-      getJobsCrumb(currentSelected),
-      getSearchCrumb(currentSelected),
-      getWellCrumb(selectedWell, dispatchNavigation),
-      getWellboreCrumb(selectedWellbore, selectedWell, dispatchNavigation),
+      getServerCrumb(connectedServer, navigate),
+      getJobsCrumb(isJobsView),
+      getQueryCrumb(isQueryView),
+      getSearchCrumb(isSearchView),
+      getWellCrumb(serverUrl, well, navigate),
+      getWellboreCrumb(serverUrl, wellbore, navigate),
       ...groupCrumbs,
-      getLogTypeCrumb(
-        selectedLogTypeGroup,
-        selectedWell,
-        selectedWellbore,
-        dispatchNavigation
-      ),
-      getObjectCrumb(navigationState, dispatchNavigation)
+      getLogTypeCrumb(serverUrl, wellbore, logType, navigate),
+      getObjectCrumb(serverUrl, objectGroup, object, logType, navigate)
     ].filter((item) => item.name);
   };
 
   useEffect(() => {
     setBreadcrumbContent(createBreadcrumbContent());
-  }, [currentSelected, selectedServer, selectedWell, selectedWellbore]);
+  }, [
+    connectedServer,
+    serverUrl,
+    objectGroup,
+    well,
+    wellbore,
+    object,
+    logType,
+    isJobsView,
+    isQueryView,
+    isSearchView
+  ]);
 
   return (
     <nav>
       <Layout>
         <NavContainer>
-          <Title style={{ color: colors.infographic.primaryMossGreen }}>
-            WITSML Explorer
-          </Title>
+          <NavLink to={"/"} style={{ textDecoration: "none" }}>
+            <Title style={{ color: colors.infographic.primaryMossGreen }}>
+              WITSML Explorer
+            </Title>
+          </NavLink>
           {breadcrumbContent.length != 0 && (
             <Icon
               name="chevronRight"
@@ -90,7 +118,6 @@ const Nav = (): React.ReactElement => {
             {breadcrumbContent.map((breadCrumb, index: number) => (
               <Breadcrumbs.Breadcrumb
                 key={uuid()}
-                href="#"
                 onClick={breadCrumb.onClick}
                 style={{
                   fontFamily:
@@ -110,137 +137,159 @@ const Nav = (): React.ReactElement => {
       </Layout>
     </nav>
   );
-};
+}
 
-const getServerCrumb = (
-  selectedServer: Server,
-  dispatch: (action: SelectServerAction) => void
-) => {
-  return selectedServer
+const getServerCrumb = (server: Server, navigate: NavigateFunction) => {
+  return server
     ? {
-        name: selectedServer.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectServer,
-            payload: { server: selectedServer }
-          })
+        name: server.name,
+        onClick: () => {
+          navigate(getWellsViewPath(server.url));
+        }
       }
     : {};
 };
 
 const getWellCrumb = (
-  selectedWell: Well,
-  dispatch: (action: SelectWellAction) => void
+  serverUrl: string,
+  well: Well,
+  navigate: NavigateFunction
 ) => {
-  return selectedWell
+  return serverUrl && well
     ? {
-        name: selectedWell.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectWell,
-            payload: { well: selectedWell }
-          })
+        name: well.name,
+        onClick: () => {
+          navigate(getWellboresViewPath(serverUrl, well.uid));
+        }
       }
     : {};
 };
 
 const getWellboreCrumb = (
-  selectedWellbore: Wellbore,
-  selectedWell: Well,
-  dispatch: (action: SelectWellboreAction) => void
+  serverUrl: string,
+  wellbore: Wellbore,
+  navigate: NavigateFunction
 ) => {
-  return selectedWellbore
+  return serverUrl && wellbore
     ? {
-        name: selectedWellbore.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectWellbore,
-            payload: { well: selectedWell, wellbore: selectedWellbore }
-          })
+        name: wellbore.name,
+        onClick: () => {
+          navigate(
+            getObjectGroupsViewPath(serverUrl, wellbore.wellUid, wellbore.uid)
+          );
+        }
       }
     : {};
 };
 
 const getObjectGroupCrumb = (
   objectType: ObjectType,
-  selectedObjectGroup: ObjectType,
-  selectedWell: Well,
-  selectedWellbore: Wellbore,
-  dispatch: (action: SelectObjectGroupAction) => void
+  serverUrl: string,
+  wellbore: Wellbore,
+  objectGroup: string,
+  navigate: NavigateFunction
 ) => {
-  return selectedObjectGroup === objectType
+  const pluralizedObjectType = pluralizeObjectType(objectType);
+  return serverUrl && wellbore && objectGroup === objectType
     ? {
-        name: pluralizeObjectType(objectType),
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectObjectGroup,
-            payload: {
-              wellUid: selectedWell.uid,
-              wellboreUid: selectedWellbore.uid,
-              objectType,
-              objects: null
-            }
-          })
+        name: pluralizedObjectType,
+        onClick: () => {
+          navigate(
+            objectGroup === ObjectType.Log
+              ? getLogTypesViewPath(
+                  serverUrl,
+                  wellbore.wellUid,
+                  wellbore.uid,
+                  objectGroup
+                )
+              : getObjectsViewPath(
+                  serverUrl,
+                  wellbore.wellUid,
+                  wellbore.uid,
+                  objectGroup
+                )
+          );
+        }
       }
     : {};
 };
 
 const getLogTypeCrumb = (
-  selectedLogTypeGroup: string,
-  selectedWell: Well,
-  selectedWellbore: Wellbore,
-  dispatch: (action: SelectLogTypeAction) => void
+  serverUrl: string,
+  wellbore: Wellbore,
+  logType: string,
+  navigate: NavigateFunction
 ) => {
-  return selectedLogTypeGroup
+  return serverUrl && wellbore && logType
     ? {
-        name:
-          selectedLogTypeGroup === calculateLogTypeDepthId(selectedWellbore)
-            ? "Depth"
-            : "Time",
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectLogType,
-            payload: {
-              well: selectedWell,
-              wellbore: selectedWellbore,
-              logTypeGroup: selectedLogTypeGroup
-            }
-          })
+        name: capitalize(logType),
+        onClick: () => {
+          navigate(
+            getLogObjectsViewPath(
+              serverUrl,
+              wellbore.wellUid,
+              wellbore.uid,
+              ObjectType.Log,
+              logType
+            )
+          );
+        }
       }
     : {};
 };
 
-const getObjectCrumb = (
-  navigationState: NavigationState,
-  dispatch: (action: NavigationAction) => void
-) => {
-  return navigationState.selectedObject?.name
+function getObjectCrumb<T extends ObjectType>(
+  serverUrl: string,
+  objectGroup: string,
+  object: ObjectTypeToModel[T],
+  logType: string,
+  navigate: NavigateFunction
+) {
+  return serverUrl && objectGroup && object
     ? {
-        name: navigationState.selectedObject.name,
-        onClick: () =>
-          dispatch({
-            type: NavigationType.SelectObject,
-            payload: {
-              well: navigationState.selectedWell,
-              wellbore: navigationState.selectedWellbore,
-              object: navigationState.selectedObject,
-              objectType: navigationState.selectedObjectGroup
-            }
-          })
+        name: object.name,
+        onClick: () => {
+          navigate(
+            logType
+              ? getLogObjectViewPath(
+                  serverUrl,
+                  object.wellUid,
+                  object.wellboreUid,
+                  objectGroup,
+                  logType,
+                  object.uid
+                )
+              : getObjectViewPath(
+                  serverUrl,
+                  object.wellUid,
+                  object.wellboreUid,
+                  objectGroup,
+                  object.uid
+                )
+          );
+        }
       }
     : {};
-};
+}
 
-const getJobsCrumb = (currentSelected: Selectable) => {
-  return currentSelected == ViewFlags.Jobs
+const getJobsCrumb = (isJobsView: boolean) => {
+  return isJobsView
     ? {
         name: "Jobs"
       }
     : {};
 };
 
-const getSearchCrumb = (currentSelected: Selectable) => {
-  return currentSelected == ViewFlags.ObjectSearchView
+const getQueryCrumb = (isQueryView: boolean) => {
+  return isQueryView
+    ? {
+        name: "Query"
+      }
+    : {};
+};
+
+const getSearchCrumb = (isSearchView: boolean) => {
+  return isSearchView
     ? {
         name: "Search"
       }
@@ -276,5 +325,3 @@ const NavContainer = styled.div`
   align-items: center;
   height: 2.5rem;
 `;
-
-export default Nav;

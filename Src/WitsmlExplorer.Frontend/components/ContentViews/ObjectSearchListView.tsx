@@ -1,4 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
+import { WITSML_INDEX_TYPE_DATE_TIME } from "components/Constants";
 import {
   ContentTable,
   ContentTableColumn,
@@ -10,27 +11,42 @@ import ContextMenu, {
   getContextMenuPosition
 } from "components/ContextMenus/ContextMenu";
 import { ObjectTypeToContextMenu } from "components/ContextMenus/ContextMenuMapping";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import LoadingContextMenu from "components/ContextMenus/LoadingContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
+import ConfirmModal from "components/Modals/ConfirmModal";
+import ProgressSpinner from "components/ProgressSpinner";
+import { isExpandableGroupObject } from "components/Sidebar/ObjectGroupItem";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   FilterContext,
-  filterTypeToProperty,
-  getFilterTypeInformation,
-  getSearchRegex,
-  isObjectFilterType,
-  isSitecomSyntax
+  ObjectFilterType,
+  filterTypeToProperty
 } from "contexts/filter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
 import OperationContext from "contexts/operationContext";
 import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useGetObjectSearch } from "hooks/query/useGetObjectSearch";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import Well from "models/well";
-import Wellbore, { calculateLogTypeId } from "models/wellbore";
-import React, { useContext, useEffect, useState } from "react";
+import Wellbore from "models/wellbore";
+import React, {
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getObjectViewPath,
+  getObjectsViewPath
+} from "routes/utils/pathBuilder";
+import NotificationService from "services/notificationService";
 import ObjectService from "services/objectService";
 
 export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
@@ -40,43 +56,78 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
   objectType: ObjectType;
 }
 
-export const ObjectSearchListView = (): React.ReactElement => {
-  const {
-    navigationState: { wells },
-    dispatchNavigation
-  } = useContext(NavigationContext);
+export const ObjectSearchListView = (): ReactElement => {
+  const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useContext(OperationContext);
-  const { selectedFilter } = useContext(FilterContext);
-  const [rows, setRows] = useState<ObjectSearchRow[]>([]);
+  const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
+  const [searchParams] = useSearchParams();
+  const { filterType } = useParams<{ filterType: ObjectFilterType }>();
+  const value = searchParams.get("value");
+  const [fetchAllObjects, setFetchAllObjects] = useState(false);
+  const currentFilterType = useRef(filterType);
+  const { searchResults, isFetching, error, isError } = useGetObjectSearch(
+    connectedServer,
+    filterType,
+    value,
+    fetchAllObjects,
+    { enabled: filterType === currentFilterType.current }
+  );
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (isObjectFilterType(selectedFilter.filterType)) {
-      const regex = getSearchRegex(selectedFilter.name);
-      setRows(
-        selectedFilter.searchResults
-          .filter(
-            (searchResult) =>
-              isSitecomSyntax(selectedFilter.name) ||
-              regex.test(searchResult.searchProperty)
-          ) // If we later want to filter away empty results, use regex.test(searchResult.searchProperty ?? ""))
-          .map((searchResult) => {
-            const well = wells?.find((w) => w.uid == searchResult.wellUid);
-            const wellbore = well?.wellbores?.find(
-              (wb) => wb.uid == searchResult.wellboreUid
-            );
-            return {
-              id: searchResult.uid,
-              ...searchResult,
-              [filterTypeToProperty[selectedFilter.filterType]]:
-                searchResult.searchProperty,
-              object: searchResult,
-              well,
-              wellbore
-            };
-          })
-      );
+    if (
+      !isFetching &&
+      !isError &&
+      searchResults !== selectedFilter.searchResults
+    ) {
+      updateSelectedFilter({ searchResults, filterType, name: value });
     }
-  }, [selectedFilter]);
+  }, [searchResults]);
+
+  useEffect(() => {
+    currentFilterType.current = filterType;
+    setFetchAllObjects(false);
+  }, [filterType]);
+
+  useEffect(() => {
+    if (isError && !!error) {
+      const message = (error as Error).message;
+      if (
+        message.includes("The given search will fetch all") ||
+        message.includes("The server does not support to select")
+      ) {
+        const confirmation = (
+          <ConfirmModal
+            heading={"Warning: Seach might be slow!"}
+            content={
+              <>
+                <Typography style={{ whiteSpace: "pre-line" }}>
+                  {message}
+                </Typography>
+              </>
+            }
+            onConfirm={() => {
+              dispatchOperation({ type: OperationType.HideModal });
+              setFetchAllObjects(true);
+            }}
+            confirmColor={"danger"}
+            switchButtonPlaces={true}
+          />
+        );
+        dispatchOperation({
+          type: OperationType.DisplayModal,
+          payload: confirmation
+        });
+      } else {
+        NotificationService.Instance.alertDispatcher.dispatch({
+          serverUrl: new URL(connectedServer.url),
+          message: message,
+          isSuccess: false,
+          severity: "error"
+        });
+      }
+    }
+  }, [error, isError]);
 
   const fetchSelectedObject = async (checkedObjectRow: ObjectSearchRow) => {
     return await ObjectService.getObject(
@@ -97,8 +148,7 @@ export const ObjectSearchListView = (): React.ReactElement => {
     });
     const fetchedObject = await fetchSelectedObject(checkedObjectRow);
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: [fetchedObject],
-      wellbore: checkedObjectRow.wellbore
+      checkedObjects: [fetchedObject]
     };
     const component = ObjectTypeToContextMenu[checkedObjectRow.objectType];
     if (component) {
@@ -117,7 +167,7 @@ export const ObjectSearchListView = (): React.ReactElement => {
     position: MousePosition
   ) => {
     const onlyOneObjectType = checkedObjectRows.every(
-      (row) => row.objectType === rows[0].objectType
+      (row) => row.objectType === checkedObjectRows[0].objectType
     );
     if (!onlyOneObjectType) {
       return;
@@ -176,10 +226,10 @@ export const ObjectSearchListView = (): React.ReactElement => {
       { property: "wellUid", label: "wellUid", type: ContentType.String }
     ];
 
-    if (filterTypeToProperty[selectedFilter?.filterType] != "name") {
+    if (filterTypeToProperty[filterType] != "name") {
       columns.unshift({
-        property: filterTypeToProperty[selectedFilter?.filterType],
-        label: filterTypeToProperty[selectedFilter?.filterType],
+        property: "searchProperty",
+        label: filterTypeToProperty[filterType],
         type: ContentType.String
       });
     }
@@ -188,41 +238,54 @@ export const ObjectSearchListView = (): React.ReactElement => {
   };
 
   const onSelect = async (row: ObjectSearchRow) => {
-    const objects = await ObjectService.getObjects(
-      row.wellUid,
-      row.wellboreUid,
-      row.objectType
-    );
-    if (row.objectType == ObjectType.Log) {
-      const logTypeGroup = calculateLogTypeId(
-        row.wellbore,
-        (objects.find((o) => o.uid == row.uid) as LogObject)?.indexType
+    const objectType = row.objectType;
+    if (objectType == ObjectType.Log) {
+      const fetchedLog = (await fetchSelectedObject(row)) as LogObject;
+      const logType =
+        fetchedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
+          ? RouterLogType.TIME
+          : RouterLogType.DEPTH;
+      navigate(
+        getLogObjectViewPath(
+          connectedServer?.url,
+          row.wellUid,
+          row.wellboreUid,
+          ObjectType.Log,
+          logType,
+          row.uid
+        )
       );
-      row.wellbore.logs = objects;
-      dispatchNavigation({
-        type: NavigationType.SelectLogType,
-        payload: {
-          well: row.well,
-          wellbore: row.wellbore,
-          logTypeGroup: logTypeGroup
-        }
-      });
     } else {
-      dispatchNavigation({
-        type: NavigationType.SelectObjectGroup,
-        payload: {
-          objectType: row.objectType,
-          wellUid: row.wellUid,
-          wellboreUid: row.wellboreUid,
-          objects
-        }
-      });
+      if (isExpandableGroupObject(objectType)) {
+        navigate(
+          getObjectViewPath(
+            connectedServer?.url,
+            row.wellUid,
+            row.wellboreUid,
+            objectType,
+            row.uid
+          )
+        );
+      } else {
+        navigate(
+          getObjectsViewPath(
+            connectedServer?.url,
+            row.wellUid,
+            row.wellboreUid,
+            objectType
+          )
+        );
+      }
     }
   };
 
-  return rows.length == 0 ? (
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching ${pluralize(filterType)}.`} />;
+  }
+
+  return searchResults.length == 0 ? (
     <Typography style={{ padding: "1rem", whiteSpace: "pre-line" }}>
-      {getFilterTypeInformation(selectedFilter.filterType)}
+      {`No ${pluralize(filterType).toLowerCase()} match the current filter.`}
     </Typography>
   ) : (
     <ContentTable
@@ -230,9 +293,9 @@ export const ObjectSearchListView = (): React.ReactElement => {
       checkableRows
       columns={getColumns()}
       onSelect={onSelect}
-      data={rows}
+      data={searchResults}
       onContextMenu={onContextMenu}
-      downloadToCsvFileName={`${selectedFilter.filterType}_search`}
+      downloadToCsvFileName={`${filterType}_search`}
     />
   );
 };

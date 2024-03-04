@@ -12,12 +12,12 @@ import {
 } from "components/ContentViews/table";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
 import BaseReport, { createReport } from "models/reports/BaseReport";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
@@ -136,7 +136,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 };
 
 export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
-  const { navigationState } = useContext(NavigationContext);
+  const { connectedServer } = useConnectedServer();
   const [report, setReport] = useState<BaseReport>(null);
   const { exportData, exportOptions } = useExport();
 
@@ -205,7 +205,7 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
       unsubscribeOnJobFinished();
       unsubscribeOnJobFailed();
     };
-  }, [navigationState.selectedServer, jobId]);
+  }, [connectedServer, jobId]);
 
   return report;
 };

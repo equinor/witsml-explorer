@@ -1,5 +1,3 @@
-import Wellbore from "models/wellbore";
-
 export default interface Well {
   uid: string;
   name: string;
@@ -11,7 +9,8 @@ export default interface Well {
   dateTimeCreation?: string;
   dateTimeLastChange?: string;
   itemState?: string;
-  wellbores?: Wellbore[];
+  isActive?: boolean;
+  isEmpty?: boolean;
 }
 
 export function emptyWell(): Well {
@@ -25,8 +24,7 @@ export function emptyWell(): Well {
     timeZone: "",
     dateTimeCreation: "",
     dateTimeLastChange: "",
-    itemState: "",
-    wellbores: []
+    itemState: ""
   };
 }
 

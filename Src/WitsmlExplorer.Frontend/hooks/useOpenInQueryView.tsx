@@ -1,17 +1,19 @@
-import { useCallback, useContext } from "react";
 import { QueryTemplatePreset } from "components/ContentViews/QueryViewUtils";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
+import { useCallback, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { getQueryViewPath } from "routes/utils/pathBuilder";
 
 export type OpenInQueryView = (templatePreset: QueryTemplatePreset) => void;
 
 export const useOpenInQueryView = () => {
   const { dispatchQuery } = useContext(QueryContext);
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
+  const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
 
   const openInQueryView = useCallback(
     (templatePreset: QueryTemplatePreset) => {
@@ -20,9 +22,9 @@ export const useOpenInQueryView = () => {
         type: QueryActionType.SetFromTemplatePreset,
         templatePreset
       });
-      dispatchNavigation({ type: NavigationType.SelectQueryView, payload: {} });
+      navigate(getQueryViewPath(connectedServer?.url));
     },
-    [dispatchOperation, dispatchQuery, dispatchNavigation]
+    [dispatchOperation, dispatchQuery, connectedServer]
   );
 
   return openInQueryView;
