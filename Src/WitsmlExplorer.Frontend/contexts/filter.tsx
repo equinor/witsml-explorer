@@ -5,6 +5,10 @@ import ObjectSearchResult from "models/objectSearchResult";
 import { ObjectType } from "models/objectType";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import {
+  STORAGE_FILTER_HIDDENOBJECTS_KEY,
+  getLocalStorageItem
+} from "tools/localStorageHelpers";
 
 export interface Filter {
   name: string;
@@ -163,6 +167,19 @@ export function FilterContextProvider({
       updateSelectedFilter({ name: well?.name || "" });
     }
   }, [well]);
+
+  useEffect(() => {
+    // This useEffect is used to set the visibility of the objects in the filter to hidden if they are stored in the local storage.
+    const hiddenItems = getLocalStorageItem<ObjectType[]>(
+      STORAGE_FILTER_HIDDENOBJECTS_KEY,
+      { defaultValue: [] }
+    );
+    const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
+    hiddenItems.forEach((objectType) => {
+      updatedVisibility[objectType] = VisibilityStatus.Hidden;
+    });
+    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+  }, []);
 
   const contextValue: FilterContextProps = React.useMemo(
     () => ({
