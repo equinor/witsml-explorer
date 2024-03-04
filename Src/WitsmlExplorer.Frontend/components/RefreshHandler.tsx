@@ -21,14 +21,14 @@ const RefreshHandler = (): React.ReactElement => {
   useEffect(() => {
     const unsubscribe =
       NotificationService.Instance.refreshDispatcher.subscribe(
-        async (refreshAction: RefreshAction) => {
+        (refreshAction: RefreshAction) => {
           try {
             switch (refreshAction.entityType) {
               case EntityType.Well:
-                await refreshWell(refreshAction);
+                refreshWell(refreshAction);
                 break;
               case EntityType.Wellbore:
-                await refreshWellbore(refreshAction);
+                refreshWellbore(refreshAction);
                 break;
               default:
                 if (
@@ -41,9 +41,9 @@ const RefreshHandler = (): React.ReactElement => {
                   );
                 }
                 if (refreshAction.objectUid == null) {
-                  await refreshWellboreObjects(refreshAction);
+                  refreshWellboreObjects(refreshAction);
                 } else {
-                  await refreshWellboreObject(refreshAction);
+                  refreshWellboreObject(refreshAction);
                 }
             }
           } catch (error) {
@@ -60,8 +60,11 @@ const RefreshHandler = (): React.ReactElement => {
     };
   }, []);
 
-  async function refreshWell(refreshAction: RefreshAction) {
-    if (refreshAction.refreshType === RefreshType.Update) {
+  function refreshWell(refreshAction: RefreshAction) {
+    if (
+      !refreshAction.wellUids &&
+      refreshAction.refreshType === RefreshType.Update
+    ) {
       refreshWellQuery(
         queryClient,
         refreshAction.serverUrl.toString().toLowerCase(),
@@ -76,7 +79,7 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshWellbore(refreshAction: RefreshAction) {
+  function refreshWellbore(refreshAction: RefreshAction) {
     if (refreshAction.refreshType === RefreshType.Update) {
       refreshWellboreQuery(
         queryClient,
@@ -94,7 +97,7 @@ const RefreshHandler = (): React.ReactElement => {
     }
   }
 
-  async function refreshWellboreObject(refreshAction: RefreshAction) {
+  function refreshWellboreObject(refreshAction: RefreshAction) {
     refreshObjectQuery(
       queryClient,
       refreshAction.serverUrl.toString().toLowerCase(),
@@ -105,7 +108,7 @@ const RefreshHandler = (): React.ReactElement => {
     );
   }
 
-  async function refreshWellboreObjects(refreshAction: RefreshAction) {
+  function refreshWellboreObjects(refreshAction: RefreshAction) {
     refreshObjectsQuery(
       queryClient,
       refreshAction.serverUrl.toString().toLowerCase(),
