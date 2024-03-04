@@ -193,7 +193,7 @@ export const isSitecomSyntax = (str: string) => {
   return /^sel\(.*\)$/.test(str);
 };
 
-export const getSearchRegex = (str: string): RegExp => {
+export const getSearchRegex = (str: string, exact = false): RegExp => {
   let newStr = str;
   if (!str) {
     newStr = ".+"; // Any string that is not empty
@@ -203,5 +203,10 @@ export const getSearchRegex = (str: string): RegExp => {
       .replace(/\*/g, ".*") // Replace * with .* to match any characters
       .replace(/\?/g, "."); // Replace ? with . to match any single character
   }
+
+  if (exact) {
+    newStr = `^${newStr}$`;
+  }
+
   return new RegExp(newStr, "i");
 };

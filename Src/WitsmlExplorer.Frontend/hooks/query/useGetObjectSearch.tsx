@@ -105,7 +105,7 @@ export const useGetObjectSearch = (
   );
 
   const filteredData = useMemo(() => {
-    const regex = getSearchRegex(value);
+    const regex = getSearchRegex(value, true);
     return dataToFilter.filter(
       (result) => isSitecomSyntax(value) || regex.test(result.searchProperty)
     );
