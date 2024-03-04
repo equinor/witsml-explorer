@@ -171,7 +171,12 @@ export const ObjectMenuItems = (
         </MenuItem>
       ))}
     </NestedMenuItem>,
-    <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+    <NestedMenuItem
+      key={"queryItems"}
+      label={"Query"}
+      icon="textField"
+      disabled={checkedObjects.length !== 1}
+    >
       {[
         <MenuItem
           key={"openInQueryView"}

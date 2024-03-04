@@ -35,6 +35,7 @@ import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
+import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
 import { toWellboreReference } from "models/jobs/wellboreReference";
@@ -63,6 +64,9 @@ const WellboreContextMenu = (
   const objectReferences = useClipboardReferences();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
+  const { capObjects } = useGetCapObjects(connectedServer, {
+    placeholderData: Object.entries(ObjectType)
+  });
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -293,6 +297,7 @@ const WellboreContextMenu = (
                   wellboreUid: wellbore.uid
                 })
               }
+              disabled={checkedWellboreRows?.length !== 1}
             >
               <StyledIcon
                 name="textField"
@@ -322,28 +327,30 @@ const WellboreContextMenu = (
               label={"New object"}
               icon={"add"}
             >
-              {Object.values(ObjectType).map((objectType) => (
-                <MenuItem
-                  key={objectType}
-                  onClick={() =>
-                    openInQueryView({
-                      templateObject: ObjectTypeToTemplateObject[objectType],
-                      storeFunction: StoreFunction.AddToStore,
-                      wellUid: wellbore.wellUid,
-                      wellboreUid: wellbore.uid,
-                      objectUid: uuid()
-                    })
-                  }
-                >
-                  <StyledIcon
-                    name="add"
-                    color={colors.interactive.primaryResting}
-                  />
-                  <Typography
-                    color={"primary"}
-                  >{`New ${objectType}`}</Typography>
-                </MenuItem>
-              ))}
+              {Object.values(ObjectType)
+                .filter((objectType) => capObjects.includes(objectType))
+                .map((objectType) => (
+                  <MenuItem
+                    key={objectType}
+                    onClick={() =>
+                      openInQueryView({
+                        templateObject: ObjectTypeToTemplateObject[objectType],
+                        storeFunction: StoreFunction.AddToStore,
+                        wellUid: wellbore.wellUid,
+                        wellboreUid: wellbore.uid,
+                        objectUid: uuid()
+                      })
+                    }
+                  >
+                    <StyledIcon
+                      name="add"
+                      color={colors.interactive.primaryResting}
+                    />
+                    <Typography
+                      color={"primary"}
+                    >{`New ${objectType}`}</Typography>
+                  </MenuItem>
+                ))}
             </NestedMenuItem>
           ]}
         </NestedMenuItem>,
