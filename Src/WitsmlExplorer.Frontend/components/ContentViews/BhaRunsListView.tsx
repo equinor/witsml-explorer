@@ -8,30 +8,35 @@ import BhaRunContextMenu from "components/ContextMenus/BhaRunContextMenu";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import BhaRun from "models/bhaRun";
-import React, { useContext, useEffect, useState } from "react";
+import { ObjectType } from "models/objectType";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 export interface BhaRunRow extends ContentTableRow, BhaRun {
   bhaRun: BhaRun;
 }
 
-export const BhaRunsListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+export default function BhaRunsListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
-  const [bhaRuns, setBhaRuns] = useState<BhaRun[]>([]);
+  const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { objects: bhaRuns } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.BhaRun
+  );
 
-  useEffect(() => {
-    if (selectedWellbore?.bhaRuns) {
-      setBhaRuns(selectedWellbore.bhaRuns);
-    }
-  }, [selectedWellbore]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.BhaRun);
 
   const getTableData = () => {
     return bhaRuns.map((bhaRun) => {
@@ -101,13 +106,12 @@ export const BhaRunsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedBhaRunRows: BhaRunRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedBhaRunRows.map((row) => row.bhaRun),
-      wellbore: selectedWellbore
+      checkedObjects: checkedBhaRunRows.map((row) => row.bhaRun)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -117,7 +121,7 @@ export const BhaRunsListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.bhaRuns, bhaRuns) && (
+    bhaRuns && (
       <ContentTable
         viewId="bhaRunsListView"
         columns={columns}
@@ -129,6 +133,4 @@ export const BhaRunsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default BhaRunsListView;
+}

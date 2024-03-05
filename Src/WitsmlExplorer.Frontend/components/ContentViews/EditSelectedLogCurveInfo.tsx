@@ -7,132 +7,136 @@ import {
   TextField,
   Typography
 } from "@equinor/eds-core-react";
-import { WITSML_INDEX_TYPE_DATE_TIME } from "components/Constants";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
+import { useGetComponents } from "hooks/query/useGetComponents";
 import { ComponentType } from "models/componentType";
-import LogCurveInfo from "models/logCurveInfo";
-import LogObject from "models/logObject";
 import {
   CSSProperties,
   Dispatch,
   SetStateAction,
   useContext,
   useEffect,
+  useMemo,
   useState
 } from "react";
-import { truncateAbortHandler } from "services/apiClient";
-import ComponentService from "services/componentService";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams
+} from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
 import { Colors, colors, dark } from "styles/Colors";
-import { formatIndexValue } from "tools/IndexHelpers";
+import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
 
 interface EditSelectedLogCurveInfoProps {
   disabled?: boolean;
   overrideStartIndex?: string;
   overrideEndIndex?: string;
+  onClickRefresh?: () => void;
 }
+
+const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
 const EditSelectedLogCurveInfo = (
   props: EditSelectedLogCurveInfoProps
 ): React.ReactElement => {
-  const { disabled, overrideStartIndex, overrideEndIndex } = props;
+  const { disabled, overrideStartIndex, overrideEndIndex, onClickRefresh } =
+    props;
   const { operationState } = useContext(OperationContext);
-  const { theme } = operationState;
-  const { dispatchNavigation, navigationState } = useContext(NavigationContext);
-  const { selectedObject, selectedLogCurveInfo } = navigationState;
-  const selectedLog = selectedObject as LogObject;
-  const [logCurveInfo, setLogCurveInfo] = useState<LogCurveInfo[]>([]);
-  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
-  const [startIndex, setStartIndex] = useState<string>("");
-  const [endIndex, setEndIndex] = useState<string>("");
+  const { theme, colors } = operationState;
+  const { wellUid, wellboreUid, logType, objectUid } = useParams();
+  const isTimeLog = logType === RouterLogType.TIME;
+  const { connectedServer } = useConnectedServer();
+  const { components: logCurveInfo, isFetching: isFetchingMnemonics } =
+    useGetComponents(
+      connectedServer,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.Mnemonic
+    );
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mnemonicsSearchParams = searchParams.get("mnemonics");
+  const startIndex = searchParams.get("startIndex");
+  const endIndex = searchParams.get("endIndex");
+  const mnemonics = useMemo(
+    () => getMnemonics(),
+    [mnemonicsSearchParams, location]
+  );
+  const [selectedMnemonics, setSelectedMnemonics] =
+    useState<string[]>(mnemonics);
+  const [selectedStartIndex, setSelectedStartIndex] = useState<string>(
+    getParsedValue(startIndex, isTimeLog)
+  );
+  const [selectedEndIndex, setSelectedEndIndex] = useState<string>(
+    getParsedValue(endIndex, isTimeLog)
+  );
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
-  const [isFetchingMnemonics, setIsFetchingMnemonics] = useState<boolean>(true);
-  const {
-    operationState: { colors }
-  } = useContext(OperationContext);
 
   useEffect(() => {
-    const minIndex = selectedLogCurveInfo?.[0]?.minIndex;
-    const maxIndex = selectedLogCurveInfo?.[0]?.maxIndex;
-    const selectedMnemonics = selectedLogCurveInfo
-      ?.map((lci) => lci.mnemonic)
-      ?.filter((mnemonic) => mnemonic !== selectedLog.indexCurve);
-    setSelectedMnemonics(selectedMnemonics || []);
-    setStartIndex(getParsedValue(String(minIndex)));
-    setEndIndex(getParsedValue(String(maxIndex)));
-  }, []);
+    setSelectedMnemonics(getMnemonics());
+    setSelectedStartIndex(getParsedValue(startIndex, isTimeLog));
+    setSelectedEndIndex(getParsedValue(endIndex, isTimeLog));
+  }, [mnemonicsSearchParams, startIndex, endIndex, location?.state?.mnemonics]);
 
-  useEffect(() => {
-    setIsFetchingMnemonics(true);
-    if (selectedLog) {
-      const controller = new AbortController();
-
-      const getLogCurveInfo = async () => {
-        const logCurveInfo = await ComponentService.getComponents(
-          selectedLog.wellUid,
-          selectedLog.wellboreUid,
-          selectedLog.uid,
-          ComponentType.Mnemonic,
-          undefined,
-          controller.signal
-        );
-        setLogCurveInfo(logCurveInfo.slice(1)); // Skip the first one as it is the index curve
-        setIsFetchingMnemonics(false);
-      };
-
-      getLogCurveInfo().catch(truncateAbortHandler);
-
-      return () => {
-        controller.abort();
-      };
+  function getMnemonics() {
+    if (mnemonicsSearchParams) {
+      return JSON.parse(mnemonicsSearchParams);
+    } else if (location?.state?.mnemonics) {
+      return JSON.parse(location.state.mnemonics);
+    } else {
+      return [];
     }
-  }, [selectedLog]);
+  }
 
   useEffect(() => {
-    if (overrideStartIndex) setStartIndex(getParsedValue(overrideStartIndex));
-    if (overrideEndIndex) setEndIndex(getParsedValue(overrideEndIndex));
+    if (overrideStartIndex)
+      setSelectedStartIndex(getParsedValue(overrideStartIndex, isTimeLog));
+    if (overrideEndIndex)
+      setSelectedEndIndex(getParsedValue(overrideEndIndex, isTimeLog));
   }, [overrideStartIndex, overrideEndIndex]);
 
   const submitLogCurveInfo = () => {
+    if (isEdited) {
+      const newSearchParams = createLogCurveValuesSearchParams(
+        selectedStartIndex,
+        selectedEndIndex,
+        selectedMnemonics
+      );
+      const isUrlTooLong = checkIsUrlTooLong(
+        location.pathname,
+        newSearchParams
+      );
+      navigate(
+        {
+          pathname: location.pathname,
+          search: isUrlTooLong
+            ? createLogCurveValuesSearchParams(
+                selectedStartIndex,
+                selectedEndIndex
+              ).toString()
+            : newSearchParams.toString()
+        },
+        {
+          state: {
+            mnemonics: JSON.stringify(selectedMnemonics)
+          }
+        }
+      );
+    } else {
+      onClickRefresh?.();
+    }
     setIsEdited(false);
-    const filteredLogCurveInfo = logCurveInfo.filter((lci) =>
-      selectedMnemonics.includes(lci.mnemonic)
-    );
-    const logCurveInfoWithUpdatedIndex = filteredLogCurveInfo.map(
-      (logCurveInfo) => {
-        return {
-          ...logCurveInfo,
-          minIndex: formatIndexValue(startIndex),
-          maxIndex: formatIndexValue(endIndex)
-        };
-      }
-    );
-    dispatchNavigation({
-      type: NavigationType.ShowCurveValues,
-      payload: { logCurveInfo: logCurveInfoWithUpdatedIndex }
-    });
-  };
-
-  const parseDate = (current: string) => {
-    return parse(current, dateTimeFormat, new Date());
-  };
-
-  const isTimeCurve = () => {
-    return selectedLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-  };
-
-  const getParsedValue = (input: string) => {
-    return isTimeCurve()
-      ? parseDate(input)
-        ? format(new Date(input), dateTimeFormat)
-        : ""
-      : input;
   };
 
   const onTextFieldChange = (
@@ -140,7 +144,7 @@ const EditSelectedLogCurveInfo = (
     setIndex: Dispatch<SetStateAction<string>>,
     setIsValid: Dispatch<SetStateAction<boolean>>
   ) => {
-    if (isTimeCurve()) {
+    if (isTimeLog) {
       if (isValid(parseDate(e.target.value))) {
         setIndex(e.target.value);
         setIsEdited(true);
@@ -163,8 +167,6 @@ const EditSelectedLogCurveInfo = (
     setIsEdited(true);
   };
 
-  const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
-
   return (
     <EdsProvider density={theme}>
       <Layout colors={colors}>
@@ -181,12 +183,12 @@ const EditSelectedLogCurveInfo = (
           <StyledTextField
             disabled={disabled}
             id="startIndex"
-            value={startIndex}
+            value={selectedStartIndex}
             variant={isValidStart ? undefined : "error"}
-            type={isTimeCurve() ? "datetime-local" : ""}
+            type={isTimeLog ? "datetime-local" : ""}
             step="1"
             onChange={(e: any) => {
-              onTextFieldChange(e, setStartIndex, setIsValidStart);
+              onTextFieldChange(e, setSelectedStartIndex, setIsValidStart);
             }}
           />
         </StartEndIndex>
@@ -195,12 +197,12 @@ const EditSelectedLogCurveInfo = (
           <StyledTextField
             disabled={disabled}
             id="endIndex"
-            value={endIndex}
-            type={isTimeCurve() ? "datetime-local" : ""}
+            value={selectedEndIndex}
+            type={isTimeLog ? "datetime-local" : ""}
             variant={isValidEnd ? undefined : "error"}
             step="1"
             onChange={(e: any) => {
-              onTextFieldChange(e, setEndIndex, setIsValidEnd);
+              onTextFieldChange(e, setSelectedEndIndex, setIsValidEnd);
             }}
           />
         </StartEndIndex>
@@ -213,7 +215,7 @@ const EditSelectedLogCurveInfo = (
             multiple={true}
             // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
             variant={selectedMnemonics.length === 0 ? "error" : null}
-            options={logCurveInfo.map((lci) => lci.mnemonic)}
+            options={logCurveInfo?.slice(1)?.map((lci) => lci.mnemonic)} // Skip the first one as it is the index curve
             selectedOptions={selectedMnemonics}
             onFocus={(e) => e.preventDefault()}
             onOptionsChange={onMnemonicsChange}
@@ -231,6 +233,7 @@ const EditSelectedLogCurveInfo = (
           onClick={submitLogCurveInfo}
           disabled={
             disabled ||
+            isFetchingMnemonics ||
             !isValidStart ||
             !isValidEnd ||
             selectedMnemonics.length === 0
@@ -241,6 +244,18 @@ const EditSelectedLogCurveInfo = (
       </Layout>
     </EdsProvider>
   );
+};
+
+const parseDate = (current: string) => {
+  return parse(current, dateTimeFormat, new Date());
+};
+
+const getParsedValue = (input: string, isTimeLog: boolean) => {
+  return isTimeLog
+    ? parseDate(input)
+      ? format(new Date(input), dateTimeFormat)
+      : ""
+    : input;
 };
 
 const Layout = styled.div<{ colors: Colors }>`

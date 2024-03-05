@@ -10,9 +10,9 @@ import JobInfoContextMenu, {
 } from "components/ContextMenus/JobInfoContextMenu";
 import formatDateString from "components/DateFormatter";
 import { ReportModal } from "components/Modals/ReportModal";
-import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import JobInfo from "models/jobs/jobInfo";
 import BaseReport from "models/reports/BaseReport";
 import { Server } from "models/server";
@@ -29,6 +29,7 @@ import React, {
   useMemo,
   useState
 } from "react";
+import { useParams } from "react-router-dom";
 import JobService from "services/jobService";
 import NotificationService, {
   Notification
@@ -37,12 +38,12 @@ import styled from "styled-components";
 import { Colors } from "styles/Colors";
 
 export const JobsView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
   const {
     dispatchOperation,
     operationState: { timeZone, colors, dateTimeFormat }
   } = useContext(OperationContext);
-  const { servers, selectedServer } = navigationState;
+  const { serverUrl } = useParams();
+  const { servers } = useGetServers();
   const [jobInfos, setJobInfos] = useState<JobInfo[]>([]);
   const [lastFetched, setLastFetched] = useState<string>(
     new Date().toLocaleTimeString()
@@ -71,7 +72,7 @@ export const JobsView = (): React.ReactElement => {
     const eventHandler = (notification: Notification) => {
       const shouldFetch =
         notification.serverUrl.toString().toLowerCase() ===
-        navigationState.selectedServer?.url?.toLowerCase();
+        serverUrl?.toLowerCase();
       if (shouldFetch) {
         setShouldRefresh(true);
       }
@@ -89,11 +90,11 @@ export const JobsView = (): React.ReactElement => {
       unsubscribeOnSnackbar();
       unsubscribeOnAlert();
     };
-  }, [navigationState.selectedServer]);
+  }, [serverUrl]);
 
   useEffect(() => {
     return setShouldRefresh(true);
-  }, [showAll, selectedServer]);
+  }, [showAll, serverUrl]);
 
   useEffect(() => {
     if (shouldRefresh) {

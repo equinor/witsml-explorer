@@ -1,8 +1,8 @@
 import { Button } from "@equinor/eds-core-react";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -14,28 +14,27 @@ export interface ServerManagerButtonProps {
 const ServerManagerButton = (
   props: ServerManagerButtonProps
 ): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, wells } = navigationState;
+  const { connectedServer } = useConnectedServer();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const navigate = useNavigate();
 
   const onClick = () => {
-    dispatchNavigation({
-      type: NavigationType.SelectServerManager,
-      payload: {}
-    });
+    navigate("/");
   };
 
-  const connected = selectedServer && wells.length;
+  const isConnected = !!connectedServer;
   return (
     <StyledButton
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
+      disabled={!isConnected}
     >
-      <Icon name={connected ? "cloudDownload" : "cloudOff"} />
-      {props.showLabels && (connected ? "Server Connections" : "No Connection")}
+      <Icon name={isConnected ? "cloudDownload" : "cloudOff"} />
+      {props.showLabels &&
+        (isConnected ? "Server Connections" : "No Connection")}
     </StyledButton>
   );
 };

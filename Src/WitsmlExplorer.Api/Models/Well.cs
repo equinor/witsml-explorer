@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace WitsmlExplorer.Api.Models
 {
     public class Well
@@ -13,9 +11,10 @@ namespace WitsmlExplorer.Api.Models
         public string DateTimeCreation { get; init; }
         public string DateTimeLastChange { get; init; }
         public string ItemState { get; init; }
-        public IList<Wellbore> Wellbores { get; set; }
         public string Country { get; init; }
         public string StatusWell { get; init; }
         public string PurposeWell { get; init; }
+        public bool? IsActive { get; set; }
+        public bool? IsEmpty { get; set; }
     }
 }

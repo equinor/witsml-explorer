@@ -91,6 +91,8 @@ namespace WitsmlExplorer.Api.Services
                 ObjectGrowing = StringHelpers.ToBoolean(witsmlLog.ObjectGrowing),
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber,
+                Direction = LogObject.ConvertDirection(witsmlLog),
+                Mnemonics = witsmlLog.LogCurveInfo.Count,
                 CommonData = new()
                 {
                     DTimCreation = witsmlLog.CommonData.DTimCreation,

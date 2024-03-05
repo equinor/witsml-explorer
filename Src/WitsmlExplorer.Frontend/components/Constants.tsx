@@ -10,3 +10,5 @@ export const DateFormat = {
 
 export const MILLIS_IN_SECOND = 1000;
 export const SECONDS_IN_MINUTE = 60;
+
+export const MAX_URL_LENGTH = 2000;

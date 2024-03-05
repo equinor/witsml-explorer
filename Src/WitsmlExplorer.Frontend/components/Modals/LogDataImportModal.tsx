@@ -5,15 +5,11 @@ import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog from "components/Modals/ModalDialog";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { ComponentType } from "models/componentType";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
 import ObjectReference from "models/jobs/objectReference";
-import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { truncateAbortHandler } from "services/apiClient";
-import ComponentService from "services/componentService";
+import React, { useCallback, useContext, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
@@ -45,52 +41,19 @@ const LogDataImportModal = (
   const [uploadedFileColumns, setUploadedFileColumns] = useState<
     ImportColumn[]
   >([]);
-  const [targetLogCurveInfos, setTargetLogCurveInfos] = useState<
-    LogCurveInfo[]
-  >([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const separator = ",";
 
-  useEffect(() => {
-    setIsLoading(true);
-    const controller = new AbortController();
-
-    const getLogCurveInfo = async () => {
-      const logCurveInfos = await ComponentService.getComponents(
-        targetLog.wellUid,
-        targetLog.wellboreUid,
-        targetLog.uid,
-        ComponentType.Mnemonic,
-        undefined,
-        controller.signal
-      );
-      setTargetLogCurveInfos(logCurveInfos);
-      setIsLoading(false);
-    };
-
-    getLogCurveInfo().catch(truncateAbortHandler);
-
-    return () => {
-      controller.abort();
-    };
-  }, [targetLog]);
-
-  useEffect(() => {
+  const validate = (fileColumns: ImportColumn[]) => {
     setError("");
-    if (uploadedFileColumns.length) {
-      if (
-        uploadedFileColumns.map((col) => col.name).some((value) => value === "")
-      )
+    if (fileColumns.length) {
+      if (fileColumns.map((col) => col.name).some((value) => value === ""))
         setError(IMPORT_FORMAT_INVALID);
-      if (
-        !uploadedFileColumns
-          .map((col) => col.name)
-          .includes(targetLog.indexCurve)
-      )
+      if (!fileColumns.map((col) => col.name).includes(targetLog.indexCurve))
         setError(MISSING_INDEX_CURVE);
     }
-  }, [uploadedFileColumns, targetLogCurveInfos]);
+  };
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -135,6 +98,7 @@ const LogDataImportModal = (
       };
     });
     setUploadedFileColumns(fileColumns);
+    validate(fileColumns);
   };
 
   return (

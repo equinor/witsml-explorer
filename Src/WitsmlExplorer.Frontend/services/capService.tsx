@@ -1,12 +1,18 @@
 import { ErrorDetails } from "models/errorDetails";
+import { Server } from "models/server";
 import { ServerCapabilities } from "models/serverCapabilities";
 import { ApiClient, throwError } from "services/apiClient";
 
 export default class CapService {
   public static async getCap(
-    abortSignal: AbortSignal = null
+    abortSignal: AbortSignal = null,
+    server?: Server
   ): Promise<ServerCapabilities> {
-    const response = await ApiClient.get("/api/capabilities", abortSignal);
+    const response = await ApiClient.get(
+      "/api/capabilities",
+      abortSignal,
+      server
+    );
 
     if (response.ok) {
       return response.json();
@@ -18,9 +24,10 @@ export default class CapService {
 
   public static async getCapObjects(
     capFunction: CapFunctions = CapFunctions.GetFromStore,
-    abortSignal: AbortSignal = null
+    abortSignal: AbortSignal = null,
+    server?: Server
   ): Promise<string[]> {
-    const capabilities = await CapService.getCap(abortSignal);
+    const capabilities = await CapService.getCap(abortSignal, server);
     return capabilities.functions
       .find((fn) => fn.name == capFunction)
       ?.dataObjects?.map((o) => o.name);

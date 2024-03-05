@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Middleware
                 ErrorDetails errorDetails = new()
                 {
                     StatusCode = (int)HttpStatusCode.BadGateway,
-                    Message = "Remote endpoint sent not WITSML server response"
+                    Message = "Remote endpoint did not send WITSML server response"
                 };
                 await HandleExceptionAsync(httpContext, errorDetails);
             }

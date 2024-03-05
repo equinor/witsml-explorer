@@ -1,5 +1,6 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
@@ -14,9 +15,10 @@ import { useClipboardComponentReferencesOfType } from "components/ContextMenus/U
 import MudLogPropertiesModal, {
   MudLogPropertiesModalProps
 } from "components/Modals/MudLogPropertiesModal";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { ComponentType } from "models/componentType";
 import MudLog from "models/mudLog";
@@ -27,14 +29,15 @@ import { colors } from "styles/Colors";
 const MudLogContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers } = navigationState;
+  const { checkedObjects } = props;
+  const { servers } = useGetServers();
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
   );
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
 
   const onClickModify = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -90,11 +93,11 @@ const MudLogContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.MudLog,
-          navigationState,
+          connectedServer,
+          servers,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}

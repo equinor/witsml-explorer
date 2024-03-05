@@ -8,14 +8,19 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
 } from "components/ContextMenus/TubularComponentContextMenu";
-import NavigationContext from "contexts/navigationContext";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
-import Tubular from "models/tubular";
+import { ObjectType } from "models/objectType";
 import TubularComponent from "models/tubularComponent";
-import React, { useContext, useEffect, useState } from "react";
-import ComponentService from "services/componentService";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 export interface TubularComponentRow extends ContentTableRow {
   uid: string;
@@ -29,42 +34,28 @@ export interface TubularComponentRow extends ContentTableRow {
   tubularComponent: TubularComponent;
 }
 
-export const TubularView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, selectedObject, servers } = navigationState;
-  const [tubularComponents, setTubularComponents] = useState<
-    TubularComponent[]
-  >([]);
+export default function TubularView() {
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const selectedTubular = selectedObject as Tubular;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { object: tubular, isFetched: isFetchedTubular } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Tubular,
+    objectUid
+  );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    if (selectedTubular) {
-      const abortController = new AbortController();
+  const { components: tubularComponents, isFetching } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.TubularComponent,
+    { placeholderData: [] }
+  );
 
-      const getTubular = async () => {
-        setTubularComponents(
-          await ComponentService.getComponents(
-            selectedTubular.wellUid,
-            selectedTubular.wellboreUid,
-            selectedTubular.uid,
-            ComponentType.TubularComponent,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getTubular();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedTubular]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -73,11 +64,7 @@ export const TubularView = (): React.ReactElement => {
   ) => {
     const contextMenuProps: TubularComponentContextMenuProps = {
       checkedTubularComponents,
-      dispatchNavigation,
-      dispatchOperation,
-      tubular: selectedTubular,
-      selectedServer,
-      servers
+      tubular
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -126,14 +113,22 @@ export const TubularView = (): React.ReactElement => {
       len: `${tubularComponent.len?.value?.toFixed(4)} ${
         tubularComponent.len?.uom
       }`,
-      tubularName: selectedTubular?.name,
-      typeTubularAssy: selectedTubular?.typeTubularAssy,
+      tubularName: tubular?.name,
+      typeTubularAssy: tubular?.typeTubularAssy,
       uid: tubularComponent.uid,
       tubularComponent: tubularComponent
     };
   });
 
-  return selectedTubular && !isFetchingData ? (
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Tubular.`} />;
+  }
+
+  if (isFetchedTubular && !tubular) {
+    return <ItemNotFound itemType={ObjectType.Tubular} />;
+  }
+
+  return (
     <ContentTable
       viewId="tubularView"
       columns={columns}
@@ -141,11 +136,7 @@ export const TubularView = (): React.ReactElement => {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      downloadToCsvFileName={`Tubular_${selectedTubular.name}`}
+      downloadToCsvFileName={`Tubular_${tubular?.name}`}
     />
-  ) : (
-    <></>
   );
-};
-
-export default TubularView;
+}

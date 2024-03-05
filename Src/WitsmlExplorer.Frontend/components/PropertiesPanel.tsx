@@ -1,17 +1,46 @@
 import { Typography } from "@equinor/eds-core-react";
-import React, { useContext } from "react";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useGetWell } from "hooks/query/useGetWell";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { getObjectOnWellboreProperties } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
+import { getWellProperties } from "models/well";
+import { getWellboreProperties } from "models/wellbore";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
 
-interface PropertiesPanelProps {
-  properties: Map<string, string>;
-}
-
-const PropertiesPanel = (props: PropertiesPanelProps): React.ReactElement => {
-  const { properties } = props;
-  const keys = Array.from(properties.keys());
+const PropertiesPanel = (): React.ReactElement => {
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const { connectedServer } = useConnectedServer();
+  const { wellUid, wellboreUid, objectGroup, objectUid } = useParams();
+  const { well } = useGetWell(connectedServer, wellUid);
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
+  const { object } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectGroup as ObjectType,
+    objectUid
+  );
+
+  const getProperties = (): Map<string, string> => {
+    if (object) {
+      return getObjectOnWellboreProperties(object, objectGroup as ObjectType);
+    } else if (wellbore) {
+      return getWellboreProperties(wellbore);
+    } else if (well) {
+      return getWellProperties(well);
+    }
+    return new Map();
+  };
+
+  const properties = getProperties();
+
+  const keys = Array.from(properties.keys());
 
   return (
     <>

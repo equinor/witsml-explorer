@@ -5,28 +5,27 @@ import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
 import ServerManagerButton from "components/ServerManagerButton";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
-import React, { useContext } from "react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { getQueryViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
-const TopRightCornerMenu = (): React.ReactElement => {
-  const {
-    navigationState: { selectedServer },
-    dispatchNavigation
-  } = useContext(NavigationContext);
+export default function TopRightCornerMenu() {
   const {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
   const { width: documentWidth } = useDocumentDimensions();
   const showLabels = documentWidth > 1180;
+  const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
 
   const openSettingsMenu = () => {
     dispatchOperation({
@@ -37,14 +36,10 @@ const TopRightCornerMenu = (): React.ReactElement => {
 
   const openCredentialsModal = () => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: selectedServer,
+      server: connectedServer,
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(
-          selectedServer,
-          username,
-          dispatchNavigation
-        );
+        AuthorizationService.onAuthorized(connectedServer, username);
       }
     };
     dispatchOperation({
@@ -54,19 +49,20 @@ const TopRightCornerMenu = (): React.ReactElement => {
   };
 
   const openQueryView = () => {
-    dispatchNavigation({ type: NavigationType.SelectQueryView, payload: {} });
+    navigate(getQueryViewPath(connectedServer?.url));
   };
 
+  const isConnected = !!connectedServer;
   return (
     <Layout>
-      {selectedServer?.currentUsername && (
+      {isConnected && (
         <StyledButton
           colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
           onClick={openCredentialsModal}
         >
           <Icon name="person" />
-          {showLabels && selectedServer.currentUsername}
+          {showLabels && connectedServer?.currentUsername}
         </StyledButton>
       )}
       <ServerManagerButton showLabels={showLabels} />
@@ -75,7 +71,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openQueryView}
-        disabled={!selectedServer}
+        disabled={!isConnected}
       >
         <Icon name="code" />
         {showLabels && "Query"}
@@ -90,7 +86,7 @@ const TopRightCornerMenu = (): React.ReactElement => {
       </StyledButton>
     </Layout>
   );
-};
+}
 
 const Layout = styled.div`
   display: flex;
@@ -104,5 +100,3 @@ const StyledButton = styled(Button)<{ colors: Colors }>`
   color: ${(props) => props.colors.infographic.primaryMossGreen};
   white-space: nowrap;
 `;
-
-export default TopRightCornerMenu;

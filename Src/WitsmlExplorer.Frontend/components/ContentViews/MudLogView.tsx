@@ -8,15 +8,20 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
   GeologyIntervalContextMenuProps
 } from "components/ContextMenus/GeologyIntervalContextMenu";
-import NavigationContext from "contexts/navigationContext";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
 import GeologyInterval from "models/geologyInterval";
 import { measureToString } from "models/measure";
-import MudLog from "models/mudLog";
-import React, { useContext, useEffect, useState } from "react";
-import ComponentService from "services/componentService";
+import { ObjectType } from "models/objectType";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 export interface GeologyIntervalRow extends ContentTableRow {
   typeLithology: string;
@@ -37,42 +42,28 @@ export interface GeologyIntervalRow extends ContentTableRow {
   geologyInterval: GeologyInterval;
 }
 
-export const MudLogView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedObject } = navigationState;
+export default function MudLogView() {
   const { dispatchOperation } = useContext(OperationContext);
-  const [geologyIntervals, setGeologyIntervals] = useState<GeologyInterval[]>(
-    []
+  const { wellUid, wellboreUid, objectUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { object: mudLog, isFetched: isFetchedMudLog } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.MudLog,
+    objectUid
   );
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const selectedMudLog = selectedObject as MudLog;
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    if (selectedMudLog) {
-      const abortController = new AbortController();
+  const { components: geologyIntervals, isFetching } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.GeologyInterval,
+    { placeholderData: [] }
+  );
 
-      const getGeologyIntervals = async () => {
-        setGeologyIntervals(
-          await ComponentService.getComponents(
-            selectedMudLog.wellUid,
-            selectedMudLog.wellboreUid,
-            selectedMudLog.uid,
-            ComponentType.GeologyInterval,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getGeologyIntervals();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedMudLog]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -80,7 +71,8 @@ export const MudLogView = (): React.ReactElement => {
     checkedRows: GeologyIntervalRow[]
   ) => {
     const contextMenuProps: GeologyIntervalContextMenuProps = {
-      checkedGeologyIntervals: checkedRows.map((row) => row.geologyInterval)
+      checkedGeologyIntervals: checkedRows.map((row) => row.geologyInterval),
+      mudLog
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -146,13 +138,15 @@ export const MudLogView = (): React.ReactElement => {
     }
   );
 
-  const insetColumns: ContentTableColumn[] = [
-    { property: "type", label: "type", type: ContentType.String },
-    { property: "codeLith", label: "codeLith", type: ContentType.Number },
-    { property: "lithPc", label: "lithPc %", type: ContentType.Number }
-  ];
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching MudLog.`} />;
+  }
 
-  return selectedMudLog && !isFetchingData ? (
+  if (isFetchedMudLog && !mudLog) {
+    return <ItemNotFound itemType={ObjectType.MudLog} />;
+  }
+
+  return (
     <ContentTable
       viewId="mudLogView"
       columns={columns}
@@ -161,11 +155,13 @@ export const MudLogView = (): React.ReactElement => {
       checkableRows
       insetColumns={insetColumns}
       showRefresh
-      downloadToCsvFileName={`MudLog_${selectedMudLog.name}`}
+      downloadToCsvFileName={`MudLog_${mudLog?.name}`}
     />
-  ) : (
-    <></>
   );
-};
+}
 
-export default MudLogView;
+const insetColumns: ContentTableColumn[] = [
+  { property: "type", label: "type", type: ContentType.String },
+  { property: "codeLith", label: "codeLith", type: ContentType.Number },
+  { property: "lithPc", label: "lithPc %", type: ContentType.Number }
+];

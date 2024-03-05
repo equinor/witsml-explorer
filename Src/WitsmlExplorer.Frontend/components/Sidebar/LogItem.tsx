@@ -5,40 +5,34 @@ import {
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TreeItem from "components/Sidebar/TreeItem";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
-import { ObjectType } from "models/objectType";
-import Well from "models/well";
-import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import { MouseEvent, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface LogItemProps {
   log: LogObject;
-  well: Well;
-  wellbore: Wellbore;
-  logGroup: string;
-  logTypeGroup: string;
   selected: boolean;
   nodeId: string;
   objectGrowing: boolean;
+  to: string;
 }
 
-const LogItem = (props: LogItemProps): React.ReactElement => {
-  const { log: log, well, wellbore, selected, nodeId, objectGrowing } = props;
+export default function LogItem({
+  log,
+  selected,
+  nodeId,
+  objectGrowing,
+  to
+}: LogItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
+  const navigate = useNavigate();
 
-  const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
-    log: LogObject
-  ) => {
+  const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: [log],
-      wellbore
+      checkedObjects: [log]
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -58,13 +52,9 @@ const LogItem = (props: LogItemProps): React.ReactElement => {
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
       selected={selected}
       isActive={objectGrowing}
-      onLabelClick={() =>
-        dispatchNavigation({
-          type: NavigationType.SelectObject,
-          payload: { object: log, well, wellbore, objectType: ObjectType.Log }
-        })
-      }
+      onLabelClick={() => {
+        navigate(to);
+      }}
     />
   );
-};
-export default LogItem;
+}

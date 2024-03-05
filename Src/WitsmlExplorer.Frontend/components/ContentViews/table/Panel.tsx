@@ -1,14 +1,17 @@
 import { Button, Icon, Typography } from "@equinor/eds-core-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
-import ModificationType from "contexts/modificationType";
-import NavigationContext from "contexts/navigationContext";
-import { treeNodeIsExpanded } from "contexts/navigationStateReducer";
-import NavigationType from "contexts/navigationType";
+import {
+  refreshObjectQuery,
+  refreshObjectsQuery,
+  refreshWellQuery,
+  refreshWellsQuery
+} from "hooks/query/queryRefreshHelpers";
 import useExport, { encloseCell } from "hooks/useExport";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import ObjectService from "services/objectService";
-import WellService from "services/wellService";
+import { ObjectType } from "models/objectType";
+import React, { useCallback, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { ContentTableColumn } from ".";
 
@@ -42,19 +45,11 @@ const Panel = (props: PanelProps) => {
     downloadToCsvFileName = null,
     stickyLeftColumns
   } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const {
-    selectedServer,
-    selectedWell,
-    selectedWellbore,
-    selectedObject,
-    selectedObjectGroup,
-    currentSelected,
-    expandedTreeNodes
-  } = navigationState;
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
+  const queryClient = useQueryClient();
+  const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid } =
+    useParams();
 
   const selectedItemsText = checkableRows
     ? `Selected: ${numberOfCheckedItems}/${numberOfItems}`
@@ -66,100 +61,29 @@ const Panel = (props: PanelProps) => {
     };
   }, []);
 
-  const refreshObjects = async () => {
-    abortRefreshControllerRef.current = new AbortController();
-    const wellUid = selectedWellbore.wellUid;
-    const wellboreUid = selectedWellbore.uid;
-    const wellboreObjects = await ObjectService.getObjects(
-      wellUid,
-      wellboreUid,
-      selectedObjectGroup,
-      abortRefreshControllerRef.current.signal
-    );
-    dispatchNavigation({
-      type: ModificationType.UpdateWellboreObjects,
-      payload: {
-        wellboreObjects,
+  const onClickRefresh = async () => {
+    if (!wellUid) {
+      refreshWellsQuery(queryClient, serverUrl);
+    } else if (!wellboreUid) {
+      refreshWellQuery(queryClient, serverUrl, wellUid);
+    } else if (!objectUid) {
+      refreshObjectsQuery(
+        queryClient,
+        serverUrl,
         wellUid,
         wellboreUid,
-        objectType: selectedObjectGroup
-      }
-    });
-  };
-
-  const refreshObject = async () => {
-    abortRefreshControllerRef.current = new AbortController();
-    const wellUid = selectedWellbore.wellUid;
-    const wellboreUid = selectedWellbore.uid;
-    const uid = selectedObject.uid;
-    let freshObject = await ObjectService.getObject(
-      wellUid,
-      wellboreUid,
-      uid,
-      selectedObjectGroup
-    );
-    const isDeleted = !freshObject;
-    if (isDeleted) {
-      freshObject = selectedObject;
-    }
-    dispatchNavigation({
-      type: ModificationType.UpdateWellboreObject,
-      payload: {
-        objectToUpdate: freshObject,
-        objectType: selectedObjectGroup,
-        isDeleted
-      }
-    });
-  };
-
-  const refreshWells = async () => {
-    abortRefreshControllerRef.current = new AbortController();
-    const wells = await WellService.getWells(
-      abortRefreshControllerRef.current.signal
-    );
-    dispatchNavigation({
-      type: ModificationType.UpdateWells,
-      payload: { wells }
-    });
-    dispatchNavigation({
-      type: NavigationType.SelectServer,
-      payload: { server: selectedServer }
-    });
-  };
-
-  const refreshWell = async () => {
-    abortRefreshControllerRef.current = new AbortController();
-    const nodeId = selectedWell.uid;
-    if (treeNodeIsExpanded(expandedTreeNodes, nodeId)) {
-      dispatchNavigation({
-        type: NavigationType.CollapseTreeNodeChildren,
-        payload: { nodeId }
-      });
-    }
-
-    const well = await WellService.getWell(
-      nodeId,
-      abortRefreshControllerRef.current.signal
-    );
-    dispatchNavigation({
-      type: ModificationType.UpdateWell,
-      payload: { well, overrideWellbores: true }
-    });
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
-  };
-
-  const onClickRefresh = async () => {
-    setIsRefreshing(true);
-    if (currentSelected === selectedServer) {
-      await refreshWells();
-    } else if (currentSelected === selectedWell) {
-      await refreshWell();
-    } else if (currentSelected === selectedObject) {
-      await refreshObject();
+        objectGroup as ObjectType
+      );
     } else {
-      await refreshObjects();
+      refreshObjectQuery(
+        queryClient,
+        serverUrl,
+        wellUid,
+        wellboreUid,
+        objectGroup as ObjectType,
+        objectUid
+      );
     }
-    setIsRefreshing(false);
   };
 
   const exportAsCsv = useCallback(() => {
@@ -195,13 +119,7 @@ const Panel = (props: PanelProps) => {
       />
       <Typography>{selectedItemsText}</Typography>
       {showRefresh && (
-        <Button
-          key="refreshObjects"
-          aria-disabled={isRefreshing ? true : false}
-          aria-label={isRefreshing ? "loading data" : null}
-          onClick={onClickRefresh}
-          disabled={isRefreshing}
-        >
+        <Button key="refreshObjects" onClick={onClickRefresh}>
           <Icon name="refresh" />
           Refresh
         </Button>

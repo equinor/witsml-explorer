@@ -53,11 +53,12 @@ const MessageComparisonModal = (
 
   useEffect(() => {
     const fetchTarget = async () => {
-      const target = await ObjectService.getObjectFromServer(
+      const target = await ObjectService.getObject(
         targetObject.wellUid,
         targetObject.wellboreUid,
         targetObject.uid,
         ObjectType.Message,
+        null,
         targetServer
       );
       if (target == null) {

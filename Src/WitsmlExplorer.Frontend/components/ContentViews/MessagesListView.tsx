@@ -8,30 +8,35 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MessageObjectContextMenu from "components/ContextMenus/MessageObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import MessageObject from "models/messageObject";
-import React, { useContext, useEffect, useState } from "react";
+import { ObjectType } from "models/objectType";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 export interface MessageObjectRow extends ContentTableRow {
   message: MessageObject;
 }
 
-export const MessagesListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+export default function MessagesListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
-  const [messages, setMessages] = useState<MessageObject[]>([]);
+  const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { objects: messages } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Message
+  );
 
-  useEffect(() => {
-    if (selectedWellbore?.messages) {
-      setMessages(selectedWellbore.messages);
-    }
-  }, [selectedWellbore]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Message);
 
   const getTableData = () => {
     return messages.map((msg, index) => {
@@ -90,13 +95,12 @@ export const MessagesListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedMessageObjectRows: MessageObjectRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedMessageObjectRows.map((row) => row.message),
-      wellbore: selectedWellbore
+      checkedObjects: checkedMessageObjectRows.map((row) => row.message)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -109,7 +113,7 @@ export const MessagesListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.messages, messages) && (
+    messages && (
       <ContentTable
         viewId="messagesListView"
         columns={columns}
@@ -121,6 +125,4 @@ export const MessagesListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default MessagesListView;
+}

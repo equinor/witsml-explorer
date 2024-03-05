@@ -4,36 +4,47 @@ import {
 } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TreeItem from "components/Sidebar/TreeItem";
-import { WellboreItemContext } from "components/Sidebar/WellboreItem";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import { calculateObjectNodeId } from "models/wellbore";
+import { ComponentType, MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 interface ObjectOnWellboreItemProps {
   nodeId: string;
   objectOnWellbore: ObjectOnWellbore;
   objectType: ObjectType;
-  selected: boolean;
-  ContextMenu: React.ComponentType<ObjectContextMenuProps>;
+  ContextMenu: ComponentType<ObjectContextMenuProps>;
+  wellUid: string;
+  wellboreUid: string;
 }
 
-const ObjectOnWellboreItem = (
-  props: ObjectOnWellboreItemProps
-): React.ReactElement => {
-  const { nodeId, objectOnWellbore, objectType, selected, ContextMenu } = props;
-  const { wellbore, well } = useContext(WellboreItemContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
+export default function ObjectOnWellboreItem({
+  nodeId,
+  objectOnWellbore,
+  objectType,
+  ContextMenu,
+  wellUid,
+  wellboreUid
+}: ObjectOnWellboreItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
+  const navigate = useNavigate();
+  const { connectedServer } = useConnectedServer();
+  const {
+    wellUid: urlWellUid,
+    wellboreUid: urlWellboreUid,
+    objectGroup,
+    objectUid
+  } = useParams();
 
-  const onContextMenu = (event: React.MouseEvent<HTMLLIElement>) => {
+  const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: ObjectContextMenuProps = {
-      checkedObjects: [objectOnWellbore],
-      wellbore
+      checkedObjects: [objectOnWellbore]
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -41,34 +52,37 @@ const ObjectOnWellboreItem = (
       payload: { component: <ContextMenu {...contextMenuProps} />, position }
     });
   };
+
+  const onLabelClick = () => {
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        objectType,
+        objectOnWellbore.uid
+      )
+    );
+  };
+
   return (
     <TreeItem
       nodeId={nodeId}
       labelText={objectOnWellbore.name}
-      selected={selected}
-      onLabelClick={() => {
-        if (objectType === ObjectType.Rig) {
-          dispatchNavigation({
-            type: NavigationType.SelectObjectGroup,
-            payload: {
-              wellUid: well.uid,
-              wellboreUid: wellbore.uid,
-              objectType: objectType,
-              objects: null
-            }
-          });
-        } else {
-          dispatchNavigation({
-            type: NavigationType.SelectObject,
-            payload: { object: objectOnWellbore, wellbore, well, objectType }
-          });
-        }
-      }}
-      onContextMenu={(event: React.MouseEvent<HTMLLIElement>) =>
-        onContextMenu(event)
+      selected={
+        calculateObjectNodeId(
+          { wellUid, uid: wellboreUid },
+          objectType,
+          objectOnWellbore.uid
+        ) ===
+        calculateObjectNodeId(
+          { wellUid: urlWellUid, uid: urlWellboreUid },
+          objectGroup,
+          objectUid
+        )
       }
+      onLabelClick={onLabelClick}
+      onContextMenu={(event: MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );
-};
-
-export default ObjectOnWellboreItem;
+}

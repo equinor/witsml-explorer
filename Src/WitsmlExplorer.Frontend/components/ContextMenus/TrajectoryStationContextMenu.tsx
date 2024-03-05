@@ -16,37 +16,31 @@ import {
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import TrajectoryStationPropertiesModal from "components/Modals/TrajectoryStationPropertiesModal";
-import { DispatchNavigation } from "contexts/navigationAction";
-import { DispatchOperation } from "contexts/operationStateReducer";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Trajectory from "models/trajectory";
-import React from "react";
+import React, { useContext } from "react";
 import { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface TrajectoryStationContextMenuProps {
   checkedTrajectoryStations: TrajectoryStationRow[];
-  dispatchNavigation: DispatchNavigation;
-  dispatchOperation: DispatchOperation;
   trajectory: Trajectory;
-  selectedServer: Server;
-  servers: Server[];
 }
 
 const TrajectoryStationContextMenu = (
   props: TrajectoryStationContextMenuProps
 ): React.ReactElement => {
-  const {
-    checkedTrajectoryStations,
-    dispatchOperation,
-    trajectory,
-    selectedServer,
-    servers
-  } = props;
+  const { checkedTrajectoryStations, trajectory } = props;
+  const { dispatchOperation } = useContext(OperationContext);
+  const { servers } = useGetServers();
+  const { connectedServer } = useConnectedServer();
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(
     ComponentType.TrajectoryStation
   );
@@ -80,7 +74,7 @@ const TrajectoryStationContextMenu = (
           key={"copy"}
           onClick={() =>
             copyComponents(
-              selectedServer,
+              connectedServer,
               checkedTrajectoryStations.map((ts) => ts.uid),
               trajectory,
               dispatchOperation,
@@ -102,6 +96,7 @@ const TrajectoryStationContextMenu = (
           key={"copyComponentToServer"}
           componentType={ComponentType.TrajectoryStation}
           componentsToCopy={checkedTrajectoryStations}
+          sourceParent={trajectory}
         />,
         <MenuItem
           key={"paste"}

@@ -5,188 +5,62 @@ import {
   Table,
   Typography
 } from "@equinor/eds-core-react";
+import { useQueryClient } from "@tanstack/react-query";
 import ServerModal, {
   showDeleteServerModal
 } from "components/Modals/ServerModal";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
-import {
-  FilterContext,
-  VisibilityStatus,
-  allVisibleObjects
-} from "contexts/filter";
-import { UpdateServerListAction } from "contexts/modificationActions";
-import ModificationType from "contexts/modificationType";
-import { SelectServerAction } from "contexts/navigationActions";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { ObjectType } from "models/objectType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { Server, emptyServer } from "models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
-import React, { useContext, useEffect, useState } from "react";
-import AuthorizationService, {
-  AuthorizationState,
-  AuthorizationStatus
-} from "services/authorizationService";
-import CapService from "services/capService";
-import NotificationService from "services/notificationService";
-import ServerService from "services/serverService";
-import WellService from "services/wellService";
+import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { getWellsViewPath } from "routes/utils/pathBuilder";
+import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
-import {
-  STORAGE_FILTER_HIDDENOBJECTS_KEY,
-  getLocalStorageItem
-} from "tools/localStorageHelpers";
 
 const NEW_SERVER_ID = "1";
 
 const ServerManager = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedServer, servers, wells } = navigationState;
+  const isAuthenticated = !msalEnabled || useIsAuthenticated();
+  const queryClient = useQueryClient();
+  const { servers, isFetching } = useGetServers({ enabled: isAuthenticated });
   const {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
-  const { updateSelectedFilter } = useContext(FilterContext);
-  const [hasFetchedServers, setHasFetchedServers] = useState(false);
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
-  const [authorizationState, setAuthorizationState] =
-    useState<AuthorizationState>();
+  const navigate = useNavigate();
+  const { connectedServer, setConnectedServer } = useConnectedServer();
 
-  useEffect(() => {
-    const unsubscribeFromCredentialsEvents =
-      AuthorizationService.onAuthorizationChangeEvent.subscribe(
-        async (authorizationState) => {
-          setAuthorizationState(authorizationState);
-        }
-      );
-    return () => {
-      unsubscribeFromCredentialsEvents();
-    };
-  }, []);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    const onCurrentLoginStateChange = async () => {
-      if (
-        selectedServer == null ||
-        wells.length !== 0 ||
-        (authorizationState &&
-          authorizationState.status != AuthorizationStatus.Authorized)
-      ) {
-        return;
-      }
-      try {
-        const [wells, supportedObjects] = await Promise.all([
-          WellService.getWells(),
-          CapService.getCapObjects()
-        ]);
-        updateVisibleObjects(supportedObjects);
-        updateSelectedFilter({
-          searchResults: []
-        });
-        dispatchNavigation({
-          type: ModificationType.UpdateWells,
-          payload: { wells: wells }
-        });
-      } catch (error) {
-        NotificationService.Instance.alertDispatcher.dispatch({
-          serverUrl: new URL(selectedServer.url),
-          message: error.message,
-          isSuccess: false
-        });
-        dispatchNavigation({
-          type: NavigationType.SelectServer,
-          payload: { server: null }
-        });
+  const connectServer = async (server: Server) => {
+    const userCredentialsModalProps: UserCredentialsModalProps = {
+      server,
+      onConnectionVerified: (username) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        AuthorizationService.onAuthorized(server, username);
+        AuthorizationService.setSelectedServer(server);
+        setConnectedServer(server);
+        navigate(getWellsViewPath(server.url));
       }
     };
-    onCurrentLoginStateChange();
-    return () => {
-      abortController.abort();
-    };
-  }, [msalEnabled, selectedServer, authorizationState]);
-
-  const isAuthenticated = !msalEnabled || useIsAuthenticated();
-  useEffect(() => {
-    if (isAuthenticated && !hasFetchedServers) {
-      const abortController = new AbortController();
-      const getServers = async () => {
-        const freshServers = await ServerService.getServers(
-          abortController.signal
-        );
-        setHasFetchedServers(true);
-        const action: UpdateServerListAction = {
-          type: ModificationType.UpdateServerList,
-          payload: { servers: freshServers }
-        };
-        dispatchNavigation(action);
-      };
-      getServers();
-
-      return () => {
-        abortController.abort();
-      };
-    }
-  }, [isAuthenticated, hasFetchedServers]);
-
-  const updateVisibleObjects = (supportedObjects: string[]) => {
-    const updatedVisibility = { ...allVisibleObjects };
-    const hiddenItems = getLocalStorageItem<ObjectType[]>(
-      STORAGE_FILTER_HIDDENOBJECTS_KEY,
-      { defaultValue: [] }
-    );
-    hiddenItems.forEach(
-      (objectType) => (updatedVisibility[objectType] = VisibilityStatus.Hidden)
-    );
-    Object.values(ObjectType)
-      .filter(
-        (objectType) =>
-          !supportedObjects
-            .map((o) => o.toLowerCase())
-            .includes(objectType.toLowerCase())
-      )
-      .forEach(
-        (objectType) =>
-          (updatedVisibility[objectType] = VisibilityStatus.Disabled)
-      );
-    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <UserCredentialsModal {...userCredentialsModalProps} />
+    });
   };
 
-  const onSelectItem = async (server: Server) => {
-    if (server.id === selectedServer?.id) {
-      const action: SelectServerAction = {
-        type: NavigationType.SelectServer,
-        payload: { server: null }
-      };
-      dispatchNavigation(action);
-    } else {
-      const userCredentialsModalProps: UserCredentialsModalProps = {
-        server,
-        onConnectionVerified: (username) => {
-          dispatchOperation({ type: OperationType.HideModal });
-          AuthorizationService.onAuthorized(
-            server,
-            username,
-            dispatchNavigation
-          );
-          const action: SelectServerAction = {
-            type: NavigationType.SelectServer,
-            payload: { server }
-          };
-          dispatchNavigation(action);
-        }
-      };
-      dispatchOperation({
-        type: OperationType.DisplayModal,
-        payload: <UserCredentialsModal {...userCredentialsModalProps} />
-      });
-    }
+  const disconnectServer = () => {
+    AuthorizationService.setSelectedServer(null);
+    setConnectedServer(null);
   };
 
   const onEditItem = (server: Server) => {
@@ -211,8 +85,12 @@ const ServerManager = (): React.ReactElement => {
   };
 
   const isConnected = (server: Server): boolean => {
-    return selectedServer?.id == server.id && wells.length != 0;
+    return server.id === connectedServer?.id;
   };
+
+  if (isFetching) {
+    return <ProgressSpinner message="Fetching servers." />;
+  }
 
   return (
     <>
@@ -255,12 +133,7 @@ const ServerManager = (): React.ReactElement => {
                 <Table.Cell style={CellStyle}>
                   {isConnected(server) ? (
                     <StyledLink
-                      onClick={() =>
-                        dispatchNavigation({
-                          type: NavigationType.SelectServer,
-                          payload: { server }
-                        })
-                      }
+                      onClick={() => navigate(getWellsViewPath(server.url))}
                     >
                       {server.name}
                     </StyledLink>
@@ -286,7 +159,11 @@ const ServerManager = (): React.ReactElement => {
                   <ConnectButton
                     colors={colors}
                     isConnected={isConnected(server)}
-                    onClick={() => onSelectItem(server)}
+                    onClick={
+                      isConnected(server)
+                        ? () => disconnectServer()
+                        : () => connectServer(server)
+                    }
                   />
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
@@ -302,8 +179,9 @@ const ServerManager = (): React.ReactElement => {
                       showDeleteServerModal(
                         server,
                         dispatchOperation,
-                        dispatchNavigation,
-                        selectedServer
+                        connectedServer,
+                        setConnectedServer,
+                        queryClient
                       )
                     }
                   >

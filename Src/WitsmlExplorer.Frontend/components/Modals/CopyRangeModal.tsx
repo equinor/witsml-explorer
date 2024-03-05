@@ -6,7 +6,7 @@ import {
 import ModalDialog from "components/Modals/ModalDialog";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { ComponentType } from "models/componentType";
@@ -18,21 +18,19 @@ import LogObject, { indexToNumber } from "models/logObject";
 import React, { useContext, useState } from "react";
 
 export interface CopyRangeModalProps {
+  logObject: LogObject;
   mnemonics: string[];
   onSubmit?: (minIndex: string | number, maxIndex: string | number) => void;
   infoMessage?: string;
 }
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
-  const {
-    navigationState: { selectedServer, selectedObject }
-  } = useContext(NavigationContext);
+  const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useContext(OperationContext);
   const [startIndex, setStartIndex] = useState<string | number>();
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);
-  const selectedLog = selectedObject as LogObject;
-  const { onSubmit: onSubmitOverride } = props;
+  const { logObject: selectedLog, onSubmit: onSubmitOverride } = props;
 
   const onSubmit = async () => {
     if (onSubmitOverride) {
@@ -42,7 +40,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
         props.mnemonics,
         selectedLog,
         ComponentType.Mnemonic,
-        selectedServer.url
+        connectedServer.url
       );
       componentReferences.startIndex = startIndex.toString();
       componentReferences.endIndex = endIndex.toString();

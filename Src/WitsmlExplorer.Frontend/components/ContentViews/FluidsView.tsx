@@ -8,15 +8,20 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "components/ContextMenus/FluidContextMenu";
-import NavigationContext from "contexts/navigationContext";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
 import Fluid from "models/fluid";
-import FluidsReport from "models/fluidsReport";
 import { measureToString } from "models/measure";
-import React, { useContext, useEffect, useState } from "react";
-import ComponentService from "services/componentService";
+import { ObjectType } from "models/objectType";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 type FluidAsStrings = {
   [Property in keyof Fluid as Exclude<Property, "rheometers">]: string;
@@ -26,40 +31,32 @@ interface FluidsRow extends ContentTableRow, FluidAsStrings {
   fluid: Fluid;
 }
 
-export const FluidsView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedObject } = navigationState;
+export default function FluidsView() {
   const { dispatchOperation } = useContext(OperationContext);
-  const [fluids, setFluids] = useState<Fluid[]>([]);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const selectedFluidsReport = selectedObject as FluidsReport;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { object: fluidsReport } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.FluidsReport,
+    objectUid
+  );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    if (selectedFluidsReport) {
-      const abortController = new AbortController();
+  const {
+    components: fluids,
+    isFetching,
+    isFetched
+  } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.Fluid,
+    { placeholderData: [] }
+  );
 
-      const getFluids = async () => {
-        setFluids(
-          await ComponentService.getComponents(
-            selectedFluidsReport.wellUid,
-            selectedFluidsReport.wellboreUid,
-            selectedFluidsReport.uid,
-            ComponentType.Fluid,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getFluids();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedFluidsReport]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -67,7 +64,8 @@ export const FluidsView = (): React.ReactElement => {
     checkedRows: FluidsRow[]
   ) => {
     const contextMenuProps: FluidContextMenuProps = {
-      checkedFluids: checkedRows.map((row) => row.fluid)
+      checkedFluids: checkedRows.map((row) => row.fluid),
+      fluidsReport
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -272,7 +270,15 @@ export const FluidsView = (): React.ReactElement => {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
-  return selectedFluidsReport && !isFetchingData ? (
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching FluidsReport.`} />;
+  }
+
+  if (isFetched && !fluidsReport) {
+    return <ItemNotFound itemType={ObjectType.FluidsReport} />;
+  }
+
+  return (
     <ContentTable
       viewId="fluidView"
       columns={columns}
@@ -281,11 +287,7 @@ export const FluidsView = (): React.ReactElement => {
       checkableRows
       insetColumns={insetColumns}
       showRefresh
-      downloadToCsvFileName={`FluidsReport_${selectedFluidsReport.name}`}
+      downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
     />
-  ) : (
-    <></>
   );
-};
-
-export default FluidsView;
+}

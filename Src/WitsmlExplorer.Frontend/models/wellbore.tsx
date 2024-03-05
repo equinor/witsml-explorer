@@ -110,32 +110,48 @@ export function wellboreHasChanges(
   return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
 }
 
+export const calculateWellNodeId = (wellUid: string): string => {
+  return `w=${wellUid};`;
+};
+
 export const calculateWellboreNodeId = (
   wellbore: Wellbore | { wellUid: string; uid: string }
 ): string => {
-  return wellbore.wellUid + wellbore.uid;
+  return calculateWellNodeId(wellbore.wellUid) + `wb=${wellbore.uid};`;
 };
 
 export const calculateObjectGroupId = (
-  wellbore: Wellbore,
-  objectType: ObjectType
+  wellbore: Wellbore | { wellUid: string; uid: string },
+  objectType: ObjectType | string
 ): string => {
-  return calculateWellboreNodeId(wellbore) + objectType;
+  return calculateWellboreNodeId(wellbore) + `ot=${objectType};`;
 };
 
 export const calculateLogTypeId = (
-  wellbore: Wellbore,
+  wellbore: Wellbore | { wellUid: string; uid: string },
   logType: string
 ): string => {
-  return calculateWellboreNodeId(wellbore) + logType;
+  return calculateWellboreNodeId(wellbore) + `lt=${logType};`;
 };
 
-export const calculateLogTypeDepthId = (wellbore: Wellbore): string => {
+export const calculateLogTypeDepthId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD);
 };
 
-export const calculateLogTypeTimeId = (wellbore: Wellbore): string => {
+export const calculateLogTypeTimeId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
+};
+
+export const calculateObjectNodeId = (
+  wellbore: Wellbore | { wellUid: string; uid: string },
+  objectType: ObjectType | string,
+  objectUid: string
+): string => {
+  return calculateObjectGroupId(wellbore, objectType) + `o=${objectUid};`;
 };
 
 export const getWellboreProperties = (

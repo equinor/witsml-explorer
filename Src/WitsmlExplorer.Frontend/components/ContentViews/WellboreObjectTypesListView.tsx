@@ -4,13 +4,17 @@ import {
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import { FilterContext, VisibilityStatus } from "contexts/filter";
-import { SelectObjectGroupAction } from "contexts/navigationActions";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useGetCapObjects } from "hooks/query/useGetCapObjects";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import EntityType from "models/entityType";
 import { ObjectType, pluralizeObjectType } from "models/objectType";
-import React, { useContext } from "react";
-import ObjectService from "services/objectService";
+import { useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
+import { LOG_TYPES_PATH, OBJECTS_PATH } from "routes/routerConstants";
 
 interface ObjectTypeRow extends ContentTableRow {
   uid: string;
@@ -18,21 +22,32 @@ interface ObjectTypeRow extends ContentTableRow {
   objectType: ObjectType;
 }
 
-export const WellboreObjectTypesListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+export default function WellboreObjectTypesListView() {
   const { selectedFilter } = useContext(FilterContext);
+  const navigate = useNavigate();
+  const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { wellbore, isFetched } = useGetWellbore(
+    connectedServer,
+    wellUid,
+    wellboreUid
+  );
+  const { capObjects } = useGetCapObjects(connectedServer, {
+    placeholderData: Object.entries(ObjectType)
+  });
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
   ];
+
+  useExpandSidebarNodes(wellUid, wellboreUid);
 
   const getRows = (): ObjectTypeRow[] => {
     return Object.values(ObjectType)
       .filter(
         (objectType) =>
           selectedFilter.objectVisibilityStatus[objectType] ==
-          VisibilityStatus.Visible
+            VisibilityStatus.Visible && capObjects.includes(objectType)
       )
       .map((objectType) => {
         return {
@@ -45,32 +60,23 @@ export const WellboreObjectTypesListView = (): React.ReactElement => {
   };
 
   const onSelect = async (row: ObjectTypeRow) => {
-    const objects = await ObjectService.getObjectsIfMissing(
-      selectedWellbore,
-      row.objectType
+    navigate(
+      `${row.objectType}/${
+        row.objectType === ObjectType.Log ? LOG_TYPES_PATH : OBJECTS_PATH
+      }`
     );
-    const action: SelectObjectGroupAction = {
-      type: NavigationType.SelectObjectGroup,
-      payload: {
-        objectType: row.objectType,
-        wellUid: selectedWell.uid,
-        wellboreUid: selectedWellbore.uid,
-        objects
-      }
-    };
-    dispatchNavigation(action);
   };
 
-  return selectedWellbore ? (
+  if (isFetched && !wellbore) {
+    return <ItemNotFound itemType={EntityType.Wellbore} />;
+  }
+
+  return (
     <ContentTable
       columns={columns}
       data={getRows()}
       onSelect={onSelect}
       showPanel={false}
     />
-  ) : (
-    <></>
   );
-};
-
-export default WellboreObjectTypesListView;
+}

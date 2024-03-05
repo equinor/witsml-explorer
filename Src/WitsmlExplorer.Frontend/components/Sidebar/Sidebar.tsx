@@ -1,43 +1,39 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
+import ProgressSpinner from "components/ProgressSpinner";
 import SearchFilter from "components/Sidebar/SearchFilter";
 import WellItem from "components/Sidebar/WellItem";
-import WellProgress from "components/WellProgress";
-import { useWellFilter } from "contexts/filter";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
+import { useSidebar } from "contexts/sidebarContext";
+import { useGetWells } from "hooks/query/useGetWells";
+import { useWellFilter } from "hooks/useWellFilter";
 import Well from "models/well";
-import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
-import styled, { CSSProp } from "styled-components";
+import { Fragment, useContext } from "react";
+import styled from "styled-components";
 import Icon from "styles/Icons";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
 
-const Sidebar = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { wells, expandedTreeNodes } = navigationState;
-  const filteredWells = useWellFilter(
-    wells,
-    React.useMemo(() => ({ dispatchNavigation }), [])
-  );
-  const WellListing: CSSProp = {
-    display: "grid",
-    gridTemplateColumns: "1fr 18px",
-    justifyContent: "center",
-    alignContent: "stretch"
-  };
+export default function Sidebar() {
+  const { connectedServer } = useConnectedServer();
+  const { wells, isFetching } = useGetWells(connectedServer);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const { expandedTreeNodes } = useSidebar();
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const filteredWells = useWellFilter(wells);
 
   return (
-    <React.Fragment>
+    <Fragment>
       <SearchFilter />
-      <SidebarTreeView>
-        <WellProgress>
-          {filteredWells &&
+      {!!connectedServer && (
+        <SidebarTreeView>
+          {isFetching ? (
+            <ProgressSpinner message="Fetching wells. This may take some time." />
+          ) : (
+            filteredWells &&
             (filteredWells.length === 0 ? (
               <Typography style={{ paddingTop: "1rem" }}>
                 No wells match the current filter
@@ -60,32 +56,38 @@ const Sidebar = (): React.ReactElement => {
                 expanded={expandedTreeNodes}
               >
                 {filteredWells.map((well: Well) => (
-                  <React.Fragment key={well.uid}>
-                    <div style={WellListing}>
-                      <WellItem well={well} />
+                  <Fragment key={well.uid}>
+                    <WellListing>
+                      <WellItem wellUid={well.uid} />
                       <WellIndicator
                         compactMode={isCompactMode}
-                        active={well.wellbores.some(
-                          (wellbore: Wellbore) => wellbore.isActive
-                        )}
+                        active={well.isActive}
                         colors={colors}
                       />
-                    </div>
+                    </WellListing>
                     <Divider
                       style={{
                         margin: "0px",
                         backgroundColor: colors.interactive.disabledBorder
                       }}
                     />
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </TreeView>
-            ))}
-        </WellProgress>
-      </SidebarTreeView>
-    </React.Fragment>
+            ))
+          )}
+        </SidebarTreeView>
+      )}
+    </Fragment>
   );
-};
+}
+
+const WellListing = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 18px;
+  justify-content: center;
+  align-content: stretch;
+`;
 
 const SidebarTreeView = styled.div`
   overflow-y: scroll;
@@ -108,5 +110,3 @@ const SidebarTreeView = styled.div`
     }
   }
 `;
-
-export default Sidebar;

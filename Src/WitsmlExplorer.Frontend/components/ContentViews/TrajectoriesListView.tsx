@@ -7,32 +7,36 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import Trajectory from "models/trajectory";
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-export const TrajectoriesListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+export default function TrajectoriesListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
-  const [trajectories, setTrajectories] = useState<Trajectory[]>([]);
+  const navigate = useNavigate();
+  const { connectedServer } = useConnectedServer();
+  const { wellUid, wellboreUid } = useParams();
+  const { objects: trajectories } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Trajectory
+  );
 
-  useEffect(() => {
-    if (selectedWellbore?.trajectories) {
-      setTrajectories(selectedWellbore.trajectories);
-    }
-  }, [selectedWellbore?.trajectories]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     selectedTrajectories: Trajectory[]
   ) => {
@@ -42,8 +46,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
       )
     );
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: unchangedSelectedTrajectories,
-      wellbore: selectedWellbore
+      checkedObjects: unchangedSelectedTrajectories
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -94,15 +97,7 @@ export const TrajectoriesListView = (): React.ReactElement => {
   ];
 
   const onSelect = (trajectory: any) => {
-    dispatchNavigation({
-      type: NavigationType.SelectObject,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        object: trajectory,
-        objectType: ObjectType.Trajectory
-      }
-    });
+    navigate(trajectory.uid);
   };
 
   const trajectoryRows = trajectories.map((trajectory) => {
@@ -135,20 +130,18 @@ export const TrajectoriesListView = (): React.ReactElement => {
     };
   });
 
-  return selectedWellbore && trajectories == selectedWellbore.trajectories ? (
-    <ContentTable
-      viewId="trajectoriesListView"
-      columns={columns}
-      data={trajectoryRows}
-      onSelect={onSelect}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName="Trajectories"
-    />
-  ) : (
-    <></>
+  return (
+    trajectories && (
+      <ContentTable
+        viewId="trajectoriesListView"
+        columns={columns}
+        data={trajectoryRows}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName="Trajectories"
+      />
+    )
   );
-};
-
-export default TrajectoriesListView;
+}

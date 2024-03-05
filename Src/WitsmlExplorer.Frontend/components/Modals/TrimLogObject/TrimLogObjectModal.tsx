@@ -7,67 +7,33 @@ import ModalDialog from "components/Modals/ModalDialog";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
 import WarningBar from "components/WarningBar";
-import ModificationType from "contexts/modificationType";
-import { NavigationAction } from "contexts/navigationAction";
-import { HideModalAction } from "contexts/operationStateReducer";
+import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { createTrimLogObjectJob } from "models/jobs/trimLogObjectJob";
 import LogObject, { indexToNumber } from "models/logObject";
-import { ObjectType } from "models/objectType";
-import React, { useState } from "react";
-import { truncateAbortHandler } from "services/apiClient";
+import React, { useContext, useState } from "react";
 import JobService, { JobType } from "services/jobService";
-import ObjectService from "services/objectService";
 
 export interface TrimLogObjectModalProps {
-  dispatchNavigation: (action: NavigationAction) => void;
-  dispatchOperation: (action: HideModalAction) => void;
   logObject: LogObject;
 }
 
 const TrimLogObjectModal = (
   props: TrimLogObjectModalProps
 ): React.ReactElement => {
-  const { dispatchNavigation, dispatchOperation, logObject } = props;
+  const { logObject } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const [log] = useState<LogObject>(logObject);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [startIndex, setStartIndex] = useState<string | number>();
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
 
-  const onSubmit = async (updatedLog: LogObject) => {
+  const onSubmit = async () => {
     setIsLoading(true);
     const trimLogObjectJob = createTrimLogObjectJob(log, startIndex, endIndex);
-    await JobService.orderJob(JobType.TrimLogObject, trimLogObjectJob);
-    refreshWellboreLogs(updatedLog);
-  };
-
-  const refreshWellboreLogs = (log: LogObject) => {
-    const controller = new AbortController();
-
-    async function getLogObject() {
-      const freshLogs = await ObjectService.getObjects(
-        log.wellUid,
-        log.wellboreUid,
-        ObjectType.Log,
-        controller.signal
-      );
-      dispatchNavigation({
-        type: ModificationType.UpdateWellboreObjects,
-        payload: {
-          wellUid: log.wellUid,
-          wellboreUid: log.wellboreUid,
-          wellboreObjects: freshLogs,
-          objectType: ObjectType.Log
-        }
-      });
-      setIsLoading(false);
-      dispatchOperation({ type: OperationType.HideModal });
-    }
-
-    getLogObject().catch(truncateAbortHandler);
-
-    return () => controller.abort();
+    JobService.orderJob(JobType.TrimLogObject, trimLogObjectJob);
+    dispatchOperation({ type: OperationType.HideModal });
   };
 
   const toggleConfirmDisabled = (isValid: boolean) => {
@@ -108,7 +74,7 @@ const TrimLogObjectModal = (
               <WarningBar message="Adjusting start/end index will permanently remove data values outside selected range" />
             </>
           }
-          onSubmit={() => onSubmit(log)}
+          onSubmit={onSubmit}
           isLoading={isLoading}
           confirmColor={"danger"}
           confirmText={"Adjust"}

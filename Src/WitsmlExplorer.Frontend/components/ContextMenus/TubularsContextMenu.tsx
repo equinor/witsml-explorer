@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   StoreFunction,
   TemplateObjects
@@ -13,42 +14,31 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import { NavigationAction } from "contexts/navigationAction";
-import {
-  DisplayModalAction,
-  HideContextMenuAction,
-  HideModalAction
-} from "contexts/operationStateReducer";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React from "react";
+import React, { useContext } from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
 export interface TubularsContextMenuProps {
-  dispatchNavigation: (action: NavigationAction) => void;
-  dispatchOperation: (
-    action: HideModalAction | HideContextMenuAction | DisplayModalAction
-  ) => void;
   wellbore: Wellbore;
   servers?: Server[];
-  setIsLoading?: (arg: boolean) => void;
 }
 
 const TubularsContextMenu = (
   props: TubularsContextMenuProps
 ): React.ReactElement => {
-  const {
-    dispatchNavigation,
-    dispatchOperation,
-    wellbore,
-    servers,
-    setIsLoading
-  } = props;
+  const { wellbore, servers } = props;
+  const { dispatchOperation } = useContext(OperationContext);
   const tubularReferences = useClipboardReferencesOfType(ObjectType.Tubular);
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
 
   return (
     <ContextMenu
@@ -58,11 +48,11 @@ const TubularsContextMenu = (
           onClick={() =>
             onClickRefresh(
               dispatchOperation,
-              dispatchNavigation,
+              queryClient,
+              connectedServer?.url,
               wellbore.wellUid,
               wellbore.uid,
-              ObjectType.Tubular,
-              setIsLoading
+              ObjectType.Tubular
             )
           }
         >
@@ -79,7 +69,7 @@ const TubularsContextMenu = (
               servers,
               tubularReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={tubularReferences === null}

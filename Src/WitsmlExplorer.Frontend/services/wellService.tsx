@@ -1,12 +1,14 @@
 import { ErrorDetails } from "models/errorDetails";
+import { Server } from "models/server";
 import Well, { emptyWell } from "models/well";
 import { ApiClient, throwError } from "services/apiClient";
 
 export default class WellService {
   public static async getWells(
-    abortSignal: AbortSignal = null
+    abortSignal: AbortSignal = null,
+    server: Server = undefined
   ): Promise<Well[]> {
-    const response = await ApiClient.get(`api/wells`, abortSignal);
+    const response = await ApiClient.get(`api/wells`, abortSignal, server);
 
     if (response.ok) {
       return response.json();
@@ -18,9 +20,14 @@ export default class WellService {
 
   public static async getWell(
     wellUid: string,
-    abortSignal: AbortSignal = null
+    abortSignal: AbortSignal = null,
+    server: Server = undefined
   ): Promise<Well> {
-    const response = await ApiClient.get(`/api/wells/${wellUid}`, abortSignal);
+    const response = await ApiClient.get(
+      `/api/wells/${wellUid}`,
+      abortSignal,
+      server
+    );
     if (response.ok) {
       return response.json();
     } else {

@@ -3,22 +3,19 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
-import {
-  calculateLogTypeDepthId,
-  calculateLogTypeTimeId
-} from "models/wellbore";
-import React, { useContext } from "react";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ObjectType } from "models/objectType";
+import { useNavigate, useParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
 
 interface LogType {
   uid: number;
   name: string;
 }
 
-export const LogTypeListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { selectedWell, selectedWellbore } = navigationState;
+export default function LogTypeListView() {
+  const navigate = useNavigate();
+  const { wellUid, wellboreUid } = useParams();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
@@ -29,20 +26,12 @@ export const LogTypeListView = (): React.ReactElement => {
     { uid: 1, name: "Time" }
   ];
 
-  const onSelect = async (logType: any) => {
-    const logTypeGroup =
-      logType.uid === 0
-        ? calculateLogTypeDepthId(selectedWellbore)
-        : calculateLogTypeTimeId(selectedWellbore);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log);
 
-    dispatchNavigation({
-      type: NavigationType.SelectLogType,
-      payload: {
-        well: selectedWell,
-        wellbore: selectedWellbore,
-        logTypeGroup: logTypeGroup
-      }
-    });
+  const onSelect = async (logType: any) => {
+    navigate(
+      `${logType.uid === 0 ? RouterLogType.DEPTH : RouterLogType.TIME}/objects`
+    );
   };
 
   return (
@@ -53,6 +42,4 @@ export const LogTypeListView = (): React.ReactElement => {
       showPanel={false}
     />
   );
-};
-
-export default LogTypeListView;
+}

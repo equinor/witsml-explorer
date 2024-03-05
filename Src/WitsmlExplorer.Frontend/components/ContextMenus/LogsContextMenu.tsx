@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   StoreFunction,
   TemplateObjects
@@ -8,7 +9,8 @@ import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
   menuItemText,
-  onClickRefresh
+  onClickRefresh,
+  onClickShowGroupOnServer
 } from "components/ContextMenus/ContextMenuUtils";
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
@@ -18,7 +20,7 @@ import LogPropertiesModal, {
   LogPropertiesModalInterface
 } from "components/Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
@@ -26,11 +28,12 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -40,16 +43,15 @@ export interface LogsContextMenuProps {
   ) => void;
   wellbore: Wellbore;
   servers: Server[];
-  indexCurve: IndexCurve;
-  setIsLoading?: (arg: boolean) => void;
+  indexCurve?: IndexCurve;
 }
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers, indexCurve, setIsLoading } =
-    props;
-  const { dispatchNavigation } = useContext(NavigationContext);
+  const { dispatchOperation, wellbore, servers, indexCurve } = props;
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -77,27 +79,25 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        setIsLoading ? (
-          <MenuItem
-            key={"refresh"}
-            onClick={() =>
-              onClickRefresh(
-                dispatchOperation,
-                dispatchNavigation,
-                wellbore.wellUid,
-                wellbore.uid,
-                ObjectType.Log,
-                setIsLoading
-              )
-            }
-          >
-            <StyledIcon
-              name="refresh"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`Refresh Logs`}</Typography>
-          </MenuItem>
-        ) : null,
+        <MenuItem
+          key={"refresh"}
+          onClick={() =>
+            onClickRefresh(
+              dispatchOperation,
+              queryClient,
+              connectedServer?.url,
+              wellbore.wellUid,
+              wellbore.uid,
+              ObjectType.Log
+            )
+          }
+        >
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>{`Refresh Logs`}</Typography>
+        </MenuItem>,
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>
@@ -109,7 +109,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               servers,
               logReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={logReferences === null}
@@ -119,6 +119,24 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
             {menuItemText("paste", "log", logReferences?.objectUids)}
           </Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowGroupOnServer(
+                  dispatchOperation,
+                  server,
+                  wellbore,
+                  ObjectType.Log,
+                  indexCurve
+                )
+              }
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
             <MenuItem

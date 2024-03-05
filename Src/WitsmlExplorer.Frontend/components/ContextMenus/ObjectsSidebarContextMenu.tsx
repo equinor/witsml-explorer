@@ -1,5 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction
@@ -9,15 +10,19 @@ import {
   StyledIcon,
   menuItemText,
   onClickRefresh,
+  onClickShowGroupOnServer,
   pluralize
 } from "components/ContextMenus/ContextMenuUtils";
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
+import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
+import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import React, { useContext } from "react";
 import { colors } from "styles/Colors";
@@ -26,20 +31,18 @@ import { v4 as uuid } from "uuid";
 export interface ObjectsSidebarContextMenuProps {
   wellbore: Wellbore;
   objectType: ObjectType;
-  setIsLoading?: (arg: boolean) => void;
 }
 
 const ObjectsSidebarContextMenu = (
   props: ObjectsSidebarContextMenuProps
 ): React.ReactElement => {
-  const { wellbore, objectType, setIsLoading } = props;
+  const { wellbore, objectType } = props;
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
-  const {
-    navigationState: { servers }
-  } = useContext(NavigationContext);
+  const { servers } = useGetServers();
   const objectReferences = useClipboardReferencesOfType(objectType);
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
 
   return (
     <ContextMenu
@@ -49,11 +52,11 @@ const ObjectsSidebarContextMenu = (
           onClick={() =>
             onClickRefresh(
               dispatchOperation,
-              dispatchNavigation,
+              queryClient,
+              connectedServer?.url,
               wellbore.wellUid,
               wellbore.uid,
-              objectType,
-              setIsLoading
+              objectType
             )
           }
         >
@@ -72,7 +75,7 @@ const ObjectsSidebarContextMenu = (
               servers,
               objectReferences,
               dispatchOperation,
-              wellbore
+              toWellboreReference(wellbore)
             )
           }
           disabled={objectReferences === null}
@@ -82,6 +85,23 @@ const ObjectsSidebarContextMenu = (
             {menuItemText("paste", objectType, objectReferences?.objectUids)}
           </Typography>
         </MenuItem>,
+        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+          {servers.map((server: Server) => (
+            <MenuItem
+              key={server.name}
+              onClick={() =>
+                onClickShowGroupOnServer(
+                  dispatchOperation,
+                  server,
+                  wellbore,
+                  objectType
+                )
+              }
+            >
+              <Typography color={"primary"}>{server.name}</Typography>
+            </MenuItem>
+          ))}
+        </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
             <MenuItem

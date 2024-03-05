@@ -1,5 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@material-ui/core";
+import { QueryClient } from "@tanstack/react-query";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction
@@ -9,7 +11,7 @@ import {
   menuItemText,
   onClickDeleteObjects,
   onClickRefreshObject,
-  onClickShowGroupOnServer
+  onClickShowObjectOnServer
 } from "components/ContextMenus/ContextMenuUtils";
 import { onClickCopyToServer } from "components/ContextMenus/CopyToServer";
 import {
@@ -18,46 +20,45 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import { DispatchNavigation } from "contexts/navigationAction";
-import { NavigationState } from "contexts/navigationContext";
+import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import { OpenInQueryView } from "hooks/useOpenInQueryView";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import Wellbore from "models/wellbore";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
-  wellbore: Wellbore;
 }
 
 export const ObjectMenuItems = (
   checkedObjects: ObjectOnWellbore[],
   objectType: ObjectType,
-  navigationState: NavigationState,
+  selectedServer: Server,
+  servers: Server[],
   dispatchOperation: DispatchOperation,
-  dispatchNavigation: DispatchNavigation,
+  queryClient: QueryClient,
   openInQueryView: OpenInQueryView,
-  wellbore: Wellbore,
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
-  const { selectedServer, servers } = navigationState;
 
   return [
     <MenuItem
       key={"refresh"}
       onClick={() =>
         onClickRefreshObject(
-          checkedObjects[0],
-          objectType,
           dispatchOperation,
-          dispatchNavigation
+          queryClient,
+          selectedServer.url,
+          checkedObjects[0].wellUid,
+          checkedObjects[0].wellboreUid,
+          objectType,
+          checkedObjects[0].uid
         )
       }
       disabled={checkedObjects.length !== 1}
@@ -114,12 +115,12 @@ export const ObjectMenuItems = (
     <MenuItem
       key={"pasteObject"}
       onClick={() =>
-        pasteObjectOnWellbore(
-          servers,
-          objectReferences,
-          dispatchOperation,
-          wellbore
-        )
+        pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, {
+          wellUid: checkedObjects[0].wellUid,
+          wellboreUid: checkedObjects[0].wellboreUid,
+          wellName: checkedObjects[0].wellName,
+          wellboreName: checkedObjects[0].wellboreName
+        })
       }
       disabled={objectReferences === null}
     >
@@ -153,12 +154,15 @@ export const ObjectMenuItems = (
         <MenuItem
           key={server.name}
           onClick={() =>
-            onClickShowGroupOnServer(
+            onClickShowObjectOnServer(
               dispatchOperation,
               server,
-              wellbore,
+              checkedObjects[0],
               objectType,
-              (checkedObjects[0] as LogObject)?.indexType
+              (checkedObjects[0] as LogObject)?.indexType ===
+                WITSML_INDEX_TYPE_MD
+                ? IndexCurve.Depth
+                : IndexCurve.Time
             )
           }
           disabled={checkedObjects.length !== 1}
@@ -167,7 +171,12 @@ export const ObjectMenuItems = (
         </MenuItem>
       ))}
     </NestedMenuItem>,
-    <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+    <NestedMenuItem
+      key={"queryItems"}
+      label={"Query"}
+      icon="textField"
+      disabled={checkedObjects.length !== 1}
+    >
       {[
         <MenuItem
           key={"openInQueryView"}
@@ -176,8 +185,8 @@ export const ObjectMenuItems = (
             openInQueryView({
               templateObject: ObjectTypeToTemplateObject[objectType],
               storeFunction: StoreFunction.GetFromStore,
-              wellUid: wellbore.wellUid,
-              wellboreUid: wellbore.uid,
+              wellUid: checkedObjects[0].wellUid,
+              wellboreUid: checkedObjects[0].wellboreUid,
               objectUid: checkedObjects[0].uid
             })
           }
@@ -195,8 +204,8 @@ export const ObjectMenuItems = (
             openInQueryView({
               templateObject: ObjectTypeToTemplateObject[objectType],
               storeFunction: StoreFunction.AddToStore,
-              wellUid: wellbore.wellUid,
-              wellboreUid: wellbore.uid,
+              wellUid: checkedObjects[0].wellUid,
+              wellboreUid: checkedObjects[0].wellboreUid,
               objectUid: uuid()
             })
           }

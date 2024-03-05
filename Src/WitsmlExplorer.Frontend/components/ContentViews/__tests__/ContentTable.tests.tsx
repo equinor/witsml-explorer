@@ -1,28 +1,19 @@
 import "@testing-library/jest-dom";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithContexts } from "__testUtils__/testUtils";
+import {
+  MockResizeObserver,
+  renderWithContexts
+} from "__testUtils__/testUtils";
 import { ContentTable } from "components/ContentViews/table/ContentTable";
 import {
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table/tableParts";
 
-class ResizeObserver {
-  observe() {
-    /**/
-  }
-  unobserve() {
-    /**/
-  }
-  disconnect() {
-    /**/
-  }
-}
-
 describe("<ContentTable />", () => {
   //mock ResizeObserver to enable testing virtualized components
-  window.ResizeObserver = ResizeObserver;
+  window.ResizeObserver = MockResizeObserver;
   const columns = [
     { property: "name", label: "Name", type: ContentType.String },
     { property: "field", label: "Field", type: ContentType.String }

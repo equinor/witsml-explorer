@@ -8,30 +8,35 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import RigContextMenu from "components/ContextMenus/RigContextMenu";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 export interface RigRow extends ContentTableRow, Rig {
   rig: Rig;
 }
 
-export const RigsListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+export default function RigsListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
-  const [rigs, setRigs] = useState<Rig[]>([]);
+  const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { objects: rigs } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Rig
+  );
 
-  useEffect(() => {
-    if (selectedWellbore?.rigs) {
-      setRigs(selectedWellbore.rigs);
-    }
-  }, [selectedWellbore]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Rig);
 
   const getTableData = () => {
     return rigs.map((rig) => {
@@ -128,13 +133,12 @@ export const RigsListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedRigRows: RigRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedRigRows.map((row) => row.rig),
-      wellbore: selectedWellbore
+      checkedObjects: checkedRigRows.map((row) => row.rig)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -144,8 +148,7 @@ export const RigsListView = (): React.ReactElement => {
   };
 
   return (
-    selectedWellbore &&
-    Object.is(selectedWellbore.rigs, rigs) && (
+    rigs && (
       <ContentTable
         viewId="rigsListView"
         columns={columns}
@@ -157,6 +160,4 @@ export const RigsListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default RigsListView;
+}

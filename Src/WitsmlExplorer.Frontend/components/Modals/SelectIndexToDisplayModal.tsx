@@ -1,3 +1,4 @@
+import { Banner } from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
@@ -6,63 +7,87 @@ import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
 import ModalDialog from "components/Modals/ModalDialog";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
-import { SelectLogCurveInfoAction } from "contexts/navigationActions";
-import NavigationType from "contexts/navigationType";
-import { HideModalAction } from "contexts/operationStateReducer";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
-import React, { useEffect, useState } from "react";
-import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
+import { ObjectType } from "models/objectType";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import { getLogCurveValuesViewPath } from "routes/utils/pathBuilder";
+import styled from "styled-components";
+import { indexToNumber } from "tools/IndexHelpers";
+import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
+import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
+import { Colors } from "../../styles/Colors";
+import Icon from "../../styles/Icons";
 
 export interface SelectIndexToDisplayModalProps {
-  dispatchNavigation: (action: SelectLogCurveInfoAction) => void;
-  dispatchOperation: (action: HideModalAction) => void;
-  selectedLog: LogObject;
-  selectedLogCurveInfoRow: LogCurveInfoRow[];
+  log: LogObject;
+  wellUid: string;
+  wellboreUid: string;
+  logCurveInfoRows: LogCurveInfoRow[];
 }
 
 const SelectIndexToDisplayModal = (
   props: SelectIndexToDisplayModalProps
 ): React.ReactElement => {
+  const { logCurveInfoRows, wellUid, wellboreUid, log } = props;
   const {
-    selectedLogCurveInfoRow,
-    dispatchNavigation,
-    dispatchOperation,
-    selectedLog
-  } = props;
-  const isTimeIndexed = selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-  const [log, setLog] = useState<LogObject>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+    operationState: { colors },
+    dispatchOperation
+  } = useContext(OperationContext);
+  const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
   const [startIndex, setStartIndex] = useState<string | number>(
-    isTimeIndexed
-      ? selectedLog.startIndex
-      : indexToNumber(selectedLog.startIndex)
+    isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex)
   );
   const [endIndex, setEndIndex] = useState<string | number>(
-    isTimeIndexed ? selectedLog.endIndex : indexToNumber(selectedLog.endIndex)
+    isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex)
   );
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
+  const navigate = useNavigate();
+  const { connectedServer } = useConnectedServer();
+  const isUrlTooLong = checkIsUrlTooLong(
+    getToPathname(),
+    createLogCurveValuesSearchParams(startIndex, endIndex, getMnemonics())
+  );
 
-  useEffect(() => {
-    setLog(selectedLog);
-  }, [selectedLog]);
+  function getToPathname() {
+    const logType =
+      log.indexType === WITSML_INDEX_TYPE_DATE_TIME
+        ? RouterLogType.TIME
+        : RouterLogType.DEPTH;
+    return getLogCurveValuesViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      ObjectType.Log,
+      logType,
+      log.uid
+    );
+  }
+
+  function getMnemonics() {
+    return logCurveInfoRows
+      .filter((row) => row.mnemonic !== log.indexCurve)
+      .map((row) => row.mnemonic);
+  }
 
   const onSubmit = async () => {
-    setIsLoading(true);
-    const logCurveInfoWithUpdatedIndex = selectedLogCurveInfoRow.map(
-      (logCurveInfo: LogCurveInfoRow) => {
-        return {
-          ...logCurveInfo,
-          minIndex: formatIndexValue(startIndex),
-          maxIndex: formatIndexValue(endIndex)
-        };
+    dispatchOperation({ type: OperationType.HideModal });
+
+    const searchParams = isUrlTooLong
+      ? createLogCurveValuesSearchParams(startIndex, endIndex)
+      : createLogCurveValuesSearchParams(startIndex, endIndex, getMnemonics());
+    navigate(
+      { pathname: getToPathname(), search: searchParams.toString() },
+      {
+        state: {
+          mnemonics: JSON.stringify(getMnemonics())
+        }
       }
     );
-    dispatchOperation({ type: OperationType.HideModal });
-    dispatchNavigation({
-      type: NavigationType.ShowCurveValues,
-      payload: { logCurveInfo: logCurveInfoWithUpdatedIndex }
-    });
   };
 
   const toggleConfirmDisabled = (isValid: boolean) => {
@@ -70,48 +95,74 @@ const SelectIndexToDisplayModal = (
   };
 
   return (
-    <>
-      {log && (
-        <ModalDialog
-          heading={`Display curve values within selected index range for ${log.name}`}
-          content={
-            <>
-              {isTimeIndexed ? (
-                <>
-                  <AdjustDateTimeModal
-                    minDate={log.startIndex}
-                    maxDate={log.endIndex}
-                    isDescending={
-                      log.direction == WITSML_LOG_ORDERTYPE_DECREASING
-                    }
-                    onStartDateChanged={setStartIndex}
-                    onEndDateChanged={setEndIndex}
-                    onValidChange={toggleConfirmDisabled}
-                  />
-                </>
-              ) : (
-                <AdjustNumberRangeModal
-                  minValue={indexToNumber(log.startIndex)}
-                  maxValue={indexToNumber(log.endIndex)}
+    log && (
+      <ModalDialog
+        heading={`Display curve values within selected index range for ${log.name}`}
+        content={
+          <>
+            {isTimeIndexed ? (
+              <>
+                <AdjustDateTimeModal
+                  minDate={log.startIndex}
+                  maxDate={log.endIndex}
                   isDescending={
                     log.direction == WITSML_LOG_ORDERTYPE_DECREASING
                   }
-                  onStartValueChanged={setStartIndex}
-                  onEndValueChanged={setEndIndex}
+                  onStartDateChanged={setStartIndex}
+                  onEndDateChanged={setEndIndex}
                   onValidChange={toggleConfirmDisabled}
                 />
-              )}
-            </>
-          }
-          onSubmit={() => onSubmit()}
-          isLoading={isLoading}
-          confirmColor={"primary"}
-          confirmText={"View curve values"}
-          confirmDisabled={confirmDisabled}
-        />
-      )}
-    </>
+              </>
+            ) : (
+              <AdjustNumberRangeModal
+                minValue={indexToNumber(log.startIndex)}
+                maxValue={indexToNumber(log.endIndex)}
+                isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                onStartValueChanged={setStartIndex}
+                onEndValueChanged={setEndIndex}
+                onValidChange={toggleConfirmDisabled}
+              />
+            )}
+            {isUrlTooLong && (
+              <StyledBanner colors={colors}>
+                <Banner.Icon variant="warning">
+                  <Icon name="infoCircle" />
+                </Banner.Icon>
+                <Banner.Message>
+                  The selected number of mnemonics is too large to be saved in
+                  the URL because the URL exceeds the maximum length of 2000
+                  characters. Therefore, it will not be possible to share this
+                  URL with others to open the chosen mnemonics on the given log.
+                </Banner.Message>
+              </StyledBanner>
+            )}
+          </>
+        }
+        onSubmit={onSubmit}
+        isLoading={false}
+        confirmColor={"primary"}
+        confirmText={"View curve values"}
+        confirmDisabled={confirmDisabled}
+      />
+    )
   );
 };
 
 export default SelectIndexToDisplayModal;
+
+const StyledBanner = styled(Banner)<{ colors: Colors }>`
+  background-color: ${(props) => props.colors.ui.backgroundDefault};
+  span {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  div {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
+  p {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+  hr {
+    background-color: ${(props) => props.colors.ui.backgroundDefault};
+  }
+`;

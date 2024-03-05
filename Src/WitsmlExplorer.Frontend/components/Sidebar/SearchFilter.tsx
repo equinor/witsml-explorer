@@ -1,37 +1,22 @@
-import {
-  Button,
-  DotProgress,
-  EdsProvider,
-  Icon,
-  Typography
-} from "@equinor/eds-core-react";
+import { Button, EdsProvider, Icon } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import OptionsContextMenu, {
   OptionsContextMenuProps
 } from "components/ContextMenus/OptionsContextMenu";
-import ConfirmModal from "components/Modals/ConfirmModal";
 import FilterPanel from "components/Sidebar/FilterPanel";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   FilterContext,
   FilterType,
-  ObjectFilterType,
-  filterTypeToProperty,
   getFilterTypeInformation,
-  isObjectFilterType,
-  isWellFilterType,
-  isWellPropertyFilterType,
-  objectFilterTypeToObjects
+  isObjectFilterType
 } from "contexts/filter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import ObjectSearchResult from "models/objectSearchResult";
-import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import NotificationService from "services/notificationService";
-import ObjectService from "services/objectService";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import { getSearchViewPath } from "routes/utils/pathBuilder";
 import styled, { CSSProp } from "styled-components";
 import { Colors } from "styles/Colors";
 import Icons from "styles/Icons";
@@ -40,22 +25,16 @@ const searchOptions = Object.values(FilterType);
 
 const SearchFilter = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
-  const { dispatchNavigation } = useContext(NavigationContext);
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedServer } = navigationState;
-  const [selectedOption, setSelectedOption] = useState<FilterType>(
-    selectedFilter.filterType
-  );
+  const { connectedServer } = useConnectedServer();
+  const selectedOption = selectedFilter?.filterType;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [nameFilter, setNameFilter] = useState<string>(selectedFilter.name);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [genericSearchResults, setGenericSearchResults] =
-    useState<boolean>(false);
   const textFieldRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const FilterPopup: CSSProp = {
     zIndex: 10,
@@ -84,137 +63,25 @@ const SearchFilter = (): React.ReactElement => {
     }
   }, [selectedFilter.name]);
 
-  const fetchObjects = async (fetchAllObjects: boolean) => {
-    setIsLoading(true);
-
-    const searchResults: ObjectSearchResult[] = [];
-    const errors: Error[] = [];
-    const objectTypes =
-      objectFilterTypeToObjects[selectedOption as ObjectFilterType];
-    const objectPromises = objectTypes.map(async (objectType) => {
-      try {
-        const objects = fetchAllObjects
-          ? await ObjectService.getObjectsWithParamByType(
-              objectType as ObjectType,
-              filterTypeToProperty[selectedOption],
-              ""
-            )
-          : await ObjectService.getObjectsWithParamByType(
-              objectType as ObjectType,
-              filterTypeToProperty[selectedOption],
-              nameFilter
-            );
-        searchResults.push(...objects);
-      } catch (error) {
-        errors.push(error);
-      }
-    });
-    await Promise.all(objectPromises);
-    if (errors.length > 0) {
-      if (
-        errors.every((e) =>
-          e.message.includes("The server does not support to select")
-        )
-      ) {
-        showWarning(
-          `${errors.join(
-            "\n"
-          )}\n\nThe search can still be performed by fetching all ${getListedObjects()} before filtering. This might take some time.\n\nDo you still want to proceed?`
-        );
-      } else {
-        NotificationService.Instance.alertDispatcher.dispatch({
-          serverUrl: new URL(selectedServer.url),
-          message: errors.map((error) => error.message).join("\n"),
-          isSuccess: false,
-          severity: errors.length === objectTypes.length ? "error" : "info"
-        });
-      }
-    }
-    if (errors.length !== objectTypes.length) {
-      updateSelectedFilter({
-        name: nameFilter,
-        filterType: selectedOption,
-        searchResults
-      });
-      setGenericSearchResults(fetchAllObjects);
-    }
-    setIsLoading(false);
-  };
-
-  const handleSearch = async () => {
-    // This is triggered when the 'Enter' key is pressed or the search icon is clicked
-    if (!isLoading) {
-      updateSelectedFilter({ name: nameFilter });
-      if (isObjectFilterType(selectedOption)) {
-        if (!genericSearchResults) {
-          const fetchAllObjects = /^$|[*?]/.test(nameFilter);
-          if (fetchAllObjects) {
-            showWarning(
-              `The given search will fetch all ${getListedObjects()}. This might take some time.\n\nDo you still want to proceed?`
-            );
-            return;
-          }
-          await fetchObjects(false);
-        }
-      }
-      openSearchView(selectedOption);
-    }
-  };
-
-  const getListedObjects = (): string => {
-    const lf = new Intl.ListFormat("en-US");
-    const pluralizedObjectTypes = objectFilterTypeToObjects[
-      selectedOption as ObjectFilterType
-    ].map((o) => pluralize(o));
-    return lf.format(pluralizedObjectTypes);
-  };
-
-  const showWarning = (warning: string) => {
-    // Some searches might be slow, so warn the user first
-    const confirmation = (
-      <ConfirmModal
-        heading={"Warning: Seach might be slow!"}
-        content={
-          <Typography style={{ whiteSpace: "pre-line" }}>{warning}</Typography>
-        }
-        onConfirm={() => {
-          dispatchOperation({ type: OperationType.HideModal });
-          fetchObjects(true).then(() => openSearchView(selectedOption));
-        }}
-        confirmColor={"danger"}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: confirmation
-    });
-  };
-
   const openSearchView = (option: FilterType) => {
-    if (isWellFilterType(option) || isWellPropertyFilterType(option)) {
-      dispatchNavigation({
-        type: NavigationType.SelectServer,
-        payload: { server: selectedServer }
-      });
-    }
     if (isObjectFilterType(option)) {
-      dispatchNavigation({
-        type: NavigationType.SelectObjectOnWellboreView,
-        payload: {}
+      const searchParams = createSearchParams({
+        value: nameFilter
+      });
+      navigate({
+        pathname: getSearchViewPath(connectedServer.url, option),
+        search: searchParams.toString()
       });
     }
   };
 
   const handleOptionChange = async (newValue: FilterType) => {
-    setSelectedOption(newValue);
     updateSelectedFilter({
-      name: nameFilter,
+      name: "",
       filterType: newValue,
       searchResults: []
     });
-    setGenericSearchResults(false);
-    openSearchView(newValue);
+    setNameFilter("");
   };
 
   const openOptions = () => {
@@ -253,13 +120,15 @@ const SearchFilter = (): React.ReactElement => {
               colors={colors}
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
-              onKeyDown={(e) => (e.key == "Enter" ? handleSearch() : null)}
+              onKeyDown={(e) =>
+                e.key == "Enter" ? openSearchView(selectedOption) : null
+              }
               InputProps={{
                 startAdornment: (
                   <SearchIconLayout>
                     <Button
                       variant="ghost_icon"
-                      disabled={!selectedServer || isLoading}
+                      disabled={!connectedServer}
                       onClick={openOptions}
                       aria-label="Show Search Options"
                     >
@@ -268,13 +137,6 @@ const SearchFilter = (): React.ReactElement => {
                         color={colors.interactive.primaryResting}
                       />
                     </Button>
-                    {isLoading && (
-                      <DotProgress
-                        color={"primary"}
-                        size={32}
-                        aria-label="Loading Options"
-                      />
-                    )}
                   </SearchIconLayout>
                 ),
                 endAdornment: (
@@ -294,7 +156,7 @@ const SearchFilter = (): React.ReactElement => {
                     )}
                     <Button
                       variant="ghost_icon"
-                      onClick={handleSearch}
+                      onClick={() => openSearchView(selectedOption)}
                       aria-label="Search"
                     >
                       <Icon

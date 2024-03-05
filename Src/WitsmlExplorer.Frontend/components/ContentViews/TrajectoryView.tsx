@@ -9,15 +9,20 @@ import TrajectoryStationContextMenu, {
   TrajectoryStationContextMenuProps
 } from "components/ContextMenus/TrajectoryStationContextMenu";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
 import { measureToString } from "models/measure";
-import Trajectory from "models/trajectory";
+import { ObjectType } from "models/objectType";
 import TrajectoryStation from "models/trajectoryStation";
-import React, { useContext, useEffect, useState } from "react";
-import ComponentService from "services/componentService";
+import React, { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 
 export interface TrajectoryStationRow extends ContentTableRow {
   uid: string;
@@ -30,45 +35,31 @@ export interface TrajectoryStationRow extends ContentTableRow {
   trajectoryStation: TrajectoryStation;
 }
 
-export const TrajectoryView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+export default function TrajectoryView() {
   const {
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const { selectedServer, selectedObject, servers } = navigationState;
-  const [trajectoryStations, setTrajectoryStations] = useState<
-    TrajectoryStation[]
-  >([]);
   const { dispatchOperation } = useContext(OperationContext);
-  const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const selectedTrajectory = selectedObject as Trajectory;
+  const { wellUid, wellboreUid, objectUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { object: trajectory, isFetched: isFetchedTrajectory } = useGetObject(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Trajectory,
+    objectUid
+  );
 
-  useEffect(() => {
-    setIsFetchingData(true);
-    if (selectedTrajectory) {
-      const abortController = new AbortController();
+  const { components: trajectoryStations, isFetching } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.TrajectoryStation,
+    { placeholderData: [] }
+  );
 
-      const getTrajectory = async () => {
-        setTrajectoryStations(
-          await ComponentService.getComponents(
-            selectedTrajectory.wellUid,
-            selectedTrajectory.wellboreUid,
-            selectedTrajectory.uid,
-            ComponentType.TrajectoryStation,
-            undefined,
-            abortController.signal
-          )
-        );
-        setIsFetchingData(false);
-      };
-
-      getTrajectory();
-
-      return function cleanup() {
-        abortController.abort();
-      };
-    }
-  }, [selectedTrajectory]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -77,11 +68,7 @@ export const TrajectoryView = (): React.ReactElement => {
   ) => {
     const contextMenuProps: TrajectoryStationContextMenuProps = {
       checkedTrajectoryStations,
-      dispatchNavigation,
-      dispatchOperation,
-      trajectory: selectedTrajectory,
-      selectedServer,
-      servers
+      trajectory
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -137,7 +124,15 @@ export const TrajectoryView = (): React.ReactElement => {
     };
   });
 
-  return selectedTrajectory && !isFetchingData ? (
+  if (isFetching) {
+    return <ProgressSpinner message={`Fetching Trajectory.`} />;
+  }
+
+  if (isFetchedTrajectory && !trajectory) {
+    return <ItemNotFound itemType={ObjectType.Trajectory} />;
+  }
+
+  return (
     <ContentTable
       viewId="trajectoryView"
       columns={columns}
@@ -145,11 +140,7 @@ export const TrajectoryView = (): React.ReactElement => {
       onContextMenu={onContextMenu}
       checkableRows
       showRefresh
-      downloadToCsvFileName={`Trajectory_${selectedTrajectory.name}`}
+      downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
     />
-  ) : (
-    <></>
   );
-};
-
-export default TrajectoryView;
+}

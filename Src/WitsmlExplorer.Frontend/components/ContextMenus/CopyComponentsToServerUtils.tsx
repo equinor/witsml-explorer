@@ -62,12 +62,12 @@ export const copyComponentsToServer = async (
       : (component: any) => {
           return component.uid;
         };
-
-  const targetParent = await ObjectService.getObjectFromServer(
+  const targetParent = await ObjectService.getObject(
     wellUid,
     wellboreUid,
     parentUid,
     parentType,
+    null,
     targetServer
   );
   if (targetParent?.uid !== parentUid) {

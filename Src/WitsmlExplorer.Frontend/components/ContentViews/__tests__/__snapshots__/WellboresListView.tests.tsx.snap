@@ -2,6 +2,892 @@
 
 exports[`Should render when selected well is not set 1`] = `
 <body>
-  <div />
+  <div>
+    <div
+      class="contentTableStyles__TableContainer-sc-rul7fz-0 MhSaI"
+    >
+      <div
+        class="Panel__Div-sc-y1eusi-0 ejXfse"
+      >
+        <button
+          aria-controls="menu-default"
+          aria-expanded="false"
+          aria-haspopup="true"
+          class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi"
+          id="anchor-default"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+          >
+            Columns 
+            6
+            /
+            6
+          </span>
+        </button>
+        <p
+          class="Typography__StyledTypography-sc-179guof-0 hcwLlK"
+        >
+          Selected: 0/0
+        </p>
+        <button
+          class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+          >
+            <svg
+              aria-hidden="true"
+              class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+              fill="currentColor"
+              height="24px"
+              viewBox="0 0 24 24"
+              width="24px"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                class="Icon__StyledPath-sc-6evbi1-1"
+                clip-rule="evenodd"
+                d="M17.646 6.35A7.958 7.958 0 0 0 11.996 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08a5.99 5.99 0 0 1-5.65 4c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L12.996 11h7V4l-2.35 2.35Z"
+                data-testid="eds-icon-path"
+                fill-rule="evenodd"
+              />
+            </svg>
+            Refresh
+          </span>
+        </button>
+        <button
+          aria-label="download as csv"
+          class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+          >
+            Download as .csv
+          </span>
+        </button>
+      </div>
+      <div
+        style="overflow-y: auto; height: 100%;"
+      >
+        <table
+          class="contentTableStyles__StyledTable-sc-rul7fz-1 hbnpDh"
+        >
+          <thead
+            class="MuiTableHead-root"
+            style="position: sticky; top: 0px; z-index: 1;"
+          >
+            <tr
+              style="display: flex;"
+            >
+              <th
+                style="width: 0px;"
+              />
+              <th
+                class="MuiTableCell-root MuiTableCell-head contentTableStyles__StyledTh-sc-rul7fz-4 huMDET"
+                colors="[object Object]"
+                scope="col"
+                sticky="0"
+                style="width: 36px; left: 0px;"
+              >
+                <div
+                  role="button"
+                  style="cursor: pointer;"
+                >
+                  <span
+                    aria-disabled="false"
+                    class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary MuiIconButton-colorSecondary"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <input
+                        class="PrivateSwitchBase-input-4"
+                        data-indeterminate="false"
+                        type="checkbox"
+                        value=""
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+                        />
+                      </svg>
+                    </span>
+                  </span>
+                </div>
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head contentTableStyles__StyledTh-sc-rul7fz-4 huMDET"
+                colors="[object Object]"
+                scope="col"
+                sticky="0"
+                style="width: 244px; left: 0px;"
+              >
+                <div
+                  role="button"
+                  style="cursor: pointer;"
+                >
+                  name
+                </div>
+                <div
+                  class="contentTableStyles__StyledResizer-sc-rul7fz-2 bfePGL"
+                />
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head contentTableStyles__StyledTh-sc-rul7fz-4 huMDET"
+                colors="[object Object]"
+                scope="col"
+                sticky="0"
+                style="width: 120px; left: 0px;"
+              >
+                <div
+                  role="button"
+                  style="cursor: pointer;"
+                >
+                  typeWellbore
+                </div>
+                <div
+                  class="contentTableStyles__StyledResizer-sc-rul7fz-2 bfePGL"
+                />
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head contentTableStyles__StyledTh-sc-rul7fz-4 huMDET"
+                colors="[object Object]"
+                scope="col"
+                sticky="0"
+                style="width: 136px; left: 0px;"
+              >
+                <div
+                  role="button"
+                  style="cursor: pointer;"
+                >
+                  statusWellbore
+                </div>
+                <div
+                  class="contentTableStyles__StyledResizer-sc-rul7fz-2 bfePGL"
+                />
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head contentTableStyles__StyledTh-sc-rul7fz-4 huMDET"
+                colors="[object Object]"
+                scope="col"
+                sticky="0"
+                style="width: 304px; left: 0px;"
+              >
+                <div
+                  role="button"
+                  style="cursor: pointer;"
+                >
+                  uid
+                </div>
+                <div
+                  class="contentTableStyles__StyledResizer-sc-rul7fz-2 bfePGL"
+                />
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head contentTableStyles__StyledTh-sc-rul7fz-4 huMDET"
+                colors="[object Object]"
+                scope="col"
+                sticky="0"
+                style="width: 208px; left: 0px;"
+              >
+                <div
+                  role="button"
+                  style="cursor: pointer;"
+                >
+                  commonData.dTimCreation
+                </div>
+                <div
+                  class="contentTableStyles__StyledResizer-sc-rul7fz-2 bfePGL"
+                />
+              </th>
+              <th
+                style="width: 224px;"
+              />
+            </tr>
+          </thead>
+          <tbody
+            class="MuiTableBody-root"
+            style="height: 0px; position: relative;"
+          />
+        </table>
+      </div>
+    </div>
+  </div>
+  <div
+    id="eds-menu-container"
+  >
+    <div
+      data-floating-ui-portal=""
+      id=":r1:"
+    >
+      <div
+        class="Paper__StyledPaper-sc-6ncnv9-0 fxxOOu Menu__MenuPaper-sc-1vlnqcj-0 uVmMH ColumnOptionsMenu__StyledMenu-sc-1qppr5x-5 dfYBUI"
+        style="position: absolute; top: 0px; left: 0px;"
+        tabindex="-1"
+      >
+        <div
+          aria-labelledby="anchor-default"
+          class="MenuList__List-sc-104rzof-0 cjfhYS"
+          id="menu-default"
+          role="menu"
+        >
+          <div
+            index="0"
+            style="display: flex;"
+          >
+            <span
+              aria-disabled="false"
+              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary PrivateSwitchBase-checked-2 Mui-checked MuiIconButton-colorSecondary"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <input
+                  checked=""
+                  class="PrivateSwitchBase-input-4"
+                  data-indeterminate="false"
+                  type="checkbox"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                  />
+                </svg>
+              </span>
+            </span>
+            <p
+              class="Typography__StyledTypography-sc-179guof-0 hcwLlK"
+              style="font-family: EquinorMedium; font-size: 0.875rem; padding: 0.25rem 0px 0px 0.25rem;"
+            >
+              Toggle all
+            </p>
+          </div>
+          <div
+            index="1"
+            style="padding: 0.125rem 0px 0.25rem 0px;"
+          >
+            <div
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
+            >
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary PrivateSwitchBase-checked-2 Mui-checked MuiIconButton-colorSecondary"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-4"
+                    data-indeterminate="false"
+                    type="checkbox"
+                    value=""
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
+                  </svg>
+                </span>
+              </span>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 15.705 4.59-4.58 4.59 4.58 1.41-1.41-6-6-6 6 1.41 1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 8.295 4.59 4.58 4.59-4.58L18 9.705l-6 6-6-6 1.41-1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <div
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
+                draggable="true"
+              >
+                <p
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-2 fFCiTq"
+                >
+                  name
+                </p>
+              </div>
+            </div>
+            <div
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
+            >
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary PrivateSwitchBase-checked-2 Mui-checked MuiIconButton-colorSecondary"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-4"
+                    data-indeterminate="false"
+                    type="checkbox"
+                    value=""
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
+                  </svg>
+                </span>
+              </span>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 15.705 4.59-4.58 4.59 4.58 1.41-1.41-6-6-6 6 1.41 1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 8.295 4.59 4.58 4.59-4.58L18 9.705l-6 6-6-6 1.41-1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <div
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
+                draggable="true"
+              >
+                <p
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-2 fFCiTq"
+                >
+                  typeWellbore
+                </p>
+              </div>
+            </div>
+            <div
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
+            >
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary PrivateSwitchBase-checked-2 Mui-checked MuiIconButton-colorSecondary"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-4"
+                    data-indeterminate="false"
+                    type="checkbox"
+                    value=""
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
+                  </svg>
+                </span>
+              </span>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 15.705 4.59-4.58 4.59 4.58 1.41-1.41-6-6-6 6 1.41 1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 8.295 4.59 4.58 4.59-4.58L18 9.705l-6 6-6-6 1.41-1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <div
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
+                draggable="true"
+              >
+                <p
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-2 fFCiTq"
+                >
+                  statusWellbore
+                </p>
+              </div>
+            </div>
+            <div
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
+            >
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary PrivateSwitchBase-checked-2 Mui-checked MuiIconButton-colorSecondary"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-4"
+                    data-indeterminate="false"
+                    type="checkbox"
+                    value=""
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
+                  </svg>
+                </span>
+              </span>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 15.705 4.59-4.58 4.59 4.58 1.41-1.41-6-6-6 6 1.41 1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 8.295 4.59 4.58 4.59-4.58L18 9.705l-6 6-6-6 1.41-1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <div
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
+                draggable="true"
+              >
+                <p
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-2 fFCiTq"
+                >
+                  uid
+                </p>
+              </div>
+            </div>
+            <div
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
+            >
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary PrivateSwitchBase-checked-2 Mui-checked MuiIconButton-colorSecondary"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-4"
+                    data-indeterminate="false"
+                    type="checkbox"
+                    value=""
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
+                  </svg>
+                </span>
+              </span>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 15.705 4.59-4.58 4.59 4.58 1.41-1.41-6-6-6 6 1.41 1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 8.295 4.59 4.58 4.59-4.58L18 9.705l-6 6-6-6 1.41-1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <div
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
+                draggable="true"
+              >
+                <p
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-2 fFCiTq"
+                >
+                  commonData.dTimCreation
+                </p>
+              </div>
+            </div>
+            <div
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
+            >
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-1 MuiCheckbox-root MuiCheckbox-colorSecondary PrivateSwitchBase-checked-2 Mui-checked MuiIconButton-colorSecondary"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-4"
+                    data-indeterminate="false"
+                    type="checkbox"
+                    value=""
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
+                  </svg>
+                </span>
+              </span>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 15.705 4.59-4.58 4.59 4.58 1.41-1.41-6-6-6 6 1.41 1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <button
+                class="Button__ButtonBase-sc-1hs0myn-1 ewNHcS ColumnOptionsMenu__OrderingButton-sc-1qppr5x-1 ROfzO"
+                disabled=""
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="Icon__StyledSvg-sc-6evbi1-0 jvLSPt"
+                    fill="currentColor"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      class="Icon__StyledPath-sc-6evbi1-1"
+                      clip-rule="evenodd"
+                      d="m7.41 8.295 4.59 4.58 4.59-4.58L18 9.705l-6 6-6-6 1.41-1.41Z"
+                      data-testid="eds-icon-path"
+                      fill-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+              </button>
+              <div
+                class="DragDropTable__Draggable-sc-fss4ac-1 fpmIJt"
+                draggable="true"
+              >
+                <p
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-2 fFCiTq"
+                >
+                  commonData.dTimLastChange
+                </p>
+              </div>
+            </div>
+            <div
+              class="DragDropTable__DummyDrop-sc-fss4ac-0 eOnFAg"
+              style="margin-left: 70px;"
+            >
+              <div
+                style="visibility: hidden; height: 15px;"
+              />
+            </div>
+          </div>
+          <div
+            class="ColumnOptionsMenu__ResetContainer-sc-1qppr5x-3 ilxnKL"
+          >
+            <button
+              class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi ColumnOptionsMenu__ResetButton-sc-1qppr5x-4 fifnQA"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+              >
+                Reset ordering
+              </span>
+            </button>
+            <button
+              class="Button__ButtonBase-sc-1hs0myn-1 hAUBXi ColumnOptionsMenu__ResetButton-sc-1qppr5x-4 fifnQA"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="Button__Inner-sc-1hs0myn-0 kkFwRC"
+              >
+                Reset sizing
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 `;

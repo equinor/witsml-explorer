@@ -10,25 +10,30 @@ import WellContextMenu, {
   WellContextMenuProps
 } from "components/ContextMenus/WellContextMenu";
 import formatDateString from "components/DateFormatter";
-import WellProgress from "components/WellProgress";
-import { useWellFilter } from "contexts/filter";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import ProgressSpinner from "components/ProgressSpinner";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWells } from "hooks/query/useGetWells";
 import Well from "models/well";
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { WELLBORES_PATH } from "routes/routerConstants";
 
 export interface WellRow extends ContentTableRow, Well {}
 
-export const WellsListView = (): React.ReactElement => {
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
-  const { servers, wells } = navigationState;
+export default function WellsListView() {
+  const { connectedServer } = useConnectedServer();
+  const { wells, isFetching } = useGetWells(connectedServer, {
+    placeholderData: []
+  });
+  const { servers } = useGetServers();
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useContext(OperationContext);
-  const filteredWells = useWellFilter(wells);
+  const navigate = useNavigate();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
@@ -49,7 +54,7 @@ export const WellsListView = (): React.ReactElement => {
   ];
 
   const onSelect = (well: any) => {
-    dispatchNavigation({ type: NavigationType.SelectWell, payload: { well } });
+    navigate(`${well.uid}/${WELLBORES_PATH}`);
   };
 
   const onContextMenu = (
@@ -71,7 +76,7 @@ export const WellsListView = (): React.ReactElement => {
   };
 
   const getTableData = () => {
-    return filteredWells.map((well) => {
+    return wells.map((well) => {
       return {
         ...well,
         id: well.uid,
@@ -89,26 +94,24 @@ export const WellsListView = (): React.ReactElement => {
     });
   };
 
-  return (
-    <WellProgress>
-      {wells.length > 0 && filteredWells.length == 0 ? (
-        <Typography style={{ padding: "1rem" }}>
-          No wells match the current filter
-        </Typography>
-      ) : (
-        <ContentTable
-          viewId="wellsListView"
-          columns={columns}
-          data={getTableData()}
-          onSelect={onSelect}
-          onContextMenu={onContextMenu}
-          checkableRows
-          downloadToCsvFileName="Wells"
-          showRefresh
-        />
-      )}
-    </WellProgress>
-  );
-};
+  if (isFetching) {
+    return (
+      <ProgressSpinner message="Fetching wells. This may take some time." />
+    );
+  }
 
-export default WellsListView;
+  return wells?.length === 0 ? (
+    <Typography style={{ padding: "1rem" }}>No wells found.</Typography>
+  ) : (
+    <ContentTable
+      viewId="wellsListView"
+      columns={columns}
+      data={getTableData()}
+      onSelect={onSelect}
+      onContextMenu={onContextMenu}
+      checkableRows
+      downloadToCsvFileName="Wells"
+      showRefresh
+    />
+  );
+}

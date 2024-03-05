@@ -18,12 +18,14 @@ export default class ObjectService {
     wellUid: string,
     wellboreUid: string,
     objectType: Key,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ObjectTypeToModel[Key][]> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
       `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}`,
-      abortSignal
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();
@@ -37,27 +39,8 @@ export default class ObjectService {
     wellboreUid: string,
     objectUid: string,
     objectType: Key,
-    abortSignal?: AbortSignal
-  ): Promise<ObjectTypeToModel[Key]> {
-    const typeRoute = pluralizeObjectType(objectType).toLowerCase();
-    const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}/${objectUid}`,
-      abortSignal
-    );
-    if (response.ok) {
-      return response.json();
-    } else {
-      return null;
-    }
-  }
-
-  public static async getObjectFromServer<Key extends ObjectType>(
-    wellUid: string,
-    wellboreUid: string,
-    objectUid: string,
-    objectType: Key,
-    server: Server,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ObjectTypeToModel[Key]> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
@@ -66,13 +49,10 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      // the route returns null if the object was not found so we need to check for it
-      const text = await response.text();
-      if (text.length) {
-        return JSON.parse(text);
-      }
+      return response.json().catch(() => null);
+    } else {
+      return null;
     }
-    return null;
   }
 
   public static async getObjectsIdOnly(
@@ -135,12 +115,15 @@ export default class ObjectService {
   }
 
   public static async getExpandableObjectsCount(
-    wellbore: Wellbore,
-    abortSignal?: AbortSignal
+    wellUid: string,
+    wellboreUid: string,
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ExpandableObjectsCount> {
     const response = await ApiClient.get(
-      `/api/wells/${wellbore.wellUid}/wellbores/${wellbore.uid}/countexpandable`,
-      abortSignal
+      `/api/wells/${wellUid}/wellbores/${wellboreUid}/countexpandable`,
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();
@@ -166,13 +149,15 @@ export default class ObjectService {
     type: ObjectType,
     propertyName: string,
     propertyValue: string,
-    abortSignal?: AbortSignal
+    abortSignal?: AbortSignal,
+    server?: Server
   ): Promise<ObjectSearchResult[]> {
     const response = await ApiClient.get(
       `/api/objects/${type}/${propertyName}/${encodeURIComponent(
         propertyValue
       )}`,
-      abortSignal
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();

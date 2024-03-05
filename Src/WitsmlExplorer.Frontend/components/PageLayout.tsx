@@ -6,7 +6,6 @@ import { preventContextMenuPropagation } from "components/ContextMenus/ContextMe
 import Nav from "components/Nav";
 import PropertiesPanel from "components/PropertiesPanel";
 import Sidebar from "components/Sidebar/Sidebar";
-import NavigationContext from "contexts/navigationContext";
 import OperationContext from "contexts/operationContext";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
 import { msalEnabled } from "msal/MsalAuthProvider";
@@ -30,8 +29,6 @@ const PageLayout = (): ReactElement => {
   const [sidebarWidth, setSidebarWidth] = useState(316);
   const { width: documentWidth, height: documentHeight } =
     useDocumentDimensions();
-  const { navigationState } = useContext(NavigationContext);
-  const { currentProperties } = navigationState;
   const version = process.env.NEXT_PUBLIC_WEX_VERSION;
   const { operationState } = useContext(OperationContext);
   const { colors } = operationState;
@@ -126,7 +123,7 @@ const PageLayout = (): ReactElement => {
           <Icon name={isSidebarExpanded ? "collapse" : "expand"} />
         </Button>
         <Properties>
-          <PropertiesPanel properties={currentProperties} />
+          <PropertiesPanel />
         </Properties>
         {version && (
           <Typography

@@ -341,7 +341,7 @@ const getChartOption = (
             minValue =
               minValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
           }
-          if (maxValue.length > LABEL_NUMBER_MAX_LENGTH) {
+          if (maxValue?.length > LABEL_NUMBER_MAX_LENGTH) {
             maxValue =
               maxValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
           }

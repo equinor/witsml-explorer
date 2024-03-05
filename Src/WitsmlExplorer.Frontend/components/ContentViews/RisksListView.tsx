@@ -8,30 +8,35 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import RiskObjectContextMenu from "components/ContextMenus/RiskContextMenu";
 import formatDateString from "components/DateFormatter";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { ObjectType } from "models/objectType";
 import RiskObject from "models/riskObject";
-import React, { useContext, useEffect, useState } from "react";
+import { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 
 export interface RiskObjectRow extends ContentTableRow, RiskObject {
   risk: RiskObject;
 }
 
-export const RisksListView = (): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
+export default function RisksListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useContext(OperationContext);
-  const { selectedWellbore } = navigationState;
-  const [risks, setRisks] = useState<RiskObject[]>([]);
+  const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { objects: risks } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.Risk
+  );
 
-  useEffect(() => {
-    if (selectedWellbore?.risks) {
-      setRisks(selectedWellbore.risks);
-    }
-  }, [selectedWellbore]);
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Risk);
 
   const getTableData = () => {
     return risks.map((risk) => {
@@ -103,13 +108,12 @@ export const RisksListView = (): React.ReactElement => {
   ];
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     {},
     checkedRiskObjectRows: RiskObjectRow[]
   ) => {
     const contextProps: ObjectContextMenuProps = {
-      checkedObjects: checkedRiskObjectRows.map((row) => row.risk),
-      wellbore: selectedWellbore
+      checkedObjects: checkedRiskObjectRows.map((row) => row.risk)
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -122,7 +126,7 @@ export const RisksListView = (): React.ReactElement => {
   };
 
   return (
-    Object.is(selectedWellbore?.risks, risks) && (
+    risks && (
       <ContentTable
         viewId="risksListView"
         columns={columns}
@@ -134,6 +138,4 @@ export const RisksListView = (): React.ReactElement => {
       />
     )
   );
-};
-
-export default RisksListView;
+}

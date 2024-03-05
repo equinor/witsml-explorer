@@ -12,43 +12,71 @@ import LogsContextMenu, {
 import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import LogItem from "components/Sidebar/LogItem";
 import TreeItem from "components/Sidebar/TreeItem";
-import { WellboreItemContext } from "components/Sidebar/WellboreItem";
-import { SelectLogTypeAction } from "contexts/navigationActions";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
 import LogObject from "models/logObject";
 import { calculateObjectNodeId } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
-import Well from "models/well";
 import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeId,
   calculateLogTypeTimeId,
-  calculateObjectGroupId
+  calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "models/wellbore";
-import React, { useCallback, useContext } from "react";
+import { Fragment, MouseEvent, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getLogObjectsViewPath
+} from "routes/utils/pathBuilder";
 
-const LogTypeItem = (): React.ReactElement => {
-  const { wellbore, well } = useContext(WellboreItemContext);
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+interface LogTypeItemProps {
+  logs: LogObject[];
+  wellUid: string;
+  wellboreUid: string;
+}
+
+export default function LogTypeItem({
+  logs,
+  wellUid,
+  wellboreUid
+}: LogTypeItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
-  const { selectedObject, selectedObjectGroup, servers } = navigationState;
-  const logGroup = calculateObjectGroupId(wellbore, ObjectType.Log);
+  const { servers } = useGetServers();
+  const { connectedServer } = useConnectedServer();
+  const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
+  const navigate = useNavigate();
+  const {
+    logType,
+    wellUid: urlWellUid,
+    wellboreUid: urlWellboreUid,
+    objectUid
+  } = useParams();
 
-  const onSelectType = async (logTypeGroup: string) => {
-    const action: SelectLogTypeAction = {
-      type: NavigationType.SelectLogType,
-      payload: { well, wellbore, logTypeGroup: logTypeGroup }
-    };
-    dispatchNavigation(action);
+  const onSelectType = (logTypeGroup: string) => {
+    const logTypePath =
+      logTypeGroup === logTypeGroupDepth
+        ? RouterLogType.DEPTH
+        : RouterLogType.TIME;
+    navigate(
+      getLogObjectsViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.Log,
+        logTypePath
+      )
+    );
   };
 
   const onContextMenu = (
-    event: React.MouseEvent<HTMLLIElement>,
+    event: MouseEvent<HTMLLIElement>,
     wellbore: Wellbore,
     indexCurve: IndexCurve
   ) => {
@@ -68,21 +96,25 @@ const LogTypeItem = (): React.ReactElement => {
       }
     });
   };
-  const depthLogs = filterLogsByType(wellbore, WITSML_INDEX_TYPE_MD);
-  const timeLogs = filterLogsByType(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
+  const depthLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_MD);
+  const timeLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_DATE_TIME);
 
-  const isSelected = useCallback(
-    (log: LogObject) => {
-      return selectedObject &&
-        selectedObjectGroup === ObjectType.Log &&
-        selectedObject.uid === log.uid &&
-        selectedObject.wellboreUid === log.wellboreUid &&
-        selectedObject.wellUid === log.wellUid
-        ? true
-        : undefined;
-    },
-    [selectedObject, selectedObjectGroup]
-  );
+  const isSelected = (log: LogObject) => {
+    return (
+      calculateWellboreObjectNodeId(
+        { wellUid: log.wellUid, uid: log.wellboreUid },
+        log.indexType,
+        log.uid
+      ) ===
+      calculateWellboreObjectNodeId(
+        { wellUid: urlWellUid, uid: urlWellboreUid },
+        logType === RouterLogType.DEPTH
+          ? WITSML_INDEX_TYPE_MD
+          : WITSML_INDEX_TYPE_DATE_TIME,
+        objectUid
+      )
+    );
+  };
 
   return (
     <>
@@ -94,14 +126,20 @@ const LogTypeItem = (): React.ReactElement => {
           onContextMenu(event, wellbore, IndexCurve.Depth)
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
+        selected={
+          calculateLogTypeId(
+            { wellUid: urlWellUid, uid: urlWellboreUid },
+            logType
+          ) === calculateLogTypeId(wellbore, RouterLogType.DEPTH)
+        }
       >
         {listLogItemsByType(
           depthLogs,
           WITSML_INDEX_TYPE_MD,
-          well,
-          wellbore,
-          logGroup,
-          isSelected
+          wellUid,
+          wellboreUid,
+          isSelected,
+          connectedServer?.url
         )}
       </TreeItem>
       <TreeItem
@@ -112,45 +150,58 @@ const LogTypeItem = (): React.ReactElement => {
           onContextMenu(event, wellbore, IndexCurve.Time)
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
+        selected={
+          calculateLogTypeId(
+            { wellUid: urlWellUid, uid: urlWellboreUid },
+            logType
+          ) === calculateLogTypeId(wellbore, RouterLogType.TIME)
+        }
       >
         {listLogItemsByType(
           timeLogs,
           WITSML_INDEX_TYPE_DATE_TIME,
-          well,
-          wellbore,
-          logGroup,
-          isSelected
+          wellUid,
+          wellboreUid,
+          isSelected,
+          connectedServer?.url
         )}
       </TreeItem>
     </>
   );
-};
+}
 
-const filterLogsByType = (wellbore: Wellbore, logType: string) => {
-  return wellbore?.logs?.filter((log) => log.indexType === logType) ?? [];
+const filterLogsByType = (logs: LogObject[], logType: string) => {
+  return logs?.filter((log) => log.indexType === logType) ?? [];
 };
 
 const listLogItemsByType = (
   logObjects: LogObject[],
   logType: string,
-  well: Well,
-  wellbore: Wellbore,
-  logGroup: string,
-  isSelected: (log: LogObject) => boolean
+  wellUid: string,
+  wellboreUid: string,
+  isSelected: (log: LogObject) => boolean,
+  serverUrl: string
 ) => {
+  const logTypePath =
+    logType === WITSML_INDEX_TYPE_DATE_TIME
+      ? RouterLogType.TIME
+      : RouterLogType.DEPTH;
   return logObjects?.map((log) => (
-    <LogItem
-      key={calculateObjectNodeId(log, ObjectType.Log)}
-      log={log}
-      well={well}
-      wellbore={wellbore}
-      logGroup={logGroup}
-      logTypeGroup={calculateLogTypeId(wellbore, logType)}
-      nodeId={calculateObjectNodeId(log, ObjectType.Log)}
-      selected={isSelected(log)}
-      objectGrowing={log.objectGrowing}
-    />
+    <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
+      <LogItem
+        log={log}
+        nodeId={calculateObjectNodeId(log, ObjectType.Log)}
+        selected={isSelected(log)}
+        objectGrowing={log.objectGrowing}
+        to={getLogObjectViewPath(
+          serverUrl,
+          wellUid,
+          wellboreUid,
+          ObjectType.Log,
+          logTypePath,
+          log.uid
+        )}
+      />
+    </Fragment>
   ));
 };
-
-export default LogTypeItem;

@@ -1,8 +1,9 @@
 import { Button } from "@equinor/eds-core-react";
-import NavigationContext from "contexts/navigationContext";
-import NavigationType from "contexts/navigationType";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { getJobsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -12,15 +13,14 @@ export interface JobsButtonProps {
 }
 
 const JobsButton = (props: JobsButtonProps): React.ReactElement => {
-  const { navigationState } = useContext(NavigationContext);
-  const { selectedServer } = navigationState;
-  const { dispatchNavigation } = useContext(NavigationContext);
   const {
     operationState: { colors }
   } = useContext(OperationContext);
+  const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
 
   const onClick = () => {
-    dispatchNavigation({ type: NavigationType.SelectJobs, payload: {} });
+    navigate(getJobsViewPath(connectedServer?.url));
   };
 
   return (
@@ -28,7 +28,7 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
-      disabled={!selectedServer}
+      disabled={!connectedServer}
     >
       <Icon name="assignment" />
       {props.showLabels && "Jobs"}

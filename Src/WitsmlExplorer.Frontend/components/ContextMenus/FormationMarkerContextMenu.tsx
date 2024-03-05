@@ -1,5 +1,6 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import {
@@ -9,9 +10,10 @@ import {
 import FormationMarkerPropertiesModal, {
   FormationMarkerPropertiesModalProps
 } from "components/Modals/FormationMarkerPropertiesModal";
-import NavigationContext from "contexts/navigationContext";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import FormationMarker from "models/formationMarker";
 import { ObjectType } from "models/objectType";
@@ -21,10 +23,12 @@ import { colors } from "styles/Colors";
 const FormationMarkerContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
-  const { checkedObjects, wellbore } = props;
-  const { navigationState, dispatchNavigation } = useContext(NavigationContext);
+  const { checkedObjects } = props;
   const { dispatchOperation } = useContext(OperationContext);
   const openInQueryView = useOpenInQueryView();
+  const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
+  const { servers } = useGetServers();
 
   const onClickModify = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -59,11 +63,11 @@ const FormationMarkerContextMenu = (
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.FormationMarker,
-          navigationState,
+          connectedServer,
+          servers,
           dispatchOperation,
-          dispatchNavigation,
+          queryClient,
           openInQueryView,
-          wellbore,
           extraMenuItems()
         )
       ]}
