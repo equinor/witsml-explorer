@@ -56,6 +56,17 @@ namespace WitsmlExplorer.Api.Services
             _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
         }
 
+        public async Task VerifyCredentials(ServerCredentials creds)
+        {
+            var witsmlClient = new WitsmlClient(options =>
+            {
+                options.Hostname = creds.Host.ToString();
+                options.Credentials = new WitsmlCredentials(creds.UserId, creds.Password);
+                options.ClientCapabilities = _clientCapabilities;
+            });
+            await witsmlClient.TestConnectionAsync();
+        }
+
         public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext)
         {
             ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.WitsmlAuth, Decrypt);
@@ -69,13 +80,7 @@ namespace WitsmlExplorer.Api.Services
                 cacheId = httpContext.CreateWitsmlExplorerCookie();
             }
 
-            var witsmlClient = new WitsmlClient(options =>
-            {
-                options.Hostname = creds.Host.ToString();
-                options.Credentials = new WitsmlCredentials(creds.UserId, creds.Password);
-                options.ClientCapabilities = _clientCapabilities;
-            });
-            await witsmlClient.TestConnectionAsync();
+            await VerifyCredentials(creds);
 
             double ttl = keep ? 24.0 : 1.0; // hours
             CacheCredentials(cacheId, creds, ttl);
