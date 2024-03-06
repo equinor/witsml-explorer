@@ -82,8 +82,8 @@ namespace WitsmlExplorer.Api.Workers
         private static void VerifyLogHeaders(WitsmlLogs logHeaders)
         {
             if (logHeaders.Logs.IsNullOrEmpty()) throw new ArgumentException("Log headers could not be fetched");
-            var direction = logHeaders.Logs.FirstOrDefault().Direction;
-            if (logHeaders.Logs.Any(log => log.Direction != direction)) throw new ArgumentException("Direction must match for all logs");
+            var isIncreasing = logHeaders.Logs.FirstOrDefault().IsIncreasing();
+            if (logHeaders.Logs.Any(log => log.IsIncreasing() != isIncreasing)) throw new ArgumentException("Direction must match for all logs");
             var indexType = logHeaders.Logs.FirstOrDefault().IndexType;
             if (logHeaders.Logs.Any(log => log.IndexType != indexType)) throw new ArgumentException("Index type must match for all logs");
         }
