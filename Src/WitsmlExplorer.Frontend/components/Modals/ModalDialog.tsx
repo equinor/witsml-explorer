@@ -5,8 +5,8 @@ import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { Colors, dark, light } from "styles/Colors";
 import Icons from "styles/Icons";
-import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
 import { ErrorMessage } from "../StyledComponents/ErrorMessage";
+import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
 
 interface ModalDialogProps {
   heading: string;
@@ -200,6 +200,8 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
   margin-top: 0.5em;
   max-height: 75vh;
   overflow-y: auto;
+  background-color: ${(props) => props.colors.ui.backgroundDefault};
+  color: ${(props) => props.colors.text.staticIconsDefault};
 
   div[class*="InputWrapper__Container"] {
     label.dHhldd {
