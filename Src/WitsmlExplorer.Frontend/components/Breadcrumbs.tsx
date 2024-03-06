@@ -95,7 +95,8 @@ export function Breadcrumbs() {
         navigate,
         isObjectView,
         isLogObjectView
-      )
+      ),
+      getLogCurveValuesCrumb(isLogCurveValuesView)
     ].filter((item) => item.name);
   };
 
@@ -299,6 +300,10 @@ function getObjectCrumb<T extends ObjectType>(
       }
     : {};
 }
+
+const getLogCurveValuesCrumb = (isLogCurveValuesView: boolean) => {
+  return isLogCurveValuesView ? { name: "Data" } : {};
+};
 
 const getJobsCrumb = (isJobsView: boolean) => {
   return isJobsView
