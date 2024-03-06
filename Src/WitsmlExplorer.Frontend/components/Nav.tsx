@@ -5,6 +5,7 @@ import OperationContext from "contexts/operationContext";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useGetActiveRoute } from "hooks/useGetActiveRoute";
 import { capitalize } from "lodash";
 import {
   ObjectType,
@@ -18,7 +19,6 @@ import { useContext, useEffect, useState } from "react";
 import {
   NavLink,
   NavigateFunction,
-  useMatch,
   useNavigate,
   useParams
 } from "react-router-dom";
@@ -42,9 +42,21 @@ export default function Nav() {
     operationState: { colors }
   } = useContext(OperationContext);
   const navigate = useNavigate();
-  const isJobsView = !!useMatch("servers/:serverUrl/jobs");
-  const isQueryView = !!useMatch("servers/:serverUrl/query");
-  const isSearchView = !!useMatch("servers/:serverUrl/search/:filterType");
+  const {
+    isJobsView,
+    isQueryView,
+    isSearchView,
+    isWellsView,
+    isWellboresView,
+    isObjectGroupsView,
+    isObjectsView,
+    isObjectView,
+    isLogTypesView,
+    isLogObjectsView,
+    isLogObjectView,
+    isLogCurveValuesView
+  } = useGetActiveRoute();
+
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
   const { connectedServer } = useConnectedServer();
@@ -60,25 +72,31 @@ export default function Nav() {
   );
 
   const createBreadcrumbContent = () => {
-    const groupCrumbs = Object.keys(ObjectType).map((key) => {
-      return getObjectGroupCrumb(
-        key as ObjectType,
-        serverUrl,
-        wellbore,
-        objectGroup,
-        navigate
-      );
-    });
     return [
-      getServerCrumb(connectedServer, navigate),
+      getServerCrumb(connectedServer, navigate, isWellsView),
       getJobsCrumb(isJobsView),
       getQueryCrumb(isQueryView),
       getSearchCrumb(isSearchView),
-      getWellCrumb(serverUrl, well, navigate),
-      getWellboreCrumb(serverUrl, wellbore, navigate),
-      ...groupCrumbs,
-      getLogTypeCrumb(serverUrl, wellbore, logType, navigate),
-      getObjectCrumb(serverUrl, objectGroup, object, logType, navigate)
+      getWellCrumb(serverUrl, well, navigate, isWellboresView),
+      getWellboreCrumb(serverUrl, wellbore, navigate, isObjectGroupsView),
+      getObjectGroupCrumb(
+        serverUrl,
+        wellbore,
+        objectGroup,
+        navigate,
+        isObjectsView,
+        isLogTypesView
+      ),
+      getLogTypeCrumb(serverUrl, wellbore, logType, navigate, isLogObjectsView),
+      getObjectCrumb(
+        serverUrl,
+        objectGroup,
+        object,
+        logType,
+        navigate,
+        isObjectView,
+        isLogObjectView
+      )
     ].filter((item) => item.name);
   };
 
@@ -94,7 +112,8 @@ export default function Nav() {
     logType,
     isJobsView,
     isQueryView,
-    isSearchView
+    isSearchView,
+    isLogCurveValuesView
   ]);
 
   return (
@@ -106,7 +125,7 @@ export default function Nav() {
               WITSML Explorer
             </Title>
           </NavLink>
-          {breadcrumbContent.length != 0 && (
+          {breadcrumbContent.length !== 0 && (
             <Icon
               name="chevronRight"
               color={colors.text.staticIconsTertiary}
@@ -124,7 +143,8 @@ export default function Nav() {
                     breadcrumbContent.length - 1 == index
                       ? "EquinorMedium"
                       : "Equinor",
-                  color: `${colors.infographic.primaryMossGreen}`
+                  color: `${colors.infographic.primaryMossGreen}`,
+                  textDecoration: breadCrumb.disabled ? "none" : null
                 }}
                 maxWidth={180}
               >
@@ -139,13 +159,18 @@ export default function Nav() {
   );
 }
 
-const getServerCrumb = (server: Server, navigate: NavigateFunction) => {
+const getServerCrumb = (
+  server: Server,
+  navigate: NavigateFunction,
+  isWellsView: boolean
+) => {
   return server
     ? {
         name: server.name,
         onClick: () => {
           navigate(getWellsViewPath(server.url));
-        }
+        },
+        disabled: isWellsView
       }
     : {};
 };
@@ -153,14 +178,17 @@ const getServerCrumb = (server: Server, navigate: NavigateFunction) => {
 const getWellCrumb = (
   serverUrl: string,
   well: Well,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  isWellboresView: boolean
 ) => {
   return serverUrl && well
     ? {
         name: well.name,
         onClick: () => {
+          if (isWellboresView) return;
           navigate(getWellboresViewPath(serverUrl, well.uid));
-        }
+        },
+        disabled: isWellboresView
       }
     : {};
 };
@@ -168,32 +196,36 @@ const getWellCrumb = (
 const getWellboreCrumb = (
   serverUrl: string,
   wellbore: Wellbore,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  isObjectGroupsView: boolean
 ) => {
   return serverUrl && wellbore
     ? {
         name: wellbore.name,
         onClick: () => {
+          if (isObjectGroupsView) return;
           navigate(
             getObjectGroupsViewPath(serverUrl, wellbore.wellUid, wellbore.uid)
           );
-        }
+        },
+        disabled: isObjectGroupsView
       }
     : {};
 };
 
 const getObjectGroupCrumb = (
-  objectType: ObjectType,
   serverUrl: string,
   wellbore: Wellbore,
   objectGroup: string,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  isObjectsView: boolean,
+  isLogTypesView: boolean
 ) => {
-  const pluralizedObjectType = pluralizeObjectType(objectType);
-  return serverUrl && wellbore && objectGroup === objectType
+  return serverUrl && wellbore && objectGroup
     ? {
-        name: pluralizedObjectType,
+        name: pluralizeObjectType(objectGroup as ObjectType),
         onClick: () => {
+          if (isObjectsView || isLogTypesView) return;
           navigate(
             objectGroup === ObjectType.Log
               ? getLogTypesViewPath(
@@ -209,7 +241,8 @@ const getObjectGroupCrumb = (
                   objectGroup
                 )
           );
-        }
+        },
+        disabled: isObjectsView || isLogTypesView
       }
     : {};
 };
@@ -218,12 +251,14 @@ const getLogTypeCrumb = (
   serverUrl: string,
   wellbore: Wellbore,
   logType: string,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  isLogObjectsView: boolean
 ) => {
   return serverUrl && wellbore && logType
     ? {
         name: capitalize(logType),
         onClick: () => {
+          if (isLogObjectsView) return;
           navigate(
             getLogObjectsViewPath(
               serverUrl,
@@ -233,7 +268,8 @@ const getLogTypeCrumb = (
               logType
             )
           );
-        }
+        },
+        disabled: isLogObjectsView
       }
     : {};
 };
@@ -243,12 +279,15 @@ function getObjectCrumb<T extends ObjectType>(
   objectGroup: string,
   object: ObjectTypeToModel[T],
   logType: string,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  isObjectView: boolean,
+  isLogObjectView: boolean
 ) {
   return serverUrl && objectGroup && object
     ? {
         name: object.name,
         onClick: () => {
+          if (isObjectView || isLogObjectView) return;
           navigate(
             logType
               ? getLogObjectViewPath(
@@ -267,7 +306,8 @@ function getObjectCrumb<T extends ObjectType>(
                   object.uid
                 )
           );
-        }
+        },
+        disabled: isObjectView || isLogObjectView
       }
     : {};
 }
@@ -275,7 +315,8 @@ function getObjectCrumb<T extends ObjectType>(
 const getJobsCrumb = (isJobsView: boolean) => {
   return isJobsView
     ? {
-        name: "Jobs"
+        name: "Jobs",
+        disabled: isJobsView
       }
     : {};
 };
@@ -283,7 +324,8 @@ const getJobsCrumb = (isJobsView: boolean) => {
 const getQueryCrumb = (isQueryView: boolean) => {
   return isQueryView
     ? {
-        name: "Query"
+        name: "Query",
+        disabled: isQueryView
       }
     : {};
 };
@@ -291,7 +333,8 @@ const getQueryCrumb = (isQueryView: boolean) => {
 const getSearchCrumb = (isSearchView: boolean) => {
   return isSearchView
     ? {
-        name: "Search"
+        name: "Search",
+        disabled: isSearchView
       }
     : {};
 };
