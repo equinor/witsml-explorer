@@ -473,7 +473,9 @@ export const CurveValuesView = (): React.ReactElement => {
         heading={"Download"}
         content={
           <>
-            <span>Choose download option?</span>
+            <span>
+              <Typography>Choose download option?</Typography>
+            </span>
 
             <label style={alignLayout}>
               <Radio
@@ -483,7 +485,7 @@ export const CurveValuesView = (): React.ReactElement => {
                 onChange={onChangeDownloadOption}
                 defaultChecked
               />
-              Download shown interval
+              <Typography>Download shown interval</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
@@ -493,7 +495,7 @@ export const CurveValuesView = (): React.ReactElement => {
                 onChange={onChangeDownloadOption}
                 disabled={!selectedRows.length}
               />
-              Download selected
+              <Typography>Download selected</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
@@ -502,7 +504,7 @@ export const CurveValuesView = (): React.ReactElement => {
                 value={DownloadOptions.All}
                 onChange={onChangeDownloadOption}
               />
-              Download all data
+              <Typography>Download all data</Typography>
             </label>
           </>
         }
