@@ -1,7 +1,5 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+
+using Witsml;
 
 using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Models;
@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public static IResult VerifyUserIsLoggedIn(ConnectionInformation connectionInfo, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
+        public static async Task<IResult> VerifyUserIsLoggedIn(ConnectionInformation connectionInfo, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(httpContext?.Request);
             var creds = credentialsService.GetCredentials(eh, connectionInfo.ServerUrl.ToString(), connectionInfo.UserName);
@@ -70,6 +70,15 @@ namespace WitsmlExplorer.Api.HttpHandlers
             {
                 return TypedResults.Unauthorized();
             }
+            try
+            {
+                await credentialsService.VerifyCredentials(creds);
+            }
+            catch (Exception)
+            {
+                return TypedResults.Unauthorized();
+            }
+
             return TypedResults.Ok();
         }
     }

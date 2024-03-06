@@ -15,6 +15,7 @@ namespace WitsmlExplorer.Api.Services
         public void VerifyUserIsLoggedIn(IEssentialHeaders eh, ServerType serverType);
         public Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri serverUrl);
         public string GetClaimFromToken(string token, string claim);
+        public Task VerifyCredentials(ServerCredentials credentials);
         public Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext);
         public ServerCredentials GetCredentials(IEssentialHeaders eh, string server, string username);
         public string GetCacheId(IEssentialHeaders eh);
