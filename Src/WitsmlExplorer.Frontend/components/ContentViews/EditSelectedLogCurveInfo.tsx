@@ -12,6 +12,7 @@ import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetMnemonicsForLogCurveValues } from "hooks/useGetMnemonicsForLogCurveValues";
 import { ComponentType } from "models/componentType";
 import {
   CSSProperties,
@@ -19,7 +20,6 @@ import {
   SetStateAction,
   useContext,
   useEffect,
-  useMemo,
   useState
 } from "react";
 import {
@@ -67,12 +67,6 @@ const EditSelectedLogCurveInfo = (
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
-  const mnemonics = useMemo(
-    () => getMnemonics(),
-    [mnemonicsSearchParams, location]
-  );
-  const [selectedMnemonics, setSelectedMnemonics] =
-    useState<string[]>(mnemonics);
   const [selectedStartIndex, setSelectedStartIndex] = useState<string>(
     getParsedValue(startIndex, isTimeLog)
   );
@@ -83,21 +77,18 @@ const EditSelectedLogCurveInfo = (
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
 
+  const isFetching = isFetchingMnemonics;
+  const { mnemonics: selectedMnemonics, setMnemonics: setSelectedMnemonics } =
+    useGetMnemonicsForLogCurveValues(
+      isFetching,
+      logCurveInfo,
+      mnemonicsSearchParams
+    );
+
   useEffect(() => {
-    setSelectedMnemonics(getMnemonics());
     setSelectedStartIndex(getParsedValue(startIndex, isTimeLog));
     setSelectedEndIndex(getParsedValue(endIndex, isTimeLog));
-  }, [mnemonicsSearchParams, startIndex, endIndex, location?.state?.mnemonics]);
-
-  function getMnemonics() {
-    if (mnemonicsSearchParams) {
-      return JSON.parse(mnemonicsSearchParams);
-    } else if (location?.state?.mnemonics) {
-      return JSON.parse(location.state.mnemonics);
-    } else {
-      return [];
-    }
-  }
+  }, [startIndex, endIndex]);
 
   useEffect(() => {
     if (overrideStartIndex)
@@ -168,81 +159,83 @@ const EditSelectedLogCurveInfo = (
   };
 
   return (
-    <EdsProvider density={theme}>
-      <Layout colors={colors}>
-        <Typography
-          style={{
-            color: `${colors.interactive.primaryResting}`
-          }}
-          variant="h3"
-        >
-          Curve Values
-        </Typography>
-        <StartEndIndex>
-          <StyledLabel label="Start Index" />
-          <StyledTextField
-            disabled={disabled}
-            id="startIndex"
-            value={selectedStartIndex}
-            variant={isValidStart ? undefined : "error"}
-            type={isTimeLog ? "datetime-local" : ""}
-            step="1"
-            onChange={(e: any) => {
-              onTextFieldChange(e, setSelectedStartIndex, setIsValidStart);
+    selectedMnemonics && (
+      <EdsProvider density={theme}>
+        <Layout colors={colors}>
+          <Typography
+            style={{
+              color: `${colors.interactive.primaryResting}`
             }}
-          />
-        </StartEndIndex>
-        <StartEndIndex>
-          <StyledLabel label="End Index" />
-          <StyledTextField
-            disabled={disabled}
-            id="endIndex"
-            value={selectedEndIndex}
-            type={isTimeLog ? "datetime-local" : ""}
-            variant={isValidEnd ? undefined : "error"}
-            step="1"
-            onChange={(e: any) => {
-              onTextFieldChange(e, setSelectedEndIndex, setIsValidEnd);
-            }}
-          />
-        </StartEndIndex>
-        <StartEndIndex>
-          <StyledLabel label="Mnemonics" />
-          <Autocomplete
-            id={"mnemonics"}
-            disabled={disabled || isFetchingMnemonics}
-            label={""}
-            multiple={true}
-            // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
-            variant={selectedMnemonics.length === 0 ? "error" : null}
-            options={logCurveInfo?.slice(1)?.map((lci) => lci.mnemonic)} // Skip the first one as it is the index curve
-            selectedOptions={selectedMnemonics}
-            onFocus={(e) => e.preventDefault()}
-            onOptionsChange={onMnemonicsChange}
-            style={
-              {
-                "--eds-input-background": colors.ui.backgroundDefault
-              } as CSSProperties
+            variant="h3"
+          >
+            Curve Values
+          </Typography>
+          <StartEndIndex>
+            <StyledLabel label="Start Index" />
+            <StyledTextField
+              disabled={disabled}
+              id="startIndex"
+              value={selectedStartIndex}
+              variant={isValidStart ? undefined : "error"}
+              type={isTimeLog ? "datetime-local" : ""}
+              step="1"
+              onChange={(e: any) => {
+                onTextFieldChange(e, setSelectedStartIndex, setIsValidStart);
+              }}
+            />
+          </StartEndIndex>
+          <StartEndIndex>
+            <StyledLabel label="End Index" />
+            <StyledTextField
+              disabled={disabled}
+              id="endIndex"
+              value={selectedEndIndex}
+              type={isTimeLog ? "datetime-local" : ""}
+              variant={isValidEnd ? undefined : "error"}
+              step="1"
+              onChange={(e: any) => {
+                onTextFieldChange(e, setSelectedEndIndex, setIsValidEnd);
+              }}
+            />
+          </StartEndIndex>
+          <StartEndIndex>
+            <StyledLabel label="Mnemonics" />
+            <Autocomplete
+              id={"mnemonics"}
+              disabled={disabled || isFetchingMnemonics}
+              label={""}
+              multiple={true}
+              // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
+              variant={selectedMnemonics.length === 0 ? "error" : null}
+              options={logCurveInfo?.slice(1)?.map((lci) => lci.mnemonic)} // Skip the first one as it is the index curve
+              selectedOptions={selectedMnemonics}
+              onFocus={(e) => e.preventDefault()}
+              onOptionsChange={onMnemonicsChange}
+              style={
+                {
+                  "--eds-input-background": colors.ui.backgroundDefault
+                } as CSSProperties
+              }
+              dropdownHeight={600}
+            />
+          </StartEndIndex>
+          <StyledButton
+            variant={"ghost"}
+            color={"primary"}
+            onClick={submitLogCurveInfo}
+            disabled={
+              disabled ||
+              isFetchingMnemonics ||
+              !isValidStart ||
+              !isValidEnd ||
+              selectedMnemonics.length === 0
             }
-            dropdownHeight={600}
-          />
-        </StartEndIndex>
-        <StyledButton
-          variant={"ghost"}
-          color={"primary"}
-          onClick={submitLogCurveInfo}
-          disabled={
-            disabled ||
-            isFetchingMnemonics ||
-            !isValidStart ||
-            !isValidEnd ||
-            selectedMnemonics.length === 0
-          }
-        >
-          <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
-        </StyledButton>
-      </Layout>
-    </EdsProvider>
+          >
+            <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
+          </StyledButton>
+        </Layout>
+      </EdsProvider>
+    )
   );
 };
 
