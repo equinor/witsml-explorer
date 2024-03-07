@@ -13,6 +13,7 @@ namespace WitsmlExplorer.Api.Jobs
             Id = Guid.NewGuid().ToString();
             StartTime = DateTime.Now;
             Status = JobStatus.Started;
+            Progress = 0.0;
         }
 
         public string JobType { get; internal set; }
@@ -44,6 +45,8 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string FailedReason { get; set; }
 
+        public double Progress { get; set; }
+
         public BaseReport Report { get; set; }
 
         private JobStatus _status;
@@ -57,6 +60,7 @@ namespace WitsmlExplorer.Api.Jobs
                 if (value is JobStatus.Finished or JobStatus.Failed)
                 {
                     EndTime = DateTime.Now;
+                    Progress = 1.0;
                 }
                 _status = value;
             }

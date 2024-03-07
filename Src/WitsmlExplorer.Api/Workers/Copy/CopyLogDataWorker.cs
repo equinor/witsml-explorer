@@ -176,6 +176,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 if (result.IsSuccessful)
                 {
                     numberOfDataRowsCopied += sourceLogData.Data.Count;
+                    UpdateJobProgress(job, sourceLog, sourceLogData);
                 }
                 else
                 {
@@ -186,6 +187,27 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             return new CopyResult { Success = true, NumberOfRowsCopied = numberOfDataRowsCopied };
+        }
+
+        private void UpdateJobProgress(CopyLogDataJob job, WitsmlLog sourceLog, WitsmlLogData copiedData)
+        {
+            string index = copiedData.Data.LastOrDefault()?.Data.Split(CommonConstants.DataSeparator).FirstOrDefault();
+            if (index == null) return;
+            double progress = 0;
+            if (sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+            {
+                string startIndex = sourceLog.StartIndex.Value;
+                string endIndex = sourceLog.EndIndex.Value;
+                progress = (StringHelpers.ToDouble(index) - StringHelpers.ToDouble(startIndex)) / (StringHelpers.ToDouble(endIndex) - StringHelpers.ToDouble(startIndex));
+            }
+            else if (sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
+            {
+                string startIndex = sourceLog.StartDateTimeIndex;
+                string endIndex = sourceLog.EndDateTimeIndex;
+                progress = (DateTime.Parse(index) - DateTime.Parse(startIndex)).TotalMilliseconds / (DateTime.Parse(endIndex) - DateTime.Parse(startIndex)).TotalMilliseconds;
+            }
+            job.ProgressReporter?.Report(progress);
+            if (job.JobInfo != null) job.JobInfo.Progress = progress;
         }
 
         private async Task<CopyResult> CopyLogDataWithoutDuplicates(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, IReadOnlyCollection<string> mnemonics, int targetDepthLogDecimals)
@@ -246,6 +268,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     numberOfDataRowsCopied += newData.Count;
                     originalNumberOfRows += data.Count;
+                    UpdateJobProgress(job, sourceLog, sourceLogWithData.LogData);
                 }
                 else
                 {

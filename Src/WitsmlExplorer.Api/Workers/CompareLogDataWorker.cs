@@ -85,8 +85,9 @@ namespace WitsmlExplorer.Api.Workers
                 // Get shared mnemonics in source and target log
                 List<string> sharedMnemonics = sourceLogMnemonics.Intersect(targetLogMnemonics).ToList();
 
-                foreach (string mnemonic in allMnemonics)
+                for (int i = 0; i < allMnemonics.Count; i++)
                 {
+                    string mnemonic = allMnemonics[i];
 
                     _mnemonicsMismatchCount[mnemonic] = 0;
                     if (sharedMnemonics.Contains(mnemonic))
@@ -106,6 +107,7 @@ namespace WitsmlExplorer.Api.Workers
                     {
                         throw new ArgumentException($"mnemonic={mnemonic} does not exist in source log or target log.");
                     }
+                    ReportProgress(job, (double)i / allMnemonics.Count);
                 }
 
                 BaseReport report = GenerateReport(sourceLog, targetLog);
@@ -121,6 +123,12 @@ namespace WitsmlExplorer.Api.Workers
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
             WorkerResult workerResult = new(GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'", jobId: job.JobInfo.Id);
             return (workerResult, null);
+        }
+
+        private static void ReportProgress(CompareLogDataJob job, double progress)
+        {
+            if (job.JobInfo != null) job.JobInfo.Progress = progress;
+            job.ProgressReporter?.Report(progress);
         }
 
         private async Task AddSharedMnemonicData(WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic)

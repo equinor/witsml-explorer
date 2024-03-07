@@ -21,12 +21,14 @@ namespace WitsmlExplorer.Api.Services
         private readonly IJobCache _jobCache;
         private readonly IJobQueue _jobQueue;
         private readonly IEnumerable<IWorker> _workers;
+        private readonly IJobProgressService _jobProgressService;
 
-        public JobService(IJobQueue jobQueue, IEnumerable<IWorker> workers, IJobCache jobCache)
+        public JobService(IJobQueue jobQueue, IEnumerable<IWorker> workers, IJobCache jobCache, IJobProgressService jobProgressService)
         {
             _jobQueue = jobQueue;
             _workers = workers;
             _jobCache = jobCache;
+            _jobProgressService = jobProgressService;
         }
 
         public async Task<string> CreateJob(JobType jobType, JobInfo jobInfo, Stream jobStream)
@@ -38,6 +40,7 @@ namespace WitsmlExplorer.Api.Services
             }
             (Task<(WorkerResult, RefreshAction)> task, Job job) = await worker.SetupWorker(jobStream);
             job.JobInfo = jobInfo;
+            job.ProgressReporter = new Progress<double>(progress => _jobProgressService.ReportProgress(new JobProgress(jobInfo.Id, progress)));
             _jobQueue.Enqueue(task);
             _jobCache.CacheJob(job.JobInfo);
 

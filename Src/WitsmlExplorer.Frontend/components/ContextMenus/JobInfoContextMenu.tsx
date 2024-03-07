@@ -1,5 +1,6 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@material-ui/core";
+import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import JobInfoPropertiesModal from "components/Modals/JobInfoPropertiesModal";
@@ -8,8 +9,9 @@ import {
   HideContextMenuAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import JobInfo from "models/jobs/jobInfo";
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 export interface JobInfoContextMenuProps {
@@ -17,13 +19,13 @@ export interface JobInfoContextMenuProps {
     action: DisplayModalAction | HideContextMenuAction
   ) => void;
   jobInfo: JobInfo;
-  setShouldRefresh: Dispatch<SetStateAction<boolean>>;
 }
 
 const JobInfoContextMenu = (
   props: JobInfoContextMenuProps
 ): React.ReactElement => {
-  const { dispatchOperation, jobInfo, setShouldRefresh } = props;
+  const { dispatchOperation, jobInfo } = props;
+  const queryClient = useQueryClient();
 
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -40,7 +42,7 @@ const JobInfoContextMenu = (
         <MenuItem
           key={"refresh"}
           onClick={() => {
-            setShouldRefresh(true);
+            refreshJobInfoQuery(queryClient);
             dispatchOperation({ type: OperationType.HideContextMenu });
           }}
         >

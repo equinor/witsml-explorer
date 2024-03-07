@@ -1,3 +1,5 @@
+using System;
+
 namespace WitsmlExplorer.Api.Jobs
 {
     public abstract record Job
@@ -8,6 +10,8 @@ namespace WitsmlExplorer.Api.Jobs
         public abstract string GetWellName();
         public abstract string GetWellboreName();
         public abstract string GetObjectName();
+
+        public IProgress<double> ProgressReporter { get; set; }
 
         public JobInfo JobInfo
         {
