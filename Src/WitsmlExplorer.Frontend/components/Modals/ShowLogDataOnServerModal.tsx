@@ -1,11 +1,13 @@
 import {
   Autocomplete,
   Banner,
+  EdsProvider,
   Radio,
   Typography
 } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import ModalDialog from "components/Modals/ModalDialog";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -31,7 +33,7 @@ enum MnemonicsOptions {
 
 export function ShowLogDataOnServerModal() {
   const {
-    operationState: { colors },
+    operationState: { colors, theme },
     dispatchOperation
   } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectGroup, objectUid, logType } = useParams();
@@ -48,6 +50,7 @@ export function ShowLogDataOnServerModal() {
   );
   const [selectedServer, setSelectedServer] = useState<Server>(null);
   const { servers, isFetching } = useGetServers();
+  const { connectedServer } = useConnectedServer();
 
   const onChangeServer = async (event: any) => {
     const selectedServerName = event.selectedItems[0];
@@ -132,11 +135,13 @@ export function ShowLogDataOnServerModal() {
     <ModalDialog
       heading={"Show Log Data on Server"}
       content={
-        <>
+        <EdsProvider density={theme}>
           <Autocomplete
             label="Select a server"
             initialSelectedOptions={[]}
-            options={servers.map((server) => server.name)}
+            options={servers
+              .filter((server) => server.id !== connectedServer.id)
+              .map((server) => server.name)}
             onOptionsChange={onChangeServer}
           />
           <StyledTypography>Index range:</StyledTypography>
@@ -147,7 +152,6 @@ export function ShowLogDataOnServerModal() {
               id={IndexRangeOptions.Full}
               onChange={handleIndexRangeOptionOnChange}
               checked={indexRangeOption === IndexRangeOptions.Full}
-              defaultChecked
             />
             <Typography>Full</Typography>
           </label>
@@ -169,7 +173,6 @@ export function ShowLogDataOnServerModal() {
               value={MnemonicsOptions.All}
               onChange={handleMnemonicsOptionOnChange}
               checked={mnemonicsOption === MnemonicsOptions.All}
-              defaultChecked
             />
             <Typography>All</Typography>
           </label>
@@ -198,7 +201,7 @@ export function ShowLogDataOnServerModal() {
               </Banner.Message>
             </StyledBanner>
           )}
-        </>
+        </EdsProvider>
       }
       isLoading={isFetching}
       onSubmit={() => handleOnSubmit()}
