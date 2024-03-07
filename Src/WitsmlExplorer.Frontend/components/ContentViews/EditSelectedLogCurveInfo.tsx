@@ -244,6 +244,7 @@ const parseDate = (current: string) => {
 };
 
 const getParsedValue = (input: string, isTimeLog: boolean) => {
+  if (!input) return null;
   return isTimeLog
     ? parseDate(input)
       ? format(new Date(input), dateTimeFormat)

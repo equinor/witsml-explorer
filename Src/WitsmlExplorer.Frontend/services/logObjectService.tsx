@@ -18,11 +18,11 @@ export default class LogObjectService {
   ): Promise<LogData> {
     if (mnemonics.length === 0) return;
     const params = [
-      `startIndex=${encodeURIComponent(startIndex)}`,
-      `endIndex=${encodeURIComponent(endIndex)}`,
       `startIndexIsInclusive=${startIndexIsInclusive}`,
       `loadAllData=${loadAllData}`
     ];
+    if (startIndex) params.push(`startIndex=${encodeURIComponent(startIndex)}`);
+    if (endIndex) params.push(`endIndex=${encodeURIComponent(endIndex)}`);
     const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join(
       "&"
     )}`;
