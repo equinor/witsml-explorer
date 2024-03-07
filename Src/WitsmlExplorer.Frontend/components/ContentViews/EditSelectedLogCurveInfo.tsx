@@ -175,7 +175,7 @@ const EditSelectedLogCurveInfo = (
             <StyledTextField
               disabled={disabled}
               id="startIndex"
-              value={selectedStartIndex}
+              value={selectedStartIndex ?? ""}
               variant={isValidStart ? undefined : "error"}
               type={isTimeLog ? "datetime-local" : ""}
               step="1"
@@ -189,7 +189,7 @@ const EditSelectedLogCurveInfo = (
             <StyledTextField
               disabled={disabled}
               id="endIndex"
-              value={selectedEndIndex}
+              value={selectedEndIndex ?? ""}
               type={isTimeLog ? "datetime-local" : ""}
               variant={isValidEnd ? undefined : "error"}
               step="1"
