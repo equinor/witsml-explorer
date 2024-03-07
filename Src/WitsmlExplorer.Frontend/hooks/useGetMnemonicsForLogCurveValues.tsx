@@ -31,6 +31,8 @@ export function useGetMnemonicsForLogCurveValues(
           );
         if (
           notExistingMnemonicsFromSearchParams.length !== 0 &&
+          notExistingMnemonicsFromSearchParams.length !==
+            mnemonicsFromSearchParams.length &&
           enableNotificationService
         ) {
           const notExistingMnemonicsString = getNotExistingMnemonicsToString(

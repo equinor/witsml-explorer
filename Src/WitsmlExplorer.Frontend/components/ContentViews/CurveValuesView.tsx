@@ -23,6 +23,7 @@ import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
 import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
+import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
@@ -566,6 +567,18 @@ export const CurveValuesView = (): React.ReactElement => {
         onClick={() => displayConfirmation(dispatchOperation)}
       >
         Download all as .csv
+      </Button>,
+      <Button
+        key="showLogDataOnServer"
+        disabled={isLoading || isFetching}
+        onClick={() =>
+          dispatchOperation({
+            type: OperationType.DisplayModal,
+            payload: <ShowLogDataOnServerModal />
+          })
+        }
+      >
+        Show on server
       </Button>
     ],
     [
