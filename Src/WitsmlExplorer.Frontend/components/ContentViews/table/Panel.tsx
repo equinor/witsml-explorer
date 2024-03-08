@@ -130,6 +130,7 @@ const Panel = (props: PanelProps) => {
         />
         {showRefresh && (
           <StyledButton
+            aria-label="refresh"
             colors={colors}
             variant="ghost_icon"
             key="refreshObjects"
