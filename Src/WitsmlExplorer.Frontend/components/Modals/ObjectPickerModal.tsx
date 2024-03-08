@@ -215,6 +215,7 @@ const ObjectPickerModal = ({
                     setCheckedIncludeIndexDuplicates(e.target.checked);
                   }}
                   checked={checkedIncludeIndexDuplicates}
+                  disabled={false}
                 />
               )}
               {objectType === ObjectType.Log &&
@@ -226,6 +227,7 @@ const ObjectPickerModal = ({
                       setCheckedCompareAllLogIndexes(e.target.checked);
                     }}
                     checked={checkedCompareAllLogIndexes}
+                    disabled={false}
                   />
                 )}
             </>

@@ -61,6 +61,7 @@ export default function CompareLogDataModal({
                 setCheckedCompareAllLogIndexes(e.target.checked);
               }}
               checked={checkedCompareAllLogIndexes}
+              disabled={false}
             />
           </ButtonsContainer>
         </ModalContentLayout>

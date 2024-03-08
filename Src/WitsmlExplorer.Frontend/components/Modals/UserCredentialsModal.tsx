@@ -162,6 +162,7 @@ const UserCredentialsModal = (
               setKeepLoggedIn(e.target.checked);
             }}
             colors={colors}
+            disabled={false}
           />
         </>
       }

@@ -100,6 +100,7 @@ const DeleteEmptyMnemonicsModal = (
                 checked={deleteNullIndex}
                 onChange={() => setDeleteNullIndex(!deleteNullIndex)}
                 colors={colors}
+                disabled={false}
               />
               <Tooltip title="This will also delete mnemonics where the minIndex and maxIndex in LogCurveInfo are not returned from the server. These properties normally contains the null value.">
                 <Icon
