@@ -20,7 +20,6 @@ export const light: Colors = {
       tokens.colors.interactive.table__cell__fill_activated.hex,
     successHover: tokens.colors.interactive.success__hover.hex,
     sidebarDivider: tokens.colors.interactive.primary__resting.hex,
-    checkBoxHover: "",
     contextMenuItemHover: "",
     tableBorder: "#E0E0E0"
   },
@@ -58,7 +57,6 @@ export const dark: Colors = {
     tableCellFillActivated: "#007079",
     successHover: "#C1E7C1",
     sidebarDivider: "#243746",
-    checkBoxHover: "#FFFFFF33",
     textHighlight: "#004F55",
     contextMenuItemHover: "#007079",
     tableBorder: "#007079"
@@ -99,7 +97,6 @@ export interface Colors {
     tableCellFillActivated: string;
     successHover: string;
     sidebarDivider: string;
-    checkBoxHover: string;
     contextMenuItemHover: string;
     tableBorder: string;
   };

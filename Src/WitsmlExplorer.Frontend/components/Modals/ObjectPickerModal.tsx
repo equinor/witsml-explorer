@@ -2,7 +2,6 @@ import {
   Autocomplete,
   Banner,
   Button,
-  Checkbox,
   TextField
 } from "@equinor/eds-core-react";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
@@ -10,6 +9,7 @@ import ModalDialog, {
   ModalContentLayout,
   ModalWidth
 } from "components/Modals/ModalDialog";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -208,7 +208,7 @@ const ObjectPickerModal = ({
             </Button>
             <>
               {includeIndexDuplicatesOption && (
-                <StyledCheckbox
+                <Checkbox
                   colors={colors}
                   label="Include index duplicates"
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -219,7 +219,7 @@ const ObjectPickerModal = ({
               )}
               {objectType === ObjectType.Log &&
                 includeCompareAllLogIndexesOption && (
-                  <StyledCheckbox
+                  <Checkbox
                     colors={colors}
                     label="Compare all log indexes"
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -270,15 +270,6 @@ const ButtonsContainer = styled.div`
   gap: 1rem;
   padding-left: 0.5rem;
   padding-bottom: 1rem;
-`;
-
-const StyledCheckbox = styled(Checkbox)<{ colors: Colors }>`
-  span {
-    color: ${(props) => props.colors.infographic.primaryMossGreen};
-  }
-  span:hover {
-    background: ${(props) => props.colors.interactive.checkBoxHover};
-  }
 `;
 
 const StyledBanner = styled(Banner)<{ colors: Colors }>`
