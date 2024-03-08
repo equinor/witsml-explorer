@@ -4,7 +4,7 @@ import { Colors } from "styles/Colors";
 
 export const Checkbox = styled(EdsCheckbox)<{
   colors: Colors;
-  disabled: boolean;
+  disabled?: boolean;
 }>`
   span {
     color: ${(props) =>

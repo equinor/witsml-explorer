@@ -98,7 +98,6 @@ const FilterPanel = (): React.ReactElement => {
             }
             label={"Hide inactive Wells / Wellbores"}
             colors={colors}
-            disabled={false}
           />
           <Checkbox
             onChange={(event) =>
@@ -110,7 +109,6 @@ const FilterPanel = (): React.ReactElement => {
             color={"primary"}
             label={"Only show growing logs"}
             colors={colors}
-            disabled={false}
           />
         </InnerContainer>
 
@@ -168,7 +166,6 @@ const FilterPanel = (): React.ReactElement => {
             color={"primary"}
             label={"Hide inactive time curves"}
             colors={colors}
-            disabled={false}
           />
         </InnerContainer>
 
