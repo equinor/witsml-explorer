@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import NotificationService from "services/notificationService";
 
-export function useGetMnemonicsForLogCurveValues(
+export function useGetMnemonics(
   isFethingLogCurveInfoList: boolean,
   logCurveInfoList: LogCurveInfo[],
   mnemonicsSearchParams: string,
@@ -24,26 +24,16 @@ export function useGetMnemonicsForLogCurveValues(
         const newMnemonics = mnemonicsFromSearchParams.filter((mnemonic) =>
           existingMnemonics.includes(mnemonic)
         );
-        const notExistingMnemonicsFromSearchParams =
-          getNotExistingMnemonicsFromSearchParams(
-            mnemonicsFromSearchParams,
-            existingMnemonics
-          );
+        const missingMnemonics = getMissingMnemonics(
+          mnemonicsFromSearchParams,
+          existingMnemonics
+        );
         if (
-          notExistingMnemonicsFromSearchParams.length !== 0 &&
-          notExistingMnemonicsFromSearchParams.length !==
-            mnemonicsFromSearchParams.length &&
+          missingMnemonics.length !== 0 &&
+          missingMnemonics.length !== mnemonicsFromSearchParams.length &&
           enableNotificationService
         ) {
-          const notExistingMnemonicsString = getNotExistingMnemonicsToString(
-            notExistingMnemonicsFromSearchParams
-          );
-          NotificationService.Instance.alertDispatcher.dispatch({
-            serverUrl: new URL(connectedServer.url),
-            message: `Not all mnemonics from the URL's search parameters exist in this log. The following mnemonics are not included from the search parameters: ${notExistingMnemonicsString}`,
-            isSuccess: false,
-            severity: "warning"
-          });
+          sendMissingMnemonicsWarning(connectedServer.url, missingMnemonics);
         }
         setMnemonics(newMnemonics);
       } else if (location?.state?.mnemonics) {
@@ -70,7 +60,7 @@ const getMnemonicsFromSearchParams = (mnemonicsSearchParams: string) => {
   return JSON.parse(mnemonicsSearchParams) as string[];
 };
 
-const getNotExistingMnemonicsFromSearchParams = (
+const getMissingMnemonics = (
   mnemonicsFromSearchParams: string[],
   existingMnemonics: string[]
 ) => {
@@ -79,10 +69,23 @@ const getNotExistingMnemonicsFromSearchParams = (
   );
 };
 
-const getNotExistingMnemonicsToString = (notExistingMnemonics: string[]) => {
+const getMissingMnemonicsToString = (notExistingMnemonics: string[]) => {
   let notExistingMnemonicsString = "";
   notExistingMnemonics.forEach(
     (mnemonic) => (notExistingMnemonicsString += "'" + mnemonic + "' ")
   );
   return notExistingMnemonicsString;
+};
+
+const sendMissingMnemonicsWarning = (
+  serverUrl: string,
+  missingMnemonics: string[]
+) => {
+  const missingMnemonicsString = getMissingMnemonicsToString(missingMnemonics);
+  NotificationService.Instance.alertDispatcher.dispatch({
+    serverUrl: new URL(serverUrl),
+    message: `Not all mnemonics from the URL's search parameters exist in this log. The following mnemonics are not included from the search parameters: ${missingMnemonicsString}`,
+    isSuccess: false,
+    severity: "warning"
+  });
 };

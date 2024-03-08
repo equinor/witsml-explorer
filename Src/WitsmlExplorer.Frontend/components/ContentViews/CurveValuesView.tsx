@@ -33,7 +33,7 @@ import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import useExport from "hooks/useExport";
-import { useGetMnemonicsForLogCurveValues } from "hooks/useGetMnemonicsForLogCurveValues";
+import { useGetMnemonics } from "hooks/useGetMnemonics";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
 import {
@@ -138,7 +138,7 @@ export const CurveValuesView = (): React.ReactElement => {
     );
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
 
-  const { mnemonics } = useGetMnemonicsForLogCurveValues(
+  const { mnemonics } = useGetMnemonics(
     isFetching,
     logCurveInfoList,
     mnemonicsSearchParams,

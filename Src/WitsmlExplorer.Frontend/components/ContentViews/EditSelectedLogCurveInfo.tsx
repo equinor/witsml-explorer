@@ -12,7 +12,7 @@ import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
 import { format } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
-import { useGetMnemonicsForLogCurveValues } from "hooks/useGetMnemonicsForLogCurveValues";
+import { useGetMnemonics } from "hooks/useGetMnemonics";
 import { ComponentType } from "models/componentType";
 import {
   CSSProperties,
@@ -77,11 +77,7 @@ const EditSelectedLogCurveInfo = (
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
 
   const { mnemonics: selectedMnemonics, setMnemonics: setSelectedMnemonics } =
-    useGetMnemonicsForLogCurveValues(
-      isFetching,
-      logCurveInfo,
-      mnemonicsSearchParams
-    );
+    useGetMnemonics(isFetching, logCurveInfo, mnemonicsSearchParams);
 
   useEffect(() => {
     setSelectedStartIndex(getParsedValue(startIndex, isTimeLog));

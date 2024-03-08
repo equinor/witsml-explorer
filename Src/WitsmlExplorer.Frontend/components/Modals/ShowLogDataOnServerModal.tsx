@@ -137,6 +137,7 @@ export function ShowLogDataOnServerModal() {
       content={
         <EdsProvider density={theme}>
           <Autocomplete
+            id={"selectServerToShow"}
             label="Select a server"
             initialSelectedOptions={[]}
             options={servers
@@ -147,9 +148,9 @@ export function ShowLogDataOnServerModal() {
           <StyledTypography>Index range:</StyledTypography>
           <label style={alignLayout}>
             <Radio
-              name="indexRangeRadios"
+              id={"indexRangeFullRadio"}
+              name="indexRangeFullRadio"
               value={IndexRangeOptions.Full}
-              id={IndexRangeOptions.Full}
               onChange={handleIndexRangeOptionOnChange}
               checked={indexRangeOption === IndexRangeOptions.Full}
             />
@@ -157,8 +158,8 @@ export function ShowLogDataOnServerModal() {
           </label>
           <label style={alignLayout}>
             <Radio
-              name="indexRangeRadios"
-              id={IndexRangeOptions.Selected}
+              id={"indexRangeSelectedRadio"}
+              name="indexRangeSelectedRadio"
               value={IndexRangeOptions.Selected}
               onChange={handleIndexRangeOptionOnChange}
               checked={indexRangeOption === IndexRangeOptions.Selected}
@@ -168,8 +169,8 @@ export function ShowLogDataOnServerModal() {
           <StyledTypography>Mnemonics:</StyledTypography>
           <label style={alignLayout}>
             <Radio
-              name="mnemonicsRadios"
-              id={MnemonicsOptions.All}
+              id={"mnemonicsAllRadio"}
+              name="mnemonicsAllRadio"
               value={MnemonicsOptions.All}
               onChange={handleMnemonicsOptionOnChange}
               checked={mnemonicsOption === MnemonicsOptions.All}
@@ -178,9 +179,9 @@ export function ShowLogDataOnServerModal() {
           </label>
           <label style={alignLayout}>
             <Radio
-              name="mnemonicsRadios"
+              id={"mnemonicsSelectedRadio"}
+              name="mnemonicsSelectedRadio"
               value={MnemonicsOptions.Selected}
-              id={MnemonicsOptions.Selected}
               onChange={handleMnemonicsOptionOnChange}
               checked={mnemonicsOption === MnemonicsOptions.Selected}
               disabled={isUrlTooLong}
