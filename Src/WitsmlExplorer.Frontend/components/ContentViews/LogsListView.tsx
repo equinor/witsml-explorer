@@ -1,4 +1,4 @@
-import { Switch, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -17,6 +17,7 @@ import formatDateString from "components/DateFormatter";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
+import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
@@ -39,7 +40,7 @@ export interface LogObjectRow extends ContentTableRow, LogObject {
 export default function LogsListView() {
   const {
     dispatchOperation,
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone, dateTimeFormat, theme }
   } = useContext(OperationContext);
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -156,12 +157,18 @@ export default function LogsListView() {
 
   return (
     <ContentContainer>
-      <CommonPanelContainer>
-        <Switch checked={showGraph} onChange={() => setShowGraph(!showGraph)} />
-        <Typography>
-          Gantt view{selectedRows.length > 0 && " (selected logs only)"}
-        </Typography>
-      </CommonPanelContainer>
+      <EdsProvider density={theme}>
+        <CommonPanelContainer>
+          <Switch
+            checked={showGraph}
+            onChange={() => setShowGraph(!showGraph)}
+            size={theme === UserTheme.Compact ? "small" : "default"}
+          />
+          <Typography>
+            Gantt view{selectedRows.length > 0 && " (selected logs only)"}
+          </Typography>
+        </CommonPanelContainer>
+      </EdsProvider>
       {showGraph ? (
         <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
       ) : (

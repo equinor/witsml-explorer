@@ -1,7 +1,8 @@
-import { Button, Icon, Typography } from "@equinor/eds-core-react";
+import { Button, EdsProvider, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
+import OperationContext from "contexts/operationContext";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -10,9 +11,11 @@ import {
 } from "hooks/query/queryRefreshHelpers";
 import useExport, { encloseCell } from "hooks/useExport";
 import { ObjectType } from "models/objectType";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 
 export interface PanelProps {
@@ -45,14 +48,18 @@ const Panel = (props: PanelProps) => {
     downloadToCsvFileName = null,
     stickyLeftColumns
   } = props;
+  const {
+    operationState: { theme, colors }
+  } = useContext(OperationContext);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
   const queryClient = useQueryClient();
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid } =
     useParams();
+  const [selectedColumns, setSelectedColumns] = useState(null);
 
   const selectedItemsText = checkableRows
-    ? `Selected: ${numberOfCheckedItems}/${numberOfItems}`
+    ? `Row: ${numberOfCheckedItems}/${numberOfItems}`
     : `Items: ${numberOfItems}`;
 
   useEffect(() => {
@@ -108,40 +115,54 @@ const Panel = (props: PanelProps) => {
   }, [columns, table]);
 
   return (
-    <Div>
-      <ColumnOptionsMenu
-        checkableRows={checkableRows}
-        table={table}
-        viewId={viewId}
-        columns={columns}
-        expandableRows={expandableRows}
-        stickyLeftColumns={stickyLeftColumns}
-      />
-      <Typography>{selectedItemsText}</Typography>
-      {showRefresh && (
-        <Button key="refreshObjects" onClick={onClickRefresh}>
-          <Icon name="refresh" />
-          Refresh
-        </Button>
-      )}
-      {downloadToCsvFileName != null && (
-        <Button
-          key="download"
-          aria-label="download as csv"
-          onClick={exportAsCsv}
-        >
-          Download as .csv
-        </Button>
-      )}
-      {panelElements}
-    </Div>
+    <PanelContainer>
+      <EdsProvider density={theme}>
+        <Typography>{selectedItemsText}</Typography>
+        <Typography>{selectedColumns}</Typography>
+        <ColumnOptionsMenu
+          checkableRows={checkableRows}
+          table={table}
+          viewId={viewId}
+          columns={columns}
+          expandableRows={expandableRows}
+          stickyLeftColumns={stickyLeftColumns}
+          setSelectedColumns={setSelectedColumns}
+        />
+        {showRefresh && (
+          <StyledButton
+            colors={colors}
+            variant="ghost_icon"
+            key="refreshObjects"
+            onClick={onClickRefresh}
+          >
+            <Icon name="refresh" />
+          </StyledButton>
+        )}
+        {downloadToCsvFileName != null && (
+          <StyledButton
+            colors={colors}
+            variant="ghost_icon"
+            key="download"
+            aria-label="download as csv"
+            onClick={exportAsCsv}
+          >
+            <Icon name="download" />
+          </StyledButton>
+        )}
+        {panelElements}
+      </EdsProvider>
+    </PanelContainer>
   );
 };
 
-const Div = styled.div`
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+`;
+
+const PanelContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px;
   align-items: center;
   padding: 4px;
   white-space: nowrap;
