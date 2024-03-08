@@ -1,8 +1,9 @@
-import { Checkbox, Icon, Tooltip, Typography } from "@equinor/eds-core-react";
+import { Icon, Tooltip } from "@equinor/eds-core-react";
 import { TextField } from "@material-ui/core";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { DeleteEmptyMnemonicsJob } from "models/jobs/deleteEmptyMnemonicsJob";
@@ -95,12 +96,11 @@ const DeleteEmptyMnemonicsModal = (
             />
             <CheckboxLayout>
               <Checkbox
+                label={"Delete mnemonics with missing minIndex and maxIndex"}
                 checked={deleteNullIndex}
                 onChange={() => setDeleteNullIndex(!deleteNullIndex)}
+                colors={colors}
               />
-              <Typography>
-                Delete mnemonics with missing minIndex and maxIndex
-              </Typography>
               <Tooltip title="This will also delete mnemonics where the minIndex and maxIndex in LogCurveInfo are not returned from the server. These properties normally contains the null value.">
                 <Icon
                   name="infoCircle"
