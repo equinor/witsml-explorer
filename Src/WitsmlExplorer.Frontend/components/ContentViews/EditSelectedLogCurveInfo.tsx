@@ -53,14 +53,13 @@ const EditSelectedLogCurveInfo = (
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const isTimeLog = logType === RouterLogType.TIME;
   const { connectedServer } = useConnectedServer();
-  const { components: logCurveInfo, isFetching: isFetchingMnemonics } =
-    useGetComponents(
-      connectedServer,
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.Mnemonic
-    );
+  const { components: logCurveInfo, isFetching } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.Mnemonic
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -77,7 +76,6 @@ const EditSelectedLogCurveInfo = (
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
 
-  const isFetching = isFetchingMnemonics;
   const { mnemonics: selectedMnemonics, setMnemonics: setSelectedMnemonics } =
     useGetMnemonicsForLogCurveValues(
       isFetching,
@@ -202,7 +200,7 @@ const EditSelectedLogCurveInfo = (
             <StyledLabel label="Mnemonics" />
             <Autocomplete
               id={"mnemonics"}
-              disabled={disabled || isFetchingMnemonics}
+              disabled={disabled || isFetching}
               label={""}
               multiple={true}
               // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
@@ -225,7 +223,7 @@ const EditSelectedLogCurveInfo = (
             onClick={submitLogCurveInfo}
             disabled={
               disabled ||
-              isFetchingMnemonics ||
+              isFetching ||
               !isValidStart ||
               !isValidEnd ||
               selectedMnemonics.length === 0

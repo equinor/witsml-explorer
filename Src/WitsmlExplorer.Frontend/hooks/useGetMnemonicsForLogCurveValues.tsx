@@ -40,7 +40,7 @@ export function useGetMnemonicsForLogCurveValues(
           );
           NotificationService.Instance.alertDispatcher.dispatch({
             serverUrl: new URL(connectedServer.url),
-            message: `Not all of the mnemonics from the URL's search parameters exists in this log. The mnemonics not included from the search parameters are: ${notExistingMnemonicsString}`,
+            message: `Not all mnemonics from the URL's search parameters exist in this log. The following mnemonics are not included from the search parameters: ${notExistingMnemonicsString}`,
             isSuccess: false,
             severity: "warning"
           });
