@@ -12,7 +12,7 @@ import {
 } from "components/ContentViews/table/tableParts";
 import OperationContext from "contexts/operationContext";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
-import { Dispatch, SetStateAction, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import {
@@ -30,7 +30,8 @@ export const ColumnOptionsMenu = (props: {
   viewId: string;
   columns: ContentTableColumn[];
   stickyLeftColumns: number;
-  setSelectedColumns: Dispatch<SetStateAction<string>>;
+  selectedColumnsStatus: string;
+  firstToggleableIndex: number;
 }): React.ReactElement => {
   const {
     table,
@@ -39,7 +40,7 @@ export const ColumnOptionsMenu = (props: {
     viewId,
     columns,
     stickyLeftColumns,
-    setSelectedColumns
+    selectedColumnsStatus
   } = props;
   const firstToggleableIndex = Math.max(
     (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0),
@@ -119,16 +120,6 @@ export const ColumnOptionsMenu = (props: {
     );
   };
 
-  const getSelectedColumnsCount = () => {
-    const numOfSelected =
-      table.getVisibleLeafColumns().length - firstToggleableIndex;
-    const numOfColumns =
-      table.getAllLeafColumns().length - firstToggleableIndex;
-    const result = `Col: ${numOfSelected}/${numOfColumns}`;
-    setSelectedColumns(result);
-    return result;
-  };
-
   return (
     <>
       <StyledButton
@@ -153,7 +144,7 @@ export const ColumnOptionsMenu = (props: {
         colors={colors}
       >
         <Typography style={{ paddingBottom: "16px" }}>
-          {getSelectedColumnsCount()}
+          {selectedColumnsStatus}
         </Typography>
         <div style={{ display: "flex" }}>
           <Checkbox

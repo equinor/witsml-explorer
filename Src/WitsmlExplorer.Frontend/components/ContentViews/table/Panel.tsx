@@ -11,7 +11,7 @@ import {
 } from "hooks/query/queryRefreshHelpers";
 import useExport, { encloseCell } from "hooks/useExport";
 import { ObjectType } from "models/objectType";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -56,8 +56,14 @@ const Panel = (props: PanelProps) => {
   const queryClient = useQueryClient();
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid } =
     useParams();
-  const [selectedColumns, setSelectedColumns] = useState(null);
-
+  const firstToggleableIndex = Math.max(
+    (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0),
+    stickyLeftColumns
+  );
+  const numOfSelected =
+    table.getVisibleLeafColumns().length - firstToggleableIndex;
+  const numOfColumns = table.getAllLeafColumns().length - firstToggleableIndex;
+  const selectedColumnsStatus = `Col: ${numOfSelected}/${numOfColumns}`;
   const selectedItemsText = checkableRows
     ? `Row: ${numberOfCheckedItems}/${numberOfItems}`
     : `Items: ${numberOfItems}`;
@@ -118,7 +124,7 @@ const Panel = (props: PanelProps) => {
     <PanelContainer>
       <EdsProvider density={theme}>
         <Typography>{selectedItemsText}</Typography>
-        <Typography>{selectedColumns}</Typography>
+        <Typography>{selectedColumnsStatus}</Typography>
         <ColumnOptionsMenu
           checkableRows={checkableRows}
           table={table}
@@ -126,7 +132,8 @@ const Panel = (props: PanelProps) => {
           columns={columns}
           expandableRows={expandableRows}
           stickyLeftColumns={stickyLeftColumns}
-          setSelectedColumns={setSelectedColumns}
+          selectedColumnsStatus={selectedColumnsStatus}
+          firstToggleableIndex={firstToggleableIndex}
         />
         {showRefresh && (
           <StyledButton
