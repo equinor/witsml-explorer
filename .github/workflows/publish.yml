@@ -18,11 +18,11 @@ jobs:
     name: Package and publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-      - name: Setup .NET 7
-        uses: actions/setup-dotnet@a351d9ea84bc76ec7508debf02a39d88f8b6c0c0 # v2.1.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3 # v4.0.0
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
           source-url: https://nuget.pkg.github.com/equinor/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -32,6 +32,6 @@ jobs:
       - name: Test
         run: dotnet test ./Tests/Witsml.Tests/Witsml.Tests.csproj --configuration Release
       - name: Package
-        run: dotnet pack --configuration Release Src/Witsml -p:Version=2.8.${GITHUB_RUN_NUMBER}
+        run: dotnet pack --configuration Release Src/Witsml -p:Version=2.9.${GITHUB_RUN_NUMBER}
       - name: Publish
-        run: dotnet nuget push --api-key ${{secrets.NUGET_PUBLISH_KEY}} --source https://api.nuget.org/v3/index.json Src/Witsml/bin/Release/WitsmlClient.2.8.${GITHUB_RUN_NUMBER}.nupkg
+        run: dotnet nuget push --api-key ${{secrets.NUGET_PUBLISH_KEY}} --source https://api.nuget.org/v3/index.json Src/Witsml/bin/Release/WitsmlClient.2.9.${GITHUB_RUN_NUMBER}.nupkg
