@@ -21,18 +21,15 @@ namespace WitsmlExplorer.Api.Services
     // ReSharper disable once UnusedMember.Global
     public class WellService : WitsmlService, IWellService
     {
-        private readonly IWellboreService _wellboreService;
 
-        public WellService(IWitsmlClientProvider witsmlClientProvider, IWellboreService wellboreService) : base(witsmlClientProvider)
+        public WellService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider)
         {
-            _wellboreService = wellboreService;
         }
 
         public async Task<IList<Well>> GetWells()
         {
             IList<Well> wells = await GetWellsInformation();
             wells = await SetWellIsActive(wells);
-            wells = await SetWellIsEmpty(wells);
             return wells.OrderBy(well => well.Name).ToList();
         }
 
@@ -76,41 +73,6 @@ namespace WitsmlExplorer.Api.Services
             return well;
         }
 
-        private async Task<IList<Well>> SetWellIsEmpty(IList<Well> wells) // Sets the IsEmpty property of each well to true if the well does not have any wellbores.
-        {
-            var query = new WitsmlWellbores
-            {
-                Wellbores = new WitsmlWellbore
-                {
-                    Uid = "",
-                    UidWell = "",
-                }.AsItemInList()
-            };
-            WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            foreach (Well well in wells)
-            {
-                WitsmlWellbore wellbore = wellbores.Wellbores.FirstOrDefault(wellbore => wellbore.UidWell == well.Uid);
-                well.IsEmpty = wellbore == null;
-            };
-            return wells;
-        }
-
-        private async Task<Well> SetWellIsEmpty(Well well) // Sets the IsEmpty property of each well to true if the well does not have any wellbores.
-        {
-            var query = new WitsmlWellbores
-            {
-                Wellbores = new WitsmlWellbore
-                {
-                    Uid = "",
-                    UidWell = well.Uid,
-                }.AsItemInList()
-            };
-            WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            WitsmlWellbore wellbore = wellbores.Wellbores.FirstOrDefault(wellbore => wellbore.UidWell == well.Uid);
-            well.IsEmpty = wellbore == null;
-            return well;
-        }
-
         private async Task<IList<Well>> GetWellsInformation(string wellUid = null)
         {
             return await MeasurementHelper.MeasureExecutionTimeAsync(async (timeMeasurer) =>
@@ -151,7 +113,6 @@ namespace WitsmlExplorer.Api.Services
             }
 
             well = await SetWellIsActive(well);
-            well = await SetWellIsEmpty(well);
             return well;
         }
     }

@@ -1,12 +1,12 @@
 import {
   Autocomplete,
   Button,
-  Checkbox,
   TextField,
   Typography
 } from "@equinor/eds-core-react";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { validText } from "components/Modals/ModalParts";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { Server } from "models/server";
@@ -17,7 +17,6 @@ import AuthorizationService, {
   ConnectionInformation
 } from "services/authorizationService";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 
 export interface UserCredentialsModalProps {
   server: Server;
@@ -156,7 +155,7 @@ const UserCredentialsModal = (
               </Button>
             </Row>
           )}
-          <StyledCheckbox
+          <Checkbox
             label={`Keep me logged in to this server for 24 hours`}
             defaultChecked={keepLoggedIn}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -191,15 +190,6 @@ const Row = styled.div`
   justify-content: space-between;
   padding: 30px 0 20px 0;
   align-items: flex-end;
-`;
-
-const StyledCheckbox = styled(Checkbox)<{ colors: Colors }>`
-  span {
-    color: ${(props) => props.colors.text.staticIconsDefault};
-  }
-  span:hover {
-    background: ${(props) => props.colors.interactive.checkBoxHover};
-  }
 `;
 
 export default UserCredentialsModal;

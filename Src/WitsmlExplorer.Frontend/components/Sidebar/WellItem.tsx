@@ -95,7 +95,7 @@ export default function WellItem({ wellUid }: WellItemProps) {
         onIconClick={onIconClick}
         isLoading={isFetching}
       >
-        {filteredWellbores ? (
+        {filteredWellbores?.length > 0 ? (
           filteredWellbores.map((wellbore: Wellbore) => (
             <WellboreItem
               wellUid={wellbore.wellUid}
@@ -114,7 +114,7 @@ export default function WellItem({ wellUid }: WellItemProps) {
               nodeId={calculateWellboreNodeId(wellbore)}
             />
           ))
-        ) : well?.isEmpty ? null : (
+        ) : (
           <EmptyTreeItem />
         )}
       </TreeItem>

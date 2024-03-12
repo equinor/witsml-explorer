@@ -1,11 +1,11 @@
 ﻿import {
-  Checkbox,
   EdsProvider,
   Icon,
   TextField,
   Typography
 } from "@equinor/eds-core-react";
 import { Divider, Tooltip } from "@material-ui/core";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "contexts/filter";
@@ -88,7 +88,7 @@ const FilterPanel = (): React.ReactElement => {
         <Divider />
 
         <InnerContainer>
-          <StyledCheckbox
+          <Checkbox
             id="filter-isActive"
             value={"Hide inactive Wells / Wellbores"}
             color={"primary"}
@@ -99,7 +99,7 @@ const FilterPanel = (): React.ReactElement => {
             label={"Hide inactive Wells / Wellbores"}
             colors={colors}
           />
-          <StyledCheckbox
+          <Checkbox
             onChange={(event) =>
               updateSelectedFilter({ objectGrowing: event.target.checked })
             }
@@ -153,7 +153,7 @@ const FilterPanel = (): React.ReactElement => {
               colors={colors}
             />
           </NumberInputContainer>
-          <StyledCheckbox
+          <Checkbox
             id="curveThreshold-hideInactive"
             onChange={(event) =>
               setCurveThreshold({
@@ -192,7 +192,7 @@ const FilterPanel = (): React.ReactElement => {
           </ObjectTitleContainer>
           <ObjectListContainer>
             {Object.values(ObjectType).map((objectType) => (
-              <StyledCheckbox
+              <Checkbox
                 label={objectType}
                 checked={
                   selectedFilter.objectVisibilityStatus[objectType] ===
@@ -246,15 +246,6 @@ const ObjectTitleContainer = styled.div`
   padding-left: 0.8rem;
   display: flex;
   gap: 8px;
-`;
-
-const StyledCheckbox = styled(Checkbox)<{ colors: Colors }>`
-  span {
-    color: ${(props) => props.colors.infographic.primaryMossGreen};
-  }
-  span:hover {
-    background: ${(props) => props.colors.interactive.checkBoxHover};
-  }
 `;
 
 const StyledTextField = styled(TextField)<{ colors: Colors }>`
