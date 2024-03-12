@@ -30,6 +30,8 @@ export const ColumnOptionsMenu = (props: {
   viewId: string;
   columns: ContentTableColumn[];
   stickyLeftColumns: number;
+  selectedColumnsStatus: string;
+  firstToggleableIndex: number;
 }): React.ReactElement => {
   const {
     table,
@@ -37,12 +39,10 @@ export const ColumnOptionsMenu = (props: {
     expandableRows,
     viewId,
     columns,
-    stickyLeftColumns
+    stickyLeftColumns,
+    selectedColumnsStatus,
+    firstToggleableIndex
   } = props;
-  const firstToggleableIndex = Math.max(
-    (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0),
-    stickyLeftColumns
-  );
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -119,17 +119,18 @@ export const ColumnOptionsMenu = (props: {
 
   return (
     <>
-      <Button
+      <StyledButton
+        variant="ghost_icon"
         ref={setMenuAnchor}
         id="anchor-default"
         aria-haspopup="true"
         aria-expanded={isMenuOpen}
         aria-controls="menu-default"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
+        colors={colors}
       >
-        Columns {table.getVisibleLeafColumns().length - firstToggleableIndex}/
-        {table.getAllLeafColumns().length - firstToggleableIndex}
-      </Button>
+        <Icon name="filter" />
+      </StyledButton>
       <StyledMenu
         open={isMenuOpen}
         id="menu-default"
@@ -139,6 +140,9 @@ export const ColumnOptionsMenu = (props: {
         placement="left-end"
         colors={colors}
       >
+        <Typography style={{ paddingBottom: "16px" }}>
+          {selectedColumnsStatus}
+        </Typography>
         <div style={{ display: "flex" }}>
           <Checkbox
             checked={table.getIsAllColumnsVisible()}
@@ -236,6 +240,10 @@ export const ColumnOptionsMenu = (props: {
     </>
   );
 };
+
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+`;
 
 const OrderingRow = styled.div`
   display: grid;

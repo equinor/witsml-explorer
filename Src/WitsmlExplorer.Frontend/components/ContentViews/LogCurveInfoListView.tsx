@@ -1,5 +1,4 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import { CommonPanelContainer } from "components/StyledComponents/Container";
 import {
   ContentTable,
   ContentTableColumn,
@@ -12,12 +11,14 @@ import LogCurveInfoContextMenu, {
 } from "components/ContextMenus/LogCurveInfoContextMenu";
 import formatDateString from "components/DateFormatter";
 import ProgressSpinner from "components/ProgressSpinner";
+import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   timeFromMinutesToMilliseconds,
   useCurveThreshold
 } from "contexts/curveThresholdContext";
 import OperationContext from "contexts/operationContext";
+import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -53,7 +54,7 @@ export interface LogCurveInfoRow extends ContentTableRow {
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone, dateTimeFormat, theme }
   } = useContext(OperationContext);
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
@@ -270,8 +271,9 @@ export default function LogCurveInfoListView() {
       <Switch
         checked={hideEmptyMnemonics}
         onChange={() => setHideEmptyMnemonics(!hideEmptyMnemonics)}
+        size={theme === UserTheme.Compact ? "small" : "default"}
       />
-      <Typography>Hide Empty Curves</Typography>
+      ,<Typography>Hide Empty Curves</Typography>,
     </CommonPanelContainer>,
     <CommonPanelContainer key="showPriority">
       <Switch
@@ -280,6 +282,7 @@ export default function LogCurveInfoListView() {
         onChange={() =>
           setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
         }
+        size={theme === UserTheme.Compact ? "small" : "default"}
       />
       <Typography>Show Only Prioritized Curves</Typography>
     </CommonPanelContainer>

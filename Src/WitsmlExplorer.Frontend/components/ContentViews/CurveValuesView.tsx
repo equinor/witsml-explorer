@@ -1,5 +1,4 @@
-import { Radio, Switch, Typography } from "@equinor/eds-core-react";
-import { Button } from "@material-ui/core";
+import { Button, Radio, Switch, Typography } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   MILLIS_IN_SECOND,
@@ -63,6 +62,8 @@ import { truncateAbortHandler } from "services/apiClient";
 import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 import { formatIndexValue } from "tools/IndexHelpers";
 import {
   CommonPanelContainer,
@@ -86,16 +87,13 @@ enum DownloadOptions {
 
 export const CurveValuesView = (): React.ReactElement => {
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone, dateTimeFormat, colors, theme },
+    dispatchOperation
   } = useContext(OperationContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
-  const {
-    operationState: { colors },
-    dispatchOperation
-  } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid, logType } = useParams();
   const [columns, setColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
@@ -561,13 +559,15 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const panelElements = useMemo(
     () => [
-      <Button
+      <StyledButton
         key="downloadall"
+        variant="ghost_icon"
         disabled={isLoading}
         onClick={() => displayConfirmation(dispatchOperation)}
+        colors={colors}
       >
-        Download all as .csv
-      </Button>,
+        <Icon name="download" />
+      </StyledButton>,
       <Button
         key="showLogDataOnServer"
         disabled={isLoading || isFetching}
@@ -585,7 +585,9 @@ export const CurveValuesView = (): React.ReactElement => {
       isLoading,
       exportSelectedDataPoints,
       exportSelectedIndexRange,
-      selectedRows
+      selectedRows,
+      colors.mode,
+      theme
     ]
   );
 
@@ -744,6 +746,10 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
       return ContentType.Number;
   }
 };
+
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+`;
 
 const alignLayout: CSSProperties = {
   display: "flex",
