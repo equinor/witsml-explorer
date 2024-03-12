@@ -262,6 +262,7 @@ const TrajectoryPropertiesModal = (
                 id="itemState"
                 label="Select an item state"
                 options={itemStateTypes}
+                hideClearButton
                 initialSelectedOptions={[
                   editableTrajectory.commonData.itemState ?? ""
                 ]}
