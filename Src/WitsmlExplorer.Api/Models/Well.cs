@@ -15,6 +15,5 @@ namespace WitsmlExplorer.Api.Models
         public string StatusWell { get; init; }
         public string PurposeWell { get; init; }
         public bool? IsActive { get; set; }
-        public bool? IsEmpty { get; set; }
     }
 }

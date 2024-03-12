@@ -32,7 +32,8 @@ export const light: Colors = {
     staticPropertyKey: tokens.colors.text.static_icons__tertiary.hex,
     staticPropertyValue: tokens.colors.interactive.primary__resting.hex,
     staticTextFieldDefault: "#F7F7F7",
-    staticTextLabel: "#999999"
+    staticTextLabel: "#999999",
+    disabledText: tokens.colors.interactive.disabled__text.hex
   },
   ui: {
     backgroundDefault: tokens.colors.ui.background__default.hex,
@@ -70,7 +71,8 @@ export const dark: Colors = {
     staticPropertyKey: "#DEE5E7",
     staticPropertyValue: "#FFFFFF",
     staticTextFieldDefault: "transparent",
-    staticTextLabel: "#CCCCCC"
+    staticTextLabel: "#CCCCCC",
+    disabledText: tokens.colors.interactive.disabled__text.hex
   },
   ui: {
     backgroundDefault: "#132634",
@@ -110,6 +112,7 @@ export interface Colors {
     staticPropertyValue: string;
     staticTextFieldDefault: string;
     staticTextLabel: string;
+    disabledText: string;
   };
   ui: {
     backgroundDefault: string;
