@@ -10,7 +10,6 @@ export default interface Well {
   dateTimeLastChange?: string;
   itemState?: string;
   isActive?: boolean;
-  isEmpty?: boolean;
 }
 
 export function emptyWell(): Well {
