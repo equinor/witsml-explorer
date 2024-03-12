@@ -40,12 +40,9 @@ export const ColumnOptionsMenu = (props: {
     viewId,
     columns,
     stickyLeftColumns,
-    selectedColumnsStatus
+    selectedColumnsStatus,
+    firstToggleableIndex
   } = props;
-  const firstToggleableIndex = Math.max(
-    (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0),
-    stickyLeftColumns
-  );
   const {
     operationState: { colors }
   } = useContext(OperationContext);
