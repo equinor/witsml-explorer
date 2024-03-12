@@ -123,7 +123,7 @@ const LogObjectContextMenu = (
 
     if (
       logCurvesReference.serverUrl?.toLowerCase() ===
-      selectedServer.url.toLowerCase()
+      connectedServer.url.toLowerCase()
     ) {
       const copyJob: CopyComponentsJob = {
         source: logCurvesReference,
@@ -138,7 +138,7 @@ const LogObjectContextMenu = (
         targetReference: targetReference,
         startIndex: logCurvesReference.startIndex,
         endIndex: logCurvesReference.endIndex,
-        targetServer: selectedServer
+        targetServer: connectedServer
       };
       const action: DisplayModalAction = {
         type: OperationType.DisplayModal,
