@@ -79,11 +79,12 @@ const CopyMnemonicsModal = (
     const parentUid = targetReference.uid;
     const parentType = getParentType(ComponentType.Mnemonic);
 
-    const targetParent = await ObjectService.getObjectFromServer(
+    const targetParent = await ObjectService.getObject(
       targetReference.wellUid,
       targetReference.wellboreUid,
       parentUid,
       parentType,
+      undefined,
       targetServer
     );
 
