@@ -87,16 +87,13 @@ enum DownloadOptions {
 
 export const CurveValuesView = (): React.ReactElement => {
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone, dateTimeFormat, colors, theme },
+    dispatchOperation
   } = useContext(OperationContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
-  const {
-    operationState: { colors },
-    dispatchOperation
-  } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid, logType } = useParams();
   const [columns, setColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
@@ -588,7 +585,9 @@ export const CurveValuesView = (): React.ReactElement => {
       isLoading,
       exportSelectedDataPoints,
       exportSelectedIndexRange,
-      selectedRows
+      selectedRows,
+      colors.mode,
+      theme
     ]
   );
 
