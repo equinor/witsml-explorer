@@ -1,8 +1,7 @@
-import { EdsProvider, Typography } from "@equinor/eds-core-react";
+import { Button, EdsProvider, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
 import OperationContext from "contexts/operationContext";
 import {
   refreshObjectQuery,
@@ -49,7 +48,7 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const {
-    operationState: { theme, colors }
+    operationState: { theme }
   } = useContext(OperationContext);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -136,26 +135,24 @@ const Panel = (props: PanelProps) => {
           firstToggleableIndex={firstToggleableIndex}
         />
         {showRefresh && (
-          <StyledGhostButton
+          <Button
             aria-label="refresh"
-            colors={colors}
             variant="ghost_icon"
             key="refreshObjects"
             onClick={onClickRefresh}
           >
             <Icon name="refresh" />
-          </StyledGhostButton>
+          </Button>
         )}
         {downloadToCsvFileName != null && (
-          <StyledGhostButton
-            colors={colors}
+          <Button
             variant="ghost_icon"
             key="download"
             aria-label="download as csv"
             onClick={exportAsCsv}
           >
             <Icon name="download" />
-          </StyledGhostButton>
+          </Button>
         )}
         {panelElements}
       </EdsProvider>

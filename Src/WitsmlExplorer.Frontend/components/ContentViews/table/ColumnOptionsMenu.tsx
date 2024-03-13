@@ -10,7 +10,6 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table/tableParts";
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
 import OperationContext from "contexts/operationContext";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
 import { useContext, useState } from "react";
@@ -120,7 +119,7 @@ export const ColumnOptionsMenu = (props: {
 
   return (
     <>
-      <StyledGhostButton
+      <Button
         variant="ghost_icon"
         ref={setMenuAnchor}
         id="anchor-default"
@@ -128,10 +127,9 @@ export const ColumnOptionsMenu = (props: {
         aria-expanded={isMenuOpen}
         aria-controls="menu-default"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        colors={colors}
       >
         <Icon name="filter" />
-      </StyledGhostButton>
+      </Button>
       <StyledMenu
         open={isMenuOpen}
         id="menu-default"

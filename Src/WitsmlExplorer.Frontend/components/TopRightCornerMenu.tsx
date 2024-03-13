@@ -4,7 +4,7 @@ import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
 import ServerManagerButton from "components/ServerManagerButton";
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
+import { StyledButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -55,18 +55,18 @@ export default function TopRightCornerMenu() {
   return (
     <Layout>
       {isConnected && (
-        <StyledGhostButton
+        <StyledButton
           colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
           onClick={openCredentialsModal}
         >
           <Icon name="person" />
           {showLabels && connectedServer?.currentUsername}
-        </StyledGhostButton>
+        </StyledButton>
       )}
       <ServerManagerButton showLabels={showLabels} />
       <JobsButton showLabels={showLabels} />
-      <StyledGhostButton
+      <StyledButton
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openQueryView}
@@ -74,15 +74,15 @@ export default function TopRightCornerMenu() {
       >
         <Icon name="code" />
         {showLabels && "Query"}
-      </StyledGhostButton>
-      <StyledGhostButton
+      </StyledButton>
+      <StyledButton
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}
       >
         <Icon name="settings" />
         {showLabels && "Settings"}
-      </StyledGhostButton>
+      </StyledButton>
     </Layout>
   );
 }

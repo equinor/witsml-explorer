@@ -1,12 +1,12 @@
 import {
   Autocomplete,
+  Button,
   EdsProvider,
   Icon,
   Label,
   TextField,
   Typography
 } from "@equinor/eds-core-react";
-import { OutlinedIconButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
@@ -213,9 +213,8 @@ const EditSelectedLogCurveInfo = (
               dropdownHeight={600}
             />
           </StartEndIndex>
-          <OutlinedIconButton
+          <Button
             variant={"ghost_icon"}
-            color={"primary"}
             onClick={submitLogCurveInfo}
             disabled={
               disabled ||
@@ -225,8 +224,8 @@ const EditSelectedLogCurveInfo = (
               selectedMnemonics.length === 0
             }
           >
-            <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
-          </OutlinedIconButton>
+            <Icon name={isEdited ? "arrowForward" : "sync"} />
+          </Button>
         </Layout>
       </EdsProvider>
     )

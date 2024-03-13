@@ -13,7 +13,7 @@ import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
 import ProgressSpinner from "components/ProgressSpinner";
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
+import { StyledButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -102,7 +102,7 @@ const ServerManager = (): React.ReactElement => {
         >
           Manage Connections
         </Typography>
-        <StyledGhostButton
+        <StyledButton
           colors={colors}
           variant="outlined"
           value={NEW_SERVER_ID}
@@ -112,7 +112,7 @@ const ServerManager = (): React.ReactElement => {
         >
           <Icon name="cloudDownload" />
           New server
-        </StyledGhostButton>
+        </StyledButton>
       </Header>
       <Table style={{ width: "100%" }} className="serversList">
         <Table.Head>

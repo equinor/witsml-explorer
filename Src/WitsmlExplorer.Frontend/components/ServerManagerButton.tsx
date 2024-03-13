@@ -1,4 +1,4 @@
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
+import { StyledButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
@@ -24,7 +24,7 @@ const ServerManagerButton = (
 
   const isConnected = !!connectedServer;
   return (
-    <StyledGhostButton
+    <StyledButton
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
@@ -33,7 +33,7 @@ const ServerManagerButton = (
       <Icon name={isConnected ? "cloudDownload" : "cloudOff"} />
       {props.showLabels &&
         (isConnected ? "Server Connections" : "No Connection")}
-    </StyledGhostButton>
+    </StyledButton>
   );
 };
 

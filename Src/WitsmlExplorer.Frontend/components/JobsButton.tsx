@@ -1,4 +1,4 @@
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
+import { StyledButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
@@ -22,7 +22,7 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
   };
 
   return (
-    <StyledGhostButton
+    <StyledButton
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
@@ -30,7 +30,7 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
     >
       <Icon name="assignment" />
       {props.showLabels && "Jobs"}
-    </StyledGhostButton>
+    </StyledButton>
   );
 };
 

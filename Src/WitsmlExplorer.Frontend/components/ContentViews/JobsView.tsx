@@ -208,10 +208,9 @@ export const JobsView = (): React.ReactElement => {
       aria-label={shouldRefresh ? "loading data" : null}
       onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
       disabled={shouldRefresh}
-      colors={colors}
+      variant="ghost_icon"
     >
       <Icon name="refresh" />
-      Refresh
     </Button>,
     msalEnabled &&
     (getUserAppRoles().includes(adminRole) ||

@@ -24,7 +24,6 @@ import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
 import ProgressSpinner from "components/ProgressSpinner";
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
@@ -559,15 +558,14 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const panelElements = useMemo(
     () => [
-      <StyledGhostButton
+      <Button
         key="downloadall"
         variant="ghost_icon"
         disabled={isLoading}
         onClick={() => displayConfirmation(dispatchOperation)}
-        colors={colors}
       >
         <Icon name="download" />
-      </StyledGhostButton>,
+      </Button>,
       <Button
         key="showLogDataOnServer"
         disabled={isLoading || isFetching}

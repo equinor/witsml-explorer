@@ -1,6 +1,5 @@
-import { Icon, Label, TextField } from "@equinor/eds-core-react";
+import { Button, Icon, Label, TextField } from "@equinor/eds-core-react";
 import { Tooltip } from "@material-ui/core";
-import { OutlinedIconButton } from "components/StyledComponents/Buttons";
 import OperationContext from "contexts/operationContext";
 import { ChangeEvent, ReactElement, useContext, useState } from "react";
 import styled from "styled-components";
@@ -60,14 +59,13 @@ const EditNumber = (props: EditNumberProps): ReactElement => {
           ) : null
         }
       />
-      <OutlinedIconButton
+      <Button
         variant={"ghost_icon"}
-        color={"primary"}
         onClick={submitEditNumber}
         disabled={!isEdited}
       >
-        <Icon size={16} name={"arrowForward"} />
-      </OutlinedIconButton>
+        <Icon name={"arrowForward"} />
+      </Button>
     </EditNumberLayout>
   );
 };

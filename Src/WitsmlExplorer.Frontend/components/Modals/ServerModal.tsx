@@ -8,7 +8,7 @@ import ModalDialog, {
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
-import { StyledGhostButton } from "components/StyledComponents/Buttons";
+import { StyledButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import {
@@ -260,7 +260,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   size={32}
                 />
               )}
-              <StyledGhostButton
+              <StyledButton
                 disabled={displayUrlError || connectionVerified}
                 onClick={showCredentialsModal}
                 color={"primary"}
@@ -268,7 +268,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 variant="outlined"
               >
                 {"Test connection"}
-              </StyledGhostButton>
+              </StyledButton>
             </ButtonWrapper>
           </ContentWrapper>
         </>
