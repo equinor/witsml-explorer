@@ -95,7 +95,7 @@ export default class JobService {
   public static async cancelJob(
     jobId: string,
     abortSignal?: AbortSignal
-  ): Promise<JobInfo> {
+  ): Promise<Response> {
     const response = await ApiClient.get(
       `/api/jobs/cancel/${jobId}`,
       abortSignal
