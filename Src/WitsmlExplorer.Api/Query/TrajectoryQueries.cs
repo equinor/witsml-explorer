@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Query
                     ServiceCompany = "",
                     DTimTrajStart = "",
                     DTimTrajEnd = "",
-                    CommonData = new WitsmlCommonData() { DTimCreation = "", DTimLastChange = "", SourceName = "" }
+                    CommonData = new WitsmlCommonData() { DTimCreation = "", DTimLastChange = "", SourceName = "", ItemState = "" }
                 }.AsItemInList()
             };
         }
