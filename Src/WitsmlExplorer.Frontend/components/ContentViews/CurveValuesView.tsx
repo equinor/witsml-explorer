@@ -24,6 +24,7 @@ import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
 import ProgressSpinner from "components/ProgressSpinner";
+import { StyledGhostButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
@@ -62,7 +63,6 @@ import { truncateAbortHandler } from "services/apiClient";
 import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 import { formatIndexValue } from "tools/IndexHelpers";
 import {
@@ -559,7 +559,7 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const panelElements = useMemo(
     () => [
-      <StyledButton
+      <StyledGhostButton
         key="downloadall"
         variant="ghost_icon"
         disabled={isLoading}
@@ -567,7 +567,7 @@ export const CurveValuesView = (): React.ReactElement => {
         colors={colors}
       >
         <Icon name="download" />
-      </StyledButton>,
+      </StyledGhostButton>,
       <Button
         key="showLogDataOnServer"
         disabled={isLoading || isFetching}
@@ -746,10 +746,6 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
       return ContentType.Number;
   }
 };
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 const alignLayout: CSSProperties = {
   display: "flex",

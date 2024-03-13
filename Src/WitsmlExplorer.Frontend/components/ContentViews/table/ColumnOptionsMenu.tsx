@@ -10,6 +10,7 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table/tableParts";
+import { StyledGhostButton } from "components/StyledComponents/Buttons";
 import OperationContext from "contexts/operationContext";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
 import { useContext, useState } from "react";
@@ -119,7 +120,7 @@ export const ColumnOptionsMenu = (props: {
 
   return (
     <>
-      <StyledButton
+      <StyledGhostButton
         variant="ghost_icon"
         ref={setMenuAnchor}
         id="anchor-default"
@@ -130,7 +131,7 @@ export const ColumnOptionsMenu = (props: {
         colors={colors}
       >
         <Icon name="filter" />
-      </StyledButton>
+      </StyledGhostButton>
       <StyledMenu
         open={isMenuOpen}
         id="menu-default"
@@ -240,10 +241,6 @@ export const ColumnOptionsMenu = (props: {
     </>
   );
 };
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 const OrderingRow = styled.div`
   display: grid;

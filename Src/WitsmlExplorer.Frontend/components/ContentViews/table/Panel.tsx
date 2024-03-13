@@ -1,7 +1,8 @@
-import { Button, EdsProvider, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
+import { StyledGhostButton } from "components/StyledComponents/Buttons";
 import OperationContext from "contexts/operationContext";
 import {
   refreshObjectQuery,
@@ -14,7 +15,6 @@ import { ObjectType } from "models/objectType";
 import React, { useCallback, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 
@@ -136,7 +136,7 @@ const Panel = (props: PanelProps) => {
           firstToggleableIndex={firstToggleableIndex}
         />
         {showRefresh && (
-          <StyledButton
+          <StyledGhostButton
             aria-label="refresh"
             colors={colors}
             variant="ghost_icon"
@@ -144,10 +144,10 @@ const Panel = (props: PanelProps) => {
             onClick={onClickRefresh}
           >
             <Icon name="refresh" />
-          </StyledButton>
+          </StyledGhostButton>
         )}
         {downloadToCsvFileName != null && (
-          <StyledButton
+          <StyledGhostButton
             colors={colors}
             variant="ghost_icon"
             key="download"
@@ -155,17 +155,13 @@ const Panel = (props: PanelProps) => {
             onClick={exportAsCsv}
           >
             <Icon name="download" />
-          </StyledButton>
+          </StyledGhostButton>
         )}
         {panelElements}
       </EdsProvider>
     </PanelContainer>
   );
 };
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 const PanelContainer = styled.div`
   display: flex;

@@ -1,11 +1,9 @@
-import { Button } from "@equinor/eds-core-react";
+import { StyledGhostButton } from "components/StyledComponents/Buttons";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { getJobsViewPath } from "routes/utils/pathBuilder";
-import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
 export interface JobsButtonProps {
@@ -24,7 +22,7 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
   };
 
   return (
-    <StyledButton
+    <StyledGhostButton
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
@@ -32,13 +30,8 @@ const JobsButton = (props: JobsButtonProps): React.ReactElement => {
     >
       <Icon name="assignment" />
       {props.showLabels && "Jobs"}
-    </StyledButton>
+    </StyledGhostButton>
   );
 };
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 export default JobsButton;
