@@ -23,7 +23,7 @@ exports[`Should render when selected well is not set 1`] = `
           aria-controls="menu-default"
           aria-expanded="false"
           aria-haspopup="true"
-          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Buttons__StyledGhostButton-sc-yhw69w-0 bVpLuW"
+          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi"
           id="anchor-default"
           tabindex="0"
           type="button"
@@ -52,7 +52,7 @@ exports[`Should render when selected well is not set 1`] = `
         </button>
         <button
           aria-label="refresh"
-          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Buttons__StyledGhostButton-sc-yhw69w-0 bVpLuW"
+          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi"
           tabindex="0"
           type="button"
         >
@@ -80,7 +80,7 @@ exports[`Should render when selected well is not set 1`] = `
         </button>
         <button
           aria-label="download as csv"
-          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Buttons__StyledGhostButton-sc-yhw69w-0 bVpLuW"
+          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi"
           tabindex="0"
           type="button"
         >
