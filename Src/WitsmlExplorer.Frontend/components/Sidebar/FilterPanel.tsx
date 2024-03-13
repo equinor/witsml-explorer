@@ -50,43 +50,6 @@ const FilterPanel = (): React.ReactElement => {
   return (
     <EdsProvider density="compact">
       <Container colors={colors}>
-        <NumberInputContainer colors={colors}>
-          <span style={{ display: "flex", gap: "7px" }}>
-            <Typography
-              token={{
-                fontFamily: "EquinorMedium",
-                fontSize: "0.75rem",
-                color: colors.interactive.primaryResting
-              }}
-            >
-              Limit number of wells
-            </Typography>
-            <Typography
-              token={{
-                fontStyle: "italic",
-                fontFamily: "EquinorRegular",
-                fontSize: "0.75rem",
-                color: colors.text.staticIconsTertiary
-              }}
-            >
-              (0 for no limit)
-            </Typography>
-          </span>
-          <StyledTextField
-            id="filter-wellLimit"
-            type="number"
-            min={0}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              updateSelectedFilter({ wellLimit: Number(event.target.value) })
-            }
-            value={selectedFilter.wellLimit}
-            autoComplete={"off"}
-            colors={colors}
-          />
-        </NumberInputContainer>
-
-        <Divider />
-
         <InnerContainer>
           <Checkbox
             id="filter-isActive"

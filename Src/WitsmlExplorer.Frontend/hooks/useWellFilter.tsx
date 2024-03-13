@@ -16,10 +16,6 @@ function filterWellsOnIsActive(wells: Well[], filterOnIsActive: boolean) {
   return wells.filter((well: Well) => well.isActive);
 }
 
-function filterOnWellLimit(wells: Well[], wellLimit: number) {
-  return wellLimit && wellLimit > 0 ? wells.slice(0, wellLimit) : wells;
-}
-
 const filterWellsOnWellProperty = (
   wells: Well[],
   property: string,
@@ -61,7 +57,6 @@ export const filterWells = (wells: Well[], filter: Filter): Well[] => {
       );
     }
     filteredWells = filterWellsOnIsActive(filteredWells, filter.isActive);
-    filteredWells = filterOnWellLimit(filteredWells, filter.wellLimit);
   }
 
   return filteredWells;
@@ -77,8 +72,7 @@ export const useWellFilter = (wells: Well[]): Well[] => {
     selectedFilter.filterType,
     selectedFilter.isActive,
     selectedFilter.name,
-    selectedFilter.searchResults,
-    selectedFilter.wellLimit
+    selectedFilter.searchResults
   ]);
 
   return filteredWells;
