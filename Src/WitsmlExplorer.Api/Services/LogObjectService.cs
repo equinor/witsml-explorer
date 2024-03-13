@@ -220,8 +220,7 @@ namespace WitsmlExplorer.Api.Services
                     cancellationToken.ThrowIfCancellationRequested();
                 }
                 allLogData.Data.AddRange(logData.Data);
-                logData = await logDataReader.GetNextBatch();               
-
+                logData = await logDataReader.GetNextBatch();
             }
 
             var witsmlLog = new WitsmlLog();

@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Jobs
             Id = Guid.NewGuid().ToString();
             StartTime = DateTime.Now;
             Status = JobStatus.Started;
-            CancellationTokenSource= new CancellationTokenSource();
+            CancellationTokenSource = new CancellationTokenSource();
         }
 
         public string JobType { get; internal set; }

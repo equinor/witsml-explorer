@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log));
-            List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks =  copyLogDataJobs.Select(x => _copyLogDataWorker.Execute(x, cancellationToken)).ToList();
+            List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(x => _copyLogDataWorker.Execute(x, cancellationToken)).ToList();
 
             Task<(WorkerResult Result, RefreshAction)[]> copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);
             await copyLogDataResultTask;
