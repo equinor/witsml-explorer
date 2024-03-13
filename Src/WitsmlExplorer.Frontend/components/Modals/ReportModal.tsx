@@ -62,6 +62,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
             setIsCancelable(true);
           }
         }
+        return jobInfo;
       };
       fetchData();
     }
