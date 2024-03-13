@@ -47,26 +47,25 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
-  const [isCancelable, setIsCancelable] = useState<boolean>(false);
+  // const [isCancelable, setIsCancelable] = useState<boolean>(false);
 
   useEffect(() => {
     if (fetchedReport) setReport(fetchedReport);
   }, [fetchedReport]);
 
-  useEffect(() => {
-    if (jobId) {
-      const fetchData = async () => {
-        const jobInfo = await JobService.getUserJobInfo(jobId);
-        if (jobInfo !== null) {
-          if (jobInfo.cancelable === true) {
-            setIsCancelable(true);
-          }
-        }
-        return jobInfo;
-      };
-      fetchData();
-    }
-  }, []);
+  // useEffect(() => {
+  //  if (jobId) {
+  //    const fetchData = async () => {
+  //      const jobInfo = await JobService.getUserJobInfo(jobId);
+  //     if (jobInfo !== null) {
+  //       if (jobInfo.cancelable === true) {
+  //         setIsCancelable(true);
+  //      }
+  //    }
+  //   };
+  //    fetchData();
+  //  }
+  //}, []);
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
@@ -85,12 +84,27 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     dispatchOperation({ type: OperationType.HideModal });
   };
 
+  const CheckIfJobIsCancelable = () => {
+    const fetchData = async () => {
+      if (jobId) {
+        const jobInfo = await JobService.getUserJobInfo(jobId);
+        if (jobInfo !== null) {
+          if (jobInfo.cancelable === true) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+    return fetchData();
+  };
+
   return (
     <ModalDialog
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      showCancelButton={isCancelable && !fetchedReport}
+      showCancelButton={CheckIfJobIsCancelable && !fetchedReport}
       content={
         <ContentLayout>
           {report ? (
