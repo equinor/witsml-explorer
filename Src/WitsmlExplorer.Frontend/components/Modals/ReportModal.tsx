@@ -47,10 +47,25 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
+  const [isCancelable, setIsCancelable] = useState<boolean>(false);
 
   useEffect(() => {
     if (fetchedReport) setReport(fetchedReport);
   }, [fetchedReport]);
+
+  useEffect(() => {
+    if (jobId) {
+      const fetchData = async () => {
+        const jobInfo = await JobService.getUserJobInfo(jobId);
+        if (jobInfo !== null) {
+          if (jobInfo.cancelable === true) {
+            setIsCancelable(true);
+          }
+        }
+      };
+      fetchData();
+    }
+  }, []);
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
@@ -64,12 +79,17 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     [report]
   );
 
+  const onCancelButtonClick = () => {
+    JobService.cancelJob(jobId);
+    dispatchOperation({ type: OperationType.HideModal });
+  };
+
   return (
     <ModalDialog
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      showCancelButton={false}
+      showCancelButton={isCancelable && !fetchedReport}
       content={
         <ContentLayout>
           {report ? (
@@ -129,6 +149,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         </ContentLayout>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
+      onCancel={() => onCancelButtonClick()}
       isLoading={false}
     />
   );

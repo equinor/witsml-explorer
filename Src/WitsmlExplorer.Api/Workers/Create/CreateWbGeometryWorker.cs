@@ -25,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Create
 
         public CreateWbGeometryWorker(ILogger<CreateWbGeometryJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWbGeometryJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWbGeometryJob job, CancellationToken? cancellationToken = null)
         {
             WbGeometry wbGeometry = job.WbGeometry;
             Verify(wbGeometry);

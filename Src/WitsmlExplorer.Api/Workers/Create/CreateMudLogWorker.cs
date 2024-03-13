@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Workers.Create
 
         public CreateMudLogWorker(ILogger<CreateMudLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateMudLogJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateMudLogJob job, CancellationToken? cancellationToken = null)
         {
             MudLog mudLog = job.MudLog;
             Verify(mudLog);

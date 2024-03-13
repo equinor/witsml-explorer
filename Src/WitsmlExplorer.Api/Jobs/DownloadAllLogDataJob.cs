@@ -25,6 +25,17 @@ public record DownloadAllLogDataJob : Job
     public bool StartIndexIsInclusive { get; init; }
 
     /// <summary>
+    /// Indicates, if the job can be cancelled
+    /// </summary>
+    public override bool? IsCancelable
+    {
+        get
+        {
+            return true;
+        }
+    }
+
+    /// <summary>
     /// Gets a description of the log reference object.
     /// </summary>
     /// <returns>A string of job information provides WellUid, WellboreUid, logIndexType and LogUid.</returns>

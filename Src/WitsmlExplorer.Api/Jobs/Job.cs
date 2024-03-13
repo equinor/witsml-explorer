@@ -1,3 +1,5 @@
+using System;
+
 namespace WitsmlExplorer.Api.Jobs
 {
     public abstract record Job
@@ -8,6 +10,7 @@ namespace WitsmlExplorer.Api.Jobs
         public abstract string GetWellName();
         public abstract string GetWellboreName();
         public abstract string GetObjectName();
+        public virtual bool? IsCancelable { get; }
 
         public JobInfo JobInfo
         {
@@ -20,6 +23,7 @@ namespace WitsmlExplorer.Api.Jobs
                 _jobInfo.ObjectName = GetObjectName();
                 _jobInfo.WellboreName = GetWellboreName();
                 _jobInfo.WellName = GetWellName();
+                _jobInfo.Cancelable = IsCancelable;
             }
         }
 

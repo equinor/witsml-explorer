@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ namespace WitsmlExplorer.Api.Workers
         public JobType JobType => JobType.SpliceLogs;
 
         public SpliceLogsWorker(ILogger<SpliceLogsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
-        public override async Task<(WorkerResult, RefreshAction)> Execute(SpliceLogsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(SpliceLogsJob job, CancellationToken? cancellationToken = null)
         {
             string wellUid = job.Logs.WellUid;
             string wellboreUid = job.Logs.WellboreUid;

@@ -91,6 +91,21 @@ export default class JobService {
       return [];
     }
   }
+
+  public static async cancelJob(
+    jobId: string,
+    abortSignal?: AbortSignal
+  ): Promise<JobInfo> {
+    const response = await ApiClient.get(
+      `/api/jobs/cancel/${jobId}`,
+      abortSignal
+    );
+    if (response.ok) {
+      return response.json();
+    } else {
+      return null;
+    }
+  }
 }
 
 export enum JobType {

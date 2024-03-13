@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using WitsmlExplorer.Api.Jobs;
@@ -36,7 +37,7 @@ namespace WitsmlExplorer.Api.Services
             {
                 throw new ArgumentOutOfRangeException(nameof(jobType), jobType, $"No worker setup to execute {jobType}");
             }
-            (Task<(WorkerResult, RefreshAction)> task, Job job) = await worker.SetupWorker(jobStream);
+            (Task<(WorkerResult, RefreshAction)> task, Job job) = await worker.SetupWorker(jobStream, jobInfo.CancellationTokenSource.Token);
             job.JobInfo = jobInfo;
             _jobQueue.Enqueue(task);
             _jobCache.CacheJob(job.JobInfo);

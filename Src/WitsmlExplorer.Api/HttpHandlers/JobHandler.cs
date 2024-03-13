@@ -89,5 +89,15 @@ namespace WitsmlExplorer.Api.HttpHandlers
             }
             return TypedResults.Ok(jobCache.GetAllJobInfos());
         }
+
+        public static IResult CancelToken(string jobId, IJobCache jobCache)
+        {
+            var job = jobCache.GetAllJobInfos().Where(x => x.Id == jobId).FirstOrDefault();
+            if (job != null)
+            {
+                job.CancellationTokenSource.Cancel();
+            }
+            return TypedResults.Ok();
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public interface ICopyLogDataWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job);
+        Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job, CancellationToken? cancellationToken = null);
     }
 
     public class CopyLogDataWorker : BaseWorker<CopyLogDataJob>, IWorker, ICopyLogDataWorker
@@ -37,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             _witsmlServerRepository = witsmlServerRepository;
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyLogDataJob job, CancellationToken? cancellationToken = null)
         {
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
