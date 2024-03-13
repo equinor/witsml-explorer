@@ -69,7 +69,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     dispatchOperation({ type: OperationType.HideModal });
   };
 
-  const CheckIfJobIsCancelable = () => {
+  const checkIfJobIsCancelable = () => {
     const fetchData = async () => {
       if (jobId) {
         const jobInfo = await JobService.getUserJobInfo(jobId);
@@ -89,7 +89,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      showCancelButton={CheckIfJobIsCancelable && !fetchedReport}
+      showCancelButton={checkIfJobIsCancelable && !fetchedReport}
       content={
         <ContentLayout>
           {report ? (
