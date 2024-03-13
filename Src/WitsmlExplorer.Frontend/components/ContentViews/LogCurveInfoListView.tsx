@@ -273,7 +273,7 @@ export default function LogCurveInfoListView() {
         onChange={() => setHideEmptyMnemonics(!hideEmptyMnemonics)}
         size={theme === UserTheme.Compact ? "small" : "default"}
       />
-      ,<Typography>Hide Empty Curves</Typography>,
+      <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
     <CommonPanelContainer key="showPriority">
       <Switch
