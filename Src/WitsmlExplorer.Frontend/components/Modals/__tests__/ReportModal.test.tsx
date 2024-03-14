@@ -66,14 +66,15 @@ describe("Report Modal", () => {
   });
 
   describe("Report Modal with jobId", () => {
-    it("Should show a loading screen when provided with a jobId of an unfinished job", () => {
+    it("Should show a loading screen when provided with a jobId of an unfinished job", async () => {
       const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
         deferred<JobInfo>();
 
       jest
         .spyOn(JobService, "getUserJobInfo")
         .mockImplementation(() => jobInfoPromise);
-      act(async () => {
+
+      await act(async () => {
         resolveJobInfoPromise(JOB_INFO);
       });
 
