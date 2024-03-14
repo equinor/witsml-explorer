@@ -1,6 +1,6 @@
 import JobInfo from "models/jobs/jobInfo";
 import { Server } from "models/server";
-import { ApiClient } from "services/apiClient";
+import { ApiClient, throwError } from "services/apiClient";
 import AuthorizationService from "services/authorizationService";
 import NotificationService from "services/notificationService";
 
@@ -103,7 +103,7 @@ export default class JobService {
     if (response.ok) {
       return response.json();
     } else {
-      return null;
+      throwError(response.status, response.statusText);
     }
   }
 }

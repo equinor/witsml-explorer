@@ -37,8 +37,7 @@ const JobInfoContextMenu = (
 
   const onClickCancelAction = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const abortController = new AbortController();
-    JobService.cancelJob(jobInfo.id, abortController.signal);
+    JobService.cancelJob(jobInfo.id);
   };
 
   return (
@@ -59,7 +58,7 @@ const JobInfoContextMenu = (
         </MenuItem>,
         <MenuItem
           key={"cancelaction"}
-          disabled={jobInfo.cancelable === null || jobInfo.status !== "Started"}
+          disabled={jobInfo.isCancelable === false || jobInfo.status !== "Started"}
           onClick={onClickCancelAction}
         >
           <StyledIcon name="clear" color={colors.interactive.primaryResting} />

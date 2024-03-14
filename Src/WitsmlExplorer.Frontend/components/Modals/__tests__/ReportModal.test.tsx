@@ -17,6 +17,7 @@ import NotificationService from "services/notificationService";
 jest.mock("services/objectService");
 jest.mock("@microsoft/signalr");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
+jest.mock("services/jobService");
 
 describe("Report Modal", () => {
   //mock ResizeObserver to enable testing virtualized components

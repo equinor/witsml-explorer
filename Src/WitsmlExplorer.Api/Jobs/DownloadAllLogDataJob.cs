@@ -27,7 +27,7 @@ public record DownloadAllLogDataJob : Job
     /// <summary>
     /// Indicates, if the job can be cancelled
     /// </summary>
-    public override bool? IsCancelable
+    public override bool IsCancelable
     {
         get
         {

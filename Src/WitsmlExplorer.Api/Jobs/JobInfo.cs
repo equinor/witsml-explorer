@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public BaseReport Report { get; set; }
 
-        public bool? Cancelable { get; internal set; } = false;
+        public bool IsCancelable { get; internal set; } = false;
 
         [JsonIgnore]
         public CancellationTokenSource CancellationTokenSource { get; private set; }

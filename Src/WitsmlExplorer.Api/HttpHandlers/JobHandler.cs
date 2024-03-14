@@ -90,14 +90,15 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return TypedResults.Ok(jobCache.GetAllJobInfos());
         }
 
-        public static IResult CancelToken(string jobId, IJobCache jobCache)
+        public static IResult CancelJob(string jobId, IJobCache jobCache)
         {
             var job = jobCache.GetAllJobInfos().Where(x => x.Id == jobId).FirstOrDefault();
-            if (job != null)
+            if (job != null && job.IsCancelable)
             {
                 job.CancellationTokenSource.Cancel();
+                return TypedResults.Ok();
             }
-            return TypedResults.Ok();
+            return TypedResults.NotFound();
         }
     }
 }
