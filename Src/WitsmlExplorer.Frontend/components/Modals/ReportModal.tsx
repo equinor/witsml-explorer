@@ -76,20 +76,20 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         const jobInfo = await JobService.getUserJobInfo(jobId);
         if (jobInfo !== null) {
           if (jobInfo.isCancelable === true) {
-            setIsCancelable(true)
+            setIsCancelable(true);
           }
         }
       }
-    }
+    };
     fetchJobInfo();
-  }, [jobId])
+  }, [jobId]);
 
   return (
     <ModalDialog
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      showCancelButton = {!fetchedReport &&  isCancelable}
+      showCancelButton={!fetchedReport && isCancelable}
       content={
         <ContentLayout>
           {report ? (

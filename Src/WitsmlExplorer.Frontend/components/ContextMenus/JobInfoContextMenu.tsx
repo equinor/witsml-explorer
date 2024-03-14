@@ -58,7 +58,9 @@ const JobInfoContextMenu = (
         </MenuItem>,
         <MenuItem
           key={"cancelaction"}
-          disabled={jobInfo.isCancelable === false || jobInfo.status !== "Started"}
+          disabled={
+            jobInfo.isCancelable === false || jobInfo.status !== "Started"
+          }
           onClick={onClickCancelAction}
         >
           <StyledIcon name="clear" color={colors.interactive.primaryResting} />
