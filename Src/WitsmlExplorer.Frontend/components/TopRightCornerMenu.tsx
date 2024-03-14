@@ -2,7 +2,6 @@ import { SettingsModal } from "components/Modals/SettingsModal";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
-import ServerManagerButton from "components/ServerManagerButton";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
@@ -46,6 +45,10 @@ export default function TopRightCornerMenu() {
     });
   };
 
+  const openServerManagerView = () => {
+    navigate("/");
+  };
+
   const openJobsView = () => {
     navigate(getJobsViewPath(connectedServer?.url));
   };
@@ -67,7 +70,15 @@ export default function TopRightCornerMenu() {
           {showLabels && connectedServer?.currentUsername}
         </Button>
       )}
-      <ServerManagerButton showLabels={showLabels} />
+      <Button
+        colors={colors}
+        variant={showLabels ? "ghost" : "ghost_icon"}
+        onClick={openServerManagerView}
+        disabled={!isConnected}
+      >
+        <Icon name={isConnected ? "cloudDownload" : "cloudOff"} />
+        {showLabels && (isConnected ? "Server Connections" : "No Connection")}
+      </Button>
       <Button
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
