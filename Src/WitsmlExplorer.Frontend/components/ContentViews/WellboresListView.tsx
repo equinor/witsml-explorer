@@ -112,7 +112,9 @@ export default function WellboresListView() {
   };
 
   const onSelect = async (wellboreRow: any) => {
-    navigate(`${wellboreRow.wellbore.uid}/${OBJECT_GROUPS_PATH}`);
+    navigate(
+      `${encodeURIComponent(wellboreRow.wellbore.uid)}/${OBJECT_GROUPS_PATH}`
+    );
   };
 
   if (isFetching) {

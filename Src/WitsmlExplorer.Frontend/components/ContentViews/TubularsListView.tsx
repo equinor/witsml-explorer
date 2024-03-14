@@ -70,7 +70,7 @@ export default function TubularsListView() {
   ];
 
   const onSelect = (tubular: any) => {
-    navigate(tubular.uid);
+    navigate(encodeURIComponent(tubular.uid));
   };
 
   const tubularRows = tubulars.map((tubular) => {

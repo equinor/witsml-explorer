@@ -54,7 +54,7 @@ export default function WellsListView() {
   ];
 
   const onSelect = (well: any) => {
-    navigate(`${well.uid}/${WELLBORES_PATH}`);
+    navigate(`${encodeURIComponent(well.uid)}/${WELLBORES_PATH}`);
   };
 
   const onContextMenu = (
