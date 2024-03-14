@@ -1,4 +1,3 @@
-import JobsButton from "components/JobsButton";
 import { SettingsModal } from "components/Modals/SettingsModal";
 import UserCredentialsModal, {
   UserCredentialsModalProps
@@ -11,7 +10,7 @@ import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { getQueryViewPath } from "routes/utils/pathBuilder";
+import { getJobsViewPath, getQueryViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
@@ -47,6 +46,10 @@ export default function TopRightCornerMenu() {
     });
   };
 
+  const openJobsView = () => {
+    navigate(getJobsViewPath(connectedServer?.url));
+  };
+
   const openQueryView = () => {
     navigate(getQueryViewPath(connectedServer?.url));
   };
@@ -65,7 +68,15 @@ export default function TopRightCornerMenu() {
         </Button>
       )}
       <ServerManagerButton showLabels={showLabels} />
-      <JobsButton showLabels={showLabels} />
+      <Button
+        colors={colors}
+        variant={showLabels ? "ghost" : "ghost_icon"}
+        onClick={openJobsView}
+        disabled={!connectedServer}
+      >
+        <Icon name="assignment" />
+        {showLabels && "Jobs"}
+      </Button>
       <Button
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
