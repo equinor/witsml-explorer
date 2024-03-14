@@ -6,6 +6,8 @@ import UserCredentialsModal, {
 } from "components/Modals/UserCredentialsModal";
 import ServerManagerButton from "components/ServerManagerButton";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
+import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
@@ -26,6 +28,7 @@ export default function TopRightCornerMenu() {
   const showLabels = documentWidth > 1180;
   const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
+  const { dispatchLoggedInUsernames } = useLoggedInUsernames();
 
   const openSettingsMenu = () => {
     dispatchOperation({
@@ -40,6 +43,10 @@ export default function TopRightCornerMenu() {
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(connectedServer, username);
+        dispatchLoggedInUsernames({
+          type: LoggedInUsernamesActionType.AddLoggedInUsername,
+          payload: { serverId: connectedServer.id, username }
+        });
       }
     };
     dispatchOperation({
