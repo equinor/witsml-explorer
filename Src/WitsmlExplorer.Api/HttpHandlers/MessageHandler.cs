@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +15,12 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<MessageObject>))]
         public static async Task<IResult> GetMessages(string wellUid, string wellboreUid, IMessageObjectService messageService)
         {
-            return TypedResults.Ok(await messageService.GetMessageObjects(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid)));
+            return TypedResults.Ok(await messageService.GetMessageObjects(wellUid, wellboreUid));
         }
         [Produces(typeof(MessageObject))]
         public static async Task<IResult> GetMessage(string wellUid, string wellboreUid, string messageUid, IMessageObjectService messageService)
         {
-            return TypedResults.Ok(await messageService.GetMessageObject(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid), HttpUtility.UrlDecode(messageUid)));
+            return TypedResults.Ok(await messageService.GetMessageObject(wellUid, wellboreUid, messageUid));
         }
     }
 }

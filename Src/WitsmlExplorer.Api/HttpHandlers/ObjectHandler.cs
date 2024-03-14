@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,20 +27,20 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(ObjectOnWellbore[]))]
         public static async Task<IResult> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType, IObjectService objectService)
         {
-            return TypedResults.Ok(await objectService.GetObjectsIdOnly(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid), objectType));
+            return TypedResults.Ok(await objectService.GetObjectsIdOnly(wellUid, wellboreUid, objectType));
         }
 
         [Produces(typeof(ObjectOnWellbore))]
         public static async Task<IResult> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType, IObjectService objectService)
         {
-            IEnumerable<ObjectOnWellbore> result = await objectService.GetObjectIdOnly(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid), HttpUtility.UrlDecode(objectUid), objectType);
+            IEnumerable<ObjectOnWellbore> result = await objectService.GetObjectIdOnly(wellUid, wellboreUid, objectUid, objectType);
             return TypedResults.Ok(result?.FirstOrDefault());
         }
 
         [Produces(typeof(Dictionary<EntityType, int>))]
         public static async Task<IResult> GetExpandableObjectsCount(string wellUid, string wellboreUid, IObjectService objectService)
         {
-            Dictionary<EntityType, int> result = await objectService.GetExpandableObjectsCount(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid));
+            Dictionary<EntityType, int> result = await objectService.GetExpandableObjectsCount(wellUid, wellboreUid);
             return TypedResults.Ok(result);
         }
     }

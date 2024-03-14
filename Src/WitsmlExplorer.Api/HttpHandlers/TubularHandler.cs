@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +14,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Tubular>))]
         public static async Task<IResult> GetTubulars(string wellUid, string wellboreUid, ITubularService tubularService)
         {
-            return TypedResults.Ok(await tubularService.GetTubulars(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid)));
+            return TypedResults.Ok(await tubularService.GetTubulars(wellUid, wellboreUid));
         }
         [Produces(typeof(IEnumerable<Tubular>))]
         public static async Task<IResult> GetTubular(string wellUid, string wellboreUid, string tubularUid, ITubularService tubularService)
         {
-            return TypedResults.Ok(await tubularService.GetTubular(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid), HttpUtility.UrlDecode(tubularUid)));
+            return TypedResults.Ok(await tubularService.GetTubular(wellUid, wellboreUid, tubularUid));
         }
         [Produces(typeof(IEnumerable<TubularComponent>))]
         public static async Task<IResult> GetTubularComponents(string wellUid, string wellboreUid, string tubularUid, ITubularService tubularService)
         {
-            return TypedResults.Ok(await tubularService.GetTubularComponents(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid), HttpUtility.UrlDecode(tubularUid)));
+            return TypedResults.Ok(await tubularService.GetTubularComponents(wellUid, wellboreUid, tubularUid));
         }
     }
 }
