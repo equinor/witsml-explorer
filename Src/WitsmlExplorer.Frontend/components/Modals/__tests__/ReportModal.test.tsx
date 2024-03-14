@@ -65,18 +65,22 @@ describe("Report Modal", () => {
     });
   });
 
-  describe("Report Modal with jobId", () => {
+  describe("Report Modal with jobId", async () => {
+    const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
+      deferred<JobInfo>();
+
+    jest
+      .spyOn(JobService, "getUserJobInfo")
+      .mockImplementation(() => jobInfoPromise);
+
+    await act(async () => {
+      resolveJobInfoPromise(JOB_INFO);
+    });
+
     it("Should show a loading screen when provided with a jobId of an unfinished job", async () => {
-      const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
-        deferred<JobInfo>();
-
-      jest
-        .spyOn(JobService, "getUserJobInfo")
-        .mockImplementation(() => jobInfoPromise);
-
-      await act(async () => {
-        resolveJobInfoPromise(JOB_INFO);
-      });
+      //   await act(async () => {
+      //     resolveJobInfoPromise(JOB_INFO);
+      //   });
 
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
@@ -104,7 +108,7 @@ describe("Report Modal", () => {
 
       // Resolve and return from the mocked getUserJobInfo
       //   await act(async () => {
-      //     resolveJobInfoPromise(JOB_INFO);
+      //      resolveJobInfoPromise(JOB_INFO);
       //   });
 
       expect(screen.queryByText(/loading report/i)).not.toBeInTheDocument();
