@@ -14,10 +14,10 @@ import { createReport } from "models/reports/BaseReport";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 
+jest.mock("services/jobService");
 jest.mock("services/objectService");
 jest.mock("@microsoft/signalr");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
-jest.mock("services/jobService");
 
 describe("Report Modal", () => {
   //mock ResizeObserver to enable testing virtualized components
@@ -67,6 +67,16 @@ describe("Report Modal", () => {
 
   describe("Report Modal with jobId", () => {
     it("Should show a loading screen when provided with a jobId of an unfinished job", () => {
+      const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
+        deferred<JobInfo>();
+
+      jest
+        .spyOn(JobService, "getUserJobInfo")
+        .mockImplementation(() => jobInfoPromise);
+      act(async () => {
+        resolveJobInfoPromise(JOB_INFO);
+      });
+
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
       expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -123,5 +133,8 @@ const REPORT_ITEMS = [
 
 const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
-const JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
+const JOB_INFO = getJobInfo({
+  report: REPORT,
+  id: "testJobId"
+});
 const NOTIFICATION = getNotification({ jobId: "testJobId" });
