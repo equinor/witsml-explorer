@@ -24,7 +24,7 @@ export default class WellService {
     server: Server = undefined
   ): Promise<Well> {
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}`,
+      `/api/wells/${encodeURIComponent(wellUid)}`,
       abortSignal,
       server
     );

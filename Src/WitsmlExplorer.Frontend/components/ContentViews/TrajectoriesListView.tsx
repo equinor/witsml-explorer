@@ -102,7 +102,7 @@ export default function TrajectoriesListView() {
   ];
 
   const onSelect = (trajectory: any) => {
-    navigate(trajectory.uid);
+    navigate(encodeURIComponent(trajectory.uid));
   };
 
   const trajectoryRows = trajectories.map((trajectory) => {

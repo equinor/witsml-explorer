@@ -144,7 +144,7 @@ export default function LogsListView() {
   ];
 
   const onSelect = (log: LogObjectRow) => {
-    navigate(log.uid);
+    navigate(encodeURIComponent(log.uid));
   };
 
   if (isFetching) {
