@@ -215,7 +215,6 @@ const EditSelectedLogCurveInfo = (
           </StartEndIndex>
           <Button
             variant={"ghost"}
-            colors={colors}
             onClick={submitLogCurveInfo}
             disabled={
               disabled ||

@@ -15,10 +15,7 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 
 export default function TopRightCornerMenu() {
-  const {
-    operationState: { colors },
-    dispatchOperation
-  } = useContext(OperationContext);
+  const { dispatchOperation } = useContext(OperationContext);
   const { width: documentWidth } = useDocumentDimensions();
   const showLabels = documentWidth > 1180;
   const { connectedServer } = useConnectedServer();
@@ -62,7 +59,6 @@ export default function TopRightCornerMenu() {
     <Layout>
       {isConnected && (
         <Button
-          colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
           onClick={openCredentialsModal}
         >
@@ -71,7 +67,6 @@ export default function TopRightCornerMenu() {
         </Button>
       )}
       <Button
-        colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openServerManagerView}
         disabled={!isConnected}
@@ -80,7 +75,6 @@ export default function TopRightCornerMenu() {
         {showLabels && (isConnected ? "Server Connections" : "No Connection")}
       </Button>
       <Button
-        colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openJobsView}
         disabled={!connectedServer}
@@ -89,7 +83,6 @@ export default function TopRightCornerMenu() {
         {showLabels && "Jobs"}
       </Button>
       <Button
-        colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openQueryView}
         disabled={!isConnected}
@@ -98,7 +91,6 @@ export default function TopRightCornerMenu() {
         {showLabels && "Query"}
       </Button>
       <Button
-        colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}
       >

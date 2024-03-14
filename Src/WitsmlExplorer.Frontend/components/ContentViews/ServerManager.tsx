@@ -1,10 +1,5 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import {
-  ButtonProps,
-  Button as EdsButton,
-  Table,
-  Typography
-} from "@equinor/eds-core-react";
+import { ButtonProps, Table, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import ServerModal, {
   showDeleteServerModal
@@ -103,7 +98,6 @@ const ServerManager = (): React.ReactElement => {
           Manage Connections
         </Typography>
         <Button
-          colors={colors}
           variant="outlined"
           value={NEW_SERVER_ID}
           key={NEW_SERVER_ID}
@@ -168,12 +162,12 @@ const ServerManager = (): React.ReactElement => {
                   />
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
-                  <EdsButton variant="ghost" onClick={() => onEditItem(server)}>
+                  <Button variant="ghost" onClick={() => onEditItem(server)}>
                     <Icon name="edit" size={24} />
-                  </EdsButton>
+                  </Button>
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
-                  <EdsButton
+                  <Button
                     disabled={editDisabled}
                     variant="ghost"
                     onClick={() =>
@@ -187,7 +181,7 @@ const ServerManager = (): React.ReactElement => {
                     }
                   >
                     <Icon name="deleteToTrash" size={24} />
-                  </EdsButton>
+                  </Button>
                 </Table.Cell>
               </Table.Row>
             ))}

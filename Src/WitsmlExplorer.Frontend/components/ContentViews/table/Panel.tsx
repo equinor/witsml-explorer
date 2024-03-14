@@ -49,7 +49,7 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const {
-    operationState: { theme, colors }
+    operationState: { theme }
   } = useContext(OperationContext);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -138,7 +138,6 @@ const Panel = (props: PanelProps) => {
         {showRefresh && (
           <Button
             aria-label="refresh"
-            colors={colors}
             variant="ghost_icon"
             key="refreshObjects"
             onClick={onClickRefresh}
@@ -148,7 +147,6 @@ const Panel = (props: PanelProps) => {
         )}
         {downloadToCsvFileName != null && (
           <Button
-            colors={colors}
             variant="ghost_icon"
             key="download"
             aria-label="download as csv"

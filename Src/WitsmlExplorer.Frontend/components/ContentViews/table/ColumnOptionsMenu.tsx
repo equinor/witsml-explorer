@@ -1,9 +1,4 @@
-import {
-  Button as EdsButton,
-  Icon,
-  Menu,
-  Typography
-} from "@equinor/eds-core-react";
+import { Icon, Menu, Typography } from "@equinor/eds-core-react";
 import { Checkbox, useTheme } from "@material-ui/core";
 import { Table } from "@tanstack/react-table";
 import {
@@ -133,7 +128,6 @@ export const ColumnOptionsMenu = (props: {
         aria-expanded={isMenuOpen}
         aria-controls="menu-default"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        colors={colors}
       >
         <Icon name="filter" />
       </Button>
@@ -184,20 +178,28 @@ export const ColumnOptionsMenu = (props: {
                     checked={column.getIsVisible()}
                     onChange={column.getToggleVisibilityHandler()}
                   />
-                  <OrderingButton
+                  <Button
+                    style={{
+                      width: "25px",
+                      height: "25px"
+                    }}
                     variant={"ghost_icon"}
                     onClick={() => onMoveUp(column.id)}
                     disabled={index == firstToggleableIndex}
                   >
                     <Icon name="chevronUp" />
-                  </OrderingButton>
-                  <OrderingButton
+                  </Button>
+                  <Button
+                    style={{
+                      width: "25px",
+                      height: "25px"
+                    }}
                     variant={"ghost_icon"}
                     onClick={() => onMoveDown(column.id)}
                     disabled={index == table.getAllLeafColumns().length - 1}
                   >
                     <Icon name="chevronDown" />
-                  </OrderingButton>
+                  </Button>
                   <Draggable
                     onDragStart={() => setDraggedId(column.id)}
                     onDragEnter={() => setDraggedOverId(column.id)}
@@ -227,7 +229,8 @@ export const ColumnOptionsMenu = (props: {
           </DummyDrop>
         </div>
         <ResetContainer>
-          <ResetButton
+          <Button
+            style={{ width: "125px" }}
             onClick={() => {
               table.setColumnOrder([
                 ...(checkableRows ? [selectId] : []),
@@ -239,8 +242,10 @@ export const ColumnOptionsMenu = (props: {
             }}
           >
             Reset ordering
-          </ResetButton>
-          <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
+          </Button>
+          <Button style={{ width: "125px" }} onClick={resizeColumns}>
+            Reset sizing
+          </Button>
         </ResetContainer>
       </StyledMenu>
     </>
@@ -251,11 +256,6 @@ const OrderingRow = styled.div`
   display: grid;
   grid-template-columns: 20px 25px 25px 1fr;
   align-items: center;
-`;
-
-const OrderingButton = styled(EdsButton)`
-  width: 25px;
-  height: 25px;
 `;
 
 const OrderingLabel = styled(Typography)`
@@ -269,10 +269,6 @@ const OrderingLabel = styled(Typography)`
 const ResetContainer = styled.div`
   display: flex;
   gap: 0.25rem;
-`;
-
-const ResetButton = styled(EdsButton)`
-  width: 125px;
 `;
 
 const StyledMenu = styled(Menu)<{ colors: Colors }>`

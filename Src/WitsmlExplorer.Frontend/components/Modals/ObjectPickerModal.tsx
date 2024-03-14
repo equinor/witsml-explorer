@@ -1,10 +1,11 @@
-import { Autocomplete, Button, TextField } from "@equinor/eds-core-react";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import ModalDialog, {
   ModalContentLayout,
   ModalWidth
 } from "components/Modals/ModalDialog";
 import { Banner } from "components/StyledComponents/Banner";
+import { Button } from "components/StyledComponents/Button";
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";

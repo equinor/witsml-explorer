@@ -1,9 +1,4 @@
-import {
-  Button as EdsButton,
-  Radio,
-  Switch,
-  Typography
-} from "@equinor/eds-core-react";
+import { Radio, Switch, Typography } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   MILLIS_IN_SECOND,
@@ -569,11 +564,10 @@ export const CurveValuesView = (): React.ReactElement => {
         variant="ghost_icon"
         disabled={isLoading}
         onClick={() => displayConfirmation(dispatchOperation)}
-        colors={colors}
       >
         <Icon name="download" />
       </Button>,
-      <EdsButton
+      <Button
         key="showLogDataOnServer"
         disabled={isLoading || isFetching}
         onClick={() =>
@@ -584,7 +578,7 @@ export const CurveValuesView = (): React.ReactElement => {
         }
       >
         Show on server
-      </EdsButton>
+      </Button>
     ],
     [
       isLoading,

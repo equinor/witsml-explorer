@@ -60,12 +60,7 @@ const EditNumber = (props: EditNumberProps): ReactElement => {
           ) : null
         }
       />
-      <Button
-        variant={"ghost"}
-        colors={colors}
-        onClick={submitEditNumber}
-        disabled={!isEdited}
-      >
+      <Button variant={"ghost"} onClick={submitEditNumber} disabled={!isEdited}>
         <Icon name={"arrowForward"} />
       </Button>
     </EditNumberLayout>

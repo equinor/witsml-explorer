@@ -1,4 +1,4 @@
-import { Button, Icon, Switch, Typography } from "@equinor/eds-core-react";
+import { Icon, Switch, Typography } from "@equinor/eds-core-react";
 import {
   ContentTable,
   ContentTableColumn,
@@ -10,6 +10,7 @@ import JobInfoContextMenu, {
 } from "components/ContextMenus/JobInfoContextMenu";
 import formatDateString from "components/DateFormatter";
 import { ReportModal } from "components/Modals/ReportModal";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -208,7 +209,6 @@ export const JobsView = (): React.ReactElement => {
       aria-label={shouldRefresh ? "loading data" : null}
       onClick={shouldRefresh ? undefined : () => setShouldRefresh(true)}
       disabled={shouldRefresh}
-      colors={colors}
     >
       <Icon name="refresh" />
       Refresh

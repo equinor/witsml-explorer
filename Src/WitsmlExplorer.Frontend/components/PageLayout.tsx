@@ -116,7 +116,6 @@ const PageLayout = (): ReactElement => {
       </ContentViewLayout>
       <PropertyBar colors={colors}>
         <Button
-          colors={colors}
           variant={"ghost_icon"}
           style={{ marginRight: "0.5rem" }}
           onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
