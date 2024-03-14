@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -18,7 +19,14 @@ public class UrlDecodeMiddleware
         {
             if (context.Request.RouteValues.TryGetValue(key, out var value) && value is string stringValue)
             {
-                context.Request.RouteValues[key] = HttpUtility.UrlDecode(stringValue);
+                try
+                {
+                    context.Request.RouteValues[key] = HttpUtility.UrlDecode(stringValue);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Was not able to decode route value: {stringValue}: {e.Message}");
+                }
             }
         }
 
