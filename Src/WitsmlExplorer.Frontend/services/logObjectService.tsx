@@ -23,9 +23,11 @@ export default class LogObjectService {
     ];
     if (startIndex) params.push(`startIndex=${encodeURIComponent(startIndex)}`);
     if (endIndex) params.push(`endIndex=${encodeURIComponent(endIndex)}`);
-    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join(
-      "&"
-    )}`;
+    const pathName = `/api/wells/${encodeURIComponent(
+      wellUid
+    )}/wellbores/${encodeURIComponent(wellboreUid)}/logs/${encodeURIComponent(
+      logUid
+    )}/logdata?${params.join("&")}`;
     const response = await ApiClient.post(
       pathName,
       JSON.stringify(mnemonics),

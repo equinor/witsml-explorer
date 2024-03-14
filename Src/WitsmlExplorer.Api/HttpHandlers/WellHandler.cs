@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(Well))]
         public static async Task<IResult> GetWell(string wellUid, IWellService wellService)
         {
-            return TypedResults.Ok(await wellService.GetWell(wellUid));
+            return TypedResults.Ok(await wellService.GetWell(HttpUtility.UrlDecode(wellUid)));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,19 +15,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<WbGeometry>))]
         public static async Task<IResult> GetWbGeometries(string wellUid, string wellboreUid, IWbGeometryService wbGeometryService)
         {
-            return TypedResults.Ok(await wbGeometryService.GetWbGeometrys(wellUid, wellboreUid));
+            return TypedResults.Ok(await wbGeometryService.GetWbGeometrys(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid)));
         }
 
         [Produces(typeof(IEnumerable<WbGeometrySection>))]
         public static async Task<IResult> GetWbGeometry(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
         {
-            return TypedResults.Ok(await wbGeometryService.GetWbGeometry(wellUid, wellboreUid, wbGeometryUid));
+            return TypedResults.Ok(await wbGeometryService.GetWbGeometry(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid), HttpUtility.UrlDecode(wbGeometryUid)));
         }
 
         [Produces(typeof(IEnumerable<WbGeometrySection>))]
         public static async Task<IResult> GetWbGeometrySections(string wellUid, string wellboreUid, string wbGeometryUid, IWbGeometryService wbGeometryService)
         {
-            return TypedResults.Ok(await wbGeometryService.GetWbGeometrySections(wellUid, wellboreUid, wbGeometryUid));
+            return TypedResults.Ok(await wbGeometryService.GetWbGeometrySections(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid), HttpUtility.UrlDecode(wbGeometryUid)));
         }
     }
 }

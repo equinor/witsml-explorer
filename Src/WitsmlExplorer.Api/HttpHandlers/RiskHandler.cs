@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Risk>))]
         public static async Task<IResult> GetRisks(string wellUid, string wellboreUid, IRiskService riskService)
         {
-            return TypedResults.Ok(await riskService.GetRisks(wellUid, wellboreUid));
+            return TypedResults.Ok(await riskService.GetRisks(HttpUtility.UrlDecode(wellUid), HttpUtility.UrlDecode(wellboreUid)));
         }
     }
 }
