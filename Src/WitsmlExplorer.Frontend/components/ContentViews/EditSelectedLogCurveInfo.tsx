@@ -1,12 +1,12 @@
 import {
   Autocomplete,
-  Button,
   EdsProvider,
   Icon,
   Label,
   TextField,
   Typography
 } from "@equinor/eds-core-react";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { isValid, parse } from "date-fns";
@@ -31,7 +31,7 @@ import {
 import { RouterLogType } from "routes/routerConstants";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
-import { Colors, colors, dark } from "styles/Colors";
+import { Colors, dark } from "styles/Colors";
 import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
 
 interface EditSelectedLogCurveInfoProps {
@@ -213,9 +213,9 @@ const EditSelectedLogCurveInfo = (
               dropdownHeight={600}
             />
           </StartEndIndex>
-          <StyledButton
+          <Button
             variant={"ghost"}
-            color={"primary"}
+            colors={colors}
             onClick={submitLogCurveInfo}
             disabled={
               disabled ||
@@ -225,8 +225,8 @@ const EditSelectedLogCurveInfo = (
               selectedMnemonics.length === 0
             }
           >
-            <Icon size={16} name={isEdited ? "arrowForward" : "sync"} />
-          </StyledButton>
+            <Icon name={isEdited ? "arrowForward" : "sync"} />
+          </Button>
         </Layout>
       </EdsProvider>
     )
@@ -272,32 +272,4 @@ const StyledTextField = styled(TextField)`
   min-width: 220px;
 `;
 
-export const StyledButton = styled(Button)`
-  ${(props) =>
-    props.disabled
-      ? `
-      &:hover{
-        border:2px solid ${colors.interactive.disabledBorder};
-        border-radius: 50%;
-      }
-      &&{
-        border:2px solid ${colors.interactive.disabledBorder};
-      }`
-      : `
-      &:hover{
-        border-radius: 50%;
-      }
-      &&{
-        border:2px solid ${colors.interactive.primaryResting};
-      }`}
-  display:flex;
-  height: 2rem;
-  width: 2rem;
-  min-height: 2rem;
-  min-width: 2rem;
-  padding: 0;
-  border-radius: 50%;
-  align-items: center;
-  justify-content: center;
-`;
 export default EditSelectedLogCurveInfo;

@@ -1,7 +1,7 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import {
-  Button,
   ButtonProps,
+  Button as EdsButton,
   Table,
   Typography
 } from "@equinor/eds-core-react";
@@ -13,6 +13,7 @@ import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
 import ProgressSpinner from "components/ProgressSpinner";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -101,7 +102,7 @@ const ServerManager = (): React.ReactElement => {
         >
           Manage Connections
         </Typography>
-        <StyledButton
+        <Button
           colors={colors}
           variant="outlined"
           value={NEW_SERVER_ID}
@@ -111,7 +112,7 @@ const ServerManager = (): React.ReactElement => {
         >
           <Icon name="cloudDownload" />
           New server
-        </StyledButton>
+        </Button>
       </Header>
       <Table style={{ width: "100%" }} className="serversList">
         <Table.Head>
@@ -167,12 +168,12 @@ const ServerManager = (): React.ReactElement => {
                   />
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
-                  <Button variant="ghost" onClick={() => onEditItem(server)}>
+                  <EdsButton variant="ghost" onClick={() => onEditItem(server)}>
                     <Icon name="edit" size={24} />
-                  </Button>
+                  </EdsButton>
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
-                  <Button
+                  <EdsButton
                     disabled={editDisabled}
                     variant="ghost"
                     onClick={() =>
@@ -186,7 +187,7 @@ const ServerManager = (): React.ReactElement => {
                     }
                   >
                     <Icon name="deleteToTrash" size={24} />
-                  </Button>
+                  </EdsButton>
                 </Table.Cell>
               </Table.Row>
             ))}
@@ -270,11 +271,6 @@ const StyledLink = styled.a`
   &&:hover {
     text-decoration: none;
   }
-`;
-
-const StyledButton = styled(Button)<{ colors?: Colors }>`
-  white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
 export default ServerManager;

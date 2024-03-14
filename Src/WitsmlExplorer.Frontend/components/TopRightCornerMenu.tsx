@@ -1,10 +1,10 @@
-import { Button } from "@equinor/eds-core-react";
 import JobsButton from "components/JobsButton";
 import { SettingsModal } from "components/Modals/SettingsModal";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
 import ServerManagerButton from "components/ServerManagerButton";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -14,7 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { getQueryViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
 export default function TopRightCornerMenu() {
@@ -56,18 +55,18 @@ export default function TopRightCornerMenu() {
   return (
     <Layout>
       {isConnected && (
-        <StyledButton
+        <Button
           colors={colors}
           variant={showLabels ? "ghost" : "ghost_icon"}
           onClick={openCredentialsModal}
         >
           <Icon name="person" />
           {showLabels && connectedServer?.currentUsername}
-        </StyledButton>
+        </Button>
       )}
       <ServerManagerButton showLabels={showLabels} />
       <JobsButton showLabels={showLabels} />
-      <StyledButton
+      <Button
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openQueryView}
@@ -75,15 +74,15 @@ export default function TopRightCornerMenu() {
       >
         <Icon name="code" />
         {showLabels && "Query"}
-      </StyledButton>
-      <StyledButton
+      </Button>
+      <Button
         colors={colors}
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}
       >
         <Icon name="settings" />
         {showLabels && "Settings"}
-      </StyledButton>
+      </Button>
     </Layout>
   );
 }
@@ -94,9 +93,4 @@ const Layout = styled.div`
   justify-content: flex-end;
   padding-right: 1rem;
   width: auto;
-`;
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-  white-space: nowrap;
 `;

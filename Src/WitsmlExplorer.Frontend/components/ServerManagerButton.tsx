@@ -1,10 +1,8 @@
-import { Button } from "@equinor/eds-core-react";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
 export interface ServerManagerButtonProps {
@@ -26,7 +24,7 @@ const ServerManagerButton = (
 
   const isConnected = !!connectedServer;
   return (
-    <StyledButton
+    <Button
       colors={colors}
       variant={props.showLabels ? "ghost" : "ghost_icon"}
       onClick={onClick}
@@ -35,13 +33,8 @@ const ServerManagerButton = (
       <Icon name={isConnected ? "cloudDownload" : "cloudOff"} />
       {props.showLabels &&
         (isConnected ? "Server Connections" : "No Connection")}
-    </StyledButton>
+    </Button>
   );
 };
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 export default ServerManagerButton;

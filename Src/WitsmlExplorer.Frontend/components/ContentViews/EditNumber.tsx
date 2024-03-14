@@ -1,10 +1,10 @@
 import { Icon, Label, TextField } from "@equinor/eds-core-react";
 import { Tooltip } from "@material-ui/core";
-import { StyledButton } from "components/ContentViews/EditSelectedLogCurveInfo";
-import { TooltipLayout } from "../StyledComponents/Tooltip";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import { ChangeEvent, ReactElement, useContext, useState } from "react";
 import styled from "styled-components";
+import { TooltipLayout } from "../StyledComponents/Tooltip";
 
 interface EditNumberProps {
   label: string;
@@ -60,14 +60,14 @@ const EditNumber = (props: EditNumberProps): ReactElement => {
           ) : null
         }
       />
-      <StyledButton
+      <Button
         variant={"ghost"}
-        color={"primary"}
+        colors={colors}
         onClick={submitEditNumber}
         disabled={!isEdited}
       >
-        <Icon size={16} name={"arrowForward"} />
-      </StyledButton>
+        <Icon name={"arrowForward"} />
+      </Button>
     </EditNumberLayout>
   );
 };
