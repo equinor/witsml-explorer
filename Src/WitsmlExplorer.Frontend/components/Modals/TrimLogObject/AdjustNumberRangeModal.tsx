@@ -65,7 +65,6 @@ const AdjustNumberRangeModal = (
 
   return (
     <>
-      {/* TODO: Move button */}
       <Button.Group
         aria-label="set depth range button group"
         style={{ margin: ".5rem" }}
