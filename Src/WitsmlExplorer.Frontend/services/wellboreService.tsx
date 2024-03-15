@@ -10,7 +10,7 @@ export default class WellboreService {
     server?: Server
   ): Promise<Wellbore[]> {
     const response = await ApiClient.get(
-      `api/wells/${wellUid}/wellbores`,
+      `api/wells/${encodeURIComponent(wellUid)}/wellbores`,
       abortSignal,
       server
     );
@@ -30,7 +30,9 @@ export default class WellboreService {
     server?: Server
   ): Promise<Wellbore> {
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}`,
       abortSignal,
       server
     );

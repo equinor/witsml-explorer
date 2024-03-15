@@ -19,7 +19,9 @@ export default class ComponentService {
     const componentRoute = pluralize(componentType).toLowerCase();
     const typeRoute = pluralize(getParentType(componentType)).toLowerCase();
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}/${objectUid}/${componentRoute}`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/${typeRoute}/${encodeURIComponent(objectUid)}/${componentRoute}`,
       abortSignal,
       server
     );

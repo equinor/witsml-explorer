@@ -23,7 +23,9 @@ export default class ObjectService {
   ): Promise<ObjectTypeToModel[Key][]> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/${typeRoute}`,
       abortSignal,
       server
     );
@@ -44,7 +46,9 @@ export default class ObjectService {
   ): Promise<ObjectTypeToModel[Key]> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/${typeRoute}/${objectUid}`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/${typeRoute}/${encodeURIComponent(objectUid)}`,
       abortSignal,
       server
     );
@@ -63,7 +67,9 @@ export default class ObjectService {
     server?: Server
   ): Promise<ObjectOnWellbore[]> {
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/idonly/${objectType}`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/idonly/${objectType}`,
       abortSignal,
       server
     );
@@ -83,7 +89,9 @@ export default class ObjectService {
     server?: Server
   ): Promise<ObjectOnWellbore> {
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/idonly/${objectType}/${objectUid}`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/idonly/${objectType}/${encodeURIComponent(objectUid)}`,
       abortSignal,
       server
     );
@@ -121,7 +129,9 @@ export default class ObjectService {
     server?: Server
   ): Promise<ExpandableObjectsCount> {
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/countexpandable`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/countexpandable`,
       abortSignal,
       server
     );
