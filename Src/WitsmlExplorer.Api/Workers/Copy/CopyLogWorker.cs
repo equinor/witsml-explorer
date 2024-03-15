@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -56,7 +57,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, copyLogTasks.First((task) => !task.Result.IsSuccessful).Result.Reason), null);
             }
 
-            IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log));
+            ConcurrentDictionary<string, double> progressDict = new ConcurrentDictionary<string, double>();
+            IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log, progressDict));
             List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(x => _copyLogDataWorker.Execute(x, cancellationToken)).ToList();
 
             Task<(WorkerResult Result, RefreshAction)[]> copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);
@@ -106,7 +108,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return result.Logs?.FirstOrDefault();
         }
 
-        private static CopyLogDataJob CreateCopyLogDataJob(CopyObjectsJob job, WitsmlLog targetLog)
+        private static CopyLogDataJob CreateCopyLogDataJob(CopyObjectsJob job, WitsmlLog targetLog, ConcurrentDictionary<string, double> progressDict)
         {
             ObjectReference sourceLogReference = new()
             {
@@ -122,6 +124,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Uid = targetLog.Uid
             };
 
+            string childJobId = Guid.NewGuid().ToString();
+            progressDict[childJobId] = 0.0;
+
             CopyLogDataJob copyLogDataJob = new()
             {
                 Source = new ComponentReferences
@@ -129,7 +134,18 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Parent = sourceLogReference,
                     ComponentUids = targetLog.LogCurveInfo.Select((lci) => lci.Mnemonic).ToArray()
                 },
-                Target = targetLogReference
+                Target = targetLogReference,
+                JobInfo = new JobInfo
+                {
+                    Id = childJobId,
+                },
+                ProgressReporter = new Progress<double>(progress =>
+                {
+                    progressDict[childJobId] = progress;
+                    var totalProgress = progressDict.Values.Average();
+                    job.ProgressReporter?.Report(totalProgress);
+                    if (job.JobInfo != null) job.JobInfo.Progress = totalProgress;
+                })
             };
             return copyLogDataJob;
         }

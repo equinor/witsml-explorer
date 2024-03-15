@@ -12,6 +12,8 @@ namespace WitsmlExplorer.Api.Jobs
         public abstract string GetObjectName();
         public virtual bool IsCancelable { get; } = false;
 
+        public IProgress<double> ProgressReporter { get; set; }
+
         public JobInfo JobInfo
         {
             get => _jobInfo;

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,6 +31,12 @@ namespace WitsmlExplorer.Api.Workers
             {
                 return result;
             }
+
+            job.CopyJob.ProgressReporter = new Progress<double>(progress =>
+                {
+                    job.ProgressReporter?.Report(progress);
+                    if (job.JobInfo != null) job.JobInfo.Progress = progress;
+                });
             return await _copyWorker.Execute(job.CopyJob, cancellationToken);
         }
     }

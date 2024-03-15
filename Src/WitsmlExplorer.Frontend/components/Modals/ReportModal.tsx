@@ -16,6 +16,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
+import { useLiveJobProgress } from "hooks/useLiveJobProgress";
 import BaseReport, { createReport } from "models/reports/BaseReport";
 import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
@@ -47,6 +48,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
+  const jobProgress = useLiveJobProgress(jobId);
   const [isCancelable, setIsCancelable] = useState(false);
 
   useEffect(() => {
@@ -137,6 +139,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                   style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem" }}
                 >
                   Waiting for the job to finish.
+                  {jobProgress > 0 ? ` ${Math.round(jobProgress * 100)}%` : ""}
                 </Typography>
                 <DotProgress />
               </div>

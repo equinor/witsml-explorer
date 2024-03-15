@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,7 +57,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
             }
 
-            (WorkerResult objectsResult, RefreshAction objectsRefresh) = await _copyObjectsWorker.Execute(new() { Source = job.Source, Target = job.Target });
+            CopyObjectsJob copyObjectsJob = new()
+            {
+                Source = job.Source,
+                Target = job.Target,
+                ProgressReporter = new Progress<double>(progress =>
+                {
+                    job.ProgressReporter?.Report(progress);
+                    if (job.JobInfo != null) job.JobInfo.Progress = progress;
+                })
+            };
+            (WorkerResult objectsResult, RefreshAction objectsRefresh) = await _copyObjectsWorker.Execute(copyObjectsJob);
             refreshAction ??= objectsRefresh;
             return (objectsResult, refreshAction);
         }

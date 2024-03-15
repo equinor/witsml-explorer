@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Jobs
             Id = Guid.NewGuid().ToString();
             StartTime = DateTime.Now;
             Status = JobStatus.Started;
+            Progress = 0.0;
             CancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -46,6 +47,8 @@ namespace WitsmlExplorer.Api.Jobs
 
         public string FailedReason { get; set; }
 
+        public double Progress { get; set; }
+
         public BaseReport Report { get; set; }
 
         public bool IsCancelable { get; internal set; } = false;
@@ -64,6 +67,7 @@ namespace WitsmlExplorer.Api.Jobs
                 if (value is JobStatus.Finished or JobStatus.Failed or JobStatus.Cancelled)
                 {
                     EndTime = DateTime.Now;
+                    Progress = 1.0;
                 }
                 _status = value;
             }

@@ -57,7 +57,6 @@ namespace WitsmlExplorer.Api.Workers
             //Todo: find a way to determine the maximum amount of rows that can be sent to the WITSML server then pass that amount to the CreateImportQueries method
             WitsmlLogs[] queries = CreateImportQueries(job, chunkSize).ToArray();
 
-            //Todo: update import progress for the user using websockets
             for (int i = 0; i < queries.Length; i++)
             {
                 for (int attempt = 0; attempt < maxUpdateAttempts; attempt++)
@@ -80,6 +79,9 @@ namespace WitsmlExplorer.Api.Workers
                         return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkSize}", result.Reason, witsmlLog.GetDescription()), null);
                     }
                 }
+                double progress = (i + 1) / (double)queries.Length;
+                if (job.JobInfo != null) job.JobInfo.Progress = progress;
+                job.ProgressReporter?.Report(progress);
             }
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
