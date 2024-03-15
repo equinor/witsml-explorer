@@ -157,7 +157,6 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
     enableHiding: false,
     size: calculateColumnWidth(expanderId, isCompactMode),
     header: ({ table }: { table: Table<any> }) => (
-      // TODO: Possible to move it out?
       <IconButton
         onClick={() =>
           table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded())
