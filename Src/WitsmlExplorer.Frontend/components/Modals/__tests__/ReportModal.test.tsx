@@ -14,7 +14,6 @@ import { createReport } from "models/reports/BaseReport";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 
-jest.mock("services/jobService");
 jest.mock("services/objectService");
 jest.mock("@microsoft/signalr");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
@@ -65,23 +64,8 @@ describe("Report Modal", () => {
     });
   });
 
-  describe("Report Modal with jobId", async () => {
-    const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
-      deferred<JobInfo>();
-
-    jest
-      .spyOn(JobService, "getUserJobInfo")
-      .mockImplementation(() => jobInfoPromise);
-
-    await act(async () => {
-      resolveJobInfoPromise(JOB_INFO);
-    });
-
-    it("Should show a loading screen when provided with a jobId of an unfinished job", async () => {
-      //   await act(async () => {
-      //     resolveJobInfoPromise(JOB_INFO);
-      //   });
-
+  describe("Report Modal with jobId", () => {
+    it("Should show a loading screen when provided with a jobId of an unfinished job", () => {
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
       expect(screen.getByRole("progressbar")).toBeInTheDocument();
@@ -89,12 +73,12 @@ describe("Report Modal", () => {
     });
 
     it("Should show the report once the job has finished", async () => {
-      //  const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
-      //    deferred<JobInfo>();
+      const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
+        deferred<JobInfo>();
 
-      //  jest
-      //    .spyOn(JobService, "getUserJobInfo")
-      //    .mockImplementation(() => jobInfoPromise);
+      jest
+        .spyOn(JobService, "getUserJobInfo")
+        .mockImplementation(() => jobInfoPromise);
 
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
@@ -107,9 +91,9 @@ describe("Report Modal", () => {
       expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(1);
 
       // Resolve and return from the mocked getUserJobInfo
-      //   await act(async () => {
-      //      resolveJobInfoPromise(JOB_INFO);
-      //   });
+      await act(async () => {
+        resolveJobInfoPromise(JOB_INFO);
+      });
 
       expect(screen.queryByText(/loading report/i)).not.toBeInTheDocument();
       expect(screen.getByText(REPORT.title)).toBeInTheDocument();
@@ -138,8 +122,5 @@ const REPORT_ITEMS = [
 
 const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
-const JOB_INFO = getJobInfo({
-  report: REPORT,
-  id: "testJobId"
-});
+const JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });

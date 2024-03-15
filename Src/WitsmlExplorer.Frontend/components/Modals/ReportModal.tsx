@@ -47,7 +47,6 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
-  const [isCancelable, setIsCancelable] = useState(false);
 
   useEffect(() => {
     if (fetchedReport) setReport(fetchedReport);
@@ -70,26 +69,27 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     dispatchOperation({ type: OperationType.HideModal });
   };
 
-  useEffect(() => {
-    const fetchJobInfo = async () => {
+  const checkIfJobIsCancelable = () => {
+    const fetchData = async () => {
       if (jobId) {
         const jobInfo = await JobService.getUserJobInfo(jobId);
         if (jobInfo !== null) {
           if (jobInfo.isCancelable === true) {
-            setIsCancelable(true);
+            return true;
           }
         }
       }
+      return false;
     };
-    fetchJobInfo();
-  }, [jobId]);
+    return fetchData();
+  };
 
   return (
     <ModalDialog
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      showCancelButton={!fetchedReport && isCancelable}
+      showCancelButton={checkIfJobIsCancelable && !fetchedReport}
       content={
         <ContentLayout>
           {report ? (
