@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         public ModifyWbGeometrySectionWorker(ILogger<ModifyWbGeometrySectionJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWbGeometrySectionJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyWbGeometrySectionJob job, CancellationToken? cancellationToken = null)
         {
             Verify(job.WbGeometrySection, job.WbGeometryReference);
 

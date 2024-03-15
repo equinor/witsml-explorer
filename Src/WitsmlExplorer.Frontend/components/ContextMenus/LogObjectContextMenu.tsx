@@ -313,7 +313,6 @@ const LogObjectContextMenu = (
       <NestedMenuItem
         key={"agentslognestedmenu"}
         label={"Agents"}
-        disabled={checkedObjects.length > 2}
         icon="person"
       >
         {[

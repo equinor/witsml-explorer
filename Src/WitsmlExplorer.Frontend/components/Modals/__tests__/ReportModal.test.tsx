@@ -18,6 +18,12 @@ jest.mock("services/objectService");
 jest.mock("@microsoft/signalr");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
+jest.mock("services/jobService", () => {
+  return {
+    getUserJobInfo: () => MOCK_JOB_INFO
+  };
+});
+
 describe("Report Modal", () => {
   //mock ResizeObserver to enable testing virtualized components
   window.ResizeObserver = MockResizeObserver;
@@ -88,11 +94,11 @@ describe("Report Modal", () => {
 
       // A notification that the job has finished has been received. It should still display loading until the job is fetched.
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
-      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(1);
+      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(2);
 
       // Resolve and return from the mocked getUserJobInfo
       await act(async () => {
-        resolveJobInfoPromise(JOB_INFO);
+        resolveJobInfoPromise(MOCK_JOB_INFO);
       });
 
       expect(screen.queryByText(/loading report/i)).not.toBeInTheDocument();
@@ -122,5 +128,5 @@ const REPORT_ITEMS = [
 
 const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
-const JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
+const MOCK_JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });

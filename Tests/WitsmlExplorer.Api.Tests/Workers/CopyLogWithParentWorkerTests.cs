@@ -50,10 +50,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             CopyWithParentJob job = CreateJobTemplate(true, true);
 
-            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SuccessResult());
-            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob)).ReturnsAsync(SuccessResult());
+            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob, null)).ReturnsAsync(SuccessResult());
+            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob, null)).ReturnsAsync(SuccessResult());
 
-            _copyWorker.Setup(w => w.Execute(It.Is<CopyObjectsJob>(j => j.Source == job.Source && j.Target == job.Target))).ReturnsAsync(SuccessResult());
+            _copyWorker.Setup(w => w.Execute(It.Is<CopyObjectsJob>(j => j.Source == job.Source && j.Target == job.Target), null)).ReturnsAsync(SuccessResult());
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             CopyWithParentJob job = CreateJobTemplate(false, false);
 
-            _copyWorker.Setup(w => w.Execute(It.Is<CopyObjectsJob>(j => j.Source == job.Source && j.Target == job.Target))).ReturnsAsync(SuccessResult());
+            _copyWorker.Setup(w => w.Execute(It.Is<CopyObjectsJob>(j => j.Source == job.Source && j.Target == job.Target), null)).ReturnsAsync(SuccessResult());
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             string failReason = "test";
 
-            _copyWellWorker.Setup(w => w.Execute(It.IsAny<CopyWellJob>())).ReturnsAsync(FailureResult(failReason));
+            _copyWellWorker.Setup(w => w.Execute(It.IsAny<CopyWellJob>(), null)).ReturnsAsync(FailureResult(failReason));
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -101,8 +101,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             string failReason = "test";
 
-            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SuccessResult());
-            _copyWellboreWorker.Setup(w => w.Execute(It.IsAny<CopyWellboreJob>())).ReturnsAsync(FailureResult(failReason));
+            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob, null)).ReturnsAsync(SuccessResult());
+            _copyWellboreWorker.Setup(w => w.Execute(It.IsAny<CopyWellboreJob>(), null)).ReturnsAsync(FailureResult(failReason));
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -120,9 +120,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             string failReason = "test";
 
-            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob)).ReturnsAsync(SuccessResult());
-            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob)).ReturnsAsync(SuccessResult());
-            _copyWorker.Setup(w => w.Execute(It.IsAny<CopyObjectsJob>())).ReturnsAsync(FailureResult(failReason));
+            _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob, null)).ReturnsAsync(SuccessResult());
+            _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob, null)).ReturnsAsync(SuccessResult());
+            _copyWorker.Setup(w => w.Execute(It.IsAny<CopyObjectsJob>(), null)).ReturnsAsync(FailureResult(failReason));
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public DeleteWellboreWorker(ILogger<DeleteWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellboreJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellboreJob job, CancellationToken? cancellationToken = null)
         {
             string wellUid = job.ToDelete.WellUid;
             string wellboreUid = job.ToDelete.WellboreUid;
