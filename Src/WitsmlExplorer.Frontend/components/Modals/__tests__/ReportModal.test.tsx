@@ -41,7 +41,7 @@ jest.mock("services/jobService", () => {
         failedReason: "",
         report: null
       };
-      const jobInfoArray: JobInfo[] = new Array();
+      const jobInfoArray: JobInfo[] = [];
       jobInfoArray[0] = jobInfo;
       return {
         jobInfos: jobInfoArray
