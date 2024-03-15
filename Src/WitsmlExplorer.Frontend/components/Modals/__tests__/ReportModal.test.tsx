@@ -20,13 +20,7 @@ jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
 jest.mock("services/jobService", () => {
   return {
-    getUserJobInfo: () => {
-      const jobInfoArray: JobInfo[] = [];
-      jobInfoArray[0] = jobInfo;
-      return {
-        jobInfos: jobInfoArray
-      };
-    }
+    getUserJobInfo: () => MOCK_JOB_INFO
   };
 });
 
@@ -104,7 +98,7 @@ describe("Report Modal", () => {
 
       // Resolve and return from the mocked getUserJobInfo
       await act(async () => {
-        resolveJobInfoPromise(JOB_INFO);
+        resolveJobInfoPromise(MOCK_JOB_INFO);
       });
 
       expect(screen.queryByText(/loading report/i)).not.toBeInTheDocument();
@@ -134,26 +128,5 @@ const REPORT_ITEMS = [
 
 const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
-const JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
+const MOCK_JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });
-
-const jobInfo: JobInfo = {
-  isCancelable: false,
-  jobType: "",
-  description: "",
-  id: "",
-  username: "",
-  witsmlTargetUsername: "",
-  witsmlSourceUsername: "",
-  sourceServer: "",
-  targetServer: "",
-  wellName: "",
-  wellboreName: "",
-  objectName: "",
-  startTime: "",
-  endTime: "",
-  killTime: "",
-  status: "",
-  failedReason: "",
-  report: null
-};
