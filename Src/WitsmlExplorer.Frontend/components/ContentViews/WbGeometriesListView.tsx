@@ -69,7 +69,7 @@ export default function WbGeometriesListView() {
   };
 
   const onSelect = (wbGeometry: any) => {
-    navigate(wbGeometry.uid);
+    navigate(encodeURIComponent(wbGeometry.uid));
   };
 
   const columns: ContentTableColumn[] = [

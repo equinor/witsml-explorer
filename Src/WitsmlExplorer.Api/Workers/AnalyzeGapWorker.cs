@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -37,7 +38,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
     /// </summary>
     /// <param name="job">Job model of logObject, array of mnemonics, gapSize...</param>
     /// <returns>Task of workerResult with gap report items.</returns>
-    public override async Task<(WorkerResult, RefreshAction)> Execute(AnalyzeGapJob job)
+    public override async Task<(WorkerResult, RefreshAction)> Execute(AnalyzeGapJob job, CancellationToken? cancellationToken = null)
     {
         Logger.LogInformation("Analyzing gaps started. {jobDescription}", job.Description());
 

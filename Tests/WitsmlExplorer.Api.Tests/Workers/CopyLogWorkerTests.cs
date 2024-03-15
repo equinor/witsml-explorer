@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             SetupGetWellbore();
             IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
-            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>(), null))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
             (WorkerResult, RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD);
             SetupGetWellbore();
             IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
-            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>(), null))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
             (WorkerResult, RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);
@@ -103,7 +103,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupGetWellbore();
             const string errorReason = "test";
             CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
-            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>(), null))
                 .ReturnsAsync((new WorkerResult(null, false, string.Empty, errorReason), null));
 
             (WorkerResult Result, RefreshAction) copyTask = await _copyLogWorker.Execute(copyLogJob);
@@ -119,7 +119,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetupSourceLog(WitsmlLog.WITSML_INDEX_TYPE_MD, sourceLogs);
             SetupGetWellbore();
             IEnumerable<WitsmlLogs> copyLogQuery = CopyTestsUtils.SetupAddInStoreAsync<WitsmlLogs>(_witsmlClient);
-            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>()))
+            _copyLogDataWorker.Setup(worker => worker.Execute(It.IsAny<CopyLogDataJob>(), null))
                 .ReturnsAsync((new WorkerResult(null, true, null), null));
 
             (WorkerResult, RefreshAction) result = await _copyLogWorker.Execute(copyLogJob);

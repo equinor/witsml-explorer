@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public interface ICopyLogWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job);
+        Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job, CancellationToken? cancellationToken = null);
     }
 
     public class CopyLogWorker : BaseWorker<CopyObjectsJob>, IWorker, ICopyLogWorker
@@ -35,7 +36,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             _copyLogDataWorker = copyLogDataWorker ?? new CopyLogDataWorker(witsmlClientProvider, null, witsmlServerRepository);
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job, CancellationToken? cancellationToken = null)
         {
             (WitsmlLog[] sourceLogs, WitsmlWellbore targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
             ICollection<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
@@ -58,7 +59,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             ConcurrentDictionary<string, double> progressDict = new ConcurrentDictionary<string, double>();
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log, progressDict));
-            List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(_copyLogDataWorker.Execute).ToList();
+            List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(x => _copyLogDataWorker.Execute(x, cancellationToken)).ToList();
 
             Task<(WorkerResult Result, RefreshAction)[]> copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);
             await copyLogDataResultTask;

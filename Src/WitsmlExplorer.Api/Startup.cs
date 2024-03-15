@@ -161,6 +161,7 @@ namespace WitsmlExplorer.Api
                 app.UseAuthentication();
                 app.UseAuthorization();
             }
+            app.UseMiddleware<UrlDecodeMiddleware>();
             app.UseMiddleware<LoggingMiddleware>();
             app.UseEndpoints(builder => builder.MapHub<NotificationsHub>("notifications", oAuth2Enabled, "SignalRPolicy"));
         }

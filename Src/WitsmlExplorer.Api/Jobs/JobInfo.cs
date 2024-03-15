@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 using WitsmlExplorer.Api.Models.Reports;
 
@@ -14,6 +15,7 @@ namespace WitsmlExplorer.Api.Jobs
             StartTime = DateTime.Now;
             Status = JobStatus.Started;
             Progress = 0.0;
+            CancellationTokenSource = new CancellationTokenSource();
         }
 
         public string JobType { get; internal set; }
@@ -49,6 +51,11 @@ namespace WitsmlExplorer.Api.Jobs
 
         public BaseReport Report { get; set; }
 
+        public bool IsCancelable { get; internal set; } = false;
+
+        [JsonIgnore]
+        public CancellationTokenSource CancellationTokenSource { get; private set; }
+
         private JobStatus _status;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -57,7 +64,7 @@ namespace WitsmlExplorer.Api.Jobs
             get => _status;
             set
             {
-                if (value is JobStatus.Finished or JobStatus.Failed)
+                if (value is JobStatus.Finished or JobStatus.Failed or JobStatus.Cancelled)
                 {
                     EndTime = DateTime.Now;
                     Progress = 1.0;
@@ -72,6 +79,7 @@ namespace WitsmlExplorer.Api.Jobs
     {
         Started,
         Finished,
-        Failed
+        Failed,
+        Cancelled
     }
 }

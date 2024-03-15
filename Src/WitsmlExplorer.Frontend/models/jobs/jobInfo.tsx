@@ -19,4 +19,5 @@ export default interface JobInfo {
   failedReason: string;
   report: BaseReport;
   progress: number;
+  isCancelable: boolean;
 }

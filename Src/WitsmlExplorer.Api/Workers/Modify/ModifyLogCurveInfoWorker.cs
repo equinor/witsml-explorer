@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -31,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
         /// </summary>
         /// <param name="job">The job containing information for the modification.</param>
         /// <returns>Task of the workerResult with RefreshAction.</returns>
-        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyLogCurveInfoJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyLogCurveInfoJob job, CancellationToken? cancellationToken = null)
         {
             Verify(job);
 

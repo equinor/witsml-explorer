@@ -7,7 +7,9 @@ export default class LogCurvePriorityService {
     abortSignal?: AbortSignal
   ): Promise<string[]> {
     const response = await ApiClient.get(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/logCurvePriority`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/logCurvePriority`,
       abortSignal
     );
     if (response.ok) {
@@ -24,7 +26,9 @@ export default class LogCurvePriorityService {
     abortSignal?: AbortSignal
   ): Promise<string[]> {
     const response = await ApiClient.post(
-      `/api/wells/${wellUid}/wellbores/${wellboreUid}/logCurvePriority`,
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/logCurvePriority`,
       JSON.stringify(prioritizedCurves),
       abortSignal
     );

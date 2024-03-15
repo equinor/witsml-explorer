@@ -12,6 +12,7 @@ import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import JobInfo from "models/jobs/jobInfo";
 import React from "react";
+import JobService from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface JobInfoContextMenuProps {
@@ -36,6 +37,11 @@ const JobInfoContextMenu = (
     });
   };
 
+  const onClickCancelAction = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    JobService.cancelJob(jobInfo.id);
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -51,6 +57,16 @@ const JobInfoContextMenu = (
             color={colors.interactive.primaryResting}
           />
           <Typography color={"primary"}>Refresh</Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"cancelaction"}
+          disabled={
+            jobInfo.isCancelable === false || jobInfo.status !== "Started"
+          }
+          onClick={onClickCancelAction}
+        >
+          <StyledIcon name="clear" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Cancel job</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>

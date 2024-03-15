@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public DeleteCurveValuesWorker(ILogger<DeleteCurveValuesJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteCurveValuesJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteCurveValuesJob job, CancellationToken? cancellationToken = null)
         {
             string wellUid = job.LogReference.WellUid;
             string wellboreUid = job.LogReference.WellboreUid;

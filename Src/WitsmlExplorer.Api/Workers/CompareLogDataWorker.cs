@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -40,7 +41,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             _witsmlServerRepository = witsmlServerRepository;
         }
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CompareLogDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CompareLogDataJob job, CancellationToken? cancellationToken = null)
         {
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();

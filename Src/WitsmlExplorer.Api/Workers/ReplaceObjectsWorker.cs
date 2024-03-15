@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -23,9 +24,9 @@ namespace WitsmlExplorer.Api.Workers
             _deleteWorker = deleteWorker;
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(ReplaceObjectsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ReplaceObjectsJob job, CancellationToken? cancellationToken = null)
         {
-            (WorkerResult WorkerResult, RefreshAction) result = await _deleteWorker.Execute(job.DeleteJob);
+            (WorkerResult WorkerResult, RefreshAction) result = await _deleteWorker.Execute(job.DeleteJob, cancellationToken);
             if (!result.WorkerResult.IsSuccess)
             {
                 return result;
@@ -36,7 +37,7 @@ namespace WitsmlExplorer.Api.Workers
                     job.ProgressReporter?.Report(progress);
                     if (job.JobInfo != null) job.JobInfo.Progress = progress;
                 });
-            return await _copyWorker.Execute(job.CopyJob);
+            return await _copyWorker.Execute(job.CopyJob, cancellationToken);
         }
     }
 }

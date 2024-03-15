@@ -190,6 +190,7 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
     failedReason: "",
     report: null,
     progress: 0,
+    isCancelable: false,
     ...overrides
   };
 }
