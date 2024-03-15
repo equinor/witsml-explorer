@@ -1,4 +1,5 @@
-import { Button, Dialog, Progress, Typography } from "@equinor/eds-core-react";
+import { Dialog, Progress, Typography } from "@equinor/eds-core-react";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import React, { ReactElement, useState } from "react";
@@ -13,7 +14,7 @@ interface ModalDialogProps {
   content: ReactElement;
   onSubmit: () => void;
   isLoading: boolean;
-  confirmColor?: "default" | "inherit" | "primary" | "secondary" | "danger";
+  confirmColor?: "primary" | "secondary" | "danger";
   confirmText?: string;
   confirmDisabled?: boolean;
   switchButtonPlaces?: boolean;
@@ -80,8 +81,6 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
           onClick={onSubmit}
           color={confirmColor ?? "primary"}
           variant="contained"
-          confirmButtonIsDisabled={confirmButtonIsDisabled}
-          colors={colors}
         >
           {ButtonPosition == ControlButtonPosition.TOP ? (
             <Icons name="save" />
@@ -96,7 +95,6 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     ),
     showCancelButton ? (
       <StyledButton
-        colors={colors}
         key={"cancel"}
         disabled={isLoading}
         onClick={onCancel}
@@ -260,31 +258,16 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
       : ""};
 `;
 
-// TODO: Move into own button component.
-const StyledButton = styled(Button)<{
-  align?: string;
-  colors?: Colors;
-  confirmButtonIsDisabled: boolean;
-}>`
-  ${(props) => (props.colors === dark ? `color:white` : "")};
-  ${(props) =>
-    props.confirmButtonIsDisabled && props.colors === dark
-      ? `
-        &&:disabled {
-        background: #565656;
-        border:1px solid #565656;
-        color:#9CA6AC;
-      }`
-      : ""};
-  &&& {
-    ${({ align }) =>
-      align === "right" ? `margin-left: auto;` : "margin: 0.5em;"};
-  }
-`;
-
 const DialogHeader = styled(Dialog.Header)<{ colors: Colors }>`
   hr {
     background-color: ${(props) => props.colors.interactive.disabledBorder};
+  }
+`;
+
+const StyledButton = styled(Button)<{ align?: string }>`
+  &&& {
+    ${({ align }) =>
+      align === "right" ? `margin-left: auto;` : "margin: 0.5em;"};
   }
 `;
 

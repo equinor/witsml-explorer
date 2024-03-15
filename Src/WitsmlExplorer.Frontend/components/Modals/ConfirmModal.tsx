@@ -5,7 +5,7 @@ interface ConfirmProps {
   heading: string;
   content: ReactElement;
   onConfirm: () => void;
-  confirmColor?: "default" | "inherit" | "primary" | "secondary" | "danger";
+  confirmColor?: "primary" | "secondary" | "danger";
   confirmText?: string;
   switchButtonPlaces?: boolean;
   showCancelButton?: boolean;
