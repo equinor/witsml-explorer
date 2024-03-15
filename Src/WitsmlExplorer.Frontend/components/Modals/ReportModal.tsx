@@ -47,10 +47,25 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
+  const [isCancelable, setIsCancelable] = useState(false);
 
   useEffect(() => {
     if (fetchedReport) setReport(fetchedReport);
   }, [fetchedReport]);
+
+  useEffect(() => {
+    const fetchJobInfo = async () => {
+      if (jobId) {
+        const jobInfo = await JobService.getUserJobInfo(jobId);
+        if (jobInfo !== null) {
+          if (jobInfo.isCancelable === true) {
+            setIsCancelable(true);
+          }
+        }
+      }
+    };
+    fetchJobInfo();
+  }, [jobId]);
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
@@ -74,7 +89,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      //  showCancelButton={checkIfJobIsCancelable && !fetchedReport}
+      showCancelButton={!fetchedReport && isCancelable}
       content={
         <ContentLayout>
           {report ? (

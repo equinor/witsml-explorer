@@ -18,6 +18,38 @@ jest.mock("services/objectService");
 jest.mock("@microsoft/signalr");
 jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
+jest.mock("services/jobService", () => {
+  return {
+    getUserJobInfo: () => {
+      let jobInfo: JobInfo = {
+        isCancelable: false,
+        jobType: "",
+        description: "",
+        id: "",
+        username: "",
+        witsmlTargetUsername: "",
+        witsmlSourceUsername: "",
+        sourceServer: "",
+        targetServer: "",
+        wellName: "",
+        wellboreName: "",
+        objectName: "",
+        startTime: "",
+        endTime: "",
+        killTime: "",
+        status: "",
+        failedReason: "",
+        report: null
+      };
+      const jobInfoArray: JobInfo[] = new Array();
+      jobInfoArray[0] = jobInfo;
+      return {
+        jobInfos: jobInfoArray
+      };
+    }
+  };
+});
+
 describe("Report Modal", () => {
   //mock ResizeObserver to enable testing virtualized components
   window.ResizeObserver = MockResizeObserver;
@@ -88,7 +120,7 @@ describe("Report Modal", () => {
 
       // A notification that the job has finished has been received. It should still display loading until the job is fetched.
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
-      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(1);
+      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(2);
 
       // Resolve and return from the mocked getUserJobInfo
       await act(async () => {
