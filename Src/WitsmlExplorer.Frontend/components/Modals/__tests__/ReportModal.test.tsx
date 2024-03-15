@@ -21,26 +21,6 @@ jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 jest.mock("services/jobService", () => {
   return {
     getUserJobInfo: () => {
-      const jobInfo: JobInfo = {
-        isCancelable: false,
-        jobType: "",
-        description: "",
-        id: "",
-        username: "",
-        witsmlTargetUsername: "",
-        witsmlSourceUsername: "",
-        sourceServer: "",
-        targetServer: "",
-        wellName: "",
-        wellboreName: "",
-        objectName: "",
-        startTime: "",
-        endTime: "",
-        killTime: "",
-        status: "",
-        failedReason: "",
-        report: null
-      };
       const jobInfoArray: JobInfo[] = [];
       jobInfoArray[0] = jobInfo;
       return {
@@ -156,3 +136,24 @@ const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
 const JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });
+
+const jobInfo: JobInfo = {
+  isCancelable: false,
+  jobType: "",
+  description: "",
+  id: "",
+  username: "",
+  witsmlTargetUsername: "",
+  witsmlSourceUsername: "",
+  sourceServer: "",
+  targetServer: "",
+  wellName: "",
+  wellboreName: "",
+  objectName: "",
+  startTime: "",
+  endTime: "",
+  killTime: "",
+  status: "",
+  failedReason: "",
+  report: null
+};
