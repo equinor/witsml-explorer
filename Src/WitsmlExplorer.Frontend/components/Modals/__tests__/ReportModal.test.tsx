@@ -21,7 +21,7 @@ jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 jest.mock("services/jobService", () => {
   return {
     getUserJobInfo: () => {
-      let jobInfo: JobInfo = {
+      const jobInfo: JobInfo = {
         isCancelable: false,
         jobType: "",
         description: "",
