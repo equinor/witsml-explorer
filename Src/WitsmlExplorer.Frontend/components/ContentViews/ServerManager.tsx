@@ -203,6 +203,7 @@ interface ConnectButtonProps extends ButtonProps {
   colors: Colors;
 }
 
+// TODO: Move into own styled component.
 const ConnectButton = ({ isConnected, ...props }: ConnectButtonProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const {

@@ -260,6 +260,7 @@ const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
       : ""};
 `;
 
+// TODO: Move into own button component.
 const StyledButton = styled(Button)<{
   align?: string;
   colors?: Colors;

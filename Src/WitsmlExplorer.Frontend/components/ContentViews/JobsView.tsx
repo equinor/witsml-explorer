@@ -189,6 +189,7 @@ export const JobsView = (): React.ReactElement => {
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
             report: jobInfo.report ? (
+              // TODO: Check if there are EDS components for this.
               <ReportButton onClick={() => onClickReport(jobInfo.report)}>
                 Report
               </ReportButton>
