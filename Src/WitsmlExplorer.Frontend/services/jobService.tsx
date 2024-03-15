@@ -95,13 +95,14 @@ export default class JobService {
   public static async cancelJob(
     jobId: string,
     abortSignal?: AbortSignal
-  ): Promise<Response> {
-    const response = await ApiClient.get(
+  ): Promise<string> {
+    const response = await ApiClient.post(
       `/api/jobs/cancel/${jobId}`,
+      null,
       abortSignal
     );
     if (response.ok) {
-      return response.json();
+      return jobId;
     } else {
       throwError(response.status, response.statusText);
     }
