@@ -11,6 +11,7 @@ using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
@@ -115,6 +116,7 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlLogs query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            result.EnsureIndexCurveIsFirst();
             return result.Logs.FirstOrDefault();
         }
 
@@ -184,8 +186,10 @@ namespace WitsmlExplorer.Api.Services
                 }
             }
 
-            string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(CommonConstants.DataSeparator);
-            string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(CommonConstants.DataSeparator);
+            List<CurveSpecification> curveSpecifications = log.LogCurveInfo
+                .Where(lci => mnemonics.Contains(lci.Mnemonic))
+                .Select(lci => new CurveSpecification { Mnemonic = lci.Mnemonic, Unit = lci.Unit ?? CommonConstants.Unit.Unitless })
+                .ToList();
 
             return new LogData
             {
@@ -193,8 +197,7 @@ namespace WitsmlExplorer.Api.Services
                 Index.Start(witsmlLog).GetValueAsString(),
                 EndIndex = witsmlLog.EndIndex == null ? endIndex.GetValueAsString() :
                 Index.End(witsmlLog).GetValueAsString(),
-                CurveSpecifications = witsmlLogMnemonics.Zip(witsmlLogUnits, (mnemonic, unit) =>
-                    new CurveSpecification { Mnemonic = mnemonic, Unit = unit }).ToList(),
+                CurveSpecifications = curveSpecifications,
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
         }
