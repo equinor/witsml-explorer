@@ -7,7 +7,7 @@ exports[`Should render when selected well is not set 1`] = `
       class="contentTableStyles__TableContainer-sc-rul7fz-0 MhSaI"
     >
       <div
-        class="Panel__PanelContainer-sc-y1eusi-1 kLOJwG"
+        class="Panel__PanelContainer-sc-y1eusi-0 eJxtbf"
       >
         <p
           class="Typography__StyledTypography-sc-179guof-0 hcwLlK"
@@ -23,7 +23,7 @@ exports[`Should render when selected well is not set 1`] = `
           aria-controls="menu-default"
           aria-expanded="false"
           aria-haspopup="true"
-          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__StyledButton-sc-1qppr5x-0 egtCvy"
+          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
           id="anchor-default"
           tabindex="0"
           type="button"
@@ -52,7 +52,7 @@ exports[`Should render when selected well is not set 1`] = `
         </button>
         <button
           aria-label="refresh"
-          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Panel__StyledButton-sc-y1eusi-0 kSbRDo"
+          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
           tabindex="0"
           type="button"
         >
@@ -80,7 +80,7 @@ exports[`Should render when selected well is not set 1`] = `
         </button>
         <button
           aria-label="download as csv"
-          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Panel__StyledButton-sc-y1eusi-0 kSbRDo"
+          class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
           tabindex="0"
           type="button"
         >
@@ -267,7 +267,7 @@ exports[`Should render when selected well is not set 1`] = `
       id=":r1:"
     >
       <div
-        class="Paper__StyledPaper-sc-6ncnv9-0 fxxOOu Menu__MenuPaper-sc-1vlnqcj-0 uVmMH ColumnOptionsMenu__StyledMenu-sc-1qppr5x-6 fUa-DrL"
+        class="Paper__StyledPaper-sc-6ncnv9-0 fxxOOu Menu__MenuPaper-sc-1vlnqcj-0 uVmMH ColumnOptionsMenu__StyledMenu-sc-1qppr5x-3 bDXYHy"
         style="position: absolute; top: 0px; left: 0px;"
         tabindex="-1"
       >
@@ -325,7 +325,7 @@ exports[`Should render when selected well is not set 1`] = `
             style="padding: 0.125rem 0px 0.25rem 0px;"
           >
             <div
-              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-1 bNLfNj"
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
             >
               <span
                 aria-disabled="false"
@@ -354,8 +354,9 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </span>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
                 disabled=""
+                style="width: 25px; height: 25px;"
                 tabindex="-1"
                 type="button"
               >
@@ -382,7 +383,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -413,14 +415,14 @@ exports[`Should render when selected well is not set 1`] = `
                 draggable="true"
               >
                 <p
-                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-3 eoQkXb"
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-1 hGoDGh"
                 >
                   name
                 </p>
               </div>
             </div>
             <div
-              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-1 bNLfNj"
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
             >
               <span
                 aria-disabled="false"
@@ -449,7 +451,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </span>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -476,7 +479,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -507,14 +511,14 @@ exports[`Should render when selected well is not set 1`] = `
                 draggable="true"
               >
                 <p
-                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-3 eoQkXb"
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-1 hGoDGh"
                 >
                   typeWellbore
                 </p>
               </div>
             </div>
             <div
-              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-1 bNLfNj"
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
             >
               <span
                 aria-disabled="false"
@@ -543,7 +547,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </span>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -570,7 +575,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -601,14 +607,14 @@ exports[`Should render when selected well is not set 1`] = `
                 draggable="true"
               >
                 <p
-                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-3 eoQkXb"
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-1 hGoDGh"
                 >
                   statusWellbore
                 </p>
               </div>
             </div>
             <div
-              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-1 bNLfNj"
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
             >
               <span
                 aria-disabled="false"
@@ -637,7 +643,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </span>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -664,7 +671,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -695,14 +703,14 @@ exports[`Should render when selected well is not set 1`] = `
                 draggable="true"
               >
                 <p
-                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-3 eoQkXb"
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-1 hGoDGh"
                 >
                   uid
                 </p>
               </div>
             </div>
             <div
-              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-1 bNLfNj"
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
             >
               <span
                 aria-disabled="false"
@@ -731,7 +739,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </span>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -758,7 +767,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -789,14 +799,14 @@ exports[`Should render when selected well is not set 1`] = `
                 draggable="true"
               >
                 <p
-                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-3 eoQkXb"
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-1 hGoDGh"
                 >
                   commonData.dTimCreation
                 </p>
               </div>
             </div>
             <div
-              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-1 bNLfNj"
+              class="ColumnOptionsMenu__OrderingRow-sc-1qppr5x-0 bFJBFi"
             >
               <span
                 aria-disabled="false"
@@ -825,7 +835,8 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </span>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
+                style="width: 25px; height: 25px;"
                 tabindex="0"
                 type="button"
               >
@@ -852,8 +863,9 @@ exports[`Should render when selected well is not set 1`] = `
                 </span>
               </button>
               <button
-                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi ColumnOptionsMenu__OrderingButton-sc-1qppr5x-2 jsUNcx"
+                class="Button__ButtonBase-sc-1hs0myn-1 huZAEi Button__GhostIconButton-sc-jk4s4u-2 eszDSa"
                 disabled=""
+                style="width: 25px; height: 25px;"
                 tabindex="-1"
                 type="button"
               >
@@ -884,7 +896,7 @@ exports[`Should render when selected well is not set 1`] = `
                 draggable="true"
               >
                 <p
-                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-3 eoQkXb"
+                  class="Typography__StyledTypography-sc-179guof-0 hcwLlK ColumnOptionsMenu__OrderingLabel-sc-1qppr5x-1 hGoDGh"
                 >
                   commonData.dTimLastChange
                 </p>
@@ -900,10 +912,11 @@ exports[`Should render when selected well is not set 1`] = `
             </div>
           </div>
           <div
-            class="ColumnOptionsMenu__ResetContainer-sc-1qppr5x-4 eZYhCc"
+            class="ColumnOptionsMenu__ResetContainer-sc-1qppr5x-2 eiHUHq"
           >
             <button
-              class="Button__ButtonBase-sc-1hs0myn-1 imupZm ColumnOptionsMenu__ResetButton-sc-1qppr5x-5 fNIZHV"
+              class="Button__ButtonBase-sc-1hs0myn-1 imupZm Button__ContainedButton-sc-jk4s4u-0 dosvQc"
+              style="width: 125px;"
               tabindex="0"
               type="button"
             >
@@ -914,7 +927,8 @@ exports[`Should render when selected well is not set 1`] = `
               </span>
             </button>
             <button
-              class="Button__ButtonBase-sc-1hs0myn-1 imupZm ColumnOptionsMenu__ResetButton-sc-1qppr5x-5 fNIZHV"
+              class="Button__ButtonBase-sc-1hs0myn-1 imupZm Button__ContainedButton-sc-jk4s4u-0 dosvQc"
+              style="width: 125px;"
               tabindex="0"
               type="button"
             >
