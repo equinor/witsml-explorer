@@ -69,27 +69,12 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     dispatchOperation({ type: OperationType.HideModal });
   };
 
-  const checkIfJobIsCancelable = () => {
-    const fetchData = async () => {
-      if (jobId) {
-        const jobInfo = await JobService.getUserJobInfo(jobId);
-        if (jobInfo !== null) {
-          if (jobInfo.isCancelable === true) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-    return fetchData();
-  };
-
   return (
     <ModalDialog
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      showCancelButton={checkIfJobIsCancelable && !fetchedReport}
+      //  showCancelButton={checkIfJobIsCancelable && !fetchedReport}
       content={
         <ContentLayout>
           {report ? (
