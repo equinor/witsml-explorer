@@ -53,7 +53,7 @@ export function useGetMnemonics(
 }
 
 const getExistingMnemonics = (logCurveInfoList: LogCurveInfo[]) => {
-  return logCurveInfoList.slice(1).map((logCurveInfo) => logCurveInfo.mnemonic); // splice(1) to skip index curve
+  return logCurveInfoList.slice(1).map((logCurveInfo) => logCurveInfo.mnemonic); // slice(1) to skip index curve
 };
 
 const getMnemonicsFromSearchParams = (mnemonicsSearchParams: string) => {
