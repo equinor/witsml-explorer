@@ -120,7 +120,10 @@ const PageLayout = (): ReactElement => {
           style={{ marginRight: "0.5rem" }}
           onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
         >
-          <Icon name={isSidebarExpanded ? "collapse" : "expand"} />
+          <Icon
+            name={isSidebarExpanded ? "collapse" : "expand"}
+            color={colors.text.staticIconsTertiary}
+          />
         </Button>
         <Properties>
           <PropertiesPanel />

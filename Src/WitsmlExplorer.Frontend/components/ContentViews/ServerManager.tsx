@@ -163,7 +163,11 @@ const ServerManager = (): React.ReactElement => {
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
                   <Button variant="ghost" onClick={() => onEditItem(server)}>
-                    <Icon name="edit" size={24} />
+                    <Icon
+                      name="edit"
+                      size={24}
+                      color={colors.text.staticIconsTertiary}
+                    />
                   </Button>
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
@@ -180,7 +184,11 @@ const ServerManager = (): React.ReactElement => {
                       )
                     }
                   >
-                    <Icon name="deleteToTrash" size={24} />
+                    <Icon
+                      name="deleteToTrash"
+                      size={24}
+                      color={colors.text.staticIconsTertiary}
+                    />
                   </Button>
                 </Table.Cell>
               </Table.Row>
