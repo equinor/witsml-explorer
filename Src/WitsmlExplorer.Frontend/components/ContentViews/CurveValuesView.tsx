@@ -1,5 +1,4 @@
-import { Radio, Switch, Typography } from "@equinor/eds-core-react";
-import { Button } from "@material-ui/core";
+import { Button, Radio, Switch, Typography } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   MILLIS_IN_SECOND,
@@ -23,15 +22,19 @@ import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
 import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
+import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import useExport from "hooks/useExport";
+import { useGetMnemonics } from "hooks/useGetMnemonics";
 import orderBy from "lodash/orderBy";
+import { ComponentType } from "models/componentType";
 import {
   DeleteLogCurveValuesJob,
   IndexRange
@@ -51,7 +54,6 @@ import React, {
 } from "react";
 import {
   createSearchParams,
-  useLocation,
   useParams,
   useSearchParams
 } from "react-router-dom";
@@ -60,6 +62,8 @@ import { truncateAbortHandler } from "services/apiClient";
 import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import Icon from "styles/Icons";
 import { formatIndexValue } from "tools/IndexHelpers";
 import {
   CommonPanelContainer,
@@ -83,21 +87,13 @@ enum DownloadOptions {
 
 export const CurveValuesView = (): React.ReactElement => {
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone, dateTimeFormat, colors, theme },
+    dispatchOperation
   } = useContext(OperationContext);
-  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
-  const mnemonics = useMemo(
-    () => getMnemonics(),
-    [mnemonicsSearchParams, location]
-  );
-  const {
-    operationState: { colors },
-    dispatchOperation
-  } = useContext(OperationContext);
   const { wellUid, wellboreUid, objectUid, logType } = useParams();
   const [columns, setColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
@@ -130,6 +126,22 @@ export const CurveValuesView = (): React.ReactElement => {
   const { exportData, exportOptions } = useExport();
   const justFinishedStreaming = useRef(false);
   let downloadOptions: DownloadOptions = DownloadOptions.IntervalOfData;
+  const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
+    useGetComponents(
+      connectedServer,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      ComponentType.Mnemonic
+    );
+  const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+
+  const { mnemonics } = useGetMnemonics(
+    isFetching,
+    logCurveInfoList,
+    mnemonicsSearchParams,
+    true
+  );
 
   const onChangeDownloadOption = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -138,16 +150,6 @@ export const CurveValuesView = (): React.ReactElement => {
     const enumToString = selectedValue as DownloadOptions;
     downloadOptions = enumToString;
   };
-
-  function getMnemonics() {
-    if (mnemonicsSearchParams) {
-      return JSON.parse(mnemonicsSearchParams);
-    } else if (location?.state?.mnemonics) {
-      return JSON.parse(location.state.mnemonics);
-    } else {
-      return [];
-    }
-  }
 
   const onRowSelectionChange = useCallback(
     (rows: CurveValueRow[]) => setSelectedRows(rows),
@@ -366,7 +368,7 @@ export const CurveValuesView = (): React.ReactElement => {
     setIsLoading(true);
     setAutoRefresh(false);
 
-    if (log) {
+    if (log && !isFetching && mnemonics) {
       getLogData(startIndex, endIndex)
         .catch(truncateAbortHandler)
         .then(() => setIsLoading(false));
@@ -557,23 +559,39 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const panelElements = useMemo(
     () => [
-      <Button
+      <StyledButton
         key="downloadall"
+        variant="ghost_icon"
         disabled={isLoading}
         onClick={() => displayConfirmation(dispatchOperation)}
+        colors={colors}
       >
-        Download all as .csv
+        <Icon name="download" />
+      </StyledButton>,
+      <Button
+        key="showLogDataOnServer"
+        disabled={isLoading || isFetching}
+        onClick={() =>
+          dispatchOperation({
+            type: OperationType.DisplayModal,
+            payload: <ShowLogDataOnServerModal />
+          })
+        }
+      >
+        Show on server
       </Button>
     ],
     [
       isLoading,
       exportSelectedDataPoints,
       exportSelectedIndexRange,
-      selectedRows
+      selectedRows,
+      colors.mode,
+      theme
     ]
   );
 
-  if (isFetchingLog) {
+  if (isFetching) {
     return <ProgressSpinner message="Fetching Log." />;
   }
 
@@ -728,6 +746,10 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
       return ContentType.Number;
   }
 };
+
+const StyledButton = styled(Button)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+`;
 
 const alignLayout: CSSProperties = {
   display: "flex",

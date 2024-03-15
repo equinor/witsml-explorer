@@ -1,8 +1,8 @@
-import { Checkbox } from "@equinor/eds-core-react";
 import ModalDialog, {
   ModalContentLayout,
   ModalWidth
 } from "components/Modals/ModalDialog";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import ObjectOnWellbore from "models/objectOnWellbore";
@@ -54,7 +54,7 @@ export default function CompareLogDataModal({
             interval. Do you want to compare all indexes instead?
           </StyledParagraph>
           <ButtonsContainer>
-            <StyledCheckbox
+            <Checkbox
               colors={colors}
               label="Compare all log indexes"
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
@@ -82,13 +82,4 @@ const StyledParagraph = styled.p<{
   colors: Colors;
 }>`
   color: ${(props) => props.colors.text.staticIconsDefault};
-`;
-
-const StyledCheckbox = styled(Checkbox)<{ colors: Colors }>`
-  span {
-    color: ${(props) => props.colors.infographic.primaryMossGreen};
-  }
-  span:hover {
-    background: ${(props) => props.colors.interactive.checkBoxHover};
-  }
 `;

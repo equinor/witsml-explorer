@@ -94,10 +94,10 @@ describe("<ContentTable />", () => {
   });
 
   it("Tables with checkable rows should display the number of checked rows", async () => {
-    const noSelectedRegex = new RegExp(`selected: 0/${data.length}`, "i");
-    const oneSelectedRegex = new RegExp(`selected: 1/${data.length}`, "i");
+    const noSelectedRegex = new RegExp(`Row: 0/${data.length}`, "i");
+    const oneSelectedRegex = new RegExp(`Row: 1/${data.length}`, "i");
     const allSelectedRegex = new RegExp(
-      `selected: ${data.length}/${data.length}`,
+      `Row: ${data.length}/${data.length}`,
       "i"
     );
 
@@ -106,7 +106,7 @@ describe("<ContentTable />", () => {
       <ContentTable columns={columns} data={data} checkableRows />
     );
     const [toggleAll, ...toggleRows] = screen.getAllByRole("checkbox");
-    const selected = screen.getByText(/selected:/i);
+    const selected = screen.getByText(/row:/i);
 
     expect(selected).toHaveTextContent(noSelectedRegex);
 

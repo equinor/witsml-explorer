@@ -20,7 +20,6 @@ export const light: Colors = {
       tokens.colors.interactive.table__cell__fill_activated.hex,
     successHover: tokens.colors.interactive.success__hover.hex,
     sidebarDivider: tokens.colors.interactive.primary__resting.hex,
-    checkBoxHover: "",
     contextMenuItemHover: "",
     tableBorder: "#E0E0E0"
   },
@@ -33,7 +32,8 @@ export const light: Colors = {
     staticPropertyKey: tokens.colors.text.static_icons__tertiary.hex,
     staticPropertyValue: tokens.colors.interactive.primary__resting.hex,
     staticTextFieldDefault: "#F7F7F7",
-    staticTextLabel: "#999999"
+    staticTextLabel: "#999999",
+    disabledText: tokens.colors.interactive.disabled__text.hex
   },
   ui: {
     backgroundDefault: tokens.colors.ui.background__default.hex,
@@ -58,7 +58,6 @@ export const dark: Colors = {
     tableCellFillActivated: "#007079",
     successHover: "#C1E7C1",
     sidebarDivider: "#243746",
-    checkBoxHover: "#FFFFFF33",
     textHighlight: "#004F55",
     contextMenuItemHover: "#007079",
     tableBorder: "#007079"
@@ -72,7 +71,8 @@ export const dark: Colors = {
     staticPropertyKey: "#DEE5E7",
     staticPropertyValue: "#FFFFFF",
     staticTextFieldDefault: "transparent",
-    staticTextLabel: "#CCCCCC"
+    staticTextLabel: "#CCCCCC",
+    disabledText: tokens.colors.interactive.disabled__text.hex
   },
   ui: {
     backgroundDefault: "#132634",
@@ -99,7 +99,6 @@ export interface Colors {
     tableCellFillActivated: string;
     successHover: string;
     sidebarDivider: string;
-    checkBoxHover: string;
     contextMenuItemHover: string;
     tableBorder: string;
   };
@@ -113,6 +112,7 @@ export interface Colors {
     staticPropertyValue: string;
     staticTextFieldDefault: string;
     staticTextLabel: string;
+    disabledText: string;
   };
   ui: {
     backgroundDefault: string;
