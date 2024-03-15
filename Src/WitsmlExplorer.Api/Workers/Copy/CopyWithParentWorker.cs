@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public JobType JobType => JobType.CopyWithParent;
 
-        public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(CopyWithParentJob job)
+        public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(CopyWithParentJob job, CancellationToken? cancellationToken = null)
         {
             RefreshAction refreshAction = null;
 

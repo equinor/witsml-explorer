@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -38,19 +39,19 @@ namespace WitsmlExplorer.Api.Workers
             return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Source);
         }
 
-        public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream)
+        public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
         {
             T job = await jobStream.Deserialize<T>();
-            Task<(WorkerResult, RefreshAction)> task = ExecuteBase(job);
+            Task<(WorkerResult, RefreshAction)> task = ExecuteBase(job, cancellationToken);
             return (task, job);
         }
 
-        private async Task<(WorkerResult, RefreshAction)> ExecuteBase(T job)
+        private async Task<(WorkerResult, RefreshAction)> ExecuteBase(T job, CancellationToken? cancellationToken = null)
         {
             try
             {
                 await Task.Delay(1); // Delay to return the task to JobService ASAP
-                (WorkerResult WorkerResult, RefreshAction RefreshAction) task = await Execute(job);
+                (WorkerResult WorkerResult, RefreshAction RefreshAction) task = await Execute(job, cancellationToken.Value);
                 job.JobInfo.Status = task.WorkerResult.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
                 if (!task.WorkerResult.IsSuccess)
                 {
@@ -58,6 +59,13 @@ namespace WitsmlExplorer.Api.Workers
                 }
 
                 return task;
+            }
+            catch (OperationCanceledException ex)
+            {
+                job.JobInfo.Status = JobStatus.Cancelled;
+                job.JobInfo.FailedReason = ex.Message;
+                Logger.LogError("{jobType} was cancelled.", job.JobInfo.JobType);
+                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} cancelled", ex.Message, jobId: job.JobInfo.Id), null);
             }
             catch (Exception ex)
             {
@@ -68,6 +76,6 @@ namespace WitsmlExplorer.Api.Workers
             }
         }
 
-        public abstract Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(T job);
+        public abstract Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(T job, CancellationToken? cancellationToken = null);
     }
 }

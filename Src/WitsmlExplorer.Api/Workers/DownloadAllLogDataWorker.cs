@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -39,10 +40,10 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
     /// </summary>
     /// <param name="job">The job model contains job-specific parameters.</param>
     /// <returns>Task of the workerResult in a report with all log data.</returns>
-    public override async Task<(WorkerResult, RefreshAction)> Execute(DownloadAllLogDataJob job)
+    public override async Task<(WorkerResult, RefreshAction)> Execute(DownloadAllLogDataJob job, CancellationToken? cancellationToken = null)
     {
         Logger.LogInformation("Downloading of all data started. {jobDescription}", job.Description());
-        var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true);
+        var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken);
         return DownloadAllLogDataResult(job, logData.Data, job.LogReference.Uid);
     }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 {
     public interface IDeleteObjectsWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(DeleteObjectsJob job);
+        Task<(WorkerResult, RefreshAction)> Execute(DeleteObjectsJob job, CancellationToken? cancellationToken = null);
     }
 
     public class DeleteObjectsWorker : BaseWorker<DeleteObjectsJob>, IWorker, IDeleteObjectsWorker
@@ -28,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         public DeleteObjectsWorker(ILogger<DeleteObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger)
         { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteObjectsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteObjectsJob job, CancellationToken? cancellationToken = null)
         {
             job.ToDelete.Verify();
             ICollection<WitsmlObjectOnWellbore> queries = ObjectQueries.DeleteObjectsQuery(job.ToDelete);

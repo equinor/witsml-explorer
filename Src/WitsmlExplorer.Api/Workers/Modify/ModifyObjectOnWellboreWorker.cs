@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         public ModifyObjectOnWellboreWorker(ILogger<ModifyObjectOnWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyObjectOnWellboreJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyObjectOnWellboreJob job, CancellationToken? cancellationToken = null)
         {
             ObjectOnWellbore obj = job.Object;
             EntityType objectType = job.ObjectType;

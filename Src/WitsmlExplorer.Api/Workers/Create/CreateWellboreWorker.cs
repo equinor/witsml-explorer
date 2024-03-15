@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Workers.Create
 
         public CreateWellboreWorker(ILogger<CreateWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWellboreJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateWellboreJob job, CancellationToken? cancellationToken = null)
         {
             Wellbore wellbore = job.Wellbore;
             Verify(wellbore);

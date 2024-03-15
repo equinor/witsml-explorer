@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers.Create
 
         public CreateLogWorker(ILogger<CreateLogJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateLogJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateLogJob job, CancellationToken? cancellationToken = null)
         {
             WitsmlWellbore targetWellbore = await GetWellbore(GetTargetWitsmlClientOrThrow(), job.LogObject);
             WitsmlLogs copyLogQuery = CreateLogQuery(job, targetWellbore);
