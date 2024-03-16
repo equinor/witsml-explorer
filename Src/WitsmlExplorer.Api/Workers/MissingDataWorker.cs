@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public MissingDataWorker(ILogger<MissingDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(MissingDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(MissingDataJob job, CancellationToken? cancellationToken = null)
         {
             IEnumerable<WellReference> wellReferences = job.WellReferences;
             IEnumerable<WellboreReference> wellboreReferences = job.WellboreReferences;

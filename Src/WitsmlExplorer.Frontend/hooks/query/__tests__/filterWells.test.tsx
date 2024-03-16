@@ -82,35 +82,6 @@ describe("Filter Wells", () => {
     });
   });
 
-  describe("Filter on wellLimit", () => {
-    const testCasesForValidInput = [1, 2, 3, 4];
-    testCasesForValidInput.forEach((testCase) => {
-      it(`Should filter number of wells based on wellLimit. Testing: ${testCase}`, () => {
-        filter.wellLimit = testCase;
-        const modifiedWells = filterWells(wells, filter);
-        expect(modifiedWells.length).toEqual(filter.wellLimit);
-      });
-    });
-
-    const testCasesForInvalidInput = [
-      0,
-      null,
-      undefined,
-      -1,
-      -2,
-      -100,
-      10,
-      100
-    ];
-    testCasesForInvalidInput.forEach((testCase) => {
-      it(`Should not filter if wellLimit is invalid, non-positive or bigger than number of wells. Testing: ${testCase}`, () => {
-        filter.wellLimit = testCase;
-        const modifiedWells = filterWells(wells, filter);
-        expect(wells).toStrictEqual(modifiedWells);
-      });
-    });
-  });
-
   describe("Filter wildcards", () => {
     it("Should match wellName using wildcard '*'", () => {
       filter.name = "We*2";

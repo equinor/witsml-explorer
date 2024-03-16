@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         public ModifyTrajectoryStationWorker(ILogger<ModifyTrajectoryStationJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyTrajectoryStationJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(ModifyTrajectoryStationJob job, CancellationToken? cancellationToken = null)
         {
             Verify(job.TrajectoryStation, job.TrajectoryReference);
 

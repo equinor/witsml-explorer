@@ -16,6 +16,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
+import { useLiveJobProgress } from "hooks/useLiveJobProgress";
 import BaseReport, { createReport } from "models/reports/BaseReport";
 import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
@@ -47,10 +48,26 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   } = React.useContext(OperationContext);
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
+  const jobProgress = useLiveJobProgress(jobId);
+  const [isCancelable, setIsCancelable] = useState(false);
 
   useEffect(() => {
     if (fetchedReport) setReport(fetchedReport);
   }, [fetchedReport]);
+
+  useEffect(() => {
+    const fetchJobInfo = async () => {
+      if (jobId) {
+        const jobInfo = await JobService.getUserJobInfo(jobId);
+        if (jobInfo !== null) {
+          if (jobInfo.isCancelable === true) {
+            setIsCancelable(true);
+          }
+        }
+      }
+    };
+    fetchJobInfo();
+  }, [jobId]);
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
@@ -64,12 +81,17 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     [report]
   );
 
+  const onCancelButtonClick = () => {
+    JobService.cancelJob(jobId);
+    dispatchOperation({ type: OperationType.HideModal });
+  };
+
   return (
     <ModalDialog
       width={ModalWidth.LARGE}
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
-      showCancelButton={false}
+      showCancelButton={!fetchedReport && isCancelable}
       content={
         <ContentLayout>
           {report ? (
@@ -117,6 +139,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                   style={{ fontFamily: "EquinorMedium", fontSize: "1.125rem" }}
                 >
                   Waiting for the job to finish.
+                  {jobProgress > 0 ? ` ${Math.round(jobProgress * 100)}%` : ""}
                 </Typography>
                 <DotProgress />
               </div>
@@ -129,6 +152,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         </ContentLayout>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
+      onCancel={() => onCancelButtonClick()}
       isLoading={false}
     />
   );

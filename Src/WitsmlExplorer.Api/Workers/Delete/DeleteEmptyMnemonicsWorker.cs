@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -38,7 +39,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             _mnemonicService = mnemonicService;
         }
 
-        public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(DeleteEmptyMnemonicsJob job)
+        public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(DeleteEmptyMnemonicsJob job, CancellationToken? cancellationToken = null)
         {
             IWitsmlClient client = GetTargetWitsmlClientOrThrow();
 

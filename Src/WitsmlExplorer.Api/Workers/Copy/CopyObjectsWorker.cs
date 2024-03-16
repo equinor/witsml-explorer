@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public interface ICopyObjectsWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job);
+        Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job, CancellationToken? cancellationToken = null);
     }
 
     public class CopyObjectsWorker : BaseWorker<CopyObjectsJob>, IWorker, ICopyObjectsWorker
@@ -31,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             _copyLogWorker = copyLogWorker;
         }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job, CancellationToken? cancellationToken = null)
         {
             if (job.Source.ObjectType == EntityType.Log)
             {

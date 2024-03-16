@@ -9,6 +9,7 @@ using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs.Common.Interfaces;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
@@ -23,11 +24,7 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
             WitsmlLog log = result.Logs.FirstOrDefault();
 
-            // Make sure the index curve is the first element in logCurveInfo
-            if (log != null)
-            {
-                log.LogCurveInfo = GetLogCurveInfoWithIndexCurveFirst(log);
-            }
+            log?.EnsureIndexCurveIsFirst();
 
             return log;
         }
@@ -37,20 +34,9 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogs logQuery = LogQueries.GetWitsmlLogsByIds(wellUid, wellboreUid, logUids);
             WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
 
-            // Make sure the index curve is the first element in logCurveInfo
-            foreach (var log in result.Logs)
-            {
-                log.LogCurveInfo = GetLogCurveInfoWithIndexCurveFirst(log);
-            }
+            result?.EnsureIndexCurveIsFirst();
 
             return result;
-        }
-
-        public static List<WitsmlLogCurveInfo> GetLogCurveInfoWithIndexCurveFirst(WitsmlLog log)
-        {
-            string indexCurve = log.IndexCurve?.Value;
-            if (indexCurve == null || log.LogCurveInfo.FirstOrDefault().Mnemonic == indexCurve) return log.LogCurveInfo;
-            return log.LogCurveInfo.OrderBy(lci => lci.Mnemonic == indexCurve ? 0 : 1).ToList();
         }
 
         public static async Task<WitsmlLogData> GetLogDataForCurve(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic, ILogger logger)

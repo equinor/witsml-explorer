@@ -1,16 +1,23 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { useTheme } from "@material-ui/core";
 import { TreeView } from "@material-ui/lab";
+import {
+  VirtualItem,
+  Virtualizer,
+  useVirtualizer
+} from "@tanstack/react-virtual";
 import ProgressSpinner from "components/ProgressSpinner";
 import SearchFilter from "components/Sidebar/SearchFilter";
 import WellItem from "components/Sidebar/WellItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
+import { UserTheme } from "contexts/operationStateReducer";
 import { useSidebar } from "contexts/sidebarContext";
 import { useGetWells } from "hooks/query/useGetWells";
 import { useWellFilter } from "hooks/useWellFilter";
 import Well from "models/well";
-import { Fragment, useContext } from "react";
+import { Fragment, useContext, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
@@ -20,16 +27,39 @@ export default function Sidebar() {
   const { wells, isFetching } = useGetWells(connectedServer);
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const { expandedTreeNodes } = useSidebar();
+  const { wellUid } = useParams();
+  const isDeepLink = useRef<boolean>(!!wellUid);
   const {
-    operationState: { colors }
+    operationState: { colors, theme }
   } = useContext(OperationContext);
   const filteredWells = useWellFilter(wells);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    getScrollElement: () => containerRef.current,
+    count: filteredWells?.length,
+    overscan: 5,
+    estimateSize: () => (theme === UserTheme.Compact ? 33 : 49),
+    measureElement:
+      typeof window !== "undefined" &&
+      navigator.userAgent.indexOf("Firefox") === -1
+        ? (element) => element?.getBoundingClientRect().height
+        : undefined
+  });
+
+  useEffect(() => {
+    // This useEffect is used to scroll a deep-linked well into view.
+    if (isDeepLink.current && filteredWells?.length > 0) {
+      isDeepLink.current = false;
+      const wellIndex = filteredWells.findIndex((well) => well.uid === wellUid);
+      virtualizer.scrollToIndex(wellIndex, { align: "start" });
+    }
+  }, [filteredWells]);
 
   return (
     <Fragment>
       <SearchFilter />
       {!!connectedServer && (
-        <SidebarTreeView>
+        <SidebarTreeView ref={containerRef}>
           {isFetching ? (
             <ProgressSpinner message="Fetching wells. This may take some time." />
           ) : (
@@ -39,7 +69,7 @@ export default function Sidebar() {
                 No wells match the current filter
               </Typography>
             ) : (
-              <TreeView
+              <StyledVirtualTreeView
                 defaultCollapseIcon={
                   <Icon
                     name="chevronDown"
@@ -54,26 +84,35 @@ export default function Sidebar() {
                 }
                 defaultEndIcon={<div style={{ width: 24 }} />}
                 expanded={expandedTreeNodes}
+                virtualizer={virtualizer}
               >
-                {filteredWells.map((well: Well) => (
-                  <Fragment key={well.uid}>
-                    <WellListing>
-                      <WellItem wellUid={well.uid} />
-                      <WellIndicator
-                        compactMode={isCompactMode}
-                        active={well.isActive}
-                        colors={colors}
+                {virtualizer.getVirtualItems().map((virtualItem) => {
+                  const well: Well = filteredWells[virtualItem.index];
+                  return (
+                    <StyledVirtualItem
+                      key={well.uid}
+                      data-index={virtualItem.index}
+                      ref={(node) => virtualizer.measureElement(node)}
+                      virtualItem={virtualItem}
+                    >
+                      <WellListing>
+                        <WellItem wellUid={well.uid} />
+                        <WellIndicator
+                          compactMode={isCompactMode}
+                          active={well.isActive}
+                          colors={colors}
+                        />
+                      </WellListing>
+                      <Divider
+                        style={{
+                          margin: "0px",
+                          backgroundColor: colors.interactive.disabledBorder
+                        }}
                       />
-                    </WellListing>
-                    <Divider
-                      style={{
-                        margin: "0px",
-                        backgroundColor: colors.interactive.disabledBorder
-                      }}
-                    />
-                  </Fragment>
-                ))}
-              </TreeView>
+                    </StyledVirtualItem>
+                  );
+                })}
+              </StyledVirtualTreeView>
             ))
           )}
         </SidebarTreeView>
@@ -109,4 +148,18 @@ const SidebarTreeView = styled.div`
       }
     }
   }
+`;
+
+const StyledVirtualTreeView = styled(TreeView)<{
+  virtualizer: Virtualizer<HTMLDivElement, Element>;
+}>`
+  position: relative;
+  width: 100%;
+  height: ${(props) => props.virtualizer.getTotalSize()}px;
+`;
+
+const StyledVirtualItem = styled.div<{ virtualItem: VirtualItem }>`
+  position: absolute;
+  width: 100%;
+  transform: translateY(${(props) => props.virtualItem.start}px);
 `;

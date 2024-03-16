@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ public class CreateRigWorker : BaseWorker<CreateRigJob>, IWorker
     /// </summary>
     /// <param name="job">Job info of created rig.</param>
     /// <returns>Task of workerResult with refresh objects.</returns>
-    public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRigJob job)
+    public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRigJob job, CancellationToken? cancellationToken = null)
     {
         Verify(job.Rig);
 

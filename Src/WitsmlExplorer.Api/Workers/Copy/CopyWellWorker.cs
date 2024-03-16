@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 {
     public interface ICopyWellWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(CopyWellJob job);
+        Task<(WorkerResult, RefreshAction)> Execute(CopyWellJob job, CancellationToken? cancellationToken = null);
     }
 
     public class CopyWellWorker : BaseWorker<CopyWellJob>, IWorker, ICopyWellWorker
@@ -23,7 +24,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public JobType JobType => JobType.CopyWell;
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyWellJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CopyWellJob job, CancellationToken? cancellationToken = null)
         {
             Witsml.IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
             Witsml.IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
