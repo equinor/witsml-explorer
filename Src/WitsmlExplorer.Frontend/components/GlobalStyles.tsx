@@ -60,7 +60,6 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
     background:${(props) => props.colors.ui.backgroundDefault};
     font-size: 16px;
     margin: 0;
-    height: 100vh;
   }
   h1 {
     font-size: 3em;
