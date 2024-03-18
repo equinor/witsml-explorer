@@ -157,7 +157,6 @@ export const ContentViewDimensionsContext =
   createContext<ContentViewDimensions>({} as ContentViewDimensions);
 
 const Layout = styled.div`
-  border: 1px solid red;
   display: grid;
   overflow: hidden;
   grid-template-areas:
@@ -170,13 +169,10 @@ const Layout = styled.div`
 
 const NavLayout = styled.div<{ colors: Colors }>`
   position: fixed;
-  /* z-index: 2;  */
   top: 0;
   width: 100%;
   height: 40px;
-  border: 1px solid orange;
-  /* border-bottom: 1px solid ${(prop) =>
-    prop.colors.interactive.disabledBorder}; */
+  border-bottom: 1px solid ${(prop) => prop.colors.interactive.disabledBorder};
 `;
 
 const SidebarLayout = styled.div<{ colors: Colors }>`
