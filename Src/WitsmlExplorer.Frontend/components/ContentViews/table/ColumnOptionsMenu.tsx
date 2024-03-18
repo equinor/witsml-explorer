@@ -178,28 +178,20 @@ export const ColumnOptionsMenu = (props: {
                     checked={column.getIsVisible()}
                     onChange={column.getToggleVisibilityHandler()}
                   />
-                  <Button
-                    style={{
-                      width: "25px",
-                      height: "25px"
-                    }}
+                  <OrderingButton
                     variant={"ghost_icon"}
                     onClick={() => onMoveUp(column.id)}
                     disabled={index == firstToggleableIndex}
                   >
                     <Icon name="chevronUp" />
-                  </Button>
-                  <Button
-                    style={{
-                      width: "25px",
-                      height: "25px"
-                    }}
+                  </OrderingButton>
+                  <OrderingButton
                     variant={"ghost_icon"}
                     onClick={() => onMoveDown(column.id)}
                     disabled={index == table.getAllLeafColumns().length - 1}
                   >
                     <Icon name="chevronDown" />
-                  </Button>
+                  </OrderingButton>
                   <Draggable
                     onDragStart={() => setDraggedId(column.id)}
                     onDragEnter={() => setDraggedOverId(column.id)}
@@ -229,8 +221,7 @@ export const ColumnOptionsMenu = (props: {
           </DummyDrop>
         </div>
         <ResetContainer>
-          <Button
-            style={{ width: "125px" }}
+          <ResetButton
             onClick={() => {
               table.setColumnOrder([
                 ...(checkableRows ? [selectId] : []),
@@ -242,10 +233,8 @@ export const ColumnOptionsMenu = (props: {
             }}
           >
             Reset ordering
-          </Button>
-          <Button style={{ width: "125px" }} onClick={resizeColumns}>
-            Reset sizing
-          </Button>
+          </ResetButton>
+          <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
         </ResetContainer>
       </StyledMenu>
     </>
@@ -256,6 +245,11 @@ const OrderingRow = styled.div`
   display: grid;
   grid-template-columns: 20px 25px 25px 1fr;
   align-items: center;
+`;
+
+const OrderingButton = styled(Button)`
+  width: 25px;
+  height: 25px;
 `;
 
 const OrderingLabel = styled(Typography)`
@@ -269,6 +263,10 @@ const OrderingLabel = styled(Typography)`
 const ResetContainer = styled.div`
   display: flex;
   gap: 0.25rem;
+`;
+
+const ResetButton = styled(Button)`
+  width: 125px;
 `;
 
 const StyledMenu = styled(Menu)<{ colors: Colors }>`
