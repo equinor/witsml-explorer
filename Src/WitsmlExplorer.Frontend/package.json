@@ -12,7 +12,7 @@
     "export": "next export"
   },
   "lint-staged": {
-    "**/*.{js,ts,tsx,css}": [
+    "**/*.{js,ts,tsx}": [
       "eslint --fix",
       "prettier -w"
     ]
