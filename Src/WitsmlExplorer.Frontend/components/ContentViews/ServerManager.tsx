@@ -14,6 +14,8 @@ import UserCredentialsModal, {
 } from "components/Modals/UserCredentialsModal";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
+import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -40,6 +42,7 @@ const ServerManager = (): React.ReactElement => {
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const navigate = useNavigate();
   const { connectedServer, setConnectedServer } = useConnectedServer();
+  const { dispatchLoggedInUsernames } = useLoggedInUsernames();
 
   const connectServer = async (server: Server) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
@@ -48,6 +51,10 @@ const ServerManager = (): React.ReactElement => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
         AuthorizationService.setSelectedServer(server);
+        dispatchLoggedInUsernames({
+          type: LoggedInUsernamesActionType.AddLoggedInUsername,
+          payload: { serverId: server.id, username }
+        });
         setConnectedServer(server);
         navigate(getWellsViewPath(server.url));
       }
