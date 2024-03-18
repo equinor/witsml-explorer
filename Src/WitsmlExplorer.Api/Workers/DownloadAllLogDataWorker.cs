@@ -1,20 +1,14 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-
-using Witsml.Data;
-using Witsml.Extensions;
-using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
-using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers;
@@ -43,7 +37,12 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
     public override async Task<(WorkerResult, RefreshAction)> Execute(DownloadAllLogDataJob job, CancellationToken? cancellationToken = null)
     {
         Logger.LogInformation("Downloading of all data started. {jobDescription}", job.Description());
-        var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken);
+        IProgress<double> progressReporter = new Progress<double>(progress =>
+        {
+            job.ProgressReporter?.Report(progress);
+            if (job.JobInfo != null) job.JobInfo.Progress = progress;
+        });
+        var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
         return DownloadAllLogDataResult(job, logData.Data, job.LogReference.Uid);
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,6 +73,24 @@ namespace WitsmlExplorer.Api.Workers
                 UnitList = unitList,
                 Data = data
             };
+        }
+
+        public static double CalculateProgressBasedOnIndex(WitsmlLog log, WitsmlLogData currentData)
+        {
+            string index = currentData.Data.LastOrDefault()?.Data.Split(CommonConstants.DataSeparator).FirstOrDefault();
+            if (index == null) return 0;
+            if (log.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+            {
+                string startIndex = log.StartIndex.Value;
+                string endIndex = log.EndIndex.Value;
+                return (StringHelpers.ToDouble(index) - StringHelpers.ToDouble(startIndex)) / (StringHelpers.ToDouble(endIndex) - StringHelpers.ToDouble(startIndex));
+            }
+            else
+            {
+                string startIndex = log.StartDateTimeIndex;
+                string endIndex = log.EndDateTimeIndex;
+                return (DateTime.Parse(index) - DateTime.Parse(startIndex)).TotalMilliseconds / (DateTime.Parse(endIndex) - DateTime.Parse(startIndex)).TotalMilliseconds;
+            }
         }
     }
 }
