@@ -56,7 +56,7 @@ export function getWellboresViewPath(serverUrl: string, wellUid: string) {
   const wellboresViewPath = WELLSBORES_VIEW_NAVIGATION_PATH.replace(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
-  ).replace(WELL_UID_PARAM, wellUid);
+  ).replace(WELL_UID_PARAM, encodeURIComponent(wellUid));
   return wellboresViewPath;
 }
 
@@ -69,8 +69,8 @@ export function getObjectGroupsViewPath(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
   )
-    .replace(WELL_UID_PARAM, wellUid)
-    .replace(WELLBORE_UID_PARAM, wellboreUid);
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid));
   return objectGroupsViewPath;
 }
 
@@ -84,8 +84,8 @@ export function getObjectsViewPath(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
   )
-    .replace(WELL_UID_PARAM, wellUid)
-    .replace(WELLBORE_UID_PARAM, wellboreUid)
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
     .replace(OBJECT_GROUP_PARAM, objectGroup);
   return objectsViewPath;
 }
@@ -101,10 +101,10 @@ export function getObjectViewPath(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
   )
-    .replace(WELL_UID_PARAM, wellUid)
-    .replace(WELLBORE_UID_PARAM, wellboreUid)
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
     .replace(OBJECT_GROUP_PARAM, objectGroup)
-    .replace(OBJECT_UID_PARAM, objectUid);
+    .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid));
   return objectViewPath;
 }
 
@@ -118,8 +118,8 @@ export function getLogTypesViewPath(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
   )
-    .replace(WELL_UID_PARAM, wellUid)
-    .replace(WELLBORE_UID_PARAM, wellboreUid)
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
     .replace(OBJECT_GROUP_PARAM, objectGroup);
   return logTypesViewPath;
 }
@@ -135,8 +135,8 @@ export function getLogObjectsViewPath(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
   )
-    .replace(WELL_UID_PARAM, wellUid)
-    .replace(WELLBORE_UID_PARAM, wellboreUid)
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
     .replace(OBJECT_GROUP_PARAM, objectGroup)
     .replace(LOG_TYPE_PARAM, logType);
   return logObjectsViewPath;
@@ -154,11 +154,11 @@ export function getLogObjectViewPath(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
   )
-    .replace(WELL_UID_PARAM, wellUid)
-    .replace(WELLBORE_UID_PARAM, wellboreUid)
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
     .replace(OBJECT_GROUP_PARAM, objectGroup)
     .replace(LOG_TYPE_PARAM, logType)
-    .replace(OBJECT_UID_PARAM, objectUid);
+    .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid));
   return logObjectViewPath;
 }
 
@@ -174,10 +174,10 @@ export function getLogCurveValuesViewPath(
     SERVER_URL_PARAM,
     encodeURIComponent(serverUrl)
   )
-    .replace(WELL_UID_PARAM, wellUid)
-    .replace(WELLBORE_UID_PARAM, wellboreUid)
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
     .replace(OBJECT_GROUP_PARAM, objectGroup)
     .replace(LOG_TYPE_PARAM, logType)
-    .replace(OBJECT_UID_PARAM, objectUid);
+    .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid));
   return logCurveValuesViewPath;
 }

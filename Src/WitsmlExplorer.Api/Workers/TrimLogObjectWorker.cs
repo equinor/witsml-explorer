@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace WitsmlExplorer.Api.Workers
 
         public TrimLogObjectWorker(ILogger<TrimLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(TrimLogDataJob job, CancellationToken? cancellationToken = null)
         {
             WitsmlLogs witsmlLogQuery = LogQueries.GetWitsmlLogById(job.LogObject.WellUid, job.LogObject.WellboreUid, job.LogObject.Uid);
             WitsmlLogs witsmlLogs = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(witsmlLogQuery, new OptionsIn(ReturnElements.HeaderOnly));

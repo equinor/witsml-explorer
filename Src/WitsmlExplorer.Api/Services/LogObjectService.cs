@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.IdentityModel.Tokens;
@@ -10,10 +12,12 @@ using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Workers;
 
 using Index = Witsml.Data.Curves.Index;
 
@@ -25,7 +29,7 @@ namespace WitsmlExplorer.Api.Services
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid);
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
         Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
-        Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData);
+        Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken, IProgress<double> progressReporter = null);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -114,6 +118,7 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlLogs query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
+            result.EnsureIndexCurveIsFirst();
             return result.Logs.FirstOrDefault();
         }
 
@@ -148,7 +153,7 @@ namespace WitsmlExplorer.Api.Services
                 }).ToList();
         }
 
-        public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData)
+        public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken = null, IProgress<double> progressReporter = null)
         {
             WitsmlLog log = await GetLogHeader(wellUid, wellboreUid, logUid);
 
@@ -166,7 +171,7 @@ namespace WitsmlExplorer.Api.Services
                 mnemonics.Insert(0, indexMnemonic);
             }
 
-            WitsmlLog witsmlLog = loadAllData ? await LoadDataRecursive(mnemonics, log, startIndex, endIndex, wellUid, wellboreUid, logUid)
+            WitsmlLog witsmlLog = loadAllData ? await LoadDataRecursive(mnemonics, log, startIndex, endIndex, cancellationToken.Value, wellUid, wellboreUid, logUid, progressReporter)
                 : await LoadData(mnemonics, log, startIndex, endIndex, wellUid, wellboreUid, logUid);
 
             if (witsmlLog?.LogData == null || witsmlLog.LogData.Data.IsNullOrEmpty())
@@ -183,8 +188,10 @@ namespace WitsmlExplorer.Api.Services
                 }
             }
 
-            string[] witsmlLogMnemonics = witsmlLog.LogData.MnemonicList.Split(CommonConstants.DataSeparator);
-            string[] witsmlLogUnits = witsmlLog.LogData.UnitList.Split(CommonConstants.DataSeparator);
+            List<CurveSpecification> curveSpecifications = log.LogCurveInfo
+                .Where(lci => mnemonics.Contains(lci.Mnemonic))
+                .Select(lci => new CurveSpecification { Mnemonic = lci.Mnemonic, Unit = lci.Unit ?? CommonConstants.Unit.Unitless })
+                .ToList();
 
             return new LogData
             {
@@ -192,8 +199,7 @@ namespace WitsmlExplorer.Api.Services
                 Index.Start(witsmlLog).GetValueAsString(),
                 EndIndex = witsmlLog.EndIndex == null ? endIndex.GetValueAsString() :
                 Index.End(witsmlLog).GetValueAsString(),
-                CurveSpecifications = witsmlLogMnemonics.Zip(witsmlLogUnits, (mnemonic, unit) =>
-                    new CurveSpecification { Mnemonic = mnemonic, Unit = unit }).ToList(),
+                CurveSpecifications = curveSpecifications,
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
         }
@@ -207,16 +213,24 @@ namespace WitsmlExplorer.Api.Services
             return witsmlLog;
         }
 
-        private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, string wellUid = null, string wellboreUid = null, string logUid = null)
+        private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, CancellationToken cancellationToken, string wellUid = null, string wellboreUid = null, string logUid = null, IProgress<double> progressReporter = null)
         {
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             var allLogData = logData;
             while (logData != null)
             {
-                allLogData.Data.AddRange(logData.Data);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+                if (progressReporter != null)
+                {
+                    double progress = LogWorkerTools.CalculateProgressBasedOnIndex(log, logData);
+                    progressReporter.Report(progress);
+                }
                 logData = await logDataReader.GetNextBatch();
-
+                if (logData != null) allLogData.Data.AddRange(logData.Data);
             }
 
             var witsmlLog = new WitsmlLog();

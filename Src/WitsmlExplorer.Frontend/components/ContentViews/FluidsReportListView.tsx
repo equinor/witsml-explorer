@@ -89,7 +89,7 @@ export default function FluidsReportsListView() {
   ];
 
   const onSelect = (fluidsReportRow: FluidsReportRow) => {
-    navigate(fluidsReportRow.fluidsReport.uid);
+    navigate(encodeURIComponent(fluidsReportRow.fluidsReport.uid));
   };
 
   const onContextMenu = (

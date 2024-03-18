@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs.Common.Interfaces;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
@@ -23,11 +25,7 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
             WitsmlLog log = result.Logs.FirstOrDefault();
 
-            // Make sure the index curve is the first element in logCurveInfo
-            if (log != null)
-            {
-                log.LogCurveInfo = GetLogCurveInfoWithIndexCurveFirst(log);
-            }
+            log?.EnsureIndexCurveIsFirst();
 
             return log;
         }
@@ -37,20 +35,9 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogs logQuery = LogQueries.GetWitsmlLogsByIds(wellUid, wellboreUid, logUids);
             WitsmlLogs result = await client.GetFromStoreAsync(logQuery, new OptionsIn(optionsInReturnElements));
 
-            // Make sure the index curve is the first element in logCurveInfo
-            foreach (var log in result.Logs)
-            {
-                log.LogCurveInfo = GetLogCurveInfoWithIndexCurveFirst(log);
-            }
+            result?.EnsureIndexCurveIsFirst();
 
             return result;
-        }
-
-        public static List<WitsmlLogCurveInfo> GetLogCurveInfoWithIndexCurveFirst(WitsmlLog log)
-        {
-            string indexCurve = log.IndexCurve?.Value;
-            if (indexCurve == null || log.LogCurveInfo.FirstOrDefault().Mnemonic == indexCurve) return log.LogCurveInfo;
-            return log.LogCurveInfo.OrderBy(lci => lci.Mnemonic == indexCurve ? 0 : 1).ToList();
         }
 
         public static async Task<WitsmlLogData> GetLogDataForCurve(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic, ILogger logger)
@@ -72,6 +59,24 @@ namespace WitsmlExplorer.Api.Workers
                 UnitList = unitList,
                 Data = data
             };
+        }
+
+        public static double CalculateProgressBasedOnIndex(WitsmlLog log, WitsmlLogData currentData)
+        {
+            string index = currentData.Data.LastOrDefault()?.Data.Split(CommonConstants.DataSeparator).FirstOrDefault();
+            if (index == null) return 0;
+            if (log.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+            {
+                string startIndex = log.StartIndex.Value;
+                string endIndex = log.EndIndex.Value;
+                return (StringHelpers.ToDouble(index) - StringHelpers.ToDouble(startIndex)) / (StringHelpers.ToDouble(endIndex) - StringHelpers.ToDouble(startIndex));
+            }
+            else
+            {
+                string startIndex = log.StartDateTimeIndex;
+                string endIndex = log.EndDateTimeIndex;
+                return (DateTime.Parse(index) - DateTime.Parse(startIndex)).TotalMilliseconds / (DateTime.Parse(endIndex) - DateTime.Parse(startIndex)).TotalMilliseconds;
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ export function ReactLogChart({
 
     chart?.on("click", (params) => {
       const uid = (params.data as DataItem).uid;
-      navigate(uid);
+      navigate(encodeURIComponent(uid));
     });
 
     // Add chart resize listener

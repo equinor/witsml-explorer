@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ public class BatchModifyLogCurveInfoWorker : BaseWorker<BatchModifyLogCurveInfoJ
     /// </summary>
     /// <param name="job">The job model contains batch modification parameters for logCurveInfo.</param>
     /// <returns>Task of the worker Result in a report with a result of batch modification.</returns>
-    public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyLogCurveInfoJob job)
+    public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyLogCurveInfoJob job, CancellationToken? cancellationToken = null)
     {
         Verify(job);
 
