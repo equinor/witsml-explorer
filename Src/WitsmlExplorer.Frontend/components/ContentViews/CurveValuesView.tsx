@@ -1,4 +1,9 @@
-import { Radio, Switch, Typography } from "@equinor/eds-core-react";
+import {
+  EdsProvider,
+  Radio,
+  Switch,
+  Typography
+} from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   MILLIS_IN_SECOND,
@@ -27,7 +32,7 @@ import ProgressSpinner from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
-import { DispatchOperation } from "contexts/operationStateReducer";
+import { DispatchOperation, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -609,8 +614,16 @@ export const CurveValuesView = (): React.ReactElement => {
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
             onClickRefresh={() => refreshData()}
           />
-          <Switch checked={showPlot} onChange={() => setShowPlot(!showPlot)} />
-          <Typography>Show Plot</Typography>
+          <EdsProvider density={theme}>
+            <Switch
+              checked={showPlot}
+              onChange={() => setShowPlot(!showPlot)}
+              size={theme === UserTheme.Compact ? "small" : "default"}
+            />
+            <Typography style={{ minWidth: "max-content" }}>
+              Show Plot
+            </Typography>
+          </EdsProvider>
           {log?.objectGrowing && (
             <>
               <Switch checked={autoRefresh} onChange={onClickAutoRefresh} />
