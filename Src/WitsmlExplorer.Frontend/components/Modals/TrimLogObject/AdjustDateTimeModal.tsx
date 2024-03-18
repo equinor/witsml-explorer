@@ -104,7 +104,6 @@ const AdjustDateTimeModal = (
 
   return (
     <>
-      {/* TODO: Move button? */}
       <Button.Group
         aria-label="set time range button group"
         style={{ margin: ".5rem" }}
