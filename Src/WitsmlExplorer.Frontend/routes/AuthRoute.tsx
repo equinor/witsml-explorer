@@ -1,4 +1,6 @@
 import { useIsAuthenticated } from "@azure/msal-react";
+import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
+import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
 import { useContext, useEffect } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
@@ -23,6 +25,7 @@ export default function AuthRoute() {
   const { serverUrl } = useParams();
   const { connectedServer, setConnectedServer } = useConnectedServer();
   const navigate = useNavigate();
+  const { dispatchLoggedInUsernames } = useLoggedInUsernames();
 
   useEffect(() => {
     const unsubscribe =
@@ -68,6 +71,10 @@ export default function AuthRoute() {
       onConnectionVerified: (username) => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
+        dispatchLoggedInUsernames({
+          type: LoggedInUsernamesActionType.AddLoggedInUsername,
+          payload: { serverId: server.id, username }
+        });
         if (initialLogin) {
           AuthorizationService.setSelectedServer(server);
           setConnectedServer(server);

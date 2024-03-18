@@ -1,11 +1,12 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
 import {
   getAxisDefinition,
   getLogCurveInfo,
-  getLogObject
+  getLogObject,
+  renderWithContexts
 } from "__testUtils__/testUtils";
 import LogCurveInfoPropertiesModal, {
   LogCurveInfoPropertiesModalProps
@@ -31,7 +32,7 @@ const propsWithAxisDefinition: LogCurveInfoPropertiesModalProps = {
 it("Properties of a LogCurve should be shown in the modal", async () => {
   const expectedLogCurveInfo = simpleProps.logCurveInfo;
 
-  render(<LogCurveInfoPropertiesModal {...simpleProps} />);
+  renderWithContexts(<LogCurveInfoPropertiesModal {...simpleProps} />);
 
   const uidInput = screen.getByRole("textbox", { name: /uid/i });
   const mnemonicInput = screen.getByRole("textbox", { name: /mnemonic/i });
@@ -47,7 +48,9 @@ it("AxisDefinition should be shown readonly in the LogCurveInfo modal when inclu
   const expectedLogCurveInfo = propsWithAxisDefinition.logCurveInfo;
   const expectedAxisDefinition = expectedLogCurveInfo.axisDefinitions[0];
 
-  render(<LogCurveInfoPropertiesModal {...propsWithAxisDefinition} />);
+  renderWithContexts(
+    <LogCurveInfoPropertiesModal {...propsWithAxisDefinition} />
+  );
 
   const uidInput = screen.getByRole("textbox", { name: /uid/i });
   const mnemonicInput = screen.getByRole("textbox", { name: /mnemonic/i });
@@ -78,7 +81,7 @@ it("Saving edited properties of a LogCurve should result in the order of a job",
 
   const user = userEvent.setup();
 
-  render(<LogCurveInfoPropertiesModal {...simpleProps} />);
+  renderWithContexts(<LogCurveInfoPropertiesModal {...simpleProps} />);
 
   const mnemonicInput = screen.getByRole("textbox", { name: /mnemonic/i });
   const saveButton = screen.getByRole("button", { name: /save/i });

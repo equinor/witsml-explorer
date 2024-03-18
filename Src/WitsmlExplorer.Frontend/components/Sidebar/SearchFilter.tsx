@@ -1,10 +1,11 @@
-import { Button, EdsProvider, Icon } from "@equinor/eds-core-react";
+import { EdsProvider, Icon } from "@equinor/eds-core-react";
 import { Divider, TextField } from "@material-ui/core";
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import OptionsContextMenu, {
   OptionsContextMenuProps
 } from "components/ContextMenus/OptionsContextMenu";
 import FilterPanel from "components/Sidebar/FilterPanel";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   FilterContext,

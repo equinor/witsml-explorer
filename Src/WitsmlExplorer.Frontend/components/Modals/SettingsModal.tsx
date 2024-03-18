@@ -1,8 +1,9 @@
-import { Button, Radio, TextField } from "@equinor/eds-core-react";
+import { Radio, TextField } from "@equinor/eds-core-react";
 import { Typography } from "@material-ui/core";
 import { getOffsetFromTimeZone } from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { StyledNativeSelect } from "components/Select";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,

@@ -1,4 +1,4 @@
-import { Button, Icon, Switch, Typography } from "@equinor/eds-core-react";
+import { Icon, Switch, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ContentTable,
@@ -11,6 +11,7 @@ import JobInfoContextMenu, {
 } from "components/ContextMenus/JobInfoContextMenu";
 import formatDateString from "components/DateFormatter";
 import { ReportModal } from "components/Modals/ReportModal";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
@@ -146,15 +147,14 @@ export const JobsView = (): React.ReactElement => {
 
   const panelElements = [
     <Button
+      variant="ghost_icon"
       key="refreshJobs"
       aria-disabled={isFetching ? true : false}
       aria-label={isFetching ? "loading data" : null}
       onClick={isFetching ? undefined : () => refreshJobInfoQuery(queryClient)}
       disabled={isFetching}
-      colors={colors}
     >
       <Icon name="refresh" />
-      Refresh
     </Button>,
     msalEnabled &&
     (getUserAppRoles().includes(adminRole) ||

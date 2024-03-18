@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,6 +17,7 @@ using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Workers;
 
 using Index = Witsml.Data.Curves.Index;
 
@@ -27,7 +29,7 @@ namespace WitsmlExplorer.Api.Services
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid);
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
         Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
-        Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken);
+        Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken, IProgress<double> progressReporter = null);
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -151,7 +153,7 @@ namespace WitsmlExplorer.Api.Services
                 }).ToList();
         }
 
-        public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken = null)
+        public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken = null, IProgress<double> progressReporter = null)
         {
             WitsmlLog log = await GetLogHeader(wellUid, wellboreUid, logUid);
 
@@ -169,7 +171,7 @@ namespace WitsmlExplorer.Api.Services
                 mnemonics.Insert(0, indexMnemonic);
             }
 
-            WitsmlLog witsmlLog = loadAllData ? await LoadDataRecursive(mnemonics, log, startIndex, endIndex, cancellationToken.Value, wellUid, wellboreUid, logUid)
+            WitsmlLog witsmlLog = loadAllData ? await LoadDataRecursive(mnemonics, log, startIndex, endIndex, cancellationToken.Value, wellUid, wellboreUid, logUid, progressReporter)
                 : await LoadData(mnemonics, log, startIndex, endIndex, wellUid, wellboreUid, logUid);
 
             if (witsmlLog?.LogData == null || witsmlLog.LogData.Data.IsNullOrEmpty())
@@ -211,7 +213,7 @@ namespace WitsmlExplorer.Api.Services
             return witsmlLog;
         }
 
-        private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, CancellationToken cancellationToken, string wellUid = null, string wellboreUid = null, string logUid = null)
+        private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, CancellationToken cancellationToken, string wellUid = null, string wellboreUid = null, string logUid = null, IProgress<double> progressReporter = null)
         {
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch();
@@ -222,8 +224,13 @@ namespace WitsmlExplorer.Api.Services
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                 }
-                allLogData.Data.AddRange(logData.Data);
+                if (progressReporter != null)
+                {
+                    double progress = LogWorkerTools.CalculateProgressBasedOnIndex(log, logData);
+                    progressReporter.Report(progress);
+                }
                 logData = await logDataReader.GetNextBatch();
+                if (logData != null) allLogData.Data.AddRange(logData.Data);
             }
 
             var witsmlLog = new WitsmlLog();
