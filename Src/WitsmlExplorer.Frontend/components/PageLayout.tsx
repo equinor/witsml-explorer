@@ -80,71 +80,71 @@ const PageLayout = (): ReactElement => {
     setIsVisibile(isAuthenticated);
   }, [isAuthenticated]);
 
-  return isVisible ? (
-    <div onContextMenu={preventContextMenuPropagation}>
-      <NavLayout colors={colors}>
-        <Nav />
-      </NavLayout>
-      <Layout>
-        <SidebarLayout
-          colors={colors}
-          ref={sidebarRef}
-          style={{
-            width: sidebarWidth,
-            ...(!isSidebarExpanded && { display: "none" })
-          }}
-        >
-          <Sidebar />
-        </SidebarLayout>
-        <Divider
-          onMouseDown={startResizing}
-          colors={colors}
-          style={{ ...(!isSidebarExpanded && { display: "none" }) }}
-        />
-        <ContentViewLayout
-          style={
-            isSidebarExpanded
-              ? { width: contentWidth }
-              : { width: "100%", gridColumn: "1 / -1" }
-          }
-        >
-          <Alerts />
-          <ContentViewDimensionsContext.Provider
-            value={{ width: contentWidth, height: documentHeight }}
+  return (
+    isVisible && (
+      <div onContextMenu={preventContextMenuPropagation}>
+        <NavLayout colors={colors}>
+          <Nav />
+        </NavLayout>
+        <MainLayout>
+          <SidebarLayout
+            colors={colors}
+            ref={sidebarRef}
+            style={{
+              width: sidebarWidth,
+              ...(!isSidebarExpanded && { display: "none" })
+            }}
           >
-            <ContentView />
-          </ContentViewDimensionsContext.Provider>
-        </ContentViewLayout>
-        <PropertyBar colors={colors}>
-          <Button
-            variant={"ghost_icon"}
-            style={{ marginRight: "0.5rem" }}
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+            <Sidebar />
+          </SidebarLayout>
+          <Divider
+            onMouseDown={startResizing}
+            colors={colors}
+            style={{ ...(!isSidebarExpanded && { display: "none" }) }}
+          />
+          <ContentViewLayout
+            style={
+              isSidebarExpanded
+                ? { width: contentWidth }
+                : { width: "100%", gridColumn: "1 / -1" }
+            }
           >
-            <Icon
-              name={isSidebarExpanded ? "collapse" : "expand"}
-              color={colors.text.staticIconsTertiary}
-            />
-          </Button>
-          <Properties>
-            <PropertiesPanel />
-          </Properties>
-          {version && (
-            <Typography
-              token={{
-                fontFamily: "Equinor",
-                fontSize: "0.875rem",
-                color: colors.text.staticIconsTertiary
-              }}
+            <Alerts />
+            <ContentViewDimensionsContext.Provider
+              value={{ width: contentWidth, height: documentHeight }}
             >
-              v.{version}
-            </Typography>
-          )}
-        </PropertyBar>
-      </Layout>
-    </div>
-  ) : (
-    <></>
+              <ContentView />
+            </ContentViewDimensionsContext.Provider>
+          </ContentViewLayout>
+          <PropertyBar colors={colors}>
+            <Button
+              variant={"ghost_icon"}
+              style={{ marginRight: "0.5rem" }}
+              onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+            >
+              <Icon
+                name={isSidebarExpanded ? "collapse" : "expand"}
+                color={colors.text.staticIconsTertiary}
+              />
+            </Button>
+            <Properties>
+              <PropertiesPanel />
+            </Properties>
+            {version && (
+              <Typography
+                token={{
+                  fontFamily: "Equinor",
+                  fontSize: "0.875rem",
+                  color: colors.text.staticIconsTertiary
+                }}
+              >
+                v.{version}
+              </Typography>
+            )}
+          </PropertyBar>
+        </MainLayout>
+      </div>
+    )
   );
 };
 
@@ -156,22 +156,22 @@ interface ContentViewDimensions {
 export const ContentViewDimensionsContext =
   createContext<ContentViewDimensions>({} as ContentViewDimensions);
 
-const Layout = styled.div`
+const MainLayout = styled.div`
   display: grid;
   overflow: hidden;
   grid-template-areas:
     "sidebar divider content"
     "footer footer footer";
-  height: calc(100vh - 40px);
-  margin-top: 40px;
-  grid-template-rows: 1fr 40px;
+  height: calc(100vh - var(--navbar-height));
+  margin-top: var(--navbar-height);
+  grid-template-rows: 1fr var(--properties-bar-height);
 `;
 
 const NavLayout = styled.div<{ colors: Colors }>`
   position: fixed;
   top: 0;
   width: 100%;
-  height: 40px;
+  height: var(--navbar-height);
   border-bottom: 1px solid ${(prop) => prop.colors.interactive.disabledBorder};
 `;
 
@@ -180,7 +180,7 @@ const SidebarLayout = styled.div<{ colors: Colors }>`
   border: solid 0.1em ${(prop) => prop.colors.ui.backgroundLight};
   display: flex;
   flex-direction: column;
-  min-width: 174px;
+  min-width: var(--sidebar-min-width);
   overflow: hidden;
 `;
 
@@ -207,12 +207,12 @@ const ContentViewLayout = styled.div`
 `;
 
 const PropertyBar = styled.div<{ colors: Colors }>`
-  width: 100vw;
-  height: 40px;
-  background-color: ${(props) => props.colors.ui.backgroundLight};
   grid-area: footer;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
+
+  height: var(--properties-bar-height);
+  background-color: ${(props) => props.colors.ui.backgroundLight};
   align-items: center;
   padding-right: 0.5rem;
 `;
