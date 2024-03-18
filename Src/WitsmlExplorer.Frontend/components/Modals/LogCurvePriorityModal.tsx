@@ -1,4 +1,5 @@
-import { Button, Icon, TextField } from "@equinor/eds-core-react";
+import { Icon, TextField } from "@equinor/eds-core-react";
+import { Button } from "components/StyledComponents/Button";
 import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";

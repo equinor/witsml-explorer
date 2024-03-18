@@ -1,11 +1,12 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { Button, Icon, Typography } from "@equinor/eds-core-react";
+import { Icon, Typography } from "@equinor/eds-core-react";
 import Alerts from "components/Alerts";
 import ContentView from "components/ContentView";
 import { preventContextMenuPropagation } from "components/ContextMenus/ContextMenu";
 import Nav from "components/Nav";
 import PropertiesPanel from "components/PropertiesPanel";
 import Sidebar from "components/Sidebar/Sidebar";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
 import { msalEnabled } from "msal/MsalAuthProvider";
@@ -115,12 +116,14 @@ const PageLayout = (): ReactElement => {
       </ContentViewLayout>
       <PropertyBar colors={colors}>
         <Button
-          colors={colors}
           variant={"ghost_icon"}
           style={{ marginRight: "0.5rem" }}
           onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
         >
-          <Icon name={isSidebarExpanded ? "collapse" : "expand"} />
+          <Icon
+            name={isSidebarExpanded ? "collapse" : "expand"}
+            color={colors.text.staticIconsTertiary}
+          />
         </Button>
         <Properties>
           <PropertiesPanel />

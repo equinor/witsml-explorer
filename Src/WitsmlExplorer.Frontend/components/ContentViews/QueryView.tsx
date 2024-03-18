@@ -1,4 +1,4 @@
-import { Button, Menu, Tabs, TextField } from "@equinor/eds-core-react";
+import { Menu, Tabs, TextField } from "@equinor/eds-core-react";
 import {
   ReturnElements,
   StoreFunction,
@@ -11,6 +11,7 @@ import ConfirmModal from "components/Modals/ConfirmModal";
 import { QueryEditor } from "components/QueryEditor";
 import { getTag } from "components/QueryEditorUtils";
 import { StyledNativeSelect } from "components/Select";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";

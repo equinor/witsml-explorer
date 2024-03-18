@@ -1,7 +1,8 @@
-import { Button, EdsProvider, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import {
   refreshObjectQuery,
@@ -14,7 +15,6 @@ import { ObjectType } from "models/objectType";
 import React, { useCallback, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 
@@ -49,7 +49,7 @@ const Panel = (props: PanelProps) => {
     stickyLeftColumns
   } = props;
   const {
-    operationState: { theme, colors }
+    operationState: { theme }
   } = useContext(OperationContext);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -136,36 +136,30 @@ const Panel = (props: PanelProps) => {
           firstToggleableIndex={firstToggleableIndex}
         />
         {showRefresh && (
-          <StyledButton
+          <Button
             aria-label="refresh"
-            colors={colors}
             variant="ghost_icon"
             key="refreshObjects"
             onClick={onClickRefresh}
           >
             <Icon name="refresh" />
-          </StyledButton>
+          </Button>
         )}
         {downloadToCsvFileName != null && (
-          <StyledButton
-            colors={colors}
+          <Button
             variant="ghost_icon"
             key="download"
             aria-label="download as csv"
             onClick={exportAsCsv}
           >
             <Icon name="download" />
-          </StyledButton>
+          </Button>
         )}
         {panelElements}
       </EdsProvider>
     </PanelContainer>
   );
 };
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
-`;
 
 const PanelContainer = styled.div`
   display: flex;

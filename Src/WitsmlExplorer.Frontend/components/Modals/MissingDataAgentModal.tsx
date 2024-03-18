@@ -1,7 +1,6 @@
 import {
   Accordion,
   Autocomplete,
-  Button,
   Icon,
   Typography
 } from "@equinor/eds-core-react";
@@ -16,6 +15,7 @@ import ModalDialog, {
   ModalWidth
 } from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
@@ -27,7 +27,6 @@ import { ObjectType } from "models/objectType";
 import { useContext, useRef, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "tools/localStorageHelpers";
 import { v4 as uuid } from "uuid";
 
@@ -302,9 +301,13 @@ const MissingDataAgentModal = (
               </Button>
             </CheckLayout>
           ))}
-          <StyledButton variant="contained_icon" onClick={addCheck}>
+          <Button
+            style={{ alignSelf: "center" }}
+            variant="contained_icon"
+            onClick={addCheck}
+          >
             <Icon name="add" />
-          </StyledButton>
+          </Button>
           <div
             style={{
               display: "flex",
@@ -362,8 +365,4 @@ const CheckLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 2fr 0.2fr;
   gap: 10px;
-`;
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  align-self: center;
 `;
