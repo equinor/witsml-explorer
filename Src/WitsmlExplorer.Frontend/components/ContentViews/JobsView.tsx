@@ -147,6 +147,7 @@ export const JobsView = (): React.ReactElement => {
 
   const panelElements = [
     <Button
+      variant="ghost_icon"
       key="refreshJobs"
       aria-disabled={isFetching ? true : false}
       aria-label={isFetching ? "loading data" : null}
@@ -154,7 +155,6 @@ export const JobsView = (): React.ReactElement => {
       disabled={isFetching}
     >
       <Icon name="refresh" />
-      Refresh
     </Button>,
     msalEnabled &&
     (getUserAppRoles().includes(adminRole) ||
