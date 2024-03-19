@@ -34,6 +34,13 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
   box-sizing: border-box;
 }
 
+:root {
+  --navbar-height: 40px;
+  --properties-bar-height: 40px;
+  --sidebar-min-width: 174px;
+}
+
+
   ::-webkit-scrollbar {
     background-color: transparent;
     width: 12px;
