@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                 await WaitUntilRiskHasBeenCreated(risk);
                 Logger.LogInformation("Risk created. {jobDescription}", job.Description());
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Risk created ({risk.Name} [{risk.Uid}])");
-                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), risk.WellUid, risk.WellboreUid, EntityType.Risk);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), risk.WellUid, risk.WellboreUid, EntityType.Risk, JobType);
                 return (workerResult, refreshAction);
             }
 

@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
                 Logger.LogInformation("Deleted wellbore. WellUid: {WellUid}, WellboreUid: {WellboreUid}",
                 wellUid,
                 wellboreUid);
-                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Remove);
+                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, RefreshType.Remove, JobType);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted wellbore: ${wellboreUid}");
                 return (workerResult, refreshAction);
             }

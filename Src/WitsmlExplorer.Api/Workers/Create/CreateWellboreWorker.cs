@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                 await WaitUntilWellboreHasBeenCreated(wellbore);
                 Logger.LogInformation("Wellbore created. {jobDescription}", job.Description());
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Wellbore created ({wellbore.Name} [{wellbore.Uid}])");
-                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellbore.WellUid, wellbore.Uid, RefreshType.Add);
+                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellbore.WellUid, wellbore.Uid, RefreshType.Add, JobType);
                 return (workerResult, refreshAction);
             }
 

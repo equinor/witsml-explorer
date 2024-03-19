@@ -43,7 +43,7 @@ export const BatchModifyMenuItem = forwardRef(
         objectType
       };
       const jobId = await JobService.orderJob(
-        JobType.BatchModifyObjectsOnWellbore,
+        JobType.BatchModifyObjectsOnSearch,
         modifyJob
       );
       if (jobId) {

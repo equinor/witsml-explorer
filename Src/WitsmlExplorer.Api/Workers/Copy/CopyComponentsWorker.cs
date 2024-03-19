@@ -87,7 +87,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
-            RefreshObjects refreshAction = new(_targetHostname, job.Target.WellUid, job.Target.WellboreUid, _componentType.ToParentType(), job.Target.Uid);
+            RefreshObjects refreshAction = new(_targetHostname, job.Target.WellUid, job.Target.WellboreUid, _componentType.ToParentType(), JobType, job.Target.Uid);
             WorkerResult workerResult = new(_targetHostname, true, $"Components {string.Join(", ", toCopyUids)} copied to: {job.Target.Name}");
 
             return (workerResult, refreshAction);

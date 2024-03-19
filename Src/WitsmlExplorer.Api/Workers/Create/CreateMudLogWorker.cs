@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                 await WaitUntilMudLogHasBeenCreated(mudLog);
                 Logger.LogInformation("MudLog created. {jobDescription}", job.Description());
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"MudLog created ({mudLog.Name} [{mudLog.Uid}])");
-                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), mudLog.WellUid, mudLog.WellboreUid, EntityType.MudLog);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), mudLog.WellUid, mudLog.WellboreUid, EntityType.MudLog, JobType);
                 return (workerResult, refreshAction);
             }
 

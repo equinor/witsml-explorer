@@ -16,13 +16,13 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Modify
 {
-    public class BatchModifyObjectsOnWellboreWorker : BaseWorker<BatchModifyObjectsOnWellboreJob>, IWorker
+    public class BatchModifyObjectsOnSearchWorker : BaseWorker<BatchModifyObjectsOnSearchJob>, IWorker
     {
-        public JobType JobType => JobType.BatchModifyObjectsOnWellbore;
+        public JobType JobType => JobType.BatchModifyObjectsOnSearch;
 
-        public BatchModifyObjectsOnWellboreWorker(ILogger<BatchModifyObjectsOnWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
+        public BatchModifyObjectsOnSearchWorker(ILogger<BatchModifyObjectsOnSearchJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyObjectsOnWellboreJob job, CancellationToken? cancellationToken = null)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(BatchModifyObjectsOnSearchJob job, CancellationToken? cancellationToken = null)
         {
             List<ObjectOnWellbore> objects = job.Objects;
             EntityType objectType = job.ObjectType;
@@ -58,13 +58,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
             Logger.LogInformation("{objectType} modified. {jobDescription}", objectType, job.Description());
 
-            RefreshObjects refreshAction = null;
-            if (objects.All(obj => obj.WellUid == objects[0].WellUid && obj.WellboreUid == objects[0].WellboreUid))
-            {
-                refreshAction = new RefreshObjects(GetTargetWitsmlClientOrThrow().GetServerHostname(), objects[0].WellUid, objects[0].WellboreUid, objectType, JobType);
-            }
+            var refreshAction = new BatchRefreshObjects(GetTargetWitsmlClientOrThrow().GetServerHostname(), objectType, JobType, objects);
 
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"{objectType} {objects[0].Name} updated for {objects[0].WellboreName}", null, null, job.JobInfo.Id);
+            var workerResult = new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"{objects.Count} objects of type {objectType} batch updated", null, null, job.JobInfo.Id);
 
             return (workerResult, refreshAction);
         }

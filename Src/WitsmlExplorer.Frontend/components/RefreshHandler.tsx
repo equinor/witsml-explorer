@@ -5,7 +5,8 @@ import {
   refreshWellQuery,
   refreshWellboreQuery,
   refreshWellboresQuery,
-  refreshWellsQuery
+  refreshWellsQuery,
+  refreshSearchQuery
 } from "hooks/query/queryRefreshHelpers";
 import EntityType from "models/entityType";
 import { ObjectType } from "models/objectType";
@@ -14,6 +15,8 @@ import NotificationService, {
   RefreshAction,
   RefreshType
 } from "services/notificationService";
+import { JobType } from "../services/jobService";
+import { ObjectFilterType } from "../contexts/filter";
 
 const RefreshHandler = (): React.ReactElement => {
   const queryClient = useQueryClient();
@@ -40,10 +43,15 @@ const RefreshHandler = (): React.ReactElement => {
                     "Unexpected EntityType when attempting to refresh WITSML objects"
                   );
                 }
-                if (refreshAction.objectUid == null) {
-                  refreshWellboreObjects(refreshAction);
-                } else {
+                if (refreshAction.objectUid != null) {
                   refreshWellboreObject(refreshAction);
+                } else if (
+                  (refreshAction.originJobType as JobType) ===
+                  JobType.BatchModifyObjectsOnSearch
+                ) {
+                  refreshSearchFilter(refreshAction);
+                } else {
+                  refreshWellboreObjects(refreshAction);
                 }
             }
           } catch (error) {
@@ -106,6 +114,25 @@ const RefreshHandler = (): React.ReactElement => {
       refreshAction.entityType as ObjectType,
       refreshAction.objectUid
     );
+  }
+
+  function refreshSearchFilter(refreshAction: RefreshAction) {
+    refreshSearchQuery(
+      queryClient,
+      refreshAction.serverUrl.toString().toLowerCase(),
+      refreshAction.entityType as ObjectFilterType
+    );
+
+    for (const object of refreshAction.objects) {
+      refreshObjectQuery(
+        queryClient,
+        refreshAction.serverUrl.toString().toLowerCase(),
+        object.wellUid,
+        object.wellboreUid,
+        refreshAction.entityType as ObjectType,
+        object.uid
+      );
+    }
   }
 
   function refreshWellboreObjects(refreshAction: RefreshAction) {

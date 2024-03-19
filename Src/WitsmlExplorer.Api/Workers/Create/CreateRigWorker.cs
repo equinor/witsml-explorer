@@ -42,7 +42,7 @@ public class CreateRigWorker : BaseWorker<CreateRigJob>, IWorker
         }
 
         Logger.LogInformation("Rig created. {jobDescription}", job.Description());
-        RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, EntityType.Rig);
+        RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Rig.WellUid, job.Rig.WellboreUid, EntityType.Rig, JobType);
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Rig {job.Rig.Name} add for {job.Rig.WellboreName}");
 
         return (workerResult, refreshAction);

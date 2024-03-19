@@ -42,7 +42,7 @@ public class CreateTrajectoryWorker : BaseWorker<CreateTrajectoryJob>, IWorker
         }
 
         Logger.LogInformation("Trajectory created. {jobDescription}", job.Description());
-        RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Trajectory.WellUid, job.Trajectory.WellboreUid, EntityType.Trajectory);
+        RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Trajectory.WellUid, job.Trajectory.WellboreUid, EntityType.Trajectory, JobType);
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Trajectory {job.Trajectory.Name} add for {job.Trajectory.WellboreName}");
 
         return (workerResult, refreshAction);

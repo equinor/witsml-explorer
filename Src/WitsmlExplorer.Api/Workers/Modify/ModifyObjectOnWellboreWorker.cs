@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
 
             Logger.LogInformation("{objectType} modified. {jobDescription}", objectType, job.Description());
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), obj.WellUid, obj.WellboreUid, objectType);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), obj.WellUid, obj.WellboreUid, objectType, JobType);
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"{objectType} {obj.Name} updated for {obj.WellboreName}");
 
             return (workerResult, refreshAction);

@@ -109,7 +109,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
             }
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, resultMessage);
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, job.Target.Uid);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, JobType, job.Target.Uid);
             return (workerResult, refreshAction);
         }
 

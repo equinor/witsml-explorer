@@ -4,6 +4,7 @@ import { AlertSeverity } from "components/Alerts";
 import { msalEnabled } from "msal/MsalAuthProvider";
 import { ApiClient, getBaseUrl } from "services/apiClient";
 import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
+import ObjectOnWellbore from "../models/objectOnWellbore";
 
 export interface Notification {
   serverUrl: URL;
@@ -23,18 +24,21 @@ interface ObjectDescription {
 
 export interface RefreshAction {
   entityType: string;
+  originJobType: string;
   refreshType?: RefreshType;
   serverUrl: URL;
   wellUid?: string;
   wellUids?: string[];
   wellboreUid?: string;
   objectUid?: string;
+  objects?: ObjectOnWellbore[];
 }
 
 export enum RefreshType {
   Add = "Add",
   Update = "Update",
-  Remove = "Remove"
+  Remove = "Remove",
+  BatchUpdate = "BatchUpdate"
 }
 
 export type JobProgress = Record<string, number>;

@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("GeologyInterval modified. {jobDescription}", job.Description());
-                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.MudLog, mudLogUid);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.MudLog, JobType, mudLogUid);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"GeologyInterval updated ({job.GeologyInterval.Uid})"), refreshAction);
             }
 

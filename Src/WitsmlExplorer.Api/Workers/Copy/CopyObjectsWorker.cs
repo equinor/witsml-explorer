@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             ICollection<WitsmlObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectsToCopy.Objects, targetWellbore);
-            RefreshObjects refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Source.ObjectType);
+            RefreshObjects refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Source.ObjectType, JobType);
             return await _copyUtils.CopyObjectsOnWellbore(targetClient, queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
     }

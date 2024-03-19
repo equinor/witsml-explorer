@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Deleted well. WellUid: {WellUid}", wellUid);
-                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, RefreshType.Remove);
+                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, RefreshType.Remove, JobType);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted well with uid ${wellUid}");
                 return (workerResult, refreshAction);
             }

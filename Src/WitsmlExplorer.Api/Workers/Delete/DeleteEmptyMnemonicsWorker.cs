@@ -107,10 +107,10 @@ namespace WitsmlExplorer.Api.Workers.Delete
             var workerResult = new WorkerResult(client.GetServerHostname(), true, $"Empty mnemonics deleted", jobId: job.JobInfo.Id);
 
             RefreshAction refreshAction = job.Logs.Any()
-                ? new RefreshObjects(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Logs.First().WellUid, job.Logs.First().WellboreUid, EntityType.Log)
+                ? new RefreshObjects(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Logs.First().WellUid, job.Logs.First().WellboreUid, EntityType.Log, JobType)
                 : job.Wellbores.Any()
-                    ? new RefreshWell(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Wellbores.First().WellUid, RefreshType.Update)
-                    : new RefreshWells(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Wells.Select(well => well.WellUid).ToArray(), RefreshType.Update);
+                    ? new RefreshWell(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Wellbores.First().WellUid, RefreshType.Update, JobType)
+                    : new RefreshWells(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Wells.Select(well => well.WellUid).ToArray(), RefreshType.Update, JobType);
 
             return (workerResult, refreshAction);
         }

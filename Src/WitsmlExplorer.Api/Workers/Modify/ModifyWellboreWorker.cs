@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             {
                 Logger.LogInformation("Wellbore modified. {jobDescription}", job.Description());
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Wellbore updated ({job.Wellbore.Name} [{job.Wellbore.Uid}])");
-                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Wellbore.WellUid, job.Wellbore.Uid, RefreshType.Update);
+                RefreshWellbore refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Wellbore.WellUid, job.Wellbore.Uid, RefreshType.Update, JobType);
                 return (workerResult, refreshAction);
             }
             WitsmlWellbores updatedWellbores = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(witsmlWellbore, new OptionsIn(ReturnElements.IdOnly));

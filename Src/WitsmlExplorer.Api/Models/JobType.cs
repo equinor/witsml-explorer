@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace WitsmlExplorer.Api.Models
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum JobType
     {
         CopyComponents = 1,
@@ -19,6 +22,7 @@ namespace WitsmlExplorer.Api.Models
         DeleteEmptyMnemonics,
         ModifyObjectOnWellbore,
         BatchModifyObjectsOnWellbore,
+        BatchModifyObjectsOnSearch,
         ModifyGeologyInterval,
         ModifyTrajectoryStation,
         ModifyTubularComponent,
