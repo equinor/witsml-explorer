@@ -5,7 +5,6 @@ import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
 import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
-import { AssetsLoader } from "../components/AssetsLoader";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
 import GlobalStyles from "../components/GlobalStyles";
 import ModalPresenter from "../components/Modals/ModalPresenter";
@@ -111,7 +110,7 @@ export default function Root() {
     <>
       <Head>
         <title>WITSML Explorer</title>
-        <link rel="icon" href={AssetsLoader.getAssetsRoot() + "/favicon.ico"} />
+        <link rel="icon" href={"/favicon.ico"} />
       </Head>
       <MsalProvider instance={msalInstance}>
         {msalEnabled && (

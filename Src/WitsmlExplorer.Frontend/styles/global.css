@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "Equinor";
+  src: url("/assets/fonts/Equinor-Regular.woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "EquinorRegular";
+  src: url("/assets/fonts/Equinor-Regular.woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "EquinorBold";
+  src: url("/assets/fonts/Equinor-Bold.woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "EquinorMedium";
+  src: url("/assets/fonts/Equinor-Medium.woff2");
+  font-weight: normal;
+  font-style: normal;
+}

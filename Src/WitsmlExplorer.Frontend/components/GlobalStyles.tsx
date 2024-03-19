@@ -1,33 +1,7 @@
-import { AssetsLoader } from "components/AssetsLoader";
 import { createGlobalStyle } from "styled-components";
 import { Colors } from "styles/Colors";
 
 const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
-  @font-face {
-    font-family: "Equinor";
-    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Regular.woff2");
-    font-weight: normal;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: "EquinorRegular";
-    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Regular.woff2");
-    font-weight: normal;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: "EquinorBold";
-    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Bold.woff2");
-    font-weight: normal;
-    font-style: normal;
-  }
-  @font-face {
-    font-family: "EquinorMedium";
-    src: url("${AssetsLoader.getAssetsRoot()}/assets/fonts/Equinor-Medium.woff2");
-    font-weight: normal;
-    font-style: normal;
-  }
-
 *,
 *:before,
 *:after {
