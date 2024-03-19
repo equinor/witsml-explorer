@@ -1,24 +1,24 @@
 @font-face {
   font-family: "Equinor";
-  src: url("https://s478-cdne-edsartefacts-prod.azureedge.net/assets/font/Equinor-Regular.woff2");
+  src:  url(//cdn.eds.equinor.com/font/Equinor-Regular.woff2) format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "EquinorRegular";
-  src: url("https://s478-cdne-edsartefacts-prod.azureedge.net/font/Equinor-Regular.woff2");
+  src:  url(//cdn.eds.equinor.com/font/Equinor-Regular.woff2) format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "EquinorBold";
-  src: url("https://s478-cdne-edsartefacts-prod.azureedge.net/font/Equinor-Bold.woff2");
+  src:  url(//cdn.eds.equinor.com/font/Equinor-Bold.woff2) format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "EquinorMedium";
-  src: url("https://s478-cdne-edsartefacts-prod.azureedge.net/font/Equinor-Medium.woff2");
+  src:  url(//cdn.eds.equinor.com/font/Equinor-Medium.woff2) format('woff2');
   font-weight: normal;
   font-style: normal;
 }
