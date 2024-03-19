@@ -1,24 +1,24 @@
 @font-face {
   font-family: "Equinor";
-  src:  url(//cdn.eds.equinor.com/font/Equinor-Regular.woff2) format('woff2');
+  src:  url("/assets/fonts/Equinor-Regular.woff2");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "EquinorRegular";
-  src:  url(//cdn.eds.equinor.com/font/Equinor-Regular.woff2) format('woff2');
+  src:  url("/assets/fonts/Equinor-Regular.woff2");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "EquinorBold";
-  src:  url(//cdn.eds.equinor.com/font/Equinor-Bold.woff2) format('woff2');
+  src:  url("/assets/fonts/Equinor-Bold.woff2");
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: "EquinorMedium";
-  src:  url(//cdn.eds.equinor.com/font/Equinor-Medium.woff2) format('woff2');
+  src:  url("/assets/fonts/Equinor-Medium.woff2");
   font-weight: normal;
   font-style: normal;
 }
