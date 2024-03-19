@@ -3,8 +3,7 @@ import {
   EdsProvider,
   Icon,
   Label,
-  TextField,
-  Typography
+  TextField
 } from "@equinor/eds-core-react";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
@@ -156,16 +155,8 @@ const EditSelectedLogCurveInfo = (
     selectedMnemonics && (
       <EdsProvider density={theme}>
         <Layout colors={colors}>
-          <Typography
-            style={{
-              color: `${colors.interactive.primaryResting}`
-            }}
-            variant="h3"
-          >
-            Curve Values
-          </Typography>
           <StartEndIndex>
-            <StyledLabel label="Start Index" />
+            <StyledLabel label="Start Index:" colors={colors} />
             <StyledTextField
               disabled={disabled}
               id="startIndex"
@@ -179,7 +170,7 @@ const EditSelectedLogCurveInfo = (
             />
           </StartEndIndex>
           <StartEndIndex>
-            <StyledLabel label="End Index" />
+            <StyledLabel label="End Index:" colors={colors} />
             <StyledTextField
               disabled={disabled}
               id="endIndex"
@@ -193,8 +184,8 @@ const EditSelectedLogCurveInfo = (
             />
           </StartEndIndex>
           <StartEndIndex>
-            <StyledLabel label="Mnemonics" />
-            <Autocomplete
+            <StyledLabel label="Mnemonics:" colors={colors} />
+            <StyledAutocomplete
               id={"mnemonics"}
               disabled={disabled || isFetching}
               label={""}
@@ -211,10 +202,11 @@ const EditSelectedLogCurveInfo = (
                 } as CSSProperties
               }
               dropdownHeight={600}
+              colors={colors}
             />
           </StartEndIndex>
           <Button
-            variant={"ghost"}
+            variant={"ghost_icon"}
             onClick={submitLogCurveInfo}
             disabled={
               disabled ||
@@ -245,6 +237,12 @@ const getParsedValue = (input: string, isTimeLog: boolean) => {
     : input;
 };
 
+const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
+  button {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+`;
+
 const Layout = styled.div<{ colors: Colors }>`
   display: flex;
   gap: 0.25rem;
@@ -258,7 +256,8 @@ const StartEndIndex = styled.div`
   display: flex;
 `;
 
-const StyledLabel = styled(Label)`
+const StyledLabel = styled(Label)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
   white-space: nowrap;
   align-items: center;
   font-style: italic;
