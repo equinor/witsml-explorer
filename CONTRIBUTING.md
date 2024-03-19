@@ -64,7 +64,7 @@ LiteDb is a serverless database stored in a single file. To use LiteDb, add this
   }
 }
 ```
-Note that the name can be a full path to the database file.
+Note that the name should contain the .db extension. It can be a full path to the database file if you want to store it in a different folder.
 
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
