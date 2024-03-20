@@ -1,11 +1,7 @@
-import {
-  Autocomplete,
-  Button,
-  TextField,
-  Typography
-} from "@equinor/eds-core-react";
+import { Autocomplete, TextField, Typography } from "@equinor/eds-core-react";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { validText } from "components/Modals/ModalParts";
+import { Button } from "components/StyledComponents/Button";
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";

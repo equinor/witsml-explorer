@@ -1,10 +1,4 @@
-import {
-  Button,
-  Icon,
-  Label,
-  TextField,
-  Tooltip
-} from "@equinor/eds-core-react";
+import { Icon, Label, TextField, Tooltip } from "@equinor/eds-core-react";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import ModalDialog, {
@@ -14,6 +8,7 @@ import ModalDialog, {
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import {
@@ -35,7 +30,6 @@ import AuthorizationService from "services/authorizationService";
 import NotificationService from "services/notificationService";
 import ServerService from "services/serverService";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icons from "styles/Icons";
 
 export interface ServerModalProps {
@@ -266,15 +260,13 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   size={32}
                 />
               )}
-              <StyledButton
+              <Button
                 disabled={displayUrlError || connectionVerified}
                 onClick={showCredentialsModal}
-                color={"primary"}
-                colors={colors}
                 variant="outlined"
               >
                 {"Test connection"}
-              </StyledButton>
+              </Button>
             </ButtonWrapper>
           </ContentWrapper>
         </>
@@ -357,11 +349,6 @@ const ButtonWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-`;
-
-const StyledButton = styled(Button)<{ colors: Colors }>`
-  white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
 export default ServerModal;

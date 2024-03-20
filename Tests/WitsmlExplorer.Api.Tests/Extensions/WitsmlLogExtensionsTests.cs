@@ -1,18 +1,19 @@
 using System.Collections.Generic;
+using System.Text.Json;
 
 using Witsml;
 using Witsml.Data;
 
-using WitsmlExplorer.Api.Workers;
+using WitsmlExplorer.Api.Extensions;
 
 using Xunit;
 
-namespace WitsmlExplorer.Api.Tests.Workers
+namespace WitsmlExplorer.Api.Tests.Extensions
 {
-    public class LogWorkerToolsTests
+    public class WitsmlLogExtensionsTests
     {
         [Fact]
-        public void GetLogCurveInfoWithIndexCurveFirst_IndexCurveIsNotFirst_MovesIndexCurveFirst()
+        public void EnsureIndexCurveIsFirst_IndexCurveIsNotFirst_MovesIndexCurveFirst()
         {
             WitsmlLog log = new WitsmlLog()
             {
@@ -46,7 +47,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            List<WitsmlLogCurveInfo> resultLCI = LogWorkerTools.GetLogCurveInfoWithIndexCurveFirst(log);
+            log.EnsureIndexCurveIsFirst();
+            List<WitsmlLogCurveInfo> resultLCI = log.LogCurveInfo;
 
             Assert.Equal("IndexCurve", resultLCI[0].Mnemonic);
             Assert.Equal("Curve3", resultLCI[1].Mnemonic);
@@ -55,7 +57,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public void GetLogCurveInfoWithIndexCurveFirst_CorrectLCI_StaysUnchanged()
+        public void EnsureIndexCurveIsFirst_CorrectLCI_StaysUnchanged()
         {
             WitsmlLog log = new WitsmlLog()
             {
@@ -89,9 +91,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
             };
 
-            List<WitsmlLogCurveInfo> resultLCI = LogWorkerTools.GetLogCurveInfoWithIndexCurveFirst(log);
+            var originalLog = JsonSerializer.Serialize(log, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-            Assert.Equal(log.LogCurveInfo, resultLCI);
+            log.EnsureIndexCurveIsFirst();
+
+            var newLog = JsonSerializer.Serialize(log, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            Assert.Equal(originalLog, newLog);
         }
     }
 }

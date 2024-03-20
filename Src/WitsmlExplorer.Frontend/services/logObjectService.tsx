@@ -18,14 +18,16 @@ export default class LogObjectService {
   ): Promise<LogData> {
     if (mnemonics.length === 0) return;
     const params = [
-      `startIndex=${encodeURIComponent(startIndex)}`,
-      `endIndex=${encodeURIComponent(endIndex)}`,
       `startIndexIsInclusive=${startIndexIsInclusive}`,
       `loadAllData=${loadAllData}`
     ];
-    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/${logUid}/logdata?${params.join(
-      "&"
-    )}`;
+    if (startIndex) params.push(`startIndex=${encodeURIComponent(startIndex)}`);
+    if (endIndex) params.push(`endIndex=${encodeURIComponent(endIndex)}`);
+    const pathName = `/api/wells/${encodeURIComponent(
+      wellUid
+    )}/wellbores/${encodeURIComponent(wellboreUid)}/logs/${encodeURIComponent(
+      logUid
+    )}/logdata?${params.join("&")}`;
     const response = await ApiClient.post(
       pathName,
       JSON.stringify(mnemonics),

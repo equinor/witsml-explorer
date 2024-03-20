@@ -1,7 +1,9 @@
-import { Button, Icon, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
+import { Button } from "components/StyledComponents/Button";
+import OperationContext from "contexts/operationContext";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -10,9 +12,10 @@ import {
 } from "hooks/query/queryRefreshHelpers";
 import useExport, { encloseCell } from "hooks/useExport";
 import { ObjectType } from "models/objectType";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 
 export interface PanelProps {
@@ -45,14 +48,24 @@ const Panel = (props: PanelProps) => {
     downloadToCsvFileName = null,
     stickyLeftColumns
   } = props;
+  const {
+    operationState: { theme }
+  } = useContext(OperationContext);
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
   const queryClient = useQueryClient();
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid } =
     useParams();
-
+  const firstToggleableIndex = Math.max(
+    (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0),
+    stickyLeftColumns
+  );
+  const numOfSelected =
+    table.getVisibleLeafColumns().length - firstToggleableIndex;
+  const numOfColumns = table.getAllLeafColumns().length - firstToggleableIndex;
+  const selectedColumnsStatus = `Col: ${numOfSelected}/${numOfColumns}`;
   const selectedItemsText = checkableRows
-    ? `Selected: ${numberOfCheckedItems}/${numberOfItems}`
+    ? `Row: ${numberOfCheckedItems}/${numberOfItems}`
     : `Items: ${numberOfItems}`;
 
   useEffect(() => {
@@ -108,40 +121,50 @@ const Panel = (props: PanelProps) => {
   }, [columns, table]);
 
   return (
-    <Div>
-      <ColumnOptionsMenu
-        checkableRows={checkableRows}
-        table={table}
-        viewId={viewId}
-        columns={columns}
-        expandableRows={expandableRows}
-        stickyLeftColumns={stickyLeftColumns}
-      />
-      <Typography>{selectedItemsText}</Typography>
-      {showRefresh && (
-        <Button key="refreshObjects" onClick={onClickRefresh}>
-          <Icon name="refresh" />
-          Refresh
-        </Button>
-      )}
-      {downloadToCsvFileName != null && (
-        <Button
-          key="download"
-          aria-label="download as csv"
-          onClick={exportAsCsv}
-        >
-          Download as .csv
-        </Button>
-      )}
-      {panelElements}
-    </Div>
+    <PanelContainer>
+      <EdsProvider density={theme}>
+        <Typography>{selectedItemsText}</Typography>
+        <Typography>{selectedColumnsStatus}</Typography>
+        <ColumnOptionsMenu
+          checkableRows={checkableRows}
+          table={table}
+          viewId={viewId}
+          columns={columns}
+          expandableRows={expandableRows}
+          stickyLeftColumns={stickyLeftColumns}
+          selectedColumnsStatus={selectedColumnsStatus}
+          firstToggleableIndex={firstToggleableIndex}
+        />
+        {showRefresh && (
+          <Button
+            aria-label="refresh"
+            variant="ghost_icon"
+            key="refreshObjects"
+            onClick={onClickRefresh}
+          >
+            <Icon name="refresh" />
+          </Button>
+        )}
+        {downloadToCsvFileName != null && (
+          <Button
+            variant="ghost_icon"
+            key="download"
+            aria-label="download as csv"
+            onClick={exportAsCsv}
+          >
+            <Icon name="download" />
+          </Button>
+        )}
+        {panelElements}
+      </EdsProvider>
+    </PanelContainer>
   );
 };
 
-const Div = styled.div`
+const PanelContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 8px;
   align-items: center;
   padding: 4px;
   white-space: nowrap;

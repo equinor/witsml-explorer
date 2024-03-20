@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 {
     public interface IDeleteComponentsWorker
     {
-        Task<(WorkerResult, RefreshAction)> Execute(DeleteComponentsJob job);
+        Task<(WorkerResult, RefreshAction)> Execute(DeleteComponentsJob job, CancellationToken? cancellationToken = null);
     }
 
     public class DeleteComponentsWorker : BaseWorker<DeleteComponentsJob>, IWorker, IDeleteComponentsWorker
@@ -25,7 +26,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public DeleteComponentsWorker(ILogger<DeleteComponentsJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteComponentsJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteComponentsJob job, CancellationToken? cancellationToken = null)
         {
             job.ToDelete.Verify();
             string wellUid = job.ToDelete.Parent.WellUid;

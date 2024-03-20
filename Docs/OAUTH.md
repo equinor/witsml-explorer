@@ -67,7 +67,7 @@ To use Azure keyvault, create your keyvault (named `witsmlexp-servers-kv` in the
 | witsmlcreds--server2user--password | My server2 test [CRUD]      |         ||
 | witsmlcreds--server2user--userid | My server2 test [CRUD]      |         ||
 
-Credentials will be mapped on URL from secrets with the server list. `Server` entry in MongoDB or CosmosDB will have the property `roles`. The app role assigned to a server will be compared to the role claims in the JWT provided in the Authorization header. If a user has been assigned the same application role, system credentials will be made available to the user. An API call will use the system credentials if the system username is set in the `WitsmlTargetUsername` or `WitsmlSourceUsername` header.
+Credentials will be mapped on URL from secrets with the server list. `Server` entry in the database will have the property `roles`. The app role assigned to a server will be compared to the role claims in the JWT provided in the Authorization header. If a user has been assigned the same application role, system credentials will be made available to the user. An API call will use the system credentials if the system username is set in the `WitsmlTargetUsername` or `WitsmlSourceUsername` header.
 
 **example server json in list**
 

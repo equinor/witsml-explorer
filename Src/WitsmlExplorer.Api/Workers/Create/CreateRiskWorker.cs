@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Workers.Create
 
         public CreateRiskWorker(ILogger<CreateRiskJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
 
-        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job)
+        public override async Task<(WorkerResult, RefreshAction)> Execute(CreateRiskJob job, CancellationToken? cancellationToken = null)
         {
             Risk risk = job.Risk;
             Verify(risk);

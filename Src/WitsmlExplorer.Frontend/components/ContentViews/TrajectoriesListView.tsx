@@ -93,11 +93,16 @@ export default function TrajectoriesListView() {
       property: "dateTimeLastChange",
       label: "commonData.dTimLastChange",
       type: ContentType.DateTime
+    },
+    {
+      property: "itemState",
+      label: "commonData.ItemState",
+      type: ContentType.String
     }
   ];
 
   const onSelect = (trajectory: any) => {
-    navigate(trajectory.uid);
+    navigate(encodeURIComponent(trajectory.uid));
   };
 
   const trajectoryRows = trajectories.map((trajectory) => {
@@ -126,7 +131,8 @@ export default function TrajectoriesListView() {
       ),
       mdMin: measureToString(trajectory.mdMin),
       mdMax: measureToString(trajectory.mdMax),
-      id: trajectory.uid
+      id: trajectory.uid,
+      itemState: trajectory.commonData?.itemState
     };
   });
 

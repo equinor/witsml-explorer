@@ -2,23 +2,22 @@ import { createSearchParams } from "react-router-dom";
 import { formatIndexValue } from "../../tools/IndexHelpers";
 
 export const createLogCurveValuesSearchParams = (
-  startIndex: string | number,
-  endIndex: string | number,
+  startIndex?: string | number,
+  endIndex?: string | number,
   mnemonics?: string[]
 ): URLSearchParams => {
-  const startIndexFormatted = formatIndexValue(startIndex);
-  const endIndexFormatted = formatIndexValue(endIndex);
-
+  let searchParams = {};
+  if (startIndex) {
+    const startIndexFormatted = formatIndexValue(startIndex);
+    searchParams = { startIndex: startIndexFormatted };
+  }
+  if (endIndex) {
+    const endIndexFormatted = formatIndexValue(endIndex);
+    searchParams = { ...searchParams, endIndex: endIndexFormatted };
+  }
   if (mnemonics) {
     const mnemonicsFormatted = JSON.stringify(mnemonics);
-    return createSearchParams({
-      mnemonics: mnemonicsFormatted,
-      startIndex: startIndexFormatted,
-      endIndex: endIndexFormatted
-    });
+    searchParams = { ...searchParams, mnemonics: mnemonicsFormatted };
   }
-  return createSearchParams({
-    startIndex: startIndexFormatted,
-    endIndex: endIndexFormatted
-  });
+  return createSearchParams(searchParams);
 };

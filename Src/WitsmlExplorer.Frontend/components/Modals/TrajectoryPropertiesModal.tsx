@@ -10,6 +10,7 @@ import { ObjectType } from "models/objectType";
 import Trajectory, { aziRefValues } from "models/trajectory";
 import React, { useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
+import { itemStateTypes } from "../../models/itemStateTypes";
 export interface TrajectoryPropertiesModalProps {
   mode: PropertiesModalMode;
   trajectory: Trajectory;
@@ -253,6 +254,22 @@ const TrajectoryPropertiesModal = (
                   const commonData = {
                     ...editableTrajectory.commonData,
                     sourceName: e.target.value
+                  };
+                  setEditableTrajectory({ ...editableTrajectory, commonData });
+                }}
+              />
+              <Autocomplete
+                id="itemState"
+                label="Select an item state"
+                options={itemStateTypes}
+                hideClearButton
+                initialSelectedOptions={[
+                  editableTrajectory.commonData.itemState ?? ""
+                ]}
+                onOptionsChange={({ selectedItems }) => {
+                  const commonData = {
+                    ...editableTrajectory.commonData,
+                    itemState: selectedItems[0] ?? null
                   };
                   setEditableTrajectory({ ...editableTrajectory, commonData });
                 }}

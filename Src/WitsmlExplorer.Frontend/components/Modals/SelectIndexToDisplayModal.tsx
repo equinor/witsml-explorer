@@ -1,4 +1,3 @@
-import { Banner } from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
@@ -7,6 +6,7 @@ import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
 import ModalDialog from "components/Modals/ModalDialog";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -16,11 +16,9 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import { getLogCurveValuesViewPath } from "routes/utils/pathBuilder";
-import styled from "styled-components";
 import { indexToNumber } from "tools/IndexHelpers";
 import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
 import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
-import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
 
 export interface SelectIndexToDisplayModalProps {
@@ -124,7 +122,7 @@ const SelectIndexToDisplayModal = (
               />
             )}
             {isUrlTooLong && (
-              <StyledBanner colors={colors}>
+              <Banner colors={colors}>
                 <Banner.Icon variant="warning">
                   <Icon name="infoCircle" />
                 </Banner.Icon>
@@ -134,7 +132,7 @@ const SelectIndexToDisplayModal = (
                   characters. Therefore, it will not be possible to share this
                   URL with others to open the chosen mnemonics on the given log.
                 </Banner.Message>
-              </StyledBanner>
+              </Banner>
             )}
           </>
         }
@@ -149,20 +147,3 @@ const SelectIndexToDisplayModal = (
 };
 
 export default SelectIndexToDisplayModal;
-
-const StyledBanner = styled(Banner)<{ colors: Colors }>`
-  background-color: ${(props) => props.colors.ui.backgroundDefault};
-  span {
-    background-color: ${(props) => props.colors.ui.backgroundDefault};
-    color: ${(props) => props.colors.infographic.primaryMossGreen};
-  }
-  div {
-    background-color: ${(props) => props.colors.ui.backgroundDefault};
-  }
-  p {
-    color: ${(props) => props.colors.infographic.primaryMossGreen};
-  }
-  hr {
-    background-color: ${(props) => props.colors.ui.backgroundDefault};
-  }
-`;

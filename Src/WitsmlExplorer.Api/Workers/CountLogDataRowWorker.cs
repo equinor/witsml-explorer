@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker
     /// </summary>
     /// <param name="job">The job model contains job-specific parameters.</param>
     /// <returns>Task of the workerResult in a report with a mnemonic name and number of rows.</returns>
-    public override async Task<(WorkerResult, RefreshAction)> Execute(CountLogDataRowJob job)
+    public override async Task<(WorkerResult, RefreshAction)> Execute(CountLogDataRowJob job, CancellationToken? cancellationToken = null)
     {
         Logger.LogInformation("Counting log data rows started. {jobDescription}", job.Description());
 

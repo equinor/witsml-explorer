@@ -3,6 +3,7 @@ import { ComponentType, getParentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import {
   QUERY_KEY_COMPONENTS,
+  QUERY_KEY_JOB_INFO,
   QUERY_KEY_OBJECT,
   QUERY_KEY_OBJECTS,
   QUERY_KEY_SERVERS,
@@ -211,5 +212,11 @@ export const refreshComponentsQuery = (
       objectUid.toLowerCase(),
       componentType.toLowerCase()
     ]
+  });
+};
+
+export const refreshJobInfoQuery = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_JOB_INFO]
   });
 };

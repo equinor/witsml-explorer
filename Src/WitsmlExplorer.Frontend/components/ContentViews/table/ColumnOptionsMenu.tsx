@@ -1,4 +1,4 @@
-import { Button, Icon, Menu, Typography } from "@equinor/eds-core-react";
+import { Icon, Menu, Typography } from "@equinor/eds-core-react";
 import { Checkbox, useTheme } from "@material-ui/core";
 import { Table } from "@tanstack/react-table";
 import {
@@ -10,6 +10,7 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table/tableParts";
+import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
 import { useContext, useState } from "react";
@@ -30,6 +31,8 @@ export const ColumnOptionsMenu = (props: {
   viewId: string;
   columns: ContentTableColumn[];
   stickyLeftColumns: number;
+  selectedColumnsStatus: string;
+  firstToggleableIndex: number;
 }): React.ReactElement => {
   const {
     table,
@@ -37,12 +40,10 @@ export const ColumnOptionsMenu = (props: {
     expandableRows,
     viewId,
     columns,
-    stickyLeftColumns
+    stickyLeftColumns,
+    selectedColumnsStatus,
+    firstToggleableIndex
   } = props;
-  const firstToggleableIndex = Math.max(
-    (checkableRows ? 1 : 0) + (expandableRows ? 1 : 0),
-    stickyLeftColumns
-  );
   const {
     operationState: { colors }
   } = useContext(OperationContext);
@@ -120,6 +121,7 @@ export const ColumnOptionsMenu = (props: {
   return (
     <>
       <Button
+        variant="ghost_icon"
         ref={setMenuAnchor}
         id="anchor-default"
         aria-haspopup="true"
@@ -127,8 +129,7 @@ export const ColumnOptionsMenu = (props: {
         aria-controls="menu-default"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
-        Columns {table.getVisibleLeafColumns().length - firstToggleableIndex}/
-        {table.getAllLeafColumns().length - firstToggleableIndex}
+        <Icon name="filter" />
       </Button>
       <StyledMenu
         open={isMenuOpen}
@@ -139,6 +140,9 @@ export const ColumnOptionsMenu = (props: {
         placement="left-end"
         colors={colors}
       >
+        <Typography style={{ paddingBottom: "16px" }}>
+          {selectedColumnsStatus}
+        </Typography>
         <div style={{ display: "flex" }}>
           <Checkbox
             checked={table.getIsAllColumnsVisible()}

@@ -123,6 +123,7 @@ namespace WitsmlExplorer.Api.Services
                 ServiceCompany = trajectory.ServiceCompany,
                 CommonData = new CommonData()
                 {
+                    ItemState = trajectory.CommonData?.ItemState,
                     SourceName = trajectory.CommonData?.SourceName,
                     DTimLastChange = trajectory.CommonData?.DTimLastChange,
                     DTimCreation = trajectory.CommonData?.DTimCreation,

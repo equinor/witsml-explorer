@@ -1,14 +1,11 @@
-import {
-  Autocomplete,
-  Banner,
-  Button,
-  TextField
-} from "@equinor/eds-core-react";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import ModalDialog, {
   ModalContentLayout,
   ModalWidth
 } from "components/Modals/ModalDialog";
+import { Banner } from "components/StyledComponents/Banner";
+import { Button } from "components/StyledComponents/Button";
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -20,7 +17,6 @@ import { Server } from "models/server";
 import { ChangeEvent, useContext, useState } from "react";
 import ObjectService from "services/objectService";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
 export interface ObjectPickerProps {
@@ -231,7 +227,7 @@ const ObjectPickerModal = ({
             </>
           </ButtonsContainer>
           {checkedIncludeIndexDuplicates && (
-            <StyledBanner colors={colors}>
+            <Banner colors={colors}>
               <Banner.Icon variant="warning">
                 <Icon name="infoCircle" />
               </Banner.Icon>
@@ -243,10 +239,10 @@ const ObjectPickerModal = ({
                 used in special cases that require investigation of anomalies in
                 the index duplicates.
               </Banner.Message>
-            </StyledBanner>
+            </Banner>
           )}
           {checkedCompareAllLogIndexes && (
-            <StyledBanner colors={colors}>
+            <Banner colors={colors}>
               <Banner.Icon variant="warning">
                 <Icon name="infoCircle" />
               </Banner.Icon>
@@ -255,7 +251,7 @@ const ObjectPickerModal = ({
                 their shared log index interval. Comparing logs outside their
                 shared index interval should be unnecessary.
               </Banner.Message>
-            </StyledBanner>
+            </Banner>
           )}
         </ModalContentLayout>
       }
@@ -270,23 +266,6 @@ const ButtonsContainer = styled.div`
   gap: 1rem;
   padding-left: 0.5rem;
   padding-bottom: 1rem;
-`;
-
-const StyledBanner = styled(Banner)<{ colors: Colors }>`
-  background-color: ${(props) => props.colors.ui.backgroundDefault};
-  span {
-    background-color: ${(props) => props.colors.ui.backgroundDefault};
-    color: ${(props) => props.colors.infographic.primaryMossGreen};
-  }
-  div {
-    background-color: ${(props) => props.colors.ui.backgroundDefault};
-  }
-  p {
-    color: ${(props) => props.colors.infographic.primaryMossGreen};
-  }
-  hr {
-    background-color: ${(props) => props.colors.ui.backgroundDefault};
-  }
 `;
 
 const invalidUid = (uid: string) => {

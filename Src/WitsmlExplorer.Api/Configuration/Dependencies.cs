@@ -42,6 +42,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
+            services.AddSingleton<IJobProgressService, JobProgressService>();
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>
@@ -55,6 +56,11 @@ namespace WitsmlExplorer.Api.Configuration
             {
                 Log.Information("Detected database config for CosmosDB");
                 services.AddSingleton<IDocumentRepository<TDocument, T>, CosmosRepository<TDocument, T>>();
+            }
+            else if (!string.IsNullOrEmpty(configuration["LiteDb:Name"]))
+            {
+                Log.Information("Detected database config for LiteDB");
+                services.AddSingleton<IDocumentRepository<TDocument, T>, LiteDbRepository<TDocument, T>>();
             }
             else
             {

@@ -4,6 +4,7 @@ import { render } from "@testing-library/react";
 import { ConnectedServerProvider } from "contexts/connectedServerContext";
 import { CurveThresholdProvider } from "contexts/curveThresholdContext";
 import { Filter, FilterContextProvider } from "contexts/filter";
+import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
 import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,
@@ -89,23 +90,25 @@ export function renderWithContexts(
           <OperationContext.Provider
             value={{ operationState, dispatchOperation }}
           >
-            <ConnectedServerProvider
-              initialConnectedServer={initialConnectedServer}
-            >
-              <CurveThresholdProvider>
-                <SidebarProvider>
-                  <ThemeProvider theme={getTheme(operationState.theme)}>
-                    <FilterContextProvider initialFilter={initialFilter}>
-                      <QueryContextProvider
-                        initialQueryState={initialQueryState}
-                      >
-                        <SnackbarProvider>{children}</SnackbarProvider>
-                      </QueryContextProvider>
-                    </FilterContextProvider>
-                  </ThemeProvider>
-                </SidebarProvider>
-              </CurveThresholdProvider>
-            </ConnectedServerProvider>
+            <LoggedInUsernamesProvider>
+              <ConnectedServerProvider
+                initialConnectedServer={initialConnectedServer}
+              >
+                <CurveThresholdProvider>
+                  <SidebarProvider>
+                    <ThemeProvider theme={getTheme(operationState.theme)}>
+                      <FilterContextProvider initialFilter={initialFilter}>
+                        <QueryContextProvider
+                          initialQueryState={initialQueryState}
+                        >
+                          <SnackbarProvider>{children}</SnackbarProvider>
+                        </QueryContextProvider>
+                      </FilterContextProvider>
+                    </ThemeProvider>
+                  </SidebarProvider>
+                </CurveThresholdProvider>
+              </ConnectedServerProvider>
+            </LoggedInUsernamesProvider>
           </OperationContext.Provider>
         </QueryClientProvider>
       </MemoryRouter>
@@ -189,6 +192,8 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
     status: "",
     failedReason: "",
     report: null,
+    progress: 0,
+    isCancelable: false,
     ...overrides
   };
 }

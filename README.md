@@ -27,7 +27,7 @@ Please see our [contributing.md](/CONTRIBUTING.md).
 Please see our [auth.md](/Docs/AUTH.md).
 
 ## Database
-Please see [mongoDb](Docker/MongoDb/README.md) or [cosmosDb](Scripts/Azure/README.md) readme.
+Please see [mongoDb](Docker/MongoDb/README.md), [cosmosDb](Scripts/Azure/README.md) or [LiteDb](Contributing.md#using-litedb) readme.
 
 ## Run locally
 Please see our [docker setup](/Docker/README.md).

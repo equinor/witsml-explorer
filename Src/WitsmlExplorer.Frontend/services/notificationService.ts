@@ -37,6 +37,8 @@ export enum RefreshType {
   Remove = "Remove"
 }
 
+export type JobProgress = Record<string, number>;
+
 export default class NotificationService {
   private static _instance: NotificationService;
   private hubConnection: HubConnection;
@@ -44,6 +46,7 @@ export default class NotificationService {
   private _alertDispatcher = new SimpleEventDispatcher<Notification>();
   private _refreshDispatcher = new SimpleEventDispatcher<RefreshAction>();
   private _onConnectionStateChanged = new SimpleEventDispatcher<boolean>();
+  private _jobProgressDispatcher = new SimpleEventDispatcher<JobProgress>();
   private static token: string | null = null;
 
   private static async getToken(): Promise<string> {
@@ -82,6 +85,20 @@ export default class NotificationService {
       this._refreshDispatcher.dispatch(refreshAction);
     });
 
+    this.hubConnection?.on("jobProgress", (jobProgress: JobProgress) => {
+      this._jobProgressDispatcher.dispatch(jobProgress);
+    });
+
+    this._jobProgressDispatcher.onSubscriptionChange.subscribe(
+      (subscriptionCount) => {
+        if (subscriptionCount === 1) {
+          this.joinJobProgressGroup();
+        } else if (subscriptionCount === 0) {
+          this.leaveJobProgressGroup();
+        }
+      }
+    );
+
     this.hubConnection?.onreconnecting(() => {
       this._onConnectionStateChanged.dispatch(false);
     });
@@ -116,11 +133,27 @@ export default class NotificationService {
     return this._refreshDispatcher.asEvent();
   }
 
+  public get jobProgressDispatcher(): ISimpleEvent<JobProgress> {
+    return this._jobProgressDispatcher.asEvent();
+  }
+
   public get onConnectionStateChanged(): ISimpleEvent<boolean> {
     return this._onConnectionStateChanged.asEvent();
   }
 
   public static get Instance(): NotificationService {
     return this._instance || (this._instance = new this());
+  }
+
+  private async joinJobProgressGroup(): Promise<void> {
+    if (this.hubConnection?.state === signalR.HubConnectionState.Connected) {
+      await this.hubConnection.send("JoinJobProgressGroup");
+    }
+  }
+
+  private async leaveJobProgressGroup(): Promise<void> {
+    if (this.hubConnection?.state === signalR.HubConnectionState.Connected) {
+      await this.hubConnection.send("LeaveJobProgressGroup");
+    }
   }
 }

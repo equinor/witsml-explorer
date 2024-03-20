@@ -118,11 +118,11 @@ export function Breadcrumbs() {
 
   return (
     <BreadcrumbsContainer>
-      <NavLink to={"/"} style={{ textDecoration: "none" }}>
+      <StyledNavLink to={"/"}>
         <Title style={{ color: colors.infographic.primaryMossGreen }}>
           WITSML Explorer
         </Title>
-      </NavLink>
+      </StyledNavLink>
       {breadcrumbContent.length !== 0 && (
         <Icon
           name="chevronRight"
@@ -131,7 +131,7 @@ export function Breadcrumbs() {
           style={{ minWidth: "18" }}
         />
       )}
-      <StyledBreadcrumbs color="inherit" aria-label="breadcrumb">
+      <StyledBreadcrumbs color="inherit" aria-label="breadcrumb" wrap={false}>
         {breadcrumbContent.map((breadCrumb, index: number) => (
           <EdsBreadcrumbs.Breadcrumb
             key={uuid()}
@@ -143,7 +143,6 @@ export function Breadcrumbs() {
                   : "Equinor",
               color: `${colors.infographic.primaryMossGreen}`
             }}
-            maxWidth={180}
           >
             {breadCrumb.name}
           </EdsBreadcrumbs.Breadcrumb>
@@ -329,9 +328,12 @@ const getSearchCrumb = (isSearchView: boolean) => {
     : {};
 };
 
+const StyledNavLink = styled(NavLink)`
+  text-decoration: none;
+`;
+
 const StyledBreadcrumbs = styled(EdsBreadcrumbs)`
   padding-top: 0.2em;
-  width: auto;
   height: 1.5rem;
   overflow: clip;
 `;
@@ -342,12 +344,13 @@ const Title = styled.p`
   color: ${colors.interactive.primaryResting};
   font-size: 1rem;
   font-family: "EquinorBold";
-  min-width: 143px;
+  min-width: max-content;
 `;
 
 const BreadcrumbsContainer = styled.div`
   display: flex;
-  width: 100%;
   align-items: center;
   height: 2.5rem;
+  min-width: 0;
+  overflow: clip;
 `;

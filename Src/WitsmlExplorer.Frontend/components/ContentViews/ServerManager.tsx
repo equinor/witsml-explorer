@@ -1,10 +1,5 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import {
-  Button,
-  ButtonProps,
-  Table,
-  Typography
-} from "@equinor/eds-core-react";
+import { ButtonProps, Table, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import ServerModal, {
   showDeleteServerModal
@@ -13,7 +8,10 @@ import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "components/Modals/UserCredentialsModal";
 import ProgressSpinner from "components/ProgressSpinner";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
+import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -40,6 +38,7 @@ const ServerManager = (): React.ReactElement => {
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const navigate = useNavigate();
   const { connectedServer, setConnectedServer } = useConnectedServer();
+  const { dispatchLoggedInUsernames } = useLoggedInUsernames();
 
   const connectServer = async (server: Server) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
@@ -48,6 +47,10 @@ const ServerManager = (): React.ReactElement => {
         dispatchOperation({ type: OperationType.HideModal });
         AuthorizationService.onAuthorized(server, username);
         AuthorizationService.setSelectedServer(server);
+        dispatchLoggedInUsernames({
+          type: LoggedInUsernamesActionType.AddLoggedInUsername,
+          payload: { serverId: server.id, username }
+        });
         setConnectedServer(server);
         navigate(getWellsViewPath(server.url));
       }
@@ -101,8 +104,7 @@ const ServerManager = (): React.ReactElement => {
         >
           Manage Connections
         </Typography>
-        <StyledButton
-          colors={colors}
+        <Button
           variant="outlined"
           value={NEW_SERVER_ID}
           key={NEW_SERVER_ID}
@@ -111,7 +113,7 @@ const ServerManager = (): React.ReactElement => {
         >
           <Icon name="cloudDownload" />
           New server
-        </StyledButton>
+        </Button>
       </Header>
       <Table style={{ width: "100%" }} className="serversList">
         <Table.Head>
@@ -168,7 +170,11 @@ const ServerManager = (): React.ReactElement => {
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
                   <Button variant="ghost" onClick={() => onEditItem(server)}>
-                    <Icon name="edit" size={24} />
+                    <Icon
+                      name="edit"
+                      size={24}
+                      color={colors.text.staticIconsTertiary}
+                    />
                   </Button>
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
@@ -185,7 +191,11 @@ const ServerManager = (): React.ReactElement => {
                       )
                     }
                   >
-                    <Icon name="deleteToTrash" size={24} />
+                    <Icon
+                      name="deleteToTrash"
+                      size={24}
+                      color={colors.text.staticIconsTertiary}
+                    />
                   </Button>
                 </Table.Cell>
               </Table.Row>
@@ -270,11 +280,6 @@ const StyledLink = styled.a`
   &&:hover {
     text-decoration: none;
   }
-`;
-
-const StyledButton = styled(Button)<{ colors?: Colors }>`
-  white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
 export default ServerManager;
