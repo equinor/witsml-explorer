@@ -13,7 +13,6 @@ export default function Nav() {
 
 const NavContainer = styled.nav`
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
 `;

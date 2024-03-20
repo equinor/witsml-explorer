@@ -57,6 +57,11 @@ namespace WitsmlExplorer.Api.Configuration
                 Log.Information("Detected database config for CosmosDB");
                 services.AddSingleton<IDocumentRepository<TDocument, T>, CosmosRepository<TDocument, T>>();
             }
+            else if (!string.IsNullOrEmpty(configuration["LiteDb:Name"]))
+            {
+                Log.Information("Detected database config for LiteDB");
+                services.AddSingleton<IDocumentRepository<TDocument, T>, LiteDbRepository<TDocument, T>>();
+            }
             else
             {
                 Log.Error(MissingDatabaseConfigMessage);

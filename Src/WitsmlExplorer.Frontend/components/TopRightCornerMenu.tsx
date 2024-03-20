@@ -113,5 +113,4 @@ const Layout = styled.div`
   flex-direction: row;
   justify-content: flex-end;
   padding-right: 1rem;
-  width: auto;
 `;

@@ -8,6 +8,13 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
   box-sizing: border-box;
 }
 
+:root {
+  --navbar-height: 40px;
+  --properties-bar-height: 40px;
+  --sidebar-min-width: 174px;
+}
+
+
   ::-webkit-scrollbar {
     background-color: transparent;
     width: 12px;
@@ -34,7 +41,6 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
     background:${(props) => props.colors.ui.backgroundDefault};
     font-size: 16px;
     margin: 0;
-    height: 100vh;
   }
   h1 {
     font-size: 3em;

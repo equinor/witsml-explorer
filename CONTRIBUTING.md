@@ -52,8 +52,19 @@ cp appsettings.json mysettings.json
 
 ### Database for storing urls to WitsmlServers
 
-Using [MongoDB](Docker/MongoDb/README.md)
-Using [CosmosDB](Scripts/Azure/README.md)
+Using [MongoDB](Docker/MongoDb/README.md), [CosmosDB](Scripts/Azure/README.md) or [LiteDB](#using-litedb)
+
+### Using LiteDb
+
+LiteDb is a serverless database stored in a single file. To use LiteDb, add this to the configuration in `mysettings.json`:
+```json
+{
+  "LiteDb": {
+    "Name": "witsml-explorer-db.db"
+  }
+}
+```
+Note that the name should contain the .db extension. It can be a full path to the database file if you want to store it in a different folder.
 
 ## Running
 The database, backend and frontend must be running at the same time for WE to work properly.
@@ -152,11 +163,20 @@ dotnet user-secrets set "Witsml:Password" "<password>"
 ```
 
 A db configuration is needed if running tests that uses the database (**NB** Use same name as in mySettings.json) :
+MongoDB:
 ```json
 {
   "MongoDb": {
     "Name": "witsml-explorer-db",
     "ConnectionString": "mongodb://<username>:<password>@localhost"
+  }
+}
+```
+LiteDB:
+```json
+{
+  "LiteDb": {
+    "Name": "witsml-explorer-db.db"
   }
 }
 ```

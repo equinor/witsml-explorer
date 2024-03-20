@@ -158,8 +158,13 @@ const StyledVirtualTreeView = styled(TreeView)<{
   height: ${(props) => props.virtualizer.getTotalSize()}px;
 `;
 
-const StyledVirtualItem = styled.div<{ virtualItem: VirtualItem }>`
+const StyledVirtualItem = styled.div.attrs<{ virtualItem: VirtualItem }>(
+  (props) => ({
+    style: {
+      transform: `translateY(${props.virtualItem.start}px)`
+    }
+  })
+)<{ virtualItem: VirtualItem }>`
   position: absolute;
   width: 100%;
-  transform: translateY(${(props) => props.virtualItem.start}px);
 `;
