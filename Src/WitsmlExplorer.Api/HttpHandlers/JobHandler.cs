@@ -100,5 +100,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
             }
             return TypedResults.NotFound();
         }
+
+        [Produces(typeof(IEnumerable<object>))]
+        public static IResult GetReportItems(string jobId, IJobCache jobCache)
+        {
+            return TypedResults.Ok(jobCache.GetReportItems(jobId));
+        }
     }
 }

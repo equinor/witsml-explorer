@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,18 +44,18 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
         });
         var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
-        return DownloadAllLogDataResult(job, logData.Data, job.LogReference.Uid);
+        return DownloadAllLogDataResult(job, logData.Data, logData.CurveSpecifications);
     }
 
-    private (WorkerResult, RefreshAction) DownloadAllLogDataResult(DownloadAllLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, string logUid)
+    private (WorkerResult, RefreshAction) DownloadAllLogDataResult(DownloadAllLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
     {
         Logger.LogInformation("Download of all data is done. {jobDescription}", job.Description());
-        job.JobInfo.Report = DownloadAllLogDataReport(reportItems, job.LogReference);
+        job.JobInfo.Report = DownloadAllLogDataReport(reportItems, job.LogReference, GetReportHeader(curveSpecifications));
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Download of all data is ready, jobId: ", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 
-    private DownloadAllLogDataReport DownloadAllLogDataReport(ICollection<Dictionary<string, LogDataValue>> reportItems, LogObject logReference)
+    private DownloadAllLogDataReport DownloadAllLogDataReport(ICollection<Dictionary<string, LogDataValue>> reportItems, LogObject logReference, string reportHeader)
     {
         return new DownloadAllLogDataReport
         {
@@ -62,7 +63,18 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             Summary = "You can download the report as csv file",
             LogReference = logReference,
             ReportItems = reportItems,
-            DownloadImmediately = true
+            DownloadImmediately = true,
+            ReportHeader= reportHeader
         };
+    }
+
+    private string GetReportHeader (ICollection<CurveSpecification> curveSpecifications)   
+    {
+        var listOfHeaders = new List<string>();
+        foreach(CurveSpecification curveSpec in curveSpecifications)
+        {
+            listOfHeaders.Add($"{curveSpec.Mnemonic}[{curveSpec.Unit}]");
+        }
+        return string.Join(',', listOfHeaders);
     }
 }

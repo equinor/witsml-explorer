@@ -107,6 +107,21 @@ export default class JobService {
       throwError(response.status, response.statusText);
     }
   }
+
+  public static async getReportItems(
+    jobId: string,
+    abortSignal?: AbortSignal
+  ): Promise<object[]> {
+    const response = await ApiClient.get(
+      `/api/jobs/getreportitems/${jobId}`,
+      abortSignal
+    );
+    if (response.ok) {
+      return response.json();
+    } else {
+      return null;
+    }
+  }
 }
 
 export enum JobType {

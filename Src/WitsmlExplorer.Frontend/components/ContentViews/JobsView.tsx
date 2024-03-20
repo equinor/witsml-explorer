@@ -11,12 +11,14 @@ import JobInfoContextMenu, {
 } from "components/ContextMenus/JobInfoContextMenu";
 import formatDateString from "components/DateFormatter";
 import { ReportModal } from "components/Modals/ReportModal";
+import { generateReport } from "components/ReportCreationHelper";
 import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
+import useExport from "hooks/useExport";
 import BaseReport from "models/reports/BaseReport";
 import { Server } from "models/server";
 import {
@@ -26,6 +28,7 @@ import {
   msalEnabled
 } from "msal/MsalAuthProvider";
 import React, { ChangeEvent, useContext, useMemo, useState } from "react";
+import JobService from "services/jobService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 
@@ -43,6 +46,8 @@ export const JobsView = (): React.ReactElement => {
   const lastFetched = dataUpdatedAt
     ? new Date(dataUpdatedAt).toLocaleTimeString()
     : "";
+
+  const { exportData } = useExport();
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -62,12 +67,22 @@ export const JobsView = (): React.ReactElement => {
     });
   };
 
-  const onClickReport = (report: BaseReport) => {
-    const reportModalProps = { report };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <ReportModal {...reportModalProps} />
-    });
+  const onClickReport = async (report: BaseReport, jobId: string) => {
+    if (report.downloadImmediately === true) {
+      const reportItems = await JobService.getReportItems(jobId);
+      const reportProperties = generateReport(reportItems, report.reportHeader);
+      exportData(
+        report.title,
+        reportProperties.exportColumns,
+        reportProperties.data
+      );
+    } else {
+      const reportModalProps = { report };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <ReportModal {...reportModalProps} />
+      });
+    }
   };
 
   const columns: ContentTableColumn[] = [
@@ -132,8 +147,12 @@ export const JobsView = (): React.ReactElement => {
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
             report: jobInfo.report ? (
-              <ReportButton onClick={() => onClickReport(jobInfo.report)}>
-                Report
+              <ReportButton
+                onClick={() => onClickReport(jobInfo.report, jobInfo.id)}
+              >
+                {jobInfo.report.downloadImmediately === true
+                  ? "Donwload file"
+                  : "Report"}
               </ReportButton>
             ) : null,
             jobInfo: jobInfo
