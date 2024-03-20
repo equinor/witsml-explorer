@@ -26,7 +26,7 @@ export const generateReport = (reportItems: object[], reportHeader: string) => {
   const data = reportItems
     .map((row) =>
       columns
-        .map((col) => row[col.property] as string)
+        .map((col) => row[col.property])
         .join(defaultExportProperties.separator)
     )
     .join(defaultExportProperties.newLineCharacter);
