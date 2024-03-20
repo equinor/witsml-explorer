@@ -6,26 +6,22 @@ export interface ReportProperties {
   data: string;
 }
 
-export const generateReport = (
-  reportItems: object[],
-  reportHeader: string
-) => {
-
+export const generateReport = (reportItems: object[], reportHeader: string) => {
   const columns: ContentTableColumn[] =
     reportItems.length > 0
       ? Object.keys(reportItems[0]).map((key) => ({
-        property: key,
-        label: key,
-        type: ContentType.String
-      }))
+          property: key,
+          label: key,
+          type: ContentType.String
+        }))
       : [];
 
   const exportColumns =
     reportHeader !== null
       ? reportHeader
       : columns
-        .map((column) => `${column.property}`)
-        .join(defaultExportProperties.separator);
+          .map((column) => `${column.property}`)
+          .join(defaultExportProperties.separator);
 
   const data = reportItems
     .map((row) =>
@@ -35,5 +31,5 @@ export const generateReport = (
     )
     .join(defaultExportProperties.newLineCharacter);
 
-  return ({ exportColumns: exportColumns, data: data })
-}
+  return { exportColumns: exportColumns, data: data };
+};
