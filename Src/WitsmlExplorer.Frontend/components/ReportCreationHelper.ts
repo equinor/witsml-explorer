@@ -6,7 +6,7 @@ export interface ReportProperties {
   data: string;
 }
 
-export const generateReport = (reportItems: any, reportHeader: string) => {
+export const generateReport = (reportItems: any[], reportHeader: string) => {
   const columns: ContentTableColumn[] =
     reportItems.length > 0
       ? Object.keys(reportItems[0]).map((key) => ({
