@@ -6,7 +6,7 @@ export interface ReportProperties {
   data: string;
 }
 
-export const generateReport = (reportItems: object[], reportHeader: string) => {
+export const generateReport = (reportItems: any, reportHeader: string) => {
   const columns: ContentTableColumn[] =
     reportItems.length > 0
       ? Object.keys(reportItems[0]).map((key) => ({
@@ -26,7 +26,7 @@ export const generateReport = (reportItems: object[], reportHeader: string) => {
   const data = reportItems
     .map((row) =>
       columns
-        .map((col) => row[col.property])
+        .map((col) => row[col.property] as string)
         .join(defaultExportProperties.separator)
     )
     .join(defaultExportProperties.newLineCharacter);
