@@ -68,7 +68,7 @@ namespace WitsmlExplorer.Api.Services
             return HandleBigData(allJobs);
         }
 
-        public IEnumerable<object> GetReportItems (string jobId)
+        public IEnumerable<object> GetReportItems(string jobId)
         {
             var job = _jobs[jobId];
             if (job != null)
@@ -108,7 +108,7 @@ namespace WitsmlExplorer.Api.Services
             var resultJobs = new List<JobInfo>();
             foreach (var job in allJobs)
             {
-                if (job.Report!= null && job.Report.DownloadImmediately)
+                if (job.Report != null && job.Report.DownloadImmediately)
                 {
                     var copyJob = job with { Report = new BaseReport() { Title = job.Report?.Title, ReportHeader = job.Report?.ReportHeader, DownloadImmediately = true } };
                     resultJobs.Add(copyJob);

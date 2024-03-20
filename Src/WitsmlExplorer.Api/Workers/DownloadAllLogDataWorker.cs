@@ -64,14 +64,14 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             LogReference = logReference,
             ReportItems = reportItems,
             DownloadImmediately = true,
-            ReportHeader= reportHeader
+            ReportHeader = reportHeader
         };
     }
 
-    private string GetReportHeader (ICollection<CurveSpecification> curveSpecifications)   
+    private string GetReportHeader(ICollection<CurveSpecification> curveSpecifications)
     {
         var listOfHeaders = new List<string>();
-        foreach(CurveSpecification curveSpec in curveSpecifications)
+        foreach (CurveSpecification curveSpec in curveSpecifications)
         {
             listOfHeaders.Add($"{curveSpec.Mnemonic}[{curveSpec.Unit}]");
         }
