@@ -6,6 +6,7 @@ import {
   deferred,
   getJobInfo,
   getNotification,
+  getReport,
   renderWithContexts
 } from "__testUtils__/testUtils";
 import { ReportModal } from "components/Modals/ReportModal";
@@ -20,7 +21,8 @@ jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
 jest.mock("services/jobService", () => {
   return {
-    getUserJobInfo: () => MOCK_JOB_INFO
+    getUserJobInfo: () => MOCK_JOB_INFO,
+    getReport: () => MOCK_REPORT
   };
 });
 
@@ -130,3 +132,4 @@ const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
 const MOCK_JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });
+const MOCK_REPORT = getReport();
