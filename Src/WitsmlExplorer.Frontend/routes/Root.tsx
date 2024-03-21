@@ -2,7 +2,6 @@ import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
 import { ThemeProvider } from "@material-ui/core";
 import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
-import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
@@ -101,17 +100,13 @@ export default function Root() {
         dispatchOperation(action);
       }
     }
-    if (process.env.NEXT_PUBLIC_DARK_MODE_DEBUG) {
+    if (import.meta.env.VITE_PUBLIC_DARK_MODE_DEBUG) {
       return enableDarkModeDebug(dispatchOperation);
     }
   }, []);
 
   return (
     <>
-      <Head>
-        <title>WITSML Explorer</title>
-        <link rel="icon" href={"/favicon.ico"} />
-      </Head>
       <MsalProvider instance={msalInstance}>
         {msalEnabled && (
           <MsalAuthenticationTemplate

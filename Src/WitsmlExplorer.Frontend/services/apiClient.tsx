@@ -32,7 +32,7 @@ export class ApiClient {
   public static async getAuthorizationHeader(): Promise<string | null> {
     if (msalEnabled) {
       const token = await getAccessToken([
-        `${process.env.NEXT_PUBLIC_AZURE_AD_SCOPE_API}`
+        `${import.meta.env.VITE_PUBLIC_AZURE_AD_SCOPE_API}`
       ]);
       return `Bearer ${token}`;
     }
@@ -232,7 +232,7 @@ function getBasePathName(): string {
 export function getBaseUrl(): URL {
   let baseUrl: URL;
   try {
-    const configuredUrl = process.env.NEXT_PUBLIC_WITSMLEXPLORER_API_URL;
+    const configuredUrl = import.meta.env.VITE_PUBLIC_WITSMLEXPLORER_API_URL;
     if (configuredUrl && configuredUrl.length > 0) {
       baseUrl = new URL(configuredUrl);
     } else {
