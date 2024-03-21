@@ -1,4 +1,5 @@
 import JobInfo from "models/jobs/jobInfo";
+import BaseReport from "models/reports/BaseReport";
 import { Server } from "models/server";
 import { ApiClient, throwError } from "services/apiClient";
 import AuthorizationService from "services/authorizationService";
@@ -108,12 +109,12 @@ export default class JobService {
     }
   }
 
-  public static async getReportItems(
+  public static async getReport(
     jobId: string,
     abortSignal?: AbortSignal
-  ): Promise<object[]> {
+  ): Promise<BaseReport> {
     const response = await ApiClient.get(
-      `/api/jobs/getreportitems/${jobId}`,
+      `/api/jobs/getreport/${jobId}`,
       abortSignal
     );
     if (response.ok) {

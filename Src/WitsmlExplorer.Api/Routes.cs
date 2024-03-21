@@ -95,7 +95,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/jobs/userjobinfo/{jobId}", JobHandler.GetUserJobInfo, useOAuth2);
             app.MapGet("/jobs/alljobinfos", JobHandler.GetAllJobInfos, useOAuth2, AuthorizationPolicyRoles.ADMINORDEVELOPER);
             app.MapPost("/jobs/cancel/{jobId}", JobHandler.CancelJob, useOAuth2);
-            app.MapGet("/jobs/getreportitems/{jobId}", JobHandler.GetReportItems, useOAuth2);
+            app.MapGet("/jobs/getreport/{jobId}", JobHandler.GetReport, useOAuth2);
 
             app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
             app.MapGet("/credentials/deauthorize", AuthorizeHandler.Deauthorize, useOAuth2);

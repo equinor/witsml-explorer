@@ -19,7 +19,7 @@ namespace WitsmlExplorer.Api.Services
         ICollection<JobInfo> GetJobInfosByUser(string username);
         JobInfo GetJobInfoById(string jobId);
         ICollection<JobInfo> GetAllJobInfos();
-        IEnumerable<object> GetReportItems(string jobId);
+        BaseReport GetReportByJobId(string jobId);
     }
 
     public class JobCache : IJobCache
@@ -53,8 +53,7 @@ namespace WitsmlExplorer.Api.Services
 
         public ICollection<JobInfo> GetJobInfosByUser(string username)
         {
-            var allJobs = _jobs.Values.Where(job => job.Username == username).ToList();
-            return HandleBigData(allJobs);
+            return _jobs.Values.Where(job => job.Username == username).ToList();
         }
 
         public JobInfo GetJobInfoById(string jobId)
@@ -64,17 +63,15 @@ namespace WitsmlExplorer.Api.Services
 
         public ICollection<JobInfo> GetAllJobInfos()
         {
-            var allJobs = _jobs.Values.ToList();
-            return HandleBigData(allJobs);
+            return _jobs.Values.ToList();
         }
 
-        public IEnumerable<object> GetReportItems(string jobId)
+        public BaseReport GetReportByJobId(string jobId)
         {
             var job = _jobs[jobId];
             if (job != null)
             {
-                var reportItems = job.Report?.ReportItems;
-                return reportItems;
+               return job.Report;
             }
             return null;
         }
@@ -101,21 +98,6 @@ namespace WitsmlExplorer.Api.Services
                 }
             }
             _logger.LogInformation("JobCache cleanup finished, deleted: {deleted}, failed: {failed}, remaining: {remaining}", deleted, failed, _jobs.Count);
-        }
-
-        private static ICollection<JobInfo> HandleBigData(ICollection<JobInfo> allJobs)
-        {
-            var resultJobs = new List<JobInfo>();
-            foreach (var job in allJobs)
-            {
-                if (job.Report != null && job.Report.DownloadImmediately)
-                {
-                    var copyJob = job with { Report = new BaseReport() { Title = job.Report?.Title, ReportHeader = job.Report?.ReportHeader, DownloadImmediately = true } };
-                    resultJobs.Add(copyJob);
-                }
-                else { resultJobs.Add(job); }
-            }
-            return resultJobs;
         }
     }
 }

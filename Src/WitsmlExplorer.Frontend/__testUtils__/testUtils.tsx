@@ -194,6 +194,7 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
     report: null,
     progress: 0,
     isCancelable: false,
+    linkType: "",
     ...overrides
   };
 }

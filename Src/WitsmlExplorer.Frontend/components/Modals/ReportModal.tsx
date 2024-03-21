@@ -179,14 +179,15 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
                 )
               );
             } else {
-              setReport(jobInfo.report);
-              if (jobInfo.report.downloadImmediately === true) {
+              const report = await JobService.getReport(jobId);
+              setReport(report);
+              if (report.downloadImmediately === true) {
                 const reportProperties = generateReport(
-                  jobInfo.report.reportItems,
-                  jobInfo.report.reportHeader
+                  report.reportItems,
+                  report.reportHeader
                 );
                 exportData(
-                  jobInfo.report.title,
+                  report.title,
                   reportProperties.exportColumns,
                   reportProperties.data
                 );

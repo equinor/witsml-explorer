@@ -9,6 +9,6 @@ namespace WitsmlExplorer.Api.Models.Reports
         public IEnumerable<object> ReportItems { get; init; }
         public string WarningMessage { get; init; }
         public bool DownloadImmediately { get; init; } = false;
-        public string ReportHeader { get; init; } = null;
+        public string ReportHeader { get; init; }
     }
 }

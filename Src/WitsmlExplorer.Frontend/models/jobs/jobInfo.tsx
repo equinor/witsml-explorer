@@ -20,4 +20,5 @@ export default interface JobInfo {
   report: BaseReport;
   progress: number;
   isCancelable: boolean;
+  linkType: string;
 }

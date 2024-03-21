@@ -19,7 +19,6 @@ import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
 import useExport from "hooks/useExport";
-import BaseReport from "models/reports/BaseReport";
 import { Server } from "models/server";
 import {
   adminRole,
@@ -67,10 +66,13 @@ export const JobsView = (): React.ReactElement => {
     });
   };
 
-  const onClickReport = async (report: BaseReport, jobId: string) => {
+  const onClickReport = async (jobId: string) => {
+    const report = await JobService.getReport(jobId);
     if (report.downloadImmediately === true) {
-      const reportItems = await JobService.getReportItems(jobId);
-      const reportProperties = generateReport(reportItems, report.reportHeader);
+      const reportProperties = generateReport(
+        report.reportItems,
+        report.reportHeader
+      );
       exportData(
         report.title,
         reportProperties.exportColumns,
@@ -130,10 +132,6 @@ export const JobsView = (): React.ReactElement => {
             wellName: jobInfo.wellName,
             wellboreName: jobInfo.wellboreName,
             objectName: jobInfo.objectName,
-            status:
-              jobInfo.progress && jobInfo.status === "Started"
-                ? `${Math.round(jobInfo.progress * 100)}%`
-                : jobInfo.status,
             startTime: formatDateString(
               jobInfo.startTime,
               timeZone,
@@ -146,15 +144,12 @@ export const JobsView = (): React.ReactElement => {
             ),
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
-            report: jobInfo.report ? (
-              <ReportButton
-                onClick={() => onClickReport(jobInfo.report, jobInfo.id)}
-              >
-                {jobInfo.report.downloadImmediately === true
-                  ? "Donwload file"
-                  : "Report"}
-              </ReportButton>
-            ) : null,
+            report:
+              jobInfo.status === "Finished" ? (
+                <ReportButton onClick={() => onClickReport(jobInfo.id)}>
+                  {jobInfo.linkType}
+                </ReportButton>
+              ) : null,
             jobInfo: jobInfo
           };
         })
