@@ -82,8 +82,7 @@ const TubularComponentContextMenu = (
               connectedServer?.url,
               tubular.wellUid,
               tubular.wellboreUid,
-              ObjectType.Tubular,
-              tubular.uid
+              ObjectType.Tubular
             )
           }
         >

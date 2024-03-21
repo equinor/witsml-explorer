@@ -57,8 +57,7 @@ export const ObjectMenuItems = (
           selectedServer.url,
           checkedObjects[0].wellUid,
           checkedObjects[0].wellboreUid,
-          objectType,
-          checkedObjects[0].uid
+          objectType
         )
       }
       disabled={checkedObjects.length !== 1}

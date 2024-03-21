@@ -29,8 +29,10 @@ interface Completion {
 export const customCompleter = {
   getCompletions: (
     editor: any,
+    // @ts-ignore
     session: Ace.EditSession,
     pos: Ace.Point,
+    // @ts-ignore
     prefix: string,
     callback: (error: any, results: Completion[]) => void
   ) => {
