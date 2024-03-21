@@ -33,12 +33,12 @@ Example `mysettings.json` file for API:
 Required environment variables in frontend:
 
 ```bash
-# To disable MSAL, leave NEXT_PUBLIC_MSALENABLED empty
-NEXT_PUBLIC_MSALENABLED=true
-NEXT_PUBLIC_AZURE_AD_TENANT_ID=b3edbf8f-e8b2-4c4e-96fc-c86cdd7fd55f
-NEXT_PUBLIC_AZURE_AD_CLIENT_ID=62cd6a0b-f869-0caa-ca95-8d1980fb6f25
-NEXT_PUBLIC_AZURE_AD_URL_WITSMLEXPLORER=http://localhost:3000/
-NEXT_PUBLIC_AZURE_AD_SCOPE_API=api://a10111dc-712d-485f-8600-57be8c597921/access_as_user
+# To disable MSAL, leave VITE_MSALENABLED empty
+VITE_MSALENABLED=true
+VITE_AZURE_AD_TENANT_ID=b3edbf8f-e8b2-4c4e-96fc-c86cdd7fd55f
+VITE_AZURE_AD_CLIENT_ID=62cd6a0b-f869-0caa-ca95-8d1980fb6f25
+VITE_AZURE_AD_URL_WITSMLEXPLORER=http://localhost:3000/
+VITE_AZURE_AD_SCOPE_API=api://a10111dc-712d-485f-8600-57be8c597921/access_as_user
 ```
 
 ## System-user credentials
