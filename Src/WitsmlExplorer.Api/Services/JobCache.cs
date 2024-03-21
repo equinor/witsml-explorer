@@ -71,7 +71,7 @@ namespace WitsmlExplorer.Api.Services
             var job = _jobs[jobId];
             if (job != null)
             {
-               return job.Report;
+                return job.Report;
             }
             return null;
         }
