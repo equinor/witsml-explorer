@@ -35,9 +35,6 @@ config.json
 /node_modules
 /wwwroot/node_modules
 
-# We ignore package-lock.json since we are using yarn
-package-lock.json
-
 # User-specific files
 *.rsuser
 *.suo
