@@ -47,7 +47,6 @@ const RefreshHandler = (): React.ReactElement => {
                 }
             }
           } catch (error) {
-            // eslint-disable-next-line no-console
             console.error(
               `Unable to perform refresh action for action: ${refreshAction.refreshType} and entity: ${refreshAction.entityType}`
             );

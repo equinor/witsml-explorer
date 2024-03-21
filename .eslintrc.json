@@ -34,10 +34,14 @@
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-use-before-define": 0,
     "@typescript-eslint/no-unused-vars": ["error"],
-    "no-console": 1,
+    "no-console": [
+      "error",
+      { "allow": ["warn", "error"] }
+    ],
     "react/prop-types": 1,
     "no-unused-vars": "off",
-    "no-empty-pattern": "off"
+    "no-empty-pattern": "off",
+    "semi": ["error", "always"]
   }
 }
 

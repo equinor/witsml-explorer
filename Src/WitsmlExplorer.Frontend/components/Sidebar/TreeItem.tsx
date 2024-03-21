@@ -19,7 +19,7 @@ interface StyledTreeItemProps extends TreeItemProps {
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, isActive, isLoading, ...other } = props; // eslint-disable-line
+  const { labelText, selected, isActive, isLoading, ...other } = props;
   const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
   const { dispatchSidebar } = useSidebar();
 
