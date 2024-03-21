@@ -2,32 +2,31 @@
   "compilerOptions": {
     // "target": "ES2020",
     // Old config:
-    "target": "es5",
+    "target": "ES2021",
     "useDefineForClassFields": true,
     // Old config:
-    "lib": ["dom", "dom.iterable", "esnext"],
-    // "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    // "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
 
     /* Bundler mode */
     // Old:
-    "moduleResolution": "node",
-    // "moduleResolution": "bundler",
+    // "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     // Old:
-    "jsx": "preserve",
-    // "jsx": "react-jsx",
+    // "jsx": "preserve",
+    "jsx": "react-jsx",
 
     // From old config
     "allowJs": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "incremental": true,
     "baseUrl": ".",
     "paths": { "*": ["*"] },
 
