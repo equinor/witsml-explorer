@@ -30,7 +30,7 @@ const PageLayout = (): ReactElement => {
   const [sidebarWidth, setSidebarWidth] = useState(316);
   const { width: documentWidth, height: documentHeight } =
     useDocumentDimensions();
-  const version = import.meta.env.VITE_PUBLIC_WEX_VERSION;
+  const version = import.meta.env.VITE_WEX_VERSION;
   const { operationState } = useContext(OperationContext);
   const { colors } = operationState;
 
