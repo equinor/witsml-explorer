@@ -100,7 +100,7 @@ export default function Root() {
         dispatchOperation(action);
       }
     }
-    if (import.meta.env.VITE_PUBLIC_DARK_MODE_DEBUG) {
+    if (import.meta.env.VITE_DARK_MODE_DEBUG) {
       return enableDarkModeDebug(dispatchOperation);
     }
   }, []);
