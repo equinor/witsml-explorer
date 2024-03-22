@@ -11,6 +11,7 @@ import {
 } from "components/ContentViews/table";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
+import { generateReport } from "components/ReportCreationHelper";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
@@ -161,55 +162,34 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
   const { connectedServer } = useConnectedServer();
   const [report, setReport] = useState<BaseReport>(null);
-  const { exportData, exportOptions } = useExport();
+  const { exportData } = useExport();
 
   if (!jobId) return null;
-
-  const downloadData = (reportItems: any[], reportTitle: string) => {
-    if (reportItems === null) {
-      return;
-    }
-
-    const columns: ContentTableColumn[] =
-      reportItems.length > 0
-        ? Object.keys(reportItems[0]).map((key) => ({
-            property: key,
-            label: key,
-            type: ContentType.String
-          }))
-        : [];
-
-    const exportColumns = columns
-      .map((column) => `${column.property}]`)
-      .join(exportOptions.separator);
-
-    const data = reportItems
-      .map((row) =>
-        columns
-          .map((col) => row[col.property] as string)
-          .join(exportOptions.separator)
-      )
-      .join(exportOptions.newLineCharacter);
-
-    exportData(reportTitle, exportColumns, data);
-  };
 
   useEffect(() => {
     const unsubscribeOnJobFinished =
       NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(
         async (notification) => {
           if (notification.jobId === jobId) {
-            const jobInfo = await JobService.getUserJobInfo(notification.jobId);
-            if (!jobInfo) {
+            const report = await JobService.getReport(jobId);
+            if (!report) {
               setReport(
                 createReport(
-                  `The job has finished, but could not find job info for job ${jobId}`
+                  `The job has finished, but could not find a report for job ${jobId}`
                 )
               );
             } else {
-              setReport(jobInfo.report);
-              if (jobInfo.report.downloadImmediately === true) {
-                downloadData(jobInfo.report.reportItems, jobInfo.report.title);
+              setReport(report);
+              if (report.downloadImmediately === true) {
+                const reportProperties = generateReport(
+                  report.reportItems,
+                  report.reportHeader
+                );
+                exportData(
+                  report.title,
+                  reportProperties.exportColumns,
+                  reportProperties.data
+                );
               }
             }
           }

@@ -1,22 +1,8 @@
+import {
+  ExportProperties,
+  defaultExportProperties
+} from "models/exportProperties";
 import { useCallback, useMemo } from "react";
-
-export interface ExportProperties {
-  outputMimeType: string;
-  fileExtension: string;
-  separator: string;
-  newLineCharacter: string;
-  omitSpecialCharactersFromFilename?: boolean;
-  appendDateTime?: boolean;
-}
-
-const defaultExportProperties = {
-  fileExtension: ".csv",
-  newLineCharacter: "\n",
-  outputMimeType: "text/csv",
-  separator: ",",
-  omitSpecialCharactersFromFilename: true,
-  appendDateTime: true
-};
 
 interface ExportObject {
   exportData: (fileName: string, header: string, data: string) => void;

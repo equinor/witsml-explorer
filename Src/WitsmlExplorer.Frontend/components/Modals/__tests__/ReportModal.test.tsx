@@ -9,8 +9,7 @@ import {
   renderWithContexts
 } from "__testUtils__/testUtils";
 import { ReportModal } from "components/Modals/ReportModal";
-import JobInfo from "models/jobs/jobInfo";
-import { createReport } from "models/reports/BaseReport";
+import BaseReport, { createReport } from "models/reports/BaseReport";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 
@@ -20,7 +19,8 @@ jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
 jest.mock("services/jobService", () => {
   return {
-    getUserJobInfo: () => MOCK_JOB_INFO
+    getUserJobInfo: () => MOCK_JOB_INFO,
+    getReport: jest.fn()
   };
 });
 
@@ -79,12 +79,12 @@ describe("Report Modal", () => {
     });
 
     it("Should show the report once the job has finished", async () => {
-      const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
-        deferred<JobInfo>();
+      const { promise: reportPromise, resolve: resolveReportPromise } =
+        deferred<BaseReport>();
 
       jest
-        .spyOn(JobService, "getUserJobInfo")
-        .mockImplementation(() => jobInfoPromise);
+        .spyOn(JobService, "getReport")
+        .mockImplementation(() => reportPromise);
 
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
@@ -92,13 +92,13 @@ describe("Report Modal", () => {
       // Send the mocked notification signal
       NotificationService.Instance.snackbarDispatcher.dispatch(NOTIFICATION);
 
-      // A notification that the job has finished has been received. It should still display loading until the job is fetched.
+      // A notification that the job has finished has been received. It should still display loading until the report is fetched.
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
-      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(2);
+      expect(JobService.getReport).toHaveBeenCalledTimes(1);
 
-      // Resolve and return from the mocked getUserJobInfo
+      // Resolve and return from the mocked report
       await act(async () => {
-        resolveJobInfoPromise(MOCK_JOB_INFO);
+        resolveReportPromise(REPORT);
       });
 
       expect(screen.queryByText(/loading report/i)).not.toBeInTheDocument();
@@ -128,5 +128,5 @@ const REPORT_ITEMS = [
 
 const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
-const MOCK_JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
+const MOCK_JOB_INFO = getJobInfo({ id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });
