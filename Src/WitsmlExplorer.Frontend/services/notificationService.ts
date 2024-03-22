@@ -24,7 +24,6 @@ interface ObjectDescription {
 
 export interface RefreshAction {
   entityType: string;
-  originJobType: string;
   refreshType?: RefreshType;
   serverUrl: URL;
   wellUid?: string;

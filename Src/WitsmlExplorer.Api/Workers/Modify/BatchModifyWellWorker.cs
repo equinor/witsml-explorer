@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             Logger.LogInformation("Wells modified. {jobDescription}", job.Description());
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, "Batch updated well properties");
             string[] wells = job.Wells.Select(well => well.Uid).ToArray();
-            RefreshWells refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wells, RefreshType.BatchUpdate, JobType);
+            RefreshWells refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wells, RefreshType.BatchUpdate);
             return (workerResult, refreshAction);
         }
 

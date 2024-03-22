@@ -77,7 +77,7 @@ namespace WitsmlExplorer.Api.Workers
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
 
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Spliced logs: {job.GetObjectName()} to log: {newLogName}", jobId: jobId);
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.Log, JobType);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, EntityType.Log);
             return (workerResult, refreshAction);
         }
 

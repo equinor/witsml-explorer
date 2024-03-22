@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Deleted {ComponentType} for {ObjectType}. {Description}", componentsName, parentType, objectsDescription);
-                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, parentType, JobType, parentUid);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, wellboreUid, parentType, parentUid);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted {componentsName}: {string.Join(", ", componentUids)} for {parentType}: {parentUid}");
                 return (workerResult, refreshAction);
             }

@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                 await WaitUntilWbGeometryHasBeenCreated(wbGeometry);
                 Logger.LogInformation("WbGeometry created. {jobDescription}", job.Description());
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"WbGeometry created ({wbGeometry.Name} [{wbGeometry.Uid}])");
-                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wbGeometry.WellUid, wbGeometry.WellboreUid, EntityType.WbGeometry, JobType);
+                RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wbGeometry.WellUid, wbGeometry.WellboreUid, EntityType.WbGeometry);
                 return (workerResult, refreshAction);
             }
 

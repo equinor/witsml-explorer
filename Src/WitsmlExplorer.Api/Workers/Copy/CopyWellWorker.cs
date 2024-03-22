@@ -68,7 +68,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                                             true,
                                             $"Successfully copied well: {job.Source.WellUid} -> {job.Target.WellUid}");
 
-            RefreshWell refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Add, JobType);
+            RefreshWell refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Add);
 
             return (workerResult, refreshAction);
         }

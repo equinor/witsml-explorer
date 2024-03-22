@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                                             true,
                                             $"Successfully copied wellbore: {job.Source.WellboreUid} -> {job.Target.WellboreUid}");
 
-            RefreshWellbore refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Add, JobType);
+            RefreshWellbore refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Add);
 
             return (workerResult, refreshAction);
         }
