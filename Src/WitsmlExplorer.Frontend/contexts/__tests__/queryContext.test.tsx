@@ -10,10 +10,16 @@ import {
   queryReducer
 } from "contexts/queryContext";
 import { v4 as uuid } from "uuid";
+import { vi } from "vitest";
 
-jest.mock("templates/templates", () => ({
+vi.mock("templates/templates", () => ({
   templates: {
-    log: LOG_QUERY
+    log: `
+<logs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <log uidWell="" uidWellbore="" uid="">
+  </log>
+</logs>
+`
   }
 }));
 
@@ -142,12 +148,12 @@ const WELL_QUERY = `
   </well>
 </wells>`;
 
-const LOG_QUERY = `
-<logs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
-  <log uidWell="" uidWellbore="" uid="">
-  </log>
-</logs>
-`;
+// const LOG_QUERY = `
+// <logs xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+//   <log uidWell="" uidWellbore="" uid="">
+//   </log>
+// </logs>
+// `;
 
 const getExpectedLogQuery = (
   wellUid: string,
