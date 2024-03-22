@@ -192,7 +192,6 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
     killTime: "",
     status: null,
     failedReason: "",
-    report: null,
     progress: 0,
     isCancelable: false,
     reportType: null,

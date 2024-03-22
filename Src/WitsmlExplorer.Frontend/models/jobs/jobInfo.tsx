@@ -19,7 +19,6 @@ export default interface JobInfo {
   killTime: string;
   status: JobStatus;
   failedReason: string;
-  report: BaseReport;
   progress: number;
   isCancelable: boolean;
   reportType: ReportType;
