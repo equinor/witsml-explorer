@@ -9,8 +9,9 @@ import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { CurveSpecification } from "models/logData";
-import { useRouter } from "next/router";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
 
 const COLUMN_WIDTH = 135;
@@ -55,8 +56,8 @@ export const CurveValuesPlot = React.memo(
     const { width: contentViewWidth } = useContext(
       ContentViewDimensionsContext
     );
-    const router = useRouter();
-    const isTimeLog = router.query.logType === "time";
+    const { logType } = useParams();
+    const isTimeLog = logType === RouterLogType.TIME;
     const extraWidth = getExtraWidth(data, columns, dateTimeFormat, isTimeLog);
     const width =
       Math.min(maxColumns, columns.length - 1) * COLUMN_WIDTH + extraWidth;
