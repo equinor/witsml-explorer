@@ -1,6 +1,6 @@
 enum ReportType {
   Report = "Report",
-  File = "Download file"
+  File = "File"
 }
 
 export default ReportType;

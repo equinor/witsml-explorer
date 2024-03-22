@@ -20,6 +20,7 @@ import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
 import useExport from "hooks/useExport";
 import JobStatus from "models/jobStatus";
+import ReportType from "models/reportType";
 import { Server } from "models/server";
 import {
   adminRole,
@@ -152,7 +153,9 @@ export const JobsView = (): React.ReactElement => {
             report:
               jobInfo.status === JobStatus.Finished ? (
                 <ReportButton onClick={() => onClickReport(jobInfo.id)}>
-                  {jobInfo.reportType}
+                  {jobInfo.reportType === ReportType.File
+                    ? "Download File"
+                    : "Report"}
                 </ReportButton>
               ) : null,
             jobInfo: jobInfo
