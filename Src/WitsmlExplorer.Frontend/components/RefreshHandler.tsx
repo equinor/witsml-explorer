@@ -2,11 +2,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
-  refreshWellQuery,
+  refreshSearchQuery,
   refreshWellboreQuery,
   refreshWellboresQuery,
-  refreshWellsQuery,
-  refreshSearchQuery
+  refreshWellQuery,
+  refreshWellsQuery
 } from "hooks/query/queryRefreshHelpers";
 import EntityType from "models/entityType";
 import { ObjectType } from "models/objectType";
@@ -15,8 +15,7 @@ import NotificationService, {
   RefreshAction,
   RefreshType
 } from "services/notificationService";
-import { JobType } from "../services/jobService";
-import { ObjectFilterType } from "../contexts/filter";
+import { convertObjectTypeToObjectFilterType } from "../contexts/filter";
 
 const RefreshHandler = (): React.ReactElement => {
   const queryClient = useQueryClient();
@@ -46,13 +45,13 @@ const RefreshHandler = (): React.ReactElement => {
                 if (refreshAction.objectUid != null) {
                   refreshWellboreObject(refreshAction);
                 } else if (
-                  (refreshAction.originJobType as JobType) ===
-                  JobType.BatchModifyObjectsOnSearch
+                  refreshAction.refreshType === RefreshType.BatchUpdate
                 ) {
-                  refreshSearchFilter(refreshAction);
+                  refreshWellboreObjectsBatch(refreshAction);
                 } else {
                   refreshWellboreObjects(refreshAction);
                 }
+                refreshSearchQueries(refreshAction);
             }
           } catch (error) {
             // eslint-disable-next-line no-console
@@ -116,13 +115,7 @@ const RefreshHandler = (): React.ReactElement => {
     );
   }
 
-  function refreshSearchFilter(refreshAction: RefreshAction) {
-    refreshSearchQuery(
-      queryClient,
-      refreshAction.serverUrl.toString().toLowerCase(),
-      refreshAction.entityType as ObjectFilterType
-    );
-
+  function refreshWellboreObjectsBatch(refreshAction: RefreshAction) {
     for (const object of refreshAction.objects) {
       refreshObjectQuery(
         queryClient,
@@ -143,6 +136,21 @@ const RefreshHandler = (): React.ReactElement => {
       refreshAction.wellboreUid,
       refreshAction.entityType as ObjectType
     );
+  }
+
+  function refreshSearchQueries(refreshAction: RefreshAction) {
+    const filterTypes = convertObjectTypeToObjectFilterType(
+      refreshAction.entityType as ObjectType
+    );
+    if (filterTypes) {
+      filterTypes.forEach((filterType) =>
+        refreshSearchQuery(
+          queryClient,
+          refreshAction.serverUrl.toString().toLowerCase(),
+          filterType
+        )
+      );
+    }
   }
 
   return <></>;

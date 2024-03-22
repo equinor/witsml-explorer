@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
         {
             job.ToDelete.Verify();
             ICollection<WitsmlObjectOnWellbore> queries = ObjectQueries.DeleteObjectsQuery(job.ToDelete);
-            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectType, JobType);
+            RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.ToDelete.WellUid, job.ToDelete.WellboreUid, job.ToDelete.ObjectType);
             return await DeleteObjectsOnWellbore(queries, refreshAction);
         }
 

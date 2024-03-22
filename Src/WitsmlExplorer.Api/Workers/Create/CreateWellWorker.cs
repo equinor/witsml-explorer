@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers.Create
                 Logger.LogInformation("Well created. {jobDescription}", job.Description());
                 await WaitUntilWellHasBeenCreated(well);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Well created ({well.Name} [{well.Uid}])");
-                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), well.Uid, RefreshType.Add, JobType);
+                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), well.Uid, RefreshType.Add);
                 return (workerResult, refreshAction);
             }
 

@@ -69,7 +69,7 @@ public class BatchModifyLogCurveInfoWorker : BaseWorker<BatchModifyLogCurveInfoJ
 
         Logger.LogInformation("{JobType} - Job successful", GetType().Name);
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"The LogCurveInfo properties have been updated in the batch.", jobId: job.JobInfo.Id);
-        RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.WellboreReference.WellUid, job.WellboreReference.WellboreUid, EntityType.Log, JobType);
+        RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.WellboreReference.WellUid, job.WellboreReference.WellboreUid, EntityType.Log);
         return (workerResult, refreshAction);
     }
 

@@ -110,7 +110,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             Logger.LogInformation("LogCurveInfo modified. {jobDescription}", job.Description());
             return (
                 new WorkerResult(client.GetServerHostname(), true, $"LogCurveInfo updated ({job.LogCurveInfo.Uid})"),
-                new RefreshObjects(client.GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, EntityType.Log, JobType, job.LogReference.Uid));
+                new RefreshObjects(client.GetServerHostname(), job.LogReference.WellUid, job.LogReference.WellboreUid, EntityType.Log, job.LogReference.Uid));
         }
 
         private static WitsmlLog GetModifyLogDataQuery(ModifyLogCurveInfoJob job, string updatedMnemonics, string updatedUnits)

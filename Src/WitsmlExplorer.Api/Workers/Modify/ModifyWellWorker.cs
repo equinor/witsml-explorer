@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
             {
                 Logger.LogInformation("Well modified. {jobDescription}", job.Description());
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Well updated ({wellName} [{wellUid}])");
-                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Well.Uid, RefreshType.Update, JobType);
+                RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Well.Uid, RefreshType.Update);
                 return (workerResult, refreshAction);
             }
 
