@@ -74,15 +74,16 @@ namespace WitsmlExplorer.Api.Jobs
             }
         }
 
-        public string LinkType
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ReportType ReportType
         {
             get
             {
                 if (Report?.DownloadImmediately == true)
                 {
-                    return "Donwload file";
+                    return ReportType.File;
                 }
-                return "Report";
+                return ReportType.Report;
             }
         }
     }
@@ -93,5 +94,11 @@ namespace WitsmlExplorer.Api.Jobs
         Finished,
         Failed,
         Cancelled
+    }
+
+    public enum ReportType
+    {
+        File,
+        Report
     }
 }

@@ -3,8 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Amazon.Runtime;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -119,7 +117,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             {
                 return TypedResults.Forbid();
             }
-            return TypedResults.Ok(jobCache.GetReportByJobId(jobId));
+            return TypedResults.Ok(job.Report);
         }
     }
 }

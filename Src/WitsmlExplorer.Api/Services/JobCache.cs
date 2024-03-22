@@ -19,7 +19,6 @@ namespace WitsmlExplorer.Api.Services
         ICollection<JobInfo> GetJobInfosByUser(string username);
         JobInfo GetJobInfoById(string jobId);
         ICollection<JobInfo> GetAllJobInfos();
-        BaseReport GetReportByJobId(string jobId);
     }
 
     public class JobCache : IJobCache
@@ -64,16 +63,6 @@ namespace WitsmlExplorer.Api.Services
         public ICollection<JobInfo> GetAllJobInfos()
         {
             return _jobs.Values.ToList();
-        }
-
-        public BaseReport GetReportByJobId(string jobId)
-        {
-            var job = _jobs[jobId];
-            if (job != null)
-            {
-                return job.Report;
-            }
-            return null;
         }
 
         private void Cleanup()
