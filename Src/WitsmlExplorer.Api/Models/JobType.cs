@@ -1,8 +1,5 @@
-using System.Text.Json.Serialization;
-
 namespace WitsmlExplorer.Api.Models
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum JobType
     {
         CopyComponents = 1,
