@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using DnsClient.Protocol.Options;
-
 using Microsoft.Extensions.Logging;
 
 using WitsmlExplorer.Api.Jobs;
-using WitsmlExplorer.Api.Models.Reports;
 
 namespace WitsmlExplorer.Api.Services
 {
@@ -62,7 +59,7 @@ namespace WitsmlExplorer.Api.Services
 
         public ICollection<JobInfo> GetAllJobInfos()
         {
-            return _jobs.Values.ToList();
+            return _jobs.Values;
         }
 
         private void Cleanup()
