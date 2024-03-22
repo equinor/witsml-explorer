@@ -114,7 +114,7 @@ export default class JobService {
     abortSignal?: AbortSignal
   ): Promise<BaseReport> {
     const response = await ApiClient.get(
-      `/api/jobs/getreport/${jobId}`,
+      `/api/jobs/report/${jobId}`,
       abortSignal
     );
     if (response.ok) {
