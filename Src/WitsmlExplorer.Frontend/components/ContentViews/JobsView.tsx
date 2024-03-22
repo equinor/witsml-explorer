@@ -104,6 +104,7 @@ export const JobsView = (): React.ReactElement => {
       type: ContentType.String
     },
     { property: "status", label: "Status", type: ContentType.String },
+    { property: "cancel", label: "Cancel", type: ContentType.Component },
     { property: "report", label: "Report", type: ContentType.Component },
     {
       property: "failedReason",
@@ -124,6 +125,11 @@ export const JobsView = (): React.ReactElement => {
     { property: "username", label: "Ordered by", type: ContentType.String }
   ];
 
+  const cancelJob = async (jobId: string) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    JobService.cancelJob(jobId);
+  };
+
   const jobInfoRows = useMemo(
     () =>
       jobInfos
@@ -138,6 +144,16 @@ export const JobsView = (): React.ReactElement => {
               jobInfo.progress && jobInfo.status === JobStatus.Started
                 ? `${Math.round(jobInfo.progress * 100)}%`
                 : jobInfo.status,
+            cancel:
+              jobInfo.isCancelable === true && jobInfo.status === "Started" ? (
+                <StyledButton
+                  key="downloadall"
+                  variant="outlined"
+                  onClick={() => cancelJob(jobInfo.id)}
+                >
+                  <Icon name="clear" />
+                </StyledButton>
+              ) : null,
             startTime: formatDateString(
               jobInfo.startTime,
               timeZone,
@@ -225,6 +241,12 @@ const StyledSwitch = styled(Switch)<{ colors: Colors }>`
 const ReportButton = styled.div`
   text-decoration: underline;
   cursor: pointer;
+`;
+
+const StyledButton = styled(Button)`
+  &&& {
+    margin-left: 1.313em; height: 1.538em; color: red};
+  }
 `;
 
 export default JobsView;
