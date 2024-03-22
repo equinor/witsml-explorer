@@ -175,7 +175,7 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
             if (!report) {
               setReport(
                 createReport(
-                  `The job has finished, but could not find job info for job ${jobId}`
+                  `The job has finished, but could not find a report for job ${jobId}`
                 )
               );
             } else {
