@@ -34,6 +34,7 @@ import ObjectOnWellbore from "models/objectOnWellbore";
 import ObjectSearchResult from "models/objectSearchResult";
 import { ObjectType, ObjectTypeToModel } from "models/objectType";
 import RefNameString from "models/refNameString";
+import BaseReport from "models/reports/BaseReport";
 import Rig from "models/rig";
 import RiskObject from "models/riskObject";
 import { Server } from "models/server";
@@ -189,11 +190,23 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
     startTime: "",
     endTime: "",
     killTime: "",
-    status: "",
+    status: null,
     failedReason: "",
-    report: null,
     progress: 0,
     isCancelable: false,
+    reportType: null,
+    ...overrides
+  };
+}
+
+export function getReport(overrides?: Partial<BaseReport>): BaseReport {
+  return {
+    title: "testTitle",
+    summary: "testSummary",
+    reportItems: [],
+    warningMessage: "",
+    downloadImmediately: false,
+    reportHeader: "",
     ...overrides
   };
 }
