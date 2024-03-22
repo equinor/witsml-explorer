@@ -1,4 +1,5 @@
 import JobStatus from "models/jobStatus";
+import ReportType from "models/reportType";
 import BaseReport from "models/reports/BaseReport";
 
 export default interface JobInfo {
@@ -21,5 +22,5 @@ export default interface JobInfo {
   report: BaseReport;
   progress: number;
   isCancelable: boolean;
-  linkType: string;
+  reportType: ReportType;
 }

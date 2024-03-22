@@ -152,7 +152,7 @@ export const JobsView = (): React.ReactElement => {
             report:
               jobInfo.status === JobStatus.Finished ? (
                 <ReportButton onClick={() => onClickReport(jobInfo.id)}>
-                  {jobInfo.linkType}
+                  {jobInfo.reportType}
                 </ReportButton>
               ) : null,
             jobInfo: jobInfo
