@@ -19,6 +19,7 @@ import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
 import useExport from "hooks/useExport";
+import JobStatus from "models/jobStatus";
 import { Server } from "models/server";
 import {
   adminRole,
@@ -132,6 +133,10 @@ export const JobsView = (): React.ReactElement => {
             wellName: jobInfo.wellName,
             wellboreName: jobInfo.wellboreName,
             objectName: jobInfo.objectName,
+            status:
+              jobInfo.progress && jobInfo.status === JobStatus.Started
+                ? `${Math.round(jobInfo.progress * 100)}%`
+                : jobInfo.status,
             startTime: formatDateString(
               jobInfo.startTime,
               timeZone,
@@ -145,7 +150,7 @@ export const JobsView = (): React.ReactElement => {
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
             report:
-              jobInfo.status === "Finished" ? (
+              jobInfo.status === JobStatus.Finished ? (
                 <ReportButton onClick={() => onClickReport(jobInfo.id)}>
                   {jobInfo.linkType}
                 </ReportButton>

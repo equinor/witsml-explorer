@@ -96,7 +96,7 @@ describe("Report Modal", () => {
 
       // A notification that the job has finished has been received. It should still display loading until the job is fetched.
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
-      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(2);
+      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(1);
 
       // Resolve and return from the mocked getUserJobInfo
       await act(async () => {
@@ -130,6 +130,6 @@ const REPORT_ITEMS = [
 
 const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
-const MOCK_JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
+const MOCK_JOB_INFO = getJobInfo({ id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });
 const MOCK_REPORT = getReport();

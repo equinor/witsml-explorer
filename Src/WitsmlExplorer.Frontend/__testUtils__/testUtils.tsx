@@ -190,7 +190,7 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
     startTime: "",
     endTime: "",
     killTime: "",
-    status: "",
+    status: null,
     failedReason: "",
     report: null,
     progress: 0,
@@ -200,14 +200,15 @@ export function getJobInfo(overrides?: Partial<JobInfo>): JobInfo {
   };
 }
 
-export function getReport(): BaseReport {
+export function getReport(overrides?: Partial<BaseReport>): BaseReport {
   return {
     title: "testTitle",
     summary: "testSummary",
     reportItems: [],
     warningMessage: "",
     downloadImmediately: false,
-    reportHeader: ""
+    reportHeader: "",
+    ...overrides
   };
 }
 

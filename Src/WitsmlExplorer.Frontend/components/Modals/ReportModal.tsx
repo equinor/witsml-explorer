@@ -171,15 +171,14 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
       NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(
         async (notification) => {
           if (notification.jobId === jobId) {
-            const jobInfo = await JobService.getUserJobInfo(notification.jobId);
-            if (!jobInfo) {
+            const report = await JobService.getReport(jobId);
+            if (!report) {
               setReport(
                 createReport(
                   `The job has finished, but could not find job info for job ${jobId}`
                 )
               );
             } else {
-              const report = await JobService.getReport(jobId);
               setReport(report);
               if (report.downloadImmediately === true) {
                 const reportProperties = generateReport(

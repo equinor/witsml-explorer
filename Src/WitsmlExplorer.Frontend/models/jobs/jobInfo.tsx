@@ -1,3 +1,4 @@
+import JobStatus from "models/jobStatus";
 import BaseReport from "models/reports/BaseReport";
 
 export default interface JobInfo {
@@ -15,7 +16,7 @@ export default interface JobInfo {
   startTime: string;
   endTime: string;
   killTime: string;
-  status: string;
+  status: JobStatus;
   failedReason: string;
   report: BaseReport;
   progress: number;
