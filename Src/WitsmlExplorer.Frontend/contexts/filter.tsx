@@ -49,6 +49,22 @@ export const objectFilterTypeToObjects = {
   [ObjectFilterType.ServiceCompany]: [ObjectType.Log, ObjectType.Trajectory]
 };
 
+// Mapping from ObjectType to ObjectFilterType.
+export const convertObjectTypeToObjectFilterType = (
+  objectType: ObjectType
+): ObjectFilterType[] => {
+  switch (objectType) {
+    case ObjectType.Log:
+      return [ObjectFilterType.Log, ObjectFilterType.ServiceCompany];
+    case ObjectType.Rig:
+      return [ObjectFilterType.Rig];
+    case ObjectType.Trajectory:
+      return [ObjectFilterType.ServiceCompany];
+    default:
+      return undefined;
+  }
+};
+
 // Mapping from every filter type to the property to filter by.
 // For WellFilterType, the property must be a property of a Well and Wellbore.
 // For ObjectFilterType, the property can be any string property under an object.
