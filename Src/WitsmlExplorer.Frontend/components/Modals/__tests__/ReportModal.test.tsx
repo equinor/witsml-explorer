@@ -1,4 +1,4 @@
-import { act, screen } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
 import {
   MockResizeObserver,
@@ -18,11 +18,12 @@ vi.mock("services/objectService");
 vi.mock("@microsoft/signalr");
 vi.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
-// jest.mock("services/jobService", () => {
-//   return {
-//     getUserJobInfo: () => MOCK_JOB_INFO
-//   };
-// });
+vi.mock("services/jobService", async (importOriginal) => {
+  return {
+    ...(await importOriginal<typeof import("services/jobService")>()),
+    getUserJobInfo: () => MOCK_JOB_INFO
+  };
+});
 
 describe("Report Modal", () => {
   //mock ResizeObserver to enable testing virtualized components
@@ -43,32 +44,37 @@ describe("Report Modal", () => {
       expect(screen.queryByRole("table")).not.toBeInTheDocument();
     });
 
-    // it("Should show the reportItems in a table", () => {
-    //   renderWithContexts(<ReportModal report={REPORT} />);
-    //   const rows = screen.getByRole("row");
-    //   console.log("rows:", rows);
-    //   expect(rows).toHaveLength(REPORT_ITEMS.length + 1); // An extra row for the header
+    it("Should show the reportItems in a table", () => {
+      // console.log("REPORT");
+      // console.log(REPORT)
+      // const currentRender = renderWithContexts(<ReportModal report={REPORT} />);
+      // console.log("currentRender");
+      // console.log(prettyDOM(currentRender.container))
+      const rows = screen.getAllByRole("row");
+      // console.log("AAAAAAAAAAAAAAAAA")
+      // console.log(rows)
+      expect(rows).toHaveLength(REPORT_ITEMS.length + 1); // An extra row for the header
 
-    //   // Test that the header has the keys as values in each cell
-    //   const headerCells = within(rows[0]).getAllByRole("button"); // header cells are buttons to toggle sorting
-    //   expect(headerCells).toHaveLength(Object.keys(REPORT_ITEMS[0]).length);
-    //   Object.keys(REPORT_ITEMS[0]).forEach((key, cellIndex) => {
-    //     expect(
-    //       within(headerCells[cellIndex]).getByText(key)
-    //     ).toBeInTheDocument();
-    //   });
+      // Test that the header has the keys as values in each cell
+      const headerCells = within(rows[0]).getAllByRole("button"); // header cells are buttons to toggle sorting
+      expect(headerCells).toHaveLength(Object.keys(REPORT_ITEMS[0]).length);
+      Object.keys(REPORT_ITEMS[0]).forEach((key, cellIndex) => {
+        expect(
+          within(headerCells[cellIndex]).getByText(key)
+        ).toBeInTheDocument();
+      });
 
-    //   // Test the data
-    //   REPORT_ITEMS.forEach((reportItem, rowIndex) => {
-    //     const cells = within(rows[rowIndex + 1]).getAllByRole("cell");
-    //     expect(cells).toHaveLength(Object.keys(reportItem).length + 2); // +2 because ContentTable adds an extra column before and after
-    //     Object.values(reportItem).forEach((value, cellIndex) => {
-    //       expect(
-    //         within(cells[cellIndex + 1]).getByText(value)
-    //       ).toBeInTheDocument(); // +1 for the same reason
-    //     });
-    //   });
-    // });
+      // Test the data
+      REPORT_ITEMS.forEach((reportItem, rowIndex) => {
+        const cells = within(rows[rowIndex + 1]).getAllByRole("cell");
+        expect(cells).toHaveLength(Object.keys(reportItem).length + 2); // +2 because ContentTable adds an extra column before and after
+        Object.values(reportItem).forEach((value, cellIndex) => {
+          expect(
+            within(cells[cellIndex + 1]).getByText(value)
+          ).toBeInTheDocument(); // +1 for the same reason
+        });
+      });
+    });
   });
 
   describe("Report Modal with jobId", () => {
