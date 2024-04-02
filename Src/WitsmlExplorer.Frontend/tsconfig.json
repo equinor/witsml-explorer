@@ -17,11 +17,11 @@
     "baseUrl": ".",
     "paths": {"*": ["*"]},
     "useDefineForClassFields": true,
-    "types": ["vitest/globals"],
     "allowImportingTsExtensions": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vitest/globals"],
   },
   "exclude": ["node_modules"],
   "include": ["vite-env.d.ts", "**/*.ts", "**/*.tsx", "."],
