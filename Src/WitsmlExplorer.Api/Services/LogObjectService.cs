@@ -171,7 +171,7 @@ namespace WitsmlExplorer.Api.Services
                 mnemonics.Insert(0, indexMnemonic);
             }
 
-            WitsmlLog witsmlLog = loadAllData ? await LoadDataRecursive(mnemonics, log, startIndex, endIndex, cancellationToken.Value, wellUid, wellboreUid, logUid, progressReporter)
+            WitsmlLog witsmlLog = loadAllData ? await LoadDataRecursive(mnemonics, log, startIndex, endIndex, cancellationToken, wellUid, wellboreUid, logUid, progressReporter)
                 : await LoadData(mnemonics, log, startIndex, endIndex, wellUid, wellboreUid, logUid);
 
             if (witsmlLog?.LogData == null || witsmlLog.LogData.Data.IsNullOrEmpty())
@@ -213,7 +213,7 @@ namespace WitsmlExplorer.Api.Services
             return witsmlLog;
         }
 
-        private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, CancellationToken cancellationToken, string wellUid = null, string wellboreUid = null, string logUid = null, IProgress<double> progressReporter = null)
+        private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, CancellationToken? cancellationToken = null, string wellUid = null, string wellboreUid = null, string logUid = null, IProgress<double> progressReporter = null)
         {
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch(cancellationToken);
