@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,

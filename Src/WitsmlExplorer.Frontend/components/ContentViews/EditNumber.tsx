@@ -1,5 +1,5 @@
 import { Icon, Label, TextField } from "@equinor/eds-core-react";
-import { Tooltip } from "@material-ui/core";
+import { Tooltip } from "@mui/material";
 import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import { ChangeEvent, ReactElement, useContext, useState } from "react";

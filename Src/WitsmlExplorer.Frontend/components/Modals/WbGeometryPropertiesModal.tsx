@@ -1,5 +1,5 @@
 import { Autocomplete } from "@equinor/eds-core-react";
-import { InputAdornment, TextField } from "@material-ui/core";
+import { InputAdornment, TextField } from "@mui/material";
 import formatDateString from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";

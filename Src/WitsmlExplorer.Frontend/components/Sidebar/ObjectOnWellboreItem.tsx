@@ -11,7 +11,7 @@ import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { calculateObjectNodeId } from "models/wellbore";
 import { ComponentType, MouseEvent, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 interface ObjectOnWellboreItemProps {
@@ -32,7 +32,6 @@ export default function ObjectOnWellboreItem({
   wellboreUid
 }: ObjectOnWellboreItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
-  const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const {
     wellUid: urlWellUid,
@@ -53,15 +52,13 @@ export default function ObjectOnWellboreItem({
     });
   };
 
-  const onLabelClick = () => {
-    navigate(
-      getObjectViewPath(
-        connectedServer?.url,
-        wellUid,
-        wellboreUid,
-        objectType,
-        objectOnWellbore.uid
-      )
+  const getNavPath = () => {
+    return getObjectViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      objectType,
+      objectOnWellbore.uid
     );
   };
 
@@ -81,7 +78,7 @@ export default function ObjectOnWellboreItem({
           objectUid
         )
       }
-      onLabelClick={onLabelClick}
+      to={getNavPath()}
       onContextMenu={(event: MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );

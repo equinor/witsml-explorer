@@ -1,6 +1,5 @@
-import { Collapse, IconButton } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
-import { Alert, AlertTitle } from "@material-ui/lab";
+import { Close } from "@mui/icons-material";
+import { Alert, AlertTitle, Collapse, IconButton } from "@mui/material";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { capitalize } from "lodash";

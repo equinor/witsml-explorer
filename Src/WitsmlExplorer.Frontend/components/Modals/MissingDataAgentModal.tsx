@@ -4,7 +4,7 @@ import {
   Icon,
   Typography
 } from "@equinor/eds-core-react";
-import { CloudUpload } from "@material-ui/icons";
+import { CloudUpload } from "@mui/icons-material";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import {
   objectToProperties,

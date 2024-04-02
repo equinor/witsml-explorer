@@ -1,5 +1,5 @@
 import { Button } from "@equinor/eds-core-react";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 export interface AdjustNumberRangeModalProps {

@@ -1,5 +1,5 @@
 import { EdsProvider, Icon } from "@equinor/eds-core-react";
-import { Divider, TextField } from "@material-ui/core";
+import { Divider, TextField } from "@mui/material";
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import OptionsContextMenu, {
   OptionsContextMenuProps

@@ -1,6 +1,6 @@
 import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material";
 import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
 import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";

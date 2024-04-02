@@ -1,4 +1,4 @@
-import { TextField, Typography } from "@material-ui/core";
+import { TextField, Typography } from "@mui/material";
 import ModalDialog from "components/Modals/ModalDialog";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";

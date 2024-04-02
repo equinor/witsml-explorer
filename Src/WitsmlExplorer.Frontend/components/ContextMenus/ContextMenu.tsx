@@ -1,4 +1,4 @@
-import { Menu } from "@material-ui/core";
+import { Menu } from "@mui/material";
 import OperationContext from "contexts/operationContext";
 import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";

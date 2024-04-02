@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import ModalDialog from "components/Modals/ModalDialog";
 import {
   invalidMeasureInput,

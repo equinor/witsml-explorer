@@ -1,5 +1,5 @@
 import { Icon, Tooltip } from "@equinor/eds-core-react";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@mui/material";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
