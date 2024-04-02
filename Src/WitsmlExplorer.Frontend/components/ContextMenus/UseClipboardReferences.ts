@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import ObjectReferences from "models/jobs/objectReferences";
 import { ObjectType } from "models/objectType";
+import { useEffect, useState } from "react";
 
 export const useClipboardReferences = (
   pollInterval = 0
@@ -19,9 +19,9 @@ export const useClipboardReferences = (
 
   useEffect(() => {
     tryToParseClipboardContent();
-    let timer: NodeJS.Timer;
+    let timer: number;
     if (pollInterval > 0) {
-      timer = setInterval(tryToParseClipboardContent, pollInterval);
+      timer = window.setInterval(tryToParseClipboardContent, pollInterval);
     }
     return () => {
       if (timer) {
