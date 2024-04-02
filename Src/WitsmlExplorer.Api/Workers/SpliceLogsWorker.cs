@@ -56,6 +56,11 @@ namespace WitsmlExplorer.Api.Workers
                     WitsmlLog logHeader = logHeaders.Logs.Find(l => l.Uid == logUid);
                     foreach (var mnemonic in logHeader.LogCurveInfo.Select(lci => lci.Mnemonic).Skip(1))
                     {
+
+                        if (cancellationToken != null && cancellationToken.Value.IsCancellationRequested)
+                        {
+                            cancellationToken.Value.ThrowIfCancellationRequested();
+                        }
                         WitsmlLogData logData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), logHeader, mnemonic, Logger);
                         newLogData = SpliceLogDataForCurve(newLogData, logData, mnemonic, isDepthLog);
                         currentIteration++;

@@ -153,7 +153,7 @@ namespace WitsmlExplorer.Api.Services
         /// Fetches and returns the next batch of log data. Will throw if an exception has happened during fetching.
         /// </summary>
         /// <returns>WitsmlLogData or, if there is no more data to fetch, null</returns>
-        public async Task<WitsmlLogData> GetNextBatch()
+        public async Task<WitsmlLogData> GetNextBatch(CancellationToken? cancellationToken = null)
         {
             if (_exception != null)
             {
@@ -166,16 +166,19 @@ namespace WitsmlExplorer.Api.Services
 
             try
             {
-                return await _buffer.ReceiveAsync(_receiveTokenSource.Token);
+                return await _buffer.ReceiveAsync(cancellationToken != null ? cancellationToken.Value : _receiveTokenSource.Token);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException ex)
             {
                 if (_exception != null)
                 {
                     throw _exception;
                 }
-                return null;
-            }
+                if (cancellationToken != null)
+                {
+                    throw ex;
+                }
+            }   return null;
         }
 
         public async ValueTask DisposeAsync()

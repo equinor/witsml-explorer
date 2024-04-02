@@ -88,6 +88,10 @@ namespace WitsmlExplorer.Api.Workers
 
                 for (int i = 0; i < allMnemonics.Count; i++)
                 {
+                    if (cancellationToken != null && cancellationToken.Value.IsCancellationRequested)
+                    {
+                        cancellationToken.Value.ThrowIfCancellationRequested();
+                    }
                     string mnemonic = allMnemonics[i];
 
                     _mnemonicsMismatchCount[mnemonic] = 0;

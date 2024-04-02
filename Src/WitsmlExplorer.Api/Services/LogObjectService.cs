@@ -216,20 +216,16 @@ namespace WitsmlExplorer.Api.Services
         private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, CancellationToken cancellationToken, string wellUid = null, string wellboreUid = null, string logUid = null, IProgress<double> progressReporter = null)
         {
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
-            WitsmlLogData logData = await logDataReader.GetNextBatch();
+            WitsmlLogData logData = await logDataReader.GetNextBatch(cancellationToken);
             var allLogData = logData;
             while (logData != null)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                }
+            {                
                 if (progressReporter != null)
                 {
                     double progress = LogWorkerTools.CalculateProgressBasedOnIndex(log, logData);
                     progressReporter.Report(progress);
                 }
-                logData = await logDataReader.GetNextBatch();
+                logData = await logDataReader.GetNextBatch(cancellationToken);
                 if (logData != null) allLogData.Data.AddRange(logData.Data);
             }
 
