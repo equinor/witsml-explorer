@@ -44,14 +44,13 @@ describe("Report Modal", () => {
     });
 
     it("Should show the reportItems in a table", () => {
-      // console.log("REPORT");
-      // console.log(REPORT)
+      // This line is needed to trigger @tanstack/react-virtual in ContentTable.tsx
+      window.Element.prototype.getBoundingClientRect = vi
+        .fn()
+        .mockReturnValue({ height: 1000, width: 1000 });
+
       renderWithContexts(<ReportModal report={REPORT} />);
-      // console.log("currentRender");
-      // console.log(prettyDOM(currentRender.container))
       const rows = screen.getAllByRole("row");
-      // console.log("AAAAAAAAAAAAAAAAA")
-      // console.log(rows)
       expect(rows).toHaveLength(REPORT_ITEMS.length + 1); // An extra row for the header
 
       // Test that the header has the keys as values in each cell
