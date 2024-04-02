@@ -178,7 +178,8 @@ namespace WitsmlExplorer.Api.Services
                 {
                     throw ex;
                 }
-            }   return null;
+                return null;
+            }
         }
 
         public async ValueTask DisposeAsync()

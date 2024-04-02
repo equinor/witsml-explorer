@@ -219,7 +219,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlLogData logData = await logDataReader.GetNextBatch(cancellationToken);
             var allLogData = logData;
             while (logData != null)
-            {                
+            {
                 if (progressReporter != null)
                 {
                     double progress = LogWorkerTools.CalculateProgressBasedOnIndex(log, logData);
