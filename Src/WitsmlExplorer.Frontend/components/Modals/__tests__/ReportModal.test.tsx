@@ -18,10 +18,9 @@ vi.mock("services/objectService");
 vi.mock("@microsoft/signalr");
 vi.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
-vi.mock("services/jobService", async (importOriginal) => {
+vi.mock("services/jobService", () => {
   return {
-    ...(await importOriginal<typeof import("services/jobService")>()),
-    getUserJobInfo: () => MOCK_JOB_INFO
+    default: { getUserJobInfo: () => MOCK_JOB_INFO }
   };
 });
 
@@ -47,7 +46,7 @@ describe("Report Modal", () => {
     it("Should show the reportItems in a table", () => {
       // console.log("REPORT");
       // console.log(REPORT)
-      // const currentRender = renderWithContexts(<ReportModal report={REPORT} />);
+      renderWithContexts(<ReportModal report={REPORT} />);
       // console.log("currentRender");
       // console.log(prettyDOM(currentRender.container))
       const rows = screen.getAllByRole("row");
