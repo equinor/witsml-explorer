@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
 // Dialog uses HTMLDialogElement which is not yet supported by jsdom, so we need to mock it. Keep an eye on https://github.com/jsdom/jsdom/issues/3294 for progress.
-export const mockEdsCoreReact = () => {
-  const originalModule = jest.requireActual("@equinor/eds-core-react");
+export const mockEdsCoreReact = async () => {
+  const originalModule = await vi.importActual<any>("@equinor/eds-core-react");
 
   const MockDialog = ({ children }: { children: ReactNode }) => (
     <div>{children}</div>

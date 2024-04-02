@@ -1,12 +1,12 @@
-import "@testing-library/jest-dom/extend-expect";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { getServer, renderWithContexts } from "__testUtils__/testUtils";
 import ContextMenuPresenter from "components/ContextMenus/ContextMenuPresenter";
 import SearchFilter from "components/Sidebar/SearchFilter";
 import { EMPTY_FILTER, FilterContext, ObjectFilterType } from "contexts/filter";
+import { vi } from "vitest";
 
-jest.mock("services/objectService");
+vi.mock("services/objectService");
 
 describe("Search Filter", () => {
   it("A search filter should show a searchable field", () => {
@@ -31,7 +31,7 @@ describe("Search Filter", () => {
   it("Typing in the field should update the filter", async () => {
     const newName = "testWell123";
     const user = userEvent.setup();
-    const mockUpdateFilter = jest.fn();
+    const mockUpdateFilter = vi.fn();
 
     renderWithContexts(
       <FilterContext.Provider

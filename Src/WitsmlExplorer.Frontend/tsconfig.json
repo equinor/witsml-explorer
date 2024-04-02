@@ -9,11 +9,12 @@
     "lib": ["ES2021", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": ["vitest/globals"],
 
     /* Bundler mode */
     // Old:
     // "moduleResolution": "node",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -28,7 +29,7 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "paths": { "*": ["*"] },
+    "paths": {"*": ["*"]},
 
     /* Linting */
     // Old:
@@ -42,6 +43,6 @@
   "exclude": ["node_modules"],
   // Old:
   // "include": ["src"],
-  "include": ["vite-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["vite-env.d.ts", "**/*.ts", "**/*.tsx", "setupTest.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
