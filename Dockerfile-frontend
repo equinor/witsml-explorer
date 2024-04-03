@@ -1,4 +1,4 @@
-FROM node:16-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY Src/WitsmlExplorer.Frontend/package.json ./
 COPY yarn.lock ./
@@ -24,7 +24,7 @@ ARG EXPOSE_PORT=3000
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=builder /app/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/out .
+COPY --from=builder /app/dist .
 EXPOSE ${EXPOSE_PORT}
 RUN mkdir -p /var/cache/nginx && chown nginx:nginx /var/cache/nginx && chown nginx:nginx -R /etc/nginx
 
