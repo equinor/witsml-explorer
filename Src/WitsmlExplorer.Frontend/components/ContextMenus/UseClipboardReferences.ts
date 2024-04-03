@@ -19,9 +19,9 @@ export const useClipboardReferences = (
 
   useEffect(() => {
     tryToParseClipboardContent();
-    let timer: number;
+    let timer: ReturnType<typeof setInterval>;
     if (pollInterval > 0) {
-      timer = window.setInterval(tryToParseClipboardContent, pollInterval);
+      timer = setInterval(tryToParseClipboardContent, pollInterval);
     }
     return () => {
       if (timer) {
