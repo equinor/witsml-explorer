@@ -4,6 +4,7 @@ export default interface BaseReport {
   reportItems: any[];
   warningMessage?: string;
   downloadImmediately?: boolean;
+  reportHeader?: string;
 }
 
 export const createReport = (
@@ -11,13 +12,15 @@ export const createReport = (
   summary = "",
   reportItems: any[] = [],
   warningMessage: string = null,
-  downloadImmediately: boolean = null
+  downloadImmediately: boolean = null,
+  reportHeader: string = null
 ): BaseReport => {
   return {
     title,
     summary,
     reportItems,
     warningMessage,
-    downloadImmediately
+    downloadImmediately,
+    reportHeader
   };
 };

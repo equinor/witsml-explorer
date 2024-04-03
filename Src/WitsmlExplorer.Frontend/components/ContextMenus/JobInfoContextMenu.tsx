@@ -10,6 +10,7 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
+import JobStatus from "models/jobStatus";
 import JobInfo from "models/jobs/jobInfo";
 import React from "react";
 import JobService from "services/jobService";
@@ -61,7 +62,8 @@ const JobInfoContextMenu = (
         <MenuItem
           key={"cancelaction"}
           disabled={
-            jobInfo.isCancelable === false || jobInfo.status !== "Started"
+            jobInfo.isCancelable === false ||
+            jobInfo.status !== JobStatus.Started
           }
           onClick={onClickCancelAction}
         >

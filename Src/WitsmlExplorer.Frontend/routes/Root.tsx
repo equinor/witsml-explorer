@@ -106,41 +106,37 @@ export default function Root() {
   }, []);
 
   return (
-    <>
-      <MsalProvider instance={msalInstance}>
-        {msalEnabled && (
-          <MsalAuthenticationTemplate
-            interactionType={InteractionType.Redirect}
-            authenticationRequest={authRequest}
-          />
-        )}
-        <OperationContext.Provider
-          value={{ operationState, dispatchOperation }}
-        >
-          <ThemeProvider theme={getTheme(operationState.theme)}>
-            <GlobalStyles colors={operationState.colors} />
-            <LoggedInUsernamesProvider>
-              <ConnectedServerProvider>
-                <CurveThresholdProvider>
-                  <SidebarProvider>
-                    <FilterContextProvider>
-                      <QueryContextProvider>
-                        <RefreshHandler />
-                        <SnackbarProvider>
-                          <Snackbar />
-                        </SnackbarProvider>
-                        <PageLayout />
-                        <ContextMenuPresenter />
-                        <ModalPresenter />
-                      </QueryContextProvider>
-                    </FilterContextProvider>
-                  </SidebarProvider>
-                </CurveThresholdProvider>
-              </ConnectedServerProvider>
-            </LoggedInUsernamesProvider>
-          </ThemeProvider>
-        </OperationContext.Provider>
-      </MsalProvider>
-    </>
+    <MsalProvider instance={msalInstance}>
+      {msalEnabled && (
+        <MsalAuthenticationTemplate
+          interactionType={InteractionType.Redirect}
+          authenticationRequest={authRequest}
+        />
+      )}
+      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+        <ThemeProvider theme={getTheme(operationState.theme)}>
+          <GlobalStyles colors={operationState.colors} />
+          <LoggedInUsernamesProvider>
+            <ConnectedServerProvider>
+              <CurveThresholdProvider>
+                <SidebarProvider>
+                  <FilterContextProvider>
+                    <QueryContextProvider>
+                      <RefreshHandler />
+                      <SnackbarProvider>
+                        <Snackbar />
+                      </SnackbarProvider>
+                      <PageLayout />
+                      <ContextMenuPresenter />
+                      <ModalPresenter />
+                    </QueryContextProvider>
+                  </FilterContextProvider>
+                </SidebarProvider>
+              </CurveThresholdProvider>
+            </ConnectedServerProvider>
+          </LoggedInUsernamesProvider>
+        </ThemeProvider>
+      </OperationContext.Provider>
+    </MsalProvider>
   );
 }

@@ -49,6 +49,7 @@ namespace WitsmlExplorer.Api.Jobs
 
         public double Progress { get; set; }
 
+        [JsonIgnore]
         public BaseReport Report { get; set; }
 
         public bool IsCancelable { get; internal set; } = false;
@@ -73,6 +74,18 @@ namespace WitsmlExplorer.Api.Jobs
             }
         }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public ReportType ReportType
+        {
+            get
+            {
+                if (Report?.DownloadImmediately == true)
+                {
+                    return ReportType.File;
+                }
+                return ReportType.Report;
+            }
+        }
     }
 
     public enum JobStatus
@@ -81,5 +94,11 @@ namespace WitsmlExplorer.Api.Jobs
         Finished,
         Failed,
         Cancelled
+    }
+
+    public enum ReportType
+    {
+        File,
+        Report
     }
 }

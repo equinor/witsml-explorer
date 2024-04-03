@@ -1,15 +1,13 @@
-import { act, screen } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
 import {
-  MockResizeObserver,
   deferred,
   getJobInfo,
   getNotification,
   renderWithContexts
 } from "__testUtils__/testUtils";
 import { ReportModal } from "components/Modals/ReportModal";
-import JobInfo from "models/jobs/jobInfo";
-import { createReport } from "models/reports/BaseReport";
+import BaseReport, { createReport } from "models/reports/BaseReport";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import { vi } from "vitest";
@@ -18,16 +16,13 @@ vi.mock("services/objectService");
 vi.mock("@microsoft/signalr");
 vi.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
-// jest.mock("services/jobService", () => {
-//   return {
-//     getUserJobInfo: () => MOCK_JOB_INFO
-//   };
-// });
+vi.mock("services/jobService", () => {
+  return {
+    default: { getUserJobInfo: () => MOCK_JOB_INFO, getReport: vi.fn() }
+  };
+});
 
 describe("Report Modal", () => {
-  //mock ResizeObserver to enable testing virtualized components
-  window.ResizeObserver = MockResizeObserver;
-
   describe("Report Modal with report", () => {
     it("Should show a basic report", () => {
       renderWithContexts(<ReportModal report={REPORT} />);
@@ -43,32 +38,36 @@ describe("Report Modal", () => {
       expect(screen.queryByRole("table")).not.toBeInTheDocument();
     });
 
-    // it("Should show the reportItems in a table", () => {
-    //   renderWithContexts(<ReportModal report={REPORT} />);
-    //   const rows = screen.getByRole("row");
-    //   console.log("rows:", rows);
-    //   expect(rows).toHaveLength(REPORT_ITEMS.length + 1); // An extra row for the header
+    it("Should show the reportItems in a table", () => {
+      // This line is needed to trigger @tanstack/react-virtual in ContentTable.tsx
+      window.Element.prototype.getBoundingClientRect = vi
+        .fn()
+        .mockReturnValue({ height: 1000, width: 1000 });
 
-    //   // Test that the header has the keys as values in each cell
-    //   const headerCells = within(rows[0]).getAllByRole("button"); // header cells are buttons to toggle sorting
-    //   expect(headerCells).toHaveLength(Object.keys(REPORT_ITEMS[0]).length);
-    //   Object.keys(REPORT_ITEMS[0]).forEach((key, cellIndex) => {
-    //     expect(
-    //       within(headerCells[cellIndex]).getByText(key)
-    //     ).toBeInTheDocument();
-    //   });
+      renderWithContexts(<ReportModal report={REPORT} />);
+      const rows = screen.getAllByRole("row");
+      expect(rows).toHaveLength(REPORT_ITEMS.length + 1); // An extra row for the header
 
-    //   // Test the data
-    //   REPORT_ITEMS.forEach((reportItem, rowIndex) => {
-    //     const cells = within(rows[rowIndex + 1]).getAllByRole("cell");
-    //     expect(cells).toHaveLength(Object.keys(reportItem).length + 2); // +2 because ContentTable adds an extra column before and after
-    //     Object.values(reportItem).forEach((value, cellIndex) => {
-    //       expect(
-    //         within(cells[cellIndex + 1]).getByText(value)
-    //       ).toBeInTheDocument(); // +1 for the same reason
-    //     });
-    //   });
-    // });
+      // Test that the header has the keys as values in each cell
+      const headerCells = within(rows[0]).getAllByRole("button"); // header cells are buttons to toggle sorting
+      expect(headerCells).toHaveLength(Object.keys(REPORT_ITEMS[0]).length);
+      Object.keys(REPORT_ITEMS[0]).forEach((key, cellIndex) => {
+        expect(
+          within(headerCells[cellIndex]).getByText(key)
+        ).toBeInTheDocument();
+      });
+
+      // Test the data
+      REPORT_ITEMS.forEach((reportItem, rowIndex) => {
+        const cells = within(rows[rowIndex + 1]).getAllByRole("cell");
+        expect(cells).toHaveLength(Object.keys(reportItem).length + 2); // +2 because ContentTable adds an extra column before and after
+        Object.values(reportItem).forEach((value, cellIndex) => {
+          expect(
+            within(cells[cellIndex + 1]).getByText(value)
+          ).toBeInTheDocument(); // +1 for the same reason
+        });
+      });
+    });
   });
 
   describe("Report Modal with jobId", () => {
@@ -80,12 +79,10 @@ describe("Report Modal", () => {
     });
 
     it("Should show the report once the job has finished", async () => {
-      const { promise: jobInfoPromise, resolve: resolveJobInfoPromise } =
-        deferred<JobInfo>();
+      const { promise: reportPromise, resolve: resolveReportPromise } =
+        deferred<BaseReport>();
 
-      vi.spyOn(JobService, "getUserJobInfo").mockImplementation(
-        () => jobInfoPromise
-      );
+      vi.spyOn(JobService, "getReport").mockImplementation(() => reportPromise);
 
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
@@ -93,13 +90,13 @@ describe("Report Modal", () => {
       // Send the mocked notification signal
       NotificationService.Instance.snackbarDispatcher.dispatch(NOTIFICATION);
 
-      // A notification that the job has finished has been received. It should still display loading until the job is fetched.
+      // A notification that the job has finished has been received. It should still display loading until the report is fetched.
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();
-      expect(JobService.getUserJobInfo).toHaveBeenCalledTimes(2);
+      expect(JobService.getReport).toHaveBeenCalledTimes(1);
 
-      // Resolve and return from the mocked getUserJobInfo
+      // Resolve and return from the mocked report
       await act(async () => {
-        resolveJobInfoPromise(MOCK_JOB_INFO);
+        resolveReportPromise(REPORT);
       });
 
       expect(screen.queryByText(/loading report/i)).not.toBeInTheDocument();
@@ -129,5 +126,5 @@ const REPORT_ITEMS = [
 
 const REPORT = createReport("testTitle", "testSummary", REPORT_ITEMS);
 const EMPTY_REPORT = createReport("emptyReportTitle", "emptyReportSummary");
-const MOCK_JOB_INFO = getJobInfo({ report: REPORT, id: "testJobId" });
+const MOCK_JOB_INFO = getJobInfo({ id: "testJobId" });
 const NOTIFICATION = getNotification({ jobId: "testJobId" });

@@ -1,5 +1,6 @@
 import { TextField } from "@mui/material";
 import ModalDialog from "components/Modals/ModalDialog";
+import JobStatus from "models/jobStatus";
 import JobInfo from "models/jobs/jobInfo";
 import React from "react";
 
@@ -39,7 +40,7 @@ const JobInfoPropertiesModal = (
               defaultValue={jobInfo.status}
               fullWidth
             />
-            {jobInfo.status == "Failed" && (
+            {jobInfo.status == JobStatus.Failed && (
               <TextField
                 InputProps={{ readOnly: true }}
                 multiline

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using DnsClient.Protocol.Options;
-
 using Microsoft.Extensions.Logging;
 
 using WitsmlExplorer.Api.Jobs;
