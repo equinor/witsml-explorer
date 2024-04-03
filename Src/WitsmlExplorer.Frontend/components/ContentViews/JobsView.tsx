@@ -1,4 +1,4 @@
-import { Icon, Switch, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Icon, Switch, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ContentTable,
@@ -146,13 +146,19 @@ export const JobsView = (): React.ReactElement => {
                 : jobInfo.status,
             cancel:
               jobInfo.isCancelable === true && jobInfo.status === "Started" ? (
-                <StyledButton
-                  key="downloadall"
-                  variant="outlined"
-                  onClick={() => cancelJob(jobInfo.id)}
-                >
-                  <Icon name="clear" />
-                </StyledButton>
+                <EdsProvider density="compact">
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Button
+                      style={{ height: "22px", width: "22px" }}
+                      color="danger"
+                      key="cancelJob"
+                      variant="ghost_icon"
+                      onClick={() => cancelJob(jobInfo.id)}
+                    >
+                      <Icon name="clear" size={18} />
+                    </Button>
+                  </div>
+                </EdsProvider>
               ) : null,
             startTime: formatDateString(
               jobInfo.startTime,
@@ -241,12 +247,6 @@ const StyledSwitch = styled(Switch)<{ colors: Colors }>`
 const ReportButton = styled.div`
   text-decoration: underline;
   cursor: pointer;
-`;
-
-const StyledButton = styled(Button)`
-  &&& {
-    margin-left: 1.313em; height: 1.538em; color: red};
-  }
 `;
 
 export default JobsView;

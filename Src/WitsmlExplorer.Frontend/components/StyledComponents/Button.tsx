@@ -47,7 +47,10 @@ const GhostButton = styled(EdsButton)<{ colors: Colors }>`
 
 const GhostIconButton = styled(EdsButton)<{ colors: Colors }>`
   white-space: nowrap;
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
+  color: ${(props) =>
+    !props.color || props.color === "primary"
+      ? props.colors.infographic.primaryMossGreen
+      : undefined};
 `;
 
 const OutlinedButton = styled(EdsButton)<{ colors: Colors }>`
