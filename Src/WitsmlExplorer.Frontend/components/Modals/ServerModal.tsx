@@ -17,6 +17,7 @@ import {
 import OperationType from "contexts/operationType";
 import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
 import { Server } from "models/server";
+import { msalEnabled } from "msal/MsalAuthProvider";
 import React, {
   CSSProperties,
   ChangeEvent,
@@ -47,7 +48,6 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { connectedServer, setConnectedServer } = useConnectedServer();
-  const msalEnabled = true;
 
   const isAddingNewServer = props.server.id === undefined;
   const labelStyle: CSSProperties = {
