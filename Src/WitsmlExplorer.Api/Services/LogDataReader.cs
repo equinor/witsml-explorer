@@ -166,7 +166,12 @@ namespace WitsmlExplorer.Api.Services
 
             try
             {
-                return await _buffer.ReceiveAsync(cancellationToken == null ? _receiveTokenSource.Token : GetLinkedCts(cancellationToken).Token);
+                if (cancellationToken == null)
+                {
+                    return await _buffer.ReceiveAsync(_receiveTokenSource.Token);
+                }
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_receiveTokenSource.Token, cancellationToken.Value);
+                return await _buffer.ReceiveAsync(linkedCts.Token);
             }
             catch (TaskCanceledException ex)
             {
@@ -190,11 +195,6 @@ namespace WitsmlExplorer.Api.Services
             _produceTask.Dispose();
             _receiveTokenSource.Dispose();
             GC.SuppressFinalize(this);
-        }
-
-        private CancellationTokenSource GetLinkedCts(CancellationToken? cancellationToken)
-        {
-            return CancellationTokenSource.CreateLinkedTokenSource(_receiveTokenSource.Token, cancellationToken.Value);
         }
     }
 }
