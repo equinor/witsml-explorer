@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
@@ -12,13 +11,14 @@ import LogCurveInfoPropertiesModal, {
   LogCurveInfoPropertiesModalProps
 } from "components/Modals/LogCurveInfoPropertiesModal";
 import JobService from "services/jobService";
+import { vi } from "vitest";
 
-jest.mock("services/jobService");
-jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
+vi.mock("services/jobService");
+vi.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
 const simpleProps: LogCurveInfoPropertiesModalProps = {
   logCurveInfo: getLogCurveInfo(),
-  dispatchOperation: jest.fn(),
+  dispatchOperation: vi.fn(),
   selectedLog: getLogObject()
 };
 
@@ -76,7 +76,7 @@ it("AxisDefinition should be shown readonly in the LogCurveInfo modal when inclu
 });
 
 it("Saving edited properties of a LogCurve should result in the order of a job", async () => {
-  const mockedOrderJob = jest.fn();
+  const mockedOrderJob = vi.fn();
   JobService.orderJob = mockedOrderJob;
 
   const user = userEvent.setup();

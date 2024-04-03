@@ -1,3 +1,4 @@
+import { Buffer } from "buffer";
 import { ApiClient } from "services/apiClient";
 
 import { BasicServerCredentials } from "services/authorizationService";

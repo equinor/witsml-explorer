@@ -1,4 +1,4 @@
-FROM node:16-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY Src/WitsmlExplorer.Frontend/package.json ./
 COPY yarn.lock ./
@@ -11,20 +11,20 @@ ARG AZURE_AD_TENANT_ID=
 ARG AZURE_AD_CLIENT_ID=
 ARG AZURE_AD_URL_WITSMLEXPLORER=
 ARG AZURE_AD_SCOPE_API=
-ENV NEXT_PUBLIC_MSALENABLED=${MSALENABLED}
-ENV NEXT_PUBLIC_AZURE_AD_TENANT_ID=${AZURE_AD_TENANT_ID}
-ENV NEXT_PUBLIC_AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID}
-ENV NEXT_PUBLIC_AZURE_AD_URL_WITSMLEXPLORER=${AZURE_AD_URL_WITSMLEXPLORER}
-ENV NEXT_PUBLIC_AZURE_AD_SCOPE_API=${AZURE_AD_SCOPE_API}
+ENV VITE_MSALENABLED=${MSALENABLED}
+ENV VITE_AZURE_AD_TENANT_ID=${AZURE_AD_TENANT_ID}
+ENV VITE_AZURE_AD_CLIENT_ID=${AZURE_AD_CLIENT_ID}
+ENV VITE_AZURE_AD_URL_WITSMLEXPLORER=${AZURE_AD_URL_WITSMLEXPLORER}
+ENV VITE_AZURE_AD_SCOPE_API=${AZURE_AD_SCOPE_API}
 
-RUN yarn test && yarn build && yarn export
+RUN yarn test && yarn build
 
 FROM nginx:1-alpine AS final
 ARG EXPOSE_PORT=3000
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 COPY --from=builder /app/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/out .
+COPY --from=builder /app/dist .
 EXPOSE ${EXPOSE_PORT}
 RUN mkdir -p /var/cache/nginx && chown nginx:nginx /var/cache/nginx && chown nginx:nginx -R /etc/nginx
 

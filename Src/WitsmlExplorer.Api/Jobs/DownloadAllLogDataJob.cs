@@ -27,13 +27,7 @@ public record DownloadAllLogDataJob : Job
     /// <summary>
     /// Indicates, if the job can be cancelled
     /// </summary>
-    public override bool IsCancelable
-    {
-        get
-        {
-            return true;
-        }
-    }
+    public override bool IsCancelable => true;
 
     /// <summary>
     /// Gets a description of the log reference object.
