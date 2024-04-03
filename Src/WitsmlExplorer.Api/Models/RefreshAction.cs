@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace WitsmlExplorer.Api.Models
@@ -30,7 +31,8 @@ namespace WitsmlExplorer.Api.Models
         public override EntityType EntityType => EntityType.Well;
         public string WellUid { get; }
 
-        public RefreshWell(Uri serverUrl, string wellUid, RefreshType refreshType) : base(serverUrl, refreshType)
+        public RefreshWell(Uri serverUrl, string wellUid, RefreshType refreshType)
+            : base(serverUrl, refreshType)
         {
             WellUid = wellUid;
         }
@@ -41,7 +43,8 @@ namespace WitsmlExplorer.Api.Models
         public override EntityType EntityType => EntityType.Well;
         public string[] WellUids { get; }
 
-        public RefreshWells(Uri serverUrl, string[] wellUids, RefreshType refreshType) : base(serverUrl, refreshType)
+        public RefreshWells(Uri serverUrl, string[] wellUids, RefreshType refreshType)
+            : base(serverUrl, refreshType)
         {
             WellUids = wellUids;
         }
@@ -53,7 +56,8 @@ namespace WitsmlExplorer.Api.Models
         public string WellUid { get; }
         public string WellboreUid { get; }
 
-        public RefreshWellbore(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType) : base(serverUrl, refreshType)
+        public RefreshWellbore(Uri serverUrl, string wellUid, string wellboreUid, RefreshType refreshType)
+            : base(serverUrl, refreshType)
         {
             WellUid = wellUid;
             WellboreUid = wellboreUid;
@@ -68,7 +72,8 @@ namespace WitsmlExplorer.Api.Models
         public string WellboreUid { get; }
         public string ObjectUid { get; }
 
-        public RefreshObjects(Uri serverUrl, string wellUid, string wellboreUid, EntityType entityType, string objectUid = null) : base(serverUrl, RefreshType.Update)
+        public RefreshObjects(Uri serverUrl, string wellUid, string wellboreUid, EntityType entityType, string objectUid = null)
+            : base(serverUrl, RefreshType.Update)
         {
             WellUid = wellUid;
             WellboreUid = wellboreUid;
@@ -77,4 +82,17 @@ namespace WitsmlExplorer.Api.Models
         }
     }
 
+    public class BatchRefreshObjects : RefreshAction
+    {
+        private readonly EntityType _entityType;
+        public override EntityType EntityType => _entityType;
+        public List<ObjectOnWellbore> Objects { get; }
+
+        public BatchRefreshObjects(Uri serverUrl, EntityType entityType, List<ObjectOnWellbore> objects)
+            : base(serverUrl, RefreshType.BatchUpdate)
+        {
+            _entityType = entityType;
+            Objects = objects;
+        }
+    }
 }
