@@ -173,16 +173,13 @@ namespace WitsmlExplorer.Api.Services
                 using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_receiveTokenSource.Token, cancellationToken.Value);
                 return await _buffer.ReceiveAsync(linkedCts.Token);
             }
-            catch (TaskCanceledException ex)
+            catch (TaskCanceledException)
             {
                 if (_exception != null)
                 {
                     throw _exception;
                 }
-                if (cancellationToken != null && cancellationToken.Value.IsCancellationRequested)
-                {
-                    throw ex;
-                }
+                cancellationToken?.ThrowIfCancellationRequested();
                 return null;
             }
         }
