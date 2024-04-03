@@ -9,10 +9,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
 
-  // port for production
-  // preview: {
-  //   port: 3000,
-  // },
+  // port for preview
+  preview: {
+    port: 3000
+  },
 
   // port for dev
   server: {
