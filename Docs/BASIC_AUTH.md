@@ -1,6 +1,6 @@
 # WITSML server credentials flow (Basic)
 
-Basic mode uses a session cookie to keep track of the user. This mode is used by setting `"OAuth2Enabled": false` in the API configuration (and leaving `NEXT_PUBLIC_MSALENABLED=` empty in the frontend environment).
+Basic mode uses a session cookie to keep track of the user. This mode is used by setting `"OAuth2Enabled": false` in the API configuration (and leaving `VITE_MSALENABLED=` empty in the frontend environment).
 
 This is a description of the flow:
 ### 1. When the user connects to a server for the first time

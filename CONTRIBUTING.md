@@ -287,7 +287,7 @@ Verify successful deployment by accessing the url in browser or postman; Expect 
 #### Deploy Frontend
 Edit .env.local file in WitsmlExplorer.Frontend project and set this value
 ```
-	NEXT_PUBLIC_WITSMLEXPLORER_API_URL=https://localhost/witsmlexplorerbackend
+	VITE_WITSMLEXPLORER_API_URL=https://localhost/witsmlexplorerbackend
 ```
 
 Build and export the application to a folder. Eg.: C:\WE_Frontend

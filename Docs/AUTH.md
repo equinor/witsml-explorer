@@ -16,6 +16,6 @@ Accessing the API without a frontend is explained at the end of each of the docu
 
 ## Authentication modes in WITSML Explorer.
 
-Basic mode uses a session cookie to keep track of the user. This mode is used by setting `"OAuth2Enabled": false` in the API configuration and empty `NEXT_PUBLIC_MSALENABLED=` in the frontend environment. Basic flow is explained in [BASIC_AUTH.md](./BASIC_AUTH.md).
+Basic mode uses a session cookie to keep track of the user. This mode is used by setting `"OAuth2Enabled": false` in the API configuration and empty `VITE_MSALENABLED=` in the frontend environment. Basic flow is explained in [BASIC_AUTH.md](./BASIC_AUTH.md).
 
-OAuth mode uses JWT authentication to keep track of the user. This mode is used by setting `"OAuth2Enabled": true` in the API configuration and `NEXT_PUBLIC_MSALENABLED=true` in the frontend environment. OAUTH flow is explained in [OAUTH.md](./OAUTH.md).
+OAuth mode uses JWT authentication to keep track of the user. This mode is used by setting `"OAuth2Enabled": true` in the API configuration and `VITE_MSALENABLED=true` in the frontend environment. OAUTH flow is explained in [OAUTH.md](./OAUTH.md).

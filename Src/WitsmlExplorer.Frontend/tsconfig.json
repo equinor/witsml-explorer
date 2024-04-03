@@ -14,10 +14,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
     "baseUrl": ".",
-    "paths": { "*": ["*"] }
+    "paths": { "*": ["*"] },
+    "useDefineForClassFields": true,
+    "allowImportingTsExtensions": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vitest/globals"]
   },
   "exclude": ["node_modules"],
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "."]
+  "include": ["vite-env.d.ts", "**/*.ts", "**/*.tsx", "."],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

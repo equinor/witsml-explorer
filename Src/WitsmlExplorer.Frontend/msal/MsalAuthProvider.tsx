@@ -12,16 +12,18 @@ export const authRequest: RedirectRequest = {
   scopes: ["openid profile"]
 };
 
-export const msalEnabled = process.env.NEXT_PUBLIC_MSALENABLED;
+export const msalEnabled = import.meta.env.VITE_MSALENABLED;
 
 export const adminRole = "admin";
 export const developerRole = "developer";
 
 const msalConfig: Configuration = {
   auth: {
-    authority: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_AZURE_AD_TENANT_ID}`,
-    clientId: process.env.NEXT_PUBLIC_AZURE_AD_CLIENT_ID,
-    redirectUri: `${process.env.NEXT_PUBLIC_AZURE_AD_URL_WITSMLEXPLORER}`
+    authority: `https://login.microsoftonline.com/${
+      import.meta.env.VITE_AZURE_AD_TENANT_ID
+    }`,
+    clientId: import.meta.env.VITE_AZURE_AD_CLIENT_ID,
+    redirectUri: `${import.meta.env.VITE_AZURE_AD_URL_WITSMLEXPLORER}`
   },
   cache: {
     cacheLocation: "sessionStorage",

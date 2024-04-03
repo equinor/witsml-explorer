@@ -12,7 +12,9 @@ const irrelevantProperties = {
   },
   axisDefinitions: [{} as AxisDefinition],
   curveDescription: "",
-  typeLogData: ""
+  typeLogData: "",
+  traceState: "",
+  nullValue: ""
 };
 
 const mnemonic = "mnemonic";

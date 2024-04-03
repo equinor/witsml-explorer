@@ -108,7 +108,9 @@ export function calculateRowHeight(
 ): number {
   if (row.getIsExpanded() && row.original.inset?.length != 0) {
     return (
-      headCellHeight + cellHeight + cellHeight * row.original.inset?.length ?? 0
+      headCellHeight +
+      cellHeight +
+      cellHeight * (row.original.inset?.length ?? 0)
     );
   }
   return cellHeight;

@@ -1,4 +1,3 @@
-import MaxLength from "models/maxLength";
 import Measure from "models/measure";
 
 export const undefinedOnUnchagedEmptyString = (
@@ -17,7 +16,7 @@ export const undefinedOnUnchagedEmptyString = (
 export const invalidStringInput = (
   original: string,
   edited: string,
-  maxLength: MaxLength
+  maxLength: number
 ): boolean => {
   return (
     errorOnDeletion(original, edited) ||

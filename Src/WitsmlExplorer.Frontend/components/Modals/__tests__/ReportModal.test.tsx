@@ -1,8 +1,6 @@
-import "@testing-library/jest-dom/extend-expect";
 import { act, screen, within } from "@testing-library/react";
 import { mockEdsCoreReact } from "__testUtils__/mocks/EDSMocks";
 import {
-  MockResizeObserver,
   deferred,
   getJobInfo,
   getNotification,
@@ -12,22 +10,19 @@ import { ReportModal } from "components/Modals/ReportModal";
 import BaseReport, { createReport } from "models/reports/BaseReport";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
+import { vi } from "vitest";
 
-jest.mock("services/objectService");
-jest.mock("@microsoft/signalr");
-jest.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
+vi.mock("services/objectService");
+vi.mock("@microsoft/signalr");
+vi.mock("@equinor/eds-core-react", () => mockEdsCoreReact());
 
-jest.mock("services/jobService", () => {
+vi.mock("services/jobService", () => {
   return {
-    getUserJobInfo: () => MOCK_JOB_INFO,
-    getReport: jest.fn()
+    default: { getUserJobInfo: () => MOCK_JOB_INFO, getReport: vi.fn() }
   };
 });
 
 describe("Report Modal", () => {
-  //mock ResizeObserver to enable testing virtualized components
-  window.ResizeObserver = MockResizeObserver;
-
   describe("Report Modal with report", () => {
     it("Should show a basic report", () => {
       renderWithContexts(<ReportModal report={REPORT} />);
@@ -44,6 +39,11 @@ describe("Report Modal", () => {
     });
 
     it("Should show the reportItems in a table", () => {
+      // This line is needed to trigger @tanstack/react-virtual in ContentTable.tsx
+      window.Element.prototype.getBoundingClientRect = vi
+        .fn()
+        .mockReturnValue({ height: 1000, width: 1000 });
+
       renderWithContexts(<ReportModal report={REPORT} />);
       const rows = screen.getAllByRole("row");
       expect(rows).toHaveLength(REPORT_ITEMS.length + 1); // An extra row for the header
@@ -82,9 +82,7 @@ describe("Report Modal", () => {
       const { promise: reportPromise, resolve: resolveReportPromise } =
         deferred<BaseReport>();
 
-      jest
-        .spyOn(JobService, "getReport")
-        .mockImplementation(() => reportPromise);
+      vi.spyOn(JobService, "getReport").mockImplementation(() => reportPromise);
 
       renderWithContexts(<ReportModal jobId="testJobId" />);
       expect(screen.getByText(/loading report/i)).toBeInTheDocument();

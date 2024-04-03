@@ -1,6 +1,5 @@
 import JobStatus from "models/jobStatus";
 import ReportType from "models/reportType";
-import BaseReport from "models/reports/BaseReport";
 
 export default interface JobInfo {
   jobType: string;

@@ -212,9 +212,7 @@ export const onClickRefreshObject = async (
   serverUrl: string,
   wellUid: string,
   wellboreUid: string,
-  objectType: ObjectType,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  objectUid: string
+  objectType: ObjectType
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   refreshObjectsQuery(queryClient, serverUrl, wellUid, wellboreUid, objectType);

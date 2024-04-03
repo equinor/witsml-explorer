@@ -19,6 +19,7 @@
 *.sln.docstates
 
 # Build results
+dist/
 bin/
 obj/
 Src/**/obj

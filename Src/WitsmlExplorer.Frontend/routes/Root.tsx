@@ -2,7 +2,6 @@ import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
 import { ThemeProvider } from "@material-ui/core";
 import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
-import Head from "next/head";
 import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
 import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
@@ -101,51 +100,43 @@ export default function Root() {
         dispatchOperation(action);
       }
     }
-    if (process.env.NEXT_PUBLIC_DARK_MODE_DEBUG) {
+    if (import.meta.env.VITE_DARK_MODE_DEBUG) {
       return enableDarkModeDebug(dispatchOperation);
     }
   }, []);
 
   return (
-    <>
-      <Head>
-        <title>WITSML Explorer</title>
-        <link rel="icon" href={"/favicon.ico"} />
-      </Head>
-      <MsalProvider instance={msalInstance}>
-        {msalEnabled && (
-          <MsalAuthenticationTemplate
-            interactionType={InteractionType.Redirect}
-            authenticationRequest={authRequest}
-          />
-        )}
-        <OperationContext.Provider
-          value={{ operationState, dispatchOperation }}
-        >
-          <ThemeProvider theme={getTheme(operationState.theme)}>
-            <GlobalStyles colors={operationState.colors} />
-            <LoggedInUsernamesProvider>
-              <ConnectedServerProvider>
-                <CurveThresholdProvider>
-                  <SidebarProvider>
-                    <FilterContextProvider>
-                      <QueryContextProvider>
-                        <RefreshHandler />
-                        <SnackbarProvider>
-                          <Snackbar />
-                        </SnackbarProvider>
-                        <PageLayout />
-                        <ContextMenuPresenter />
-                        <ModalPresenter />
-                      </QueryContextProvider>
-                    </FilterContextProvider>
-                  </SidebarProvider>
-                </CurveThresholdProvider>
-              </ConnectedServerProvider>
-            </LoggedInUsernamesProvider>
-          </ThemeProvider>
-        </OperationContext.Provider>
-      </MsalProvider>
-    </>
+    <MsalProvider instance={msalInstance}>
+      {msalEnabled && (
+        <MsalAuthenticationTemplate
+          interactionType={InteractionType.Redirect}
+          authenticationRequest={authRequest}
+        />
+      )}
+      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+        <ThemeProvider theme={getTheme(operationState.theme)}>
+          <GlobalStyles colors={operationState.colors} />
+          <LoggedInUsernamesProvider>
+            <ConnectedServerProvider>
+              <CurveThresholdProvider>
+                <SidebarProvider>
+                  <FilterContextProvider>
+                    <QueryContextProvider>
+                      <RefreshHandler />
+                      <SnackbarProvider>
+                        <Snackbar />
+                      </SnackbarProvider>
+                      <PageLayout />
+                      <ContextMenuPresenter />
+                      <ModalPresenter />
+                    </QueryContextProvider>
+                  </FilterContextProvider>
+                </SidebarProvider>
+              </CurveThresholdProvider>
+            </ConnectedServerProvider>
+          </LoggedInUsernamesProvider>
+        </ThemeProvider>
+      </OperationContext.Provider>
+    </MsalProvider>
   );
 }
