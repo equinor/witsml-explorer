@@ -25,5 +25,10 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"Source={SourceLog.Name} Target={TargetLog.Name}";
         }
+
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
     }
 }
