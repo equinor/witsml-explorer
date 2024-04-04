@@ -1,4 +1,5 @@
 import {
+  QueryClient,
   QueryObserverResult,
   useQuery,
   useQueryClient
@@ -83,8 +84,10 @@ export const useGetObjectSearch = (
   options?: QueryOptions
 ): ObjectSearchQueryResult => {
   const queryClient = useQueryClient();
-  const cachedAllObjects = queryClient.getQueryData<ObjectSearchResult[]>(
-    getObjectSearchQueryKey(server?.url, filterType, "", true)
+  const cachedAllObjects = getCachedAllObjects(
+    queryClient,
+    server.url,
+    filterType
   );
   const { data, ...state } = useQuery<ObjectSearchResult[]>(
     objectSearchQuery(
@@ -158,6 +161,24 @@ const fetchObjects = async (
     );
   }
   return searchResults;
+};
+
+const getCachedAllObjects = (
+  queryClient: QueryClient,
+  serverUrl: string,
+  filterType: ObjectFilterType
+) => {
+  const allObjectsQueryKey = getObjectSearchQueryKey(
+    serverUrl,
+    filterType,
+    "",
+    true
+  );
+  const cachedState = queryClient.getQueryState(allObjectsQueryKey);
+  if (cachedState?.isInvalidated) {
+    return null;
+  }
+  return queryClient.getQueryData<ObjectSearchResult[]>(allObjectsQueryKey);
 };
 
 const needToFetchAllObjects = (value: string) => {

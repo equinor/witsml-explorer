@@ -98,7 +98,7 @@ export const ObjectSearchListView = (): ReactElement => {
       ) {
         const confirmation = (
           <ConfirmModal
-            heading={"Warning: Seach might be slow!"}
+            heading={"Warning: Search might be slow!"}
             content={
               <>
                 <Typography style={{ whiteSpace: "pre-line" }}>

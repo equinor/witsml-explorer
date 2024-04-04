@@ -5,6 +5,7 @@ import {
   QUERY_KEY_COMPONENTS,
   QUERY_KEY_JOB_INFO,
   QUERY_KEY_OBJECT,
+  QUERY_KEY_OBJECT_SEARCH,
   QUERY_KEY_OBJECTS,
   QUERY_KEY_SERVERS,
   QUERY_KEY_WELL,
@@ -12,6 +13,7 @@ import {
   QUERY_KEY_WELLBORES,
   QUERY_KEY_WELLS
 } from "./queryKeys";
+import { ObjectFilterType } from "../../contexts/filter";
 
 export const refreshServersQuery = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({
@@ -218,5 +220,19 @@ export const refreshComponentsQuery = (
 export const refreshJobInfoQuery = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_JOB_INFO]
+  });
+};
+
+export const refreshSearchQuery = (
+  queryClient: QueryClient,
+  serverUrl: string,
+  filterType: ObjectFilterType
+) => {
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_OBJECT_SEARCH,
+      serverUrl.toLowerCase(),
+      filterType.toString()
+    ]
   });
 };

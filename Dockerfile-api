@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /build
 COPY Src/Witsml/Witsml.csproj Src/Witsml/Witsml.csproj
 COPY Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj
@@ -16,7 +16,7 @@ RUN dotnet test -c Release Witsml.Tests --no-restore && \
 WORKDIR /build/Src/WitsmlExplorer.Api
 RUN dotnet publish -c Release -o out --no-restore --no-build --no-dependencies
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 as base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as base
 ARG EXPOSE_PORT=5000
 WORKDIR /app
 COPY --from=build /build/Src/WitsmlExplorer.Api/out .
