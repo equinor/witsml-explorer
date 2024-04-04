@@ -16,6 +16,8 @@ import { ComponentType, getParentType } from "../../models/componentType";
 import ComponentService from "../../services/componentService";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
+import AuthorizationService from "../../services/authorizationService";
+import LogObject from "../../models/logObject";
 
 enum CopyMnemonicsType {
   DeleteInsert = "deleteInsert",
@@ -26,6 +28,7 @@ export interface CopyMnemonicsModalProps {
   sourceReferences: ComponentReferences;
   targetReference: ObjectReference;
   targetServer: Server;
+  sourceServer?: Server;
   startIndex?: string;
   endIndex?: string;
 }
@@ -36,6 +39,7 @@ const CopyMnemonicsModal = (
   const {
     sourceReferences,
     targetReference,
+    sourceServer,
     targetServer,
     startIndex,
     endIndex
@@ -72,7 +76,12 @@ const CopyMnemonicsModal = (
       endIndex: endIndex
     };
 
-    await JobService.orderJob(jobType, copyJob);
+    if (sourceServer) {
+      AuthorizationService.setSourceServer(sourceServer);
+      JobService.orderJobAtServer(jobType, copyJob, targetServer, sourceServer);
+    } else {
+      await JobService.orderJob(jobType, copyJob);
+    }
   }
 
   async function orderDeleteInsertJob() {
@@ -96,21 +105,42 @@ const CopyMnemonicsModal = (
       targetServer
     );
 
-    const deleteJob: DeleteComponentsJob = {
-      toDelete: createComponentReferences(
-        allTargetComponents.map((component) => component.mnemonic),
-        targetParent,
-        ComponentType.Mnemonic
-      )
-    };
+    const indexCurve = (targetParent as LogObject)?.indexCurve;
 
-    const copyJob: CopyComponentsJob = {
-      source: sourceReferences,
-      target: targetReference
-    };
+    const targetComponentsToDelete = allTargetComponents.filter(
+      (c) => c.mnemonic !== indexCurve
+    );
 
-    const replaceJob: ReplaceComponentsJob = { deleteJob, copyJob };
-    await JobService.orderJob(JobType.ReplaceComponents, replaceJob);
+    if (targetComponentsToDelete.length == 0) {
+      await orderPasteJob();
+    } else {
+      const deleteJob: DeleteComponentsJob = {
+        toDelete: createComponentReferences(
+          targetComponentsToDelete.map((component) => component.mnemonic),
+          targetParent,
+          ComponentType.Mnemonic,
+          targetServer.url
+        )
+      };
+
+      const copyJob: CopyComponentsJob = {
+        source: sourceReferences,
+        target: targetReference
+      };
+
+      const replaceJob: ReplaceComponentsJob = { deleteJob, copyJob };
+
+      if (sourceServer) {
+        await JobService.orderJobAtServer(
+          JobType.ReplaceComponents,
+          replaceJob,
+          targetServer,
+          sourceServer
+        );
+      } else {
+        await JobService.orderJob(JobType.ReplaceComponents, replaceJob);
+      }
+    }
   }
 
   return (
