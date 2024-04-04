@@ -40,7 +40,7 @@ internal sealed class WitsmlMetrics
             description: "Number of active requests");
 
     internal async Task<TResponseType> MeasureQuery<TResponseType>(Uri serverUri, WitsmlMethod method, string witsmlType, Task<TResponseType> wmlsTask)
-        where TResponseType:IWitsmlResponse
+        where TResponseType : IWitsmlResponse
     {
         var tagList = new TagList
         {
