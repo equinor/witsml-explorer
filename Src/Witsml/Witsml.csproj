@@ -3,6 +3,7 @@
   <PropertyGroup>
     <LangVersion>latestMajor</LangVersion>
     <TargetFramework>net8.0</TargetFramework>
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
