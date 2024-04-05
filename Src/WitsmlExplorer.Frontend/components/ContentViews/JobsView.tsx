@@ -146,13 +146,14 @@ export const JobsView = (): React.ReactElement => {
                 : jobInfo.status,
             cancel:
               jobInfo.isCancelable === true && jobInfo.status === "Started" ? (
-                <StyledButton
-                  key="downloadall"
-                  variant="outlined"
+                <Button
+                  key="cancelJob"
+                  color="danger"
+                  variant="table_icon"
                   onClick={() => cancelJob(jobInfo.id)}
                 >
-                  <Icon name="clear" />
-                </StyledButton>
+                  <Icon name="clear" size={18} />
+                </Button>
               ) : null,
             startTime: formatDateString(
               jobInfo.startTime,
@@ -241,12 +242,6 @@ const StyledSwitch = styled(Switch)<{ colors: Colors }>`
 const ReportButton = styled.div`
   text-decoration: underline;
   cursor: pointer;
-`;
-
-const StyledButton = styled(Button)`
-  &&& {
-    margin-left: 1.313em; height: 1.538em; color: red};
-  }
 `;
 
 export default JobsView;
