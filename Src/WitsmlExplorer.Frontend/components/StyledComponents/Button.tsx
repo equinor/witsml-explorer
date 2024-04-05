@@ -101,7 +101,7 @@ const OutlinedButton = styled(EdsButton)<{ colors: Colors }>`
   color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
-export const TableIconButtonLayout = styled.div`
+const TableIconButtonLayout = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
