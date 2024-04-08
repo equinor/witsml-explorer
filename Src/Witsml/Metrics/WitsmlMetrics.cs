@@ -4,6 +4,8 @@ using System.Diagnostics.Metrics;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using Serilog;
+
 using Witsml.ServiceReference;
 
 namespace Witsml.Metrics;
@@ -49,11 +51,19 @@ internal sealed class WitsmlMetrics
             { "objectType", witsmlType },
         };
 
-        _activeRequests.Add(1, tagList);
-        var timer = Stopwatch.StartNew();
-        TResponseType response = await wmlsTask;
-        timer.Stop();
-        _activeRequests.Add(-1, tagList);
+        Stopwatch timer = null;
+        TResponseType response;
+        try
+        {
+            _activeRequests.Add(1, tagList);
+            timer = Stopwatch.StartNew();
+            response = await wmlsTask;
+        }
+        finally
+        {
+            timer?.Stop();
+            _activeRequests.Add(-1, tagList);
+        }
 
         tagList.Add("resultCode", response.GetResultCode());
 
