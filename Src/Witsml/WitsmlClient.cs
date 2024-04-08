@@ -432,11 +432,15 @@ namespace Witsml
 
         public async Task<QueryResult> TestConnectionAsync()
         {
-            WMLS_GetVersionResponse response = await _client.WMLS_GetVersionAsync();
+            WMLS_GetVersionResponse response =
+                await _witsmlMetrics.MeasureQuery(
+                    _serverUrl,
+                    WitsmlMethod.GetCap,
+                    "",
+                    _client.WMLS_GetVersionAsync());
+
             if (string.IsNullOrEmpty(response.Result))
-            {
                 throw new Exception("Error while testing connection: Server failed to return a valid version");
-            }
 
             // Spec requires a comma-seperated list of supported versions without spaces
             var versions = response.Result.Split(CommonConstants.DataSeparator);

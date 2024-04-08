@@ -4,12 +4,12 @@ namespace Witsml.ServiceReference
 {
     internal interface IWitsmlResponse
     {
-        public short GetResultCode();
+        public string GetResultCode();
     }
 
     public partial class WMLS_GetFromStoreResponse : IWitsmlResponse
     {
-        public short GetResultCode() => Result;
+        public string GetResultCode() => Result.ToString();
 
         public override string ToString()
         {
@@ -19,21 +19,26 @@ namespace Witsml.ServiceReference
 
     public partial class WMLS_AddToStoreResponse : IWitsmlResponse
     {
-        public short GetResultCode() => Result;
+        public string GetResultCode() => Result.ToString();
     }
 
     public partial class WMLS_UpdateInStoreResponse : IWitsmlResponse
     {
-        public short GetResultCode() => Result;
+        public string GetResultCode() => Result.ToString();
     }
 
     public partial class WMLS_DeleteFromStoreResponse : IWitsmlResponse
     {
-        public short GetResultCode() => Result;
+        public string GetResultCode() => Result.ToString();
     }
 
     public partial class WMLS_GetCapResponse : IWitsmlResponse
     {
-        public short GetResultCode() => Result;
+        public string GetResultCode() => Result.ToString();
+    }
+
+    public partial class WMLS_GetVersionResponse : IWitsmlResponse
+    {
+        public string GetResultCode() => Result;
     }
 }
