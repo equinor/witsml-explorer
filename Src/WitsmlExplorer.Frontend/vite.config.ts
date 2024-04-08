@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 /// <reference types="vite/client" />
 
 import react from "@vitejs/plugin-react";
@@ -17,12 +16,5 @@ export default defineConfig({
   // port for dev
   server: {
     port: 3000
-  },
-
-  // test config
-  test: {
-    globals: true,
-    environment: "jsdom",
-    setupFiles: ["./setupTests.ts"]
   }
 });
