@@ -6,5 +6,6 @@ public enum WitsmlMethod
     AddToStore,
     UpdateInStore,
     DeleteFromStore,
-    GetCap
+    GetCap,
+    GetVersion
 }

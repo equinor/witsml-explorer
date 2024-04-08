@@ -435,7 +435,7 @@ namespace Witsml
             WMLS_GetVersionResponse response =
                 await _witsmlMetrics.MeasureQuery(
                     _serverUrl,
-                    WitsmlMethod.GetCap,
+                    WitsmlMethod.GetVersion,
                     "",
                     _client.WMLS_GetVersionAsync());
 
