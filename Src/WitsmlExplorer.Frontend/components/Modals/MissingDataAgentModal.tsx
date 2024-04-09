@@ -317,10 +317,10 @@ const MissingDataAgentModal = (
               paddingLeft: "0.5rem"
             }}
           >
-            <Button onClick={onClear}>
+            <Button onClick={onClear} variant="outlined">
               <Typography>Clear</Typography>
             </Button>
-            <Button onClick={onImport}>
+            <Button onClick={onImport} variant="outlined">
               <CloudUpload />
               <Typography noWrap>Import</Typography>
               <input
@@ -331,7 +331,7 @@ const MissingDataAgentModal = (
                 hidden
               />
             </Button>
-            <Button onClick={onExport}>
+            <Button onClick={onExport} variant="outlined">
               <Typography>Export</Typography>
             </Button>
           </div>
