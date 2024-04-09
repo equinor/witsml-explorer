@@ -1,0 +1,13 @@
+{
+  "name": "WEx-Desktop",
+  "description": "Witsml Explorer Desktop Edition",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^29.2.0"
+  }
+}
