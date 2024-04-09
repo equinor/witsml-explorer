@@ -64,7 +64,7 @@ export const StyledMenu = styled(Menu)<{ colors: Colors }>`
     svg {
       fill: ${(props) => props.colors.infographic.primaryMossGreen};
     }
-    .MuiListItem-button:hover {
+    .MuiMenuItem-root:hover {
       text-decoration: none;
       background-color: ${(props) =>
         props.colors.interactive.contextMenuItemHover};

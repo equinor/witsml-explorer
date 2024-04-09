@@ -157,7 +157,7 @@ const edsTheme = createTheme({
     MuiMenuItem: {
       styleOverrides: {
         root: {
-          padding: "0 1.5rem",
+          padding: "0.35rem 1.5rem",
           margin: "0.75rem 0"
         }
       }
