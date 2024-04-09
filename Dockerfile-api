@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /build
+COPY Directory.Packages.props Directory.Packages.props
 COPY Src/Witsml/Witsml.csproj Src/Witsml/Witsml.csproj
 COPY Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj
 COPY Tests/Witsml.Tests/Witsml.Tests.csproj Tests/Witsml.Tests/Witsml.Tests.csproj
