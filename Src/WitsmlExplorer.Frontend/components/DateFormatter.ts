@@ -1,5 +1,5 @@
-import { format, formatInTimeZone, toDate } from "date-fns-tz";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
+import { format, formatInTimeZone, toDate } from "date-fns-tz";
 
 //https://date-fns.org/v2.29.3/docs/format
 const naturalDateTimeFormat = "dd.MM.yyyy HH:mm:ss.SSS";
@@ -85,7 +85,10 @@ export function validateIsoDateString(dateString: string): boolean {
       return false;
     }
     const parsed = toDate(replaced);
-    const formatted = formatInTimeZone(parsed, offset, rawDateTimeFormat);
+    let formatted = formatInTimeZone(parsed, offset, rawDateTimeFormat);
+    if (!replaced.includes(".")) {
+      formatted = formatted.replace(".000", "");
+    }
     return replaced == formatted;
   } catch {
     return false;

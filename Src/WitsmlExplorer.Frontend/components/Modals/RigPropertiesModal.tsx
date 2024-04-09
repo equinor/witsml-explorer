@@ -3,6 +3,7 @@ import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import {
   PropertiesModalMode,
+  validFaxNumber,
   validPhoneNumber,
   validText
 } from "components/Modals/ModalParts";
@@ -54,10 +55,20 @@ const RigPropertiesModal = (
   };
 
   const yearEntServiceValid =
-    (rig.yearEntService == null &&
-      (editableRig?.yearEntService == null ||
-        editableRig?.yearEntService.length == 0)) ||
+    (!rig.yearEntService && !editableRig?.yearEntService) ||
     editableRig?.yearEntService?.length == 4;
+  const validTelNumber =
+    (!rig.telNumber && !editableRig?.telNumber) ||
+    validPhoneNumber(editableRig.telNumber);
+  const faxNumberValid =
+    (!rig.faxNumber && !editableRig?.faxNumber) ||
+    validFaxNumber(editableRig.faxNumber);
+  const validEmailAddress =
+    (!rig.emailAddress && !editableRig?.emailAddress) ||
+    validText(editableRig.emailAddress, 1, 128);
+  const validNameContact =
+    (!rig.nameContact && !editableRig?.nameContact) ||
+    validText(editableRig?.nameContact, 1, 64);
 
   const validRigUid = validText(editableRig?.uid, 1, 64);
   const validRigName = validText(editableRig?.name, 1, 64);
@@ -173,19 +184,12 @@ const RigPropertiesModal = (
                 id={"telNumber"}
                 label={"telNumber"}
                 value={editableRig.telNumber ? editableRig.telNumber : ""}
-                error={
-                  editMode &&
-                  (!validPhoneNumber(editableRig.telNumber) ||
-                    editableRig.telNumber?.length < 8)
-                }
+                variant={!validTelNumber ? "error" : undefined}
                 helperText={
-                  editMode &&
-                  (!validPhoneNumber(editableRig.telNumber) ||
-                  editableRig.telNumber?.length < 8
+                  !validTelNumber
                     ? "telNumber must be an integer of min 8 characters, however whitespace, dash and plus is accepted"
-                    : "")
+                    : ""
                 }
-                inputProps={{ minLength: 8, maxLength: 16 }}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({ ...editableRig, telNumber: e.target.value })
                 }
@@ -194,14 +198,12 @@ const RigPropertiesModal = (
                 id={"faxNumber"}
                 label={"faxNumber"}
                 value={editableRig.faxNumber ? editableRig.faxNumber : ""}
-                error={editMode && !validPhoneNumber(editableRig.faxNumber)}
+                variant={!faxNumberValid ? "error" : undefined}
                 helperText={
-                  editMode && !validPhoneNumber(editableRig.faxNumber)
+                  !faxNumberValid
                     ? "faxNumber must be an integer, however whitespace, dash and plus is accepted"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 0, maxLength: 16 }}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({ ...editableRig, faxNumber: e.target.value })
                 }
@@ -210,14 +212,12 @@ const RigPropertiesModal = (
                 id={"emailAddress"}
                 label={"emailAddress"}
                 value={editableRig.emailAddress ? editableRig.emailAddress : ""}
-                error={editMode && editableRig.emailAddress?.length === 0}
+                variant={!validEmailAddress ? "error" : undefined}
                 helperText={
-                  editMode && editableRig.emailAddress?.length === 0
+                  !validEmailAddress
                     ? "The emailAddress must be at least 1 character long"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 0, maxLength: 128 }}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({
                     ...editableRig,
@@ -229,17 +229,12 @@ const RigPropertiesModal = (
                 id={"nameContact"}
                 label={"nameContact"}
                 value={editableRig.nameContact ? editableRig.nameContact : ""}
-                variant={
-                  editMode && editableRig.nameContact?.length === 0
-                    ? "error"
-                    : undefined
-                }
+                variant={!validNameContact ? "error" : undefined}
                 helperText={
-                  editMode && editableRig.nameContact?.length === 0
+                  !validNameContact
                     ? "The nameContact must be at least 1 character long"
                     : ""
                 }
-                inputProps={{ minLength: 0, maxLength: 128 }}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({
                     ...editableRig,

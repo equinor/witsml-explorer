@@ -22,10 +22,10 @@ export const validTimeZone = (timeZone: string): boolean => {
   return timeZoneValidator.test(timeZone);
 };
 
-export const validPhoneNumber = (telnum: string): boolean => {
+const validNumber = (num: string): boolean => {
   let result = true;
-  if (telnum) {
-    const arr: Array<string> = telnum.split("");
+  if (num) {
+    const arr: Array<string> = num.split("");
     arr.forEach((e) => {
       if (isNaN(parseInt(e)) && e != " " && e != "-" && e != "+") {
         result = false;
@@ -33,4 +33,12 @@ export const validPhoneNumber = (telnum: string): boolean => {
     });
   }
   return result;
+};
+
+export const validPhoneNumber = (telnum: string): boolean => {
+  return validNumber(telnum) && validText(telnum, 8, 16);
+};
+
+export const validFaxNumber = (faxnum: string): boolean => {
+  return validNumber(faxnum) && validText(faxnum, 0, 16);
 };
