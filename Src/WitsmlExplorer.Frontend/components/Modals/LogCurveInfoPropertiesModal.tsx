@@ -1,12 +1,14 @@
-import { TextField, Typography } from "@mui/material";
+import { TextField } from "@equinor/eds-core-react";
+import { Typography } from "@mui/material";
 import ModalDialog from "components/Modals/ModalDialog";
+import { validText } from "components/Modals/ModalParts";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import ModifyLogCurveInfoJob from "models/jobs/modifyLogCurveInfoJob";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { Layout } from "../StyledComponents/Layout";
 
@@ -40,6 +42,9 @@ const LogCurveInfoPropertiesModal = (
     setEditableLogCurveInfo(logCurveInfo);
   }, [logCurveInfo]);
 
+  const validMnemonic = validText(editableLogCurveInfo?.mnemonic, 1, 64);
+  const validUnit = validText(editableLogCurveInfo?.unit, 1, 64);
+
   return (
     <>
       {editableLogCurveInfo && (
@@ -52,22 +57,19 @@ const LogCurveInfoPropertiesModal = (
                 id="uid"
                 label="uid"
                 defaultValue={editableLogCurveInfo.uid}
-                fullWidth
               />
               <TextField
                 id="mnemonic"
                 label="mnemonic"
                 defaultValue={editableLogCurveInfo.mnemonic}
-                error={editableLogCurveInfo.mnemonic.length === 0}
+                variant={validMnemonic ? undefined : "error"}
                 helperText={
-                  editableLogCurveInfo.mnemonic.length === 0
+                  !validMnemonic
                     ? "A logCurveInfo mnemonic cannot be empty. Size must be 1 to 64 characters."
                     : ""
                 }
-                fullWidth
                 disabled={isIndexCurve}
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogCurveInfo({
                     ...editableLogCurveInfo,
                     mnemonic: e.target.value
@@ -78,18 +80,13 @@ const LogCurveInfoPropertiesModal = (
                 id="unit"
                 label="unit"
                 defaultValue={editableLogCurveInfo.unit}
-                error={
-                  editableLogCurveInfo.unit == null ||
-                  editableLogCurveInfo.unit.length === 0
-                }
+                variant={validUnit ? undefined : "error"}
                 helperText={
-                  editableLogCurveInfo.unit == null ||
-                  editableLogCurveInfo.unit.length === 0
+                  !validUnit
                     ? "A unit cannot be empty. Size must be 1 to 64 characters."
                     : ""
                 }
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogCurveInfo({
                     ...editableLogCurveInfo,
                     unit: e.target.value
@@ -100,7 +97,7 @@ const LogCurveInfoPropertiesModal = (
                 id="curveDescription"
                 label="curveDescription"
                 defaultValue={editableLogCurveInfo.curveDescription}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogCurveInfo({
                     ...editableLogCurveInfo,
                     curveDescription: e.target.value
@@ -112,14 +109,12 @@ const LogCurveInfoPropertiesModal = (
                 id="typeLogData"
                 label="typeLogData"
                 defaultValue={editableLogCurveInfo.typeLogData}
-                fullWidth
               />
               <TextField
                 disabled
                 id="mnemAlias"
                 label="mnemAlias"
                 defaultValue={editableLogCurveInfo.mnemAlias}
-                fullWidth
               />
               {logCurveInfo?.axisDefinitions?.map((axisDefinition) => {
                 return (
@@ -129,21 +124,18 @@ const LogCurveInfoPropertiesModal = (
                     </Typography>
                     <TextField
                       disabled
-                      fullWidth
                       id="order"
                       label="order"
                       defaultValue={axisDefinition.order ?? ""}
                     />
                     <TextField
                       disabled
-                      fullWidth
                       id="count"
                       label="count"
                       defaultValue={axisDefinition.count ?? ""}
                     />
                     <TextField
                       disabled
-                      fullWidth
                       id="doubleValues"
                       label="doubleValues"
                       defaultValue={axisDefinition.doubleValues ?? ""}

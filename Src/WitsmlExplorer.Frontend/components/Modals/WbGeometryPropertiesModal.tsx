@@ -1,5 +1,4 @@
-import { Autocomplete } from "@equinor/eds-core-react";
-import { InputAdornment, TextField } from "@mui/material";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
@@ -9,7 +8,7 @@ import OperationType from "contexts/operationType";
 import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
 import WbGeometryObject from "models/wbGeometry";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface WbGeometryPropertiesModalProps {
@@ -68,6 +67,8 @@ const WbGeometryPropertiesModal = (
     dispatchOperation({ type: OperationType.HideModal });
   };
 
+  const validWbGeometryName = validText(editableWbGeometryObject?.name, 1, 64);
+
   return (
     <>
       {editableWbGeometryObject && (
@@ -84,35 +85,30 @@ const WbGeometryPropertiesModal = (
                 id="wellUid"
                 label="well uid"
                 defaultValue={editableWbGeometryObject.wellUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellName"
                 label="well name"
                 defaultValue={editableWbGeometryObject.wellName}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreUid"
                 label="wellbore uid"
                 defaultValue={editableWbGeometryObject.wellboreUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreName"
                 label="wellbore name"
                 defaultValue={editableWbGeometryObject.wellboreName}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dateTimeCreation"
                 label="created"
                 defaultValue={editableWbGeometryObject.commonData.dTimCreation}
-                fullWidth
               />
               <TextField
                 disabled
@@ -121,21 +117,18 @@ const WbGeometryPropertiesModal = (
                 defaultValue={
                   editableWbGeometryObject.commonData.dTimLastChange
                 }
-                fullWidth
               />
               <TextField
                 disabled
                 id="dateTimeReport"
                 label="time of report"
                 defaultValue={editableWbGeometryObject.dTimReport}
-                fullWidth
               />
               <TextField
                 disabled
                 id="sourceName"
                 label="source name"
                 defaultValue={editableWbGeometryObject.commonData.sourceName}
-                fullWidth
               />
               <TextField
                 disabled
@@ -143,7 +136,6 @@ const WbGeometryPropertiesModal = (
                 label={"wbGeometry uid"}
                 required
                 defaultValue={editableWbGeometryObject.uid}
-                fullWidth
               />
               <TextField
                 id={"name"}
@@ -154,15 +146,13 @@ const WbGeometryPropertiesModal = (
                     ? editableWbGeometryObject.name
                     : ""
                 }
-                error={editableWbGeometryObject.name.length === 0}
+                variant={validWbGeometryName ? undefined : "error"}
                 helperText={
-                  editableWbGeometryObject.name.length === 0
+                  !validWbGeometryName
                     ? "The wbGeometry name must be 1-64 characters"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWbGeometryObject({
                     ...editableWbGeometryObject,
                     name: e.target.value
@@ -173,19 +163,14 @@ const WbGeometryPropertiesModal = (
                 id={"mdBottom"}
                 label={"mdBottom"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableWbGeometryObject.mdBottom
-                        ? editableWbGeometryObject.mdBottom.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableWbGeometryObject.mdBottom
+                    ? editableWbGeometryObject.mdBottom.uom
+                    : ""
+                }
                 disabled={!editableWbGeometryObject.mdBottom}
                 value={editableWbGeometryObject.mdBottom?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWbGeometryObject({
                     ...editableWbGeometryObject,
                     mdBottom: {
@@ -201,19 +186,14 @@ const WbGeometryPropertiesModal = (
                 id={"gapAir"}
                 label={"gapAir"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableWbGeometryObject.gapAir
-                        ? editableWbGeometryObject.gapAir.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableWbGeometryObject.gapAir
+                    ? editableWbGeometryObject.gapAir.uom
+                    : ""
+                }
                 disabled={!editableWbGeometryObject.gapAir}
                 value={editableWbGeometryObject.gapAir?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWbGeometryObject({
                     ...editableWbGeometryObject,
                     gapAir: {
@@ -229,19 +209,14 @@ const WbGeometryPropertiesModal = (
                 id={"depthWaterMean"}
                 label={"depthWaterMean"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableWbGeometryObject.depthWaterMean
-                        ? editableWbGeometryObject.depthWaterMean.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableWbGeometryObject.depthWaterMean
+                    ? editableWbGeometryObject.depthWaterMean.uom
+                    : ""
+                }
                 disabled={!editableWbGeometryObject.depthWaterMean}
                 value={editableWbGeometryObject.depthWaterMean?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWbGeometryObject({
                     ...editableWbGeometryObject,
                     depthWaterMean: {
@@ -262,8 +237,7 @@ const WbGeometryPropertiesModal = (
                     ? editableWbGeometryObject.commonData.comments
                     : ""
                 }
-                fullWidth
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const commonData = {
                     ...editableWbGeometryObject.commonData,
                     comments: e.target.value
@@ -296,7 +270,7 @@ const WbGeometryPropertiesModal = (
               />
             </>
           }
-          confirmDisabled={!validText(editableWbGeometryObject.name)}
+          confirmDisabled={!validWbGeometryName}
           onSubmit={() => onSubmit(editableWbGeometryObject)}
           isLoading={isLoading}
         />

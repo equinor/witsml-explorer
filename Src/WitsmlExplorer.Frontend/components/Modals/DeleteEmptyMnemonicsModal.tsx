@@ -1,5 +1,4 @@
-import { Icon, Tooltip } from "@equinor/eds-core-react";
-import { TextField } from "@mui/material";
+import { Icon, TextField, Tooltip } from "@equinor/eds-core-react";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
@@ -11,7 +10,7 @@ import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
-import { useContext, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
@@ -88,11 +87,13 @@ const DeleteEmptyMnemonicsModal = (
               timeZone={timeZone}
             />
             <TextField
+              id="nullDepthValue"
               label="Null depth value"
               type="number"
-              fullWidth
               value={nullDepthValue}
-              onChange={(e: any) => setNullDepthValue(+e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setNullDepthValue(+e.target.value)
+              }
             />
             <CheckboxLayout>
               <Checkbox

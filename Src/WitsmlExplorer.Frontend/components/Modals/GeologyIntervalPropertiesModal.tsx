@@ -19,6 +19,7 @@ import MeasureWithDatum from "models/measureWithDatum";
 import MudLog from "models/mudLog";
 import { toObjectReference } from "models/objectOnWellbore";
 import React, {
+  ChangeEvent,
   Dispatch,
   SetStateAction,
   useContext,
@@ -213,7 +214,7 @@ const GeologyIntervalPropertiesModal = (
                     ? `description must be 1-${MaxLength.Comment} characters`
                     : ""
                 }
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditable({
                     ...editable,
                     description: undefinedOnUnchagedEmptyString(
@@ -308,7 +309,7 @@ const GeologyIntervalPropertiesModal = (
                 defaultValue={geologyInterval?.dxcAv}
                 helperText={invalid.dxcAv ? `dxcAv cannot be empty` : ""}
                 variant={invalid.dxcAv ? "error" : undefined}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditable({
                     ...editable,
                     dxcAv: parseFloat(e.target.value)
@@ -345,7 +346,7 @@ const GeologyIntervalPropertiesModal = (
                           ? `codeLith must be 1-${MaxLength.Str16} characters`
                           : ""
                       }
-                      onChange={(e: any) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setLithology(e.target.value, "codeLith", lithology.uid)
                       }
                     />
@@ -366,7 +367,7 @@ const GeologyIntervalPropertiesModal = (
                           ? "error"
                           : undefined
                       }
-                      onChange={(e: any) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setLithology(
                           parseFloat(e.target.value),
                           "lithPc",
@@ -414,7 +415,7 @@ const MeasureField = (props: MeasureFieldProps): React.ReactElement => {
       unit={originalMeasure?.uom}
       helperText={invalid[property] ? `${property} cannot be empty` : ""}
       variant={invalid[property] ? "error" : undefined}
-      onChange={(e: any) => {
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
         setResult({
           ...editable,
           [property]: {

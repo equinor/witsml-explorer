@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
@@ -7,7 +7,7 @@ import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import MessageObject from "models/messageObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface MessagePropertiesModalProps {
@@ -58,6 +58,13 @@ const MessagePropertiesModal = (
     dispatchOperation({ type: OperationType.HideModal });
   };
 
+  const validName = validText(editableMessageObject?.name, 1, 64);
+  const validMessageText = validText(
+    editableMessageObject?.messageText,
+    1,
+    4000
+  );
+
   return (
     <>
       {editableMessageObject && (
@@ -74,36 +81,29 @@ const MessagePropertiesModal = (
                 id="dateTimeCreation"
                 label="created"
                 defaultValue={editableMessageObject.commonData.dTimCreation}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dateTimeLastChange"
                 label="last changed"
                 defaultValue={editableMessageObject.commonData.dTimLastChange}
-                fullWidth
               />
               <TextField
                 disabled
                 id="uid"
                 label="message uid"
                 defaultValue={editableMessageObject.uid}
-                fullWidth
               />
               <TextField
                 id="name"
                 label="name"
                 required
                 defaultValue={editableMessageObject.name}
-                error={editableMessageObject.name.length === 0}
+                variant={validName ? undefined : "error"}
                 helperText={
-                  editableMessageObject.name.length === 0
-                    ? "The message name must be 1-64 characters"
-                    : ""
+                  !validName ? "The message name must be 1-64 characters" : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableMessageObject({
                     ...editableMessageObject,
                     name: e.target.value
@@ -114,17 +114,15 @@ const MessagePropertiesModal = (
                 id="messageText"
                 label="messageText"
                 value={editableMessageObject.messageText}
-                fullWidth
                 multiline
                 required
-                error={!validText(editableMessageObject.messageText)}
+                variant={validMessageText ? undefined : "error"}
                 helperText={
-                  editableMessageObject.messageText.length === 0
+                  !validMessageText
                     ? "The message text must be 1-4000 characters"
                     : ""
                 }
-                inputProps={{ minLength: 1, maxLength: 4000 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableMessageObject({
                     ...editableMessageObject,
                     messageText: e.target.value
@@ -136,35 +134,28 @@ const MessagePropertiesModal = (
                 id="wellUid"
                 label="well uid"
                 defaultValue={editableMessageObject.wellUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellName"
                 label="well name"
                 defaultValue={editableMessageObject.wellName}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreUid"
                 label="wellbore uid"
                 defaultValue={editableMessageObject.wellboreUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreName"
                 label="wellbore name"
                 defaultValue={editableMessageObject.wellboreName}
-                fullWidth
               />
             </>
           }
-          confirmDisabled={
-            !validText(editableMessageObject.messageText) ||
-            !validText(editableMessageObject.name)
-          }
+          confirmDisabled={!validName || !validMessageText}
           onSubmit={() => onSubmit(editableMessageObject)}
           isLoading={isLoading}
         />

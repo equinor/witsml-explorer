@@ -184,7 +184,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             <TextField
               id="description"
               defaultValue={server.description}
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setServer({ ...server, description: e.target.value })
               }
               disabled={props.editDisabled}
@@ -195,7 +195,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 <TextField
                   id="role"
                   defaultValue={server.roles?.join(" ")}
-                  onChange={(e: any) =>
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setServer({
                       ...server,
                       roles: e.target.value
@@ -218,7 +218,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 <TextField
                   id="creds"
                   defaultValue={server.credentialIds?.join(" ") ?? ""}
-                  onChange={(e: any) =>
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setServer({
                       ...server,
                       credentialIds: e.target.value
@@ -244,7 +244,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   : ""
               }
               type="number"
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setServer({
                   ...server,
                   depthLogDecimals: parseInt(e.target.value)

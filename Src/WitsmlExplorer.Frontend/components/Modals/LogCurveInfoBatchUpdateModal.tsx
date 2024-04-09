@@ -1,6 +1,6 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { Grid } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -108,7 +108,7 @@ const LogCurveInfoBatchUpdateModal = (
                     label={"SensorOffset value"}
                     type="number"
                     value={editableLogCurveInfo.sensorOffset?.value}
-                    onChange={(e: any) =>
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       setEditableLogCurveInfo({
                         ...editableLogCurveInfo,
                         sensorOffset: {
@@ -147,7 +147,7 @@ const LogCurveInfoBatchUpdateModal = (
                 label={"NullValue"}
                 type="number"
                 value={editableLogCurveInfo.nullValue}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogCurveInfo({
                     ...editableLogCurveInfo,
                     nullValue: e.target.value
