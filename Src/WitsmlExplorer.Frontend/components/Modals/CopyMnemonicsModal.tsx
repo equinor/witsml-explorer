@@ -1,4 +1,4 @@
-import { Radio } from "@equinor/eds-core-react";
+import { Radio, Typography } from "@equinor/eds-core-react";
 import ModalDialog from "components/Modals/ModalDialog";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -108,7 +108,9 @@ const CopyMnemonicsModal = (
     const indexCurve = (targetParent as LogObject)?.indexCurve;
 
     const targetComponentsToDelete = allTargetComponents.filter(
-      (c) => c.mnemonic !== indexCurve
+      (c) =>
+        c.mnemonic !== indexCurve &&
+        sourceReferences.componentUids.find((sr) => sr === c.mnemonic)
     );
 
     if (targetComponentsToDelete.length == 0) {
@@ -150,10 +152,12 @@ const CopyMnemonicsModal = (
         confirmText={`Submit`}
         content={
           <ContentLayout>
-            <TextLayout>Choose paste option:</TextLayout>
+            <TextLayout>
+              <Typography variant="h4">Choose paste option:</Typography>
+            </TextLayout>
             <RadioLayout>
               <RadioItemLayout>
-                <div>
+                <div style={{ alignItems: "top" }}>
                   <Radio
                     checked={
                       selectedCopyMnemonicsType ===
@@ -165,15 +169,15 @@ const CopyMnemonicsModal = (
                   />
                 </div>
                 <div>
-                  <div>Delete/Insert</div>
-                  <div>
+                  <Typography variant="h5">Delete/Insert</Typography>
+                  <Typography variant="body_long">
                     Delete target mnemonics before copying. The mnemonics will
                     become equal on the source and target server afterwards.
-                  </div>
+                  </Typography>
                 </div>
               </RadioItemLayout>
               <RadioItemLayout>
-                <div>
+                <div style={{ alignItems: "top" }}>
                   <Radio
                     checked={
                       selectedCopyMnemonicsType === CopyMnemonicsType.Paste
@@ -184,12 +188,12 @@ const CopyMnemonicsModal = (
                   />
                 </div>
                 <div>
-                  <div>Paste</div>
-                  <div>
+                  <Typography variant="h5">Paste</Typography>
+                  <Typography variant="body_long">
                     Data on target server will be overwritten by data on the
                     source. Data on target server outside of the
                     startIndex/endIndex will be kept as is.
-                  </div>
+                  </Typography>
                 </div>
               </RadioItemLayout>
             </RadioLayout>
@@ -205,19 +209,18 @@ const CopyMnemonicsModal = (
 const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.75rem;
 `;
 
 const TextLayout = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 0.25rem;
 `;
 
 const RadioLayout = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.75rem;
   align-items: center;
 `;
 
