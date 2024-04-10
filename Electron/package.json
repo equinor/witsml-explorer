@@ -4,10 +4,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "electron ."
+    "dev": "electron-vite dev -w",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview"
   },
-  "main": "main.js",
+  "main": "./out/main/main.js",
   "devDependencies": {
-    "electron": "^29.2.0"
+    "electron": "^29.2.0",
+    "electron-vite": "^2.1.0",
+    "vite-tsconfig-paths": "^4.3.2"
   }
 }
