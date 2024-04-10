@@ -20,6 +20,9 @@ export default defineConfig({
                     index: resolve(__dirname, '../Src/WitsmlExplorer.Frontend/index.html')
                 }
             }
+        },
+        server: {
+            port: 3000
         }
     }
 });
