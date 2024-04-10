@@ -179,8 +179,10 @@ export const ObjectMenuItems = (
       {[
         <MenuItem
           key={"openInQueryView"}
-          disabled={checkedObjects.length != 1}
-          onClick={() =>
+          disabled={checkedObjects.length !== 1}
+          onClick={() =>{
+            const selectedObject = checkedObjects[0];
+            if (!selectedObject) return;
             openInQueryView({
               templateObject: ObjectTypeToTemplateObject[objectType],
               storeFunction: StoreFunction.GetFromStore,
@@ -188,7 +190,7 @@ export const ObjectMenuItems = (
               wellboreUid: checkedObjects[0].wellboreUid,
               objectUid: checkedObjects[0].uid
             })
-          }
+          }}
         >
           <StyledIcon
             name="textField"
