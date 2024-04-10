@@ -1,15 +1,18 @@
 /* eslint-env node */
 
 import { app, BrowserWindow } from 'electron';
-// import * as path from 'path';
+import * as path from 'path';
 
 let mainWindow;
 
 function createWindow() {
     mainWindow = new BrowserWindow({});
 
-    // Vite dev server URL
-    mainWindow.loadURL('http://localhost:5173');
+    if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
+        mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    } else {
+        mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
+    }
     mainWindow.on('closed', () => mainWindow = null);
 }
 
