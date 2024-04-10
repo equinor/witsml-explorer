@@ -4,8 +4,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
-  menuItemText
+  menuItemText,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { onClickPaste } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
@@ -45,8 +45,6 @@ import { ComponentType } from "models/componentType";
 import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
 import CompareLogDataJob from "models/jobs/compareLogData";
 import { CopyRangeClipboard } from "models/jobs/componentReferences";
-import { CopyComponentsJob } from "models/jobs/copyJobs";
-import ObjectReference from "models/jobs/objectReference";
 import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -55,6 +53,10 @@ import React, { useContext } from "react";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import ObjectReference from "../../models/jobs/objectReference";
+import CopyMnemonicsModal, {
+  CopyMnemonicsModalProps
+} from "../Modals/CopyMnemonicsModal";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -117,13 +119,19 @@ const LogObjectContextMenu = (
     const targetReference: ObjectReference = toObjectReference(
       checkedObjects[0]
     );
-    const copyJob: CopyComponentsJob = {
-      source: logCurvesReference,
-      target: targetReference,
+
+    const copyMnemonicsModalProps: CopyMnemonicsModalProps = {
+      sourceReferences: logCurvesReference,
+      targetReference: targetReference,
       startIndex: logCurvesReference.startIndex,
-      endIndex: logCurvesReference.endIndex
+      endIndex: logCurvesReference.endIndex,
+      targetServer: connectedServer
     };
-    JobService.orderJob(JobType.CopyLogData, copyJob);
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: <CopyMnemonicsModal {...copyMnemonicsModalProps} />
+    };
+    dispatchOperation(action);
   };
 
   const onClickCompareHeader = () => {
