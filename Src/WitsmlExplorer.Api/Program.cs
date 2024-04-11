@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -17,12 +18,23 @@ using WitsmlExplorer.Api.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", false, true)
-        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
-        .AddJsonFile("mysettings.json", true, true)
-        .AddJsonFile("config.json", true, true)
+var configPath = builder.Configuration["CONFIG_PATH"];
+
+if (configPath != null)
+{
+    builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile(configPath, false, true)
         .AddEnvironmentVariables();
+}
+else
+{
+    builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+            .AddJsonFile("mysettings.json", true, true)
+            .AddJsonFile("config.json", true, true)
+            .AddEnvironmentVariables();
+}
 
 if (builder.Environment.IsDevelopment())
 {

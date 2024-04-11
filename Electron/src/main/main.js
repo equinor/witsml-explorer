@@ -7,8 +7,12 @@ import * as path from 'path';
 let mainWindow;
 let apiProcess;
 
-function startApi() { // TODO: Remove ELECTRON_PORT as we are not using it in the API.
-    apiProcess = spawn('dotnet', ['run', '--project', path.resolve(__dirname, '../../../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env: { ...process.env, ELECTRON_PORT: '5000' } });
+function startApi() {
+    const env = {
+        ...process.env,
+        CONFIG_PATH: path.resolve(__dirname, '../../api.config.json')
+    };
+    apiProcess = spawn('dotnet', ['run', '--project', path.resolve(__dirname, '../../../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
 
     // Log messages from the API to the console
     apiProcess.stdout.on('data', (data) => {

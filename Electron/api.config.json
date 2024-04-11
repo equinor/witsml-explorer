@@ -1,0 +1,16 @@
+{
+    "LogQueries": false,
+    "AllowedHosts": "*",
+    "AllowedOrigin": "http://localhost:3000",
+    "Witsml": {
+      "ClientCapabilities": {
+        "Name": "Witsml Explorer Desktop",
+        "Description": "Desktop interface for Witsml servers"
+      }
+    },
+    "OAuth2Enabled": false,
+    "LiteDb": {
+        "Name": "../../Electron/witsml-explorer-db.db"
+    }
+  }
+  
