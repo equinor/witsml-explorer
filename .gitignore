@@ -31,6 +31,9 @@ Tests/Witsml.Tests/config.json
 config.json
 **/mysettings.*
 
+# Database files
+*.db
+
 # Common node modules locations
 /node_modules
 /wwwroot/node_modules

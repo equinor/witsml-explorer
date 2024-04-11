@@ -12,7 +12,14 @@ function startApi() {
         ...process.env,
         CONFIG_PATH: path.resolve(__dirname, '../../api.config.json')
     };
-    apiProcess = spawn('dotnet', ['run', '--project', path.resolve(__dirname, '../../../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
+
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+
+    if (isDevelopment) {
+        apiProcess = spawn('dotnet', ['run', '--project', path.resolve(__dirname, '../../../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
+    } else {
+        apiProcess = spawn(path.resolve(__dirname, '../api/WitsmlExplorer.Api'), [], { env });
+    }
 
     // Log messages from the API to the console
     apiProcess.stdout.on('data', (data) => {
@@ -34,6 +41,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
     startApi();
+    // TODO: Either make sure that we wait until the API is running, or ensure that the frontend can handle the API not being available initially.
     createWindow();
 });
 

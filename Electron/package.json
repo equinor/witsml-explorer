@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "electron-vite dev -w",
-    "build": "electron-vite build",
+    "build:api": "dotnet publish -o ./out/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../../electron/api.config.json ../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
+    "build:frontend": "electron-vite build",
+    "build": "yarn build:api && yarn build:frontend",
     "preview": "electron-vite preview"
   },
   "main": "./out/main/main.js",

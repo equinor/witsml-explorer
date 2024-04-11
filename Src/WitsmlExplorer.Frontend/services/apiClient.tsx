@@ -240,6 +240,10 @@ export function getBaseUrl(): URL {
       const host = window.location.hostname;
       const port = window.location.port === "3000" ? ":5000" : "";
       baseUrl = new URL(`${protocol}://${host}${port}`);
+      if (!protocol.includes("http")) {
+        // TODO: Rather use VITE_WITSMLEXPLORER_API_URL and remove this
+        baseUrl = new URL("http://localhost:5000");
+      }
     }
   } catch (e) {
     baseUrl = new URL("http://localhost");
