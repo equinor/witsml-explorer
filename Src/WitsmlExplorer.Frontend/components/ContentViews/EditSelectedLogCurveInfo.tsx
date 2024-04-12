@@ -15,6 +15,7 @@ import { useGetMnemonics } from "hooks/useGetMnemonics";
 import { ComponentType } from "models/componentType";
 import {
   CSSProperties,
+  ChangeEvent,
   Dispatch,
   SetStateAction,
   useContext,
@@ -124,7 +125,7 @@ const EditSelectedLogCurveInfo = (
   };
 
   const onTextFieldChange = (
-    e: any,
+    e: ChangeEvent<HTMLInputElement>,
     setIndex: Dispatch<SetStateAction<string>>,
     setIsValid: Dispatch<SetStateAction<boolean>>
   ) => {
@@ -164,7 +165,7 @@ const EditSelectedLogCurveInfo = (
               variant={isValidStart ? undefined : "error"}
               type={isTimeLog ? "datetime-local" : ""}
               step="1"
-              onChange={(e: any) => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 onTextFieldChange(e, setSelectedStartIndex, setIsValidStart);
               }}
             />
@@ -178,7 +179,7 @@ const EditSelectedLogCurveInfo = (
               type={isTimeLog ? "datetime-local" : ""}
               variant={isValidEnd ? undefined : "error"}
               step="1"
-              onChange={(e: any) => {
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 onTextFieldChange(e, setSelectedEndIndex, setIsValidEnd);
               }}
             />

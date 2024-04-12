@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   StoreFunction,

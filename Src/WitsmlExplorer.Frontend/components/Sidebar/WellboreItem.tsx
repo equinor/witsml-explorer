@@ -1,4 +1,3 @@
-import { useTheme } from "@material-ui/core";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -25,21 +24,19 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
 import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
-import { WellIndicator } from "../StyledComponents/WellIndicator";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
+import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import { useSidebar } from "contexts/sidebarContext";
-import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { ObjectType } from "models/objectType";
 import Wellbore from "models/wellbore";
 import { MouseEvent, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
+import { WellIndicator } from "../StyledComponents/WellIndicator";
 
 interface WellboreItemProps {
   wellUid: string;
@@ -55,14 +52,15 @@ export default function WellboreItem({
   nodeId
 }: WellboreItemProps) {
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const {
+    dispatchOperation,
+    operationState: { theme }
+  } = useContext(OperationContext);
+  const isCompactMode = theme === UserTheme.Compact;
   const {
     operationState: { colors }
   } = useContext(OperationContext);
   const { connectedServer } = useConnectedServer();
-  const navigate = useNavigate();
-  const { dispatchSidebar } = useSidebar();
   const { wellbore, isFetching } = useGetWellbore(
     connectedServer,
     wellUid,
@@ -165,29 +163,21 @@ export default function WellboreItem({
     });
   };
 
-  const onLabelClick = () => {
-    navigate(
-      getObjectGroupsViewPath(connectedServer?.url, wellUid, wellboreUid)
-    );
-  };
-
-  const onIconClick = () => {
-    dispatchSidebar({
-      type: SidebarActionType.ToggleTreeNode,
-      payload: { nodeId: nodeId }
-    });
+  const getNavPath = () => {
+    return getObjectGroupsViewPath(connectedServer?.url, wellUid, wellboreUid);
   };
 
   return (
     <WellboreLayout>
       <TreeItem
-        onContextMenu={(event) => onContextMenu(event, wellbore)}
+        onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
+          onContextMenu(event, wellbore)
+        }
         key={nodeId}
         nodeId={nodeId}
         selected={selected}
         labelText={wellbore?.name}
-        onLabelClick={onLabelClick}
-        onIconClick={onIconClick}
+        to={getNavPath()}
         isLoading={isFetching}
       >
         <ObjectGroupItem

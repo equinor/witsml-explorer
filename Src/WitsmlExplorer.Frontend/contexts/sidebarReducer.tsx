@@ -1,7 +1,8 @@
 export enum SidebarActionType {
   ExpandTreeNodes = "ExpandTreeNodes",
   ToggleTreeNode = "ToggleTreeNode",
-  CollapseTreeNodes = "CollapseTreeNodes"
+  CollapseTreeNodes = "CollapseTreeNodes",
+  SetTreeNodes = "SetTreeNodes"
 }
 
 export interface SidebarAction {
@@ -24,6 +25,11 @@ export interface CollapseTreeNodesAction extends SidebarAction {
   payload: null;
 }
 
+export interface SetTreeNodesAction extends SidebarAction {
+  type: SidebarActionType.SetTreeNodes;
+  payload: { nodeIds: string[] };
+}
+
 export function sidebarReducer(
   state: string[],
   action: SidebarAction
@@ -35,6 +41,8 @@ export function sidebarReducer(
       return expandTreeNodes(state, action);
     case SidebarActionType.CollapseTreeNodes:
       return collapseTreeNodes();
+    case SidebarActionType.SetTreeNodes:
+      return setTreeNodes(action);
     default: {
       throw new Error(`Unsupported action type ${action.type}`);
     }
@@ -70,4 +78,8 @@ const toggleTreeNode = (
 
 const collapseTreeNodes = (): string[] => {
   return [];
+};
+
+const setTreeNodes = ({ payload }: SidebarAction): string[] => {
+  return payload.nodeIds;
 };

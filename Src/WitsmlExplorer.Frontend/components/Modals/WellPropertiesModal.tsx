@@ -1,4 +1,4 @@
-import { TextField } from "@material-ui/core";
+import { TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import {
@@ -10,7 +10,7 @@ import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import Well from "models/well";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface WellPropertiesModalProps {
@@ -47,6 +47,12 @@ const WellPropertiesModal = (
     setEditableWell(well);
   }, [well]);
 
+  const validWellUid = validText(editableWell?.uid, 1, 64);
+  const validWellName = validText(editableWell?.name, 1, 64);
+  const validWellField = validText(editableWell?.field, 0, 64);
+  const validWellCountry = validText(editableWell?.country, 0, 32);
+  const validWellOperator = validText(editableWell?.operator, 0, 64);
+
   return (
     <>
       {editableWell && (
@@ -62,12 +68,13 @@ const WellPropertiesModal = (
                 id={"uid"}
                 label={"uid"}
                 value={editableWell.uid}
-                fullWidth
                 disabled={editMode}
                 required
-                error={!validText(editableWell.uid)}
-                inputProps={{ maxLength: 64 }}
-                onChange={(e) =>
+                variant={validWellUid ? undefined : "error"}
+                helperText={
+                  !validWellUid ? "A well uid must be 1-64 characters" : ""
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWell({ ...editableWell, uid: e.target.value })
                 }
               />
@@ -75,11 +82,12 @@ const WellPropertiesModal = (
                 id={"name"}
                 label={"name"}
                 value={editableWell.name}
-                fullWidth
                 required
-                error={!validText(editableWell.name)}
-                inputProps={{ maxLength: 64 }}
-                onChange={(e) =>
+                variant={validWellName ? undefined : "error"}
+                helperText={
+                  !validWellName ? "A well name must be 1-64 characters" : ""
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWell({ ...editableWell, name: e.target.value })
                 }
               />
@@ -87,9 +95,11 @@ const WellPropertiesModal = (
                 id={"field"}
                 label={"field"}
                 value={editableWell.field || ""}
-                fullWidth
-                inputProps={{ maxLength: 64 }}
-                onChange={(e) =>
+                variant={validWellField ? undefined : "error"}
+                helperText={
+                  !validWellField ? "A well field must be 0-64 characters" : ""
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWell({ ...editableWell, field: e.target.value })
                 }
               />
@@ -97,9 +107,13 @@ const WellPropertiesModal = (
                 id={"country"}
                 label={"country"}
                 value={editableWell.country || ""}
-                fullWidth
-                inputProps={{ maxLength: 32 }}
-                onChange={(e) =>
+                variant={validWellCountry ? undefined : "error"}
+                helperText={
+                  !validWellCountry
+                    ? "A well country must be 0-32 characters"
+                    : ""
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWell({ ...editableWell, country: e.target.value })
                 }
               />
@@ -107,9 +121,13 @@ const WellPropertiesModal = (
                 id={"operator"}
                 label={"operator"}
                 value={editableWell.operator || ""}
-                fullWidth
-                inputProps={{ maxLength: 64 }}
-                onChange={(e) =>
+                variant={validWellOperator ? undefined : "error"}
+                helperText={
+                  !validWellOperator
+                    ? "A well operator must be 0-64 characters"
+                    : ""
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWell({ ...editableWell, operator: e.target.value })
                 }
               />
@@ -117,13 +135,13 @@ const WellPropertiesModal = (
                 id={"timeZone"}
                 label={"time zone"}
                 value={editableWell.timeZone}
-                fullWidth
-                error={!validTimeZone(editableWell.timeZone)}
+                variant={
+                  validTimeZone(editableWell.timeZone) ? undefined : "error"
+                }
                 helperText={
                   "TimeZone has to be 'Z' or in the format -hh:mm or +hh:mm within the range (-12:00 to +14:00) and minutes has to be 00, 30 or 45"
                 }
-                inputProps={{ maxLength: 6 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWell({ ...editableWell, timeZone: e.target.value })
                 }
               />
@@ -132,7 +150,6 @@ const WellPropertiesModal = (
                 id={"numLicense"}
                 label={"numLicense"}
                 defaultValue={well.numLicense}
-                fullWidth
               />
               {mode !== PropertiesModalMode.New && (
                 <>
@@ -145,7 +162,6 @@ const WellPropertiesModal = (
                       timeZone,
                       dateTimeFormat
                     )}
-                    fullWidth
                   />
                   <TextField
                     disabled
@@ -156,15 +172,17 @@ const WellPropertiesModal = (
                       timeZone,
                       dateTimeFormat
                     )}
-                    fullWidth
                   />
                 </>
               )}
             </>
           }
           confirmDisabled={
-            !validText(editableWell.uid) ||
-            !validText(editableWell.name) ||
+            !validWellName ||
+            !validWellUid ||
+            !validWellField ||
+            !validWellOperator ||
+            !validWellCountry ||
             !validTimeZone(editableWell.timeZone)
           }
           onSubmit={() => onSubmit(editableWell)}

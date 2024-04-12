@@ -12,7 +12,7 @@ import MaxLength from "models/maxLength";
 import MudLog from "models/mudLog";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { Layout } from "../StyledComponents/Layout";
 
@@ -216,7 +216,7 @@ const EditableTextField = (
       helperText={
         invalid ? `${property} must be 1-${maxLength} characters` : ""
       }
-      onChange={(e: any) =>
+      onChange={(e: ChangeEvent<HTMLInputElement>) =>
         setter({
           ...editableObject,
           [property]: undefinedOnUnchagedEmptyString(

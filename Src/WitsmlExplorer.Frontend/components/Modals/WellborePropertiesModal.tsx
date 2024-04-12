@@ -1,6 +1,4 @@
-import { Autocomplete } from "@equinor/eds-core-react";
-import { TextField } from "@material-ui/core";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
@@ -11,7 +9,7 @@ import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import MaxLength from "models/maxLength";
 import Wellbore, { wellboreHasChanges } from "models/wellbore";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
@@ -71,6 +69,9 @@ const WellborePropertiesModal = (
     setPristineWellbore(wellbore);
   }, [wellbore]);
 
+  const validWellboreUid = validText(editableWellbore?.uid, 1, 64);
+  const validWellboreName = validText(editableWellbore?.name, 1, 64);
+
   return (
     <>
       {editableWellbore && (
@@ -86,17 +87,15 @@ const WellborePropertiesModal = (
                 id={"uid"}
                 label={"uid"}
                 value={editableWellbore.uid}
-                fullWidth
                 disabled={editMode}
                 required
-                error={!validText(editableWellbore.uid)}
+                variant={validWellboreUid ? undefined : "error"}
                 helperText={
-                  editableWellbore.uid.length === 0
+                  !validWellboreUid
                     ? "A wellbore uid must be 1-64 characters"
                     : ""
                 }
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWellbore({
                     ...editableWellbore,
                     uid: e.target.value
@@ -106,16 +105,15 @@ const WellborePropertiesModal = (
               <TextField
                 id={"name"}
                 label={"wellbore name"}
+                required
                 value={editableWellbore.name}
-                error={!validText(editableWellbore.name)}
+                variant={validWellboreName ? undefined : "error"}
                 helperText={
-                  editableWellbore.name.length === 0
+                  !validWellboreName
                     ? "A wellbore name must be 1-64 characters"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWellbore({
                     ...editableWellbore,
                     name: e.target.value
@@ -127,21 +125,18 @@ const WellborePropertiesModal = (
                 id="wellUid"
                 label="well uid"
                 defaultValue={editableWellbore.wellUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellName"
                 label="well name"
                 defaultValue={editableWellbore.wellName}
-                fullWidth
               />
               <TextField
                 disabled
                 id={"wellboreParent"}
                 label={"wellbore parent"}
                 defaultValue={editableWellbore.wellboreParentName}
-                fullWidth
               />
               <Autocomplete
                 id="wellborePurpose"
@@ -163,8 +158,7 @@ const WellborePropertiesModal = (
                       id={"number"}
                       label={"number"}
                       value={editableWellbore.number || ""}
-                      fullWidth
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           number: e.target.value
@@ -175,8 +169,7 @@ const WellborePropertiesModal = (
                       id={"suffixAPI"}
                       label={"suffix api"}
                       value={editableWellbore.suffixAPI || ""}
-                      fullWidth
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           suffixAPI: e.target.value
@@ -188,8 +181,7 @@ const WellborePropertiesModal = (
                     id={"numGovt"}
                     label={"num govt"}
                     value={editableWellbore.numGovt || ""}
-                    fullWidth
-                    onChange={(e) =>
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       setEditableWellbore({
                         ...editableWellbore,
                         numGovt: e.target.value
@@ -213,17 +205,10 @@ const WellborePropertiesModal = (
                       id={"md"}
                       label={"md"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.md ? editableWellbore.md.uom : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={editableWellbore.md ? editableWellbore.md.uom : ""}
                       disabled={!editableWellbore.md}
                       value={editableWellbore.md?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           md: {
@@ -239,19 +224,12 @@ const WellborePropertiesModal = (
                       id={"tvd"}
                       label={"tvd"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.tvd
-                              ? editableWellbore.tvd.uom
-                              : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={
+                        editableWellbore.tvd ? editableWellbore.tvd.uom : ""
+                      }
                       disabled={!editableWellbore.tvd}
                       value={editableWellbore.tvd?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           tvd: {
@@ -269,19 +247,14 @@ const WellborePropertiesModal = (
                       id={"mdKickoff"}
                       label={"md kickoff"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.mdKickoff
-                              ? editableWellbore.mdKickoff.uom
-                              : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={
+                        editableWellbore.mdKickoff
+                          ? editableWellbore.mdKickoff.uom
+                          : ""
+                      }
                       disabled={!editableWellbore.mdKickoff}
                       value={editableWellbore.mdKickoff?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           mdKickoff: {
@@ -297,19 +270,14 @@ const WellborePropertiesModal = (
                       id={"tvdKickoff"}
                       label={"tvd kickoff"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.tvdKickoff
-                              ? editableWellbore.tvdKickoff.uom
-                              : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={
+                        editableWellbore.tvdKickoff
+                          ? editableWellbore.tvdKickoff.uom
+                          : ""
+                      }
                       disabled={!editableWellbore.tvdKickoff}
                       value={editableWellbore.tvdKickoff?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           tvdKickoff: {
@@ -327,19 +295,14 @@ const WellborePropertiesModal = (
                       id={"mdPlanned"}
                       label={"md planned"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.mdPlanned
-                              ? editableWellbore.mdPlanned.uom
-                              : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={
+                        editableWellbore.mdPlanned
+                          ? editableWellbore.mdPlanned.uom
+                          : ""
+                      }
                       disabled={!editableWellbore.mdPlanned}
                       value={editableWellbore.mdPlanned?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           mdPlanned: {
@@ -355,19 +318,14 @@ const WellborePropertiesModal = (
                       id={"tvdPlanned"}
                       label={"tvd planned"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.tvdPlanned
-                              ? editableWellbore.tvdPlanned.uom
-                              : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={
+                        editableWellbore.tvdPlanned
+                          ? editableWellbore.tvdPlanned.uom
+                          : ""
+                      }
                       disabled={!editableWellbore.tvdPlanned}
                       value={editableWellbore.tvdPlanned?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           tvdPlanned: {
@@ -385,19 +343,14 @@ const WellborePropertiesModal = (
                       id={"mdSubSeaPlanned"}
                       label={"md subsea planned"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.mdSubSeaPlanned
-                              ? editableWellbore.mdSubSeaPlanned.uom
-                              : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={
+                        editableWellbore.mdSubSeaPlanned
+                          ? editableWellbore.mdSubSeaPlanned.uom
+                          : ""
+                      }
                       disabled={!editableWellbore.mdSubSeaPlanned}
                       value={editableWellbore.mdSubSeaPlanned?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           mdSubSeaPlanned: {
@@ -413,19 +366,14 @@ const WellborePropertiesModal = (
                       id={"tvdSubSeaPlanned"}
                       label={"tvd subsea planned"}
                       type="number"
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            {editableWellbore.tvdSubSeaPlanned
-                              ? editableWellbore.tvdSubSeaPlanned.uom
-                              : ""}
-                          </InputAdornment>
-                        )
-                      }}
+                      unit={
+                        editableWellbore.tvdSubSeaPlanned
+                          ? editableWellbore.tvdSubSeaPlanned.uom
+                          : ""
+                      }
                       disabled={!editableWellbore.tvdSubSeaPlanned}
                       value={editableWellbore.tvdSubSeaPlanned?.value}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setEditableWellbore({
                           ...editableWellbore,
                           tvdSubSeaPlanned: {
@@ -442,19 +390,14 @@ const WellborePropertiesModal = (
                     id={"dayTarget"}
                     label={"day target"}
                     type="number"
-                    fullWidth
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          {editableWellbore.dayTarget
-                            ? editableWellbore.dayTarget.uom
-                            : ""}
-                        </InputAdornment>
-                      )
-                    }}
+                    unit={
+                      editableWellbore.dayTarget
+                        ? editableWellbore.dayTarget.uom
+                        : ""
+                    }
                     disabled={!editableWellbore.dayTarget}
                     value={editableWellbore.dayTarget?.value}
-                    onChange={(e) =>
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       setEditableWellbore({
                         ...editableWellbore,
                         dayTarget: {
@@ -475,7 +418,6 @@ const WellborePropertiesModal = (
                       timeZone,
                       dateTimeFormat
                     )}
-                    fullWidth
                   />
                   <TextField
                     disabled
@@ -486,17 +428,20 @@ const WellborePropertiesModal = (
                       timeZone,
                       dateTimeFormat
                     )}
-                    fullWidth
                   />
                   <TextField
                     id="comments"
                     label="comments"
                     multiline
-                    error={invalidStringInput(
-                      wellbore.comments,
-                      editableWellbore.comments,
-                      MaxLength.Comment
-                    )}
+                    variant={
+                      invalidStringInput(
+                        wellbore.comments,
+                        editableWellbore.comments,
+                        MaxLength.Comment
+                      )
+                        ? "error"
+                        : undefined
+                    }
                     helperText={
                       invalidStringInput(
                         wellbore.comments,
@@ -506,10 +451,8 @@ const WellborePropertiesModal = (
                         ? `A comment must be 1-${MaxLength.Comment} characters`
                         : ""
                     }
-                    inputProps={{ maxLength: MaxLength.Comment }}
                     value={editableWellbore.comments || ""}
-                    fullWidth
-                    onChange={(e) => {
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
                       setEditableWellbore({
                         ...editableWellbore,
                         comments: e.target.value
@@ -521,8 +464,8 @@ const WellborePropertiesModal = (
             </>
           }
           confirmDisabled={
-            !validText(editableWellbore.uid) ||
-            !validText(editableWellbore.name) ||
+            !validWellboreUid ||
+            !validWellboreName ||
             !dTimeKickoffValid ||
             !wellboreHasChanges(pristineWellbore, editableWellbore)
           }

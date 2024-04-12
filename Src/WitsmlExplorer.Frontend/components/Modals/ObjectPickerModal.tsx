@@ -155,7 +155,9 @@ const ObjectPickerModal = ({
                 ? `Well UID must be 1-${MaxLength.Uid} characters`
                 : ""
             }
-            onChange={(e: any) => setWellUid(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setWellUid(e.target.value)
+            }
             style={{
               paddingBottom: invalidUid(wellUid) ? 0 : "24px"
             }}
@@ -170,7 +172,9 @@ const ObjectPickerModal = ({
                 ? `Wellbore UID must be 1-${MaxLength.Uid} characters`
                 : ""
             }
-            onChange={(e: any) => setWellboreUid(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setWellboreUid(e.target.value)
+            }
             style={{
               paddingBottom: invalidUid(wellboreUid) ? 0 : "24px"
             }}
@@ -185,7 +189,9 @@ const ObjectPickerModal = ({
                 ? `Object UID must be 1-${MaxLength.Uid} characters`
                 : ""
             }
-            onChange={(e: any) => setObjectUid(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setObjectUid(e.target.value)
+            }
             style={{
               paddingBottom: invalidUid(objectUid) ? 0 : "24px"
             }}

@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
-import { ReactElement, useContext, useState } from "react";
+import { ChangeEvent, ReactElement, useContext, useState } from "react";
 import styled from "styled-components";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
@@ -101,7 +101,7 @@ export const BatchModifyPropertiesModal = (
                     ? "error"
                     : undefined
                 }
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   onChangeProperty(property.property, e.target.value)
                 }
               />

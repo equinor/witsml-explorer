@@ -1,12 +1,10 @@
 import { DotProgress } from "@equinor/eds-core-react";
-import { Tooltip } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
-import { TreeItem } from "@material-ui/lab";
-import { TreeItemProps } from "@material-ui/lab/TreeItem";
+import { Tooltip } from "@mui/material";
+import { TreeItem, TreeItemProps } from "@mui/x-tree-view";
 import OperationContext from "contexts/operationContext";
-import { useSidebar } from "contexts/sidebarContext";
-import { SidebarActionType } from "contexts/sidebarReducer";
+import { UserTheme } from "contexts/operationStateReducer";
 import React, { useContext } from "react";
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -16,56 +14,56 @@ interface StyledTreeItemProps extends TreeItemProps {
   selected?: boolean;
   isActive?: boolean;
   isLoading?: boolean;
+  to?: string;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, isActive, isLoading, ...other } = props;
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
-  const { dispatchSidebar } = useSidebar();
+  const { labelText, selected, isActive, isLoading, nodeId, to, ...other } =
+    props;
+  const {
+    operationState: { theme }
+  } = useContext(OperationContext);
+  const isCompactMode = theme === UserTheme.Compact;
 
-  const toggleTreeNode = (props: StyledTreeItemProps) => {
-    dispatchSidebar({
-      type: SidebarActionType.ToggleTreeNode,
-      payload: { nodeId: props.nodeId }
-    });
-  };
   const {
     operationState: { colors }
   } = useContext(OperationContext);
 
   return (
     <TreeItem
-      onIconClick={() => toggleTreeNode(props)}
+      nodeId={nodeId}
       label={
-        <Label>
-          <Tooltip
-            title={labelText}
-            arrow
-            placement="top"
-            disableHoverListener={labelText === "" || labelText == null}
-          >
-            <NavigationDrawer
-              colors={colors}
-              selected={selected}
-              compactMode={isCompactMode}
+        <NavLink to={to} style={{ textDecoration: "none" }}>
+          <Label>
+            <Tooltip
+              title={labelText}
+              arrow
+              placement="top"
+              disableHoverListener={labelText === "" || labelText == null}
             >
-              {labelText}
-            </NavigationDrawer>
-          </Tooltip>
-          {isLoading && <StyledDotProgress color={"primary"} size={32} />}
-          {isActive && (
-            <Icon
-              size={16}
-              name="beat"
-              color={colors.interactive.successHover}
-              style={{
-                position: "absolute",
-                right: "-20px",
-                top: isCompactMode ? "6px" : "14px"
-              }}
-            />
-          )}
-        </Label>
+              <NavigationDrawer
+                colors={colors}
+                selected={selected}
+                compactMode={isCompactMode}
+              >
+                {labelText}
+              </NavigationDrawer>
+            </Tooltip>
+            {isLoading && <StyledDotProgress color={"primary"} size={32} />}
+            {isActive && (
+              <Icon
+                size={16}
+                name="beat"
+                color={colors.interactive.successHover}
+                style={{
+                  position: "absolute",
+                  right: "-20px",
+                  top: isCompactMode ? "6px" : "14px"
+                }}
+              />
+            )}
+          </Label>
+        </NavLink>
       }
       {...other}
     />

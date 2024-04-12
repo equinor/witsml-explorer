@@ -1,5 +1,5 @@
 import { Radio, TextField } from "@equinor/eds-core-react";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { getOffsetFromTimeZone } from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { StyledNativeSelect } from "components/Select";

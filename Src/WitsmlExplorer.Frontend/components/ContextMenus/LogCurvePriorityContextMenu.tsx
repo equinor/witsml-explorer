@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import React, { useContext } from "react";
 import OperationContext from "../../contexts/operationContext";
 import { MousePosition } from "../../contexts/operationStateReducer";

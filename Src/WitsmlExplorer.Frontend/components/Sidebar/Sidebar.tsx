@@ -1,6 +1,5 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
-import { useTheme } from "@material-ui/core";
-import { TreeView } from "@material-ui/lab";
+import { TreeView } from "@mui/x-tree-view";
 import {
   VirtualItem,
   Virtualizer,
@@ -13,6 +12,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useSidebar } from "contexts/sidebarContext";
+import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
 import { useWellFilter } from "hooks/useWellFilter";
 import Well from "models/well";
@@ -25,20 +25,20 @@ import { WellIndicator } from "../StyledComponents/WellIndicator";
 export default function Sidebar() {
   const { connectedServer } = useConnectedServer();
   const { wells, isFetching } = useGetWells(connectedServer);
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
-  const { expandedTreeNodes } = useSidebar();
+  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const { wellUid } = useParams();
   const isDeepLink = useRef<boolean>(!!wellUid);
   const {
     operationState: { colors, theme }
   } = useContext(OperationContext);
+  const isCompactMode = theme === UserTheme.Compact;
   const filteredWells = useWellFilter(wells);
   const containerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
     getScrollElement: () => containerRef.current,
     count: filteredWells?.length,
     overscan: 5,
-    estimateSize: () => (theme === UserTheme.Compact ? 33 : 49),
+    estimateSize: () => (isCompactMode ? 33 : 49),
     measureElement:
       typeof window !== "undefined" &&
       navigator.userAgent.indexOf("Firefox") === -1
@@ -54,6 +54,15 @@ export default function Sidebar() {
       virtualizer.scrollToIndex(wellIndex, { align: "start" });
     }
   }, [filteredWells]);
+
+  const onNodeToggle = (_: React.SyntheticEvent, nodeIds: string[]) => {
+    if (nodeIds !== expandedTreeNodes) {
+      dispatchSidebar({
+        type: SidebarActionType.SetTreeNodes,
+        payload: { nodeIds }
+      });
+    }
+  };
 
   return (
     <Fragment>
@@ -84,6 +93,7 @@ export default function Sidebar() {
                 }
                 defaultEndIcon={<div style={{ width: 24 }} />}
                 expanded={expandedTreeNodes}
+                onNodeToggle={onNodeToggle}
                 virtualizer={virtualizer}
               >
                 {virtualizer.getVirtualItems().map((virtualItem) => {

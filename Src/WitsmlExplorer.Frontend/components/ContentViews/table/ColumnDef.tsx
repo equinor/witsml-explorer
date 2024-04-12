@@ -1,4 +1,4 @@
-import { Checkbox, IconButton, useTheme } from "@material-ui/core";
+import { Checkbox, IconButton } from "@mui/material";
 import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
 import {
   activeId,
@@ -14,7 +14,7 @@ import {
   ContentType
 } from "components/ContentViews/table/tableParts";
 import OperationContext from "contexts/operationContext";
-import { DecimalPreference } from "contexts/operationStateReducer";
+import { DecimalPreference, UserTheme } from "contexts/operationStateReducer";
 import { useContext, useMemo } from "react";
 import Icon from "styles/Icons";
 import {
@@ -37,11 +37,10 @@ export const useColumnDef = (
   checkableRows: boolean,
   stickyLeftColumns: number
 ) => {
-  const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
-
   const {
-    operationState: { decimals }
+    operationState: { decimals, theme }
   } = useContext(OperationContext);
+  const isCompactMode = theme === UserTheme.Compact;
 
   return useMemo(() => {
     const savedWidths = getLocalStorageItem<{ [label: string]: number }>(

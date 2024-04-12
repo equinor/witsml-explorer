@@ -1,5 +1,4 @@
-import { Autocomplete } from "@equinor/eds-core-react";
-import { InputAdornment, TextField } from "@material-ui/core";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
@@ -14,7 +13,7 @@ import { riskCategory } from "models/riskCategory";
 import RiskObject from "models/riskObject";
 import { riskSubCategory } from "models/riskSubCategory";
 import { riskType } from "models/riskType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface RiskPropertiesModalProps {
@@ -73,6 +72,9 @@ const RiskPropertiesModal = (
     dispatchOperation({ type: OperationType.HideModal });
   };
 
+  const validRiskName = validText(editableRiskObject?.name, 1, 64);
+  const validRiskDetails = validText(editableRiskObject?.details, 1, 256);
+
   return (
     <>
       {editableRiskObject && (
@@ -89,42 +91,36 @@ const RiskPropertiesModal = (
                 id="wellUid"
                 label="well uid"
                 defaultValue={editableRiskObject.wellUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellName"
                 label="well name"
                 defaultValue={editableRiskObject.wellName}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreUid"
                 label="wellbore uid"
                 defaultValue={editableRiskObject.wellboreUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreName"
                 label="wellbore name"
                 defaultValue={editableRiskObject.wellboreName}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dateTimeCreation"
                 label="created"
                 defaultValue={editableRiskObject.commonData.dTimCreation}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dateTimeLastChange"
                 label="last changed"
                 defaultValue={editableRiskObject.commonData.dTimLastChange}
-                fullWidth
               />
               <TextField
                 disabled
@@ -132,22 +128,17 @@ const RiskPropertiesModal = (
                 label={"risk uid"}
                 required
                 defaultValue={editableRiskObject.uid}
-                fullWidth
               />
               <TextField
                 id={"name"}
                 label={"name"}
                 required
                 value={editableRiskObject.name ? editableRiskObject.name : ""}
-                error={editableRiskObject.name.length === 0}
+                variant={validRiskName ? undefined : "error"}
                 helperText={
-                  editableRiskObject.name.length === 0
-                    ? "The risk name must be 1-64 characters"
-                    : ""
+                  !validRiskName ? "The risk name must be 1-64 characters" : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     name: e.target.value
@@ -199,9 +190,17 @@ const RiskPropertiesModal = (
                     ? editableRiskObject.extendCategory
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) =>
+                variant={
+                  editableRiskObject.extendCategory?.length === 0
+                    ? "error"
+                    : undefined
+                }
+                helperText={
+                  editableRiskObject.extendCategory?.length === 0
+                    ? "The risk extendCategory must be at least 1 character"
+                    : ""
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     extendCategory: e.target.value
@@ -253,19 +252,14 @@ const RiskPropertiesModal = (
                 id={"mdBitStart"}
                 label={"mdBitStart"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableRiskObject.mdBitStart
-                        ? editableRiskObject.mdBitStart.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableRiskObject.mdBitStart
+                    ? editableRiskObject.mdBitStart.uom
+                    : ""
+                }
                 disabled={!editableRiskObject.mdBitStart}
                 value={editableRiskObject.mdBitStart?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     mdBitStart: {
@@ -281,19 +275,14 @@ const RiskPropertiesModal = (
                 id={"mdBitEnd"}
                 label={"mdBitEnd"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableRiskObject.mdBitEnd
-                        ? editableRiskObject.mdBitEnd.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableRiskObject.mdBitEnd
+                    ? editableRiskObject.mdBitEnd.uom
+                    : ""
+                }
                 disabled={!editableRiskObject.mdBitEnd}
                 value={editableRiskObject.mdBitEnd?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     mdBitEnd: {
@@ -313,15 +302,17 @@ const RiskPropertiesModal = (
                     ? editableRiskObject.severityLevel
                     : ""
                 }
-                error={editableRiskObject.severityLevel?.length === 0}
+                variant={
+                  editableRiskObject.severityLevel?.length === 0
+                    ? "error"
+                    : undefined
+                }
                 helperText={
                   editableRiskObject.severityLevel?.length === 0
                     ? "The risk severityLevel must be at least 1 character"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     severityLevel: e.target.value
@@ -336,15 +327,17 @@ const RiskPropertiesModal = (
                     ? editableRiskObject.probabilityLevel
                     : ""
                 }
-                error={editableRiskObject.probabilityLevel?.length === 0}
+                variant={
+                  editableRiskObject.probabilityLevel?.length === 0
+                    ? "error"
+                    : undefined
+                }
                 helperText={
                   editableRiskObject.probabilityLevel?.length === 0
                     ? "The risk probabilityLevel must be at least 1 character"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     probabilityLevel: e.target.value
@@ -358,15 +351,15 @@ const RiskPropertiesModal = (
                 value={
                   editableRiskObject.summary ? editableRiskObject.summary : ""
                 }
-                error={editableRiskObject.summary?.length === 0}
+                variant={
+                  editableRiskObject.summary?.length === 0 ? "error" : undefined
+                }
                 helperText={
                   editableRiskObject.summary?.length === 0
                     ? "The risk summary must be at least 1 character"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     summary: e.target.value
@@ -379,16 +372,14 @@ const RiskPropertiesModal = (
                 value={
                   editableRiskObject.details ? editableRiskObject.details : ""
                 }
-                error={editableRiskObject.details?.length === 0}
+                variant={validRiskDetails ? undefined : "error"}
                 multiline
                 helperText={
-                  editableRiskObject.details?.length === 0
+                  !validRiskDetails
                     ? "The risk details must be between 1 and 256 characters"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 256 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRiskObject({
                     ...editableRiskObject,
                     details: e.target.value
@@ -403,8 +394,7 @@ const RiskPropertiesModal = (
                     ? editableRiskObject.commonData.sourceName
                     : ""
                 }
-                fullWidth
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const commonData = {
                     ...editableRiskObject.commonData,
                     sourceName: e.target.value
@@ -431,11 +421,7 @@ const RiskPropertiesModal = (
               />
             </>
           }
-          confirmDisabled={
-            !validText(editableRiskObject.name) ||
-            !dTimStartValid ||
-            !dTimEndValid
-          }
+          confirmDisabled={!validRiskName || !dTimStartValid || !dTimEndValid}
           onSubmit={() => onSubmit(editableRiskObject)}
           isLoading={isLoading}
         />
