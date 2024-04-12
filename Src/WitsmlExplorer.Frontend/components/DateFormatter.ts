@@ -85,10 +85,7 @@ export function validateIsoDateString(dateString: string): boolean {
       return false;
     }
     const parsed = toDate(replaced);
-    let formatted = formatInTimeZone(parsed, offset, rawDateTimeFormat);
-    if (!replaced.includes(".")) {
-      formatted = formatted.replace(".000", "");
-    }
+    const formatted = formatInTimeZone(parsed, offset, rawDateTimeFormat);
     return replaced == formatted;
   } catch {
     return false;
