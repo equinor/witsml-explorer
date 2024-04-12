@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  createHashRouter
+} from "react-router-dom";
 import {
   JOBS_VIEW_ROUTE_PATH,
   LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
@@ -47,7 +51,11 @@ const queryClient = new QueryClient({
   }
 });
 
-const router = createBrowserRouter([
+const userAgent = navigator.userAgent.toLowerCase();
+const createRouter =
+  userAgent.indexOf(" electron/") > -1 ? createHashRouter : createBrowserRouter;
+
+const router = createRouter([
   {
     path: "/",
     element: <Root />,
