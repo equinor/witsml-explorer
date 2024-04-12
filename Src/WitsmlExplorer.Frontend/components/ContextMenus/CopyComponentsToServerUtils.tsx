@@ -1,5 +1,8 @@
 import { Fragment } from "react";
-import { DispatchOperation } from "../../contexts/operationStateReducer";
+import {
+  DispatchOperation,
+  DisplayModalAction
+} from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import { ComponentType, getParentType } from "../../models/componentType";
 import ComponentReferences, {
@@ -21,6 +24,9 @@ import ObjectService from "../../services/objectService";
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
 import { pluralize } from "./ContextMenuUtils";
+import CopyMnemonicsModal, {
+  CopyMnemonicsModalProps
+} from "../Modals/CopyMnemonicsModal";
 
 export interface OnClickCopyComponentToServerProps {
   targetServer: Server;
@@ -91,6 +97,23 @@ export const copyComponentsToServer = async (
     );
   const targetParentReference: ObjectReference =
     toObjectReference(targetParent);
+
+  if (componentType == ComponentType.Mnemonic) {
+    const copyMnemonicsModalProps: CopyMnemonicsModalProps = {
+      sourceReferences: sourceComponentReferences,
+      targetReference: targetParentReference,
+      startIndex: startIndex,
+      endIndex: endIndex,
+      targetServer: targetServer,
+      sourceServer: sourceServer
+    };
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: <CopyMnemonicsModal {...copyMnemonicsModalProps} />
+    };
+    dispatchOperation(action);
+    return;
+  }
 
   const copyJob: CopyComponentsJob = createCopyJob();
 
