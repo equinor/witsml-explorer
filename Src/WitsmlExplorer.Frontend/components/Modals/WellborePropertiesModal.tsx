@@ -467,12 +467,7 @@ const WellborePropertiesModal = (
             !validWellboreUid ||
             !validWellboreName ||
             !dTimeKickoffValid ||
-            !wellboreHasChanges(pristineWellbore, editableWellbore) ||
-            !invalidStringInput(
-              wellbore.comments,
-              editableWellbore.comments,
-              MaxLength.Comment
-            )
+            !wellboreHasChanges(pristineWellbore, editableWellbore)
           }
           onSubmit={() => onSubmit(editableWellbore)}
           isLoading={isLoading}
