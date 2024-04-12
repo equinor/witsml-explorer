@@ -90,7 +90,7 @@ const RigPropertiesModal = (
                 value={editableRig.uid}
                 variant={validRigUid ? undefined : "error"}
                 helperText={
-                  validRigUid ? "A rig uid must be 1-64 characters" : ""
+                  !validRigUid ? "A rig uid must be 1-64 characters" : ""
                 }
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({ ...editableRig, uid: e.target.value })
