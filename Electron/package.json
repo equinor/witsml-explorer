@@ -5,16 +5,22 @@
   "private": true,
   "scripts": {
     "dev": "electron-vite dev -w",
-    "build:api": "dotnet publish -o ./out/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../../electron/api.config.json ../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
-    "build:frontend": "electron-vite build",
+    "build:api": "dotnet publish -o ./dist/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../../electron/api.config.json ../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
+    "build:frontend": "electron-vite build --outDir=dist",
     "build": "yarn build:api && yarn build:frontend",
+    "package": "yarn build && electron-forge package",
     "preview": "electron-vite preview"
   },
-  "main": "./out/main/main.js",
+  "main": "./dist/main/main.js",
   "devDependencies": {
     "cross-spawn": "^7.0.3",
     "electron": "^29.2.0",
     "electron-vite": "^2.1.0",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "@electron-forge/cli": "^6.2.1",
+    "@electron-forge/maker-deb": "^6.2.1",
+    "@electron-forge/maker-rpm": "^6.2.1",
+    "@electron-forge/maker-squirrel": "^6.2.1",
+    "@electron-forge/maker-zip": "^6.2.1"
   }
 }
