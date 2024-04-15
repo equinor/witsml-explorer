@@ -13,7 +13,7 @@ function startApi() {
         CONFIG_PATH: path.resolve(__dirname, '../../api.config.json')
     };
 
-    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const isDevelopment = process.env.NODE_ENV === 'development';
 
     if (isDevelopment) {
         apiProcess = spawn('dotnet', ['run', '--project', path.resolve(__dirname, '../../../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
