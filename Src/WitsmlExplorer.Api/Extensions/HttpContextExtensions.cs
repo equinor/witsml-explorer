@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Extensions
         {
             CookieOptions cookieOptions = new()
             {
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Secure = true,
                 HttpOnly = true
             };
