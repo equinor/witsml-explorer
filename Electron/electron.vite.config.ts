@@ -9,8 +9,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-    main: {},
-    preload: {},
+    main: {
+        build: {
+            outDir: "dist/main"
+        }
+    },
+    preload: {
+        build: {
+            outDir: "dist/preload"
+        }
+    },
     renderer: {
         root: resolve(__dirname, '../Src/WitsmlExplorer.Frontend'),
         plugins: [react(), tsconfigPaths()],
@@ -19,7 +27,8 @@ export default defineConfig({
                 input: {
                     index: resolve(__dirname, '../Src/WitsmlExplorer.Frontend/index.html')
                 }
-            }
+            },
+            outDir: "dist/renderer"
         },
         server: {
             port: 3000
