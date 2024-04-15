@@ -3,12 +3,14 @@
   "description": "Witsml Explorer Desktop Edition",
   "version": "1.0.0",
   "private": true,
+  "author": "WEx-Desktop",
   "scripts": {
     "dev": "electron-vite dev -w",
     "build:api": "dotnet publish -o ./dist/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../../electron/api.config.json ../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
     "build:frontend": "electron-vite build",
     "build": "delete_build_dir.bat && yarn build:api && yarn build:frontend",
     "package": "yarn build && electron-forge package",
+    "make": "yarn build && electron-forge make",
     "preview": "delete_build_dir.bat && yarn build:api && electron-vite preview"
   },
   "main": "./dist/main/main.js",
