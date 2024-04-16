@@ -12,5 +12,12 @@
         "target": [
             "nsis"
         ]
+    },
+    "nsis": {
+        "oneClick": false,
+        "perMachine": false,
+        "allowToChangeInstallationDirectory": true,
+        "deleteAppDataOnUninstall": false,
+        "createStartMenuShortcut": true
     }
 }
