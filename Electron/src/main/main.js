@@ -4,19 +4,20 @@ import { spawn } from 'cross-spawn';
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 
+const basePath = app.getAppPath();
+
 let mainWindow;
 let apiProcess;
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 function startApi() {
-
-    const isDevelopment = process.env.NODE_ENV === 'development';
-
     if (isDevelopment) {
         const env = {
             ...process.env,
-            CONFIG_PATH: path.resolve(__dirname, '../../api.config.json')
+            CONFIG_PATH: path.resolve(basePath, 'api.config.json')
         };
-        apiProcess = spawn('dotnet', ['run', '--project', path.resolve(__dirname, '../../../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
+        apiProcess = spawn('dotnet', ['run', '--project', path.resolve(basePath, '../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
     } else {
         const env = {
             ...process.env,
@@ -36,7 +37,7 @@ function startApi() {
 function createWindow() {
     mainWindow = new BrowserWindow({});
 
-    if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
+    if (isDevelopment) {
         mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
     } else {
         mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
