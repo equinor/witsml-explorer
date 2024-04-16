@@ -126,3 +126,6 @@ coverage*[.json, .xml, .info]
 /Tests/WitsmlExplorer.IntegrationTests/Properties/launchSettings.json
 
 .fake
+
+# TGZ files
+*.tgz
