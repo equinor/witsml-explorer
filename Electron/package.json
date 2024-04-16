@@ -10,8 +10,8 @@
     "build:frontend": "electron-vite build",
     "build": "delete_build_dir.bat && yarn build:api && yarn build:frontend",
     "preview": "delete_build_dir.bat && yarn build:api && electron-vite preview",
-    "pack": "yarn build && electron-builder --dir -c electron-builder.json",
-    "dist": "yarn build && electron-builder -c electron-builder.json"
+    "electron:pack": "yarn build && electron-builder --dir -c electron-builder.json",
+    "electron:dist": "yarn build && electron-builder -c electron-builder.json"
   },
   "main": "./dist/main/main.js",
   "devDependencies": {
