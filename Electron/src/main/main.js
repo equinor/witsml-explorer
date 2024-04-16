@@ -8,17 +8,22 @@ let mainWindow;
 let apiProcess;
 
 function startApi() {
-    const env = {
-        ...process.env,
-        CONFIG_PATH: path.resolve(__dirname, '../../api.config.json')
-    };
 
     const isDevelopment = process.env.NODE_ENV === 'development';
 
     if (isDevelopment) {
+        const env = {
+            ...process.env,
+            CONFIG_PATH: path.resolve(__dirname, '../../api.config.json')
+        };
         apiProcess = spawn('dotnet', ['run', '--project', path.resolve(__dirname, '../../../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
     } else {
-        apiProcess = spawn(path.resolve(__dirname, '../api/WitsmlExplorer.Api'), [], { env });
+        const env = {
+            ...process.env,
+            CONFIG_PATH: './api.config.json'
+        };
+        const apiPath = path.resolve(__dirname, '../api/');
+        apiProcess = spawn(path.resolve(apiPath, 'WitsmlExplorer.Api'), [], { env, cwd: apiPath });
     }
 
     // Log messages from the API to the console

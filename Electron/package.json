@@ -9,19 +9,15 @@
     "build:api": "dotnet publish -o ./dist/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../../electron/api.config.json ../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
     "build:frontend": "electron-vite build",
     "build": "delete_build_dir.bat && yarn build:api && yarn build:frontend",
-    "package": "yarn build && electron-forge package",
-    "make": "yarn build && electron-forge make",
-    "preview": "delete_build_dir.bat && yarn build:api && electron-vite preview"
+    "preview": "delete_build_dir.bat && yarn build:api && electron-vite preview",
+    "pack": "yarn build && electron-builder --dir -c electron-builder.json",
+    "dist": "yarn build && electron-builder -c electron-builder.json"
   },
   "main": "./dist/main/main.js",
   "devDependencies": {
-    "@electron-forge/cli": "^7.4.0",
-    "@electron-forge/maker-deb": "^7.4.0",
-    "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-squirrel": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.4.0",
     "cross-spawn": "^7.0.3",
     "electron": "^29.3.0",
+    "electron-builder": "^24.13.3",
     "electron-vite": "^2.1.0",
     "vite-tsconfig-paths": "^4.3.2"
   }

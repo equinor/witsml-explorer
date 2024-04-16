@@ -1,0 +1,17 @@
+{
+    "appId": "WEx-Desktop-App",
+    "asar": false,
+    "productName": "WEx-Desktop",
+    "directories": {
+        "output": "dist"
+    },
+    "files": [
+        "dist/**/*"
+    ],
+    "win": {
+        "target": [
+            "nsis"
+        ]
+    }
+}
+
