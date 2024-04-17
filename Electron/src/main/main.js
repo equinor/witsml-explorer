@@ -44,6 +44,7 @@ function startApi() {
 
 function createWindow() {
     mainWindow = new BrowserWindow({});
+    mainWindow.setMenuBarVisibility(false);
 
     if (isDevelopment) {
         mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
