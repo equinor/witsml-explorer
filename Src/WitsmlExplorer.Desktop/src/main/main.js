@@ -28,8 +28,8 @@ function getProductionPath(relativePath, isAsarUnpacked = false) {
         return path.join(__dirname, '../', relativePath);
     }
 }
-async function startApi() {
 
+async function startApi() {
     if (isDevelopment) {
         const basePath = app.getAppPath();
         const env = {
@@ -111,4 +111,3 @@ app.on('before-quit', () => {
     apiProcess?.kill();
     apiProcess = null;
 });
-
