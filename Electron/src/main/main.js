@@ -51,10 +51,10 @@ async function startApi() {
     // Promise that is manual resolved when API has started.
     const { promise, resolve, reject } = deferred();
 
-    // The app will wait 15 seconds for the API to start, if not it will be forced quit.
+    // The app will wait 30 seconds for the API to start, if not it will be forced quit.
     setTimeout(() => {
         reject()
-    }, 15000);
+    }, 30000);
 
     // Log messages from the API to the console
     apiProcess.stdout.setEncoding('utf8');
