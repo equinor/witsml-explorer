@@ -20,12 +20,12 @@ export default defineConfig({
         }
     },
     renderer: {
-        root: resolve(__dirname, '../Src/WitsmlExplorer.Frontend'),
+        root: resolve(__dirname, '../WitsmlExplorer.Frontend'),
         plugins: [react(), tsconfigPaths()],
         build: {
             rollupOptions: {
                 input: {
-                    index: resolve(__dirname, '../Src/WitsmlExplorer.Frontend/index.html')
+                    index: resolve(__dirname, '../WitsmlExplorer.Frontend/index.html')
                 }
             },
             outDir: "dist/renderer"

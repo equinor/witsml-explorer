@@ -37,7 +37,7 @@ async function startApi() {
             CONFIG_PATH: path.join(basePath, 'api.config.json'),
             "LiteDB:Name": path.join(app.getPath('userData'), 'witsml-explorer-db.db')
         };
-        apiProcess = spawn('dotnet', ['run', '--project', path.join(basePath, '../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
+        apiProcess = spawn('dotnet', ['run', '--project', path.join(basePath, '../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
     } else {
         const env = {
             ...process.env,
