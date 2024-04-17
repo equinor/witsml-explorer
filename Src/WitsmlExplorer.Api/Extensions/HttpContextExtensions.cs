@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 
 using Microsoft.AspNetCore.Http;
@@ -9,11 +10,11 @@ namespace WitsmlExplorer.Api.Extensions
 {
     public static class HttpContextExtensions
     {
-        public static string CreateWitsmlExplorerCookie(this HttpContext httpContext)
+        public static string CreateWitsmlExplorerCookie(this HttpContext httpContext, bool isDesktopApp)
         {
             CookieOptions cookieOptions = new()
             {
-                SameSite = SameSiteMode.None,
+                SameSite = isDesktopApp ? SameSiteMode.None : SameSiteMode.Strict,
                 Secure = true,
                 HttpOnly = true
             };

@@ -1,6 +1,6 @@
 {
   "LogQueries": false,
-  "AllowedHosts": "*",
+  "AllowedHosts": "localhost",
   "AllowedOrigin": "http://localhost:3000",
   "Witsml": {
     "ClientCapabilities": {
@@ -9,6 +9,7 @@
     }
   },
   "OAuth2Enabled": false,
+  "IsDesktopApp": true,
   "Serilog": {
     "MinimumLevel": {
       "Default": "Information",

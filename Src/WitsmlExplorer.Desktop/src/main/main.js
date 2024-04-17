@@ -65,7 +65,7 @@ async function startApi() {
         if (data.includes("Application started")) resolve();
     });
 
-    await promise.catch((e) => {
+    await promise.catch(() => {
         dialog.showMessageBoxSync(this, {
             type: 'error',
             buttons: ['OK'],
