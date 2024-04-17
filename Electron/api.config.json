@@ -9,9 +9,6 @@
     }
   },
   "OAuth2Enabled": false,
-  "LiteDb": {
-    "Name": "witsml-explorer-db.db"
-  },
   "Serilog": {
     "MinimumLevel": {
       "Default": "Information",
