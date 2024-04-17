@@ -4,27 +4,35 @@ import { spawn } from 'cross-spawn';
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 
-const basePath = app.getAppPath();
-
 let mainWindow;
 let apiProcess;
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
+function getProductionPath(relativePath, isAsarUnpacked = false) {
+    if (isAsarUnpacked) {
+        let asarUnpackedPath = __dirname.replace(/\.asar([\\/])/, '.asar.unpacked$1');
+        return path.join(asarUnpackedPath, '../', relativePath);
+    } else {
+        return path.join(__dirname, '../', relativePath);
+    }
+}
+
 function startApi() {
     if (isDevelopment) {
+        const basePath = app.getAppPath();
         const env = {
             ...process.env,
-            CONFIG_PATH: path.resolve(basePath, 'api.config.json')
+            CONFIG_PATH: path.join(basePath, 'api.config.json')
         };
-        apiProcess = spawn('dotnet', ['run', '--project', path.resolve(basePath, '../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
+        apiProcess = spawn('dotnet', ['run', '--project', path.join(basePath, '../Src/WitsmlExplorer.Api/WitsmlExplorer.Api.csproj')], { env });
     } else {
         const env = {
             ...process.env,
             CONFIG_PATH: './api.config.json'
         };
-        const apiPath = path.resolve(__dirname, '../api/');
-        apiProcess = spawn(path.resolve(apiPath, 'WitsmlExplorer.Api'), [], { env, cwd: apiPath });
+        const apiPath = getProductionPath('api/', true);
+        apiProcess = spawn(path.join(apiPath, 'WitsmlExplorer.Api'), [], { env, cwd: apiPath });
     }
 
     // Log messages from the API to the console

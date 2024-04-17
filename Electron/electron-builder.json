@@ -1,6 +1,9 @@
 {
     "appId": "WEx-Desktop-App",
-    "asar": false,
+    "asar": true,
+    "asarUnpack": [
+        "dist/api/**/*"
+    ],
     "productName": "WEx-Desktop",
     "directories": {
         "output": "dist"
