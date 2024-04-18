@@ -19,7 +19,6 @@
     ],
     "nohoist": ["**electron**"]
   },
-  
   "scripts": {
     "dotnet-format": "dotnet tool run dotnet-format --check",
     "dotnet-format:fix": "dotnet tool run dotnet-format",

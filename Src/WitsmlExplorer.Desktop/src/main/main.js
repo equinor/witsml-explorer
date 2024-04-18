@@ -28,8 +28,8 @@ function getProductionPath(relativePath, isAsarUnpacked = false) {
         return path.join(__dirname, '../', relativePath);
     }
 }
-async function startApi() {
 
+async function startApi() {
     if (isDevelopment) {
         const basePath = app.getAppPath();
         const env = {
@@ -65,7 +65,7 @@ async function startApi() {
         if (data.includes("Application started")) resolve();
     });
 
-    await promise.catch((e) => {
+    await promise.catch(() => {
         dialog.showMessageBoxSync(this, {
             type: 'error',
             buttons: ['OK'],
@@ -111,4 +111,3 @@ app.on('before-quit', () => {
     apiProcess?.kill();
     apiProcess = null;
 });
-

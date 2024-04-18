@@ -37,6 +37,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICredentialsCache _credentialsCache;
         private static readonly string SUBJECT = "sub";
         private readonly bool _useOAuth2;
+        private readonly bool _isDesktopApp;
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
@@ -54,6 +55,7 @@ namespace WitsmlExplorer.Api.Services
             _witsmlServerRepository = witsmlServerRepository ?? throw new ArgumentException("Missing WitsmlServerRepository");
             _credentialsCache = credentialsCache ?? throw new ArgumentException("CredentialsService missing");
             _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            _isDesktopApp = StringHelpers.ToBoolean(configuration[ConfigConstants.IsDesktopApp]);
         }
 
         public async Task VerifyCredentials(ServerCredentials creds)
@@ -77,7 +79,7 @@ namespace WitsmlExplorer.Api.Services
             string cacheId = GetCacheId(eh);
             if (!_useOAuth2 && (string.IsNullOrEmpty(cacheId) || _credentialsCache.GetItem(cacheId) == null))
             {
-                cacheId = httpContext.CreateWitsmlExplorerCookie();
+                cacheId = httpContext.CreateWitsmlExplorerCookie(_isDesktopApp);
             }
 
             await VerifyCredentials(creds);
