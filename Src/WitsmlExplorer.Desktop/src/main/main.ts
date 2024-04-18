@@ -72,7 +72,7 @@ async function startApi() {
     // The app will wait 30 seconds for the API to start, if not it will be forced quit.
     setTimeout(() => {
         reject();
-    }, 30000);
+    }, 60000);
 
     // Log messages from the API to the console
     apiProcess.stdout.setEncoding("utf8");
