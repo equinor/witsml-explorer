@@ -8,8 +8,8 @@
     "dev": "electron-vite dev -w",
     "build:api": "dotnet publish -o ./dist/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
     "build:frontend": "electron-vite build",
-    "build": "delete_build_dir.bat && yarn build:api && yarn build:frontend",
-    "preview": "delete_build_dir.bat && yarn build:api && electron-vite preview",
+    "build": "yarn build:api && yarn build:frontend",
+    "preview": "yarn build:api && electron-vite preview",
     "electron:pack": "yarn build && electron-builder --dir -c electron-builder.json",
     "electron:dist": "yarn build && electron-builder -c electron-builder.json"
   },
