@@ -3,7 +3,7 @@
   "description": "Witsml Explorer Desktop Edition",
   "version": "1.0.0",
   "private": true,
-  "author": "WEx-Desktop",
+  "author": "Witsml Explorer Team",
   "scripts": {
     "dev": "electron-vite dev -w",
     "build:api": "dotnet publish -o ./dist/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
