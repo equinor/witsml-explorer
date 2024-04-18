@@ -15,10 +15,12 @@
   },
   "main": "./dist/main/main.js",
   "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
     "cross-spawn": "^7.0.3",
     "electron": "^29.3.0",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.1.0",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "@vitejs/plugin-react": "^4.2.1"
   }
 }

@@ -22,7 +22,7 @@
       {
         "Name": "Console",
         "Args": {
-            "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console"
+          "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console"
         }
       },
       {
@@ -37,9 +37,6 @@
         }
       }
     ],
-    "Enrich": [
-      "FromLogContext"
-    ]
+    "Enrich": ["FromLogContext"]
   }
 }
-  

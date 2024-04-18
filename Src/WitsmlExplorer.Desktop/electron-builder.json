@@ -1,26 +1,20 @@
 {
-    "appId": "WEx-Desktop-App",
-    "asar": true,
-    "asarUnpack": [
-        "dist/api/**/*"
-    ],
-    "productName": "WEx-Desktop",
-    "directories": {
-        "output": "dist"
-    },
-    "files": [
-        "dist/**/*"
-    ],
-    "win": {
-        "target": [
-            "nsis"
-        ]
-    },
-    "nsis": {
-        "oneClick": false,
-        "perMachine": false,
-        "allowToChangeInstallationDirectory": true,
-        "deleteAppDataOnUninstall": false,
-        "createStartMenuShortcut": true
-    }
+  "appId": "WEx-Desktop-App",
+  "asar": true,
+  "asarUnpack": ["dist/api/**/*"],
+  "productName": "WEx-Desktop",
+  "directories": {
+    "output": "dist"
+  },
+  "files": ["dist/**/*"],
+  "win": {
+    "target": ["nsis"]
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "createStartMenuShortcut": true
+  }
 }
