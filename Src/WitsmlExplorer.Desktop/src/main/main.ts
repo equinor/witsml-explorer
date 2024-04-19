@@ -15,6 +15,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 interface AppConfig {
     apiPort: string;
     dbPath: string;
+    logsPath: string;
 }
 
 // Function to read the configuration file. If it does not exist, create it with default values first.
@@ -22,27 +23,36 @@ function readOrCreateAppConfig() {
     const userDataPath = app.getPath('userData');
     const configPath = path.join(userDataPath, 'config.json');
 
-    try {
-        fs.accessSync(configPath);
-    } catch (err) {
-        const defaultConfig: AppConfig = {
-            apiPort: "35427",
-            dbPath: path.join(userDataPath, 'witsml-explorer-db.db')
-        };
-        fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 4), 'utf-8');
-        console.log('Default config created:', configPath);
-    }
+    const defaultConfig: AppConfig = {
+        apiPort: "35427",
+        dbPath: path.join(userDataPath, 'witsml-explorer-db.db'),
+        logsPath: path.join(userDataPath, 'logs')
+    };
+
+    let config: AppConfig;
+    let existingConfig: AppConfig;
 
     try {
         const configData = fs.readFileSync(configPath, 'utf-8');
-        console.log('Configuration read:', configPath, '\n', configData)
-        const data = JSON.parse(configData);
-        if (!data) throw new Error('Invalid configuration data');
-        return JSON.parse(configData);
-    } catch (error) {
-        console.error('Failed to read configuration:', error);
-        showErrorAndQuit(`Failed to read configuration file: ${configPath}. ${error}`);
+        existingConfig = JSON.parse(configData);
+        // Merge the configs to ensure that new properties are added to the existing config.
+        config = { ...defaultConfig, ...existingConfig };
+    } catch (err) {
+        config = defaultConfig;
     }
+
+    if (!!JSON.stringify(existingConfig) && (JSON.stringify(existingConfig) !== JSON.stringify(config))) {
+        try {
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 4), 'utf-8');
+            console.log('Config created/updated:', configPath);
+        } catch (error) {
+            console.error('Failed to write configuration:', error);
+            showErrorAndQuit(`Failed to write configuration file: ${configPath}. ${error}`);
+        }
+    }
+
+    console.log('Using configuration:\n', config)
+    return config;
 }
 
 function showErrorAndQuit(message: string) {
@@ -89,6 +99,7 @@ async function startApi(appConfig: AppConfig) {
             CONFIG_PATH: path.join(basePath, "api.config.json"),
             ASPNETCORE_URLS: `http://localhost:${appConfig.apiPort}`,
             ASPNETCORE_ENVIRONMENT: "Development",
+            "Serilog:WriteTo:1:Args:path": path.join(appConfig.logsPath, 'witsml-explorer-api-.log'),
             "LiteDB:Name": appConfig.dbPath
         };
         apiProcess = spawn(
@@ -106,6 +117,7 @@ async function startApi(appConfig: AppConfig) {
             ...process.env,
             ASPNETCORE_URLS: `http://localhost:${appConfig.apiPort}`,
             CONFIG_PATH: './api.config.json',
+            "Serilog:WriteTo:1:Args:path": path.join(appConfig.logsPath, 'witsml-explorer-api-.log'),
             "LiteDB:Name": appConfig.dbPath
         };
         const apiPath = getProductionPath("api/", true);
