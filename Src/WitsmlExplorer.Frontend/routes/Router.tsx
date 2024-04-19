@@ -19,6 +19,7 @@ import {
   WELLSBORES_VIEW_ROUTE_PATH,
   WELLS_VIEW_ROUTE_PATH
 } from "routes/routerConstants";
+import { isDesktopApp } from "tools/desktopAppHelpers";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import { ErrorView } from "../components/ContentViews/ErrorView";
@@ -51,9 +52,7 @@ const queryClient = new QueryClient({
   }
 });
 
-const userAgent = navigator.userAgent.toLowerCase();
-const createRouter =
-  userAgent.indexOf(" electron/") > -1 ? createHashRouter : createBrowserRouter;
+const createRouter = isDesktopApp() ? createHashRouter : createBrowserRouter;
 
 const router = createRouter([
   {

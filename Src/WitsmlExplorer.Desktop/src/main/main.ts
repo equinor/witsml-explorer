@@ -1,14 +1,61 @@
 /* eslint-env node */
+/* eslint-disable no-console */
 /// <reference types="vite/client" />
 
 import { spawn } from "cross-spawn";
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import * as fs from 'fs';
 import * as path from "path";
 
 let mainWindow;
 let apiProcess: any;
 
-// Function to manual control a Promise
+const isDevelopment = process.env.NODE_ENV === "development";
+
+interface AppConfig {
+    apiPort: string;
+    dbPath: string;
+}
+
+// Function to read the configuration file. If it does not exist, create it with default values first.
+function readOrCreateAppConfig() {
+    const userDataPath = app.getPath('userData');
+    const configPath = path.join(userDataPath, 'config.json');
+
+    try {
+        fs.accessSync(configPath);
+    } catch (err) {
+        const defaultConfig: AppConfig = {
+            apiPort: "35427",
+            dbPath: path.join(userDataPath, 'witsml-explorer-db.db')
+        };
+        fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 4), 'utf-8');
+        console.log('Default config created:', configPath);
+    }
+
+    try {
+        const configData = fs.readFileSync(configPath, 'utf-8');
+        console.log('Configuration read:', configPath, '\n', configData)
+        const data = JSON.parse(configData);
+        if (!data) throw new Error('Invalid configuration data');
+        return JSON.parse(configData);
+    } catch (error) {
+        console.error('Failed to read configuration:', error);
+        showErrorAndQuit(`Failed to read configuration file: ${configPath}. ${error}`);
+    }
+}
+
+function showErrorAndQuit(message: string) {
+    dialog.showMessageBoxSync(this, {
+        type: 'error',
+        buttons: ['OK'],
+        title: 'Confirm',
+        message
+    });
+    app.quit()
+}
+
+// Function to manually control a Promise
 function deferred() {
     let resolve: any;
     let reject: any;
@@ -19,14 +66,12 @@ function deferred() {
     return { promise, resolve, reject };
 }
 
-const isDevelopment = process.env.NODE_ENV === "development";
-
 function getProductionPath(
     relativePath: string,
     isAsarUnpacked: boolean = false
 ) {
     if (isAsarUnpacked) {
-        let asarUnpackedPath = __dirname.replace(
+        const asarUnpackedPath = __dirname.replace(
             /\.asar([\\/])/,
             ".asar.unpacked$1"
         );
@@ -36,28 +81,32 @@ function getProductionPath(
     }
 }
 
-async function startApi() {
+async function startApi(appConfig: AppConfig) {
     if (isDevelopment) {
         const basePath = app.getAppPath();
         const env = {
             ...process.env,
-            "CONFIG_PATH": path.join(basePath, "api.config.json"),
-            "LiteDB:Name": path.join(app.getPath("userData"), "witsml-explorer-db.db")
+            CONFIG_PATH: path.join(basePath, "api.config.json"),
+            ASPNETCORE_URLS: `http://localhost:${appConfig.apiPort}`,
+            ASPNETCORE_ENVIRONMENT: "Development",
+            "LiteDB:Name": appConfig.dbPath
         };
         apiProcess = spawn(
             "dotnet",
             [
                 "run",
                 "--project",
-                path.join(basePath, "../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj")
+                path.join(basePath, "../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj"),
+                '--no-launch-profile'
             ],
             { env }
         );
     } else {
         const env = {
             ...process.env,
-            "CONFIG_PATH": "./api.config.json",
-            "LiteDB:Name": path.join(app.getPath("userData"), "witsml-explorer-db.db")
+            ASPNETCORE_URLS: `http://localhost:${appConfig.apiPort}`,
+            CONFIG_PATH: './api.config.json',
+            "LiteDB:Name": appConfig.dbPath
         };
         const apiPath = getProductionPath("api/", true);
         apiProcess = spawn(path.join(apiPath, "WitsmlExplorer.Api"), [], {
@@ -66,7 +115,7 @@ async function startApi() {
         });
     }
 
-    // Promise that is manual resolved when API has started.
+    // Promise that is manually resolved when the API has started.
     const { promise, resolve, reject } = deferred();
 
     // The app will wait 30 seconds for the API to start, if not it will be forced quit.
@@ -84,20 +133,17 @@ async function startApi() {
     });
 
     await promise.catch(() => {
-        dialog.showMessageBoxSync(this, {
-            type: "error",
-            buttons: ["OK"],
-            title: "Confirm",
-            message: "API was not able to run, the application will be forced quit!"
-        });
-        app.quit();
+        showErrorAndQuit('API was not able to run, the application will be forced quit!')
     });
 }
 
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1920,
-        height: 1080
+        height: 1080,
+        webPreferences: {
+            preload: path.join(__dirname, '../preload/preload.js')
+        }
     });
     mainWindow.setMenuBarVisibility(false);
 
@@ -110,7 +156,9 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-    await startApi();
+    const appConfig = readOrCreateAppConfig();
+    await startApi(appConfig);
+    ipcMain.handle('getConfig', () => appConfig);
     createWindow();
 
     // From Electron docs: macOS apps generally continue running even without any windows open, and activating the app when no windows are available should open a new one.

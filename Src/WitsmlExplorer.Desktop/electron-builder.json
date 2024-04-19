@@ -1,12 +1,12 @@
 {
   "appId": "WEx-Desktop-App",
-  "asar": true,
-  "asarUnpack": ["dist/api/**/*"],
   "productName": "Witsml Explorer Desktop",
   "directories": {
     "output": "dist"
   },
   "files": ["dist/**/*"],
+  "asar": true,
+  "asarUnpack": ["dist/api/**/*"],
   "win": {
     "target": ["nsis"]
   },
