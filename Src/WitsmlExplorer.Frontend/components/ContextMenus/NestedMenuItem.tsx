@@ -1,5 +1,5 @@
 import { Icon, Typography } from "@equinor/eds-core-react";
-import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
+import MenuItem, { MenuItemProps } from "@mui/material/MenuItem";
 import { StyledMenu } from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import OperationContext from "contexts/operationContext";

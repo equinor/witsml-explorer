@@ -1,5 +1,5 @@
-import { format, formatInTimeZone, toDate } from "date-fns-tz";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
+import { format, formatInTimeZone, toDate } from "date-fns-tz";
 
 //https://date-fns.org/v2.29.3/docs/format
 const naturalDateTimeFormat = "dd.MM.yyyy HH:mm:ss.SSS";

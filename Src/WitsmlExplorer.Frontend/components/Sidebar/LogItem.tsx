@@ -9,7 +9,6 @@ import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
 import { MouseEvent, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface LogItemProps {
   log: LogObject;
@@ -27,7 +26,6 @@ export default function LogItem({
   to
 }: LogItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
-  const navigate = useNavigate();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
@@ -46,15 +44,15 @@ export default function LogItem({
 
   return (
     <TreeItem
-      onContextMenu={(event) => onContextMenu(event, log)}
+      onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
+        onContextMenu(event, log)
+      }
       key={nodeId}
       nodeId={nodeId}
       labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
       selected={selected}
       isActive={objectGrowing}
-      onLabelClick={() => {
-        navigate(to);
-      }}
+      to={to}
     />
   );
 }

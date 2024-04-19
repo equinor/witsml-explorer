@@ -100,7 +100,9 @@ const UserCredentialsModal = (
             helperText={
               username?.length === 0 ? "Username must be 1-7936 characters" : ""
             }
-            onChange={(e: any) => setUsername(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setUsername(e.target.value)
+            }
             style={{ marginBottom: 15, color: colors.text.staticIconsDefault }}
           />
           <TextField
@@ -114,7 +116,9 @@ const UserCredentialsModal = (
             }
             type="password"
             autoComplete="current-password"
-            onChange={(e: any) => setPassword(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setPassword(e.target.value)
+            }
             style={{ color: colors.text.staticIconsDefault }}
           />
           {server.usernames && server.usernames.length > 0 && (

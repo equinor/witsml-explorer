@@ -14,7 +14,13 @@ import Measure from "models/measure";
 import MeasureWithDatum from "models/measureWithDatum";
 import { ObjectType } from "models/objectType";
 import StratigraphicStruct from "models/stratigraphicStruct";
-import React, { Dispatch, SetStateAction, useContext, useState } from "react";
+import React, {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState
+} from "react";
 import JobService, { JobType } from "services/jobService";
 import { Layout } from "../StyledComponents/Layout";
 
@@ -138,7 +144,7 @@ const FormationMarkerPropertiesModal = (
                     ? `name must be 1-${MaxLength.Name} characters`
                     : ""
                 }
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditable({ ...editable, name: e.target.value })
                 }
               />
@@ -258,7 +264,7 @@ const FormationMarkerPropertiesModal = (
                     ? `description must be 1-${MaxLength.Comment} characters`
                     : ""
                 }
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditable({
                     ...editable,
                     description: undefinedOnUnchagedEmptyString(
@@ -303,7 +309,7 @@ const StratigraphicField = (
       unit={originalStruct?.kind}
       helperText={invalid[property] ? `${property} cannot be empty` : ""}
       variant={invalid[property] ? "error" : undefined}
-      onChange={(e: any) => {
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
         setResult({
           ...editable,
           [property]: {
@@ -336,7 +342,7 @@ const MeasureField = (props: MeasureFieldProps): React.ReactElement => {
       unit={originalMeasure?.uom}
       helperText={invalid[property] ? `${property} cannot be empty` : ""}
       variant={invalid[property] ? "error" : undefined}
-      onChange={(e: any) => {
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
         setResult({
           ...editable,
           [property]: {

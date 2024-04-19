@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import {

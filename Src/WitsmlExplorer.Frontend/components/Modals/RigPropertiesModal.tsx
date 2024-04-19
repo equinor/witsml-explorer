@@ -1,9 +1,9 @@
-﻿import { Autocomplete } from "@equinor/eds-core-react";
-import { TextField } from "@material-ui/core";
+﻿import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import {
   PropertiesModalMode,
+  validFaxNumber,
   validPhoneNumber,
   validText
 } from "components/Modals/ModalParts";
@@ -14,7 +14,7 @@ import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
 import { rigType } from "models/rigType";
-import React, { useContext, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface RigPropertiesModalProps {
@@ -55,10 +55,24 @@ const RigPropertiesModal = (
   };
 
   const yearEntServiceValid =
-    (rig.yearEntService == null &&
-      (editableRig?.yearEntService == null ||
-        editableRig?.yearEntService.length == 0)) ||
+    (!rig.yearEntService && !editableRig?.yearEntService) ||
     editableRig?.yearEntService?.length == 4;
+  const validTelNumber =
+    (!rig.telNumber && !editableRig?.telNumber) ||
+    validPhoneNumber(editableRig.telNumber);
+  const faxNumberValid =
+    (!rig.faxNumber && !editableRig?.faxNumber) ||
+    validFaxNumber(editableRig.faxNumber);
+  const validEmailAddress =
+    (!rig.emailAddress && !editableRig?.emailAddress) ||
+    validText(editableRig.emailAddress, 1, 128);
+  const validNameContact =
+    (!rig.nameContact && !editableRig?.nameContact) ||
+    validText(editableRig?.nameContact, 1, 64);
+
+  const validRigUid = validText(editableRig?.uid, 1, 64);
+  const validRigName = validText(editableRig?.name, 1, 64);
+
   return (
     <>
       {editableRig && (
@@ -74,15 +88,11 @@ const RigPropertiesModal = (
                 label="rig uid"
                 required
                 value={editableRig.uid}
-                fullWidth
-                error={!validText(editableRig.uid)}
+                variant={validRigUid ? undefined : "error"}
                 helperText={
-                  editableRig.uid.length === 0
-                    ? "A rig uid must be 1-64 characters"
-                    : ""
+                  !validRigUid ? "A rig uid must be 1-64 characters" : ""
                 }
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({ ...editableRig, uid: e.target.value })
                 }
               />
@@ -91,43 +101,35 @@ const RigPropertiesModal = (
                 id="wellUid"
                 label="well uid"
                 defaultValue={editableRig.wellUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellName"
                 label="well name"
                 defaultValue={editableRig.wellName}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreUid"
                 label="wellbore uid"
                 defaultValue={editableRig.wellboreUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreName"
                 label="wellbore name"
                 defaultValue={editableRig.wellboreName}
-                fullWidth
               />
               <TextField
                 id={"name"}
                 label={"name"}
                 required
                 value={editableRig.name ? editableRig.name : ""}
-                error={editableRig.name?.length === 0}
+                variant={validRigName ? undefined : "error"}
                 helperText={
-                  editableRig.name?.length === 0
-                    ? "The rig name must be 1-64 characters"
-                    : ""
+                  !validRigName ? "The rig name must be 1-64 characters" : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({ ...editableRig, name: e.target.value })
                 }
               />
@@ -165,15 +167,13 @@ const RigPropertiesModal = (
                 value={
                   editableRig.yearEntService ? editableRig.yearEntService : ""
                 }
-                error={editMode && !yearEntServiceValid}
+                variant={!yearEntServiceValid ? "error" : undefined}
                 helperText={
-                  editMode && !yearEntServiceValid
+                  !yearEntServiceValid
                     ? "The rig yearEntService must be a 4 digit integer number"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 4, maxLength: 4 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({
                     ...editableRig,
                     yearEntService: e.target.value
@@ -184,21 +184,13 @@ const RigPropertiesModal = (
                 id={"telNumber"}
                 label={"telNumber"}
                 value={editableRig.telNumber ? editableRig.telNumber : ""}
-                error={
-                  editMode &&
-                  (!validPhoneNumber(editableRig.telNumber) ||
-                    editableRig.telNumber?.length < 8)
-                }
+                variant={!validTelNumber ? "error" : undefined}
                 helperText={
-                  editMode &&
-                  (!validPhoneNumber(editableRig.telNumber) ||
-                  editableRig.telNumber?.length < 8
+                  !validTelNumber
                     ? "telNumber must be an integer of min 8 characters, however whitespace, dash and plus is accepted"
-                    : "")
+                    : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 8, maxLength: 16 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({ ...editableRig, telNumber: e.target.value })
                 }
               />
@@ -206,15 +198,13 @@ const RigPropertiesModal = (
                 id={"faxNumber"}
                 label={"faxNumber"}
                 value={editableRig.faxNumber ? editableRig.faxNumber : ""}
-                error={editMode && !validPhoneNumber(editableRig.faxNumber)}
+                variant={!faxNumberValid ? "error" : undefined}
                 helperText={
-                  editMode && !validPhoneNumber(editableRig.faxNumber)
+                  !faxNumberValid
                     ? "faxNumber must be an integer, however whitespace, dash and plus is accepted"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 0, maxLength: 16 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({ ...editableRig, faxNumber: e.target.value })
                 }
               />
@@ -222,15 +212,13 @@ const RigPropertiesModal = (
                 id={"emailAddress"}
                 label={"emailAddress"}
                 value={editableRig.emailAddress ? editableRig.emailAddress : ""}
-                error={editMode && editableRig.emailAddress?.length === 0}
+                variant={!validEmailAddress ? "error" : undefined}
                 helperText={
-                  editMode && editableRig.emailAddress?.length === 0
+                  !validEmailAddress
                     ? "The emailAddress must be at least 1 character long"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 0, maxLength: 128 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({
                     ...editableRig,
                     emailAddress: e.target.value
@@ -241,15 +229,13 @@ const RigPropertiesModal = (
                 id={"nameContact"}
                 label={"nameContact"}
                 value={editableRig.nameContact ? editableRig.nameContact : ""}
-                error={editMode && editableRig.nameContact?.length === 0}
+                variant={!validNameContact ? "error" : undefined}
                 helperText={
-                  editMode && editableRig.nameContact?.length === 0
+                  !validNameContact
                     ? "The nameContact must be at least 1 character long"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 0, maxLength: 128 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({
                     ...editableRig,
                     nameContact: e.target.value
@@ -260,14 +246,13 @@ const RigPropertiesModal = (
                 id={"ratingDrillDepth"}
                 label={"ratingDrillDepth"}
                 type="number"
-                fullWidth
                 value={
                   editableRig.ratingDrillDepth
                     ? editableRig.ratingDrillDepth.value
                     : ""
                 }
                 disabled={!editableRig.ratingDrillDepth}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({
                     ...editableRig,
                     ratingDrillDepth: {
@@ -283,14 +268,13 @@ const RigPropertiesModal = (
                 id={"ratingWaterDepth"}
                 label={"ratingWaterDepth"}
                 type="number"
-                fullWidth
                 value={
                   editableRig.ratingWaterDepth
                     ? editableRig.ratingWaterDepth.value
                     : ""
                 }
                 disabled={!editableRig.ratingWaterDepth}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableRig({
                     ...editableRig,
                     ratingWaterDepth: {
@@ -306,9 +290,8 @@ const RigPropertiesModal = (
                 id={"airGap"}
                 label={"airGap"}
                 type="number"
-                fullWidth
                 value={editableRig.airGap ? editableRig.airGap.value : ""}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const uom =
                     editableRig.airGap !== null ? editableRig.airGap.uom : "m";
                   setEditableRig({
@@ -325,9 +308,8 @@ const RigPropertiesModal = (
               <TextField
                 id={"owner"}
                 label={"owner"}
-                fullWidth
                 value={editableRig.owner ?? ""}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setEditableRig({
                     ...editableRig,
                     owner: e.target.value
@@ -337,9 +319,8 @@ const RigPropertiesModal = (
               <TextField
                 id={"manufacturer"}
                 label={"manufacturer"}
-                fullWidth
                 value={editableRig.manufacturer ?? ""}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setEditableRig({
                     ...editableRig,
                     manufacturer: e.target.value
@@ -349,9 +330,8 @@ const RigPropertiesModal = (
               <TextField
                 id={"classRig"}
                 label={"classRig"}
-                fullWidth
                 value={editableRig.classRig ?? ""}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setEditableRig({
                     ...editableRig,
                     classRig: e.target.value
@@ -361,9 +341,8 @@ const RigPropertiesModal = (
               <TextField
                 id={"approvals"}
                 label={"approvals"}
-                fullWidth
                 value={editableRig.approvals ?? ""}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setEditableRig({
                     ...editableRig,
                     approvals: e.target.value
@@ -373,9 +352,8 @@ const RigPropertiesModal = (
               <TextField
                 id={"registration"}
                 label={"registration"}
-                fullWidth
                 value={editableRig.registration ?? ""}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setEditableRig({
                     ...editableRig,
                     registration: e.target.value
@@ -402,7 +380,10 @@ const RigPropertiesModal = (
             </>
           }
           confirmDisabled={
-            !validText(editableRig.name) || !dTimStartOpValid || !dTimEndOpValid
+            !validRigUid ||
+            !validRigName ||
+            !dTimStartOpValid ||
+            !dTimEndOpValid
           }
           onSubmit={() => onSubmit(editableRig)}
           isLoading={isLoading}

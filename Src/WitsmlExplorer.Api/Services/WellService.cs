@@ -39,6 +39,7 @@ namespace WitsmlExplorer.Api.Services
             {
                 Wellbores = new WitsmlWellbore
                 {
+                    UidWell = "",
                     IsActive = "true"
                 }.AsItemInList()
             };

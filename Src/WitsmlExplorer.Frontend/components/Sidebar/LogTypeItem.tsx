@@ -27,7 +27,7 @@ import Wellbore, {
   calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "models/wellbore";
 import { Fragment, MouseEvent, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
   getLogObjectViewPath,
@@ -51,7 +51,6 @@ export default function LogTypeItem({
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
-  const navigate = useNavigate();
   const {
     logType,
     wellUid: urlWellUid,
@@ -59,19 +58,17 @@ export default function LogTypeItem({
     objectUid
   } = useParams();
 
-  const onSelectType = (logTypeGroup: string) => {
+  const getNavPath = (logTypeGroup: string) => {
     const logTypePath =
       logTypeGroup === logTypeGroupDepth
         ? RouterLogType.DEPTH
         : RouterLogType.TIME;
-    navigate(
-      getLogObjectsViewPath(
-        connectedServer?.url,
-        wellUid,
-        wellboreUid,
-        ObjectType.Log,
-        logTypePath
-      )
+    return getLogObjectsViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      ObjectType.Log,
+      logTypePath
     );
   };
 
@@ -121,8 +118,8 @@ export default function LogTypeItem({
       <TreeItem
         labelText={"Depth"}
         nodeId={logTypeGroupDepth}
-        onLabelClick={() => onSelectType(logTypeGroupDepth)}
-        onContextMenu={(event) =>
+        to={getNavPath(logTypeGroupDepth)}
+        onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
           onContextMenu(event, wellbore, IndexCurve.Depth)
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
@@ -145,8 +142,8 @@ export default function LogTypeItem({
       <TreeItem
         nodeId={logTypeGroupTime}
         labelText={"Time"}
-        onLabelClick={() => onSelectType(logTypeGroupTime)}
-        onContextMenu={(event) =>
+        to={getNavPath(logTypeGroupTime)}
+        onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
           onContextMenu(event, wellbore, IndexCurve.Time)
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
