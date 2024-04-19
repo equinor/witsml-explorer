@@ -1,6 +1,5 @@
-/* eslint-env node */
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from "electron";
 
-contextBridge.exposeInMainWorld('electronAPI', {
-    getConfig: () => ipcRenderer.invoke('getConfig')
-})
+contextBridge.exposeInMainWorld("electronAPI", {
+  getConfig: () => ipcRenderer.invoke("getConfig")
+});

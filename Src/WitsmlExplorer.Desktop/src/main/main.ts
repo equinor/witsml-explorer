@@ -1,4 +1,3 @@
-/* eslint-env node */
 /* eslint-disable no-console */
 /// <reference types="vite/client" />
 
