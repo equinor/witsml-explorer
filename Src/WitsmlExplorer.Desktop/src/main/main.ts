@@ -17,7 +17,7 @@ interface AppConfig {
   logsPath: string;
 }
 
-// Function to read the configuration file. If it does not exist, create it with default values first.
+// Function to read the configuration file. If it does not exist, create it with default values.
 function readOrCreateAppConfig() {
   const userDataPath = app.getPath("userData");
   const configPath = path.join(userDataPath, "config.json");
@@ -69,13 +69,13 @@ function showErrorAndQuit(message: string) {
   app.quit();
 }
 
-// Function to manually control a Promise
 interface Deferred<T> {
   promise: Promise<T>;
   resolve: (value?: T | PromiseLike<T>) => void;
   reject: (reason?: any) => void;
 }
 
+// Function to manually control a Promise
 export function deferred<T>(): Deferred<T> {
   let resolve: (value?: T | PromiseLike<T>) => void;
   let reject: (reason?: any) => void;
@@ -154,7 +154,6 @@ async function startApi(appConfig: AppConfig) {
   // Log messages from the API to the console
   apiProcess.stdout.setEncoding("utf8");
   apiProcess.stdout.on("data", (data: string) => {
-    // eslint-disable-next-line no-console
     console.log(`API: ${data}`);
 
     if (data.includes("Application started")) resolve();
