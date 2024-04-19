@@ -12,9 +12,15 @@
     "url": "git+https://github.com/equinor/witsml-explorer.git"
   },
   "license": "Apache-2.0",
-  "workspaces": [
-    "Src/WitsmlExplorer.Frontend"
-  ],
+  "workspaces": {
+    "packages": [
+      "Src/WitsmlExplorer.Desktop",
+      "Src/WitsmlExplorer.Frontend"
+    ],
+    "nohoist": [
+      "**electron**"
+    ]
+  },
   "scripts": {
     "dotnet-format": "dotnet tool run dotnet-format --check",
     "dotnet-format:fix": "dotnet tool run dotnet-format",

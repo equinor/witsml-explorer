@@ -4,6 +4,7 @@ import { getAccessToken, msalEnabled } from "msal/MsalAuthProvider";
 import AuthorizationService, {
   AuthorizationStatus
 } from "services/authorizationService";
+import { isDesktopApp } from "tools/desktopAppHelpers";
 
 export class ApiClient {
   private static async getCommonHeaders(
@@ -105,20 +106,21 @@ export class ApiClient {
     return ApiClient.runHttpRequest(pathName, requestInit);
   }
 
-  public static runHttpRequest(
+  public static async runHttpRequest(
     pathName: string,
     requestInit: RequestInit,
     targetServer: Server = undefined,
     sourceServer: Server = undefined,
     rerun = true
-  ) {
+  ): Promise<Response> {
+    const baseUrl = await getBaseUrl();
+    const url = new URL((await getBasePathName()) + pathName, baseUrl);
     return new Promise<Response>((resolve, reject) => {
       if (!("Authorization" in requestInit.headers)) {
         if (msalEnabled) {
           reject("Not authorized");
         }
       }
-      const url = new URL(getBasePathName() + pathName, getBaseUrl());
       this.fetchWithRerun(
         url,
         requestInit,
@@ -224,16 +226,21 @@ export class ApiClient {
   }
 }
 
-function getBasePathName(): string {
-  const basePathName = getBaseUrl().pathname;
+async function getBasePathName(): Promise<string> {
+  const baseUrl = await getBaseUrl();
+  const basePathName = baseUrl.pathname;
   return basePathName !== "/" ? basePathName : "";
 }
 
-export function getBaseUrl(): URL {
+export async function getBaseUrl(): Promise<URL> {
   let baseUrl: URL;
   try {
     const configuredUrl = import.meta.env.VITE_WITSMLEXPLORER_API_URL;
-    if (configuredUrl && configuredUrl.length > 0) {
+    if (isDesktopApp()) {
+      // @ts-ignore
+      const config = await window.electronAPI.getConfig();
+      baseUrl = new URL(`http://localhost:${config.apiPort}`);
+    } else if (configuredUrl && configuredUrl.length > 0) {
       baseUrl = new URL(configuredUrl);
     } else {
       const protocol = window.location.protocol.slice(0, -1);

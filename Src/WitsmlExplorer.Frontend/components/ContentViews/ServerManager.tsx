@@ -30,7 +30,10 @@ const NEW_SERVER_ID = "1";
 const ServerManager = (): React.ReactElement => {
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   const queryClient = useQueryClient();
-  const { servers, isFetching } = useGetServers({ enabled: isAuthenticated });
+  const { servers, isFetching } = useGetServers({
+    enabled: isAuthenticated,
+    placeholderData: []
+  });
   const {
     operationState: { colors },
     dispatchOperation
