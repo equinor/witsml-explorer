@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useSidebar } from "contexts/sidebarContext";
-import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbores } from "hooks/query/useGetWellbores";
@@ -22,8 +21,8 @@ import Wellbore, {
   calculateWellNodeId,
   calculateWellboreNodeId
 } from "models/wellbore";
-import React, { useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { MouseEvent, useContext } from "react";
+import { useParams } from "react-router-dom";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
 
 interface WellItemProps {
@@ -35,7 +34,7 @@ export default function WellItem({ wellUid }: WellItemProps) {
   const { servers } = useGetServers();
   const { wellUid: urlWellUid, wellboreUid: urlWellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
+  const { expandedTreeNodes } = useSidebar();
   const { well, isFetching: isFetchingWell } = useGetWell(
     connectedServer,
     wellUid
@@ -48,7 +47,6 @@ export default function WellItem({ wellUid }: WellItemProps) {
   );
   const filteredWellbores = useWellboreFilter(wellbores);
   const isFetching = isFetchingWell || isFetchingWellbores;
-  const navigate = useNavigate();
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -70,30 +68,20 @@ export default function WellItem({ wellUid }: WellItemProps) {
     });
   };
 
-  const onIconClick = () => {
-    dispatchSidebar({
-      type: SidebarActionType.ToggleTreeNode,
-      payload: { nodeId: calculateWellNodeId(wellUid) }
-    });
-  };
-
-  const onSelectWell = () => {
-    navigate(getWellboresViewPath(connectedServer?.url, wellUid));
-  };
-
   return (
     well && (
       <TreeItem
-        onContextMenu={(event) => onContextMenu(event, well)}
+        onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
+          onContextMenu(event, well)
+        }
         selected={
           calculateWellNodeId(wellUid) === calculateWellNodeId(urlWellUid)
         }
         key={wellUid}
         labelText={well?.name}
         nodeId={calculateWellNodeId(wellUid)}
-        onLabelClick={onSelectWell}
-        onIconClick={onIconClick}
         isLoading={isFetching}
+        to={getWellboresViewPath(connectedServer?.url, wellUid)}
       >
         {filteredWellbores?.length > 0 ? (
           filteredWellbores.map((wellbore: Wellbore) => (

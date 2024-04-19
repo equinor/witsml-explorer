@@ -1,4 +1,4 @@
-import { InputAdornment, TextField } from "@material-ui/core";
+import { TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
@@ -10,7 +10,7 @@ import { measureToString } from "models/measure";
 import { toObjectReference } from "models/objectOnWellbore";
 import Trajectory from "models/trajectory";
 import TrajectoryStation from "models/trajectoryStation";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface TrajectoryStationPropertiesModalInterface {
@@ -68,14 +68,12 @@ const TrajectoryStationPropertiesModal = (
                 id="uid"
                 label="uid"
                 defaultValue={editableTrajectoryStation.uid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="typeTrajStation"
                 label="type trajectory station"
                 defaultValue={editableTrajectoryStation.typeTrajStation}
-                fullWidth
               />
               <DateTimeField
                 value={editableTrajectoryStation.dTimStn}
@@ -93,19 +91,14 @@ const TrajectoryStationPropertiesModal = (
                 id={"md"}
                 label={"md"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableTrajectoryStation.md
-                        ? editableTrajectoryStation.md.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableTrajectoryStation.md
+                    ? editableTrajectoryStation.md.uom
+                    : ""
+                }
                 disabled={!editableTrajectoryStation.md}
                 value={editableTrajectoryStation.md?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTrajectoryStation({
                     ...editableTrajectoryStation,
                     md: {
@@ -121,19 +114,14 @@ const TrajectoryStationPropertiesModal = (
                 id={"tvd"}
                 label={"tvd"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableTrajectoryStation.tvd
-                        ? editableTrajectoryStation.tvd.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableTrajectoryStation.tvd
+                    ? editableTrajectoryStation.tvd.uom
+                    : ""
+                }
                 disabled={!editableTrajectoryStation.tvd}
                 value={editableTrajectoryStation.tvd?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTrajectoryStation({
                     ...editableTrajectoryStation,
                     tvd: {
@@ -149,19 +137,14 @@ const TrajectoryStationPropertiesModal = (
                 id={"azi"}
                 label={"azi"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableTrajectoryStation.azi
-                        ? editableTrajectoryStation.azi.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableTrajectoryStation.azi
+                    ? editableTrajectoryStation.azi.uom
+                    : ""
+                }
                 disabled={!editableTrajectoryStation.azi}
                 value={editableTrajectoryStation.azi?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTrajectoryStation({
                     ...editableTrajectoryStation,
                     azi: {
@@ -177,19 +160,14 @@ const TrajectoryStationPropertiesModal = (
                 id={"incl"}
                 label={"incl"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableTrajectoryStation.incl
-                        ? editableTrajectoryStation.incl.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableTrajectoryStation.incl
+                    ? editableTrajectoryStation.incl.uom
+                    : ""
+                }
                 disabled={!editableTrajectoryStation.incl}
                 value={editableTrajectoryStation.incl?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTrajectoryStation({
                     ...editableTrajectoryStation,
                     incl: {
@@ -206,28 +184,24 @@ const TrajectoryStationPropertiesModal = (
                 id="mtf"
                 label="mtf"
                 defaultValue={measureToString(editableTrajectoryStation.mtf)}
-                fullWidth
               />
               <TextField
                 disabled
                 id="gtf"
                 label="gtf"
                 defaultValue={measureToString(editableTrajectoryStation.gtf)}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dispNs"
                 label="dispNs"
                 defaultValue={measureToString(editableTrajectoryStation.dispNs)}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dispEw"
                 label="dispEw"
                 defaultValue={measureToString(editableTrajectoryStation.dispEw)}
-                fullWidth
               />
               <TextField
                 disabled
@@ -236,14 +210,12 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.vertSect
                 )}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dls"
                 label="dls"
                 defaultValue={measureToString(editableTrajectoryStation.dls)}
-                fullWidth
               />
               <TextField
                 disabled
@@ -252,7 +224,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.rateTurn
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -261,7 +232,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.rateBuild
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -270,7 +240,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.gravTotalUncert
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -279,7 +248,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.dipAngleUncert
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -288,7 +256,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.magTotalUncert
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -297,7 +264,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.gravTotalFieldReference
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -306,7 +272,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.magTotalFieldReference
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -315,14 +280,12 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.magDipAngleReference
                 )}
-                fullWidth
               />
               <TextField
                 disabled
                 id="statusTrajStation"
                 label="statusTrajStation"
                 defaultValue={editableTrajectoryStation.statusTrajStation}
-                fullWidth
               />
               <TextField
                 disabled
@@ -331,7 +294,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.gravAxialRaw
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -340,7 +302,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.gravTran1Raw
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -349,7 +310,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.gravTran2Raw
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -358,7 +318,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.magAxialRaw
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -367,7 +326,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.rawData.magTran1Raw
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -376,7 +334,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.rawData.magTran2Raw
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -385,7 +342,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.gravAxialAccelCor
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -394,7 +350,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.gravTran1AccelCor
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -403,7 +358,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.gravTran2AccelCor
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -412,7 +366,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.magAxialDrlstrCor
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -421,7 +374,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.magTran1DrlstrCor
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -430,7 +382,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.magTran2DrlstrCor
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -439,7 +390,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.sagIncCor
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -448,7 +398,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.stnMagDeclUsed
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -457,7 +406,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.stnGridCorUsed
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -466,7 +414,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.corUsed.dirSensorOffset
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -475,7 +422,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.valid.magTotalFieldCalc
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -484,7 +430,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.valid.magDipAngleCalc
                 )}
-                fullWidth
               />
               <TextField
                 disabled
@@ -493,7 +438,6 @@ const TrajectoryStationPropertiesModal = (
                 defaultValue={measureToString(
                   editableTrajectoryStation.valid.gravTotalFieldCalc
                 )}
-                fullWidth
               />
             </>
           }

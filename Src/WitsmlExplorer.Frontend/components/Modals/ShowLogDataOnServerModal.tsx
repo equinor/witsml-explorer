@@ -4,7 +4,6 @@ import {
   Radio,
   Typography
 } from "@equinor/eds-core-react";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import ModalDialog from "components/Modals/ModalDialog";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
@@ -12,7 +11,7 @@ import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { Server } from "models/server";
-import { ChangeEvent, useContext, useState } from "react";
+import { CSSProperties, ChangeEvent, useContext, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import { createLogCurveValuesSearchParams } from "routes/utils/createLogCurveValuesSearchParams";

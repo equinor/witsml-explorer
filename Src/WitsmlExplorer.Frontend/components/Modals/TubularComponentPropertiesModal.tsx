@@ -9,7 +9,7 @@ import { toObjectReference } from "models/objectOnWellbore";
 import Tubular from "models/tubular";
 import TubularComponent from "models/tubularComponent";
 import { tubularComponentTypes } from "models/tubularComponentTypes";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface TubularComponentPropertiesModalInterface {
@@ -67,7 +67,7 @@ const TubularComponentPropertiesModal = (
                 label={"Sequence"}
                 type="number"
                 defaultValue={editableTubularComponent.sequence}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTubularComponent({
                     ...editableTubularComponent,
                     sequence: parseFloat(e.target.value)
@@ -110,7 +110,7 @@ const TubularComponentPropertiesModal = (
                 }
                 disabled={!editableTubularComponent.id}
                 defaultValue={editableTubularComponent.id?.value}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTubularComponent({
                     ...editableTubularComponent,
                     id: {
@@ -131,7 +131,7 @@ const TubularComponentPropertiesModal = (
                 }
                 disabled={!editableTubularComponent.od}
                 defaultValue={editableTubularComponent.od?.value}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTubularComponent({
                     ...editableTubularComponent,
                     od: {
@@ -152,7 +152,7 @@ const TubularComponentPropertiesModal = (
                 }
                 disabled={!editableTubularComponent.len}
                 defaultValue={editableTubularComponent.len?.value}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTubularComponent({
                     ...editableTubularComponent,
                     len: {

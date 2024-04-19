@@ -8,7 +8,7 @@ import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export enum IndexCurve {
@@ -135,7 +135,7 @@ const LogPropertiesModal = (
                     : ""
                 }
                 variant={validText(editableLogObject.uid) ? undefined : "error"}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogObject({
                     ...editableLogObject,
                     uid: e.target.value
@@ -154,7 +154,7 @@ const LogPropertiesModal = (
                 variant={
                   editableLogObject.name.length === 0 ? "error" : undefined
                 }
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogObject({
                     ...editableLogObject,
                     name: e.target.value
@@ -181,7 +181,7 @@ const LogPropertiesModal = (
                 }
                 variant={validServiceCompany() ? undefined : "error"}
                 defaultValue={editableLogObject.serviceCompany}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogObject({
                     ...editableLogObject,
                     serviceCompany:
@@ -195,7 +195,7 @@ const LogPropertiesModal = (
                 helperText={validRunNumber() ? "" : getRunNumberHelperText()}
                 variant={validRunNumber() ? undefined : "error"}
                 defaultValue={editableLogObject.runNumber}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogObject({
                     ...editableLogObject,
                     runNumber: e.target.value === "" ? null : e.target.value

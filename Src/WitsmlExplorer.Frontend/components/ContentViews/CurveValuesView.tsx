@@ -4,7 +4,6 @@ import {
   Switch,
   Typography
 } from "@equinor/eds-core-react";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import {
   MILLIS_IN_SECOND,
   SECONDS_IN_MINUTE,
@@ -51,6 +50,7 @@ import LogObject, { indexToNumber } from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import React, {
+  CSSProperties,
   useCallback,
   useContext,
   useEffect,

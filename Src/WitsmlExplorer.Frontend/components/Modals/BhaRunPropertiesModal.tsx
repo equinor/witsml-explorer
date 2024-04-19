@@ -1,5 +1,4 @@
-import { Autocomplete } from "@equinor/eds-core-react";
-import { InputAdornment, TextField } from "@material-ui/core";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
@@ -13,7 +12,7 @@ import OperationType from "contexts/operationType";
 import BhaRun from "models/bhaRun";
 import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 const typesOfBhaStatus = ["final", "progress", "plan", "unknown"];
@@ -94,6 +93,8 @@ const BhaRunPropertiesModal = (
     dispatchOperation({ type: OperationType.HideModal });
   };
 
+  const validBhaRunName = validText(editableBhaRun?.name, 1, 64);
+
   return (
     <>
       {editableBhaRun && (
@@ -108,28 +109,24 @@ const BhaRunPropertiesModal = (
                 id="wellUid"
                 label="well uid"
                 defaultValue={editableBhaRun.wellUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellName"
                 label="well name"
                 defaultValue={editableBhaRun.wellName}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreUid"
                 label="wellbore uid"
                 defaultValue={editableBhaRun.wellboreUid}
-                fullWidth
               />
               <TextField
                 disabled
                 id="wellboreName"
                 label="wellbore name"
                 defaultValue={editableBhaRun.wellboreName}
-                fullWidth
               />
               <TextField
                 disabled
@@ -137,22 +134,19 @@ const BhaRunPropertiesModal = (
                 label={"uid"}
                 required
                 defaultValue={editableBhaRun.uid}
-                fullWidth
               />
               <TextField
                 id={"name"}
                 label={"name"}
                 required
                 value={editableBhaRun.name ?? ""}
-                error={!validText(editableBhaRun.name)}
+                variant={validBhaRunName ? undefined : "error"}
                 helperText={
-                  !validText(editableBhaRun.name)
+                  !validBhaRunName
                     ? "The bha run name must be 1-64 characters"
                     : ""
                 }
-                fullWidth
-                inputProps={{ minLength: 1, maxLength: 64 }}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({ ...editableBhaRun, name: e.target.value })
                 }
               />
@@ -161,9 +155,12 @@ const BhaRunPropertiesModal = (
                 label={"tubular"}
                 required
                 value={editableBhaRun.tubular?.value ?? ""}
-                error={editableBhaRun.tubular?.value?.length === 0}
-                fullWidth
-                onChange={(e) =>
+                variant={
+                  editableBhaRun.tubular?.value?.length === 0
+                    ? "error"
+                    : undefined
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     tubular: {
@@ -178,9 +175,12 @@ const BhaRunPropertiesModal = (
                 label={"tubularUidRef"}
                 required
                 value={editableBhaRun.tubular?.uidRef ?? ""}
-                error={editableBhaRun.tubular?.uidRef?.length === 0}
-                fullWidth
-                onChange={(e) =>
+                variant={
+                  editableBhaRun.tubular?.uidRef?.length === 0
+                    ? "error"
+                    : undefined
+                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     tubular: {
@@ -236,19 +236,12 @@ const BhaRunPropertiesModal = (
                 id={"planDogleg"}
                 label={"planDogleg"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableBhaRun.planDogleg
-                        ? editableBhaRun.planDogleg.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableBhaRun.planDogleg ? editableBhaRun.planDogleg.uom : ""
+                }
                 disabled={!editableBhaRun.planDogleg}
                 value={editableBhaRun.planDogleg?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     planDogleg: {
@@ -264,19 +257,12 @@ const BhaRunPropertiesModal = (
                 id={"actDogleg"}
                 label={"actDogleg"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableBhaRun.actDogleg
-                        ? editableBhaRun.actDogleg.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableBhaRun.actDogleg ? editableBhaRun.actDogleg.uom : ""
+                }
                 disabled={!editableBhaRun.actDogleg}
                 value={editableBhaRun.actDogleg?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     actDogleg: {
@@ -292,19 +278,14 @@ const BhaRunPropertiesModal = (
                 id={"actDoglegMx"}
                 label={"actDoglegMx"}
                 type="number"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {editableBhaRun.actDoglegMx
-                        ? editableBhaRun.actDoglegMx.uom
-                        : ""}
-                    </InputAdornment>
-                  )
-                }}
+                unit={
+                  editableBhaRun.actDoglegMx
+                    ? editableBhaRun.actDoglegMx.uom
+                    : ""
+                }
                 disabled={!editableBhaRun.actDoglegMx}
                 value={editableBhaRun.actDoglegMx?.value}
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     actDoglegMx: {
@@ -332,8 +313,7 @@ const BhaRunPropertiesModal = (
                 id={"numBitRun"}
                 label={"numBitRun"}
                 value={editableBhaRun.numBitRun ?? ""}
-                fullWidth
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     numBitRun: e.target.value
@@ -345,8 +325,7 @@ const BhaRunPropertiesModal = (
                 type="number"
                 label={"numStringRun"}
                 value={editableBhaRun.numStringRun ?? ""}
-                fullWidth
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     numStringRun: e.target.value
@@ -357,8 +336,7 @@ const BhaRunPropertiesModal = (
                 id={"reasonTrip"}
                 label={"reasonTrip"}
                 value={editableBhaRun.reasonTrip ?? ""}
-                fullWidth
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     reasonTrip: e.target.value
@@ -369,8 +347,7 @@ const BhaRunPropertiesModal = (
                 id={"objectiveBha"}
                 label={"objectiveBha"}
                 value={editableBhaRun.objectiveBha ?? ""}
-                fullWidth
-                onChange={(e) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableBhaRun({
                     ...editableBhaRun,
                     objectiveBha: e.target.value
@@ -397,21 +374,18 @@ const BhaRunPropertiesModal = (
                 id="dateTimeCreation"
                 label="created"
                 defaultValue={editableBhaRun.commonData.dTimCreation}
-                fullWidth
               />
               <TextField
                 disabled
                 id="dateTimeLastChange"
                 label="last changed"
                 defaultValue={editableBhaRun.commonData.dTimLastChange}
-                fullWidth
               />
               <TextField
                 id="sourceName"
                 label="sourceName"
                 value={editableBhaRun.commonData.sourceName ?? ""}
-                fullWidth
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const commonData = {
                     ...editableBhaRun.commonData,
                     sourceName: e.target.value
@@ -423,8 +397,7 @@ const BhaRunPropertiesModal = (
                 id="serviceCategory"
                 label="serviceCategory"
                 value={editableBhaRun.commonData.serviceCategory ?? ""}
-                fullWidth
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const commonData = {
                     ...editableBhaRun.commonData,
                     serviceCategory: e.target.value
@@ -436,8 +409,7 @@ const BhaRunPropertiesModal = (
                 id="comments"
                 label="comments"
                 value={editableBhaRun.commonData.comments ?? ""}
-                fullWidth
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const commonData = {
                     ...editableBhaRun.commonData,
                     comments: e.target.value
@@ -449,8 +421,7 @@ const BhaRunPropertiesModal = (
                 id="defaultDatum"
                 label="defaultDatum"
                 value={editableBhaRun.commonData.defaultDatum ?? ""}
-                fullWidth
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   const commonData = {
                     ...editableBhaRun.commonData,
                     defaultDatum: e.target.value
@@ -461,7 +432,7 @@ const BhaRunPropertiesModal = (
             </>
           }
           confirmDisabled={
-            !validText(editableBhaRun.name) ||
+            !validBhaRunName ||
             !dTimStopValid ||
             !dTimStartValid ||
             !dTimStartDrillingValid ||
