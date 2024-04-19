@@ -17,7 +17,9 @@
       "Src/WitsmlExplorer.Desktop",
       "Src/WitsmlExplorer.Frontend"
     ],
-    "nohoist": ["**electron**"]
+    "nohoist": [
+      "**electron**"
+    ]
   },
   "scripts": {
     "dotnet-format": "dotnet tool run dotnet-format --check",
