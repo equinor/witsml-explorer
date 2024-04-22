@@ -64,7 +64,11 @@ export default class NotificationService {
   }
 
   private constructor() {
-    let notificationURL = getBaseUrl().toString();
+    this.setupConnection();
+  }
+
+  private async setupConnection() {
+    let notificationURL = (await getBaseUrl()).toString();
     if (!notificationURL.endsWith("/")) {
       notificationURL = notificationURL + "/";
     }
