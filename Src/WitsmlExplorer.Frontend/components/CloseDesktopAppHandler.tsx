@@ -17,10 +17,10 @@ export function CloseDesktopAppHandler(): ReactElement {
 
     if (unfinishedJobs.length > 0) {
       // @ts-ignore
-      window.electronAPI.closeWindowResponse(1);
+      window.electronAPI.closeWindowResponse(true);
     } else {
       // @ts-ignore
-      window.electronAPI.closeWindowResponse(0);
+      window.electronAPI.closeWindowResponse(false);
     }
   }, [jobInfos]);
 

@@ -5,6 +5,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onCloseWindow: (callback: any) =>
     ipcRenderer.on("closeWindow", () => callback()),
   removeCloseWindow: () => ipcRenderer.removeAllListeners("closeWindow"),
-  closeWindowResponse: (response: number) =>
-    ipcRenderer.send("closeWindowResponse", response)
+  closeWindowResponse: (isUnfinishedJobs: boolean) =>
+    ipcRenderer.send("closeWindowResponse", isUnfinishedJobs)
 });

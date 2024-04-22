@@ -216,8 +216,8 @@ app.whenReady().then(async () => {
   await startApi(appConfig);
   ipcMain.handle("getConfig", () => appConfig);
 
-  ipcMain.on("closeWindowResponse", async (_event, response) => {
-    if (response === 1 && !isUnfinishedJobsWarningDialogOpen) {
+  ipcMain.on("closeWindowResponse", async (_event, isUnfinishedJobs) => {
+    if (isUnfinishedJobs && !isUnfinishedJobsWarningDialogOpen) {
       isUnfinishedJobsWarningDialogOpen = true;
       const dialogResponse = showUnfinishedJobsWarningOnClose();
       isUnfinishedJobsWarningDialogOpen = false;
