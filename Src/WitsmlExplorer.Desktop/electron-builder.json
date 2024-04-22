@@ -4,7 +4,12 @@
   "directories": {
     "output": "dist"
   },
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/api/**/*",
+    "dist/main/**/*",
+    "dist/preload/**/*",
+    "dist/renderer/**/*"
+  ],
   "asar": true,
   "asarUnpack": ["dist/api/**/*"],
   "win": {
