@@ -154,9 +154,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       content={
         <>
           <ContentWrapper>
-            <Label label="Server URL" style={labelStyle} />
+            <Label label="Server URL" style={labelStyle} htmlFor="serverUrl" />
             <TextField
-              id="url"
+              id="serverUrl"
               defaultValue={server.url}
               variant={displayUrlError ? "error" : null}
               helperText={displayUrlError ? "Not a valid server url" : ""}
@@ -165,9 +165,13 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               required
               disabled={props.editDisabled}
             />
-            <Label label="Server name" style={labelStyle} />
+            <Label
+              label="Server name"
+              style={labelStyle}
+              htmlFor="serverName"
+            />
             <TextField
-              id="name"
+              id="serverName"
               defaultValue={server.name}
               variant={displayNameError ? "error" : null}
               helperText={
@@ -180,7 +184,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               required
               disabled={props.editDisabled}
             />
-            <Label label="Server description" style={labelStyle} />
+            <Label
+              label="Server description"
+              style={labelStyle}
+              htmlFor="description"
+            />
             <TextField
               id="description"
               defaultValue={server.description}
@@ -191,7 +199,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             />
             {msalEnabled && (
               <>
-                <Label label="Roles (space delimited)" style={labelStyle} />
+                <Label
+                  label="Roles (space delimited)"
+                  style={labelStyle}
+                  htmlFor="role"
+                />
                 <TextField
                   id="role"
                   defaultValue={server.roles?.join(" ")}
@@ -206,7 +218,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   disabled={props.editDisabled}
                 />
                 <div style={{ display: "flex", flexDirection: "row" }}>
-                  <Label label="Credential Ids" style={labelStyle} />
+                  <Label
+                    label="Credential Ids"
+                    style={labelStyle}
+                    htmlFor="creds"
+                  />
                   <Tooltip title="If this (space \ndelimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
                     <Icon
                       name="infoCircle"
@@ -233,6 +249,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             <Label
               label="Number of decimals in depth log index"
               style={labelStyle}
+              htmlFor="depthLogDecimals"
             />
             <TextField
               id="depthLogDecimals"

@@ -1,0 +1,29 @@
+name: Desktop Package and Test
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'Src/WitsmlExplorer.Frontend/**'
+      - 'Src/WitsmlExplorer.Desktop/**'
+
+permissions: {}
+
+jobs:
+  frontend:
+    name: Package and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: yarn
+        working-directory: ./Src/WitsmlExplorer.Desktop
+      - name: Package
+        run: yarn electron:pack
+        working-directory: ./Src/WitsmlExplorer.Desktop
+      - name: Test
+        run: yarn test
+        working-directory: ./Src/WitsmlExplorer.Desktop
