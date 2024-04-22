@@ -15,6 +15,7 @@ import * as path from "path";
 
 let mainWindow: BrowserWindow;
 let apiProcess: any;
+let isUnfinishedJobsWarningDialogOpen = false;
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -203,7 +204,8 @@ function createWindow() {
 
   mainWindow.on("close", async (e: Event) => {
     e.preventDefault();
-    mainWindow.webContents.send("closeWindow");
+    if (!isUnfinishedJobsWarningDialogOpen)
+      mainWindow.webContents.send("closeWindow");
   });
 
   mainWindow.on("closed", (): void => (mainWindow = null));
@@ -215,8 +217,10 @@ app.whenReady().then(async () => {
   ipcMain.handle("getConfig", () => appConfig);
 
   ipcMain.on("closeWindowResponse", async (_event, response) => {
-    if (response === 1) {
+    if (response === 1 && !isUnfinishedJobsWarningDialogOpen) {
+      isUnfinishedJobsWarningDialogOpen = true;
       const dialogResponse = showUnfinishedJobsWarningOnClose();
+      isUnfinishedJobsWarningDialogOpen = false;
       if (dialogResponse === 1) mainWindow.destroy();
     } else {
       mainWindow.destroy();
