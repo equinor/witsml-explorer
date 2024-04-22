@@ -5,7 +5,7 @@ import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { ObjectType } from "models/objectType";
 import Tubular from "models/tubular";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 const typeTubularAssy = [
@@ -80,7 +80,7 @@ const TubularPropertiesModal = (
                 variant={
                   editableTubular.name.length === 0 ? "error" : undefined
                 }
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableTubular({
                     ...editableTubular,
                     name: e.target.value

@@ -1,0 +1,42 @@
+{
+  "LogQueries": false,
+  "AllowedHosts": "localhost",
+  "AllowedOrigin": "http://localhost:3000",
+  "Witsml": {
+    "ClientCapabilities": {
+      "Name": "Witsml Explorer Desktop",
+      "Description": "Desktop interface for Witsml servers"
+    }
+  },
+  "OAuth2Enabled": false,
+  "IsDesktopApp": true,
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "System": "Warning",
+        "Microsoft": "Information"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Code, Serilog.Sinks.Console"
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "api-.log",
+          "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message}{NewLine}{Exception}",
+          "rollOnFileSizeLimit": true,
+          "fileSizeLimitBytes": 20971520,
+          "retainedFileCountLimit": 100,
+          "rollingInterval": "Day"
+        }
+      }
+    ],
+    "Enrich": ["FromLogContext"]
+  }
+}

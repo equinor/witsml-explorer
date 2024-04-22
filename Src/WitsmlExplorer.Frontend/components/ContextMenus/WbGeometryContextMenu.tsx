@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {

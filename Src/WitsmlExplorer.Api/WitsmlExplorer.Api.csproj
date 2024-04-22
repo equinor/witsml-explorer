@@ -39,4 +39,9 @@
       <DependentUpon>appsettings.json</DependentUpon>
     </Content>
   </ItemGroup>
+  <ItemGroup Condition="'$(IncludeApiConfig)' == 'true'">
+    <Content Include="$(CONFIG_PATH)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

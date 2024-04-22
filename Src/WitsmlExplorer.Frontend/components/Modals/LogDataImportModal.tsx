@@ -1,6 +1,6 @@
 ﻿import { Accordion, List } from "@equinor/eds-core-react";
-import { Button, Tooltip, Typography } from "@material-ui/core";
-import { CloudUpload } from "@material-ui/icons";
+import { CloudUpload } from "@mui/icons-material";
+import { Button, Tooltip, Typography } from "@mui/material";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog from "components/Modals/ModalDialog";
 import OperationContext from "contexts/operationContext";

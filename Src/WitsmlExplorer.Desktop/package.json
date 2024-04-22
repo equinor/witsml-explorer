@@ -1,0 +1,38 @@
+{
+  "name": "WEx-Desktop",
+  "description": "Witsml Explorer Desktop Edition",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Witsml Explorer Team",
+  "scripts": {
+    "dev": "electron-vite dev -w",
+    "build:api": "dotnet publish -o ./dist/api --os win --arch x64 --self-contained true /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
+    "build:frontend": "electron-vite build",
+    "build": "yarn build:api && yarn build:frontend",
+    "preview": "yarn build:api && electron-vite preview",
+    "electron:pack": "yarn build && electron-builder --dir -c electron-builder.json",
+    "electron:dist": "yarn build && electron-builder -c electron-builder.json"
+  },
+  "main": "./dist/main/main.js",
+  "lint-staged": {
+    "**/*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier -w"
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/",
+    "out/"
+  ],
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "cross-spawn": "^7.0.3",
+    "electron": "^29.3.0",
+    "electron-builder": "^24.13.3",
+    "electron-vite": "^2.1.0",
+    "vite-tsconfig-paths": "^4.3.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "lint-staged": "^13.0.3"
+  }
+}

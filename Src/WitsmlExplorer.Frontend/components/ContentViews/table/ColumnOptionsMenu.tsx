@@ -1,5 +1,5 @@
 import { Icon, Menu, Typography } from "@equinor/eds-core-react";
-import { Checkbox, useTheme } from "@material-ui/core";
+import { Checkbox } from "@mui/material";
 import { Table } from "@tanstack/react-table";
 import {
   calculateColumnWidth,
@@ -12,6 +12,7 @@ import {
 } from "components/ContentViews/table/tableParts";
 import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
+import { UserTheme } from "contexts/operationStateReducer";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
 import { useContext, useState } from "react";
 import styled from "styled-components";
@@ -45,7 +46,7 @@ export const ColumnOptionsMenu = (props: {
     firstToggleableIndex
   } = props;
   const {
-    operationState: { colors }
+    operationState: { colors, theme }
   } = useContext(OperationContext);
   const [draggedId, setDraggedId] = useState<string | null>();
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
@@ -54,7 +55,7 @@ export const ColumnOptionsMenu = (props: {
   const [, saveOrderToStorage] = useLocalStorageState<string[]>(
     viewId + STORAGE_CONTENTTABLE_ORDER_KEY
   );
-  const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
+  const isCompactMode = theme === UserTheme.Compact;
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();

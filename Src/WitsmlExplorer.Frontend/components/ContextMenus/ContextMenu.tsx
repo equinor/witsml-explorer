@@ -1,4 +1,4 @@
-import { Menu } from "@material-ui/core";
+import { Menu } from "@mui/material";
 import OperationContext from "contexts/operationContext";
 import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -64,7 +64,7 @@ export const StyledMenu = styled(Menu)<{ colors: Colors }>`
     svg {
       fill: ${(props) => props.colors.infographic.primaryMossGreen};
     }
-    .MuiListItem-button:hover {
+    .MuiMenuItem-root:hover {
       text-decoration: none;
       background-color: ${(props) =>
         props.colors.interactive.contextMenuItemHover};

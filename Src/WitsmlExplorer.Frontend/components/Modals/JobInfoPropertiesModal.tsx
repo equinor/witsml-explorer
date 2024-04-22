@@ -1,4 +1,4 @@
-import { TextField } from "@material-ui/core";
+import { TextField } from "@equinor/eds-core-react";
 import ModalDialog from "components/Modals/ModalDialog";
 import JobStatus from "models/jobStatus";
 import JobInfo from "models/jobs/jobInfo";
@@ -20,97 +20,86 @@ const JobInfoPropertiesModal = (
         content={
           <>
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="id"
               label="Job ID"
               defaultValue={jobInfo.id}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="jobType"
               label="Job Type"
               defaultValue={jobInfo.jobType}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="status"
               label="Status"
               defaultValue={jobInfo.status}
-              fullWidth
             />
             {jobInfo.status == JobStatus.Failed && (
               <TextField
-                InputProps={{ readOnly: true }}
+                readOnly
                 multiline
                 id="failedReason"
                 label="Failure Reason"
                 defaultValue={jobInfo.failedReason}
-                fullWidth
               />
             )}
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="objectName"
               label="Object Name(s)"
               defaultValue={jobInfo.objectName}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="wellboreName"
               label="Wellbore Name"
               defaultValue={jobInfo.wellboreName}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="wellName"
               label="Well Name"
               defaultValue={jobInfo.wellName}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               multiline
+              rows={3}
               id="description"
               label="Description"
               defaultValue={description}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="targetServer"
               label="Target Server Url"
               defaultValue={jobInfo.targetServer}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="witsmlTargetUsername"
               label="Target Username"
               defaultValue={jobInfo.witsmlTargetUsername}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="sourceServer"
               label="Source Server Url"
               defaultValue={
                 jobInfo.sourceServer == "" ? "-" : jobInfo.sourceServer
               }
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="witsmlSourceUsername"
               label="Source Username"
               defaultValue={jobInfo.witsmlSourceUsername}
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="startTime"
               label="Start Time"
               defaultValue={
@@ -118,10 +107,9 @@ const JobInfoPropertiesModal = (
                   ? new Date(jobInfo.startTime).toLocaleString()
                   : "-"
               }
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="finishTime"
               label="Finish Time"
               defaultValue={
@@ -129,10 +117,9 @@ const JobInfoPropertiesModal = (
                   ? new Date(jobInfo.endTime).toLocaleString()
                   : "-"
               }
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="expirationTime"
               label="Expiration Time"
               defaultValue={
@@ -140,14 +127,12 @@ const JobInfoPropertiesModal = (
                   ? new Date(jobInfo.killTime).toLocaleString()
                   : "-"
               }
-              fullWidth
             />
             <TextField
-              InputProps={{ readOnly: true }}
+              readOnly
               id="username"
               label="Username"
               defaultValue={jobInfo.username}
-              fullWidth
             />
           </>
         }

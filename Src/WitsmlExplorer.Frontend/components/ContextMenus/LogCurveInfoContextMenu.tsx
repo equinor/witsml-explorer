@@ -1,5 +1,5 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
 import ContextMenu from "components/ContextMenus/ContextMenu";

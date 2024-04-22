@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  createHashRouter
+} from "react-router-dom";
 import {
   JOBS_VIEW_ROUTE_PATH,
   LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
@@ -15,6 +19,7 @@ import {
   WELLSBORES_VIEW_ROUTE_PATH,
   WELLS_VIEW_ROUTE_PATH
 } from "routes/routerConstants";
+import { isDesktopApp } from "tools/desktopAppHelpers";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import { ErrorView } from "../components/ContentViews/ErrorView";
@@ -47,7 +52,9 @@ const queryClient = new QueryClient({
   }
 });
 
-const router = createBrowserRouter([
+const createRouter = isDesktopApp() ? createHashRouter : createBrowserRouter;
+
+const router = createRouter([
   {
     path: "/",
     element: <Root />,

@@ -1,5 +1,5 @@
 import { Icon, Typography } from "@equinor/eds-core-react";
-import { MenuItem, Tooltip } from "@material-ui/core";
+import { MenuItem, Tooltip } from "@mui/material";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import { HideModalAction } from "contexts/operationStateReducer";

@@ -4,7 +4,7 @@
   TextField,
   Typography
 } from "@equinor/eds-core-react";
-import { Divider, Tooltip } from "@material-ui/core";
+import { Divider, Tooltip } from "@mui/material";
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";

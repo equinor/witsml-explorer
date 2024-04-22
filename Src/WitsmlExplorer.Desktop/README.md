@@ -1,0 +1,51 @@
+# Witsml Explorer Desktop Edition
+
+Witsml Explorer Desktop Edition is an easy-to-install version of Witsml Explorer. However, this edition does not support all features as the web application.
+
+## Supported operating systems
+
+- Windows 64-bit
+
+<!-- ## Installation guide
+The installer can be downloaded from our [GitHub releases page](https://github.com/equinor/witsml-explorer/releases). Download and run the installer. -->
+
+## Configuration
+
+A configuration file is created in '%AppData%\Roaming\WEx-Desktop\config.json'. It can be edited to change the API port and the path of logging and database files.
+
+## For developers
+
+Install dependencies:
+
+```sh
+cd Src/WitsmlExplorer.Desktop/
+# Download dependencies
+yarn
+```
+
+Run in developer mode:
+
+```sh
+# From Src/WitsmlExplorer.Desktop/ run:
+yarn dev
+```
+
+Run production preview:
+
+```sh
+# From Src/WitsmlExplorer.Desktop/ run:
+yarn preview
+```
+
+Build an installer and install it on your computer:
+
+```sh
+# From Src/WitsmlExplorer.Desktop/ run:
+yarn electron:dist
+```
+
+The installer can be found in `Src/WitsmlExplorer.Desktop/dist/WEx-Desktop Setup <version>.exe`. Run it and follow the instructions.
+
+### API log files for debugging
+
+Check the [Configuration](#configuration) file to see where the logging files are placed.

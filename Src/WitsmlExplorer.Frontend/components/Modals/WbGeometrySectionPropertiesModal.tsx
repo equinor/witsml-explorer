@@ -8,7 +8,13 @@ import Measure from "models/measure";
 import { toObjectReference } from "models/objectOnWellbore";
 import WbGeometryObject from "models/wbGeometry";
 import WbGeometrySection from "models/wbGeometrySection";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState
+} from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
@@ -174,7 +180,7 @@ const WbGeometrySectionPropertiesModal = (
                 defaultValue={editableWbgs?.grade}
                 variant={invalidGrade ? "error" : undefined}
                 helperText={invalidGrade ? "Grade must be 1-32 characters" : ""}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableWbGeometrySection({
                     ...editableWbgs,
                     grade: e.target.value
@@ -188,7 +194,7 @@ const WbGeometrySectionPropertiesModal = (
                 defaultValue={editableWbgs?.factFric}
                 helperText={invalidFactFric ? `FactFric cannot be empty` : ""}
                 variant={invalidFactFric ? "error" : undefined}
-                onChange={(e: any) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setEditableWbGeometrySection({
                     ...editableWbgs,
                     factFric: isNaN(parseFloat(e.target.value))
@@ -239,7 +245,7 @@ const MeasureField = (props: MeasureFieldProps): React.ReactElement => {
       unit={measure?.uom}
       helperText={invalid ? `${name} cannot be empty` : ""}
       variant={invalid ? "error" : undefined}
-      onChange={(e: any) => {
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
         measure.value = isNaN(parseFloat(e.target.value))
           ? undefined
           : parseFloat(e.target.value);

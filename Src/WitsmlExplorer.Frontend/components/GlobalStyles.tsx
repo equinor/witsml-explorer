@@ -127,7 +127,7 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
     }
   }
 
-  p[class*="Typography__StyledTypography"] {
+  [class*="Typography__StyledTypography"] {
     color:${(props) => props.colors.text.staticIconsDefault};
   }
 
