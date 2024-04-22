@@ -25,5 +25,5 @@ jobs:
         run: yarn electron:pack
         working-directory: ./Src/WitsmlExplorer.Desktop
       - name: Test
-        run: yarn test
+        run: yarn test:pack
         working-directory: ./Src/WitsmlExplorer.Desktop

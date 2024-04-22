@@ -12,12 +12,7 @@ function getExecutablePath() {
         "Witsml Explorer Desktop.exe"
       );
     case "linux":
-      return path.join(
-        __dirname,
-        "dist",
-        "linux-unpacked",
-        "Witsml Explorer Desktop"
-      );
+      return path.join(__dirname, "dist", "linux-unpacked", "wex-desktop");
     default:
       throw new Error("Platform not configured for electron tests.");
   }
