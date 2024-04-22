@@ -15,7 +15,6 @@ import * as path from "path";
 
 let mainWindow: BrowserWindow;
 let apiProcess: any;
-let isUnfinishedJobsWarningDialogOpen = false;
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -86,7 +85,7 @@ function showUnfinishedJobsWarningOnClose() {
     detail:
       "You have unfinished jobs that may cause issues if not completed before exiting.\n\nAre you sure you want to exit the application?"
   };
-  return dialog.showMessageBoxSync(null, options);
+  return dialog.showMessageBoxSync(mainWindow, options);
 }
 
 interface Deferred<T> {
@@ -204,8 +203,7 @@ function createWindow() {
 
   mainWindow.on("close", async (e: Event) => {
     e.preventDefault();
-    if (!isUnfinishedJobsWarningDialogOpen)
-      mainWindow.webContents.send("closeWindow");
+    mainWindow.webContents.send("closeWindow");
   });
 
   mainWindow.on("closed", (): void => (mainWindow = null));
@@ -217,10 +215,8 @@ app.whenReady().then(async () => {
   ipcMain.handle("getConfig", () => appConfig);
 
   ipcMain.on("closeWindowResponse", async (_event, isUnfinishedJobs) => {
-    if (isUnfinishedJobs && !isUnfinishedJobsWarningDialogOpen) {
-      isUnfinishedJobsWarningDialogOpen = true;
+    if (isUnfinishedJobs) {
       const dialogResponse = showUnfinishedJobsWarningOnClose();
-      isUnfinishedJobsWarningDialogOpen = false;
       if (dialogResponse === 1) mainWindow.destroy();
     } else {
       mainWindow.destroy();

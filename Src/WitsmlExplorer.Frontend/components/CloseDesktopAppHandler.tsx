@@ -30,7 +30,7 @@ export function CloseDesktopAppHandler(): ReactElement {
 
     return () => {
       // @ts-ignore
-      window.electronAPI.removeCloseWindow(listener);
+      window.electronAPI.removeCloseWindowListener(listener);
     };
   }, [listener]);
 
