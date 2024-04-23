@@ -20,7 +20,14 @@ function getExecutablePath() {
 
 test("should open window and edit server list", async () => {
   const electronApp = await _electron.launch({
-    executablePath: getExecutablePath()
+    executablePath: getExecutablePath(),
+    // These args can be commented out to see the execution of the tests when running locally.
+    args: [
+      "--no-sandbox",
+      "--headless",
+      "--disable-gpu",
+      "--disable-dev-shm-usage"
+    ]
   });
 
   const window = await electronApp.firstWindow();
@@ -34,7 +41,7 @@ test("should open window and edit server list", async () => {
   await window.click("role=button[name=/save/i]");
 
   expect(await window.title()).toBe("WITSML Explorer");
-  expect(await window.getByText("Test Witsml Server")).toBeVisible();
+  expect(await window.getByText("Test Witsml Server").first()).toBeVisible();
 
   await electronApp.close();
 });
