@@ -2,11 +2,18 @@
 /// <reference types="vite/client" />
 
 import { spawn } from "cross-spawn";
-import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  Event,
+  ipcMain,
+  MessageBoxOptions
+} from "electron";
 import * as fs from "fs";
 import * as path from "path";
 
-let mainWindow;
+let mainWindow: BrowserWindow;
 let apiProcess: any;
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -67,6 +74,18 @@ function showErrorAndQuit(message: string) {
     message
   });
   app.quit();
+}
+
+function showUnfinishedJobsWarningOnClose() {
+  const options: MessageBoxOptions = {
+    type: "warning",
+    buttons: ["Cancel", "Quit"],
+    title: "WARNING",
+    message: "Unfinished jobs will be terminated",
+    detail:
+      "You have unfinished jobs that may cause issues if not completed before exiting.\n\nAre you sure you want to exit the application?"
+  };
+  return dialog.showMessageBoxSync(mainWindow, options);
 }
 
 interface Deferred<T> {
@@ -181,6 +200,12 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
+
+  mainWindow.on("close", async (e: Event) => {
+    e.preventDefault();
+    mainWindow.webContents.send("closeWindow");
+  });
+
   mainWindow.on("closed", (): void => (mainWindow = null));
 }
 
@@ -188,6 +213,16 @@ app.whenReady().then(async () => {
   const appConfig = readOrCreateAppConfig();
   await startApi(appConfig);
   ipcMain.handle("getConfig", () => appConfig);
+
+  ipcMain.on("closeWindowResponse", async (_event, isUnfinishedJobs) => {
+    if (isUnfinishedJobs) {
+      const dialogResponse = showUnfinishedJobsWarningOnClose();
+      if (dialogResponse === 1) mainWindow.destroy();
+    } else {
+      mainWindow.destroy();
+    }
+  });
+
   createWindow();
 
   // From Electron docs: macOS apps generally continue running even without any windows open, and activating the app when no windows are available should open a new one.

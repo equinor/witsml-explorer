@@ -2,6 +2,8 @@
 
 Witsml Explorer Desktop Edition is an easy-to-install version of Witsml Explorer. However, this edition does not support all features as the web application.
 
+> :warning: **Please be aware that there is a potential risk associated with running jobs while using the desktop edition**: As the API is running locally on your machine, there is a potential risk that critical jobs may not be able to finish. This could be due to exiting the application while running a job, computer shutdown, power outage or any other cause that forces the computer or application to shut down.
+
 ## Supported operating systems
 
 - Windows 64-bit
