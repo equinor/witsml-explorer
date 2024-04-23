@@ -4,6 +4,7 @@ on:
     branches:
       - main
     paths:
+      - 'Src/WitsmlExplorer.Api/**'
       - 'Src/WitsmlExplorer.Frontend/**'
       - 'Src/WitsmlExplorer.Desktop/**'
 
