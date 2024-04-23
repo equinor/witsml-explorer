@@ -277,7 +277,7 @@
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
-"@electron/asar@^3.2.1":
+"@electron/asar@^3.2.1", "@electron/asar@^3.2.4":
   version "3.2.9"
   resolved "https://registry.yarnpkg.com/@electron/asar/-/asar-3.2.9.tgz#7b3a1fd677b485629f334dd80ced8c85353ba7e7"
   integrity sha512-Vu2P3X2gcZ3MY9W7yH72X9+AMXwUQZEJBrsPIbX0JsdllLtoh62/Q8Wg370/DawIEVKOyfD6KtTLo645ezqxUA==
@@ -2811,6 +2811,13 @@ electron-builder@^24.13.3:
     read-config-file "6.3.2"
     simple-update-notifier "2.0.0"
     yargs "^17.6.2"
+
+electron-playwright-helpers@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/electron-playwright-helpers/-/electron-playwright-helpers-1.7.1.tgz#1e63f8b9da91787ffabe13f0a770c35811e8a9d3"
+  integrity sha512-S9mo7LfpERgub2WIuYVPpib4XKFeAqBP+mxYf5Bv7E0B5GUB+LUbSj6Fpu39h18Ar635Nf9nQYTmypjuvaYJng==
+  dependencies:
+    "@electron/asar" "^3.2.4"
 
 electron-publish@24.13.1:
   version "24.13.1"

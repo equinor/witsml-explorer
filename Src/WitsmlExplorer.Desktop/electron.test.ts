@@ -1,37 +1,33 @@
-import { _electron, expect, test } from "@playwright/test";
-import { platform } from "os";
-import * as path from "path";
+/* eslint-disable no-console */
+import { ElectronApplication, _electron, expect, test } from "@playwright/test";
+import * as eph from "electron-playwright-helpers";
 
-function getExecutablePath() {
-  switch (platform()) {
-    case "win32":
-      return path.join(
-        __dirname,
-        "dist",
-        "win-unpacked",
-        "Witsml Explorer Desktop.exe"
-      );
-    case "linux":
-      return path.join(__dirname, "dist", "linux-unpacked", "wex-desktop");
-    default:
-      throw new Error("Platform not configured for electron tests.");
-  }
-}
+let electronApp: ElectronApplication;
 
-test("should open window and edit server list", async () => {
-  const electronApp = await _electron.launch({
-    executablePath: getExecutablePath(),
-    // These args can be commented out to see the execution of the tests when running locally.
-    args: [
-      "--no-sandbox",
-      "--headless",
-      "--disable-gpu",
-      "--disable-dev-shm-usage"
-    ]
+test.beforeAll(async () => {
+  const latestBuild = eph.findLatestBuild("dist");
+  const appInfo = eph.parseElectronApp(latestBuild);
+  electronApp = await _electron.launch({
+    args: [appInfo.main],
+    executablePath: appInfo.executable
   });
 
-  const window = await electronApp.firstWindow();
+  electronApp.on("window", async (page) => {
+    page.on("pageerror", (error) => {
+      console.error(error);
+    });
+    page.on("console", (msg) => {
+      console.log(msg.text());
+    });
+  });
+});
 
+test.afterAll(async () => {
+  await electronApp.close();
+});
+
+test("should open window and edit server list", async () => {
+  const window = await electronApp.firstWindow();
   await window.click("role=button[name=/new server/i]");
   await window.fill(
     "role=textbox[name=/url/i]",
@@ -40,8 +36,11 @@ test("should open window and edit server list", async () => {
   await window.fill("role=textbox[name=/name/i]", "Test Witsml Server");
   await window.click("role=button[name=/save/i]");
 
-  expect(await window.title()).toBe("WITSML Explorer");
-  expect(await window.getByText("Test Witsml Server").first()).toBeVisible();
+  await window.waitForSelector("role=cell[name=/test witsml server/i]");
 
-  await electronApp.close();
+  const title = await window.title();
+  const server = await window.$$("role=cell[name=/test witsml server/i]");
+
+  expect(title).toBe("WITSML Explorer");
+  expect(server.length).toBeGreaterThan(0);
 });
