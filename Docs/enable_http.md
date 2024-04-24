@@ -1,6 +1,6 @@
 # Enable HTTP WITSML servers
 
-**Using HTTP to connect to WITSML servers is not secure.** HTTP does not encrypt data, making it vulnerable to interception, tampering, and man-in-the-middle attacks. It is strongly recommended to use HTTPS, which encrypts communications, to protect against these risks.
+> :warning: **Using HTTP to connect to WITSML servers is not secure.** HTTP does not encrypt data, making it vulnerable to interception, tampering, and man-in-the-middle attacks. It is strongly recommended to use HTTPS, which encrypts communications, to protect against these risks.
 
 ## Implementation Details
 If enabling HTTP between the API and your WITSML server is required, here is how to modify the service binding in the API to accommodate HTTP communication. The changes should be applied to `WitsmlClientBase.cs` in the API. With these changes, only the servers with a http-scheme will use http. If your server URL begins with https, it will still use secure communication.
