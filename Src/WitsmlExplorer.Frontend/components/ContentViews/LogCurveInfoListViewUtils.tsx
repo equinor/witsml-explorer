@@ -1,5 +1,8 @@
 import formatDateString from "components/DateFormatter";
-import { timeFromMinutesToMilliseconds, CurveThreshold } from "contexts/curveThresholdContext";
+import {
+  timeFromMinutesToMilliseconds,
+  CurveThreshold
+} from "contexts/curveThresholdContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
@@ -18,8 +21,7 @@ export const calculateIsCurveActive = (
     );
   } else {
     const dateDifferenceInMilliseconds =
-      new Date().valueOf() -
-      new Date(logCurveInfo.maxDateTimeIndex).valueOf();
+      new Date().valueOf() - new Date(logCurveInfo.maxDateTimeIndex).valueOf();
     return (
       dateDifferenceInMilliseconds <
       timeFromMinutesToMilliseconds(curveThreshold.timeInMinutes)
@@ -27,10 +29,14 @@ export const calculateIsCurveActive = (
   }
 };
 
-
-
-export const getTableData = (logCurveInfoList: LogCurveInfo[], logObjects: Map<string, object>, timeZone: TimeZone, dateTimeFormat: DateTimeFormat, curveThreshold: CurveThreshold, oneLogOnly: boolean = false) => {
-
+export const getTableData = (
+  logCurveInfoList: LogCurveInfo[],
+  logObjects: Map<string, object>,
+  timeZone: TimeZone,
+  dateTimeFormat: DateTimeFormat,
+  curveThreshold: CurveThreshold,
+  oneLogOnly: boolean = false
+) => {
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
 
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
@@ -49,26 +55,33 @@ export const getTableData = (logCurveInfoList: LogCurveInfo[], logObjects: Map<s
       const logObje = logObjects.get(logCurveInfo.logUid) as LogObject;
       const isActive =
         logObje.objectGrowing &&
-        calculateIsCurveActive(logCurveInfo, maxDepth, isDepthIndex, curveThreshold);
+        calculateIsCurveActive(
+          logCurveInfo,
+          maxDepth,
+          isDepthIndex,
+          curveThreshold
+        );
       return {
         id: `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
-        uid: oneLogOnly ? `${logCurveInfo.logUid}` : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
+        uid: oneLogOnly
+          ? `${logCurveInfo.logUid}`
+          : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logUid: logCurveInfo.logUid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
           ? logCurveInfo.minDepthIndex
           : formatDateString(
-            logCurveInfo.minDateTimeIndex,
-            timeZone,
-            dateTimeFormat
-          ),
+              logCurveInfo.minDateTimeIndex,
+              timeZone,
+              dateTimeFormat
+            ),
         maxIndex: isDepthIndex
           ? logCurveInfo.maxDepthIndex
           : formatDateString(
-            logCurveInfo.maxDateTimeIndex,
-            timeZone,
-            dateTimeFormat
-          ),
+              logCurveInfo.maxDateTimeIndex,
+              timeZone,
+              dateTimeFormat
+            ),
         classWitsml: logCurveInfo.classWitsml,
         unit: logCurveInfo.unit,
         sensorOffset: measureToString(logCurveInfo.sensorOffset),
@@ -86,11 +99,13 @@ export const getTableData = (logCurveInfoList: LogCurveInfo[], logObjects: Map<s
     })
     .sort((curve, curve2) => {
       if (
-        curve.mnemonic.toLowerCase() === (logObjects.get(curve.logUid) as LogObject).indexCurve?.toLowerCase()
+        curve.mnemonic.toLowerCase() ===
+        (logObjects.get(curve.logUid) as LogObject).indexCurve?.toLowerCase()
       ) {
         return -1;
       } else if (
-        curve2.mnemonic.toLowerCase() === (logObjects.get(curve2.logUid) as LogObject).indexCurve?.toLowerCase()
+        curve2.mnemonic.toLowerCase() ===
+        (logObjects.get(curve2.logUid) as LogObject).indexCurve?.toLowerCase()
       ) {
         return 1;
       }

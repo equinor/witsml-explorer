@@ -33,7 +33,6 @@ import LogCurvePriorityService from "services/logCurvePriorityService";
 import { getTableData } from "./LogCurveInfoListViewUtils";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
 
-
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
   mnemonic: string;
@@ -81,14 +80,14 @@ export default function SelectedLogsCurveInfoListView() {
   const loadLogs = (): Map<string, object> => {
     const result = new Map<string, object>();
     geLogsFromSearchParams(logsSearchParams).forEach((value) => {
-
       if (!result.get(value)) {
-        const log = useGetObject(connectedServer,
+        const log = useGetObject(
+          connectedServer,
           wellUid,
           wellboreUid,
           ObjectType.Log,
           value
-        )
+        );
         result.set(value, log);
       }
     });
@@ -97,11 +96,12 @@ export default function SelectedLogsCurveInfoListView() {
 
   const logObjects = loadLogs();
 
-  const { mnemonics: logCurveInfoList, isFetching: isFetchingLogCurveInfo } = useGetSeveralLogsMnemonics(
-    wellUid,
-    wellboreUid,
-    geLogsFromSearchParams(logsSearchParams),
-  );
+  const { mnemonics: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
+    useGetSeveralLogsMnemonics(
+      wellUid,
+      wellboreUid,
+      geLogsFromSearchParams(logsSearchParams)
+    );
 
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
@@ -131,7 +131,7 @@ export default function SelectedLogsCurveInfoListView() {
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
-    { },
+    {},
     checkedLogCurveInfoRows: LogCurveInfoRow[]
   ) => {
     const contextMenuProps: LogCurveInfoContextMenuProps = {
@@ -153,11 +153,6 @@ export default function SelectedLogsCurveInfoListView() {
     });
   };
 
-
-
-
-
-
   const columns: ContentTableColumn[] = [
     ...(!isDepthIndex
       ? [{ property: "isActive", label: "active", type: ContentType.String }]
@@ -170,7 +165,8 @@ export default function SelectedLogsCurveInfoListView() {
         return (
           !showOnlyPrioritizedCurves ||
           prioritizedCurves.includes(row.original.mnemonic) ||
-          row.original.mnemonic === (logObjects.get(row.original.logUid) as LogObject).indexCurve // Always show index curve
+          row.original.mnemonic ===
+            (logObjects.get(row.original.logUid) as LogObject).indexCurve // Always show index curve
         );
       }
     },
@@ -234,7 +230,8 @@ export default function SelectedLogsCurveInfoListView() {
   ];
 
   return (
-    logObjects && logCurveInfoList && (
+    logObjects &&
+    logCurveInfoList && (
       <ContentTable
         viewId={
           isDepthIndex
@@ -243,7 +240,14 @@ export default function SelectedLogsCurveInfoListView() {
         }
         panelElements={panelElements}
         columns={columns}
-        data={getTableData(logCurveInfoList, logObjects, timeZone, dateTimeFormat, curveThreshold, true)}
+        data={getTableData(
+          logCurveInfoList,
+          logObjects,
+          timeZone,
+          dateTimeFormat,
+          curveThreshold,
+          true
+        )}
         onContextMenu={onContextMenu}
         checkableRows
         showRefresh

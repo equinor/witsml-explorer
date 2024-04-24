@@ -29,7 +29,11 @@ import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
-import { NavigateFunction, createSearchParams, useNavigate } from "react-router-dom";
+import {
+  NavigateFunction,
+  createSearchParams,
+  useNavigate
+} from "react-router-dom";
 import { getLogCurveInfoListViewPath } from "routes/utils/pathBuilder";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
@@ -64,11 +68,9 @@ export const ObjectMenuItems = (
           checkedObjects[0].uid,
           checkedObjects,
           navigate,
-          (checkedObjects[0] as LogObject)?.indexType ===
-            WITSML_INDEX_TYPE_MD
+          (checkedObjects[0] as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
             ? IndexCurve.Depth
             : IndexCurve.Time
-
         )
       }
       disabled={checkedObjects.length == 0}
@@ -257,37 +259,33 @@ const onClickOpenSeveralLogs = (
   checkedItems: ObjectOnWellbore[],
   navigate: NavigateFunction,
   indexCurve: IndexCurve = null
-
 ) => {
-
-
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const path = getLogCurveInfoListViewPath(serverUrl,
+  const path = getLogCurveInfoListViewPath(
+    serverUrl,
     wellUid,
     wellboreUid,
     ObjectType.Log,
     indexCurve,
-    uid);
+    uid
+  );
   let searchParams = {};
   const mnemonics = getObjects(checkedItems);
   const mnemonicsFormatted = JSON.stringify(mnemonics);
 
   searchParams = createSearchParams({ logs: mnemonicsFormatted });
 
-  // console.log(path)  
-  navigate({ pathname: path, search: searchParams.toString() }
+  // console.log(path)
+  navigate(
+    { pathname: path, search: searchParams.toString() }
     //,{
     //   state: {
     //     mnemonics: JSON.stringify(mnemonics)
     //    }
     //  }
-  )
-
-
+  );
 };
 
 function getObjects(objectOnWelbore: ObjectOnWellbore[]) {
-  return objectOnWelbore
-    .map((row) => row.uid);
+  return objectOnWelbore.map((row) => row.uid);
 }
-

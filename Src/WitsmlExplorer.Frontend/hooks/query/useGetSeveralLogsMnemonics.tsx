@@ -1,7 +1,7 @@
 import {
   //QueryClient,
   QueryObserverResult,
-  useQuery,
+  useQuery
   //useQueryClient
 } from "@tanstack/react-query";
 //import { Server } from "../../models/server";
@@ -13,7 +13,11 @@ import { QueryOptions } from "./queryOptions";
 import LogObjectService from "services/logObjectService";
 import LogCurveInfo from "models/logCurveInfo";
 
-export const getMnemonicsQueryKey = (wellUid: string, wellboreUid: string, logsSearchParams: string[]) => {
+export const getMnemonicsQueryKey = (
+  wellUid: string,
+  wellboreUid: string,
+  logsSearchParams: string[]
+) => {
   return [
     QUERY_KEY_MNEMONICS,
     wellUid?.toLowerCase(),
@@ -21,8 +25,6 @@ export const getMnemonicsQueryKey = (wellUid: string, wellboreUid: string, logsS
     logsSearchParams.toString().toLowerCase()
   ];
 };
-
-
 
 export const mnemonicsQuery = (
   // queryClient: QueryClient,

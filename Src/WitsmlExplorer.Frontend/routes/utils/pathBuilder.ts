@@ -191,14 +191,15 @@ export function getLogCurveInfoListViewPath(
   logType: string,
   objectUid: string
 ) {
-  const logCurveValuesViewPath = LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH.replace(
-    SERVER_URL_PARAM,
-    encodeURIComponent(serverUrl)
-  )
-    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
-    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
-    .replace(OBJECT_GROUP_PARAM, objectGroup)
-    .replace(LOG_TYPE_PARAM, logType)
-    .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid));
+  const logCurveValuesViewPath =
+    LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH.replace(
+      SERVER_URL_PARAM,
+      encodeURIComponent(serverUrl)
+    )
+      .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+      .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
+      .replace(OBJECT_GROUP_PARAM, objectGroup)
+      .replace(LOG_TYPE_PARAM, logType)
+      .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid));
   return logCurveValuesViewPath;
 }

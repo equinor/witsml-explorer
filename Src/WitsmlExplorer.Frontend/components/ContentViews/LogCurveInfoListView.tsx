@@ -12,9 +12,7 @@ import LogCurveInfoContextMenu, {
 import ProgressSpinner from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import {
-  useCurveThreshold
-} from "contexts/curveThresholdContext";
+import { useCurveThreshold } from "contexts/curveThresholdContext";
 import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -92,7 +90,6 @@ export default function LogCurveInfoListView() {
     const result = new Map<string, object>();
     result.set(objectUid, logObject);
     return result;
-
   };
 
   const logObjects = loadLogs();
@@ -115,7 +112,7 @@ export default function LogCurveInfoListView() {
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
-    { },
+    {},
     checkedLogCurveInfoRows: LogCurveInfoRow[]
   ) => {
     const contextMenuProps: LogCurveInfoContextMenuProps = {
@@ -137,7 +134,6 @@ export default function LogCurveInfoListView() {
     });
   };
 
-
   const columns: ContentTableColumn[] = [
     ...(!isDepthIndex
       ? [{ property: "isActive", label: "active", type: ContentType.String }]
@@ -150,7 +146,8 @@ export default function LogCurveInfoListView() {
         return (
           !showOnlyPrioritizedCurves ||
           prioritizedCurves.includes(row.original.mnemonic) ||
-          row.original.mnemonic === (logObjects.get(row.original.logUid) as LogObject).indexCurve // Always show index curve
+          row.original.mnemonic ===
+            (logObjects.get(row.original.logUid) as LogObject).indexCurve // Always show index curve
         );
       }
     },
@@ -222,7 +219,13 @@ export default function LogCurveInfoListView() {
         }
         panelElements={panelElements}
         columns={columns}
-        data={getTableData(logCurveInfoList, logObjects, timeZone, dateTimeFormat, curveThreshold)}
+        data={getTableData(
+          logCurveInfoList,
+          logObjects,
+          timeZone,
+          dateTimeFormat,
+          curveThreshold
+        )}
         onContextMenu={onContextMenu}
         checkableRows
         showRefresh
