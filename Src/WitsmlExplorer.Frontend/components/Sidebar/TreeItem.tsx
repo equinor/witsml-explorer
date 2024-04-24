@@ -40,6 +40,7 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
               arrow
               placement="top"
               disableHoverListener={labelText === "" || labelText == null}
+              disableInteractive
             >
               <NavigationDrawer
                 colors={colors}
