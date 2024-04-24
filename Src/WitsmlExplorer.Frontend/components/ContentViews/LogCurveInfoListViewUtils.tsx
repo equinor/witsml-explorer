@@ -4,9 +4,12 @@ import {
   CurveThreshold
 } from "contexts/curveThresholdContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
-import LogCurveInfo from "models/logCurveInfo";
+import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
+//import {  ContentType } from "./table";
+import { ContentType } from "components/ContentViews/table";
+import { Row } from "@tanstack/react-table";
 
 export const calculateIsCurveActive = (
   logCurveInfo: LogCurveInfo,
@@ -27,6 +30,59 @@ export const calculateIsCurveActive = (
       timeFromMinutesToMilliseconds(curveThreshold.timeInMinutes)
     );
   }
+};
+
+export const columns = (
+  isDepthIndex: boolean,
+  showOnlyPrioritizedCurves: boolean,
+  prioritizedCurves: string[],
+  logObjects: Map<string, object>,
+  hideEmptyMnemonics: boolean
+) => {
+  return [
+    ...(!isDepthIndex
+      ? [{ property: "isActive", label: "active", type: ContentType.String }]
+      : []),
+    {
+      property: "mnemonic",
+      label: "mnemonic",
+      type: ContentType.String,
+      filterFn: (row: Row<any>) => {
+        return (
+          !showOnlyPrioritizedCurves ||
+          prioritizedCurves.includes(row.original.mnemonic) ||
+          row.original.mnemonic ===
+            (logObjects.get(row.original.logUid) as LogObject).indexCurve // Always show index curve
+        );
+      }
+    },
+    {
+      property: "minIndex",
+      label: "minIndex",
+      type: isDepthIndex ? ContentType.Number : ContentType.DateTime,
+      filterFn: (row: Row<any>) => {
+        return (
+          !hideEmptyMnemonics || !isNullOrEmptyIndex(row.original.minIndex)
+        );
+      }
+    },
+    {
+      property: "maxIndex",
+      label: "maxIndex",
+      type: isDepthIndex ? ContentType.Number : ContentType.DateTime
+    },
+    { property: "classWitsml", label: "classWitsml", type: ContentType.String },
+    { property: "unit", label: "unit", type: ContentType.String },
+    {
+      property: "sensorOffset",
+      label: "sensorOffset",
+      type: ContentType.Measure
+    },
+    { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
+    { property: "traceState", label: "traceState", type: ContentType.String },
+    { property: "nullValue", label: "nullValue", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String }
+  ];
 };
 
 export const getTableData = (

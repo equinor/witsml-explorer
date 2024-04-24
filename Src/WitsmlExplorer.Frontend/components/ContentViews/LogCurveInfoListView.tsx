@@ -1,10 +1,5 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import {
-  ContentTable,
-  ContentTableColumn,
-  ContentTableRow,
-  ContentType
-} from "components/ContentViews/table";
+import { ContentTable, ContentTableRow } from "components/ContentViews/table";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
@@ -21,14 +16,13 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
-import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
+import LogCurveInfo from "models/logCurveInfo";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
-import { getTableData } from "./LogCurveInfoListViewUtils";
-import LogObject from "models/logObject";
+import { columns, getTableData } from "./LogCurveInfoListViewUtils";
 import { ItemNotFound } from "routes/ItemNotFound";
 
 export interface LogCurveInfoRow extends ContentTableRow {
@@ -134,51 +128,6 @@ export default function LogCurveInfoListView() {
     });
   };
 
-  const columns: ContentTableColumn[] = [
-    ...(!isDepthIndex
-      ? [{ property: "isActive", label: "active", type: ContentType.String }]
-      : []),
-    {
-      property: "mnemonic",
-      label: "mnemonic",
-      type: ContentType.String,
-      filterFn: (row) => {
-        return (
-          !showOnlyPrioritizedCurves ||
-          prioritizedCurves.includes(row.original.mnemonic) ||
-          row.original.mnemonic ===
-            (logObjects.get(row.original.logUid) as LogObject).indexCurve // Always show index curve
-        );
-      }
-    },
-    {
-      property: "minIndex",
-      label: "minIndex",
-      type: isDepthIndex ? ContentType.Number : ContentType.DateTime,
-      filterFn: (row) => {
-        return (
-          !hideEmptyMnemonics || !isNullOrEmptyIndex(row.original.minIndex)
-        );
-      }
-    },
-    {
-      property: "maxIndex",
-      label: "maxIndex",
-      type: isDepthIndex ? ContentType.Number : ContentType.DateTime
-    },
-    { property: "classWitsml", label: "classWitsml", type: ContentType.String },
-    { property: "unit", label: "unit", type: ContentType.String },
-    {
-      property: "sensorOffset",
-      label: "sensorOffset",
-      type: ContentType.Measure
-    },
-    { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
-    { property: "traceState", label: "traceState", type: ContentType.String },
-    { property: "nullValue", label: "nullValue", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String }
-  ];
-
   if (isFetching) {
     return <ProgressSpinner message={`Fetching Log.`} />;
   }
@@ -218,7 +167,13 @@ export default function LogCurveInfoListView() {
             : "timeLogCurveInfoListView"
         }
         panelElements={panelElements}
-        columns={columns}
+        columns={columns(
+          isDepthIndex,
+          showOnlyPrioritizedCurves,
+          prioritizedCurves,
+          logObjects,
+          hideEmptyMnemonics
+        )}
         data={getTableData(
           logCurveInfoList,
           logObjects,
