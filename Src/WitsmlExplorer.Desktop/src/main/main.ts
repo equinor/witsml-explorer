@@ -191,7 +191,8 @@ function createWindow() {
     height: 1080,
     webPreferences: {
       preload: path.join(__dirname, "../preload/preload.js")
-    }
+    },
+    icon: path.join(__dirname, "../../resources/logo.png")
   });
   mainWindow.setMenuBarVisibility(false);
 
