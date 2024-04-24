@@ -48,6 +48,16 @@ yarn electron:dist
 
 The installer can be found in `Src/WitsmlExplorer.Desktop/dist/WEx-Desktop Setup <version>.exe`. Run it and follow the instructions.
 
+Run playwright tests:
+```sh
+# From Src/WitsmlExplorer.Desktop/ run:
+yarn electron:pack
+yarn test:pack
+
+# Debug tests interactively:
+yarn test:pack --debug
+```
+
 ### API log files for debugging
 
 Check the [Configuration](#configuration) file to see where the logging files are placed.
