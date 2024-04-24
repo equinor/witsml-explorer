@@ -9,29 +9,30 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
+
 import ProgressSpinner from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import {
-  useCurveThreshold
-} from "contexts/curveThresholdContext";
+
 import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useGetSeveralLogsMnemonics } from "hooks/query/useGetSeveralLogsMnemonics";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
-import { ComponentType } from "models/componentType";
 import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
+import LogObject from "models/logObject";
+
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { getTableData } from "./LogCurveInfoListViewUtils";
-import LogObject from "models/logObject";
-import { ItemNotFound } from "routes/ItemNotFound";
+import { useCurveThreshold } from "contexts/curveThresholdContext";
+
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -50,7 +51,7 @@ export interface LogCurveInfoRow extends ContentTableRow {
   logCurveInfo: LogCurveInfo;
 }
 
-export default function LogCurveInfoListView() {
+export default function SelectedLogsCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat, theme }
@@ -58,6 +59,8 @@ export default function LogCurveInfoListView() {
   const { dispatchOperation } = useContext(OperationContext);
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
+  const [searchParams] = useSearchParams();
+  const logsSearchParams = searchParams.get("logs");
   const { servers } = useGetServers();
   const {
     object: logObject,
@@ -70,14 +73,36 @@ export default function LogCurveInfoListView() {
     ObjectType.Log,
     objectUid
   );
-  const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
-    useGetComponents(
-      connectedServer,
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.Mnemonic
-    );
+
+  const geLogsFromSearchParams = (logsSearchParams: string) => {
+    return JSON.parse(logsSearchParams) as string[];
+  };
+
+  const loadLogs = (): Map<string, object> => {
+    const result = new Map<string, object>();
+    geLogsFromSearchParams(logsSearchParams).forEach((value) => {
+
+      if (!result.get(value)) {
+        const log = useGetObject(connectedServer,
+          wellUid,
+          wellboreUid,
+          ObjectType.Log,
+          value
+        )
+        result.set(value, log);
+      }
+    });
+    return result;
+  };
+
+  const logObjects = loadLogs();
+
+  const { mnemonics: logCurveInfoList, isFetching: isFetchingLogCurveInfo } = useGetSeveralLogsMnemonics(
+    wellUid,
+    wellboreUid,
+    geLogsFromSearchParams(logsSearchParams),
+  );
+
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
 
@@ -87,15 +112,6 @@ export default function LogCurveInfoListView() {
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
-
-  const loadLogs = (): Map<string, object> => {
-    const result = new Map<string, object>();
-    result.set(objectUid, logObject);
-    return result;
-
-  };
-
-  const logObjects = loadLogs();
 
   useEffect(() => {
     if (logObject) {
@@ -138,6 +154,10 @@ export default function LogCurveInfoListView() {
   };
 
 
+
+
+
+
   const columns: ContentTableColumn[] = [
     ...(!isDepthIndex
       ? [{ property: "isActive", label: "active", type: ContentType.String }]
@@ -154,6 +174,7 @@ export default function LogCurveInfoListView() {
         );
       }
     },
+    { property: "logUid", label: "logUid", type: ContentType.String },
     {
       property: "minIndex",
       label: "minIndex",
@@ -213,7 +234,7 @@ export default function LogCurveInfoListView() {
   ];
 
   return (
-    logObjects && (
+    logObjects && logCurveInfoList && (
       <ContentTable
         viewId={
           isDepthIndex
@@ -222,11 +243,11 @@ export default function LogCurveInfoListView() {
         }
         panelElements={panelElements}
         columns={columns}
-        data={getTableData(logCurveInfoList, logObjects, timeZone, dateTimeFormat, curveThreshold)}
+        data={getTableData(logCurveInfoList, logObjects, timeZone, dateTimeFormat, curveThreshold, true)}
         onContextMenu={onContextMenu}
         checkableRows
         showRefresh
-        downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
+        downloadToCsvFileName={`LogCurveInfo_${logsSearchParams}`}
       />
     )
   );

@@ -17,6 +17,7 @@ export default interface LogCurveInfo {
   axisDefinitions: AxisDefinition[];
   traceState: string;
   nullValue: string;
+  logUid?: string;
 }
 
 export function EmptyLogCurveInfo(): LogCurveInfo {

@@ -7,7 +7,7 @@ import {
   useState
 } from "react";
 
-interface CurveThreshold {
+export interface CurveThreshold {
   depthInMeters: number;
   timeInMinutes: number;
   hideInactiveCurves: boolean;

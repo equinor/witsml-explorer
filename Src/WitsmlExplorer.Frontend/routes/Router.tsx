@@ -7,6 +7,7 @@ import {
 import {
   JOBS_VIEW_ROUTE_PATH,
   LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
+  LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
   LOG_OBJECTS_VIEW_ROUTE_PATH,
   LOG_OBJECT_VIEW_ROUTE_PATH,
   LOG_TYPES_VIEW_ROUTE_PATH,
@@ -25,6 +26,7 @@ import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import { ErrorView } from "../components/ContentViews/ErrorView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
+import SelectedLogsCurveInfoListView from "components/ContentViews/SelectedLogsCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import LogsListView from "../components/ContentViews/LogsListView";
 import ObjectSearchListView from "../components/ContentViews/ObjectSearchListView";
@@ -113,6 +115,11 @@ const router = createRouter([
           {
             path: LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
             element: <CurveValuesView />,
+            errorElement: <ErrorView />
+          },
+          {
+            path: LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
+            element: <SelectedLogsCurveInfoListView />,
             errorElement: <ErrorView />
           },
           {

@@ -2,6 +2,7 @@ import { useMatch } from "react-router-dom";
 import {
   JOBS_VIEW_NAVIGATION_PATH,
   LOG_CURVE_VALUES_VIEW_NAVIGATION_PATH,
+  LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH,
   LOG_OBJECTS_VIEW_NAVIGATION_PATH,
   LOG_OBJECT_VIEW_NAVIGATION_PATH,
   LOG_TYPES_VIEW_NAVIGATION_PATH,
@@ -29,6 +30,9 @@ export function useGetActiveRoute() {
   const isLogCurveValuesView = !!useMatch(
     LOG_CURVE_VALUES_VIEW_NAVIGATION_PATH
   );
+  const isLogsCurveInforListView = !!useMatch(
+    LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH
+  );
   return {
     isJobsView,
     isQueryView,
@@ -41,6 +45,7 @@ export function useGetActiveRoute() {
     isLogTypesView,
     isLogObjectsView,
     isLogObjectView,
-    isLogCurveValuesView
+    isLogCurveValuesView,
+    isLogsCurveInforListView
   };
 }

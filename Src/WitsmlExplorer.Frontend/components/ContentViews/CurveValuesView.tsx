@@ -45,7 +45,7 @@ import {
   IndexRange
 } from "models/jobs/deleteLogCurveValuesJob";
 import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
-import { CurveSpecification, LogData, LogDataRow } from "models/logData";
+import { CurveSpecification, LogData, LogDataRequestQuery, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -82,7 +82,7 @@ const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
 const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
 
-interface CurveValueRow extends LogDataRow, ContentTableRow {}
+interface CurveValueRow extends LogDataRow, ContentTableRow { }
 
 enum DownloadOptions {
   All = "All",
@@ -140,6 +140,7 @@ export const CurveValuesView = (): React.ReactElement => {
       ComponentType.Mnemonic
     );
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+
 
   const { mnemonics } = useGetMnemonics(
     isFetching,
@@ -532,12 +533,13 @@ export const CurveValuesView = (): React.ReactElement => {
   const getLogData = async (startIndex: string, endIndex: string) => {
     const startIndexIsInclusive = !autoRefresh;
     controller.current = new AbortController();
+    const logDataObjectQuery = new LogDataRequestQuery(objectUid, mnemonics);
+    const payLoad = [logDataObjectQuery];
 
     const logData: LogData = await LogObjectService.getLogData(
       wellUid,
       wellboreUid,
-      objectUid,
-      mnemonics,
+      payLoad,
       startIndexIsInclusive,
       startIndex,
       endIndex,
