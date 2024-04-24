@@ -1,4 +1,10 @@
-import { Icon, Menu, Typography } from "@equinor/eds-core-react";
+import {
+  EdsProvider,
+  Icon,
+  Menu,
+  TextField,
+  Typography
+} from "@equinor/eds-core-react";
 import { Checkbox } from "@mui/material";
 import { Table } from "@tanstack/react-table";
 import {
@@ -14,7 +20,7 @@ import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
-import { useContext, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import {
@@ -119,6 +125,10 @@ export const ColumnOptionsMenu = (props: {
     );
   };
 
+  const resetFilter = () => {
+    // TODO: Implement reset filter
+  };
+
   return (
     <>
       <Button
@@ -206,6 +216,16 @@ export const ColumnOptionsMenu = (props: {
                     <OrderingLabel>
                       {column.columnDef.header.toString()}
                     </OrderingLabel>
+                    <EdsProvider density="compact">
+                      <TextField
+                        id={`field-${column.id}`}
+                        required
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                          column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
+                        }}
+                        style={{ minWidth: "100px", maxHeight: "25px" }}
+                      />
+                    </EdsProvider>
                   </Draggable>
                 </OrderingRow>
               )
@@ -236,6 +256,7 @@ export const ColumnOptionsMenu = (props: {
             Reset ordering
           </ResetButton>
           <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
+          <ResetButton onClick={resetFilter}>Reset filter</ResetButton>
         </ResetContainer>
       </StyledMenu>
     </>
@@ -256,6 +277,7 @@ const OrderingButton = styled(Button)`
 const OrderingLabel = styled(Typography)`
   margin-top: auto;
   margin-bottom: auto;
+  margin-right: 1rem;
   cursor: grab;
   font-family: EquinorMedium;
   font-size: 0.875rem;

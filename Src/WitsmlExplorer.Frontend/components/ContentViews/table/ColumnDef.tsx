@@ -1,5 +1,12 @@
 import { Checkbox, IconButton } from "@mui/material";
-import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  FilterFn,
+  FilterMeta,
+  Row,
+  SortingFn,
+  Table
+} from "@tanstack/react-table";
 import {
   activeId,
   calculateColumnWidth,
@@ -58,8 +65,8 @@ export const useColumnDef = (
         size: width,
         meta: { type: column.type },
         sortingFn: getSortingFn(column.type),
-        enableColumnFilter: column.filterFn != null,
-        filterFn: column.filterFn,
+        enableColumnFilter: column.type !== ContentType.Component,
+        filterFn: getFilterFn(column),
         ...addComponentCell(column.type),
         ...addActiveCurveFiltering(column.label),
         ...addDecimalPreference(column.type, decimals)
@@ -234,4 +241,22 @@ const getSortingFn = (contentType: ContentType) => {
     return "alphanumeric";
   }
   return "text";
+};
+
+const getFilterFn = (column: ContentTableColumn): FilterFn<any> => {
+  return (
+    row: Row<any>,
+    id: string,
+    value: any,
+    addMeta: (meta: FilterMeta) => void
+  ): boolean => {
+    return (
+      (!value ||
+        row.original[id]
+          .toString()
+          .toLowerCase()
+          .includes(value?.toLowerCase())) &&
+      (!column.filterFn || column.filterFn(row, id, value, addMeta))
+    );
+  };
 };
