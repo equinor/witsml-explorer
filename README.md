@@ -41,6 +41,9 @@ Please see our [server readme](./Docker/Server/README.md).
 ## API custom client access
 Please visit [API client access](/Docs/APICLIENT.md).
 
+## Enable HTTP WITSML servers
+Please see [enable HTTP](/Docs/enable_http.md).
+
 ## Community
 Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)
 
