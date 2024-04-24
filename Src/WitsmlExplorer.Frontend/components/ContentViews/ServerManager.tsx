@@ -182,6 +182,7 @@ const ServerManager = (): React.ReactElement => {
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
                   <Button
+                    data-testid="deleteServerButton"
                     disabled={editDisabled}
                     variant="ghost"
                     onClick={() =>

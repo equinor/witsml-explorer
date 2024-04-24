@@ -11,7 +11,7 @@ on:
 permissions: {}
 
 jobs:
-  frontend:
+  desktop:
     name: Package and Test
     runs-on: ubuntu-latest
     steps:
