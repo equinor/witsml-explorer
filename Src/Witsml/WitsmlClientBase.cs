@@ -15,7 +15,9 @@ public abstract class WitsmlClientBase
     {
         EndpointAddress endpointAddress = new(options.Hostname);
 
-        Binding serviceBinding = CreateBinding(options);
+        Binding serviceBinding = options.ClientCertificate == null
+            ? CreateBasicBinding(options.RequestTimeOut)
+            : CreateCertificateAndBasicBinding();
 
         var client = new StoreSoapPortClient(serviceBinding, endpointAddress);
         client.ClientCredentials.UserName.UserName = options.Credentials.Username;
@@ -34,49 +36,13 @@ public abstract class WitsmlClientBase
         return client;
     }
 
-    private static Binding CreateBinding(WitsmlClientOptions options)
-    {
-        Uri uri = new(options.Hostname);
-
-        if (uri.Scheme == "http")
-        {
-            return CreateBasicHttpBinding(options.RequestTimeOut);
-        }
-        else if (uri.Scheme == "https" && options.ClientCertificate == null)
-        {
-            return CreateBasicHttpsBinding(options.RequestTimeOut);
-        }
-        else if (uri.Scheme == "https" && options.ClientCertificate != null)
-        {
-            return CreateCertificateAndBasicBinding();
-        }
-        throw new NotSupportedException($"No binding supported for the client options '{options}'.");
-    }
-
-    private static BasicHttpsBinding CreateBasicHttpsBinding(TimeSpan requestTimeout)
+    private static BasicHttpsBinding CreateBasicBinding(TimeSpan requestTimeout)
     {
         return new BasicHttpsBinding
         {
             Security =
             {
                 Mode = BasicHttpsSecurityMode.Transport,
-                Transport =
-                {
-                    ClientCredentialType = HttpClientCredentialType.Basic
-                }
-            },
-            MaxReceivedMessageSize = int.MaxValue,
-            SendTimeout = requestTimeout
-        };
-    }
-
-    private static BasicHttpBinding CreateBasicHttpBinding(TimeSpan requestTimeout)
-    {
-        return new BasicHttpBinding
-        {
-            Security =
-            {
-                Mode = BasicHttpSecurityMode.TransportCredentialOnly,
                 Transport =
                 {
                     ClientCredentialType = HttpClientCredentialType.Basic
