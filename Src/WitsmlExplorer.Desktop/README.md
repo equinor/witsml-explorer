@@ -53,6 +53,9 @@ Run playwright tests:
 # From Src/WitsmlExplorer.Desktop/ run:
 yarn electron:pack
 yarn test:pack
+
+# Debug tests interactively:
+yarn test:pack --debug
 ```
 
 ### API log files for debugging
