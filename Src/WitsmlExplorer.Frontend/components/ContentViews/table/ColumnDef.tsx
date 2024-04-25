@@ -20,6 +20,7 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table/tableParts";
+import { getSearchRegex } from "contexts/filter";
 import OperationContext from "contexts/operationContext";
 import { DecimalPreference, UserTheme } from "contexts/operationStateReducer";
 import { useContext, useMemo } from "react";
@@ -250,12 +251,9 @@ const getFilterFn = (column: ContentTableColumn): FilterFn<any> => {
     value: any,
     addMeta: (meta: FilterMeta) => void
   ): boolean => {
+    const filter = getSearchRegex(value, false);
     return (
-      (!value ||
-        row.original[id]
-          .toString()
-          .toLowerCase()
-          .includes(value?.toLowerCase())) &&
+      (!value || filter.test(row.original[id] ?? "")) &&
       (!column.filterFn || column.filterFn(row, id, value, addMeta))
     );
   };

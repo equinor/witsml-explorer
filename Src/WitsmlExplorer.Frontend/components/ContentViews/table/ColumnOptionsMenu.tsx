@@ -219,7 +219,6 @@ export const ColumnOptionsMenu = (props: {
                     <EdsProvider density="compact">
                       <TextField
                         id={`field-${column.id}`}
-                        required
                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
                           column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
                         }}
@@ -300,4 +299,23 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
   padding: 0.25rem 0.5rem 0.25rem 0.5rem;
   max-height: 90vh;
   overflow-y: scroll;
+
+  div[class*="InputWrapper__Container"] {
+    label.dHhldd {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+
+  div[class*="Input__Container"][disabled] {
+    background: ${(props) => props.colors.text.staticTextFieldDefault};
+    border-bottom: 1px solid #9ca6ac;
+  }
+
+  div[class*="Input__Container"] {
+    background-color: ${(props) => props.colors.text.staticTextFieldDefault};
+  }
+
+  input[class*="Input__StyledInput"] {
+    padding: 4px;
+  }
 `;
