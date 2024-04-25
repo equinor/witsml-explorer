@@ -8,6 +8,7 @@ namespace WitsmlExplorer.Api.Models
     {
         public string Uid { get; init; }
         public string Mnemonic { get; init; }
+        public string LogUid { get; init; }
         public string MinDateTimeIndex { get; init; }
         public string MinDepthIndex { get; init; }
         public string MaxDateTimeIndex { get; init; }
