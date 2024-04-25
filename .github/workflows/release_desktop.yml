@@ -3,6 +3,9 @@ name: Release Desktop Edition
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Release WEx Desktop Installer
