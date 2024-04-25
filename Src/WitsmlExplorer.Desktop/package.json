@@ -6,8 +6,7 @@
   "author": "Witsml Explorer Team",
   "scripts": {
     "dev": "electron-vite dev -w",
-    "build:api": "dotnet publish -o ./dist/api /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
-    "build:api:win64": "dotnet publish -o ./dist/api --os win --arch x64 --self-contained true /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
+    "build:api": "dotnet publish -o ./dist/api --self-contained true /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
     "build:frontend": "electron-vite build",
     "build": "yarn build:api && yarn build:frontend",
     "preview": "yarn build:api && electron-vite preview",
