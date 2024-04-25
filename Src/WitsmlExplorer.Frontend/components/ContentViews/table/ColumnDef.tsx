@@ -30,6 +30,7 @@ import {
   STORAGE_CONTENTTABLE_WIDTH_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
+import { getNestedValue } from "tools/nestedValueHelpers";
 
 declare module "@tanstack/react-table" {
   interface SortingFns {
@@ -253,7 +254,7 @@ const getFilterFn = (column: ContentTableColumn): FilterFn<any> => {
   ): boolean => {
     const filter = getSearchRegex(value, false);
     return (
-      (!value || filter.test(row.original[id] ?? "")) &&
+      (!value || filter.test(getNestedValue(row.original, id) ?? "")) && // Use the nested value to be able to filter on for example commonData.dTimCreation
       (!column.filterFn || column.filterFn(row, id, value, addMeta))
     );
   };
