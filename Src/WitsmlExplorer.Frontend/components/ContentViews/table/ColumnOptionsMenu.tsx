@@ -8,6 +8,7 @@ import {
 import { Checkbox } from "@mui/material";
 import { Table } from "@tanstack/react-table";
 import {
+  activeId,
   calculateColumnWidth,
   expanderId,
   selectId
@@ -216,16 +217,21 @@ export const ColumnOptionsMenu = (props: {
                     <OrderingLabel>
                       {column.columnDef.header.toString()}
                     </OrderingLabel>
-                    <EdsProvider density="compact">
-                      <TextField
-                        id={`field-${column.id}`}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                          column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
-                        }}
-                        style={{ minWidth: "100px", maxHeight: "25px" }}
-                      />
-                    </EdsProvider>
                   </Draggable>
+                  <EdsProvider density="compact">
+                    <TextField
+                      id={`field-${column.id}`}
+                      disabled={
+                        column.id === activeId ||
+                        (column.columnDef.meta as { type: ContentType })
+                          ?.type === ContentType.Component
+                      }
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
+                      }}
+                      style={{ minWidth: "100px", maxHeight: "25px" }}
+                    />
+                  </EdsProvider>
                 </OrderingRow>
               )
             );
@@ -264,7 +270,7 @@ export const ColumnOptionsMenu = (props: {
 
 const OrderingRow = styled.div`
   display: grid;
-  grid-template-columns: 20px 25px 25px 1fr;
+  grid-template-columns: 20px 25px 25px 1fr 1.5fr;
   align-items: center;
 `;
 
@@ -280,6 +286,7 @@ const OrderingLabel = styled(Typography)`
   cursor: grab;
   font-family: EquinorMedium;
   font-size: 0.875rem;
+  white-space: nowrap;
 `;
 
 const ResetContainer = styled.div`
