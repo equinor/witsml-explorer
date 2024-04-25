@@ -62,6 +62,9 @@ export const ColumnOptionsMenu = (props: {
   const [, saveOrderToStorage] = useLocalStorageState<string[]>(
     viewId + STORAGE_CONTENTTABLE_ORDER_KEY
   );
+  const [filterValues, setFilterValues] = useState<{ [key: string]: string }>(
+    {}
+  );
   const isCompactMode = theme === UserTheme.Compact;
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -127,7 +130,10 @@ export const ColumnOptionsMenu = (props: {
   };
 
   const resetFilter = () => {
-    // TODO: Implement reset filter
+    table.getAllLeafColumns().map((column) => {
+      column.setFilterValue(null);
+    });
+    setFilterValues({});
   };
 
   return (
@@ -221,6 +227,7 @@ export const ColumnOptionsMenu = (props: {
                   <EdsProvider density="compact">
                     <TextField
                       id={`field-${column.id}`}
+                      value={filterValues[column.id] || ""}
                       disabled={
                         column.id === activeId ||
                         (column.columnDef.meta as { type: ContentType })
@@ -228,6 +235,10 @@ export const ColumnOptionsMenu = (props: {
                       }
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                         column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
+                        setFilterValues({
+                          ...filterValues,
+                          [column.id]: e.target.value
+                        });
                       }}
                       style={{ minWidth: "100px", maxHeight: "25px" }}
                     />
