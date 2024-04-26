@@ -84,7 +84,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static IResult GetAllJobInfos(IJobCache jobCache, IConfiguration configuration)
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            if (!useOAuth2)
+            bool IsDesktopApp = StringHelpers.ToBoolean(configuration[ConfigConstants.IsDesktopApp]);
+            if (!useOAuth2 && !IsDesktopApp)
             {
                 return TypedResults.Unauthorized();
             }
