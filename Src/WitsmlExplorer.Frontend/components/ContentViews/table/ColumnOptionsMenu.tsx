@@ -1,7 +1,14 @@
-import { Icon, Menu, Typography } from "@equinor/eds-core-react";
+import {
+  EdsProvider,
+  Icon,
+  Menu,
+  TextField,
+  Typography
+} from "@equinor/eds-core-react";
 import { Checkbox } from "@mui/material";
 import { Table } from "@tanstack/react-table";
 import {
+  activeId,
   calculateColumnWidth,
   expanderId,
   selectId
@@ -14,7 +21,7 @@ import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
-import { useContext, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import {
@@ -54,6 +61,9 @@ export const ColumnOptionsMenu = (props: {
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
   const [, saveOrderToStorage] = useLocalStorageState<string[]>(
     viewId + STORAGE_CONTENTTABLE_ORDER_KEY
+  );
+  const [filterValues, setFilterValues] = useState<{ [key: string]: string }>(
+    {}
   );
   const isCompactMode = theme === UserTheme.Compact;
 
@@ -117,6 +127,13 @@ export const ColumnOptionsMenu = (props: {
         }))
       )
     );
+  };
+
+  const resetFilter = () => {
+    table.getAllLeafColumns().map((column) => {
+      column.setFilterValue(null);
+    });
+    setFilterValues({});
   };
 
   return (
@@ -207,6 +224,25 @@ export const ColumnOptionsMenu = (props: {
                       {column.columnDef.header.toString()}
                     </OrderingLabel>
                   </Draggable>
+                  <EdsProvider density="compact">
+                    <TextField
+                      id={`field-${column.id}`}
+                      value={filterValues[column.id] || ""}
+                      disabled={
+                        column.id === activeId ||
+                        (column.columnDef.meta as { type: ContentType })
+                          ?.type === ContentType.Component
+                      }
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
+                        setFilterValues({
+                          ...filterValues,
+                          [column.id]: e.target.value
+                        });
+                      }}
+                      style={{ minWidth: "100px", maxHeight: "25px" }}
+                    />
+                  </EdsProvider>
                 </OrderingRow>
               )
             );
@@ -236,6 +272,7 @@ export const ColumnOptionsMenu = (props: {
             Reset ordering
           </ResetButton>
           <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
+          <ResetButton onClick={resetFilter}>Reset filter</ResetButton>
         </ResetContainer>
       </StyledMenu>
     </>
@@ -244,7 +281,7 @@ export const ColumnOptionsMenu = (props: {
 
 const OrderingRow = styled.div`
   display: grid;
-  grid-template-columns: 20px 25px 25px 1fr;
+  grid-template-columns: 20px 25px 25px 1fr 1.5fr;
   align-items: center;
 `;
 
@@ -256,9 +293,11 @@ const OrderingButton = styled(Button)`
 const OrderingLabel = styled(Typography)`
   margin-top: auto;
   margin-bottom: auto;
+  margin-right: 1rem;
   cursor: grab;
   font-family: EquinorMedium;
   font-size: 0.875rem;
+  white-space: nowrap;
 `;
 
 const ResetContainer = styled.div`
@@ -278,4 +317,23 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
   padding: 0.25rem 0.5rem 0.25rem 0.5rem;
   max-height: 90vh;
   overflow-y: scroll;
+
+  div[class*="InputWrapper__Container"] {
+    label.dHhldd {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+
+  div[class*="Input__Container"][disabled] {
+    background: ${(props) => props.colors.text.staticTextFieldDefault};
+    border-bottom: 1px solid #9ca6ac;
+  }
+
+  div[class*="Input__Container"] {
+    background-color: ${(props) => props.colors.text.staticTextFieldDefault};
+  }
+
+  input[class*="Input__StyledInput"] {
+    padding: 4px;
+  }
 `;

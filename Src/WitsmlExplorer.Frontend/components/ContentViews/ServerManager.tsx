@@ -17,10 +17,11 @@ import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { Server, emptyServer } from "models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getWellsViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
+import NotificationService from "services/notificationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -30,7 +31,7 @@ const NEW_SERVER_ID = "1";
 const ServerManager = (): React.ReactElement => {
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   const queryClient = useQueryClient();
-  const { servers, isFetching } = useGetServers({
+  const { servers, isFetching, isError } = useGetServers({
     enabled: isAuthenticated,
     placeholderData: []
   });
@@ -42,6 +43,18 @@ const ServerManager = (): React.ReactElement => {
   const navigate = useNavigate();
   const { connectedServer, setConnectedServer } = useConnectedServer();
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
+
+  useEffect(() => {
+    if (isError) {
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: null,
+        message:
+          "Unable to connect to the API. Please verify that the API is running and refresh the page to try again.",
+        isSuccess: false,
+        severity: "error"
+      });
+    }
+  }, [isError]);
 
   const connectServer = async (server: Server) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {
@@ -111,7 +124,7 @@ const ServerManager = (): React.ReactElement => {
           variant="outlined"
           value={NEW_SERVER_ID}
           key={NEW_SERVER_ID}
-          disabled={editDisabled}
+          disabled={editDisabled || isError}
           onClick={() => onEditItem(emptyServer())}
         >
           <Icon name="cloudDownload" />
@@ -131,7 +144,7 @@ const ServerManager = (): React.ReactElement => {
           </Table.Row>
         </Table.Head>
         <StyledTableBody colors={colors}>
-          {servers
+          {(servers ?? [])
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
               <Table.Row id={server.id} key={server.id}>

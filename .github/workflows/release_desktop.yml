@@ -1,0 +1,35 @@
+name: Release Desktop Edition
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release WEx Desktop Installer
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: stable-desktop-wex
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: '20'
+      - name: Install Dependencies
+        run: yarn --network-timeout 100000
+        working-directory: ./Src/WitsmlExplorer.Desktop
+      - name: Build Installer
+        run: yarn electron:dist
+        working-directory: ./Src/WitsmlExplorer.Desktop
+      - name: Release Installer
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            ./Src/WitsmlExplorer.Desktop/dist/WExDesktop.x64*.exe
+
