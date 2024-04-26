@@ -1,5 +1,12 @@
 import { Checkbox, IconButton } from "@mui/material";
-import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  FilterFn,
+  FilterMeta,
+  Row,
+  SortingFn,
+  Table
+} from "@tanstack/react-table";
 import {
   activeId,
   calculateColumnWidth,
@@ -13,6 +20,7 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table/tableParts";
+import { getSearchRegex } from "contexts/filter";
 import OperationContext from "contexts/operationContext";
 import { DecimalPreference, UserTheme } from "contexts/operationStateReducer";
 import { useContext, useMemo } from "react";
@@ -58,8 +66,8 @@ export const useColumnDef = (
         size: width,
         meta: { type: column.type },
         sortingFn: getSortingFn(column.type),
-        enableColumnFilter: column.filterFn != null,
-        filterFn: column.filterFn,
+        enableColumnFilter: column.type !== ContentType.Component,
+        filterFn: getFilterFn(column),
         ...addComponentCell(column.type),
         ...addActiveCurveFiltering(column.label),
         ...addDecimalPreference(column.type, decimals)
@@ -234,4 +242,19 @@ const getSortingFn = (contentType: ContentType) => {
     return "alphanumeric";
   }
   return "text";
+};
+
+const getFilterFn = (column: ContentTableColumn): FilterFn<any> => {
+  return (
+    row: Row<any>,
+    id: string,
+    value: any,
+    addMeta: (meta: FilterMeta) => void
+  ): boolean => {
+    const filter = getSearchRegex(value, false);
+    return (
+      (!value || filter.test(row.getValue(id) ?? "")) &&
+      (!column.filterFn || column.filterFn(row, id, value, addMeta))
+    );
+  };
 };
