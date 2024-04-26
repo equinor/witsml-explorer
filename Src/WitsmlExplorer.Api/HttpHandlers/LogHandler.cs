@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             if (logMnemonicsGetRequest.Any())
             {
-                var logMnemonics = logMnemonicsGetRequest.Select(log => logObjectService.ReadLogData(wellUid, wellboreUid, log.LogUid, log.Mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex,  loadAllData: false, CancellationToken.None)).ToList();
+                var logMnemonics = logMnemonicsGetRequest.Select(log => logObjectService.ReadLogData(wellUid, wellboreUid, log.LogUid, log.Mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData: false, CancellationToken.None)).ToList();
                 var resultTask = await Task.WhenAll(logMnemonics);
                 var logRow = resultTask.FirstOrDefault();
                 if (logRow != null)

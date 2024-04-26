@@ -244,7 +244,7 @@ namespace WitsmlExplorer.Api.Services
         private static ICollection<Dictionary<string, LogDataValue>> GetDataDictionary(WitsmlLogData logData)
         {
             List<Dictionary<string, LogDataValue>> result = new();
-                    string[] mnemonics = logData.MnemonicList.Split(CommonConstants.DataSeparator);
+            string[] mnemonics = logData.MnemonicList.Split(CommonConstants.DataSeparator);
             foreach (string valueRow in logData.Data.Select(d => d.Data))
             {
                 var keyValuePairs = valueRow.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
