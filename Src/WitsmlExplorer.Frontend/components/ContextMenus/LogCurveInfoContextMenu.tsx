@@ -52,6 +52,7 @@ export interface LogCurveInfoContextMenuProps {
   servers: Server[];
   prioritizedCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
+  disableMenuItem?: boolean;
 }
 
 const LogCurveInfoContextMenu = (
@@ -64,7 +65,8 @@ const LogCurveInfoContextMenu = (
     selectedServer,
     servers,
     prioritizedCurves,
-    setPrioritizedCurves
+    setPrioritizedCurves,
+    disableMenuItem = false
   } = props;
 
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
@@ -204,7 +206,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"open"}
           onClick={onClickOpen}
-          disabled={checkedLogCurveInfoRows.length === 0}
+          disabled={checkedLogCurveInfoRows.length === 0 || disableMenuItem}
         >
           <StyledIcon
             name="folderOpen"
@@ -223,7 +225,7 @@ const LogCurveInfoContextMenu = (
               ComponentType.Mnemonic
             )
           }
-          disabled={checkedLogCurveInfoRows.length === 0}
+          disabled={checkedLogCurveInfoRows.length === 0 || disableMenuItem}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>
@@ -237,7 +239,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"copyRange"}
           onClick={onClickCopyRange}
-          disabled={checkedLogCurveInfoRows.length === 0}
+          disabled={checkedLogCurveInfoRows.length === 0 || disableMenuItem}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`${menuItemText(
@@ -252,6 +254,7 @@ const LogCurveInfoContextMenu = (
           componentsToCopy={checkedLogCurveInfoRows}
           sourceParent={selectedLog}
           withRange
+          disableMenuItem={disableMenuItem}
         />,
         <CopyComponentsToServerMenuItem
           key={"copyComponentToServer"}
@@ -261,6 +264,7 @@ const LogCurveInfoContextMenu = (
           componentsToPreserve={checkedLogCurveInfoRows.filter(
             (lci) => lci.mnemonic === selectedLog.indexCurve
           )}
+          disableMenuItem={disableMenuItem}
         />,
         <MenuItem
           key={"delete"}
@@ -271,7 +275,10 @@ const LogCurveInfoContextMenu = (
               JobType.DeleteComponents
             )
           }
-          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
+          disabled={
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
+            disableMenuItem
+          }
         >
           <StyledIcon
             name="deleteToTrash"
@@ -285,7 +292,11 @@ const LogCurveInfoContextMenu = (
             )}
           </Typography>
         </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+        <NestedMenuItem
+          key={"showOnServer"}
+          label={"Show on server"}
+          disabled={disableMenuItem}
+        >
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
@@ -300,6 +311,7 @@ const LogCurveInfoContextMenu = (
                     : IndexCurve.Time
                 )
               }
+              disabled={disableMenuItem}
             >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
@@ -308,7 +320,10 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"analyzeGaps"}
           onClick={onClickAnalyzeGaps}
-          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
+          disabled={
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
+            disableMenuItem
+          }
         >
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>
@@ -357,7 +372,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"batchUpdate"}
           onClick={onClickBatchUpdate}
-          disabled={checkedLogCurveInfoRows.length < 2}
+          disabled={checkedLogCurveInfoRows.length < 2 || disableMenuItem}
         >
           <StyledIcon
             name="settings"

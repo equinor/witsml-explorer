@@ -16,6 +16,7 @@ import Wellbore from "models/wellbore";
 import { Fragment } from "react";
 import { RouterLogType } from "routes/routerConstants";
 import {
+  getLogCurveInfoListViewPath,
   getLogObjectViewPath,
   getLogObjectsViewPath,
   getLogTypesViewPath,
@@ -27,6 +28,7 @@ import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
+import { NavigateFunction, createSearchParams } from "react-router-dom";
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -281,3 +283,35 @@ const displayDeleteModal = (
     payload: confirmation
   });
 };
+
+export const onClickOpenSeveralLogs = (
+  dispatchOperation: DispatchOperation,
+  // queryClient: QueryClient,
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  uid: string,
+  checkedItems: ObjectOnWellbore[],
+  navigate: NavigateFunction,
+  indexCurve: IndexCurve = null
+) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  const path = getLogCurveInfoListViewPath(
+    serverUrl,
+    wellUid,
+    wellboreUid,
+    ObjectType.Log,
+    indexCurve,
+    uid
+  );
+  let searchParams = {};
+  const mnemonics = getObjects(checkedItems);
+  const mnemonicsFormatted = JSON.stringify(mnemonics);
+
+  searchParams = createSearchParams({ logs: mnemonicsFormatted });
+  navigate({ pathname: path, search: searchParams.toString() });
+};
+
+function getObjects(objectOnWelbore: ObjectOnWellbore[]) {
+  return objectOnWelbore.map((row) => row.uid);
+}

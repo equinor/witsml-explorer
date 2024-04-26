@@ -172,14 +172,16 @@ export default function LogCurveInfoListView() {
           showOnlyPrioritizedCurves,
           prioritizedCurves,
           logObjects,
-          hideEmptyMnemonics
+          hideEmptyMnemonics,
+          true
         )}
         data={getTableData(
           logCurveInfoList,
           logObjects,
           timeZone,
           dateTimeFormat,
-          curveThreshold
+          curveThreshold,
+          true
         )}
         onContextMenu={onContextMenu}
         checkableRows

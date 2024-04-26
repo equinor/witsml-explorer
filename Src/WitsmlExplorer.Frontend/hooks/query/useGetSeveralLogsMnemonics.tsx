@@ -1,15 +1,6 @@
-import {
-  //QueryClient,
-  QueryObserverResult,
-  useQuery
-  //useQueryClient
-} from "@tanstack/react-query";
-//import { Server } from "../../models/server";
-//import Wellbore from "../../models/wellbore";
-//import WellboreService from "../../services/wellboreService";
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { QUERY_KEY_MNEMONICS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-//import { getWellboreQueryKey } from "./useGetWellbore";
 import LogObjectService from "services/logObjectService";
 import LogCurveInfo from "models/logCurveInfo";
 
@@ -27,7 +18,6 @@ export const getMnemonicsQueryKey = (
 };
 
 export const mnemonicsQuery = (
-  // queryClient: QueryClient,
   wellUid: string,
   wellboreUid: string,
   logsSearchParams: string[],
@@ -41,7 +31,6 @@ export const mnemonicsQuery = (
       logsSearchParams,
       new AbortController().signal
     );
-    // updateIndividualWellbores(queryClient, server, wellbores);
     return mnemonics;
   },
   ...options,
@@ -61,7 +50,6 @@ export const useGetSeveralLogsMnemonics = (
   logsSearchParams: string[],
   options?: QueryOptions
 ): MnemonicsQueryResult => {
-  // const queryClient = useQueryClient();
   const { data, ...state } = useQuery<LogCurveInfo[]>(
     mnemonicsQuery(wellUid, wellboreUid, logsSearchParams, options)
   );

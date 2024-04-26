@@ -10,6 +10,7 @@ import {
   StyledIcon,
   menuItemText,
   onClickDeleteObjects,
+  onClickOpenSeveralLogs,
   onClickRefreshObject,
   onClickShowObjectOnServer
 } from "components/ContextMenus/ContextMenuUtils";
@@ -22,19 +23,13 @@ import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
-import OperationType from "contexts/operationType";
 import { OpenInQueryView } from "hooks/useOpenInQueryView";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
-import {
-  NavigateFunction,
-  createSearchParams,
-  useNavigate
-} from "react-router-dom";
-import { getLogCurveInfoListViewPath } from "routes/utils/pathBuilder";
+import { useNavigate } from "react-router-dom";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -61,7 +56,6 @@ export const ObjectMenuItems = (
       onClick={() =>
         onClickOpenSeveralLogs(
           dispatchOperation,
-          //   queryClient,
           selectedServer.url,
           checkedObjects[0].wellUid,
           checkedObjects[0].wellboreUid,
@@ -73,11 +67,11 @@ export const ObjectMenuItems = (
             : IndexCurve.Time
         )
       }
-      disabled={checkedObjects.length == 0}
+      disabled={checkedObjects.length == 0 || objectType !== ObjectType.Log}
     >
       <StyledIcon name="folderOpen" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>
-        {menuItemText("Open", objectType, null)}
+        {menuItemText("Open", objectType, checkedObjects)}
       </Typography>
     </MenuItem>,
     <MenuItem
@@ -248,44 +242,3 @@ export const ObjectMenuItems = (
     </NestedMenuItem>
   ];
 };
-
-const onClickOpenSeveralLogs = (
-  dispatchOperation: DispatchOperation,
-  // queryClient: QueryClient,
-  serverUrl: string,
-  wellUid: string,
-  wellboreUid: string,
-  uid: string,
-  checkedItems: ObjectOnWellbore[],
-  navigate: NavigateFunction,
-  indexCurve: IndexCurve = null
-) => {
-  dispatchOperation({ type: OperationType.HideContextMenu });
-  const path = getLogCurveInfoListViewPath(
-    serverUrl,
-    wellUid,
-    wellboreUid,
-    ObjectType.Log,
-    indexCurve,
-    uid
-  );
-  let searchParams = {};
-  const mnemonics = getObjects(checkedItems);
-  const mnemonicsFormatted = JSON.stringify(mnemonics);
-
-  searchParams = createSearchParams({ logs: mnemonicsFormatted });
-
-  // console.log(path)
-  navigate(
-    { pathname: path, search: searchParams.toString() }
-    //,{
-    //   state: {
-    //     mnemonics: JSON.stringify(mnemonics)
-    //    }
-    //  }
-  );
-};
-
-function getObjects(objectOnWelbore: ObjectOnWellbore[]) {
-  return objectOnWelbore.map((row) => row.uid);
-}

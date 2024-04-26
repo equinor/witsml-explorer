@@ -7,7 +7,6 @@ import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
-//import {  ContentType } from "./table";
 import { ContentType } from "components/ContentViews/table";
 import { Row } from "@tanstack/react-table";
 
@@ -37,7 +36,8 @@ export const columns = (
   showOnlyPrioritizedCurves: boolean,
   prioritizedCurves: string[],
   logObjects: Map<string, object>,
-  hideEmptyMnemonics: boolean
+  hideEmptyMnemonics: boolean,
+  oneLogOnly: boolean = false
 ) => {
   return [
     ...(!isDepthIndex
@@ -56,6 +56,9 @@ export const columns = (
         );
       }
     },
+    ...(!oneLogOnly
+      ? [{ property: "logUid", label: "logUid", type: ContentType.String }]
+      : []),
     {
       property: "minIndex",
       label: "minIndex",
@@ -94,7 +97,6 @@ export const getTableData = (
   oneLogOnly: boolean = false
 ) => {
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
-
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
       if (isDepthIndex) return true;
@@ -108,9 +110,9 @@ export const getTableData = (
 
   return logCurveInfoList
     .map((logCurveInfo) => {
-      const logObje = logObjects.get(logCurveInfo.logUid) as LogObject;
+      const logObject = logObjects.get(logCurveInfo.logUid) as LogObject;
       const isActive =
-        logObje.objectGrowing &&
+        logObject.objectGrowing &&
         calculateIsCurveActive(
           logCurveInfo,
           maxDepth,
@@ -120,7 +122,7 @@ export const getTableData = (
       return {
         id: `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         uid: oneLogOnly
-          ? `${logCurveInfo.logUid}`
+          ? `${logCurveInfo.uid}`
           : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logUid: logCurveInfo.logUid,
         mnemonic: logCurveInfo.mnemonic,
@@ -142,10 +144,10 @@ export const getTableData = (
         unit: logCurveInfo.unit,
         sensorOffset: measureToString(logCurveInfo.sensorOffset),
         mnemAlias: logCurveInfo.mnemAlias,
-        wellUid: logObje.wellUid,
-        wellboreUid: logObje.wellboreUid,
-        wellName: logObje.wellName,
-        wellboreName: logObje.wellboreName,
+        wellUid: logObject.wellUid,
+        wellboreUid: logObject.wellboreUid,
+        wellName: logObject.wellName,
+        wellboreName: logObject.wellboreName,
         traceState: logCurveInfo.traceState,
         nullValue: logCurveInfo.nullValue,
         isActive: isActive,
