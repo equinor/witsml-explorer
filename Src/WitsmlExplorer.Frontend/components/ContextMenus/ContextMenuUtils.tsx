@@ -26,6 +26,7 @@ import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
+import { openRouteInNewWindow } from "tools/windowHelpers";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
 
 export const StyledIcon = styled(Icon)`
@@ -69,7 +70,6 @@ export const onClickShowObjectOnServer = async (
   indexCurve: IndexCurve = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const host = `${window.location.protocol}//${window.location.host}`;
   let url = "";
   if (objectType === ObjectType.Log) {
     const logTypePath =
@@ -100,7 +100,7 @@ export const onClickShowObjectOnServer = async (
       objectType
     );
   }
-  window.open(`${host}${url}`);
+  openRouteInNewWindow(url);
 };
 
 export const onClickShowGroupOnServer = async (
@@ -111,7 +111,6 @@ export const onClickShowGroupOnServer = async (
   indexCurve: IndexCurve = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const host = `${window.location.protocol}//${window.location.host}`;
   let url = "";
   if (objectType === ObjectType.Log && indexCurve) {
     const logTypePath =
@@ -140,7 +139,7 @@ export const onClickShowGroupOnServer = async (
       objectType
     );
   }
-  window.open(`${host}${url}`);
+  openRouteInNewWindow(url);
 };
 
 export const onClickDeleteObjects = async (

@@ -1,7 +1,7 @@
 import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
 import { ThemeProvider } from "@mui/material";
-import { CloseDesktopAppHandler } from "components/CloseDesktopAppHandler";
+import { DesktopAppEventHandler } from "components/DesktopAppEventHandler";
 import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
 import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
@@ -124,7 +124,7 @@ export default function Root() {
                 <SidebarProvider>
                   <FilterContextProvider>
                     <QueryContextProvider>
-                      {isDesktopApp() && <CloseDesktopAppHandler />}
+                      {isDesktopApp() && <DesktopAppEventHandler />}
                       <RefreshHandler />
                       <SnackbarProvider>
                         <Snackbar />
