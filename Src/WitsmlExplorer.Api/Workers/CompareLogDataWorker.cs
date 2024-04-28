@@ -27,6 +27,7 @@ namespace WitsmlExplorer.Api.Workers
         public JobType JobType => JobType.CompareLogData;
         private List<ICompareLogDataItem> _compareLogDataReportItems;
         private Dictionary<string, int> _mnemonicsMismatchCount;
+        private Dictionary<string, string> _unsharedMnemonics;
         private const int MaxMismatchesLimit = 500;
         private int _sourceDepthLogDecimals;
         private int _targetDepthLogDecimals;
@@ -56,6 +57,9 @@ namespace WitsmlExplorer.Api.Workers
 
             // Set up mnemonics mismatch count dictionary
             _mnemonicsMismatchCount = new Dictionary<string, int>();
+
+            // Set up unshared mnemonics dictionary
+            _unsharedMnemonics = new Dictionary<string, string>();
 
             // Get logs
             WitsmlLog sourceLog = await LogWorkerTools.GetLog(GetSourceWitsmlClientOrThrow(), job.SourceLog, ReturnElements.HeaderOnly);
@@ -98,12 +102,14 @@ namespace WitsmlExplorer.Api.Workers
                     }
                     else if (sourceLogMnemonics.Contains(mnemonic))
                     {
-                        await AddUnsharedMnemonicData(ServerType.Source, GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic);
+                        // await AddUnsharedMnemonicData(ServerType.Source, GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic);
+                        _unsharedMnemonics[mnemonic] = sourceLog.Name;
 
                     }
                     else if (targetLogMnemonics.Contains(mnemonic))
                     {
-                        await AddUnsharedMnemonicData(ServerType.Target, GetTargetWitsmlClientOrThrow(), targetLog, mnemonic);
+                        // await AddUnsharedMnemonicData(ServerType.Target, GetTargetWitsmlClientOrThrow(), targetLog, mnemonic);
+                        _unsharedMnemonics[mnemonic] = targetLog.Name;
                     }
                     else
                     {
@@ -289,13 +295,19 @@ namespace WitsmlExplorer.Api.Workers
                 mnemonicsMismatchCountResult += keyValues.Value >= 500 ? $"\n{keyValues.Key}: {keyValues.Value:n0} or more" : $"\n{keyValues.Key}: {keyValues.Value:n0}";
             }
 
+            string unsharedMnemonicsResult = _unsharedMnemonics.Count > 0 ? "\nUnshared mnemonics:" : "";
+            foreach (KeyValuePair<string, string> mnemonic in _unsharedMnemonics)
+            {
+                unsharedMnemonicsResult += $"\n{mnemonic.Key}: Only exists in {mnemonic.Value}";
+            }
+
             string indexRange = _compareAllIndexes ? "" : GetSharedIntervalReportFormat(sourceLog, targetLog);
 
             return new BaseReport
             {
                 Title = $"Log data comparison",
                 Summary = _compareLogDataReportItems.Count > 0
-                ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':{indexRange}" + mnemonicsMismatchCountResult
+                ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the shared mnemonics in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':{indexRange}" + unsharedMnemonicsResult + mnemonicsMismatchCountResult
                 : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'{indexRange}.",
                 ReportItems = _compareLogDataReportItems,
                 WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"When finding {MaxMismatchesLimit:n0} mismatches while searching through data indexes for any mnemonic, we stop comparing the log data for that particular mnemonic. This is because {MaxMismatchesLimit:n0} is the maximum limit for mismatches during the search for each mnemonic. It indicates that there might be an issue with the compare log setup. However, you can still access the report for the comparison performed below." : null,
