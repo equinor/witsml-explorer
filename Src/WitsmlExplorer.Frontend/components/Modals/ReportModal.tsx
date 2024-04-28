@@ -2,6 +2,7 @@ import {
   Accordion,
   DotProgress,
   Icon,
+  TextField,
   Typography
 } from "@equinor/eds-core-react";
 import {
@@ -9,6 +10,7 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
+import { LabelsLayout } from "components/Modals/ComparisonModalStyles";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { generateReport } from "components/ReportCreationHelper";
@@ -97,6 +99,22 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         <ContentLayout>
           {report ? (
             <>
+              {report.jobDetails && (
+                <LabelsLayout>
+                  {report.jobDetails.split("|").map((jobDetail) => {
+                    const keyValuePair = jobDetail.split("::");
+                    return (
+                      <TextField
+                        key={keyValuePair[0].trim()}
+                        readOnly
+                        id={keyValuePair[0].trim()}
+                        label={keyValuePair[0]}
+                        defaultValue={keyValuePair[1]}
+                      />
+                    );
+                  })}
+                </LabelsLayout>
+              )}
               {report.warningMessage && (
                 <Banner colors={colors}>
                   <Banner.Icon variant="warning">
