@@ -106,13 +106,11 @@ namespace WitsmlExplorer.Api.Workers
                     }
                     else if (sourceLogMnemonics.Contains(mnemonic))
                     {
-                        // await AddUnsharedMnemonicData(ServerType.Source, GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic);
                         _unsharedMnemonics[mnemonic] = sourceLog.Name;
 
                     }
                     else if (targetLogMnemonics.Contains(mnemonic))
                     {
-                        // await AddUnsharedMnemonicData(ServerType.Target, GetTargetWitsmlClientOrThrow(), targetLog, mnemonic);
                         _unsharedMnemonics[mnemonic] = targetLog.Name;
                     }
                     else
