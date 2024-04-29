@@ -1,5 +1,6 @@
-import { Close } from "@mui/icons-material";
-import { Alert, AlertTitle, Collapse, IconButton } from "@mui/material";
+import { Icon } from "@equinor/eds-core-react";
+import { Alert, AlertTitle, Collapse } from "@mui/material";
+import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import { capitalize } from "lodash";
@@ -101,16 +102,15 @@ const Alerts = (): React.ReactElement => {
         <Alert
           severity={alert?.severity ?? "error"}
           action={
-            <IconButton
+            <Button
+              variant="ghost_icon"
               aria-label="close"
-              color="inherit"
-              size="small"
               onClick={() => {
                 setAlert(null);
               }}
             >
-              <Close fontSize="inherit" />
-            </IconButton>
+              <Icon name="clear" />
+            </Button>
           }
         >
           <AlertTitle>

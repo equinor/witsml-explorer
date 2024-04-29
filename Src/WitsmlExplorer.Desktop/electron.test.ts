@@ -23,6 +23,7 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
+  electronApp.windows()?.forEach((window) => window.close());
   await electronApp.close();
 });
 
