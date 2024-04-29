@@ -203,6 +203,82 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
+        public async Task CompareLogData_DifferentNumberOfMnemonicsDepthLogs_ReturnsOnlySharedMnemonicsMismatchedReportItems()
+        {
+            SetupWorker(0, 0);
+            string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
+            TestLog sourceLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "0",
+                EndIndex = "1",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
+                Data = new() { "0,0", "1,0" }
+            };
+
+            TestLog targetLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "0",
+                EndIndex = "1",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1"), ("Curve2", "Unit2") },
+                Data = new() { "0,1,0", "1,0,0" }
+            };
+
+            var job = SetupTest(sourceLog, targetLog);
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+            List<CompareLogDataItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
+
+            int expectedNumberOfMismatches = 1;
+            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("0", "Curve1", "0", "1");
+
+            Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
+
+            Assert.Equal(expectedMismatchItem1.Index, resultReportItems[0].Index);
+            Assert.Equal(expectedMismatchItem1.Mnemonic, resultReportItems[0].Mnemonic);
+            Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
+            Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
+        }
+
+        [Fact]
+        public async Task CompareLogData_DifferentNumberOfMnemonicsTimeLogs_ReturnsOnlySharedMnemonicsMismatchedReportItems()
+        {
+            SetupWorker(0, 0);
+            string indexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME;
+            TestLog sourceLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "2023-09-28T08:10:00Z",
+                EndIndex = "2023-09-28T08:11:00Z",
+                LogCurveInfo = new() { ("IndexCurve", "DateTime"), ("Curve1", "Unit1") },
+                Data = new() { "2023-09-28T08:10:00Z,0", "2023-09-28T08:11:00Z,0" }
+            };
+
+            TestLog targetLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "2023-09-28T08:10:00Z",
+                EndIndex = "2023-09-28T08:11:00Z",
+                LogCurveInfo = new() { ("IndexCurve", "DateTime"), ("Curve1", "Unit1"), ("Curve2", "Unit2") },
+                Data = new() { "2023-09-28T08:10:00Z,1,0", "2023-09-28T08:11:00Z,0,0" }
+            };
+
+            var job = SetupTest(sourceLog, targetLog);
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+            List<CompareLogDataItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
+
+            int expectedNumberOfMismatches = 1;
+            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("2023-09-28T08:10:00Z", "Curve1", "0", "1");
+
+            Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
+
+            Assert.Equal(expectedMismatchItem1.Index, resultReportItems[0].Index);
+            Assert.Equal(expectedMismatchItem1.Mnemonic, resultReportItems[0].Mnemonic);
+            Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
+            Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
+        }
+
+        [Fact]
         public async Task CompareLogData_DifferentIndexRangeDepthLogs_ReturnsMismatchedReportItems()
         {
             SetupWorker(0, 0);
