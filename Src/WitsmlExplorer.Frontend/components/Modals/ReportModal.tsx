@@ -25,6 +25,7 @@ import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
+import { Colors } from "styles/Colors";
 
 export interface ReportModal {
   report?: BaseReport;
@@ -104,7 +105,8 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                   {report.jobDetails.split("|").map((jobDetail) => {
                     const keyValuePair = jobDetail.split("::");
                     return (
-                      <TextField
+                      <StyledTextField
+                        colors={colors}
                         key={keyValuePair[0].trim()}
                         readOnly
                         id={keyValuePair[0].trim()}
@@ -230,6 +232,12 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
 
   return report;
 };
+
+const StyledTextField = styled(TextField)<{ colors: Colors }>`
+  label {
+    color: ${(props) => props.colors.interactive.primaryResting};
+  }
+`;
 
 const ContentLayout = styled.div`
   display: flex;

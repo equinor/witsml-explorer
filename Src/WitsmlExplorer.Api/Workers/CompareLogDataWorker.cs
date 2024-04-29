@@ -160,49 +160,6 @@ namespace WitsmlExplorer.Api.Workers
             }
         }
 
-        private async Task AddUnsharedMnemonicData(ServerType serverType, IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic)
-        {
-            WitsmlLogData mnemonicData = await LogWorkerTools.GetLogDataForCurve(witsmlClient, log, mnemonic, Logger);
-
-            foreach (string dataRow in mnemonicData.Data.Select(row => row.Data))
-            {
-                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
-
-                var data = dataRow.Split(CommonConstants.DataSeparator);
-                var index = data.First();
-                var value = data.Last();
-
-                if (_isEqualNumOfDecimals && serverType == ServerType.Source)
-                {
-                    AddReportItem(mnemonic, index, value, null);
-                }
-                else if (_isEqualNumOfDecimals && serverType == ServerType.Target)
-                {
-                    AddReportItem(mnemonic, index, null, value);
-                }
-                else if (!_isEqualNumOfDecimals && serverType == ServerType.Source && (_sourceDepthLogDecimals < _targetDepthLogDecimals))
-                {
-                    AddUnequalServerDecimalsReportItem(mnemonic, index, null, value, null);
-                }
-                else if (!_isEqualNumOfDecimals && serverType == ServerType.Source && (_sourceDepthLogDecimals > _targetDepthLogDecimals))
-                {
-                    AddUnequalServerDecimalsReportItem(mnemonic, null, index, null, value);
-                }
-                else if (!_isEqualNumOfDecimals && serverType == ServerType.Target && (_targetDepthLogDecimals < _sourceDepthLogDecimals))
-                {
-                    AddUnequalServerDecimalsReportItem(mnemonic, index, null, value, null);
-                }
-                else if (!_isEqualNumOfDecimals && serverType == ServerType.Target && (_targetDepthLogDecimals > _sourceDepthLogDecimals))
-                {
-                    AddUnequalServerDecimalsReportItem(mnemonic, null, index, null, value);
-                }
-                else
-                {
-                    throw new ArgumentException($"serverType={serverType} not supported.");
-                }
-            }
-        }
-
         private void CompareLogData(Dictionary<string, string> sourceData, Dictionary<string, string> targetData, string mnemonic)
         {
             List<string> indexes = sourceData.Keys.Union(targetData.Keys).ToList();
@@ -293,7 +250,7 @@ namespace WitsmlExplorer.Api.Workers
         private BaseReport GenerateReport(WitsmlLog sourceLog, WitsmlLog targetLog)
         {
             var sortedMnemonicsMismatchCount = _mnemonicsMismatchCount.OrderByDescending(x => x.Value);
-            string mnemonicsMismatchCountResult = "\nNumber of mismatches for each mnemonic:";
+            string mnemonicsMismatchCountResult = "\nNumber of mismatches for each shared mnemonic:";
             foreach (KeyValuePair<string, int> keyValues in sortedMnemonicsMismatchCount)
             {
                 mnemonicsMismatchCountResult += keyValues.Value >= 500 ? $"\n{keyValues.Key}: {keyValues.Value:n0} or more" : $"\n{keyValues.Key}: {keyValues.Value:n0}";
@@ -315,7 +272,7 @@ namespace WitsmlExplorer.Api.Workers
                 : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'{indexRange}.",
                 ReportItems = _compareLogDataReportItems,
                 WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"When finding {MaxMismatchesLimit:n0} mismatches while searching through data indexes for any mnemonic, we stop comparing the log data for that particular mnemonic. This is because {MaxMismatchesLimit:n0} is the maximum limit for mismatches during the search for each mnemonic. It indicates that there might be an issue with the compare log setup. However, you can still access the report for the comparison performed below." : null,
-                JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceLog::{sourceLog.Name}|TargetLog::{targetLog.Name}"
+                JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceLog::{sourceLog.Name}|TargetLog::{targetLog.Name}|Number of mismatches for shared mnemonics::{_compareLogDataReportItems.Count:n0}|Number of unshared mnemonics::{_unsharedMnemonics.Count:n0}"
             };
         }
 
