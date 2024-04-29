@@ -203,7 +203,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task CompareLogData_DifferentNumberOfMnemonicsDepthLogs_ReturnsMismatchedReportItems()
+        public async Task CompareLogData_DifferentNumberOfMnemonicsDepthLogs_ReturnsOnlySharedMnemonicsMismatchedReportItems()
         {
             SetupWorker(0, 0);
             string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
@@ -222,16 +222,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 StartIndex = "0",
                 EndIndex = "1",
                 LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1"), ("Curve2", "Unit2") },
-                Data = new() { "0,0,0", "1,0,0" }
+                Data = new() { "0,1,0", "1,0,0" }
             };
 
             var job = SetupTest(sourceLog, targetLog);
             var (workerResult, refreshAction) = await _worker.Execute(job);
             List<CompareLogDataItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
 
-            int expectedNumberOfMismatches = 2;
-            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("0", "Curve2", null, "0");
-            CompareLogDataItem expectedMismatchItem2 = CreateCompareLogDataItem("1", "Curve2", null, "0");
+            int expectedNumberOfMismatches = 1;
+            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("0", "Curve1", "0", "1");
 
             Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
 
@@ -239,15 +238,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedMismatchItem1.Mnemonic, resultReportItems[0].Mnemonic);
             Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
             Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
-
-            Assert.Equal(expectedMismatchItem2.Index, resultReportItems[1].Index);
-            Assert.Equal(expectedMismatchItem2.Mnemonic, resultReportItems[1].Mnemonic);
-            Assert.Equal(expectedMismatchItem2.SourceValue, resultReportItems[1].SourceValue);
-            Assert.Equal(expectedMismatchItem2.TargetValue, resultReportItems[1].TargetValue);
         }
 
         [Fact]
-        public async Task CompareLogData_DifferentNumberOfMnemonicsTimeLogs_ReturnsMismatchedReportItems()
+        public async Task CompareLogData_DifferentNumberOfMnemonicsTimeLogs_ReturnsOnlySharedMnemonicsMismatchedReportItems()
         {
             SetupWorker(0, 0);
             string indexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME;
@@ -266,16 +260,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 StartIndex = "2023-09-28T08:10:00Z",
                 EndIndex = "2023-09-28T08:11:00Z",
                 LogCurveInfo = new() { ("IndexCurve", "DateTime"), ("Curve1", "Unit1"), ("Curve2", "Unit2") },
-                Data = new() { "2023-09-28T08:10:00Z,0,0", "2023-09-28T08:11:00Z,0,0" }
+                Data = new() { "2023-09-28T08:10:00Z,1,0", "2023-09-28T08:11:00Z,0,0" }
             };
 
             var job = SetupTest(sourceLog, targetLog);
             var (workerResult, refreshAction) = await _worker.Execute(job);
             List<CompareLogDataItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
 
-            int expectedNumberOfMismatches = 2;
-            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("2023-09-28T08:10:00Z", "Curve2", null, "0");
-            CompareLogDataItem expectedMismatchItem2 = CreateCompareLogDataItem("2023-09-28T08:11:00Z", "Curve2", null, "0");
+            int expectedNumberOfMismatches = 1;
+            CompareLogDataItem expectedMismatchItem1 = CreateCompareLogDataItem("2023-09-28T08:10:00Z", "Curve1", "0", "1");
 
             Assert.Equal(expectedNumberOfMismatches, resultReportItems.Count);
 
@@ -283,11 +276,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedMismatchItem1.Mnemonic, resultReportItems[0].Mnemonic);
             Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
             Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
-
-            Assert.Equal(expectedMismatchItem2.Index, resultReportItems[1].Index);
-            Assert.Equal(expectedMismatchItem2.Mnemonic, resultReportItems[1].Mnemonic);
-            Assert.Equal(expectedMismatchItem2.SourceValue, resultReportItems[1].SourceValue);
-            Assert.Equal(expectedMismatchItem2.TargetValue, resultReportItems[1].TargetValue);
         }
 
         [Fact]
