@@ -28,6 +28,8 @@ namespace WitsmlExplorer.Api.Workers
         private List<ICompareLogDataItem> _compareLogDataReportItems;
         private Dictionary<string, int> _mnemonicsMismatchCount;
         private Dictionary<string, string> _unsharedMnemonics;
+        private string _sourceServerName;
+        private string _targetServerName;
         private const int MaxMismatchesLimit = 500;
         private int _sourceDepthLogDecimals;
         private int _targetDepthLogDecimals;
@@ -49,6 +51,8 @@ namespace WitsmlExplorer.Api.Workers
             IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
             _sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
             _targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
+            _sourceServerName = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.Name;
+            _targetServerName = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.Name;
             _smallestDepthLogDecimals = Math.Min(_sourceDepthLogDecimals, _targetDepthLogDecimals);
             _isEqualNumOfDecimals = _sourceDepthLogDecimals == _targetDepthLogDecimals;
 
@@ -311,6 +315,7 @@ namespace WitsmlExplorer.Api.Workers
                 : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'{indexRange}.",
                 ReportItems = _compareLogDataReportItems,
                 WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"When finding {MaxMismatchesLimit:n0} mismatches while searching through data indexes for any mnemonic, we stop comparing the log data for that particular mnemonic. This is because {MaxMismatchesLimit:n0} is the maximum limit for mismatches during the search for each mnemonic. It indicates that there might be an issue with the compare log setup. However, you can still access the report for the comparison performed below." : null,
+                JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceLog::{sourceLog.Name}|TargetLog::{targetLog.Name}"
             };
         }
 

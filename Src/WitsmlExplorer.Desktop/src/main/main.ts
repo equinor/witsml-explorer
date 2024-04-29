@@ -8,12 +8,12 @@ import {
   dialog,
   Event,
   ipcMain,
+  IpcMainEvent,
   MessageBoxOptions
 } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 
-let mainWindow: BrowserWindow;
 let apiProcess: any;
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -76,7 +76,7 @@ function showErrorAndQuit(message: string) {
   app.quit();
 }
 
-function showUnfinishedJobsWarningOnClose() {
+function showUnfinishedJobsWarningOnClose(browserWindow: BrowserWindow) {
   const options: MessageBoxOptions = {
     type: "warning",
     buttons: ["Cancel", "Quit"],
@@ -85,7 +85,7 @@ function showUnfinishedJobsWarningOnClose() {
     detail:
       "You have unfinished jobs that may cause issues if not completed before exiting.\n\nAre you sure you want to exit the application?"
   };
-  return dialog.showMessageBoxSync(mainWindow, options);
+  return dialog.showMessageBoxSync(browserWindow, options);
 }
 
 interface Deferred<T> {
@@ -185,8 +185,8 @@ async function startApi(appConfig: AppConfig) {
   });
 }
 
-function createWindow() {
-  mainWindow = new BrowserWindow({
+function createWindow(route: string = "") {
+  const newBrowserWindow = new BrowserWindow({
     width: 1920,
     height: 1080,
     webPreferences: {
@@ -194,51 +194,75 @@ function createWindow() {
     },
     icon: path.join(__dirname, "../../resources/logo.png")
   });
-  mainWindow.setMenuBarVisibility(false);
+  newBrowserWindow.setMenuBarVisibility(false);
 
-  if (isDevelopment) {
-    mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
-  } else {
-    mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
-  }
+  const loadWindow = isDevelopment
+    ? () => newBrowserWindow.loadURL(process.env["ELECTRON_RENDERER_URL"])
+    : () =>
+        newBrowserWindow.loadFile(
+          path.join(__dirname, "../renderer/index.html")
+        );
 
-  mainWindow.on("close", async (e: Event) => {
-    e.preventDefault();
-    mainWindow.webContents.send("closeWindow");
-  });
-
-  mainWindow.on("closed", (): void => (mainWindow = null));
-}
-
-app.whenReady().then(async () => {
-  const appConfig = readOrCreateAppConfig();
-  await startApi(appConfig);
-  ipcMain.handle("getConfig", () => appConfig);
-
-  ipcMain.on("closeWindowResponse", async (_event, isUnfinishedJobs) => {
-    if (isUnfinishedJobs) {
-      const dialogResponse = showUnfinishedJobsWarningOnClose();
-      if (dialogResponse === 1) mainWindow.destroy();
-    } else {
-      mainWindow.destroy();
+  loadWindow().then(() => {
+    if (route) {
+      newBrowserWindow.webContents.send("navigate", route);
     }
   });
 
-  createWindow();
-
-  // From Electron docs: macOS apps generally continue running even without any windows open, and activating the app when no windows are available should open a new one.
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  newBrowserWindow.on("close", async (e: Event) => {
+    if (BrowserWindow.getAllWindows().length === 1) {
+      e.preventDefault();
+      newBrowserWindow.webContents.send("closeWindow");
+    }
   });
-});
+}
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
+const gotTheLock = app.requestSingleInstanceLock();
 
-app.on("before-quit", () => {
-  apiProcess?.kill();
-  apiProcess = null;
-});
+if (!gotTheLock) {
+  // Only allow one instance of the application. app.on('second-instance') will be called in the first instance and create a new window instead.
+  app.quit();
+} else {
+  app.whenReady().then(async () => {
+    const appConfig = readOrCreateAppConfig();
+    await startApi(appConfig);
+    ipcMain.handle("getConfig", () => appConfig);
+
+    ipcMain.on("closeWindowResponse", async (_event, isUnfinishedJobs) => {
+      const browserWindow = BrowserWindow.fromWebContents(_event.sender);
+      if (isUnfinishedJobs) {
+        const dialogResponse = showUnfinishedJobsWarningOnClose(browserWindow);
+        if (dialogResponse === 1) browserWindow.destroy();
+      } else {
+        browserWindow.destroy();
+      }
+    });
+
+    ipcMain.on("newWindow", (_event: IpcMainEvent, route: string) => {
+      createWindow(route);
+    });
+
+    createWindow();
+
+    // From Electron docs: macOS apps generally continue running even without any windows open, and activating the app when no windows are available should open a new one.
+    app.on("activate", () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+  });
+
+  app.on("second-instance", () => {
+    // Create a new window in this instance if trying to open the application again.
+    createWindow();
+  });
+
+  app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") {
+      app.quit();
+    }
+  });
+
+  app.on("before-quit", () => {
+    apiProcess?.kill();
+    apiProcess = null;
+  });
+}
