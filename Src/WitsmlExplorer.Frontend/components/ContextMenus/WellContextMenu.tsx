@@ -46,6 +46,7 @@ import React from "react";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
+import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
 
 export interface WellContextMenuProps {
@@ -196,9 +197,8 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const host = `${window.location.protocol}//${window.location.host}`;
     const wellboresViewPath = getWellboresViewPath(server.url, well.uid);
-    window.open(`${host}${wellboresViewPath}`);
+    openRouteInNewWindow(wellboresViewPath);
   };
 
   const onClickBatchUpdate = () => {

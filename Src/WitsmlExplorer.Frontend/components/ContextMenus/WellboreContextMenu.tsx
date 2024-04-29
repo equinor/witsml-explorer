@@ -47,6 +47,7 @@ import React, { useContext } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
+import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
 
 export interface WellboreContextMenuProps {
@@ -210,13 +211,12 @@ const WellboreContextMenu = (
 
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const host = `${window.location.protocol}//${window.location.host}`;
     const objectGroupsViewPath = getObjectGroupsViewPath(
       server.url,
       wellbore.wellUid,
       wellbore.uid
     );
-    window.open(`${host}${objectGroupsViewPath}`);
+    openRouteInNewWindow(objectGroupsViewPath);
   };
 
   return (

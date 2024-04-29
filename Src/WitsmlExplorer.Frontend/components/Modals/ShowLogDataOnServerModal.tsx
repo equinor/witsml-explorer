@@ -19,6 +19,7 @@ import { getLogCurveValuesViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import { openRouteInNewWindow } from "tools/windowHelpers";
 
 enum IndexRangeOptions {
   Full = "Full",
@@ -99,7 +100,6 @@ export function ShowLogDataOnServerModal() {
 
   const handleOnSubmit = () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const host = `${window.location.protocol}//${window.location.host}`;
     const targetServerLogCurveValuesViewPath = getLogCurveValuesViewPath(
       selectedServer.url,
       wellUid,
@@ -121,8 +121,8 @@ export function ShowLogDataOnServerModal() {
       targetServerEndIndex,
       JSON.parse(targetServerMnemonics)
     ).toString();
-    window.open(
-      `${host}${targetServerLogCurveValuesViewPath}${
+    openRouteInNewWindow(
+      `${targetServerLogCurveValuesViewPath}${
         targetServerSearchParams.length !== 0
           ? `?${targetServerSearchParams}`
           : ""
