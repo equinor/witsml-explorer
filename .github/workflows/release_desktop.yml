@@ -35,7 +35,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           draft: false
-          generate_release_notes: true
           tag_name: ${{ github.event.inputs.tag }}
           files: |
             ./Src/WitsmlExplorer.Desktop/dist/WExDesktop.x64*.exe
