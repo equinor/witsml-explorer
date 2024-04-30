@@ -24,6 +24,7 @@ import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { columns, getTableData } from "./LogCurveInfoListViewUtils";
 import { ItemNotFound } from "routes/ItemNotFound";
+import LogObject from "models/logObject";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -80,13 +81,7 @@ export default function LogCurveInfoListView() {
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
 
-  const loadLogs = (): Map<string, object> => {
-    const result = new Map<string, object>();
-    result.set(objectUid, logObject);
-    return result;
-  };
-
-  const logObjects = loadLogs();
+  const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
 
   useEffect(() => {
     if (logObject) {

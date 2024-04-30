@@ -23,7 +23,9 @@ export default class LogObjectService {
       `startIndexIsInclusive=${startIndexIsInclusive}`,
       `loadAllData=${loadAllData}`
     ];
-    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/multilogdata?${params.join(
+    const pathName = `/api/wells/${encodeURIComponent(
+      wellUid
+    )}/wellbores/${encodeURIComponent(wellboreUid)}/multilog/data?${params.join(
       "&"
     )}`;
 
@@ -60,7 +62,7 @@ export default class LogObjectService {
     abortSignal: AbortSignal
   ): Promise<LogCurveInfo[]> {
     if (logUids.length === 0) return;
-    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/logs/mnemonics`;
+    const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/multilog/mnemonics`;
 
     const response = await ApiClient.post(
       pathName,

@@ -35,7 +35,7 @@ export const columns = (
   isDepthIndex: boolean,
   showOnlyPrioritizedCurves: boolean,
   prioritizedCurves: string[],
-  logObjects: Map<string, object>,
+  logObjects: Map<string, LogObject>,
   hideEmptyMnemonics: boolean,
   oneLogOnly: boolean = false
 ) => {
@@ -90,7 +90,7 @@ export const columns = (
 
 export const getTableData = (
   logCurveInfoList: LogCurveInfo[],
-  logObjects: Map<string, object>,
+  logObjects: Map<string, LogObject>,
   timeZone: TimeZone,
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
@@ -110,7 +110,7 @@ export const getTableData = (
 
   return logCurveInfoList
     .map((logCurveInfo) => {
-      const logObject = logObjects.get(logCurveInfo.logUid) as LogObject;
+      const logObject = logObjects.get(logCurveInfo.logUid);
       const isActive =
         logObject.objectGrowing &&
         calculateIsCurveActive(
@@ -156,17 +156,24 @@ export const getTableData = (
       };
     })
     .sort((curve, curve2) => {
-      if (
-        curve.mnemonic.toLowerCase() ===
-        (logObjects.get(curve.logUid) as LogObject).indexCurve?.toLowerCase()
-      ) {
-        return -1;
-      } else if (
-        curve2.mnemonic.toLowerCase() ===
-        (logObjects.get(curve2.logUid) as LogObject).indexCurve?.toLowerCase()
-      ) {
-        return 1;
+      if (oneLogOnly) {
+        if (
+          curve.mnemonic.toLowerCase() ===
+          (logObjects.get(curve.logUid) as LogObject).indexCurve?.toLowerCase()
+        ) {
+          return -1;
+        } else if (
+          curve2.mnemonic.toLowerCase() ===
+          (logObjects.get(curve2.logUid) as LogObject).indexCurve?.toLowerCase()
+        ) {
+          return 1;
+        }
+        return curve.mnemonic.localeCompare(curve2.mnemonic);
       }
-      return curve.mnemonic.localeCompare(curve2.mnemonic);
+      if (curve.logUid !== curve2.logUid) {
+        return curve.logUid.localeCompare(curve2.logUid);
+      } else {
+        return curve.mnemonic.localeCompare(curve2.mnemonic);
+      }
     });
 };

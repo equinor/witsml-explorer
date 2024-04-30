@@ -285,7 +285,6 @@ const displayDeleteModal = (
 
 export const onClickOpenSeveralLogs = (
   dispatchOperation: DispatchOperation,
-  // queryClient: QueryClient,
   serverUrl: string,
   wellUid: string,
   wellboreUid: string,
@@ -304,10 +303,10 @@ export const onClickOpenSeveralLogs = (
     uid
   );
   let searchParams = {};
-  const mnemonics = getObjects(checkedItems);
-  const mnemonicsFormatted = JSON.stringify(mnemonics);
+  const logUids = getObjects(checkedItems);
+  const logUidsFormatted = JSON.stringify(logUids);
 
-  searchParams = createSearchParams({ logs: mnemonicsFormatted });
+  searchParams = createSearchParams({ logs: logUidsFormatted });
   navigate({ pathname: path, search: searchParams.toString() });
 };
 

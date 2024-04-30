@@ -52,7 +52,7 @@ export interface LogCurveInfoContextMenuProps {
   servers: Server[];
   prioritizedCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
-  disableMenuItem?: boolean;
+  isMultiLog?: boolean;
 }
 
 const LogCurveInfoContextMenu = (
@@ -66,7 +66,7 @@ const LogCurveInfoContextMenu = (
     servers,
     prioritizedCurves,
     setPrioritizedCurves,
-    disableMenuItem = false
+    isMultiLog = false
   } = props;
 
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
@@ -206,7 +206,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"open"}
           onClick={onClickOpen}
-          disabled={checkedLogCurveInfoRows.length === 0 || disableMenuItem}
+          disabled={checkedLogCurveInfoRows.length === 0 || isMultiLog}
         >
           <StyledIcon
             name="folderOpen"
@@ -225,7 +225,7 @@ const LogCurveInfoContextMenu = (
               ComponentType.Mnemonic
             )
           }
-          disabled={checkedLogCurveInfoRows.length === 0 || disableMenuItem}
+          disabled={checkedLogCurveInfoRows.length === 0 || isMultiLog}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>
@@ -239,7 +239,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"copyRange"}
           onClick={onClickCopyRange}
-          disabled={checkedLogCurveInfoRows.length === 0 || disableMenuItem}
+          disabled={checkedLogCurveInfoRows.length === 0 || isMultiLog}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`${menuItemText(
@@ -254,7 +254,7 @@ const LogCurveInfoContextMenu = (
           componentsToCopy={checkedLogCurveInfoRows}
           sourceParent={selectedLog}
           withRange
-          disableMenuItem={disableMenuItem}
+          disableMenuItem={isMultiLog}
         />,
         <CopyComponentsToServerMenuItem
           key={"copyComponentToServer"}
@@ -264,7 +264,7 @@ const LogCurveInfoContextMenu = (
           componentsToPreserve={checkedLogCurveInfoRows.filter(
             (lci) => lci.mnemonic === selectedLog.indexCurve
           )}
-          disableMenuItem={disableMenuItem}
+          disableMenuItem={isMultiLog}
         />,
         <MenuItem
           key={"delete"}
@@ -276,8 +276,7 @@ const LogCurveInfoContextMenu = (
             )
           }
           disabled={
-            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
-            disableMenuItem
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
           }
         >
           <StyledIcon
@@ -295,7 +294,7 @@ const LogCurveInfoContextMenu = (
         <NestedMenuItem
           key={"showOnServer"}
           label={"Show on server"}
-          disabled={disableMenuItem}
+          disabled={isMultiLog}
         >
           {servers.map((server: Server) => (
             <MenuItem
@@ -311,7 +310,7 @@ const LogCurveInfoContextMenu = (
                     : IndexCurve.Time
                 )
               }
-              disabled={disableMenuItem}
+              disabled={isMultiLog}
             >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
@@ -321,8 +320,7 @@ const LogCurveInfoContextMenu = (
           key={"analyzeGaps"}
           onClick={onClickAnalyzeGaps}
           disabled={
-            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
-            disableMenuItem
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
           }
         >
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
@@ -372,7 +370,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"batchUpdate"}
           onClick={onClickBatchUpdate}
-          disabled={checkedLogCurveInfoRows.length < 2 || disableMenuItem}
+          disabled={checkedLogCurveInfoRows.length < 2 || isMultiLog}
         >
           <StyledIcon
             name="settings"
