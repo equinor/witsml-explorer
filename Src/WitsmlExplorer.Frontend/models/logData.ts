@@ -13,13 +13,3 @@ export interface CurveSpecification {
 export interface LogDataRow {
   [key: string]: number | string | boolean;
 }
-
-export class LogDataRequestQuery {
-  mnemonics: string[];
-  logUid: string;
-
-  constructor(logUid: string, mnemonics: string[]) {
-    this.logUid = logUid;
-    this.mnemonics = mnemonics;
-  }
-}

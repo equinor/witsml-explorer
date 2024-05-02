@@ -1,37 +1,37 @@
 import { ErrorDetails } from "models/errorDetails";
-import { LogData, LogDataRequestQuery } from "../models/logData";
 import { ApiClient } from "services/apiClient";
 import AuthorizationService from "services/authorizationService";
 import NotificationService from "services/notificationService";
 import LogCurveInfo from "../models/logCurveInfo";
+import { LogData } from "../models/logData";
 
 export default class LogObjectService {
   public static async getLogData(
     wellUid: string,
     wellboreUid: string,
-    requestData: LogDataRequestQuery[],
+    logUid: string,
+    mnemonics: string[],
     startIndexIsInclusive: boolean,
     startIndex: string,
     endIndex: string,
     loadAllData: boolean,
     abortSignal: AbortSignal
   ): Promise<LogData> {
-    if (requestData.length === 0) return;
+    if (mnemonics.length === 0) return;
     const params = [
-      `startIndex=${encodeURIComponent(startIndex)}`,
-      `endIndex=${encodeURIComponent(endIndex)}`,
       `startIndexIsInclusive=${startIndexIsInclusive}`,
       `loadAllData=${loadAllData}`
     ];
+    if (startIndex) params.push(`startIndex=${encodeURIComponent(startIndex)}`);
+    if (endIndex) params.push(`endIndex=${encodeURIComponent(endIndex)}`);
     const pathName = `/api/wells/${encodeURIComponent(
       wellUid
-    )}/wellbores/${encodeURIComponent(wellboreUid)}/multilog/data?${params.join(
-      "&"
-    )}`;
-
+    )}/wellbores/${encodeURIComponent(wellboreUid)}/logs/${encodeURIComponent(
+      logUid
+    )}/logdata?${params.join("&")}`;
     const response = await ApiClient.post(
       pathName,
-      JSON.stringify(requestData),
+      JSON.stringify(mnemonics),
       abortSignal
     );
     if (response.ok) {
