@@ -97,7 +97,6 @@ export const getTableData = (
   curveThreshold: CurveThreshold,
   oneLogOnly: boolean = false
 ) => {
-  console.log(logCurveInfoList);
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
