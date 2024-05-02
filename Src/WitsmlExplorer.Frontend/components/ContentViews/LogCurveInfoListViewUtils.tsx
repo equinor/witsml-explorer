@@ -58,7 +58,7 @@ export const columns = (
       }
     },
     ...(!oneLogOnly
-      ? [{ property: "logUid", label: "logUid", type: ContentType.String }]
+      ? [{ property: "logName", label: "logName", type: ContentType.String }]
       : []),
     {
       property: "minIndex",
@@ -129,7 +129,7 @@ export const getTableData = (
           logUid === null
             ? `${logCurveInfo.uid}`
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
-        logUid: logCurveInfo.logUid,
+        logName: logObject.name,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
           ? logCurveInfo.minDepthIndex
@@ -164,19 +164,19 @@ export const getTableData = (
       if (logUid !== null) {
         if (
           curve.mnemonic.toLowerCase() ===
-          logObjects.get(curve.logUid).indexCurve?.toLowerCase()
+          logObjects.get(curve.logName).indexCurve?.toLowerCase()
         ) {
           return -1;
         } else if (
           curve2.mnemonic.toLowerCase() ===
-          logObjects.get(curve2.logUid).indexCurve?.toLowerCase()
+          logObjects.get(curve2.logName).indexCurve?.toLowerCase()
         ) {
           return 1;
         }
         return curve.mnemonic.localeCompare(curve2.mnemonic);
       }
-      if (curve.logUid !== curve2.logUid) {
-        return curve.logUid.localeCompare(curve2.logUid);
+      if (curve.logName !== curve2.logName) {
+        return curve.logName.localeCompare(curve2.logName);
       } else {
         return curve.mnemonic.localeCompare(curve2.mnemonic);
       }
