@@ -176,7 +176,7 @@ export default function LogCurveInfoListView() {
           timeZone,
           dateTimeFormat,
           curveThreshold,
-          true
+          objectUid
         )}
         onContextMenu={onContextMenu}
         checkableRows

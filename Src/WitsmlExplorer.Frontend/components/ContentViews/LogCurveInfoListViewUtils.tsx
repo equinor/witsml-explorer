@@ -95,7 +95,7 @@ export const getTableData = (
   timeZone: TimeZone,
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
-  oneLogOnly: boolean = false
+  logUid: string = null
 ) => {
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
@@ -111,6 +111,9 @@ export const getTableData = (
 
   return logCurveInfoList
     .map((logCurveInfo) => {
+      if (logUid !== null) {
+        logCurveInfo.logUid = logUid;
+      }
       const logObject = logObjects.get(logCurveInfo.logUid);
       const isActive =
         logObject.objectGrowing &&
@@ -122,9 +125,10 @@ export const getTableData = (
         );
       return {
         id: `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
-        uid: oneLogOnly
-          ? `${logCurveInfo.uid}`
-          : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
+        uid:
+          logUid === null
+            ? `${logCurveInfo.uid}`
+            : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logUid: logCurveInfo.logUid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
@@ -157,15 +161,15 @@ export const getTableData = (
       };
     })
     .sort((curve, curve2) => {
-      if (oneLogOnly) {
+      if (logUid === null) {
         if (
           curve.mnemonic.toLowerCase() ===
-          (logObjects.get(curve.logUid) as LogObject).indexCurve?.toLowerCase()
+          logObjects.get(curve.logUid).indexCurve?.toLowerCase()
         ) {
           return -1;
         } else if (
           curve2.mnemonic.toLowerCase() ===
-          (logObjects.get(curve2.logUid) as LogObject).indexCurve?.toLowerCase()
+          logObjects.get(curve2.logUid).indexCurve?.toLowerCase()
         ) {
           return 1;
         }
