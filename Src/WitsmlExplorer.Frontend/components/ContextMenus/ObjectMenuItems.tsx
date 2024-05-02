@@ -50,7 +50,6 @@ export const ObjectMenuItems = (
   const objectReferences = useClipboardReferencesOfType(objectType);
   const navigate = useNavigate();
   return [
-    // ------- OPEN
     <MenuItem
       key={"open"}
       onClick={() =>

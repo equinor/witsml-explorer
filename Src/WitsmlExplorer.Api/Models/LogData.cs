@@ -11,24 +11,14 @@ namespace WitsmlExplorer.Api.Models
         public string StartIndex { get; init; }
         public string EndIndex { get; init; }
         public string Direction { get; set; }
-        public string WellUid { get; set; }
-        public string WellBoreUid { get; set; }
-
-        public ICollection<CurveSpecification> CurveSpecifications { get; set; }
-        public ICollection<Dictionary<string, LogDataValue>> Data { get; set; }
-
-        internal LogData(string wellUid, string wellBoreUid)
-        {
-            this.WellUid = wellUid;
-            this.WellBoreUid = wellBoreUid;
-        }
+        public ICollection<CurveSpecification> CurveSpecifications { get; init; }
+        public ICollection<Dictionary<string, LogDataValue>> Data { get; init; }
     }
 
     public class CurveSpecification
     {
         public string Mnemonic { get; init; }
         public string Unit { get; init; }
-        public string LogUid { get; set; }
     }
 
     [JsonConverter(typeof(LogDataValueConverter))]

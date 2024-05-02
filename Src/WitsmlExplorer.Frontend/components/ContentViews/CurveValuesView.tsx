@@ -45,12 +45,7 @@ import {
   IndexRange
 } from "models/jobs/deleteLogCurveValuesJob";
 import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
-import {
-  CurveSpecification,
-  LogData,
-  LogDataRequestQuery,
-  LogDataRow
-} from "models/logData";
+import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -537,13 +532,12 @@ export const CurveValuesView = (): React.ReactElement => {
   const getLogData = async (startIndex: string, endIndex: string) => {
     const startIndexIsInclusive = !autoRefresh;
     controller.current = new AbortController();
-    const logDataObjectQuery = new LogDataRequestQuery(objectUid, mnemonics);
-    const payLoad = [logDataObjectQuery];
 
     const logData: LogData = await LogObjectService.getLogData(
       wellUid,
       wellboreUid,
-      payLoad,
+      objectUid,
+      mnemonics,
       startIndexIsInclusive,
       startIndex,
       endIndex,

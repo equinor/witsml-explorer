@@ -153,12 +153,6 @@ namespace WitsmlExplorer.Api.Services
                     }).ToList(),
                 }).ToList();
         }
-        public async Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, IEnumerable<string> logUids)
-        {
-            var logGetters = logUids.Select(logUid => GetLogCurveInfo(wellUid, wellboreUid, logUid)).ToList();
-            var resultTask = await Task.WhenAll(logGetters);
-            return resultTask.SelectMany(i => i).ToList();
-        }
 
         public async Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, IEnumerable<string> logUids)
         {
@@ -177,7 +171,7 @@ namespace WitsmlExplorer.Api.Services
 
             if ((!log.IsDecreasing() && startIndex > endIndex) || (log.IsDecreasing() && startIndex < endIndex))
             {
-                return new LogData(wellUid, wellboreUid);
+                return new LogData();
             }
 
             string indexMnemonic = log.IndexCurve.Value;
@@ -191,7 +185,7 @@ namespace WitsmlExplorer.Api.Services
 
             if (witsmlLog?.LogData == null || witsmlLog.LogData.Data.IsNullOrEmpty())
             {
-                return new LogData(wellUid, wellboreUid);
+                return new LogData();
             }
 
             if (!startIndexIsInclusive)
@@ -199,7 +193,7 @@ namespace WitsmlExplorer.Api.Services
                 witsmlLog.LogData.Data.RemoveAt(0);
                 if (witsmlLog.LogData.Data.Count == 0)
                 {
-                    return new LogData(wellUid, wellboreUid);
+                    return new LogData();
                 }
             }
 
@@ -208,7 +202,7 @@ namespace WitsmlExplorer.Api.Services
                 .Select(lci => new CurveSpecification { Mnemonic = lci.Mnemonic, Unit = lci.Unit ?? CommonConstants.Unit.Unitless })
                 .ToList();
 
-            return new LogData(wellUid, wellboreUid)
+            return new LogData
             {
                 StartIndex = witsmlLog.StartIndex == null ? startIndex.GetValueAsString() :
                 Index.Start(witsmlLog).GetValueAsString(),
@@ -219,7 +213,7 @@ namespace WitsmlExplorer.Api.Services
             };
         }
 
-        public async Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, string logUid)
+        private async Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, string logUid)
         {
             WitsmlLog witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
 
@@ -276,7 +270,8 @@ namespace WitsmlExplorer.Api.Services
                 if (logData != null) allLogData.Data.AddRange(logData.Data);
             }
 
-            var witsmlLog = new WitsmlLog { LogData = allLogData };
+            var witsmlLog = new WitsmlLog();
+            witsmlLog.LogData = allLogData;
             return witsmlLog;
         }
 
