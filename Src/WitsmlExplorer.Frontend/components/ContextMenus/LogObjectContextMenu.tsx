@@ -1,11 +1,12 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  menuItemText,
-  StyledIcon
+  StyledIcon,
+  menuItemText
 } from "components/ContextMenus/ContextMenuUtils";
 import { onClickPaste } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
@@ -50,6 +51,12 @@ import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React, { useContext } from "react";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getMultiLogCurveInfoListViewPath
+} from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
@@ -69,6 +76,7 @@ const LogObjectContextMenu = (
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const onClickProperties = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -271,6 +279,40 @@ const LogObjectContextMenu = (
     dispatchOperation(action);
   };
 
+  const onClickOpenSeveralLogs = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    if (checkedObjects.length === 1) {
+      navigate(
+        getLogObjectViewPath(
+          connectedServer.url,
+          checkedObjects[0].wellUid,
+          checkedObjects[0].wellboreUid,
+          ObjectType.Log,
+          (checkedObjects[0] as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
+            ? RouterLogType.DEPTH
+            : RouterLogType.TIME,
+          checkedObjects[0].uid
+        )
+      );
+    } else {
+      const path = getMultiLogCurveInfoListViewPath(
+        connectedServer.url,
+        checkedObjects[0].wellUid,
+        checkedObjects[0].wellboreUid,
+        ObjectType.Log,
+        (checkedObjects[0] as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
+          ? RouterLogType.DEPTH
+          : RouterLogType.TIME
+      );
+      let searchParams = {};
+      const logUids = checkedObjects.map((row) => row.uid);
+      const logUidsFormatted = JSON.stringify(logUids);
+
+      searchParams = createSearchParams({ logs: logUidsFormatted });
+      navigate({ pathname: path, search: searchParams.toString() });
+    }
+  };
+
   const extraMenuItems = (): React.ReactElement[] => {
     return [
       <MenuItem
@@ -428,6 +470,15 @@ const LogObjectContextMenu = (
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem key={"open"} onClick={onClickOpenSeveralLogs}>
+          <StyledIcon
+            name="folderOpen"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            {menuItemText("Open", ObjectType.Log, checkedObjects)}
+          </Typography>
+        </MenuItem>,
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Log,
