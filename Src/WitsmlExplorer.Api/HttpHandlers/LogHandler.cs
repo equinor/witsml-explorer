@@ -34,10 +34,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             return TypedResults.Ok(await logObjectService.GetLogCurveInfo(wellUid, wellboreUid, logUid));
         }
-        [Produces(typeof(IEnumerable<LogCurveInfo>))]
+        [Produces(typeof(IEnumerable<MultiLogCurveInfo>))]
         public static async Task<IResult> GetMultiLogCurveInfo(string wellUid, string wellboreUid, [FromBody] IEnumerable<string> logUids, ILogObjectService logObjectService)
         {
-            return TypedResults.Ok(await logObjectService.GetLogCurveInfo(wellUid, wellboreUid, logUids));
+            return TypedResults.Ok(await logObjectService.GetMultiLogCurveInfo(wellUid, wellboreUid, logUids));
         }
         [Produces(typeof(LogData))]
         public static async Task<IResult> GetLogData(

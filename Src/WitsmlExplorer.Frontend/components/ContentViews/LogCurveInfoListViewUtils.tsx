@@ -9,6 +9,7 @@ import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
 import { ContentType } from "components/ContentViews/table";
 import { Row } from "@tanstack/react-table";
+import MultiLogCurveInfo from "models/multilogCurveInfo";
 
 export const calculateIsCurveActive = (
   logCurveInfo: LogCurveInfo,
@@ -89,13 +90,14 @@ export const columns = (
 };
 
 export const getTableData = (
-  logCurveInfoList: LogCurveInfo[],
+  logCurveInfoList: MultiLogCurveInfo[],
   logObjects: Map<string, LogObject>,
   timeZone: TimeZone,
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
   oneLogOnly: boolean = false
 ) => {
+  console.log(logCurveInfoList);
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
