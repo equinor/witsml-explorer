@@ -161,7 +161,7 @@ export const getTableData = (
       };
     })
     .sort((curve, curve2) => {
-      if (logUid === null) {
+      if (logUid !== null) {
         if (
           curve.mnemonic.toLowerCase() ===
           logObjects.get(curve.logUid).indexCurve?.toLowerCase()

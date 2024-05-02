@@ -30,7 +30,7 @@ export function useGetActiveRoute() {
   const isLogCurveValuesView = !!useMatch(
     LOG_CURVE_VALUES_VIEW_NAVIGATION_PATH
   );
-  const isLogsCurveInforListView = !!useMatch(
+  const isLogsCurveInfoListView = !!useMatch(
     MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH
   );
   return {
@@ -46,6 +46,6 @@ export function useGetActiveRoute() {
     isLogObjectsView,
     isLogObjectView,
     isLogCurveValuesView,
-    isLogsCurveInforListView
+    isLogsCurveInfoListView
   };
 }
