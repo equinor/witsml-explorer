@@ -10,7 +10,6 @@ import {
   StyledIcon,
   menuItemText,
   onClickDeleteObjects,
-  onClickOpenSeveralLogs,
   onClickRefreshObject,
   onClickShowObjectOnServer
 } from "components/ContextMenus/ContextMenuUtils";
@@ -29,7 +28,6 @@ import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -48,31 +46,8 @@ export const ObjectMenuItems = (
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
-  const navigate = useNavigate();
+
   return [
-    <MenuItem
-      key={"open"}
-      onClick={() =>
-        onClickOpenSeveralLogs(
-          dispatchOperation,
-          selectedServer.url,
-          checkedObjects[0].wellUid,
-          checkedObjects[0].wellboreUid,
-          checkedObjects[0].uid,
-          checkedObjects,
-          navigate,
-          (checkedObjects[0] as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
-            ? IndexCurve.Depth
-            : IndexCurve.Time
-        )
-      }
-      disabled={checkedObjects.length == 0 || objectType !== ObjectType.Log}
-    >
-      <StyledIcon name="folderOpen" color={colors.interactive.primaryResting} />
-      <Typography color={"primary"}>
-        {menuItemText("Open", objectType, checkedObjects)}
-      </Typography>
-    </MenuItem>,
     <MenuItem
       key={"refresh"}
       onClick={() =>

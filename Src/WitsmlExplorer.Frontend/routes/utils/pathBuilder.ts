@@ -2,11 +2,11 @@ import {
   FILTER_TYPE_PARAM,
   JOBS_VIEW_NAVIGATION_PATH,
   LOG_CURVE_VALUES_VIEW_NAVIGATION_PATH,
-  MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH,
   LOG_OBJECTS_VIEW_NAVIGATION_PATH,
   LOG_OBJECT_VIEW_NAVIGATION_PATH,
   LOG_TYPES_VIEW_NAVIGATION_PATH,
   LOG_TYPE_PARAM,
+  MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH,
   OBJECTS_VIEW_NAVIGATION_PATH,
   OBJECT_GROUPS_VIEW_NAVIGATION_PATH,
   OBJECT_GROUP_PARAM,
@@ -183,13 +183,12 @@ export function getLogCurveValuesViewPath(
   return logCurveValuesViewPath;
 }
 
-export function getLogCurveInfoListViewPath(
+export function getMultiLogCurveInfoListViewPath(
   serverUrl: string,
   wellUid: string,
   wellboreUid: string,
   objectGroup: string,
-  logType: string,
-  objectUid: string
+  logType: string
 ) {
   const logCurveValuesViewPath =
     MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH.replace(
@@ -199,7 +198,6 @@ export function getLogCurveInfoListViewPath(
       .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
       .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
       .replace(OBJECT_GROUP_PARAM, objectGroup)
-      .replace(LOG_TYPE_PARAM, logType)
-      .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid));
+      .replace(LOG_TYPE_PARAM, logType);
   return logCurveValuesViewPath;
 }
