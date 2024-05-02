@@ -7,9 +7,26 @@ import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
-import { ContentType } from "components/ContentViews/table";
+import { ContentTableRow, ContentType } from "components/ContentViews/table";
 import { Row } from "@tanstack/react-table";
 import MultiLogCurveInfo from "models/multilogCurveInfo";
+
+export interface LogCurveInfoRow extends ContentTableRow {
+  uid: string;
+  mnemonic: string;
+  minIndex: number | Date;
+  maxIndex: number | Date;
+  classWitsml: string;
+  unit: string;
+  mnemAlias: string;
+  logUid: string;
+  wellUid: string;
+  wellboreUid: string;
+  wellName: string;
+  wellboreName: string;
+  isActive: boolean;
+  logCurveInfo: LogCurveInfo;
+}
 
 export const calculateIsCurveActive = (
   logCurveInfo: LogCurveInfo,
@@ -130,6 +147,7 @@ export const getTableData = (
             ? `${logCurveInfo.uid}`
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logName: logObject.name,
+        logUid: logObject.uid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
           ? logCurveInfo.minDepthIndex

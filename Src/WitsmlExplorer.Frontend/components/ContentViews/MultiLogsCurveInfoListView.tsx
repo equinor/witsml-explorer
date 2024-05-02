@@ -1,5 +1,5 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import { ContentTable, ContentTableRow } from "components/ContentViews/table";
+import { ContentTable } from "components/ContentViews/table";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
@@ -18,30 +18,17 @@ import LogCurveInfo from "models/logCurveInfo";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { columns, getTableData } from "./LogCurveInfoListViewUtils";
+import {
+  LogCurveInfoRow,
+  columns,
+  getTableData
+} from "./LogCurveInfoListViewUtils";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
 import LogObject from "models/logObject";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import LogObjectService from "services/logObjectService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { truncateAbortHandler } from "services/apiClient";
-
-export interface LogCurveInfoRow extends ContentTableRow {
-  uid: string;
-  mnemonic: string;
-  minIndex: number | Date;
-  maxIndex: number | Date;
-  classWitsml: string;
-  unit: string;
-  mnemAlias: string;
-  logUid: string;
-  wellUid: string;
-  wellboreUid: string;
-  wellName: string;
-  wellboreName: string;
-  isActive: boolean;
-  logCurveInfo: LogCurveInfo;
-}
 
 export default function MultiLogsCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
@@ -122,7 +109,7 @@ export default function MultiLogsCurveInfoListView() {
     selectedItem: LogCurveInfoRow,
     checkedLogCurveInfoRows: LogCurveInfoRow[]
   ) => {
-    const selectedLog = logObjects.get(selectedItem.logUid) as LogObject;
+    const selectedLog = logObjects.get(selectedItem.logUid);
     const isMultiLog = true;
     const contextMenuProps: LogCurveInfoContextMenuProps = {
       checkedLogCurveInfoRows,

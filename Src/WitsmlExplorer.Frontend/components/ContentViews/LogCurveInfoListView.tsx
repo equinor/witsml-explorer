@@ -1,5 +1,5 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import { ContentTable, ContentTableRow } from "components/ContentViews/table";
+import { ContentTable } from "components/ContentViews/table";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
@@ -16,32 +16,18 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
-import LogCurveInfo from "models/logCurveInfo";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
-import { columns, getTableData } from "./LogCurveInfoListViewUtils";
+import {
+  LogCurveInfoRow,
+  columns,
+  getTableData
+} from "./LogCurveInfoListViewUtils";
 import { ItemNotFound } from "routes/ItemNotFound";
 import LogObject from "models/logObject";
-
-export interface LogCurveInfoRow extends ContentTableRow {
-  uid: string;
-  mnemonic: string;
-  minIndex: number | Date;
-  maxIndex: number | Date;
-  classWitsml: string;
-  unit: string;
-  mnemAlias: string;
-  logUid: string;
-  wellUid: string;
-  wellboreUid: string;
-  wellName: string;
-  wellboreName: string;
-  isActive: boolean;
-  logCurveInfo: LogCurveInfo;
-}
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
