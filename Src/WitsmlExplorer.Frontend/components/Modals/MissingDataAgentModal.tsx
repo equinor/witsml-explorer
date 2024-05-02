@@ -4,7 +4,6 @@ import {
   Icon,
   Typography
 } from "@equinor/eds-core-react";
-import { CloudUpload } from "@mui/icons-material";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import {
   objectToProperties,
@@ -318,11 +317,11 @@ const MissingDataAgentModal = (
             }}
           >
             <Button onClick={onClear} variant="outlined">
-              <Typography>Clear</Typography>
+              Clear
             </Button>
             <Button onClick={onImport} variant="outlined">
-              <CloudUpload />
-              <Typography noWrap>Import</Typography>
+              <Icon name="cloudUpload" />
+              Import
               <input
                 ref={inputFileRef}
                 type="file"
@@ -332,7 +331,7 @@ const MissingDataAgentModal = (
               />
             </Button>
             <Button onClick={onExport} variant="outlined">
-              <Typography>Export</Typography>
+              Export
             </Button>
           </div>
         </ModalContentLayout>

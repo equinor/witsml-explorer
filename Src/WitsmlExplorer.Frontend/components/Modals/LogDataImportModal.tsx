@@ -1,5 +1,4 @@
-﻿import { Accordion, List } from "@equinor/eds-core-react";
-import { CloudUpload } from "@mui/icons-material";
+﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog from "components/Modals/ModalDialog";
@@ -113,7 +112,7 @@ const LogDataImportModal = (
                   variant="contained"
                   color={"primary"}
                   component="label"
-                  startIcon={<CloudUpload />}
+                  startIcon={<Icon name="cloudUpload" />}
                 >
                   <Typography noWrap>Upload File</Typography>
                   <input

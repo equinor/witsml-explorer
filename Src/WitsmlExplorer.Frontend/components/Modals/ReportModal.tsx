@@ -2,6 +2,7 @@ import {
   Accordion,
   DotProgress,
   Icon,
+  TextField,
   Typography
 } from "@equinor/eds-core-react";
 import {
@@ -9,6 +10,7 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
+import { LabelsLayout } from "components/Modals/ComparisonModalStyles";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { generateReport } from "components/ReportCreationHelper";
@@ -23,6 +25,7 @@ import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
+import { Colors } from "styles/Colors";
 
 export interface ReportModal {
   report?: BaseReport;
@@ -97,6 +100,23 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         <ContentLayout>
           {report ? (
             <>
+              {report.jobDetails && (
+                <LabelsLayout>
+                  {report.jobDetails.split("|").map((jobDetail) => {
+                    const keyValuePair = jobDetail.split("::");
+                    return (
+                      <StyledTextField
+                        colors={colors}
+                        key={keyValuePair[0].trim()}
+                        readOnly
+                        id={keyValuePair[0].trim()}
+                        label={keyValuePair[0]}
+                        defaultValue={keyValuePair[1]}
+                      />
+                    );
+                  })}
+                </LabelsLayout>
+              )}
               {report.warningMessage && (
                 <Banner colors={colors}>
                   <Banner.Icon variant="warning">
@@ -212,6 +232,12 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
 
   return report;
 };
+
+const StyledTextField = styled(TextField)<{ colors: Colors }>`
+  label {
+    color: ${(props) => props.colors.interactive.primaryResting};
+  }
+`;
 
 const ContentLayout = styled.div`
   display: flex;
