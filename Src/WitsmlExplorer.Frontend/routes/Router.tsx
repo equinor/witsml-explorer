@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import MultiLogsCurveInfoListView from "components/ContentViews/MultiLogsCurveInfoListView";
 import {
   RouterProvider,
   createBrowserRouter,
@@ -7,10 +8,10 @@ import {
 import {
   JOBS_VIEW_ROUTE_PATH,
   LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
-  LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
   LOG_OBJECTS_VIEW_ROUTE_PATH,
   LOG_OBJECT_VIEW_ROUTE_PATH,
   LOG_TYPES_VIEW_ROUTE_PATH,
+  MULTI_LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
   OBJECTS_VIEW_ROUTE_PATH,
   OBJECT_GROUPS_VIEW_ROUTE_PATH,
   OBJECT_VIEW_ROUTE_PATH,
@@ -26,7 +27,6 @@ import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import { ErrorView } from "../components/ContentViews/ErrorView";
 import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
-import MultiLogsCurveInfoListView from "components/ContentViews/MultiLogsCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import LogsListView from "../components/ContentViews/LogsListView";
 import ObjectSearchListView from "../components/ContentViews/ObjectSearchListView";
@@ -118,7 +118,7 @@ const router = createRouter([
             errorElement: <ErrorView />
           },
           {
-            path: LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
+            path: MULTI_LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
             element: <MultiLogsCurveInfoListView />,
             errorElement: <ErrorView />
           },
