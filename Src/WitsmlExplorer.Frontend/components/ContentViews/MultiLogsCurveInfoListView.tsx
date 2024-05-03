@@ -9,26 +9,26 @@ import ProgressSpinner from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 
+import { useCurveThreshold } from "contexts/curveThresholdContext";
 import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import LogCurveInfo from "models/logCurveInfo";
+import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
+import { truncateAbortHandler } from "services/apiClient";
+import LogCurvePriorityService from "services/logCurvePriorityService";
+import LogObjectService from "services/logObjectService";
 import {
   LogCurveInfoRow,
   columns,
   getTableData
 } from "./LogCurveInfoListViewUtils";
-import { useCurveThreshold } from "contexts/curveThresholdContext";
-import LogObject from "models/logObject";
-import { useGetObjects } from "hooks/query/useGetObjects";
-import LogObjectService from "services/logObjectService";
-import LogCurvePriorityService from "services/logCurvePriorityService";
-import { truncateAbortHandler } from "services/apiClient";
 
 export default function MultiLogsCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
@@ -44,27 +44,23 @@ export default function MultiLogsCurveInfoListView() {
   const [searchParams] = useSearchParams();
   const logsSearchParams = searchParams.get("logs");
   const { servers } = useGetServers();
-
+  const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
+  const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
+    useState<boolean>(false);
+  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
   const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Log
   );
-
-  const getLogsFromSearchParams = (logsSearchParams: string) => {
-    return JSON.parse(logsSearchParams) as string[];
-  };
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
 
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isFetching = isFetchingLogs || isFetchingMnemonics;
-
-  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
-
-  const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
-  const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
-    useState<boolean>(false);
-  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
+  const getLogsFromSearchParams = (logsSearchParams: string) => {
+    return JSON.parse(logsSearchParams) as string[];
+  };
 
   useEffect(() => {
     if (allLogs) {
