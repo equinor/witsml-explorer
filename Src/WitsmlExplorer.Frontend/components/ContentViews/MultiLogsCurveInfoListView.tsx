@@ -75,7 +75,7 @@ export default function MultiLogsCurveInfoListView() {
 
       const getMnemonics = async () => {
         setIsFetchingMnemonics(true);
-        const mnemonics = await LogObjectService.getMnemonicsInLogs(
+        const mnemonics = await LogObjectService.getMultiLogsCurveInfo(
           wellUid,
           wellboreUid,
           getLogsFromSearchParams(logsSearchParams),

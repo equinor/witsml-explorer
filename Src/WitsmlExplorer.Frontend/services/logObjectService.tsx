@@ -55,7 +55,7 @@ export default class LogObjectService {
     }
   }
 
-  public static async getMnemonicsInLogs(
+  public static async getMultiLogsCurveInfo(
     wellUid: string,
     wellboreUid: string,
     logUids: string[],

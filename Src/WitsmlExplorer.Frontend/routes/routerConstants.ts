@@ -6,7 +6,6 @@ export const OBJECT_GROUPS_PATH = "objectgroups";
 export const OBJECTS_PATH = "objects";
 export const LOG_TYPES_PATH = "logtypes";
 export const LOG_CURVE_VALUES_PATH = "curvevalues";
-export const LOGS_CURVE_VALUES_PATH = "logscurvevalues";
 export const JOBS_PATH = "jobs";
 export const QUERY_PATH = "query";
 export const SEARCH_PATH = "search";
