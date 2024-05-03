@@ -287,7 +287,11 @@ const getChartOption = (
         color: colors.text.staticIconsDefault
       },
       selected: selectedLabels,
-      scrollDataIndex: scrollIndex
+      scrollDataIndex: scrollIndex,
+      pageIconColor: colors.infographic.primaryMossGreen,
+      pageTextStyle: {
+        color: colors.infographic.primaryMossGreen
+      }
     },
     grid: {
       left: "30px",
@@ -297,6 +301,9 @@ const getChartOption = (
       containLabel: true
     },
     toolbox: {
+      iconStyle: {
+        borderColor: colors.infographic.primaryMossGreen
+      },
       feature: {
         restore: {},
         saveAsImage: {}
