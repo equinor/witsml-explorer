@@ -470,7 +470,11 @@ const LogObjectContextMenu = (
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"open"} onClick={onClickOpenSeveralLogs}>
+        <MenuItem
+          key={"open"}
+          onClick={onClickOpenSeveralLogs}
+          disabled={checkedObjects.length > 8}
+        >
           <StyledIcon
             name="folderOpen"
             color={colors.interactive.primaryResting}
