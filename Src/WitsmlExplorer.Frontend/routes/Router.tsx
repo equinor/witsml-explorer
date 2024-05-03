@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import MultiLogsCurveInfoListView from "components/ContentViews/MultiLogsCurveInfoListView";
 import {
   RouterProvider,
   createBrowserRouter,
@@ -10,6 +11,7 @@ import {
   LOG_OBJECTS_VIEW_ROUTE_PATH,
   LOG_OBJECT_VIEW_ROUTE_PATH,
   LOG_TYPES_VIEW_ROUTE_PATH,
+  MULTI_LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
   OBJECTS_VIEW_ROUTE_PATH,
   OBJECT_GROUPS_VIEW_ROUTE_PATH,
   OBJECT_VIEW_ROUTE_PATH,
@@ -113,6 +115,11 @@ const router = createRouter([
           {
             path: LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
             element: <CurveValuesView />,
+            errorElement: <ErrorView />
+          },
+          {
+            path: MULTI_LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
+            element: <MultiLogsCurveInfoListView />,
             errorElement: <ErrorView />
           },
           {

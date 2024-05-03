@@ -29,6 +29,7 @@ namespace WitsmlExplorer.Api.Services
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid);
         Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
         Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
+        Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, IEnumerable<string> logUids);
         Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken, IProgress<double> progressReporter = null);
     }
 
@@ -153,6 +154,14 @@ namespace WitsmlExplorer.Api.Services
                 }).ToList();
         }
 
+        public async Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, IEnumerable<string> logUids)
+        {
+            var logGetters = logUids.Select(logUid => GetMultiLogCurveInfo(wellUid, wellboreUid, logUid)).ToList();
+            var resultTask = await Task.WhenAll(logGetters);
+            var result = resultTask.SelectMany(i => i).ToList();
+            return result;
+        }
+
         public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken = null, IProgress<double> progressReporter = null)
         {
             WitsmlLog log = await GetLogHeader(wellUid, wellboreUid, logUid);
@@ -202,6 +211,38 @@ namespace WitsmlExplorer.Api.Services
                 CurveSpecifications = curveSpecifications,
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
+        }
+
+        private async Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, string logUid)
+        {
+            WitsmlLog witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
+
+            return witsmlLog?.LogCurveInfo.Select(logCurveInfo =>
+                new MultiLogCurveInfo
+                {
+                    Uid = logCurveInfo.Uid,
+                    Mnemonic = logCurveInfo.Mnemonic,
+                    LogUid = logUid,
+                    ClassWitsml = logCurveInfo.ClassWitsml,
+                    MaxDateTimeIndex = logCurveInfo.MaxDateTimeIndex,
+                    MaxDepthIndex = logCurveInfo.MaxIndex?.Value,
+                    MinDateTimeIndex = logCurveInfo.MinDateTimeIndex,
+                    MinDepthIndex = logCurveInfo.MinIndex?.Value,
+                    MnemAlias = logCurveInfo.MnemAlias,
+                    SensorOffset = LengthMeasure.FromWitsml(logCurveInfo.SensorOffset),
+                    Unit = logCurveInfo.Unit,
+                    CurveDescription = logCurveInfo.CurveDescription,
+                    TypeLogData = logCurveInfo.TypeLogData,
+                    TraceState = logCurveInfo.TraceState,
+                    NullValue = logCurveInfo.NullValue,
+                    AxisDefinitions = logCurveInfo.AxisDefinitions?.Select(a => new AxisDefinition()
+                    {
+                        Uid = a.Uid,
+                        Order = a.Order,
+                        Count = a.Count,
+                        DoubleValues = a.DoubleValues
+                    }).ToList(),
+                }).ToList();
         }
 
         private async Task<WitsmlLog> LoadData(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, string wellUid = null, string wellboreUid = null, string logUid = null)

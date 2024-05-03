@@ -2,7 +2,7 @@ import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
 } from "components/Constants";
-import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListViewUtils";
 import ModalDialog from "components/Modals/ModalDialog";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";

@@ -22,6 +22,7 @@ export interface CopyComponentsToServerMenuItemProps {
   sourceParent: ObjectOnWellbore;
   withRange?: boolean;
   componentsToPreserve?: { uid: string }[] | LogCurveInfo[];
+  disableMenuItem?: boolean;
 }
 
 export const CopyComponentsToServerMenuItem = (
@@ -32,7 +33,8 @@ export const CopyComponentsToServerMenuItem = (
     componentType,
     withRange,
     componentsToPreserve,
-    sourceParent
+    sourceParent,
+    disableMenuItem
   } = props;
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
@@ -84,7 +86,7 @@ export const CopyComponentsToServerMenuItem = (
     <NestedMenuItem
       key={"copyComponentToServer"}
       label={menuText}
-      disabled={componentsToCopy.length < 1}
+      disabled={componentsToCopy.length < 1 || disableMenuItem}
     >
       {servers?.map(
         (server: Server) =>
@@ -94,7 +96,7 @@ export const CopyComponentsToServerMenuItem = (
               onClick={() => {
                 onClickHandler(server);
               }}
-              disabled={componentsToCopy.length < 1}
+              disabled={componentsToCopy.length < 1 || disableMenuItem}
             >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>

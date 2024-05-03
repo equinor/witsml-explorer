@@ -53,7 +53,8 @@ export function Breadcrumbs() {
     isLogTypesView,
     isLogObjectsView,
     isLogObjectView,
-    isLogCurveValuesView
+    isLogCurveValuesView,
+    isMultiLogsCurveInfoListView
   } = useGetActiveRoute();
 
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
@@ -96,7 +97,8 @@ export function Breadcrumbs() {
         isObjectView,
         isLogObjectView
       ),
-      getLogCurveValuesCrumb(isLogCurveValuesView)
+      getLogCurveValuesCrumb(isLogCurveValuesView),
+      getLogsCurveInfoListCrumb(isMultiLogsCurveInfoListView)
     ].filter((item) => item.name);
   };
 
@@ -113,7 +115,8 @@ export function Breadcrumbs() {
     isJobsView,
     isQueryView,
     isSearchView,
-    isLogCurveValuesView
+    isLogCurveValuesView,
+    isMultiLogsCurveInfoListView
   ]);
 
   return (
@@ -302,6 +305,10 @@ function getObjectCrumb<T extends ObjectType>(
 
 const getLogCurveValuesCrumb = (isLogCurveValuesView: boolean) => {
   return isLogCurveValuesView ? { name: "Data" } : {};
+};
+
+const getLogsCurveInfoListCrumb = (isMultiLogsCurveInfoListView: boolean) => {
+  return isMultiLogsCurveInfoListView ? { name: "Multiple logs" } : {};
 };
 
 const getJobsCrumb = (isJobsView: boolean) => {

@@ -12,7 +12,7 @@ import Measure from "../../models/measure";
 import { toObjectReference } from "../../models/objectOnWellbore";
 import { unitType } from "../../models/unitType";
 import JobService, { JobType } from "../../services/jobService";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
+import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListViewUtils";
 import ModalDialog from "./ModalDialog";
 import { validText } from "./ModalParts";
 import { ReportModal } from "./ReportModal";

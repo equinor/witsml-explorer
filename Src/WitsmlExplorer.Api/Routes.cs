@@ -59,6 +59,7 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.Log], LogHandler.GetLogs, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}", LogHandler.GetLog, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}/" + ComponentType.Mnemonic.ToPluralLowercase(), LogHandler.GetLogCurveInfo, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/multilog/" + ComponentType.Mnemonic.ToPluralLowercase(), LogHandler.GetMultiLogCurveInfo, useOAuth2);
             app.MapPost(routes[EntityType.Log] + "/{logUid}/logdata", LogHandler.GetLogData, useOAuth2);
 
             app.MapGet(routes[EntityType.Message], MessageHandler.GetMessages, useOAuth2);
