@@ -10,6 +10,5 @@ export const QUERY_KEY_OBJECTS = "objects";
 export const QUERY_KEY_OBJECT = "object";
 export const QUERY_KEY_COMPONENTS = "components";
 export const QUERY_KEY_CAP_OBJECTS = "capObjects";
-export const QUERY_KEY_MNEMONICS = "mnemonics";
 
 export const QUERY_KEY_JOB_INFO = "jobInfo";
