@@ -16,9 +16,11 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ComponentType } from "models/componentType";
+import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import {
@@ -26,8 +28,6 @@ import {
   columns,
   getTableData
 } from "./LogCurveInfoListViewUtils";
-import { ItemNotFound } from "routes/ItemNotFound";
-import LogObject from "models/logObject";
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
@@ -57,17 +57,15 @@ export default function LogCurveInfoListView() {
       objectUid,
       ComponentType.Mnemonic
     );
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
-  const isFetching = isFetchingLog || isFetchingLogCurveInfo;
-
-  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
-
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
-
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
+  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
+  const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
 
   useEffect(() => {
     if (logObject) {

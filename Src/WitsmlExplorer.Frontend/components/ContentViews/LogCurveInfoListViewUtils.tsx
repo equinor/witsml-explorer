@@ -1,14 +1,14 @@
+import { Row } from "@tanstack/react-table";
+import { ContentTableRow, ContentType } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import {
-  timeFromMinutesToMilliseconds,
-  CurveThreshold
+  CurveThreshold,
+  timeFromMinutesToMilliseconds
 } from "contexts/curveThresholdContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
-import { ContentTableRow, ContentType } from "components/ContentViews/table";
-import { Row } from "@tanstack/react-table";
 import MultiLogCurveInfo from "models/multilogCurveInfo";
 
 export interface LogCurveInfoRow extends ContentTableRow {
@@ -182,12 +182,12 @@ export const getTableData = (
       if (logUid !== null) {
         if (
           curve.mnemonic.toLowerCase() ===
-          logObjects.get(curve.logName).indexCurve?.toLowerCase()
+          logObjects.get(curve.logUid).indexCurve?.toLowerCase()
         ) {
           return -1;
         } else if (
           curve2.mnemonic.toLowerCase() ===
-          logObjects.get(curve2.logName).indexCurve?.toLowerCase()
+          logObjects.get(curve2.logUid).indexCurve?.toLowerCase()
         ) {
           return 1;
         }
