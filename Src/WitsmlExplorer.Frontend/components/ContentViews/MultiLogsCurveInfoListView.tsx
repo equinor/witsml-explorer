@@ -26,7 +26,7 @@ import LogCurvePriorityService from "services/logCurvePriorityService";
 import LogObjectService from "services/logObjectService";
 import {
   LogCurveInfoRow,
-  columns,
+  getColumns,
   getTableData
 } from "./LogCurveInfoListViewUtils";
 
@@ -163,7 +163,7 @@ export default function MultiLogsCurveInfoListView() {
             : "timeLogCurveInfoListView"
         }
         panelElements={panelElements}
-        columns={columns(
+        columns={getColumns(
           isDepthIndex,
           showOnlyPrioritizedCurves,
           prioritizedCurves,

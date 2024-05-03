@@ -49,7 +49,7 @@ export const calculateIsCurveActive = (
   }
 };
 
-export const columns = (
+export const getColumns = (
   isDepthIndex: boolean,
   showOnlyPrioritizedCurves: boolean,
   prioritizedCurves: string[],
@@ -179,7 +179,7 @@ export const getTableData = (
       };
     })
     .sort((curve, curve2) => {
-      if (logUid !== null) {
+      if (logUid !== null || curve.logName === curve2.logName) {
         if (
           curve.mnemonic.toLowerCase() ===
           logObjects.get(curve.logUid).indexCurve?.toLowerCase()
@@ -193,10 +193,6 @@ export const getTableData = (
         }
         return curve.mnemonic.localeCompare(curve2.mnemonic);
       }
-      if (curve.logName !== curve2.logName) {
-        return curve.logName.localeCompare(curve2.logName);
-      } else {
-        return curve.mnemonic.localeCompare(curve2.mnemonic);
-      }
+      return curve.logName.localeCompare(curve2.logName);
     });
 };

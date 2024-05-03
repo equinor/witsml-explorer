@@ -25,7 +25,7 @@ import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import {
   LogCurveInfoRow,
-  columns,
+  getColumns,
   getTableData
 } from "./LogCurveInfoListViewUtils";
 
@@ -146,7 +146,7 @@ export default function LogCurveInfoListView() {
             : "timeLogCurveInfoListView"
         }
         panelElements={panelElements}
-        columns={columns(
+        columns={getColumns(
           isDepthIndex,
           showOnlyPrioritizedCurves,
           prioritizedCurves,
