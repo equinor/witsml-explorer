@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Services
         public async Task<ICollection<LogObject>> GetLogs(string wellUid, string wellboreUid)
         {
             WitsmlLogs witsmlLog = LogQueries.GetWitsmlLogsByWellbore(wellUid, wellboreUid);
-            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.HeaderOnly));
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.Requested));
 
             return result.Logs.Select(log =>
                 new LogObject

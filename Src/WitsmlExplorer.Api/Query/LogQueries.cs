@@ -25,14 +25,24 @@ namespace WitsmlExplorer.Api.Query
                     IndexType = "",
                     RunNumber = "",
                     ObjectGrowing = "",
+                    ServiceCompany = "",
                     StartIndex = new WitsmlIndex(),
                     EndIndex = new WitsmlIndex(),
                     StartDateTimeIndex = "",
                     EndDateTimeIndex = "",
+                    IndexCurve = new WitsmlIndexCurve(),
+                    Direction = "",
                     CommonData = new WitsmlCommonData()
                     {
                         DTimCreation = "",
                         DTimLastChange = ""
+                    },
+                    LogCurveInfo = new List<WitsmlLogCurveInfo>()
+                    {
+                        new WitsmlLogCurveInfo()
+                        {
+                            Mnemonic = ""
+                        }
                     }
                 }.AsItemInList()
             };
