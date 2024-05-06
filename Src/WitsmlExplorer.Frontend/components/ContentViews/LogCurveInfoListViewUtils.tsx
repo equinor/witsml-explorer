@@ -6,7 +6,7 @@ import {
   timeFromMinutesToMilliseconds
 } from "contexts/curveThresholdContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
-import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
+import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
 import MultiLogCurveInfo from "models/multilogCurveInfo";
@@ -83,7 +83,8 @@ export const getColumns = (
       type: isDepthIndex ? ContentType.Number : ContentType.DateTime,
       filterFn: (row: Row<any>) => {
         return (
-          !hideEmptyMnemonics || !isNullOrEmptyIndex(row.original.minIndex)
+          !hideEmptyMnemonics ||
+          !isEmptyCurve(row.original.minIndex, row.original.maxIndex)
         );
       }
     },
@@ -195,4 +196,8 @@ export const getTableData = (
       }
       return curve.logName.localeCompare(curve2.logName);
     });
+};
+
+const isEmptyCurve = (minIndex: string, maxIndex: string) => {
+  return minIndex === maxIndex;
 };
