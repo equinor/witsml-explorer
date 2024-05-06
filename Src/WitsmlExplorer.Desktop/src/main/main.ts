@@ -11,8 +11,13 @@ import {
   IpcMainEvent,
   MessageBoxOptions
 } from "electron";
+import { autoUpdater, ProgressInfo, UpdateInfo } from "electron-updater";
 import * as fs from "fs";
 import * as path from "path";
+
+// Auto updater settings
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = false;
 
 let apiProcess: any;
 
@@ -210,10 +215,54 @@ function createWindow(route: string = "") {
   });
 
   newBrowserWindow.on("close", async (e: Event) => {
+    // If the API process is not running, we skip the close window check as it depends on the API.
+    if (apiProcess === null) return;
     if (BrowserWindow.getAllWindows().length === 1) {
       e.preventDefault();
       newBrowserWindow.webContents.send("closeWindow");
     }
+  });
+
+  autoUpdater.on("update-available", (info: UpdateInfo) => {
+    newBrowserWindow.webContents.send("updateStatus", {
+      status: "update-available",
+      updateInfo: info
+    });
+  });
+
+  autoUpdater.on("update-not-available", (info: UpdateInfo) => {
+    newBrowserWindow.webContents.send("updateStatus", {
+      status: "update-not-available",
+      updateInfo: info
+    });
+  });
+
+  autoUpdater.on("checking-for-update", () => {
+    newBrowserWindow.webContents.send("updateStatus", {
+      status: "checking-for-update",
+      updateInfo: null
+    });
+  });
+
+  autoUpdater.on("update-downloaded", (info: UpdateInfo) => {
+    newBrowserWindow.webContents.send("updateStatus", {
+      status: "update-downloaded",
+      updateInfo: info
+    });
+  });
+
+  autoUpdater.on("download-progress", (info: ProgressInfo) => {
+    newBrowserWindow.webContents.send("updateStatus", {
+      status: "download-progress",
+      updateInfo: info
+    });
+  });
+
+  autoUpdater.on("error", (info: Error) => {
+    newBrowserWindow.webContents.send("updateStatus", {
+      status: "error",
+      updateInfo: info
+    });
   });
 }
 
@@ -240,6 +289,28 @@ if (!gotTheLock) {
 
     ipcMain.on("newWindow", (_event: IpcMainEvent, route: string) => {
       createWindow(route);
+    });
+
+    ipcMain.handle("getAppVersion", () => app.getVersion());
+
+    ipcMain.handle("checkForUpdates", () => {
+      const updateCheckResult = autoUpdater.checkForUpdates();
+      return updateCheckResult;
+    });
+
+    ipcMain.handle("downloadUpdate", () => {
+      const downloadedPaths = autoUpdater.downloadUpdate();
+      return downloadedPaths;
+    });
+
+    ipcMain.on("quitAndInstallUpdate", async (_event, isUnfinishedJobs) => {
+      const browserWindow = BrowserWindow.fromWebContents(_event.sender);
+      if (isUnfinishedJobs) {
+        const dialogResponse = showUnfinishedJobsWarningOnClose(browserWindow);
+        if (dialogResponse === 1) autoUpdater.quitAndInstall();
+      } else {
+        autoUpdater.quitAndInstall();
+      }
     });
 
     createWindow();
