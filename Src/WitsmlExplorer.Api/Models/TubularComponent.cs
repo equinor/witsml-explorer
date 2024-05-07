@@ -17,7 +17,5 @@ namespace WitsmlExplorer.Api.Models
         public string TypeMaterial { get; set; }
         public string Vendor { get; set; }
         public string Model { get; set; }
-        // public List<NameTag> NameTag { get; set; }
-        // public List<TubularConnection> TubularConnection { get; set; }
     }
 }
