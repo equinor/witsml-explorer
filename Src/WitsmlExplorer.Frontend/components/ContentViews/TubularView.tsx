@@ -83,9 +83,24 @@ export default function TubularView() {
       label: "typeTubularComp",
       type: ContentType.String
     },
+    { property: "description", label: "description", type: ContentType.String },
     { property: "innerDiameter", label: "id", type: ContentType.Measure },
     { property: "od", label: "od", type: ContentType.Measure },
     { property: "len", label: "len", type: ContentType.Measure },
+    { property: "wtPerLen", label: "wtPerLen", type: ContentType.Measure },
+    {
+      property: "numJointStand",
+      label: "numJointStand",
+      type: ContentType.Number
+    },
+    { property: "configCon", label: "configCon", type: ContentType.String },
+    {
+      property: "typeMaterial",
+      label: "typeMaterial",
+      type: ContentType.String
+    },
+    { property: "vendor", label: "vendor", type: ContentType.String },
+    { property: "model", label: "model", type: ContentType.String },
     {
       property: "tubularName",
       label: "tubular.name",
@@ -102,8 +117,9 @@ export default function TubularView() {
   const tubularComponentRows = tubularComponents.map((tubularComponent) => {
     return {
       id: tubularComponent.uid,
-      sequence: tubularComponent.sequence,
       typeTubularComponent: tubularComponent.typeTubularComponent,
+      sequence: tubularComponent.sequence,
+      description: tubularComponent.description,
       innerDiameter: `${tubularComponent.id?.value?.toFixed(4)} ${
         tubularComponent.id?.uom
       }`,
@@ -113,6 +129,14 @@ export default function TubularView() {
       len: `${tubularComponent.len?.value?.toFixed(4)} ${
         tubularComponent.len?.uom
       }`,
+      numJointStand: tubularComponent.numJointStand,
+      wtPerLen: `${tubularComponent.wtPerLen?.value?.toFixed(4)} ${
+        tubularComponent.wtPerLen?.uom
+      }`,
+      configCon: tubularComponent.configCon,
+      typeMaterial: tubularComponent.typeMaterial,
+      vendor: tubularComponent.vendor,
+      model: tubularComponent.model,
       tubularName: tubular?.name,
       typeTubularAssy: tubular?.typeTubularAssy,
       uid: tubularComponent.uid,

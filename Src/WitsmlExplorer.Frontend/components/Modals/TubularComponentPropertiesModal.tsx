@@ -4,7 +4,10 @@ import { validText } from "components/Modals/ModalParts";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { isInteger } from "lodash";
+import { boxPinConfigTypes } from "models/boxPinConfigTypes";
 import ObjectReference from "models/jobs/objectReference";
+import { materialTypes } from "models/materialTypes";
+import MaxLength from "models/maxLength";
 import { toObjectReference } from "models/objectOnWellbore";
 import Tubular from "models/tubular";
 import TubularComponent from "models/tubularComponent";
@@ -81,6 +84,36 @@ const TubularComponentPropertiesModal = (
                 helperText={
                   isInvalidSequence(editableTubularComponent.sequence) &&
                   "Sequence must be a positive non-zero integer"
+                }
+              />
+              <TextField
+                id="description"
+                label="description"
+                defaultValue={editableTubularComponent.description ?? ""}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    description: e.target.value
+                  })
+                }
+                variant={
+                  tubularComponent.description &&
+                  !validText(
+                    editableTubularComponent.description,
+                    1,
+                    MaxLength.Comment
+                  )
+                    ? "error"
+                    : undefined
+                }
+                helperText={
+                  tubularComponent.description &&
+                  !validText(
+                    editableTubularComponent.description,
+                    1,
+                    MaxLength.Comment
+                  ) &&
+                  `Description must be 1-${MaxLength.Comment} characters`
                 }
               />
               <Autocomplete
@@ -162,14 +195,156 @@ const TubularComponentPropertiesModal = (
                   })
                 }
               />
+              <TextField
+                id={"wtPerLen"}
+                label={"wtPerLen"}
+                type="number"
+                unit={
+                  editableTubularComponent.wtPerLen
+                    ? editableTubularComponent.wtPerLen.uom
+                    : ""
+                }
+                disabled={!editableTubularComponent.wtPerLen}
+                defaultValue={editableTubularComponent.wtPerLen?.value}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    wtPerLen: {
+                      value: parseFloat(e.target.value),
+                      uom: editableTubularComponent.wtPerLen.uom
+                    }
+                  })
+                }
+              />
+              <TextField
+                id={"numJointStand"}
+                label={"numJointStand"}
+                type="number"
+                defaultValue={editableTubularComponent.numJointStand}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    numJointStand: parseFloat(e.target.value)
+                  })
+                }
+                variant={
+                  Number.isNaN(editableTubularComponent.numJointStand)
+                    ? "error"
+                    : undefined
+                }
+                helperText={
+                  Number.isNaN(editableTubularComponent.numJointStand) &&
+                  "numJointStand must be a positive non-zero integer"
+                }
+              />
+              <Autocomplete
+                label="configCon"
+                initialSelectedOptions={[editableTubularComponent.configCon]}
+                options={boxPinConfigTypes}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    configCon: selectedItems[0]
+                  });
+                }}
+                hideClearButton={!!editableTubularComponent.configCon}
+              />
+              <Autocomplete
+                label="typeMaterial"
+                initialSelectedOptions={[editableTubularComponent.typeMaterial]}
+                options={materialTypes}
+                onOptionsChange={({ selectedItems }) => {
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    typeMaterial: selectedItems[0]
+                  });
+                }}
+                hideClearButton={!!editableTubularComponent.typeMaterial}
+              />
+              <TextField
+                id="vendor"
+                label="vendor"
+                defaultValue={editableTubularComponent.vendor ?? ""}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    vendor: e.target.value
+                  })
+                }
+                variant={
+                  tubularComponent.vendor &&
+                  !validText(editableTubularComponent.vendor, 1, MaxLength.Name)
+                    ? "error"
+                    : undefined
+                }
+                helperText={
+                  tubularComponent.vendor &&
+                  !validText(
+                    editableTubularComponent.vendor,
+                    1,
+                    MaxLength.Name
+                  ) &&
+                  `Vendor must be 1-${MaxLength.Name} characters`
+                }
+              />
+              <TextField
+                id="model"
+                label="model"
+                defaultValue={editableTubularComponent.model ?? ""}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setEditableTubularComponent({
+                    ...editableTubularComponent,
+                    model: e.target.value
+                  })
+                }
+                variant={
+                  tubularComponent.model &&
+                  !validText(editableTubularComponent.model, 1, MaxLength.Name)
+                    ? "error"
+                    : undefined
+                }
+                helperText={
+                  tubularComponent.model &&
+                  !validText(
+                    editableTubularComponent.model,
+                    1,
+                    MaxLength.Name
+                  ) &&
+                  `Model must be 1-${MaxLength.Name} characters`
+                }
+              />
             </>
           }
           confirmDisabled={
             !validText(editableTubularComponent.typeTubularComponent) ||
             isInvalidSequence(editableTubularComponent.sequence) ||
+            Number.isNaN(editableTubularComponent.numJointStand) ||
             Number.isNaN(editableTubularComponent.id.value) ||
             Number.isNaN(editableTubularComponent.od.value) ||
-            Number.isNaN(editableTubularComponent.len.value)
+            Number.isNaN(editableTubularComponent.len.value) ||
+            Number.isNaN(editableTubularComponent.wtPerLen.value) ||
+            (tubularComponent.description &&
+              !validText(
+                editableTubularComponent.description,
+                1,
+                MaxLength.Comment
+              )) ||
+            (tubularComponent.configCon &&
+              !validText(
+                editableTubularComponent.configCon,
+                1,
+                MaxLength.Enum
+              )) ||
+            (tubularComponent.typeMaterial &&
+              !validText(
+                editableTubularComponent.typeMaterial,
+                1,
+                MaxLength.Enum
+              )) ||
+            (tubularComponent.vendor &&
+              !validText(editableTubularComponent.vendor, 1, MaxLength.Name)) ||
+            (tubularComponent.model &&
+              !validText(editableTubularComponent.model, 1, MaxLength.Name))
           }
           onSubmit={() => onSubmit(editableTubularComponent)}
           isLoading={isLoading}
