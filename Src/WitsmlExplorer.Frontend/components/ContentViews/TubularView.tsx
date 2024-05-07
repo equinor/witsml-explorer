@@ -102,11 +102,6 @@ export default function TubularView() {
     { property: "vendor", label: "vendor", type: ContentType.String },
     { property: "model", label: "model", type: ContentType.String },
     {
-      property: "tubularName",
-      label: "tubular.name",
-      type: ContentType.String
-    },
-    {
       property: "typeTubularAssy",
       label: "tubular.typeTubularAssy",
       type: ContentType.String
@@ -137,7 +132,6 @@ export default function TubularView() {
       typeMaterial: tubularComponent.typeMaterial,
       vendor: tubularComponent.vendor,
       model: tubularComponent.model,
-      tubularName: tubular?.name,
       typeTubularAssy: tubular?.typeTubularAssy,
       uid: tubularComponent.uid,
       tubularComponent: tubularComponent
