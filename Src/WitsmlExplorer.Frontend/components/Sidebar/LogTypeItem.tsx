@@ -147,7 +147,7 @@ export default function LogTypeItem({
       : RouterLogType.DEPTH;
   };
 
-  const setIndexToLogName =(log: LogObject, index: string)=> {
+  const setIndexToLogName = (log: LogObject, index: string) => {
     log.sameNameIndex = index;
     return log;
   };
@@ -170,7 +170,11 @@ export default function LogTypeItem({
               log.name,
               (index + 1).toString()
             ) ===
-            calculateMultipleLogsNodeItem(wellbore, log.name, (index + 1).toString())
+            calculateMultipleLogsNodeItem(
+              wellbore,
+              log.name,
+              (index + 1).toString()
+            )
           }
           objectGrowing={log.objectGrowing}
           to={getLogObjectViewPath(
