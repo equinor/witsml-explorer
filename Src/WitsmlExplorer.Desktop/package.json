@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "author": "Witsml Explorer Team",
-  "repository": "https://github.com/janmarius/witsml-explorer",
+  "repository": "https://github.com/equinor/witsml-explorer",
   "scripts": {
     "dev": "electron-vite dev -w",
     "build:api": "dotnet publish -o ./dist/api --self-contained true /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
