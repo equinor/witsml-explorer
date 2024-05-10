@@ -146,6 +146,28 @@ export const calculateLogTypeTimeId = (
   return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
 };
 
+export const calculateMultipleLogsNode = (
+  wellbore: Wellbore | { wellUid: string; uid: string },
+  objectUid: string
+): string => {
+  const result =
+    calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD) + `lt=${objectUid};`;
+  return result;
+};
+
+export const calculateMultipleLogsNodeItem = (
+  wellbore: Wellbore | { wellUid: string; uid: string },
+  objectUid: string,
+  index: string
+): string => {
+  const result =
+    calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD) +
+    `lt=${objectUid};` +
+    `o=${objectUid}${index};`;
+
+  return result;
+};
+
 export const calculateObjectNodeId = (
   wellbore: Wellbore | { wellUid: string; uid: string },
   objectType: ObjectType | string,
