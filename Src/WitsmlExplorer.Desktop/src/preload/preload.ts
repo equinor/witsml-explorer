@@ -16,5 +16,20 @@ contextBridge.exposeInMainWorld("electronAPI", {
   removeCloseWindowListener: () =>
     ipcRenderer.removeAllListeners("closeWindow"),
   closeWindowResponse: (isUnfinishedJobs: boolean) =>
-    ipcRenderer.send("closeWindowResponse", isUnfinishedJobs)
+    ipcRenderer.send("closeWindowResponse", isUnfinishedJobs),
+
+  // App version events
+  getAppVersion: () => ipcRenderer.invoke("getAppVersion"),
+
+  // Updates events
+  onUpdateStatus: (callback: any) =>
+    ipcRenderer.on("updateStatus", (_, updateStatus: any) =>
+      callback(updateStatus)
+    ),
+  removeUpdateStatusListener: () =>
+    ipcRenderer.removeAllListeners("updateStatus"),
+  checkForUpdates: () => ipcRenderer.invoke("checkForUpdates"),
+  downloadUpdate: () => ipcRenderer.invoke("downloadUpdate"),
+  quitAndInstallUpdate: (isUnfinishedJobs: boolean) =>
+    ipcRenderer.send("quitAndInstallUpdate", isUnfinishedJobs)
 });

@@ -31,6 +31,8 @@ jobs:
       - name: Build Installer
         run: yarn electron:dist
         working-directory: ./Src/WitsmlExplorer.Desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release Installer
         uses: softprops/action-gh-release@v1
         with:
@@ -38,3 +40,4 @@ jobs:
           tag_name: ${{ github.event.inputs.tag }}
           files: |
             ./Src/WitsmlExplorer.Desktop/dist/WExDesktop.x64*.exe
+            ./Src/WitsmlExplorer.Desktop/dist/latest.yml

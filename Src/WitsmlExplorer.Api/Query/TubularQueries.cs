@@ -39,8 +39,14 @@ namespace WitsmlExplorer.Api.Query
             WitsmlTubularComponent tc = new()
             {
                 Uid = tubularComponent.Uid,
+                TypeTubularComp = tubularComponent.TypeTubularComponent,
                 Sequence = tubularComponent.Sequence,
-                TypeTubularComp = tubularComponent.TypeTubularComponent
+                Description = tubularComponent.Description,
+                NumJointStand = tubularComponent.NumJointStand,
+                ConfigCon = tubularComponent.ConfigCon,
+                TypeMaterial = tubularComponent.TypeMaterial,
+                Vendor = tubularComponent.Vendor,
+                Model = tubularComponent.Model
             };
 
             if (tubularComponent.Id != null)
@@ -56,6 +62,11 @@ namespace WitsmlExplorer.Api.Query
             if (tubularComponent.Len != null)
             {
                 tc.Len = new WitsmlLengthMeasure { Uom = tubularComponent.Len.Uom, Value = tubularComponent.Len.Value.ToString(CultureInfo.InvariantCulture) };
+            }
+
+            if (tubularComponent.WtPerLen != null)
+            {
+                tc.WtPerLen = new WitsmlLengthMeasure { Uom = tubularComponent.WtPerLen.Uom, Value = tubularComponent.WtPerLen.Value.ToString(CultureInfo.InvariantCulture) };
             }
 
             return new WitsmlTubulars
