@@ -39,6 +39,7 @@ import {
   trending_up as isActive,
   launch,
   more_vertical as moreVertical,
+  new_alert as newAlert,
   paste,
   person,
   refresh,
@@ -47,6 +48,7 @@ import {
   settings,
   sync,
   text_field as textField,
+  update,
   upload,
   world
 } from "@equinor/eds-icons";
@@ -90,6 +92,7 @@ const icons = {
   isActive,
   launch,
   moreVertical,
+  newAlert,
   paste,
   person,
   refresh,
@@ -98,6 +101,7 @@ const icons = {
   settings,
   sync,
   textField,
+  update,
   upload,
   world
 };
