@@ -52,7 +52,6 @@ export function useExpandSidebarNodes(
     }
 
     if (wellUid && wellboreUid && logType && logName) {
-      console.log(logName);
       nodeIds.push(
         calculateMultipleLogsNode({ wellUid, uid: wellboreUid }, logName)
       );
