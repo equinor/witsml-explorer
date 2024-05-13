@@ -65,7 +65,13 @@ export default function LogCurveInfoListView() {
   const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
 
-  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
+  useExpandSidebarNodes(
+    wellUid,
+    wellboreUid,
+    ObjectType.Log,
+    logType,
+    logObject?.name
+  );
 
   useEffect(() => {
     if (logObject) {

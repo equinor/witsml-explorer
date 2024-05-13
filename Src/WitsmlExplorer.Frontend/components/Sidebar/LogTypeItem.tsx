@@ -147,11 +147,6 @@ export default function LogTypeItem({
       : RouterLogType.DEPTH;
   };
 
-  const setIndexToLogName = (log: LogObject, index: string) => {
-    log.sameNameIndex = index;
-    return log;
-  };
-
   const listSubLogItems = (
     logObjects: LogObject[],
     logType: string,
@@ -159,35 +154,26 @@ export default function LogTypeItem({
     wellboreUid: string,
     serverUrl: string
   ) => {
-    return logObjects?.map((log, index) => (
-      <Fragment key={getMultipleLogsNodeItem(log.name, (index + 1).toString())}>
-        <LogItem
-          log={setIndexToLogName(log, (index + 1).toString())}
-          nodeId={getMultipleLogsNodeItem(log.name, (index + 1).toString())}
-          selected={
-            calculateMultipleLogsNodeItem(
-              { wellUid: urlWellUid, uid: urlWellboreUid },
-              log.name,
-              (index + 1).toString()
-            ) ===
-            calculateMultipleLogsNodeItem(
-              wellbore,
-              log.name,
-              (index + 1).toString()
-            )
-          }
-          objectGrowing={log.objectGrowing}
-          to={getLogObjectViewPath(
-            serverUrl,
-            wellUid,
-            wellboreUid,
-            ObjectType.Log,
-            getLogTypePath(logType),
-            log.uid
-          )}
-        />
-      </Fragment>
-    ));
+    return logObjects
+      ?.sort((a, b) => a.runNumber?.localeCompare(b.runNumber))
+      .map((log, index) => (
+        <Fragment key={getMultipleLogsNodeItem(log.name, index.toString())}>
+          <LogItem
+            log={log}
+            nodeId={getMultipleLogsNodeItem(log.name, index.toString())}
+            selected={isSelected(log)}
+            objectGrowing={log.objectGrowing}
+            to={getLogObjectViewPath(
+              serverUrl,
+              wellUid,
+              wellboreUid,
+              ObjectType.Log,
+              getLogTypePath(logType),
+              log.uid
+            )}
+          />
+        </Fragment>
+      ));
   };
 
   const listLogItemsByType = (
@@ -211,8 +197,8 @@ export default function LogTypeItem({
           selected={
             calculateMultipleLogsNode(
               { wellUid: urlWellUid, uid: urlWellboreUid },
-              log.name
-            ) === calculateMultipleLogsNode(wellbore, log.name)
+              log.uid
+            ) === calculateMultipleLogsNode(wellbore, log.uid)
           }
         >
           {listSubLogItems(

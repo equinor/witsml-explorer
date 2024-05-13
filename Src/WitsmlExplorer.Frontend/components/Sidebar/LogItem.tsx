@@ -42,12 +42,6 @@ export default function LogItem({
     });
   };
 
-  const getSameNamesIndex = (logName: string) => {
-    return log.sameNameIndex !== undefined
-      ? logName + " (" + log.sameNameIndex + ")"
-      : logName;
-  };
-
   return (
     <TreeItem
       onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
@@ -55,11 +49,7 @@ export default function LogItem({
       }
       key={nodeId}
       nodeId={nodeId}
-      labelText={
-        log.runNumber
-          ? `${getSameNamesIndex(log.name)} (${log.runNumber})`
-          : getSameNamesIndex(log.name)
-      }
+      labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
       selected={selected}
       isActive={objectGrowing}
       to={to}

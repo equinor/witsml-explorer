@@ -8,6 +8,7 @@ import { SidebarActionType } from "../contexts/sidebarReducer";
 import { ObjectType } from "../models/objectType";
 import {
   calculateLogTypeId,
+  calculateMultipleLogsNode,
   calculateObjectGroupId,
   calculateWellNodeId,
   calculateWellboreNodeId
@@ -18,7 +19,8 @@ export function useExpandSidebarNodes(
   wellUid: string,
   wellboreUid?: string,
   objectType?: ObjectType,
-  logType?: string
+  logType?: string,
+  logName?: string
 ) {
   const { dispatchSidebar } = useSidebar();
 
@@ -49,9 +51,16 @@ export function useExpandSidebarNodes(
       );
     }
 
+    if (wellUid && wellboreUid && logType && logName) {
+      console.log(logName);
+      nodeIds.push(
+        calculateMultipleLogsNode({ wellUid, uid: wellboreUid }, logName)
+      );
+    }
+
     dispatchSidebar({
       type: SidebarActionType.ExpandTreeNodes,
       payload: { nodeIds }
     });
-  }, [wellUid, wellboreUid, objectType, logType]);
+  }, [wellUid, wellboreUid, objectType, logType, logName]);
 }

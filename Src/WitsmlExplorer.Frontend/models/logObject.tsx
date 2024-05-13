@@ -12,7 +12,6 @@ export default interface LogObject extends ObjectOnWellbore {
   direction?: string;
   mnemonics?: string;
   commonData?: CommonData;
-  sameNameIndex?: string;
 }
 
 export const indexToNumber = (index: string): number => {
