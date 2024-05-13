@@ -86,6 +86,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 throw new InvalidOperationException($"{nameof(tubularComponent.Sequence)} must be a positive non-zero integer");
             }
 
+            if (tubularComponent.NumJointStand is not null and < 1)
+            {
+                throw new InvalidOperationException($"{nameof(tubularComponent.NumJointStand)} must be a positive non-zero integer");
+            }
+
             if (tubularComponent.Id != null && string.IsNullOrEmpty(tubularComponent.Id.Uom))
             {
                 throw new InvalidOperationException($"unit of measure for {nameof(tubularComponent.Id)} cannot be empty");
@@ -99,6 +104,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
             if (tubularComponent.Len != null && string.IsNullOrEmpty(tubularComponent.Len.Uom))
             {
                 throw new InvalidOperationException($"unit of measure for {nameof(tubularComponent.Len)} cannot be empty");
+            }
+
+            if (tubularComponent.WtPerLen != null && string.IsNullOrEmpty(tubularComponent.WtPerLen.Uom))
+            {
+                throw new InvalidOperationException($"unit of measure for {nameof(tubularComponent.WtPerLen)} cannot be empty");
             }
         }
     }
