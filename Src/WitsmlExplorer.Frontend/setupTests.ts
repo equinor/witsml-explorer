@@ -1,6 +1,5 @@
-import "@testing-library/jest-dom";
-import "@testing-library/jest-dom/extend-expect";
-import matchers from "@testing-library/jest-dom/matchers";
+import * as matchers from "@testing-library/jest-dom/matchers";
+import "@testing-library/jest-dom/vitest";
 import { expect } from "vitest";
 
 expect.extend(matchers);
