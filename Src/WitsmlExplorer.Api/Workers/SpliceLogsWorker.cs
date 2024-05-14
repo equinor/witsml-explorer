@@ -88,6 +88,8 @@ namespace WitsmlExplorer.Api.Workers
                     }
 
                     await AddDataToLog(wellUid, wellboreUid, newLogUid, newLogData);
+
+                    Logger.LogDebug("{JobType} - Added {Mnemonic} to spliced log. Progress: {CurrentIteration}/{TotalIterations}", GetType().Name, mnemonic, currentIteration, totalIterations);
                 }
 
             }
