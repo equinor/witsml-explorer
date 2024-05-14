@@ -22,6 +22,8 @@ function formatDateString(
     }
     if (dateTimeFormatString == DateTimeFormat.Natural) {
       dateTimeFormat = naturalDateTimeFormat;
+    } else if (dateTimeFormatString == DateTimeFormat.RawNoOffset) {
+      dateTimeFormat = dateTimeFormatNoOffset;
     } else if (dateTimeFormatString == DateTimeFormat.Raw) {
       dateTimeFormat = rawDateTimeFormat;
     }

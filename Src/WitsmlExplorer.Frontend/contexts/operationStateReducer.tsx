@@ -23,7 +23,8 @@ export enum TimeZone {
 
 export enum DateTimeFormat {
   Raw = "raw",
-  Natural = "natural"
+  Natural = "natural",
+  RawNoOffset = "rawNoOffset"
 }
 
 export enum DecimalPreference {

@@ -5,11 +5,14 @@ import {
   Label,
   TextField
 } from "@equinor/eds-core-react";
+import formatDateString, {
+  getOffsetFromTimeZone
+} from "components/DateFormatter";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
+import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import { isValid, parse } from "date-fns";
-import { format } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetMnemonics } from "hooks/useGetMnemonics";
 import { ComponentType } from "models/componentType";
@@ -49,7 +52,7 @@ const EditSelectedLogCurveInfo = (
   const { disabled, overrideStartIndex, overrideEndIndex, onClickRefresh } =
     props;
   const { operationState } = useContext(OperationContext);
-  const { theme, colors } = operationState;
+  const { theme, colors, timeZone } = operationState;
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const isTimeLog = logType === RouterLogType.TIME;
   const { connectedServer } = useConnectedServer();
@@ -66,12 +69,9 @@ const EditSelectedLogCurveInfo = (
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
-  const [selectedStartIndex, setSelectedStartIndex] = useState<string>(
-    getParsedValue(startIndex, isTimeLog)
-  );
-  const [selectedEndIndex, setSelectedEndIndex] = useState<string>(
-    getParsedValue(endIndex, isTimeLog)
-  );
+  const [selectedStartIndex, setSelectedStartIndex] =
+    useState<string>(startIndex);
+  const [selectedEndIndex, setSelectedEndIndex] = useState<string>(endIndex);
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
@@ -80,15 +80,13 @@ const EditSelectedLogCurveInfo = (
     useGetMnemonics(isFetching, logCurveInfo, mnemonicsSearchParams);
 
   useEffect(() => {
-    setSelectedStartIndex(getParsedValue(startIndex, isTimeLog));
-    setSelectedEndIndex(getParsedValue(endIndex, isTimeLog));
+    setSelectedStartIndex(startIndex);
+    setSelectedEndIndex(endIndex);
   }, [startIndex, endIndex]);
 
   useEffect(() => {
-    if (overrideStartIndex)
-      setSelectedStartIndex(getParsedValue(overrideStartIndex, isTimeLog));
-    if (overrideEndIndex)
-      setSelectedEndIndex(getParsedValue(overrideEndIndex, isTimeLog));
+    if (overrideStartIndex) setSelectedStartIndex(overrideStartIndex);
+    if (overrideEndIndex) setSelectedEndIndex(overrideEndIndex);
   }, [overrideStartIndex, overrideEndIndex]);
 
   const submitLogCurveInfo = () => {
@@ -131,7 +129,7 @@ const EditSelectedLogCurveInfo = (
   ) => {
     if (isTimeLog) {
       if (isValid(parseDate(e.target.value))) {
-        setIndex(e.target.value);
+        setIndex(getUtcValue(e.target.value, isTimeLog, timeZone));
         setIsEdited(true);
         setIsValid(true);
       } else {
@@ -161,7 +159,9 @@ const EditSelectedLogCurveInfo = (
             <StyledTextField
               disabled={disabled}
               id="startIndex"
-              value={selectedStartIndex ?? ""}
+              value={
+                getParsedValue(selectedStartIndex, isTimeLog, timeZone) ?? ""
+              }
               variant={isValidStart ? undefined : "error"}
               type={isTimeLog ? "datetime-local" : ""}
               step="1"
@@ -175,7 +175,9 @@ const EditSelectedLogCurveInfo = (
             <StyledTextField
               disabled={disabled}
               id="endIndex"
-              value={selectedEndIndex ?? ""}
+              value={
+                getParsedValue(selectedEndIndex, isTimeLog, timeZone) ?? ""
+              }
               type={isTimeLog ? "datetime-local" : ""}
               variant={isValidEnd ? undefined : "error"}
               step="1"
@@ -229,13 +231,29 @@ const parseDate = (current: string) => {
   return parse(current, dateTimeFormat, new Date());
 };
 
-const getParsedValue = (input: string, isTimeLog: boolean) => {
+const getParsedValue = (
+  input: string,
+  isTimeLog: boolean,
+  timeZone: TimeZone
+) => {
   if (!input) return null;
   return isTimeLog
-    ? parseDate(input)
-      ? format(new Date(input), dateTimeFormat)
-      : ""
+    ? formatDateString(input, timeZone, DateTimeFormat.RawNoOffset)
     : input;
+};
+
+const getUtcValue = (input: string, isTimeLog: boolean, timeZone: TimeZone) => {
+  if (!input) return null;
+  if (isTimeLog) {
+    const inputWithZone = input + getOffsetFromTimeZone(timeZone);
+    const utcInput = formatDateString(
+      inputWithZone,
+      TimeZone.Utc,
+      DateTimeFormat.Raw
+    );
+    return utcInput;
+  }
+  return input;
 };
 
 const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
