@@ -32,6 +32,7 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import { createArtificialRunNumbersForLogs } from "tools/logSameNamesHelper";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -85,10 +86,17 @@ export default function LogsListView() {
   };
 
   const getTableData = (): LogObjectRow[] => {
-    return logs.map((log) => {
+    createArtificialRunNumbersForLogs(logs);
+    const result = logs.map((log) => {
       return {
         ...log,
         id: log.uid,
+
+        name: log.runNumber
+          ? log.name + " (" + log.runNumber + ")"
+          : log.sameNameIndex
+          ? log.sameNameIndex
+          : log.name,
         startIndex: isTimeIndexed
           ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
           : log.startIndex,
@@ -108,6 +116,7 @@ export default function LogsListView() {
         logObject: log
       };
     });
+    return result.sort((a, b) => a.name.localeCompare(b.name));
   };
 
   const columns: ContentTableColumn[] = [

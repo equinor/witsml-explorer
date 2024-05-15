@@ -49,7 +49,13 @@ export default function LogItem({
       }
       key={nodeId}
       nodeId={nodeId}
-      labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
+      labelText={
+        log.runNumber
+          ? `${log.name} (${log.runNumber})`
+          : log.sameNameIndex
+          ? `${log.sameNameIndex}`
+          : log.name
+      }
       selected={selected}
       isActive={objectGrowing}
       to={to}

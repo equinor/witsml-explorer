@@ -132,6 +132,7 @@ export const getTableData = (
       if (logUid !== null) {
         logCurveInfo.logUid = logUid;
       }
+
       const logObject = logObjects.get(logCurveInfo.logUid);
       const isActive =
         logObject.objectGrowing &&
@@ -147,7 +148,11 @@ export const getTableData = (
           logUid === null
             ? `${logCurveInfo.uid}`
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
-        logName: logObject.name,
+        logName: logObject.runNumber
+          ? logObject.name + " (" + logObject.runNumber + ")"
+          : logObject.sameNameIndex
+          ? logObject.sameNameIndex
+          : logObject.name,
         logUid: logObject.uid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex

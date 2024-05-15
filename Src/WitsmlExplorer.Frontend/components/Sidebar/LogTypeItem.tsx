@@ -35,6 +35,7 @@ import {
   getLogObjectViewPath,
   getLogObjectsViewPath
 } from "routes/utils/pathBuilder";
+import { createArtificialRunNumbersForLogs } from "tools/logSameNamesHelper";
 
 interface LogTypeItemProps {
   logs: LogObject[];
@@ -155,7 +156,10 @@ export default function LogTypeItem({
     serverUrl: string
   ) => {
     return logObjects
-      ?.sort((a, b) => a.runNumber?.localeCompare(b.runNumber))
+      ?.sort(
+        (a, b) =>
+          a.runNumber?.localeCompare(b.runNumber) || a.uid.localeCompare(b.uid)
+      )
       .map((log, index) => (
         <Fragment key={getMultipleLogsNodeItem(log.name, index.toString())}>
           <LogItem
@@ -184,6 +188,7 @@ export default function LogTypeItem({
     isSelected: (log: LogObject) => boolean,
     serverUrl: string
   ) => {
+    createArtificialRunNumbersForLogs(logObjects);
     const distinctLogObjects = logObjects.filter(
       (logObject, i, arr) =>
         arr.findIndex((t) => t.name === logObject.name) === i
@@ -197,8 +202,12 @@ export default function LogTypeItem({
           selected={
             calculateMultipleLogsNode(
               { wellUid: urlWellUid, uid: urlWellboreUid },
-              log.uid
-            ) === calculateMultipleLogsNode(wellbore, log.uid)
+              log.name
+            ) ===
+            calculateMultipleLogsNode(
+              wellbore,
+              logObjects.find((x) => x.uid === objectUid)?.name
+            )
           }
         >
           {listSubLogItems(
