@@ -38,6 +38,8 @@ namespace WitsmlExplorer.Api.Workers
 
             WitsmlLogs logHeaders = await GetLogHeaders(wellUid, wellboreUid, logUids);
             WitsmlLog newLogHeader = CreateNewLogQuery(logHeaders, newLogUid, newLogName);
+            string currentMnemonic = "";
+            string currentLogUid = "";
 
             try
             {
@@ -55,6 +57,7 @@ namespace WitsmlExplorer.Api.Workers
 
                 foreach (var mnemonic in newLogHeader.LogCurveInfo.Select(lci => lci.Mnemonic).Skip(1)) // Skip the index curve
                 {
+                    currentMnemonic = mnemonic;
                     string mnemonicUnit = newLogHeader.LogCurveInfo.FirstOrDefault(lci => lci.Mnemonic == mnemonic).Unit;
                     WitsmlLogData newLogData = new()
                     {
@@ -65,6 +68,7 @@ namespace WitsmlExplorer.Api.Workers
 
                     foreach (string logUid in logUids)
                     {
+                        currentLogUid = logUid;
                         cancellationToken?.ThrowIfCancellationRequested();
                         WitsmlLog logHeader = logHeaders.Logs.Find(l => l.Uid == logUid);
                         if (logHeader.LogCurveInfo.Any(lci => lci.Mnemonic == mnemonic))
@@ -93,9 +97,9 @@ namespace WitsmlExplorer.Api.Workers
                 }
 
             }
-            catch (ArgumentException e)
+            catch (Exception e)
             {
-                var message = $"SpliceLogsJob failed. Description: {job.Description()}.";
+                var message = $"SpliceLogsJob failed. Description: {job.Description()}. CurrentMnemonic: {currentMnemonic}, currentLogUid: {currentLogUid}";
                 Logger.LogError(message);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message, e.Message, jobId: jobId), null);
             }
