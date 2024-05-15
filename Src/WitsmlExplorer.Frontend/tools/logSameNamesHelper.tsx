@@ -1,7 +1,7 @@
 import LogObject from "models/logObject";
 
 export const createArtificialRunNumbersForLogs = (logObjects: LogObject[]) => {
-  let dictionary = Object.fromEntries(
+  const dictionary = Object.fromEntries(
     logObjects.map((item) => [
       item.name,
       logObjects.filter((x) => x.name === item.name)
