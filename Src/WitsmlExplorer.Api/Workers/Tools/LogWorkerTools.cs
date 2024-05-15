@@ -15,6 +15,8 @@ using WitsmlExplorer.Api.Jobs.Common.Interfaces;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
 
+using CurveIndex = Witsml.Data.Curves.Index;
+
 namespace WitsmlExplorer.Api.Workers
 {
     public static class LogWorkerTools
@@ -40,9 +42,9 @@ namespace WitsmlExplorer.Api.Workers
             return result;
         }
 
-        public static async Task<WitsmlLogData> GetLogDataForCurve(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic, ILogger logger)
+        public static async Task<WitsmlLogData> GetLogDataForCurve(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic, ILogger logger, CurveIndex startIndex = null, CurveIndex endIndex = null)
         {
-            await using LogDataReader logDataReader = new(witsmlClient, log, mnemonic.AsItemInList(), logger);
+            await using LogDataReader logDataReader = new(witsmlClient, log, mnemonic.AsItemInList(), logger, startIndex ?? CurveIndex.Start(log), endIndex ?? CurveIndex.End(log));
             List<WitsmlData> data = new();
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             var mnemonicList = logData?.MnemonicList;
