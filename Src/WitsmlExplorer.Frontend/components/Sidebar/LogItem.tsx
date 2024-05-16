@@ -9,8 +9,10 @@ import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
 import { MouseEvent, useContext } from "react";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 
 interface LogItemProps {
+  logObjects: LogObject[];
   log: LogObject;
   selected: boolean;
   nodeId: string;
@@ -19,6 +21,7 @@ interface LogItemProps {
 }
 
 export default function LogItem({
+  logObjects,
   log,
   selected,
   nodeId,
@@ -49,7 +52,11 @@ export default function LogItem({
       }
       key={nodeId}
       nodeId={nodeId}
-      labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
+      labelText={
+        log.runNumber
+          ? `${log.name} (${log.runNumber})`
+          : log.name + getNameOccurrenceSuffix(logObjects, log)
+      }
       selected={selected}
       isActive={objectGrowing}
       to={to}

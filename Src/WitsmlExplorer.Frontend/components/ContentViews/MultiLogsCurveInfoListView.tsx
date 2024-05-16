@@ -171,6 +171,7 @@ export default function MultiLogsCurveInfoListView() {
           hideEmptyMnemonics
         )}
         data={getTableData(
+          allLogs,
           logCurveInfoList,
           logObjects,
           timeZone,

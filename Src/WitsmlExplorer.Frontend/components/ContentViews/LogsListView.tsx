@@ -28,6 +28,7 @@ import { MouseEvent, useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 import {
   CommonPanelContainer,
   ContentContainer
@@ -85,10 +86,14 @@ export default function LogsListView() {
   };
 
   const getTableData = (): LogObjectRow[] => {
-    return logs.map((log) => {
+    const result = logs.map((log) => {
       return {
         ...log,
         id: log.uid,
+
+        name: log.runNumber
+          ? `${log.name} (${log.runNumber})`
+          : log.name + getNameOccurrenceSuffix(logs, log),
         startIndex: isTimeIndexed
           ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
           : log.startIndex,
@@ -108,6 +113,7 @@ export default function LogsListView() {
         logObject: log
       };
     });
+    return result.sort((a, b) => a.name.localeCompare(b.name));
   };
 
   const columns: ContentTableColumn[] = [
