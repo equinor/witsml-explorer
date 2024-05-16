@@ -161,6 +161,7 @@ export default function LogCurveInfoListView() {
           true
         )}
         data={getTableData(
+          [logObject],
           logCurveInfoList,
           logObjects,
           timeZone,

@@ -109,6 +109,7 @@ export const getColumns = (
 };
 
 export const getTableData = (
+  allLogs: LogObject[],
   logCurveInfoList: MultiLogCurveInfo[],
   logObjects: Map<string, LogObject>,
   timeZone: TimeZone,
@@ -151,8 +152,7 @@ export const getTableData = (
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logName: logObject.runNumber
           ? `${logObject.name} (${logObject.runNumber})`
-          : logObject.name +
-            getNameOccurrenceSuffix(Object.values(logObjects), logObject),
+          : logObject.name + getNameOccurrenceSuffix(allLogs, logObject),
         logUid: logObject.uid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
