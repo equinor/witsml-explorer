@@ -35,7 +35,6 @@ import {
   getLogObjectViewPath,
   getLogObjectsViewPath
 } from "routes/utils/pathBuilder";
-import { createArtificialRunNumbersForLogs } from "tools/logSameNamesHelper";
 
 interface LogTypeItemProps {
   logs: LogObject[];
@@ -80,8 +79,8 @@ export default function LogTypeItem({
     return calculateMultipleLogsNode(wellbore, logName);
   };
 
-  const getMultipleLogsNodeItem = (logName: string, index: string) => {
-    return calculateMultipleLogsNodeItem(wellbore, logName, index);
+  const getMultipleLogsNodeItem = (logName: string, logUid: string) => {
+    return calculateMultipleLogsNodeItem(wellbore, logName, logUid);
   };
 
   const onContextMenu = (
@@ -131,11 +130,7 @@ export default function LogTypeItem({
   };
 
   const subLogsCount = (logs: LogObject[], logName: string) => {
-    const foundLogs = logs.filter((x) => x.name === logName);
-    if (foundLogs === null) {
-      return 0;
-    }
-    return foundLogs.length;
+    return logs.filter((x) => x.name === logName).length;
   };
 
   const subLogsNodeName = (logName: string) => {
@@ -160,11 +155,12 @@ export default function LogTypeItem({
         (a, b) =>
           a.runNumber?.localeCompare(b.runNumber) || a.uid.localeCompare(b.uid)
       )
-      .map((log, index) => (
-        <Fragment key={getMultipleLogsNodeItem(log.name, index.toString())}>
+      .map((log) => (
+        <Fragment key={getMultipleLogsNodeItem(log.name, log.uid)}>
           <LogItem
+            logObjects={logObjects}
             log={log}
-            nodeId={getMultipleLogsNodeItem(log.name, index.toString())}
+            nodeId={getMultipleLogsNodeItem(log.name, log.uid)}
             selected={isSelected(log)}
             objectGrowing={log.objectGrowing}
             to={getLogObjectViewPath(
@@ -188,7 +184,6 @@ export default function LogTypeItem({
     isSelected: (log: LogObject) => boolean,
     serverUrl: string
   ) => {
-    createArtificialRunNumbersForLogs(logObjects);
     const distinctLogObjects = logObjects.filter(
       (logObject, i, arr) =>
         arr.findIndex((t) => t.name === logObject.name) === i
@@ -221,6 +216,7 @@ export default function LogTypeItem({
       ) : (
         <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
           <LogItem
+            logObjects={logObjects}
             log={log}
             nodeId={calculateObjectNodeId(log, ObjectType.Log)}
             selected={isSelected(log)}

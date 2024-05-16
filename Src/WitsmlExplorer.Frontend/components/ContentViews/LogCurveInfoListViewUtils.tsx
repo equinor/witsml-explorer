@@ -10,6 +10,7 @@ import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
 import MultiLogCurveInfo from "models/multilogCurveInfo";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -149,10 +150,9 @@ export const getTableData = (
             ? `${logCurveInfo.uid}`
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logName: logObject.runNumber
-          ? logObject.name + " (" + logObject.runNumber + ")"
-          : logObject.sameNameIndex
-          ? logObject.sameNameIndex
-          : logObject.name,
+          ? `${logObject.name} (${logObject.runNumber})`
+          : logObject.name +
+            getNameOccurrenceSuffix(Object.values(logObjects), logObject),
         logUid: logObject.uid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex

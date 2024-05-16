@@ -1,27 +1,16 @@
 import LogObject from "models/logObject";
 
-export const createArtificialRunNumbersForLogs = (logObjects: LogObject[]) => {
-  const dictionary = Object.fromEntries(
-    logObjects.map((item) => [
-      item.name,
-      logObjects.filter((x) => x.name === item.name)
-    ])
-  );
+export const getNameOccurrenceSuffix = (
+  logObjects: LogObject[],
+  logObject: LogObject
+): string => {
+  const filteredObjects = logObjects
+    .filter((obj) => obj.name === logObject.name && !obj.runNumber)
+    .sort((a, b) => a.uid.localeCompare(b.uid));
 
-  Object.keys(dictionary).map((k) =>
-    dictionary[k].length > 1
-      ? dictionary[k]
-          .filter((x) => x.runNumber === null)
-          .sort((a, b) => a.uid.localeCompare(b.uid))
-          .forEach(
-            (x, sameNameIndex = 0) =>
-              (x.sameNameIndex = x.name
-                .concat(" [")
-                .concat(
-                  String.fromCharCode(++sameNameIndex + 64).toLocaleLowerCase()
-                )
-                .concat("]"))
-          )
-      : {}
-  );
+  if (filteredObjects.length > 1) {
+    const index = filteredObjects.findIndex((obj) => obj.uid === logObject.uid);
+    return ` [${String.fromCharCode(97 + index)}]`;
+  }
+  return "";
 };

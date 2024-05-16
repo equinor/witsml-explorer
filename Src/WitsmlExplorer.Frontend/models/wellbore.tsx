@@ -148,24 +148,21 @@ export const calculateLogTypeTimeId = (
 
 export const calculateMultipleLogsNode = (
   wellbore: Wellbore | { wellUid: string; uid: string },
-  objectUid: string
+  logName: string
 ): string => {
-  const result =
-    calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD) + `lt=${objectUid};`;
-  return result;
+  return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD) + `ln=${logName};`;
 };
 
 export const calculateMultipleLogsNodeItem = (
   wellbore: Wellbore | { wellUid: string; uid: string },
-  objectUid: string,
-  index: string
+  logName: string,
+  logUid: string
 ): string => {
-  const result =
+  return (
     calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD) +
-    `lt=${objectUid};` +
-    `o=${objectUid}${index};`;
-
-  return result;
+    `ln=${logName};` +
+    `o=${logUid};`
+  );
 };
 
 export const calculateObjectNodeId = (
