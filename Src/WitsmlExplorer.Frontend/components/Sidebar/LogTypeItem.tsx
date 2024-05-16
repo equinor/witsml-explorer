@@ -143,6 +143,12 @@ export default function LogTypeItem({
       : RouterLogType.DEPTH;
   };
 
+  const getLogTypeGroup = (logType: string) => {
+    return logType === WITSML_INDEX_TYPE_DATE_TIME
+      ? logTypeGroupTime
+      : logTypeGroupDepth;
+  };
+
   const listSubLogItems = (
     logObjects: LogObject[],
     logType: string,
@@ -194,6 +200,7 @@ export default function LogTypeItem({
           labelText={subLogsNodeName(log.name)}
           key={getMultipleLogsNode(log.name)}
           nodeId={getMultipleLogsNode(log.name)}
+          to={getNavPath(getLogTypeGroup(logType))}
           selected={
             calculateMultipleLogsNode(
               { wellUid: urlWellUid, uid: urlWellboreUid },
