@@ -11,9 +11,18 @@ export function Snackbar() {
     const unsubscribe =
       NotificationService.Instance.snackbarDispatcherAsEvent.subscribe(
         (notification) => {
+          const connectedServerUrl = connectedServer?.url?.toLowerCase();
+          const notificationServerUrl = notification.serverUrl
+            .toString()
+            .toLowerCase();
+          const notificationSourceServerUrl = notification.sourceServerUrl
+            ?.toString()
+            .toLowerCase();
           const shouldNotify =
-            notification.serverUrl.toString().toLowerCase() ===
-            connectedServer?.url?.toLowerCase();
+            connectedServerUrl &&
+            (notification.serverUrl === null ||
+              connectedServerUrl === notificationServerUrl ||
+              connectedServerUrl === notificationSourceServerUrl);
           if (shouldNotify) {
             enqueueSnackbar(notification.message, {
               variant: notification.isSuccess ? "success" : "error"

@@ -40,10 +40,18 @@ const Alerts = (): React.ReactElement => {
     const unsubscribeOnJobFinished =
       NotificationService.Instance.alertDispatcherAsEvent.subscribe(
         (notification) => {
+          const connectedServerUrl = connectedServer?.url?.toLowerCase();
+          const notificationServerUrl = notification.serverUrl
+            .toString()
+            .toLowerCase();
+          const notificationSourceServerUrl = notification.sourceServerUrl
+            ?.toString()
+            .toLowerCase();
           const shouldNotify =
-            notification.serverUrl == null ||
-            notification.serverUrl.toString().toLowerCase() ===
-              connectedServer?.url?.toLowerCase();
+            connectedServerUrl &&
+            (notification.serverUrl === null ||
+              connectedServerUrl === notificationServerUrl ||
+              connectedServerUrl === notificationSourceServerUrl);
           if (!shouldNotify) {
             return;
           }

@@ -15,7 +15,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
     public interface ICopyUtils
     {
-        public Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore(IWitsmlClient witsmlClient, IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid);
+        public Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore(IWitsmlClient targetClient, IWitsmlClient sourceClient, IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid);
     }
 
     public class CopyUtils : ICopyUtils
@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             _logger = logger;
         }
 
-        public async Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore(IWitsmlClient witsmlClient, IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid)
+        public async Task<(WorkerResult, RefreshAction)> CopyObjectsOnWellbore(IWitsmlClient targetClient, IWitsmlClient sourceClient, IEnumerable<WitsmlObjectOnWellbore> queries, RefreshAction refreshAction, string sourceWellUid, string sourceWellboreUid)
         {
             bool error = false;
             List<string> successUids = new();
@@ -37,7 +37,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 try
                 {
-                    QueryResult result = await witsmlClient.AddToStoreAsync(query.AsItemInWitsmlList());
+                    QueryResult result = await targetClient.AddToStoreAsync(query.AsItemInWitsmlList());
                     if (result.IsSuccessful)
                     {
                         _logger.LogInformation(
@@ -78,8 +78,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
             var typeName = queries.FirstOrDefault()?.GetType().Name;
             string successString = successUids.Count > 0 ? $"Copied {typeName}s: {string.Join(", ", successUids)}." : "";
             return !error
-                ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
-                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to copy some {typeName}s", errorReason, errorEntity), successUids.Count > 0 ? refreshAction : null);
+                ? (new WorkerResult(targetClient.GetServerHostname(), true, successString, sourceServerUrl: sourceClient.GetServerHostname()), refreshAction)
+                : (new WorkerResult(targetClient.GetServerHostname(), false, $"{successString} Failed to copy some {typeName}s", errorReason, errorEntity, sourceServerUrl: sourceClient.GetServerHostname()), successUids.Count > 0 ? refreshAction : null);
         }
     }
 }
