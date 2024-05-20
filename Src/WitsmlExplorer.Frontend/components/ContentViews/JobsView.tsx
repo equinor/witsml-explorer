@@ -168,7 +168,8 @@ export const JobsView = (): React.ReactElement => {
             targetServer: serverUrlToName(servers, jobInfo.targetServer),
             sourceServer: serverUrlToName(servers, jobInfo.sourceServer),
             report:
-              jobInfo.status === JobStatus.Finished ? (
+              jobInfo.status === JobStatus.Finished &&
+              jobInfo.reportType !== ReportType.None ? (
                 <ReportButton onClick={() => onClickReport(jobInfo.id)}>
                   {jobInfo.reportType === ReportType.File
                     ? "Download File"
