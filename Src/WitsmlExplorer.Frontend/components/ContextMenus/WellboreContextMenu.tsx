@@ -297,7 +297,9 @@ const WellboreContextMenu = (
                   wellboreUid: wellbore.uid
                 })
               }
-              disabled={checkedWellboreRows?.length !== 1}
+              disabled={
+                !!checkedWellboreRows && checkedWellboreRows.length !== 1
+              }
             >
               <StyledIcon
                 name="textField"
