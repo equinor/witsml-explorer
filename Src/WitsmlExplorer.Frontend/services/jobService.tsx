@@ -30,18 +30,20 @@ export default class JobService {
       targetServer,
       sourceServer
     );
-    return this.onResponse(jobType, response, targetServer);
+    return this.onResponse(jobType, response, targetServer, sourceServer);
   }
 
   private static async onResponse(
     jobType: JobType,
     response: Response,
-    server = AuthorizationService.selectedServer
+    server = AuthorizationService.selectedServer,
+    sourceServer: Server = null
   ): Promise<any> {
     AuthorizationService.resetSourceServer();
     if (response.ok) {
       NotificationService.Instance.snackbarDispatcher.dispatch({
         serverUrl: new URL(server?.url),
+        sourceServerUrl: sourceServer ? new URL(sourceServer?.url) : null,
         message: `Ordered ${jobType} job`,
         isSuccess: true
       });
@@ -49,6 +51,7 @@ export default class JobService {
     } else {
       NotificationService.Instance.snackbarDispatcher.dispatch({
         serverUrl: new URL(server?.url),
+        sourceServerUrl: sourceServer ? new URL(sourceServer?.url) : null,
         message: `Failed ordering ${jobType} job`,
         isSuccess: false
       });
