@@ -317,6 +317,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
                   wellboreUid: uuid()
                 })
               }
+              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
             >
               <StyledIcon
                 name="add"
