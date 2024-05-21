@@ -297,7 +297,9 @@ const WellboreContextMenu = (
                   wellboreUid: wellbore.uid
                 })
               }
-              disabled={checkedWellboreRows?.length !== 1}
+              disabled={
+                !!checkedWellboreRows && checkedWellboreRows.length !== 1
+              }
             >
               <StyledIcon
                 name="textField"
@@ -326,6 +328,9 @@ const WellboreContextMenu = (
               key={"newObjects"}
               label={"New object"}
               icon={"add"}
+              disabled={
+                !!checkedWellboreRows && checkedWellboreRows.length !== 1
+              }
             >
               {Object.values(ObjectType)
                 .filter((objectType) => capObjects.includes(objectType))
@@ -340,6 +345,9 @@ const WellboreContextMenu = (
                         wellboreUid: wellbore.uid,
                         objectUid: uuid()
                       })
+                    }
+                    disabled={
+                      !!checkedWellboreRows && checkedWellboreRows.length !== 1
                     }
                   >
                     <StyledIcon
