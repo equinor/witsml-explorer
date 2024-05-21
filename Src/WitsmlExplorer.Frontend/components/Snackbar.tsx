@@ -13,14 +13,14 @@ export function Snackbar() {
         (notification) => {
           const connectedServerUrl = connectedServer?.url?.toLowerCase();
           const notificationServerUrl = notification.serverUrl
-            .toString()
+            ?.toString()
             .toLowerCase();
           const notificationSourceServerUrl = notification.sourceServerUrl
             ?.toString()
             .toLowerCase();
           const shouldNotify =
             connectedServerUrl &&
-            (notification.serverUrl === null ||
+            (notificationServerUrl === null ||
               connectedServerUrl === notificationServerUrl ||
               connectedServerUrl === notificationSourceServerUrl);
           if (shouldNotify) {
