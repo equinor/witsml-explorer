@@ -18,6 +18,7 @@ import * as path from "path";
 // Auto updater settings
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = false;
+let isUpdateAvailableChecked = false;
 
 let apiProcess: any;
 
@@ -294,8 +295,12 @@ if (!gotTheLock) {
     ipcMain.handle("getAppVersion", () => app.getVersion());
 
     ipcMain.handle("checkForUpdates", () => {
-      const updateCheckResult = autoUpdater.checkForUpdates();
-      return updateCheckResult;
+      if (!isUpdateAvailableChecked) {
+        isUpdateAvailableChecked = true;
+        const updateCheckResult = autoUpdater.checkForUpdates();
+        return updateCheckResult;
+      }
+      return;
     });
 
     ipcMain.handle("downloadUpdate", () => {

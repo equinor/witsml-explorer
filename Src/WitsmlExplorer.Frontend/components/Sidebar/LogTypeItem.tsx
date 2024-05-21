@@ -24,6 +24,8 @@ import Wellbore, {
   calculateLogTypeDepthId,
   calculateLogTypeId,
   calculateLogTypeTimeId,
+  calculateMultipleLogsNode,
+  calculateMultipleLogsNodeItem,
   calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "models/wellbore";
 import { Fragment, MouseEvent, useContext } from "react";
@@ -51,6 +53,7 @@ export default function LogTypeItem({
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
+
   const {
     logType,
     wellUid: urlWellUid,
@@ -70,6 +73,14 @@ export default function LogTypeItem({
       ObjectType.Log,
       logTypePath
     );
+  };
+
+  const getMultipleLogsNode = (logName: string) => {
+    return calculateMultipleLogsNode(wellbore, logName);
+  };
+
+  const getMultipleLogsNodeItem = (logName: string, logUid: string) => {
+    return calculateMultipleLogsNodeItem(wellbore, logName, logUid);
   };
 
   const onContextMenu = (
@@ -93,6 +104,11 @@ export default function LogTypeItem({
       }
     });
   };
+
+  const filterLogsByType = (logs: LogObject[], logType: string) => {
+    return logs?.filter((log) => log.indexType === logType) ?? [];
+  };
+
   const depthLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_MD);
   const timeLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_DATE_TIME);
 
@@ -109,6 +125,119 @@ export default function LogTypeItem({
           ? WITSML_INDEX_TYPE_MD
           : WITSML_INDEX_TYPE_DATE_TIME,
         objectUid
+      )
+    );
+  };
+
+  const subLogsCount = (logs: LogObject[], logName: string) => {
+    return logs.filter((x) => x.name === logName).length;
+  };
+
+  const subLogsNodeName = (logName: string) => {
+    return logName + " (multiple)";
+  };
+
+  const getLogTypePath = (logType: string) => {
+    return logType === WITSML_INDEX_TYPE_DATE_TIME
+      ? RouterLogType.TIME
+      : RouterLogType.DEPTH;
+  };
+
+  const getLogTypeGroup = (logType: string) => {
+    return logType === WITSML_INDEX_TYPE_DATE_TIME
+      ? logTypeGroupTime
+      : logTypeGroupDepth;
+  };
+
+  const listSubLogItems = (
+    logObjects: LogObject[],
+    logType: string,
+    wellUid: string,
+    wellboreUid: string,
+    serverUrl: string
+  ) => {
+    return logObjects
+      ?.sort(
+        (a, b) =>
+          a.runNumber?.localeCompare(b.runNumber) || a.uid.localeCompare(b.uid)
+      )
+      .map((log) => (
+        <Fragment key={getMultipleLogsNodeItem(log.name, log.uid)}>
+          <LogItem
+            logObjects={logObjects}
+            log={log}
+            nodeId={getMultipleLogsNodeItem(log.name, log.uid)}
+            selected={isSelected(log)}
+            objectGrowing={log.objectGrowing}
+            to={getLogObjectViewPath(
+              serverUrl,
+              wellUid,
+              wellboreUid,
+              ObjectType.Log,
+              getLogTypePath(logType),
+              log.uid
+            )}
+          />
+        </Fragment>
+      ));
+  };
+
+  const listLogItemsByType = (
+    logObjects: LogObject[],
+    logType: string,
+    wellUid: string,
+    wellboreUid: string,
+    isSelected: (log: LogObject) => boolean,
+    serverUrl: string
+  ) => {
+    const distinctLogObjects = logObjects.filter(
+      (logObject, i, arr) =>
+        arr.findIndex((t) => t.name === logObject.name) === i
+    );
+    return distinctLogObjects?.map((log) =>
+      subLogsCount(logObjects, log.name) > 1 ? (
+        <TreeItem
+          labelText={subLogsNodeName(log.name)}
+          key={getMultipleLogsNode(log.name)}
+          nodeId={getMultipleLogsNode(log.name)}
+          to={getNavPath(getLogTypeGroup(logType))}
+          selected={
+            calculateMultipleLogsNode(
+              { wellUid: urlWellUid, uid: urlWellboreUid },
+              log.name
+            ) ===
+            calculateMultipleLogsNode(
+              wellbore,
+              logObjects.find((x) => x.uid === objectUid)?.name
+            )
+          }
+        >
+          {listSubLogItems(
+            logObjects.filter((x) => x.name === log.name),
+            logType,
+            wellUid,
+            wellboreUid,
+            connectedServer?.url
+          )}
+        </TreeItem>
+      ) : (
+        <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
+          <LogItem
+            logObjects={logObjects}
+            log={log}
+            nodeId={calculateObjectNodeId(log, ObjectType.Log)}
+            selected={isSelected(log)}
+            objectGrowing={log.objectGrowing}
+            to={getLogObjectViewPath(
+              serverUrl,
+              wellUid,
+              wellboreUid,
+              ObjectType.Log,
+              getLogTypePath(logType),
+              log.uid
+            )}
+          />
+        </Fragment>
       )
     );
   };
@@ -166,39 +295,3 @@ export default function LogTypeItem({
     </>
   );
 }
-
-const filterLogsByType = (logs: LogObject[], logType: string) => {
-  return logs?.filter((log) => log.indexType === logType) ?? [];
-};
-
-const listLogItemsByType = (
-  logObjects: LogObject[],
-  logType: string,
-  wellUid: string,
-  wellboreUid: string,
-  isSelected: (log: LogObject) => boolean,
-  serverUrl: string
-) => {
-  const logTypePath =
-    logType === WITSML_INDEX_TYPE_DATE_TIME
-      ? RouterLogType.TIME
-      : RouterLogType.DEPTH;
-  return logObjects?.map((log) => (
-    <Fragment key={calculateObjectNodeId(log, ObjectType.Log)}>
-      <LogItem
-        log={log}
-        nodeId={calculateObjectNodeId(log, ObjectType.Log)}
-        selected={isSelected(log)}
-        objectGrowing={log.objectGrowing}
-        to={getLogObjectViewPath(
-          serverUrl,
-          wellUid,
-          wellboreUid,
-          ObjectType.Log,
-          logTypePath,
-          log.uid
-        )}
-      />
-    </Fragment>
-  ));
-};

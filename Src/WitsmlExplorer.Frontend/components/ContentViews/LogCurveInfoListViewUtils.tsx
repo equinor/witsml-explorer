@@ -10,6 +10,7 @@ import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
 import MultiLogCurveInfo from "models/multilogCurveInfo";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -108,6 +109,7 @@ export const getColumns = (
 };
 
 export const getTableData = (
+  allLogs: LogObject[],
   logCurveInfoList: MultiLogCurveInfo[],
   logObjects: Map<string, LogObject>,
   timeZone: TimeZone,
@@ -132,6 +134,7 @@ export const getTableData = (
       if (logUid !== null) {
         logCurveInfo.logUid = logUid;
       }
+
       const logObject = logObjects.get(logCurveInfo.logUid);
       const isActive =
         logObject.objectGrowing &&
@@ -147,7 +150,9 @@ export const getTableData = (
           logUid === null
             ? `${logCurveInfo.uid}`
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
-        logName: logObject.name,
+        logName: logObject.runNumber
+          ? `${logObject.name} (${logObject.runNumber})`
+          : logObject.name + getNameOccurrenceSuffix(allLogs, logObject),
         logUid: logObject.uid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
