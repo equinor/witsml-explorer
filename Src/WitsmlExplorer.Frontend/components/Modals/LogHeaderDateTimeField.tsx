@@ -101,8 +101,7 @@ export const LogHeaderDateTimeField = (
           onChange={onTextFieldChange}
           style={{
             paddingTop: "16px",
-            fontFeatureSettings: '"tnum"',
-            paddingBottom: validate(value) ? "24px" : 0
+            fontFeatureSettings: '"tnum"'
           }}
         />
       </Horizontal>
@@ -140,5 +139,4 @@ const Layout = styled.div`
 const Horizontal = styled.div`
   display: flex;
   flex-direction: row;
-  justify-items: bottom;
 `;
