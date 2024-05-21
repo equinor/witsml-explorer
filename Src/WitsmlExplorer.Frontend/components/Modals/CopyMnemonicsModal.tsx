@@ -48,7 +48,7 @@ const CopyMnemonicsModal = (
   const { dispatchOperation } = useContext(OperationContext);
 
   const [selectedCopyMnemonicsType, setCopyMnemonicsType] = useState<string>(
-    CopyMnemonicsType.DeleteInsert
+    CopyMnemonicsType.Paste
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -160,26 +160,6 @@ const CopyMnemonicsModal = (
                 <div style={{ alignItems: "top" }}>
                   <Radio
                     checked={
-                      selectedCopyMnemonicsType ===
-                      CopyMnemonicsType.DeleteInsert
-                    }
-                    onChange={() =>
-                      setCopyMnemonicsType(CopyMnemonicsType.DeleteInsert)
-                    }
-                  />
-                </div>
-                <div>
-                  <Typography variant="h5">Delete/Insert</Typography>
-                  <Typography variant="body_long">
-                    Delete target mnemonics before copying. The mnemonics will
-                    become equal on the source and target server afterwards.
-                  </Typography>
-                </div>
-              </RadioItemLayout>
-              <RadioItemLayout>
-                <div style={{ alignItems: "top" }}>
-                  <Radio
-                    checked={
                       selectedCopyMnemonicsType === CopyMnemonicsType.Paste
                     }
                     onChange={() =>
@@ -197,6 +177,25 @@ const CopyMnemonicsModal = (
                 </div>
               </RadioItemLayout>
             </RadioLayout>
+            <RadioItemLayout>
+              <div style={{ alignItems: "top" }}>
+                <Radio
+                  checked={
+                    selectedCopyMnemonicsType === CopyMnemonicsType.DeleteInsert
+                  }
+                  onChange={() =>
+                    setCopyMnemonicsType(CopyMnemonicsType.DeleteInsert)
+                  }
+                />
+              </div>
+              <div>
+                <Typography variant="h5">Delete/Insert</Typography>
+                <Typography variant="body_long">
+                  Delete target mnemonics before copying. The mnemonics will
+                  become equal on the source and target server afterwards.
+                </Typography>
+              </div>
+            </RadioItemLayout>
           </ContentLayout>
         }
         onSubmit={() => onSubmit()}
