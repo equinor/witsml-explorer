@@ -6,6 +6,7 @@ const naturalDateTimeFormat = "dd.MM.yyyy HH:mm:ss.SSS";
 const rawDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 let dateTimeFormat = rawDateTimeFormat;
 export const dateTimeFormatNoOffset = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+export const dateTimeFormatTextField = "yyyy-MM-dd'T'HH:mm:ss";
 
 // Minus character U+2212 is preferred by ISO 8601 over hyphen minus '-' so we check both
 // date-fns-tz behaves weirdly with minus so we replace it

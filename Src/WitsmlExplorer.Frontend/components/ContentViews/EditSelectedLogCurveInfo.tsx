@@ -6,6 +6,8 @@ import {
   TextField
 } from "@equinor/eds-core-react";
 import formatDateString, {
+  dateTimeFormatTextField,
+  getOffset,
   getOffsetFromTimeZone
 } from "components/DateFormatter";
 import { Button } from "components/StyledComponents/Button";
@@ -43,8 +45,6 @@ interface EditSelectedLogCurveInfoProps {
   overrideEndIndex?: string;
   onClickRefresh?: () => void;
 }
-
-const dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
 const EditSelectedLogCurveInfo = (
   props: EditSelectedLogCurveInfoProps
@@ -125,11 +125,18 @@ const EditSelectedLogCurveInfo = (
   const onTextFieldChange = (
     e: ChangeEvent<HTMLInputElement>,
     setIndex: Dispatch<SetStateAction<string>>,
-    setIsValid: Dispatch<SetStateAction<boolean>>
+    setIsValid: Dispatch<SetStateAction<boolean>>,
+    index: string
   ) => {
     if (isTimeLog) {
-      if (isValid(parseDate(e.target.value))) {
-        setIndex(getUtcValue(e.target.value, isTimeLog, timeZone));
+      const isMissingSeconds = e.target.value.split(":")?.length === 2;
+      const value = isMissingSeconds ? `${e.target.value}:00` : e.target.value;
+      if (isValid(parseDate(value))) {
+        const offset =
+          timeZone === TimeZone.Raw
+            ? getOffset(index)
+            : getOffsetFromTimeZone(timeZone);
+        setIndex(getUtcValue(value, isTimeLog, offset));
         setIsEdited(true);
         setIsValid(true);
       } else {
@@ -166,7 +173,12 @@ const EditSelectedLogCurveInfo = (
               type={isTimeLog ? "datetime-local" : ""}
               step="1"
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                onTextFieldChange(e, setSelectedStartIndex, setIsValidStart);
+                onTextFieldChange(
+                  e,
+                  setSelectedStartIndex,
+                  setIsValidStart,
+                  startIndex
+                );
               }}
             />
           </StartEndIndex>
@@ -182,7 +194,12 @@ const EditSelectedLogCurveInfo = (
               variant={isValidEnd ? undefined : "error"}
               step="1"
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                onTextFieldChange(e, setSelectedEndIndex, setIsValidEnd);
+                onTextFieldChange(
+                  e,
+                  setSelectedEndIndex,
+                  setIsValidEnd,
+                  endIndex
+                );
               }}
             />
           </StartEndIndex>
@@ -228,7 +245,7 @@ const EditSelectedLogCurveInfo = (
 };
 
 const parseDate = (current: string) => {
-  return parse(current, dateTimeFormat, new Date());
+  return parse(current, dateTimeFormatTextField, new Date());
 };
 
 const getParsedValue = (
@@ -242,10 +259,10 @@ const getParsedValue = (
     : input;
 };
 
-const getUtcValue = (input: string, isTimeLog: boolean, timeZone: TimeZone) => {
+const getUtcValue = (input: string, isTimeLog: boolean, offset: string) => {
   if (!input) return null;
   if (isTimeLog) {
-    const inputWithZone = input + getOffsetFromTimeZone(timeZone);
+    const inputWithZone = input + offset;
     const utcInput = formatDateString(
       inputWithZone,
       TimeZone.Utc,
