@@ -59,11 +59,13 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             try
             {
+                Thread.Sleep(15000);
                 VerifyNormalSourceMnemonicsDoesNotMatchIndexCurveOnTarget(sourceLog, targetLog, mnemonicsToCopy);
                 VerifyMatchingIndexTypes(sourceLog, targetLog);
                 VerifyValidInterval(sourceLog);
                 VerifyIndexCurveIsIncludedInMnemonics(sourceLog, newMnemonicsInTarget, existingMnemonicsInTarget);
                 await VerifyTargetHasRequiredLogCurveInfos(sourceLog, job.Source.ComponentUids, targetLog);
+                cancellationToken?.ThrowIfCancellationRequested();
             }
             catch (Exception e)
             {

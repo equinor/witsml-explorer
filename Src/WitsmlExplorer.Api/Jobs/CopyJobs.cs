@@ -2,13 +2,23 @@ using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
 {
-    public record CopyComponentsJob : ICopyJob<ComponentReferences, ObjectReference> { }
+    public record CopyComponentsJob : ICopyJob<ComponentReferences, ObjectReference>
+    {
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
+    }
     public record CopyObjectsJob : ICopyJob<ObjectReferences, WellboreReference> { }
 
     public record CopyLogDataJob : ICopyJob<ComponentReferences, ObjectReference>
     {
         public string StartIndex { get; init; }
         public string EndIndex { get; init; }
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
 
         public override string Description()
         {

@@ -40,13 +40,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyComponentsJob job, CancellationToken? cancellationToken = null)
         {
+            // cancellationToken?.ThrowIfCancellationRequested();
             if (job.Source.ComponentType == ComponentType.Mnemonic)
             {
                 return await _copyLogDataWorker.Execute(new CopyLogDataJob()
                 {
                     Source = job.Source,
-                    Target = job.Target
-                });
+                    Target = job.Target,
+                }, cancellationToken) ;
             }
 
             _job = job;
@@ -78,7 +79,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 string reason = $"Could not retrieve some {_componentType.ToPluralLowercase()}, missing uids: {string.Join(", ", missingUids)}.";
                 return LogErrorAndReturnResult(reason);
             }
-
+            cancellationToken?.ThrowIfCancellationRequested();
             WitsmlObjectOnWellbore updateTargetQuery = ObjectQueries.CopyComponents(source.Objects?.FirstOrDefault(), _componentType, job.Target, toCopyUids);
             QueryResult copyResult = await targetClient.UpdateInStoreAsync(updateTargetQuery.AsItemInWitsmlList());
             if (!copyResult.IsSuccessful)
