@@ -127,11 +127,11 @@ namespace WitsmlExplorer.Api.Workers
             {
                 string message = $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'";
                 Logger.LogError(message);
-                return (new WorkerResult(GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message, e.Message, jobId: job.JobInfo.Id), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message, e.Message, jobId: job.JobInfo.Id, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful", GetType().Name);
-            WorkerResult workerResult = new(GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'", jobId: job.JobInfo.Id);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'", jobId: job.JobInfo.Id, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname());
             return (workerResult, null);
         }
 
