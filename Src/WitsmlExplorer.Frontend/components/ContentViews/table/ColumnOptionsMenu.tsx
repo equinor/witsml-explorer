@@ -6,7 +6,7 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import { Checkbox } from "@mui/material";
-import { Table } from "@tanstack/react-table";
+import { Column, Table } from "@tanstack/react-table";
 import {
   activeId,
   calculateColumnWidth,
@@ -21,7 +21,9 @@ import { Button } from "components/StyledComponents/Button";
 import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import {
@@ -31,6 +33,8 @@ import {
 import { Draggable, DummyDrop } from "../../StyledComponents/DragDropTable";
 
 const lastId = "dummyLastId";
+
+type FilterValues = Record<string, string>;
 
 export const ColumnOptionsMenu = (props: {
   table: Table<any>;
@@ -62,10 +66,17 @@ export const ColumnOptionsMenu = (props: {
   const [, saveOrderToStorage] = useLocalStorageState<string[]>(
     viewId + STORAGE_CONTENTTABLE_ORDER_KEY
   );
-  const [filterValues, setFilterValues] = useState<{ [key: string]: string }>(
-    {}
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filterValues, setFilterValues] = useState<FilterValues>({});
   const isCompactMode = theme === UserTheme.Compact;
+
+  useEffect(() => {
+    const initialFilter = JSON.parse(searchParams.get("filter"));
+    if (initialFilter) {
+      // We need a small delay to ensure that the table configuration is complete
+      setTimeout(() => setInitialFilter(initialFilter), 50);
+    }
+  }, []);
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -134,6 +145,39 @@ export const ColumnOptionsMenu = (props: {
       column.setFilterValue(null);
     });
     setFilterValues({});
+  };
+
+  const setInitialFilter = (filterValues: FilterValues) => {
+    Object.entries(filterValues).forEach(([key, value]) => {
+      const column = table.getAllLeafColumns().find((col) => col.id === key);
+      column.setFilterValue(value);
+    });
+    setFilterValues(filterValues);
+  };
+
+  const onChangeColumnFilter = (
+    e: ChangeEvent<HTMLInputElement>,
+    column: Column<any, unknown>
+  ) => {
+    // TODO: Debounce to avoid constant updates (and navigation state updates). A fairly large debounce should be used.
+    const newValue = e.target.value || null; // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
+    column.setFilterValue(newValue);
+    const newFilterValues = {
+      ...filterValues,
+      [column.id]: newValue
+    };
+    if (!newValue) {
+      delete newFilterValues[column.id];
+    }
+    setFilterValues(newFilterValues);
+    const newSearchParams = createColumnFilterSearchParams(
+      searchParams,
+      newFilterValues
+    );
+    if (checkIsUrlTooLong(location.pathname, newSearchParams)) {
+      newSearchParams.delete("filter"); // Remove filter from the URL if it takes too much space. The filter will still be applied, but not in the URL.
+    }
+    setSearchParams(newSearchParams);
   };
 
   return (
@@ -233,13 +277,9 @@ export const ColumnOptionsMenu = (props: {
                         (column.columnDef.meta as { type: ContentType })
                           ?.type === ContentType.Component
                       }
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
-                        setFilterValues({
-                          ...filterValues,
-                          [column.id]: e.target.value
-                        });
-                      }}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        onChangeColumnFilter(e, column)
+                      }
                       style={{ minWidth: "100px", maxHeight: "25px" }}
                     />
                   </EdsProvider>
@@ -337,3 +377,15 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
     padding: 4px;
   }
 `;
+
+const createColumnFilterSearchParams = (
+  currentSearchParams: URLSearchParams,
+  filterValues: FilterValues
+): URLSearchParams => {
+  if (Object.entries(filterValues).length === 0) {
+    currentSearchParams.delete("filter");
+  } else {
+    currentSearchParams.set("filter", JSON.stringify(filterValues));
+  }
+  return currentSearchParams;
+};
