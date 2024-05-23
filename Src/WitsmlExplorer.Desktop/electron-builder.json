@@ -19,7 +19,7 @@
     "icon": "resources/logo.png"
   },
   "nsis": {
-    "artifactName": "WExDesktop.x64.${version}.${ext}",
+    "artifactName": "WExDesktopInstaller.Windows.x64.${version}.${ext}",
     "oneClick": false,
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
