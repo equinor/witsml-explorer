@@ -13,7 +13,7 @@ The installer can be downloaded from our [GitHub releases page](https://github.c
 
 ## Configuration
 
-A configuration file is created in '%AppData%\Roaming\WEx-Desktop\config.json'. It can be edited to change the API port and the path of logging and database files.
+A configuration file is created in `%AppData%\Roaming\WEx-Desktop\config.json`. It can be edited to change the API port and the path of logging and database files.
 
 ## For developers
 
@@ -46,7 +46,7 @@ Build an installer and install it on your computer:
 yarn electron:dist
 ```
 
-The installer can be found in `Src/WitsmlExplorer.Desktop/dist/WEx-Desktop Setup <version>.exe`. Run it and follow the instructions.
+The installer can be found in `Src/WitsmlExplorer.Desktop/dist/WExDesktopInstaller.Windows.x64.<version>}.exe`. Run it and follow the instructions.
 
 Run playwright tests:
 ```sh
