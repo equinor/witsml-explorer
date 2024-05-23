@@ -7,6 +7,7 @@ import {
   LOG_TYPES_VIEW_NAVIGATION_PATH,
   LOG_TYPE_PARAM,
   MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH,
+  MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH,
   OBJECTS_VIEW_NAVIGATION_PATH,
   OBJECT_GROUPS_VIEW_NAVIGATION_PATH,
   OBJECT_GROUP_PARAM,
@@ -192,6 +193,25 @@ export function getMultiLogCurveInfoListViewPath(
 ) {
   const logCurveValuesViewPath =
     MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH.replace(
+      SERVER_URL_PARAM,
+      encodeURIComponent(serverUrl)
+    )
+      .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+      .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
+      .replace(OBJECT_GROUP_PARAM, objectGroup)
+      .replace(LOG_TYPE_PARAM, logType);
+  return logCurveValuesViewPath;
+}
+
+export function getMultiLogCurveValuesViewPath(
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  objectGroup: string,
+  logType: string
+) {
+  const logCurveValuesViewPath =
+    MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH.replace(
       SERVER_URL_PARAM,
       encodeURIComponent(serverUrl)
     )

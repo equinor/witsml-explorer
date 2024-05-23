@@ -10,12 +10,16 @@ import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetActiveRoute } from "hooks/useGetActiveRoute";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
-import { getLogCurveValuesViewPath } from "routes/utils/pathBuilder";
+import {
+  getLogCurveValuesViewPath,
+  getMultiLogCurveValuesViewPath
+} from "routes/utils/pathBuilder";
 import { indexToNumber } from "tools/IndexHelpers";
 import { checkIsUrlTooLong } from "../../routes/utils/checkIsUrlTooLong";
 import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
@@ -32,16 +36,17 @@ const SelectIndexToDisplayModal = (
   props: SelectIndexToDisplayModalProps
 ): React.ReactElement => {
   const { logCurveInfoRows, wellUid, wellboreUid, log } = props;
+  const { isMultiLogsCurveInfoListView: isMultiLog } = useGetActiveRoute();
   const {
     operationState: { colors },
     dispatchOperation
   } = useContext(OperationContext);
   const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
   const [startIndex, setStartIndex] = useState<string | number>(
-    isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex)
+    getStartIndex(log, logCurveInfoRows, isMultiLog)
   );
   const [endIndex, setEndIndex] = useState<string | number>(
-    isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex)
+    getEndIndex(log, logCurveInfoRows, isMultiLog)
   );
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
   const navigate = useNavigate();
@@ -56,6 +61,17 @@ const SelectIndexToDisplayModal = (
       log.indexType === WITSML_INDEX_TYPE_DATE_TIME
         ? RouterLogType.TIME
         : RouterLogType.DEPTH;
+
+    if (isMultiLog) {
+      return getMultiLogCurveValuesViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.Log,
+        logType
+      );
+    }
+
     return getLogCurveValuesViewPath(
       connectedServer?.url,
       wellUid,
@@ -67,6 +83,16 @@ const SelectIndexToDisplayModal = (
   }
 
   function getMnemonics() {
+    if (isMultiLog) {
+      const logMnemonics = logCurveInfoRows.reduce(
+        (acc, { logUid, mnemonic }) => {
+          (acc[logUid] = acc[logUid] || []).push(mnemonic);
+          return acc;
+        },
+        {} as Record<string, string[]>
+      );
+      return logMnemonics;
+    }
     return logCurveInfoRows
       .filter((row) => row.mnemonic !== log.indexCurve)
       .map((row) => row.mnemonic);
@@ -95,14 +121,20 @@ const SelectIndexToDisplayModal = (
   return (
     log && (
       <ModalDialog
-        heading={`Display curve values within selected index range for ${log.name}`}
+        heading={`Display curve values within selected index range${
+          isMultiLog ? "" : ` for ${log.name}`
+        }`}
         content={
           <>
             {isTimeIndexed ? (
               <>
                 <AdjustDateTimeModal
-                  minDate={log.startIndex}
-                  maxDate={log.endIndex}
+                  minDate={
+                    getStartIndex(log, logCurveInfoRows, isMultiLog) as string
+                  }
+                  maxDate={
+                    getEndIndex(log, logCurveInfoRows, isMultiLog) as string
+                  }
                   isDescending={
                     log.direction == WITSML_LOG_ORDERTYPE_DECREASING
                   }
@@ -113,8 +145,12 @@ const SelectIndexToDisplayModal = (
               </>
             ) : (
               <AdjustNumberRangeModal
-                minValue={indexToNumber(log.startIndex)}
-                maxValue={indexToNumber(log.endIndex)}
+                minValue={
+                  getStartIndex(log, logCurveInfoRows, isMultiLog) as number
+                }
+                maxValue={
+                  getEndIndex(log, logCurveInfoRows, isMultiLog) as number
+                }
                 isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
                 onStartValueChanged={setStartIndex}
                 onEndValueChanged={setEndIndex}
@@ -147,3 +183,51 @@ const SelectIndexToDisplayModal = (
 };
 
 export default SelectIndexToDisplayModal;
+
+const getStartIndex = (
+  log: LogObject,
+  logCurveInfoRows: LogCurveInfoRow[],
+  isMultiLog: boolean
+): string | number => {
+  const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+
+  if (isMultiLog) {
+    if (isTimeIndexed) {
+      return logCurveInfoRows
+        .reduce((minRow, currentRow) =>
+          new Date(currentRow.minIndex) < new Date(minRow.minIndex)
+            ? currentRow
+            : minRow
+        )
+        .minIndex.toString();
+    } else {
+      return Math.min(...logCurveInfoRows.map((lci) => lci.minIndex as number));
+    }
+  } else {
+    isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex);
+  }
+};
+
+const getEndIndex = (
+  log: LogObject,
+  logCurveInfoRows: LogCurveInfoRow[],
+  isMultiLog: boolean
+): string | number => {
+  const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+
+  if (isMultiLog) {
+    if (isTimeIndexed) {
+      return logCurveInfoRows
+        .reduce((maxRow, currentRow) =>
+          new Date(currentRow.maxIndex) > new Date(maxRow.maxIndex)
+            ? currentRow
+            : maxRow
+        )
+        .maxIndex.toString();
+    } else {
+      return Math.max(...logCurveInfoRows.map((lci) => lci.maxIndex as number));
+    }
+  } else {
+    isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex);
+  }
+};

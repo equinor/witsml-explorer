@@ -4,7 +4,7 @@ import { formatIndexValue } from "../../tools/IndexHelpers";
 export const createLogCurveValuesSearchParams = (
   startIndex?: string | number,
   endIndex?: string | number,
-  mnemonics?: string[]
+  mnemonics?: string[] | Record<string, string[]>
 ): URLSearchParams => {
   let searchParams = {};
   if (startIndex) {
