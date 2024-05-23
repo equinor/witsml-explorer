@@ -46,7 +46,7 @@ Build an installer and install it on your computer:
 yarn electron:dist
 ```
 
-The installer can be found in `Src/WitsmlExplorer.Desktop/dist/WExDesktopInstaller.Windows.x64.<version>}.exe`. Run it and follow the instructions.
+The installer can be found in `Src/WitsmlExplorer.Desktop/dist/WExDesktopInstaller.Windows.x64.<version>.exe`. Run it and follow the instructions.
 
 Run playwright tests:
 ```sh
