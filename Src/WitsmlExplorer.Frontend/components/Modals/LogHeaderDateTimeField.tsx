@@ -1,12 +1,10 @@
 import { TextField } from "@equinor/eds-core-react";
 import formatDateString, {
-  dateTimeFormatTextField,
   getOffset,
   getOffsetFromTimeZone
 } from "components/DateFormatter";
 import OperationContext from "contexts/operationContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
-import { isValid, parse } from "date-fns";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -71,9 +69,8 @@ export const LogHeaderDateTimeField = (
   };
 
   const onTextFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const isMissingSeconds = e.target.value.split(":")?.length === 2;
-    const value = isMissingSeconds ? `${e.target.value}:00` : e.target.value;
-    if (isValid(parseDate(value))) {
+    const value = e.target.value;
+    if (getUtcValue(value, offset) !== "Invalid date") {
       updateObject(getUtcValue(value, offset));
     }
   };
@@ -97,7 +94,7 @@ export const LogHeaderDateTimeField = (
           helperText={getHelperText()}
           variant={validate(value) ? undefined : "error"}
           type={"datetime-local"}
-          step="1"
+          step="0.001"
           onChange={onTextFieldChange}
           style={{
             paddingTop: "16px",
@@ -107,10 +104,6 @@ export const LogHeaderDateTimeField = (
       </Horizontal>
     </Layout>
   );
-};
-
-const parseDate = (current: string) => {
-  return parse(current, dateTimeFormatTextField, new Date());
 };
 
 const getParsedValue = (input: string, timeZone: TimeZone) => {
