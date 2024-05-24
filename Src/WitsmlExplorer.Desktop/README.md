@@ -69,10 +69,10 @@ To release a new version of Witsml Explorer Desktop Edition, follow these step-b
 2. Create a new tag to mark the specific point in the project's history you want to release. You can use the following command:
 ```sh
 # Create tag
-git tag -a <tag_name> -m "<message>"
+git tag -a wex-desktop@<version> -m "<message>"
 
 # Push the tag to origin
-git push origin <tag_name>
+git push origin wex-desktop@<version>
 ```
 3. Merge the `main` branch into the `stable-desktop-wex` branch to keep the current released version in its own branch.
 
