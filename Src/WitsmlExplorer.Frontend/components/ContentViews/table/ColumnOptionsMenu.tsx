@@ -160,8 +160,12 @@ export const ColumnOptionsMenu = (props: {
 
   const setInitialFilter = useCallback(
     debounce((filterValues: FilterValues) => {
+      // Make sure we remove previous filters
+      table.getAllLeafColumns().map((column) => {
+        column.setFilterValue(null);
+      });
       if (!filterValues) {
-        resetFilter();
+        setFilterValues({});
       } else {
         Object.entries(filterValues).forEach(([key, value]) => {
           const column = table
