@@ -80,7 +80,9 @@ export const ColumnOptionsMenu = (props: {
   useEffect(() => {
     const filterString = searchParams.get("filter");
     const initialFilter = JSON.parse(filterString);
-    if (initialFilter && filterString !== JSON.stringify(filterValues)) {
+    const bothEmpty =
+      !initialFilter && Object.entries(filterValues).length === 0;
+    if (filterString !== JSON.stringify(filterValues) && !bothEmpty) {
       setInitialFilter(initialFilter);
     }
   }, [searchParams]);
@@ -158,11 +160,17 @@ export const ColumnOptionsMenu = (props: {
 
   const setInitialFilter = useCallback(
     debounce((filterValues: FilterValues) => {
-      Object.entries(filterValues).forEach(([key, value]) => {
-        const column = table.getAllLeafColumns().find((col) => col.id === key);
-        column.setFilterValue(value);
-      });
-      setFilterValues(filterValues);
+      if (!filterValues) {
+        resetFilter();
+      } else {
+        Object.entries(filterValues).forEach(([key, value]) => {
+          const column = table
+            .getAllLeafColumns()
+            .find((col) => col.id === key);
+          column.setFilterValue(value);
+        });
+        setFilterValues(filterValues);
+      }
     }, 50),
     []
   );
