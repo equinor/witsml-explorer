@@ -78,12 +78,12 @@ export const ColumnOptionsMenu = (props: {
   const isCompactMode = theme === UserTheme.Compact;
 
   useEffect(() => {
-    const initialFilter = JSON.parse(searchParams.get("filter"));
-    if (initialFilter) {
-      // We need a small delay to ensure that the table configuration is complete
-      setTimeout(() => setInitialFilter(initialFilter), 50);
+    const filterString = searchParams.get("filter");
+    const initialFilter = JSON.parse(filterString);
+    if (initialFilter && filterString !== JSON.stringify(filterValues)) {
+      setInitialFilter(initialFilter);
     }
-  }, []);
+  }, [searchParams]);
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -156,13 +156,16 @@ export const ColumnOptionsMenu = (props: {
     setSearchParams(searchParams);
   };
 
-  const setInitialFilter = (filterValues: FilterValues) => {
-    Object.entries(filterValues).forEach(([key, value]) => {
-      const column = table.getAllLeafColumns().find((col) => col.id === key);
-      column.setFilterValue(value);
-    });
-    setFilterValues(filterValues);
-  };
+  const setInitialFilter = useCallback(
+    debounce((filterValues: FilterValues) => {
+      Object.entries(filterValues).forEach(([key, value]) => {
+        const column = table.getAllLeafColumns().find((col) => col.id === key);
+        column.setFilterValue(value);
+      });
+      setFilterValues(filterValues);
+    }, 50),
+    []
+  );
 
   const onChangeColumnFilter = (
     e: ChangeEvent<HTMLInputElement>,
@@ -401,7 +404,7 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
   }
 `;
 
-const createColumnFilterSearchParams = (
+export const createColumnFilterSearchParams = (
   currentSearchParams: URLSearchParams,
   filterValues: FilterValues
 ): URLSearchParams => {
