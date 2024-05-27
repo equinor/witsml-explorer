@@ -59,7 +59,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             try
             {
-                Thread.Sleep(15000);
                 VerifyNormalSourceMnemonicsDoesNotMatchIndexCurveOnTarget(sourceLog, targetLog, mnemonicsToCopy);
                 VerifyMatchingIndexTypes(sourceLog, targetLog);
                 VerifyValidInterval(sourceLog);
@@ -78,7 +77,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             int originalRows = 0;
             if (existingMnemonicsInTarget.Any())
             {
-                CopyResult copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget, sourceDepthLogDecimals, targetDepthLogDecimals);
+                CopyResult copyResultForExistingMnemonics = await CopyLogData(sourceLog, targetLog, job, existingMnemonicsInTarget, sourceDepthLogDecimals, targetDepthLogDecimals, cancellationToken);
                 totalRowsCopied += copyResultForExistingMnemonics.NumberOfRowsCopied;
                 originalRows += copyResultForExistingMnemonics.OriginalNumberOfRows;
                 if (!copyResultForExistingMnemonics.Success)
@@ -90,7 +89,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (newMnemonicsInTarget.Any())
             {
-                CopyResult copyResultForNewMnemonics = await CopyLogData(sourceLog, targetLog, job, newMnemonicsInTarget, sourceDepthLogDecimals, targetDepthLogDecimals);
+                CopyResult copyResultForNewMnemonics = await CopyLogData(sourceLog, targetLog, job, newMnemonicsInTarget, sourceDepthLogDecimals, targetDepthLogDecimals, cancellationToken);
                 totalRowsCopied += copyResultForNewMnemonics.NumberOfRowsCopied;
                 originalRows += copyResultForNewMnemonics.OriginalNumberOfRows;
                 if (!copyResultForNewMnemonics.Success)
@@ -157,7 +156,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message), null);
         }
 
-        private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, List<string> mnemonics, int sourceDepthLogDecimals, int targetDepthLogDecimals)
+        private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, List<string> mnemonics, int sourceDepthLogDecimals, int targetDepthLogDecimals, CancellationToken? cancellationToken = null)
         {
             if (sourceLog.IsEmpty())
             {
@@ -186,6 +185,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
                 }
+                cancellationToken?.ThrowIfCancellationRequested();
                 sourceLogData = await logDataReader.GetNextBatch();
             }
 
@@ -196,6 +196,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             double progress = LogWorkerTools.CalculateProgressBasedOnIndex(sourceLog, copiedData);
             job.ProgressReporter?.Report(progress);
+            if (job.JobInfo != null) job.JobInfo.Progress = progress;
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
         }
 
