@@ -21,6 +21,7 @@ import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
+import { RouterLogType } from "routes/routerConstants";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import {
@@ -62,7 +63,7 @@ export default function LogCurveInfoListView() {
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
+  const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
 
   useExpandSidebarNodes(
@@ -167,6 +168,7 @@ export default function LogCurveInfoListView() {
           timeZone,
           dateTimeFormat,
           curveThreshold,
+          isDepthIndex,
           objectUid
         )}
         onContextMenu={onContextMenu}

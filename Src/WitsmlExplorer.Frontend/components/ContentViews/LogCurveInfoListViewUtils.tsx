@@ -115,9 +115,9 @@ export const getTableData = (
   timeZone: TimeZone,
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
+  isDepthIndex: boolean,
   logUid: string = null
 ) => {
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
       if (isDepthIndex) return true;
