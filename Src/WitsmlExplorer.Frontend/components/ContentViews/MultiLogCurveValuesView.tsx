@@ -158,10 +158,6 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
     <>
       <ContentContainer>
         <CommonPanelContainer>
-          {/* <EditSelectedLogCurveInfo
-                        key="editSelectedLogCurveInfo"
-                        onClickRefresh={() => refreshData()}
-                    /> */}
           <EdsProvider density={theme}>
             <Switch
               checked={showPlot}
