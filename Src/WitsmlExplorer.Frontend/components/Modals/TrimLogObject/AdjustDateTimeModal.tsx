@@ -1,12 +1,7 @@
 import { Button } from "@equinor/eds-core-react";
-import {
-  dateTimeFormatNoOffset,
-  getOffset,
-  validateIsoDateStringNoOffset
-} from "components/DateFormatter";
 import { LogHeaderDateTimeField } from "components/Modals/LogHeaderDateTimeField";
 import { addMilliseconds } from "date-fns";
-import { formatInTimeZone, toDate } from "date-fns-tz";
+import { toDate } from "date-fns-tz";
 import React, { useEffect, useState } from "react";
 
 export interface AdjustDateTimeModelProps {
@@ -34,14 +29,8 @@ const AdjustDateTimeModal = (
     onEndDateChanged,
     onValidChange
   } = props;
-  const [startOffset] = useState<string>(getOffset(minDate));
-  const [endOffset] = useState<string>(getOffset(maxDate));
-  const [startIndex, setStartIndex] = useState<string>(
-    formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset)
-  );
-  const [endIndex, setEndIndex] = useState<string>(
-    formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset)
-  );
+  const [startIndex, setStartIndex] = useState<string>(minDate);
+  const [endIndex, setEndIndex] = useState<string>(maxDate);
   const [startIndexInitiallyEmpty] = useState<boolean>(
     startIndex == null || startIndex === ""
   );
@@ -62,35 +51,31 @@ const AdjustDateTimeModal = (
 
   const validate = (
     current: string,
-    offset: string,
     minValue: string,
     maxValue: string,
     initiallyEmpty: boolean
   ) => {
     return (
-      (validateIsoDateStringNoOffset(current, offset) &&
-        (!minValue || current >= minValue) &&
+      ((!minValue || current >= minValue) &&
         (!maxValue || current <= maxValue)) ||
       (initiallyEmpty && (current == null || current === ""))
     );
   };
 
   useEffect(() => {
-    onStartDateChanged(startIndex + startOffset);
-    onEndDateChanged(endIndex + endOffset);
+    onStartDateChanged(startIndex);
+    onEndDateChanged(endIndex);
   }, [startIndex, endIndex]);
 
   useEffect(() => {
     const startIndexIsValid = validate(
       startIndex,
-      startOffset,
       startIndexMinValue,
       startIndexMaxValue,
       startIndexInitiallyEmpty
     );
     const endIndexIsValid = validate(
       endIndex,
-      endOffset,
       endIndexMinValue,
       endIndexMaxValue,
       endIndexInitiallyEmpty
@@ -115,19 +100,11 @@ const AdjustDateTimeModal = (
                 key={"last" + buttonValue.displayText}
                 onClick={() => {
                   const newStartIndex = addMilliseconds(
-                    toDate(endIndex + endOffset),
+                    toDate(endIndex),
                     -buttonValue.timeInMilliseconds
                   );
-                  setStartIndex(
-                    formatInTimeZone(
-                      newStartIndex,
-                      startOffset,
-                      dateTimeFormatNoOffset
-                    )
-                  );
-                  setEndIndex(
-                    formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset)
-                  );
+                  setStartIndex(newStartIndex.toISOString());
+                  setEndIndex(maxDate);
                 }}
               >
                 {"Last " + buttonValue.displayText}
@@ -138,12 +115,8 @@ const AdjustDateTimeModal = (
         <Button
           key={"resetRangeValues"}
           onClick={() => {
-            setStartIndex(
-              formatInTimeZone(minDate, startOffset, dateTimeFormatNoOffset)
-            );
-            setEndIndex(
-              formatInTimeZone(maxDate, endOffset, dateTimeFormatNoOffset)
-            );
+            setStartIndex(minDate);
+            setEndIndex(maxDate);
           }}
         >
           Reset
@@ -156,7 +129,6 @@ const AdjustDateTimeModal = (
         updateObject={(dateTime: string) => {
           setStartIndex(dateTime);
         }}
-        offset={startOffset}
         minValue={startIndexMinValue}
         maxValue={startIndexMaxValue}
       />
@@ -166,7 +138,6 @@ const AdjustDateTimeModal = (
         updateObject={(dateTime: string) => {
           setEndIndex(dateTime);
         }}
-        offset={endOffset}
         minValue={endIndexMinValue}
         maxValue={endIndexMaxValue}
       />
