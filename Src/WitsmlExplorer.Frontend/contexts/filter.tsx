@@ -1,9 +1,11 @@
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import ObjectSearchResult from "models/objectSearchResult";
 import { ObjectType } from "models/objectType";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
+  STORAGE_FILTER_ISACTIVE_KEY,
+  STORAGE_FILTER_OBJECTGROWING_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
 
@@ -151,6 +153,7 @@ export function FilterContextProvider({
 }: FilterContextProviderProps) {
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>({
     ...EMPTY_FILTER,
+    ...getLocalStorageFilter(),
     ...initialFilter
   });
 
@@ -163,19 +166,6 @@ export function FilterContextProvider({
     },
     []
   );
-
-  useEffect(() => {
-    // This useEffect is used to set the visibility of the objects in the filter to hidden if they are stored in the local storage.
-    const hiddenItems = getLocalStorageItem<ObjectType[]>(
-      STORAGE_FILTER_HIDDENOBJECTS_KEY,
-      { defaultValue: [] }
-    );
-    const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
-    hiddenItems.forEach((objectType) => {
-      updatedVisibility[objectType] = VisibilityStatus.Hidden;
-    });
-    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
-  }, []);
 
   const contextValue: FilterContextProps = React.useMemo(
     () => ({
@@ -222,4 +212,34 @@ export const getSearchRegex = (str: string, exact = false): RegExp => {
   }
 
   return new RegExp(newStr, "i");
+};
+
+const getLocalStorageFilter = (): Partial<Filter> => {
+  const localStorageFilter: Partial<Filter> = {};
+
+  const hiddenItems = getLocalStorageItem<ObjectType[]>(
+    STORAGE_FILTER_HIDDENOBJECTS_KEY,
+    { defaultValue: [] }
+  );
+  if (hiddenItems) {
+    const updatedVisibility = allVisibleObjects;
+    hiddenItems.forEach((objectType) => {
+      updatedVisibility[objectType] = VisibilityStatus.Hidden;
+    });
+    localStorageFilter["objectVisibilityStatus"] = updatedVisibility;
+  }
+
+  const isActive = getLocalStorageItem<boolean>(STORAGE_FILTER_ISACTIVE_KEY);
+  if (isActive !== null) {
+    localStorageFilter["isActive"] = isActive;
+  }
+
+  const objectGrowing = getLocalStorageItem<boolean>(
+    STORAGE_FILTER_OBJECTGROWING_KEY
+  );
+  if (objectGrowing !== null) {
+    localStorageFilter["objectGrowing"] = objectGrowing;
+  }
+
+  return localStorageFilter;
 };
