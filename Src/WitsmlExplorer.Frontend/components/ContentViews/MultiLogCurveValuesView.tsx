@@ -55,7 +55,6 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
     isFetching: isFetchingLogs,
     isFetched: isFetchedLogs
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
-  const log = allLogs?.[0];
 
   const isFetching = isFetchingLogs;
 
@@ -188,7 +187,9 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
               data={tableData}
               columns={columns}
               name={"Multiple Logs"}
-              isDescending={log?.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+              isDescending={
+                allLogs?.[0].direction === WITSML_LOG_ORDERTYPE_DECREASING
+              }
               autoRefresh={false}
             />
           ) : (

@@ -248,7 +248,6 @@ namespace WitsmlExplorer.Api.Services
 
         private LogData MergeMultiLogData(List<LogData> logDatas, List<WitsmlLog> logs)
         {
-
             List<CurveSpecification> curveSpecifications = new();
 
             var indexCurveSpecification = logDatas.FirstOrDefault(l => l.CurveSpecifications != null)?.CurveSpecifications?.FirstOrDefault();
@@ -263,8 +262,6 @@ namespace WitsmlExplorer.Api.Services
                 if (currentLogData.Data == null) continue; // Skip if there is no data for a given log within the specified interval.
                 string currentLogIndexCurve = currentLogData.CurveSpecifications.First().Mnemonic;
                 string logUid = logs[i].Uid;
-                // TODO: What about if the names are equal?
-                string logName = logs[i].Name;
 
                 foreach (var curveSpecification in currentLogData.CurveSpecifications.Skip(1)) // Skip the index curve as we only want it once
                 {
