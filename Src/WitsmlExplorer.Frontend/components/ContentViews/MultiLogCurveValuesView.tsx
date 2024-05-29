@@ -241,7 +241,7 @@ const getLogDataWithProperNames = (
         const log = allLogs.find((log) => log.uid === uid);
         const newKey = key.replace(
           uidRegex,
-          `{${log.name}${getNameOccurrenceSuffix(allLogs, log)}}`
+          ` - ${log.name}${getNameOccurrenceSuffix(allLogs, log)}`
         );
         newRow[newKey] = row[key];
       } else {
@@ -259,7 +259,7 @@ const getLogDataWithProperNames = (
       const log = allLogs.find((log) => log.uid === uid);
       newMnemonic = spec.mnemonic.replace(
         uidRegex,
-        `{${log.name}${getNameOccurrenceSuffix(allLogs, log)}}`
+        ` - ${log.name}${getNameOccurrenceSuffix(allLogs, log)}`
       );
     }
     return {
