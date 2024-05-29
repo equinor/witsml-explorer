@@ -91,9 +91,7 @@ export default function LogsListView() {
         ...log,
         id: log.uid,
 
-        name: log.runNumber
-          ? `${log.name} (${log.runNumber})`
-          : log.name + getNameOccurrenceSuffix(logs, log),
+        name: log.name + getNameOccurrenceSuffix(logs, log),
         startIndex: isTimeIndexed
           ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
           : log.startIndex,
