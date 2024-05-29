@@ -7,11 +7,11 @@ export const createLogCurveValuesSearchParams = (
   mnemonics?: string[] | Record<string, string[]>
 ): URLSearchParams => {
   let searchParams = {};
-  if (startIndex) {
+  if (startIndex !== null && startIndex !== undefined) {
     const startIndexFormatted = formatIndexValue(startIndex);
     searchParams = { startIndex: startIndexFormatted };
   }
-  if (endIndex) {
+  if (endIndex !== null && endIndex !== undefined) {
     const endIndexFormatted = formatIndexValue(endIndex);
     searchParams = { ...searchParams, endIndex: endIndexFormatted };
   }
