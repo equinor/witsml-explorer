@@ -15,6 +15,7 @@ import { UserTheme } from "contexts/operationStateReducer";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
+import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
@@ -22,6 +23,7 @@ import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 import {
   CommonPanelContainer,
   ContentContainer
@@ -132,10 +134,14 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
       controller.current.signal
     );
     if (logData && logData.data) {
-      updateColumns(logData.curveSpecifications);
-      const indexCurve = logData.curveSpecifications[0].mnemonic;
+      const logDataWithProperNames = getLogDataWithProperNames(
+        logData,
+        allLogs
+      );
+      updateColumns(logDataWithProperNames.curveSpecifications);
+      const indexCurve = logDataWithProperNames.curveSpecifications[0].mnemonic;
 
-      const logDataRows = logData.data.map((data) => {
+      const logDataRows = logDataWithProperNames.data.map((data) => {
         const row: CurveValueRow = {
           id: String(data[indexCurve]),
           ...data
@@ -218,4 +224,53 @@ const getColumnType = (curveSpecification: CurveSpecification) => {
     default:
       return ContentType.Number;
   }
+};
+
+const getLogDataWithProperNames = (
+  logData: LogData,
+  allLogs: LogObject[]
+): LogData => {
+  const uidRegex = /\[uid=(.*?)\]/; // Matches on [uid=<...>]
+
+  const newData = logData.data.map((row: LogDataRow) => {
+    const newRow: LogDataRow = {};
+    for (const key in row) {
+      if (uidRegex.test(key)) {
+        const match = key.match(uidRegex);
+        const uid = match[1];
+        const log = allLogs.find((log) => log.uid === uid);
+        const newKey = key.replace(
+          uidRegex,
+          `{${log.name}${getNameOccurrenceSuffix(allLogs, log)}}`
+        );
+        newRow[newKey] = row[key];
+      } else {
+        newRow[key] = row[key];
+      }
+    }
+    return newRow;
+  });
+
+  const newCurveSpecifications = logData.curveSpecifications.map((spec) => {
+    const match = spec.mnemonic.match(uidRegex);
+    const uid = match ? match[1] : null;
+    let newMnemonic = spec.mnemonic;
+    if (uid) {
+      const log = allLogs.find((log) => log.uid === uid);
+      newMnemonic = spec.mnemonic.replace(
+        uidRegex,
+        `{${log.name}${getNameOccurrenceSuffix(allLogs, log)}}`
+      );
+    }
+    return {
+      ...spec,
+      mnemonic: newMnemonic
+    };
+  });
+
+  return {
+    ...logData,
+    curveSpecifications: newCurveSpecifications,
+    data: newData
+  };
 };
