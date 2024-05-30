@@ -330,7 +330,7 @@ export const CurveValuesView = (): React.ReactElement => {
         columnOf: curveSpecification,
         property: curveSpecification.mnemonic,
         label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
-        type: getColumnType(curveSpecification)
+        type: getColumnType(curveSpecification, log)
       };
     });
     const prevMnemonics = columns.map((column) => column.property);
@@ -742,7 +742,17 @@ const getComparatorByColumn = (
   return [comparator, column.property];
 };
 
-const getColumnType = (curveSpecification: CurveSpecification) => {
+const getColumnType = (
+  curveSpecification: CurveSpecification,
+  log: LogObject
+) => {
+  const isTimeLog = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+  if (
+    isTimeLog &&
+    curveSpecification.mnemonic.toLowerCase() === log.indexCurve.toLowerCase()
+  ) {
+    return ContentType.DateTime;
+  }
   const isTimeMnemonic = (mnemonic: string) =>
     ["time", "datetime", "date time"].indexOf(mnemonic.toLowerCase()) >= 0;
   if (isTimeMnemonic(curveSpecification.mnemonic)) {

@@ -69,14 +69,16 @@ namespace WitsmlExplorer.Api.Workers
                 job.JobInfo.Status = JobStatus.Cancelled;
                 job.JobInfo.FailedReason = ex.Message;
                 Logger.LogError("{jobType} was cancelled.", job.JobInfo.JobType);
-                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} cancelled", ex.Message, jobId: job.JobInfo.Id), null);
+                Uri sourceServerUrl = job.JobInfo.SourceServer != null ? new Uri(job.JobInfo.SourceServer) : null;
+                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} cancelled", ex.Message, jobId: job.JobInfo.Id, sourceServerUrl: sourceServerUrl), null);
             }
             catch (Exception ex)
             {
                 job.JobInfo.Status = JobStatus.Failed;
                 job.JobInfo.FailedReason = ex.Message;
                 Logger.LogError("An unexpected exception has occured during {jobType}: {ex}", job.JobInfo.JobType, ex);
-                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} failed", ex.Message, jobId: job.JobInfo.Id), null);
+                Uri sourceServerUrl = job.JobInfo.SourceServer != null ? new Uri(job.JobInfo.SourceServer) : null;
+                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} failed", ex.Message, jobId: job.JobInfo.Id, sourceServerUrl: sourceServerUrl), null);
             }
         }
 

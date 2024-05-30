@@ -2,6 +2,7 @@ import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
 } from "components/Constants";
+import { createColumnFilterSearchParams } from "components/ContentViews/table/ColumnOptionsMenu";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -29,7 +30,7 @@ import Wellbore, {
   calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "models/wellbore";
 import { Fragment, MouseEvent, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
   getLogObjectViewPath,
@@ -48,6 +49,7 @@ export default function LogTypeItem({
   wellboreUid
 }: LogTypeItemProps) {
   const { dispatchOperation } = useContext(OperationContext);
+  const [searchParams] = useSearchParams();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
@@ -200,7 +202,11 @@ export default function LogTypeItem({
           labelText={subLogsNodeName(log.name)}
           key={getMultipleLogsNode(log.name)}
           nodeId={getMultipleLogsNode(log.name)}
-          to={getNavPath(getLogTypeGroup(logType))}
+          to={`${getNavPath(
+            getLogTypeGroup(logType)
+          )}?${createColumnFilterSearchParams(searchParams, {
+            name: log.name
+          })}`}
           selected={
             calculateMultipleLogsNode(
               { wellUid: urlWellUid, uid: urlWellboreUid },

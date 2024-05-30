@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 string errorMessage = "Failed to copy log data.";
                 Logger.LogError("{errorMessage} - {error} - {Description}", errorMessage, e.Message, job.Description());
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, e.Message), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, e.Message, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
 
             int totalRowsCopied = 0;
@@ -109,7 +109,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 Logger.LogInformation("{JobType} - Job successful. {Count} rows copied. {Description}", GetType().Name, totalRowsCopied, job.Description());
             }
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, resultMessage);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, resultMessage, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname());
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log, job.Target.Uid);
             return (workerResult, refreshAction);
         }
@@ -153,7 +153,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 message += $" \nIf copying to a target server with lower number of depth log decimals than the source server, make sure that the \"Number of decimals in depth log index\" field is filled out for both the target and the source server.";
             }
-            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, "Failed to copy log data", message, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
         }
 
         private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, List<string> mnemonics, int sourceDepthLogDecimals, int targetDepthLogDecimals, CancellationToken? cancellationToken = null)

@@ -35,7 +35,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 string message = "Target wellbore already exists";
                 Logger.LogWarning("{WarningMessage} - {JobDescription}", message, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), true, message), null);
+                return (new WorkerResult(targetClient.GetServerHostname(), true, message, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
             WitsmlWellbore sourceWellbore = await WorkerTools.GetWellbore(sourceClient, job.Source, Witsml.ServiceReference.ReturnElements.All);
@@ -45,7 +45,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (sourceWellbore == null)
             {
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage), null);
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
             // May be the same UID and name or a different one
@@ -61,14 +61,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (!result.IsSuccessful)
             {
                 Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, result.Reason, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, result.Reason), null);
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
 
-            WorkerResult workerResult = new(targetClient.GetServerHostname(),
-                                            true,
-                                            $"Successfully copied wellbore: {job.Source.WellboreUid} -> {job.Target.WellboreUid}");
+            WorkerResult workerResult = new(targetClient.GetServerHostname(), true, $"Successfully copied wellbore: {job.Source.WellboreUid} -> {job.Target.WellboreUid}", sourceServerUrl: sourceClient.GetServerHostname());
 
             RefreshWellbore refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, RefreshType.Add);
 

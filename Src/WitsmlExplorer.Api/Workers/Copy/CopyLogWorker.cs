@@ -49,12 +49,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (copyLogTasksResult.Status == TaskStatus.Faulted)
             {
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
             if (results.Any((result) => !result.IsSuccessful))
             {
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, copyLogTasks.First((task) => !task.Result.IsSuccessful).Result.Reason), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, copyLogTasks.First((task) => !task.Result.IsSuccessful).Result.Reason, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
 
             ConcurrentDictionary<string, double> progressDict = new ConcurrentDictionary<string, double>();
@@ -67,7 +67,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (copyLogDataResultTask.Status == TaskStatus.Faulted)
             {
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
 
             int failedCopyDataTasks = copyLogDataResultTask.Result.Count((task) => task.Result.IsSuccess == false);
@@ -76,13 +76,13 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 (WorkerResult Result, RefreshAction) firstFailedTask = copyLogDataResultTask.Result.First((task) => task.Result.IsSuccess == false);
                 errorMessage = $"Failed to copy log data for {failedCopyDataTasks} out of {copyLogDataTasks.Count()} logs.";
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
-                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, firstFailedTask.Result.Reason), null);
+                return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, firstFailedTask.Result.Reason, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             RefreshObjects refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, EntityType.Log);
             string copiedLogsMessage = (sourceLogs.Length == 1 ? $"Copied log object {sourceLogs[0].Name}" : $"Copied {sourceLogs.Length} logs") + $" to: {targetWellbore.Name}";
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, copiedLogsMessage);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, copiedLogsMessage, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname());
 
             return (workerResult, refreshAction);
         }
