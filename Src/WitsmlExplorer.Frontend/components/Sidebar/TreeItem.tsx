@@ -94,8 +94,7 @@ const NavigationDrawer = styled.p<{
 
 const StyledDotProgress = styled(DotProgress)`
   z-index: 2;
-  top: 0.75rem;
-  position: relative;
+  align-self: center;
 `;
 
 export default StyledTreeItem;
