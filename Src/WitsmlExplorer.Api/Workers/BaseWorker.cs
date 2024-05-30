@@ -55,6 +55,10 @@ namespace WitsmlExplorer.Api.Workers
                 job.JobInfo.Status = task.WorkerResult.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
                 if (!task.WorkerResult.IsSuccess)
                 {
+                    if (cancellationToken is { IsCancellationRequested: true })
+                    {
+                        job.JobInfo.Status = JobStatus.Cancelled;
+                    }
                     job.JobInfo.FailedReason = task.WorkerResult.Reason;
                 }
 

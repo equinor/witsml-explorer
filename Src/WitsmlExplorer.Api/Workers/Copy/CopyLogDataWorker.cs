@@ -169,6 +169,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             int numberOfDataRowsCopied = 0;
+
             await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
             while (sourceLogData != null)
@@ -185,7 +186,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
                 }
-                cancellationToken?.ThrowIfCancellationRequested();
+
+                if (cancellationToken is { IsCancellationRequested: true })
+                {
+                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = JobStatus.Cancelled.ToString() };
+                }
+
                 sourceLogData = await logDataReader.GetNextBatch();
             }
 
