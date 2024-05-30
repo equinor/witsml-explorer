@@ -2,6 +2,12 @@ export const STORAGE_THEME_KEY = "selectedTheme";
 export const STORAGE_TIMEZONE_KEY = "selectedTimeZone";
 export const STORAGE_MODE_KEY = "selectedMode";
 export const STORAGE_FILTER_HIDDENOBJECTS_KEY = "hiddenObjects";
+export const STORAGE_FILTER_ISACTIVE_KEY = "filterIsActive";
+export const STORAGE_FILTER_OBJECTGROWING_KEY = "filterObjectGrowing";
+export const STORAGE_FILTER_INACTIVE_TIME_CURVES_KEY =
+  "filterHideInactiveCurves";
+export const STORAGE_FILTER_INACTIVE_TIME_CURVES_VALUE_KEY =
+  "filterInactiveCurveTimeInMinutes";
 export const STORAGE_MISSING_DATA_AGENT_CHECKS_KEY = "missingDataAgentChecks";
 export const STORAGE_DATETIMEFORMAT_KEY = "selectedDateTimeFormat";
 export const STORAGE_QUERYVIEW_DATA = "queryViewData";
