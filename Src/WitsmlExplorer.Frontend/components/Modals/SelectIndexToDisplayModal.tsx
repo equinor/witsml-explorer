@@ -205,7 +205,12 @@ const getStartIndex = (
           .minIndex?.toString() ?? ""
       );
     } else {
-      return Math.min(...logCurveInfoRows.map((lci) => lci.minIndex as number));
+      const min = Math.min(
+        ...logCurveInfoRows.map((lci) =>
+          lci.minIndex === null ? Infinity : (lci.minIndex as number)
+        )
+      );
+      return min === Infinity ? 0 : min;
     }
   } else {
     isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex);
