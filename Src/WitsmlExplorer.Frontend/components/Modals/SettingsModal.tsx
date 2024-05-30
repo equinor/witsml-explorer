@@ -1,9 +1,9 @@
-import { Radio, TextField } from "@equinor/eds-core-react";
-import { Typography } from "@mui/material";
+import { Radio, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
 import { getOffsetFromTimeZone } from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { StyledNativeSelect } from "components/Select";
 import { Button } from "components/StyledComponents/Button";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,
@@ -13,7 +13,7 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { getAccountInfo, msalEnabled, signOut } from "msal/MsalAuthProvider";
-import React, { CSSProperties, useContext, useState } from "react";
+import React, { CSSProperties, ChangeEvent, useContext, useState } from "react";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { dark, light } from "styles/Colors";
@@ -21,6 +21,7 @@ import Icon from "styles/Icons";
 import {
   STORAGE_DATETIMEFORMAT_KEY,
   STORAGE_DECIMAL_KEY,
+  STORAGE_HOTKEYS_ENABLED_KEY,
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
   STORAGE_TIMEZONE_KEY,
@@ -44,7 +45,14 @@ const timeZoneLabels: Record<TimeZone, string> = {
 
 const SettingsModal = (): React.ReactElement => {
   const {
-    operationState: { theme, timeZone, colors, dateTimeFormat, decimals },
+    operationState: {
+      theme,
+      timeZone,
+      colors,
+      dateTimeFormat,
+      decimals,
+      hotKeysEnabled
+    },
     dispatchOperation
   } = useContext(OperationContext);
   const [checkedDecimalPreference, setCheckedDecimalPreference] =
@@ -109,9 +117,7 @@ const SettingsModal = (): React.ReactElement => {
     }
   };
 
-  const onChangeDecimalPreference = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const onChangeDecimalPreference = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
     if (event.target.value === DecimalPreference.Raw) {
       setLocalStorageItem<DecimalPreference>(
@@ -124,6 +130,15 @@ const SettingsModal = (): React.ReactElement => {
       });
     }
     setCheckedDecimalPreference(selectedValue);
+  };
+
+  const onChangeHotKeysEnabled = (event: ChangeEvent<HTMLInputElement>) => {
+    const hotKeysEnabled = event.target.checked;
+    setLocalStorageItem<boolean>(STORAGE_HOTKEYS_ENABLED_KEY, hotKeysEnabled);
+    dispatchOperation({
+      type: OperationType.SetHotKeysEnabled,
+      payload: hotKeysEnabled
+    });
   };
 
   return (
@@ -251,6 +266,29 @@ const SettingsModal = (): React.ReactElement => {
                 )}
               </div>
             </div>
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <Icon
+              style={{ alignSelf: "center" }}
+              name="keyboard"
+              size={32}
+              color={colors.infographic.primaryMossGreen}
+            />
+            <Checkbox
+              color={"primary"}
+              checked={hotKeysEnabled}
+              onChange={onChangeHotKeysEnabled}
+              label={"Enable HotKeys"}
+              colors={colors}
+            />
+            <Tooltip title="Alt+D or Alt+T: Navigate to Depth or Time logs.">
+              <Icon
+                style={{ alignSelf: "center", marginLeft: "8px" }}
+                name="infoCircle"
+                color={colors.interactive.primaryResting}
+                size={18}
+              />
+            </Tooltip>
           </HorizontalLayout>
           {msalEnabled && (
             <HorizontalLayout>

@@ -78,6 +78,11 @@ export interface SetDateTimeFormatAction extends PayloadAction {
   payload: DateTimeFormat;
 }
 
+export interface SetHotKeysEnabledAction extends PayloadAction {
+  type: OperationType.SetHotKeysEnabled;
+  payload: boolean;
+}
+
 export interface SetDecimalAction extends PayloadAction {
   type: OperationType.SetDecimal;
   payload: DecimalPreference;
@@ -92,6 +97,7 @@ export interface OperationState {
   colors: Colors;
   dateTimeFormat: DateTimeFormat;
   decimals: DecimalPreference;
+  hotKeysEnabled: boolean;
 }
 
 export interface MousePosition {
@@ -123,7 +129,8 @@ export const initOperationStateReducer = (): [
     timeZone: TimeZone.Raw,
     colors: Light,
     dateTimeFormat: DateTimeFormat.Raw,
-    decimals: DecimalPreference.Raw
+    decimals: DecimalPreference.Raw,
+    hotKeysEnabled: false
   };
   return useReducer(reducer, initialState);
 };
@@ -151,6 +158,8 @@ export const reducer = (
       return setDateTimeFormat(state, action as SetDateTimeFormatAction);
     case OperationType.SetDecimal:
       return setDecimal(state, action as SetDecimalAction);
+    case OperationType.SetHotKeysEnabled:
+      return setHotKeysEnabled(state, action as SetHotKeysEnabledAction);
     default:
       throw new Error();
   }
@@ -233,6 +242,16 @@ const setDecimal = (state: OperationState, { payload }: SetDecimalAction) => {
   };
 };
 
+const setHotKeysEnabled = (
+  state: OperationState,
+  { payload }: SetHotKeysEnabledAction
+) => {
+  return {
+    ...state,
+    hotKeysEnabled: payload
+  };
+};
+
 export type OperationAction =
   | DisplayModalAction
   | HideModalAction
@@ -242,6 +261,7 @@ export type OperationAction =
   | SetTimeZoneAction
   | SetModeAction
   | SetDateTimeFormatAction
-  | SetDecimalAction;
+  | SetDecimalAction
+  | SetHotKeysEnabledAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

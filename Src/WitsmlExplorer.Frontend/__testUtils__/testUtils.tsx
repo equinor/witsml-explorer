@@ -80,6 +80,7 @@ export function renderWithContexts(
         dateTimeFormat: DateTimeFormat.Raw,
         decimals: DecimalPreference.Raw,
         colors: light,
+        hotKeysEnabled: false,
         ...initialOperationState
       }
     );

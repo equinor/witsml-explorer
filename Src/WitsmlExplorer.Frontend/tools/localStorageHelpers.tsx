@@ -1,6 +1,7 @@
 export const STORAGE_THEME_KEY = "selectedTheme";
 export const STORAGE_TIMEZONE_KEY = "selectedTimeZone";
 export const STORAGE_MODE_KEY = "selectedMode";
+export const STORAGE_HOTKEYS_ENABLED_KEY = "hotKeysEnabled";
 export const STORAGE_FILTER_HIDDENOBJECTS_KEY = "hiddenObjects";
 export const STORAGE_FILTER_ISACTIVE_KEY = "filterIsActive";
 export const STORAGE_FILTER_OBJECTGROWING_KEY = "filterObjectGrowing";

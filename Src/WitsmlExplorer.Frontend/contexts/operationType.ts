@@ -10,7 +10,8 @@ enum OperationType {
   SetTimeZone,
   SetMode,
   SetDateTimeFormat,
-  SetDecimal
+  SetDecimal,
+  SetHotKeysEnabled
 }
 
 export default OperationType;
