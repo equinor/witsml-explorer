@@ -193,13 +193,17 @@ const getStartIndex = (
 
   if (isMultiLog) {
     if (isTimeIndexed) {
-      return logCurveInfoRows
-        .reduce((minRow, currentRow) =>
-          new Date(currentRow.minIndex) < new Date(minRow.minIndex)
-            ? currentRow
-            : minRow
-        )
-        .minIndex.toString();
+      return (
+        logCurveInfoRows
+          .reduce((minRow, currentRow) => {
+            if (minRow.minIndex === null) return currentRow;
+            if (currentRow.minIndex === null) return minRow;
+            return new Date(currentRow.minIndex) < new Date(minRow.minIndex)
+              ? currentRow
+              : minRow;
+          })
+          .minIndex?.toString() ?? ""
+      );
     } else {
       return Math.min(...logCurveInfoRows.map((lci) => lci.minIndex as number));
     }
@@ -217,13 +221,15 @@ const getEndIndex = (
 
   if (isMultiLog) {
     if (isTimeIndexed) {
-      return logCurveInfoRows
-        .reduce((maxRow, currentRow) =>
-          new Date(currentRow.maxIndex) > new Date(maxRow.maxIndex)
-            ? currentRow
-            : maxRow
-        )
-        .maxIndex.toString();
+      return (
+        logCurveInfoRows
+          .reduce((maxRow, currentRow) =>
+            new Date(currentRow.maxIndex) > new Date(maxRow.maxIndex)
+              ? currentRow
+              : maxRow
+          )
+          .maxIndex?.toString() ?? ""
+      );
     } else {
       return Math.max(...logCurveInfoRows.map((lci) => lci.maxIndex as number));
     }
