@@ -21,6 +21,7 @@ import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import LogObjectService from "services/logObjectService";
@@ -56,7 +57,7 @@ export default function MultiLogsCurveInfoListView() {
   );
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
 
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
+  const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLogs || isFetchingMnemonics;
   const getLogsFromSearchParams = (logsSearchParams: string) => {
     return JSON.parse(logsSearchParams) as string[];
@@ -176,7 +177,8 @@ export default function MultiLogsCurveInfoListView() {
           logObjects,
           timeZone,
           dateTimeFormat,
-          curveThreshold
+          curveThreshold,
+          isDepthIndex
         )}
         onContextMenu={onContextMenu}
         checkableRows

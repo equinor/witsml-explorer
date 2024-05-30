@@ -56,5 +56,26 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 return TypedResults.BadRequest("Missing list of mnemonics");
             }
         }
+
+        [Produces(typeof(LogData))]
+        public static async Task<IResult> GetMultiLogData(
+            string wellUid,
+            string wellboreUid,
+            [FromQuery(Name = "startIndex")] string startIndex,
+            [FromQuery(Name = "endIndex")] string endIndex,
+            [FromQuery(Name = "startIndexIsInclusive")] bool startIndexIsInclusive,
+            [FromBody] Dictionary<string, List<string>> logMnemonics,
+            ILogObjectService logObjectService)
+        {
+            if (logMnemonics.Count > 0)
+            {
+                var multiLogData = await logObjectService.GetMultiLogData(wellUid, wellboreUid, startIndex, endIndex, startIndexIsInclusive, logMnemonics);
+                return TypedResults.Ok(multiLogData);
+            }
+            else
+            {
+                return TypedResults.BadRequest("Missing dict of requested logs and mnemonics");
+            }
+        }
     }
 }

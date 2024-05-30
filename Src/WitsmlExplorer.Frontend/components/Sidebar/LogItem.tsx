@@ -52,11 +52,7 @@ export default function LogItem({
       }
       key={nodeId}
       nodeId={nodeId}
-      labelText={
-        log.runNumber
-          ? `${log.name} (${log.runNumber})`
-          : log.name + getNameOccurrenceSuffix(logObjects, log)
-      }
+      labelText={log.name + getNameOccurrenceSuffix(logObjects, log)}
       selected={selected}
       isActive={objectGrowing}
       to={to}
