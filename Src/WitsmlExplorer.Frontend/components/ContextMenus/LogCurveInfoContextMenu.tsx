@@ -206,7 +206,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"open"}
           onClick={onClickOpen}
-          disabled={checkedLogCurveInfoRows.length === 0 || isMultiLog}
+          disabled={checkedLogCurveInfoRows.length === 0}
         >
           <StyledIcon
             name="folderOpen"

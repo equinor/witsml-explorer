@@ -2,6 +2,7 @@ import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
 import { ThemeProvider } from "@mui/material";
 import { DesktopAppEventHandler } from "components/DesktopAppEventHandler";
+import { HotKeyHandler } from "components/HotKeyHandler";
 import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
 import { SnackbarProvider } from "notistack";
 import { useEffect } from "react";
@@ -21,6 +22,7 @@ import {
   DecimalPreference,
   SetDateTimeFormatAction,
   SetDecimalAction,
+  SetHotKeysEnabledAction,
   SetModeAction,
   SetThemeAction,
   SetTimeZoneAction,
@@ -42,6 +44,7 @@ import { getTheme } from "../styles/material-eds";
 import {
   STORAGE_DATETIMEFORMAT_KEY,
   STORAGE_DECIMAL_KEY,
+  STORAGE_HOTKEYS_ENABLED_KEY,
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
   STORAGE_TIMEZONE_KEY,
@@ -81,9 +84,9 @@ export default function Root() {
         };
         dispatchOperation(action);
       }
-      const storedDateTimeFormat = getLocalStorageItem(
+      const storedDateTimeFormat = getLocalStorageItem<DateTimeFormat>(
         STORAGE_DATETIMEFORMAT_KEY
-      ) as DateTimeFormat;
+      );
       if (storedDateTimeFormat) {
         const action: SetDateTimeFormatAction = {
           type: OperationType.SetDateTimeFormat,
@@ -91,13 +94,22 @@ export default function Root() {
         };
         dispatchOperation(action);
       }
-      const storedDecimals = getLocalStorageItem(
-        STORAGE_DECIMAL_KEY
-      ) as DecimalPreference;
+      const storedDecimals =
+        getLocalStorageItem<DecimalPreference>(STORAGE_DECIMAL_KEY);
       if (storedDecimals) {
         const action: SetDecimalAction = {
           type: OperationType.SetDecimal,
           payload: storedDecimals
+        };
+        dispatchOperation(action);
+      }
+      const storedHotKeysEnabled = getLocalStorageItem<boolean>(
+        STORAGE_HOTKEYS_ENABLED_KEY
+      );
+      if (storedHotKeysEnabled != null) {
+        const action: SetHotKeysEnabledAction = {
+          type: OperationType.SetHotKeysEnabled,
+          payload: storedHotKeysEnabled
         };
         dispatchOperation(action);
       }
@@ -125,6 +137,7 @@ export default function Root() {
                   <FilterContextProvider>
                     <QueryContextProvider>
                       {isDesktopApp() && <DesktopAppEventHandler />}
+                      <HotKeyHandler />
                       <RefreshHandler />
                       <SnackbarProvider>
                         <Snackbar />

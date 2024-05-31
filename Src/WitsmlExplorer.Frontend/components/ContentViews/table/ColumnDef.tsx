@@ -60,8 +60,8 @@ export const useColumnDef = (
         savedWidths?.[column.label] ??
         calculateColumnWidth(column.label, isCompactMode, column.type);
       return {
-        id: column.label,
-        accessorKey: column.property,
+        id: column.property,
+        accessorFn: (data) => data[column.property],
         header: column.label,
         size: width,
         meta: { type: column.type },
