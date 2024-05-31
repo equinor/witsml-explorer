@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MultiLogCurveValuesView } from "components/ContentViews/MultiLogCurveValuesView";
 import MultiLogsCurveInfoListView from "components/ContentViews/MultiLogsCurveInfoListView";
+import { SearchListView } from "components/ContentViews/SearchListView";
 import {
   RouterProvider,
   createBrowserRouter,
@@ -31,7 +32,6 @@ import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import LogsListView from "../components/ContentViews/LogsListView";
-import ObjectSearchListView from "../components/ContentViews/ObjectSearchListView";
 import { ObjectView } from "../components/ContentViews/ObjectView";
 import { ObjectsListView } from "../components/ContentViews/ObjectsListView";
 import QueryView from "../components/ContentViews/QueryView";
@@ -141,7 +141,7 @@ const router = createRouter([
           },
           {
             path: SEARCH_VIEW_ROUTE_PATH,
-            element: <ObjectSearchListView />,
+            element: <SearchListView />,
             errorElement: <ErrorView />
           },
           {
