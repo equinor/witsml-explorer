@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(IEnumerable<Wellbore>))]
         public static async Task<IResult> GetWellbores(string wellUid, IWellboreService wellboreService)
         {
-            return TypedResults.Ok(await wellboreService.GetWellbores(wellUid));
+            return TypedResults.Ok(await wellboreService.GetWellbores(wellUid ?? ""));
         }
 
         [Produces(typeof(Wellbore))]

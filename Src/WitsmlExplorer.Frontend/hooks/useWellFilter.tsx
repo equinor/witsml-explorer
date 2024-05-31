@@ -1,3 +1,4 @@
+import Wellbore from "models/wellbore";
 import { useContext, useMemo } from "react";
 import {
   Filter,
@@ -6,7 +7,8 @@ import {
   getSearchRegex,
   isObjectFilterType,
   isWellFilterType,
-  isWellPropertyFilterType
+  isWellPropertyFilterType,
+  isWellboreFilterType
 } from "../contexts/filter";
 import ObjectSearchResult from "../models/objectSearchResult";
 import Well from "../models/well";
@@ -33,8 +35,20 @@ const filterWellsOnSearchResult = (
   wells: Well[],
   searchResults: ObjectSearchResult[]
 ) => {
-  const wellUids = searchResults.map((searchResult) => searchResult.wellUid);
-  return wells.filter((well) => wellUids.includes(well.uid));
+  const wellUids = searchResults.map((searchResult) =>
+    searchResult.wellUid?.toLowerCase()
+  );
+  return wells.filter((well) => wellUids.includes(well.uid.toLowerCase()));
+};
+
+const filterWellsOnWellboreSearchResult = (
+  wells: Well[],
+  wellboreSearchResults: Wellbore[]
+) => {
+  const wellUids = wellboreSearchResults.map((searchResult) =>
+    searchResult.wellUid?.toLowerCase()
+  );
+  return wells.filter((well) => wellUids.includes(well.uid.toLowerCase()));
 };
 
 export const filterWells = (wells: Well[], filter: Filter): Well[] => {
@@ -55,6 +69,11 @@ export const filterWells = (wells: Well[], filter: Filter): Well[] => {
         filteredWells,
         filter.searchResults
       );
+    } else if (isWellboreFilterType(filter.filterType)) {
+      filteredWells = filterWellsOnWellboreSearchResult(
+        filteredWells,
+        filter.wellboreSearchResults
+      );
     }
     filteredWells = filterWellsOnIsActive(filteredWells, filter.isActive);
   }
@@ -72,7 +91,8 @@ export const useWellFilter = (wells: Well[]): Well[] => {
     selectedFilter.filterType,
     selectedFilter.isActive,
     selectedFilter.name,
-    selectedFilter.searchResults
+    selectedFilter.searchResults,
+    selectedFilter.wellboreSearchResults
   ]);
 
   return filteredWells;

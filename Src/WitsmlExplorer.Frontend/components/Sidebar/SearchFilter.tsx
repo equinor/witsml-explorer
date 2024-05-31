@@ -11,7 +11,8 @@ import {
   FilterContext,
   FilterType,
   getFilterTypeInformation,
-  isObjectFilterType
+  isObjectFilterType,
+  isWellboreFilterType
 } from "contexts/filter";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -65,7 +66,7 @@ const SearchFilter = (): React.ReactElement => {
   }, [selectedFilter.name]);
 
   const openSearchView = (option: FilterType) => {
-    if (isObjectFilterType(option)) {
+    if (isObjectFilterType(option) || isWellboreFilterType(option)) {
       const searchParams = createSearchParams({
         value: nameFilter
       });

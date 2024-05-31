@@ -289,7 +289,7 @@ export const ObjectSearchListView = (): ReactElement => {
     </Typography>
   ) : (
     <ContentTable
-      viewId="objectOnWellboreListView"
+      viewId="objectSearchListView"
       checkableRows
       columns={getColumns()}
       onSelect={onSelect}

@@ -56,8 +56,13 @@ export const objectSearchQuery = (
     fetchAllObjects
   ),
   queryFn: async () => {
-    const well = await fetchObjects(server, filterType, value, fetchAllObjects);
-    return well;
+    const searchResults = await fetchObjects(
+      server,
+      filterType,
+      value,
+      fetchAllObjects
+    );
+    return searchResults;
   },
   ...options,
   enabled:
