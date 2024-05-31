@@ -1,5 +1,10 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { ButtonProps, Table, Typography } from "@equinor/eds-core-react";
+import {
+  ButtonProps,
+  Table,
+  TextField,
+  Typography
+} from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import ServerModal, {
   showDeleteServerModal
@@ -10,6 +15,7 @@ import UserCredentialsModal, {
 import ProgressSpinner from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { getSearchRegex } from "contexts/filter";
 import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
 import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
 import OperationContext from "contexts/operationContext";
@@ -17,7 +23,7 @@ import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { Server, emptyServer } from "models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
-import React, { useContext, useEffect } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getWellsViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
@@ -43,6 +49,11 @@ const ServerManager = (): React.ReactElement => {
   const navigate = useNavigate();
   const { connectedServer, setConnectedServer } = useConnectedServer();
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
+  const [filter, setFilter] = useState<string>("");
+  const searchRegex = getSearchRegex(filter);
+  const filteredServers = servers.filter(
+    (s) => !filter || searchRegex.test(s.name) || searchRegex.test(s.url)
+  );
 
   useEffect(() => {
     if (isError) {
@@ -114,12 +125,31 @@ const ServerManager = (): React.ReactElement => {
   return (
     <>
       <Header>
-        <Typography
-          style={{ color: colors.infographic.primaryMossGreen }}
-          bold={true}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "16px"
+          }}
         >
-          Manage Connections
-        </Typography>
+          <Typography
+            style={{
+              color: colors.infographic.primaryMossGreen,
+              whiteSpace: "nowrap"
+            }}
+            bold={true}
+          >
+            Manage Connections
+          </Typography>
+          <StyledTextField
+            id="serverSearch"
+            value={filter}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setFilter(e.target.value)
+            }
+          />
+        </div>
         <Button
           variant="outlined"
           value={NEW_SERVER_ID}
@@ -144,7 +174,7 @@ const ServerManager = (): React.ReactElement => {
           </Table.Row>
         </Table.Head>
         <StyledTableBody colors={colors}>
-          {(servers ?? [])
+          {(filteredServers ?? [])
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((server: Server) => (
               <Table.Row id={server.id} key={server.id}>
@@ -297,6 +327,13 @@ const StyledLink = styled.a`
   &&:hover {
     text-decoration: none;
   }
+`;
+
+const StyledTextField = styled(TextField)`
+  div {
+    background-color: transparent;
+  }
+  min-width: 220px;
 `;
 
 export default ServerManager;
