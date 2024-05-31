@@ -29,11 +29,12 @@ namespace WitsmlExplorer.Api.Workers
         {
             List<ReplaceComponentsReportItem> replaceComponentReportItems = new();
             (WorkerResult WorkerResult, RefreshAction) result = await _deleteWorker.Execute(job.DeleteJob, cancellationToken);
+
             replaceComponentReportItems.Add(new ReplaceComponentsReportItem
             {
                 Object = "Deleted Components",
                 Message = result.WorkerResult.Message,
-                Status = result.WorkerResult.IsSuccess ? "Success" : "Fail"
+                Status =  GetJobStatus(result.WorkerResult.IsSuccess, cancellationToken)
             });
             if (!result.WorkerResult.IsSuccess)
             {
@@ -43,8 +44,8 @@ namespace WitsmlExplorer.Api.Workers
             replaceComponentReportItems.Add(new ReplaceComponentsReportItem
             {
                 Object = "Replaced Components",
-                Message = copyResult.Item1.Message,
-                Status = copyResult.Item1.IsSuccess ? "Success" : "Fail"
+                Message = copyResult.Item1.Reason,
+                Status = GetJobStatus(copyResult.Item1.IsSuccess, cancellationToken)
             });
             job.JobInfo.Report= GetReplaceComponentReport(replaceComponentReportItems);
             return copyResult;
@@ -58,6 +59,16 @@ namespace WitsmlExplorer.Api.Workers
                 Summary = "Replace component report",
                 ReportItems = reportItems
             };
+        }
+
+        private string GetJobStatus(bool status,
+            CancellationToken? cancellationToken)
+        {
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return JobStatus.Cancelled.ToString();
+            }
+            return status ? "Success" : "Fail";
         }
     }
 }
