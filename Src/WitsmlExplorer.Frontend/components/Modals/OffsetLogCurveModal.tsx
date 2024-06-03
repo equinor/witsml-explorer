@@ -6,6 +6,7 @@ import {
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import WarningBar from "components/WarningBar";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { OffsetLogCurveJob } from "models/jobs/offsetLogCurveJob";
@@ -140,6 +141,7 @@ export const OffsetLogCurveModal = (
               />
             </>
           )}
+          <WarningBar message="Data within the specified range will be deleted before attempting to write the new data with the offset. If writing the offset data fails, the original data will be lost!" />
         </Layout>
       }
       onSubmit={onSubmit}
