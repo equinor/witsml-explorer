@@ -213,7 +213,7 @@ const getStartIndex = (
       return min === Infinity ? 0 : min;
     }
   } else {
-    isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex);
+    return isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex);
   }
 };
 
@@ -239,6 +239,6 @@ const getEndIndex = (
       return Math.max(...logCurveInfoRows.map((lci) => lci.maxIndex as number));
     }
   } else {
-    isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex);
+    return isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex);
   }
 };
