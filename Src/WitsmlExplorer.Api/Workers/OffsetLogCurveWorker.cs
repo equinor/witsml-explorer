@@ -44,12 +44,16 @@ namespace WitsmlExplorer.Api.Workers
                 Index endIndex = Index.End(log, job.EndIndex);
                 List<WitsmlLogCurveInfo> logCurveInfos = log.LogCurveInfo.Where(lci => logCurveInfoReferences.ComponentUids.Contains(lci.Uid)).ToList();
 
-                foreach (WitsmlLogCurveInfo logCurveInfo in logCurveInfos)
+                double totalIterations = logCurveInfos.Count * 2;
+                for (int i = 0; i < logCurveInfos.Count; i++)
                 {
+                    var logCurveInfo = logCurveInfos[i];
                     WitsmlLogData logData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), log, logCurveInfo.Mnemonic, Logger, startIndex, endIndex);
                     WitsmlLogData offsetLogData = OffsetLogData(logData, depthOffset, timeOffset, isDepthLog);
                     await DeleteLogData(log, logCurveInfo, startIndex, endIndex);
+                    ReportProgress(job, ((i * 2) + 1) / totalIterations);
                     await UpdateLogData(log, logCurveInfo, offsetLogData);
+                    ReportProgress(job, ((i * 2) + 2) / totalIterations);
                 }
             }
             catch (Exception e)
@@ -65,6 +69,12 @@ namespace WitsmlExplorer.Api.Workers
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Successfully offset curves {string.Join(", ", logCurveInfoReferences.ComponentUids)}", null, null, job.JobInfo.Id);
 
             return (workerResult, refreshAction);
+        }
+
+        private static void ReportProgress(OffsetLogCurveJob job, double progress)
+        {
+            if (job.JobInfo != null) job.JobInfo.Progress = progress;
+            job.ProgressReporter?.Report(progress);
         }
 
         private async Task DeleteLogData(WitsmlLog log, WitsmlLogCurveInfo logCurveInfo, Index startIndex, Index endIndex)
@@ -86,7 +96,6 @@ namespace WitsmlExplorer.Api.Workers
                 var result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query), Logger);
                 if (!result.IsSuccessful)
                 {
-                    // TODO: Do we want to keep going, or stop on first error?
                     throw new Exception($"Failed to update log data for mnemonic {logCurveinfo.Mnemonic}");
                 }
             }
@@ -94,7 +103,7 @@ namespace WitsmlExplorer.Api.Workers
 
         private static List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData)
         {
-            int chunkSize = 1000;
+            int chunkSize = 5000; // TODO: Base this on maxDataNodes/maxDataPoints once issue #1957 is implemented.
             List<WitsmlLogs> batchedQueries = offsetLogData.Data.Chunk(chunkSize).Select(chunk =>
                 new WitsmlLogs
                 {
