@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers
                 bool isDepthLog = log.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
                 Index startIndex = Index.Start(log, job.StartIndex);
                 Index endIndex = Index.End(log, job.EndIndex);
-                List<WitsmlLogCurveInfo> logCurveInfos = log.LogCurveInfo.Where(lci => logCurveInfoReferences.ComponentUids.Contains(lci.Uid)).ToList();
+                List<WitsmlLogCurveInfo> logCurveInfos = log.LogCurveInfo.Where(lci => logCurveInfoReferences.ComponentUids.Contains(lci.Mnemonic)).ToList();
 
                 double totalIterations = logCurveInfos.Count * 2;
                 for (int i = 0; i < logCurveInfos.Count; i++)

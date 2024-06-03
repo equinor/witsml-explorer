@@ -170,9 +170,11 @@ const LogCurveInfoContextMenu = (
     dispatchOperation({ type: OperationType.HideContextMenu });
     const offsetLogCurveModalProps: OffsetLogCurveModalProps = {
       selectedLog,
-      logCurveInfos: checkedLogCurveInfoRowsWithoutIndexCurve.map(
-        (lc) => lc.logCurveInfo
-      )
+      mnemonics: checkedLogCurveInfoRowsWithoutIndexCurve.map(
+        (lc) => lc.logCurveInfo.mnemonic
+      ),
+      startIndex: selectedLog.startIndex,
+      endIndex: selectedLog.endIndex
     };
     dispatchOperation({
       type: OperationType.DisplayModal,

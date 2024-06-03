@@ -10,7 +10,6 @@ import WarningBar from "components/WarningBar";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { OffsetLogCurveJob } from "models/jobs/offsetLogCurveJob";
-import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import React, { ChangeEvent, ReactElement, useContext, useState } from "react";
 import JobService, { JobType } from "services/jobService";
@@ -22,22 +21,29 @@ import ModalDialog from "./ModalDialog";
 
 export interface OffsetLogCurveModalProps {
   selectedLog: LogObject;
-  logCurveInfos: LogCurveInfo[];
+  mnemonics: string[];
+  startIndex: string;
+  endIndex: string;
 }
 
 export const OffsetLogCurveModal = (
   props: OffsetLogCurveModalProps
 ): React.ReactElement => {
-  const { selectedLog, logCurveInfos } = props;
+  const {
+    selectedLog,
+    mnemonics,
+    startIndex: initialStartIndex,
+    endIndex: initialEndIndex
+  } = props;
   const { operationState, dispatchOperation } = useContext(OperationContext);
   const { colors } = operationState;
   const isDepthLog = selectedLog.indexType === WITSML_INDEX_TYPE_MD;
   const [isValidInterval, setIsValidInterval] = useState<boolean>();
   const [startIndex, setStartIndex] = useState<string | number>(
-    isDepthLog ? indexToNumber(selectedLog.startIndex) : selectedLog.startIndex
+    isDepthLog ? indexToNumber(initialStartIndex) : initialStartIndex
   );
   const [endIndex, setEndIndex] = useState<string | number>(
-    isDepthLog ? indexToNumber(selectedLog.endIndex) : selectedLog.endIndex
+    isDepthLog ? indexToNumber(initialEndIndex) : initialEndIndex
   );
   const [offset, setOffset] = useState<string>(isDepthLog ? "0" : "00:00:00");
   const isValidOffset = isDepthLog
@@ -52,7 +58,7 @@ export const OffsetLogCurveModal = (
     const depthOffset = isDepthLog ? Number(offset) : null;
     const offsetLogCurveJob: OffsetLogCurveJob = {
       logCurveInfoReferences: createComponentReferences(
-        logCurveInfos.map((lci) => lci.uid),
+        mnemonics,
         selectedLog,
         ComponentType.Mnemonic
       ),
@@ -88,8 +94,8 @@ export const OffsetLogCurveModal = (
           {isDepthLog ? (
             <>
               <AdjustNumberRangeModal
-                minValue={indexToNumber(selectedLog.startIndex)}
-                maxValue={indexToNumber(selectedLog.endIndex)}
+                minValue={indexToNumber(initialStartIndex)}
+                maxValue={indexToNumber(initialEndIndex)}
                 isDescending={
                   selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING
                 }
@@ -115,8 +121,8 @@ export const OffsetLogCurveModal = (
           ) : (
             <>
               <AdjustDateTimeModal
-                minDate={selectedLog.startIndex}
-                maxDate={selectedLog.endIndex}
+                minDate={initialStartIndex}
+                maxDate={initialEndIndex}
                 isDescending={
                   selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING
                 }

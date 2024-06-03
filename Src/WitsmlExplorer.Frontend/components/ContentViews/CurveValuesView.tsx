@@ -40,14 +40,10 @@ import useExport from "hooks/useExport";
 import { useGetMnemonics } from "hooks/useGetMnemonics";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
-import {
-  DeleteLogCurveValuesJob,
-  IndexRange
-} from "models/jobs/deleteLogCurveValuesJob";
+import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
-import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import React, {
   CSSProperties,
@@ -218,29 +214,6 @@ export const CurveValuesView = (): React.ReactElement => {
     });
   };
 
-  const getDeleteLogCurveValuesJob = useCallback(
-    (
-      mnemonics: string[],
-      checkedContentItems: CurveValueRow[],
-      selectedLog: LogObject,
-      tableData: CurveValueRow[]
-    ) => {
-      const indexRanges = getIndexRanges(
-        checkedContentItems,
-        tableData,
-        selectedLog
-      );
-
-      const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
-        logReference: toObjectReference(selectedLog),
-        mnemonics: mnemonics,
-        indexRanges: indexRanges
-      };
-      return deleteLogCurveValuesJob;
-    },
-    [getIndexRanges, toObjectReference]
-  );
-
   const executeExport = () => {
     switch (downloadOptions) {
       case DownloadOptions.All:
@@ -298,13 +271,12 @@ export const CurveValuesView = (): React.ReactElement => {
       const originalTableData = tableData.filter((data) =>
         checkedContentItems.map((c) => c.id).includes(data.id)
       );
-      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(
-        mnemonics,
-        originalTableData,
+      const indexRanges = getIndexRanges(originalTableData, tableData, log);
+      const contextMenuProps = {
         log,
-        tableData
-      );
-      const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
+        mnemonics,
+        indexRanges
+      };
       const position = getContextMenuPosition(event);
       dispatchOperation({
         type: OperationType.DisplayContextMenu,
@@ -317,7 +289,7 @@ export const CurveValuesView = (): React.ReactElement => {
     [
       mnemonics,
       log,
-      getDeleteLogCurveValuesJob,
+      getIndexRanges,
       dispatchOperation,
       getContextMenuPosition,
       tableData
@@ -373,7 +345,7 @@ export const CurveValuesView = (): React.ReactElement => {
     setIsLoading(true);
     setAutoRefresh(false);
 
-    if (log && !isFetching && mnemonics) {
+    if (log && !isFetchingLog && mnemonics) {
       getLogData(startIndex, endIndex)
         .catch(truncateAbortHandler)
         .then(() => setIsLoading(false));
