@@ -4,4 +4,6 @@ export interface OffsetLogCurveJob {
   logCurveInfoReferences: ComponentReferences;
   timeOffsetMilliseconds: number;
   depthOffset: number;
+  startIndex: string;
+  endIndex: string;
 }

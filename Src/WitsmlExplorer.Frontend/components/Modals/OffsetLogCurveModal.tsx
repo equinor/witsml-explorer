@@ -1,6 +1,11 @@
 import { Accordion, TextField, Typography } from "@equinor/eds-core-react";
-import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import {
+  WITSML_INDEX_TYPE_MD,
+  WITSML_LOG_ORDERTYPE_DECREASING
+} from "components/Constants";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
+import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
+import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { OffsetLogCurveJob } from "models/jobs/offsetLogCurveJob";
@@ -9,6 +14,7 @@ import LogObject from "models/logObject";
 import React, { ChangeEvent, ReactElement, useContext, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
+import { indexToNumber } from "tools/IndexHelpers";
 import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ModalDialog from "./ModalDialog";
@@ -25,6 +31,13 @@ export const OffsetLogCurveModal = (
   const { operationState, dispatchOperation } = useContext(OperationContext);
   const { colors } = operationState;
   const isDepthLog = selectedLog.indexType === WITSML_INDEX_TYPE_MD;
+  const [isValidInterval, setIsValidInterval] = useState<boolean>();
+  const [startIndex, setStartIndex] = useState<string | number>(
+    isDepthLog ? indexToNumber(selectedLog.startIndex) : selectedLog.startIndex
+  );
+  const [endIndex, setEndIndex] = useState<string | number>(
+    isDepthLog ? indexToNumber(selectedLog.endIndex) : selectedLog.endIndex
+  );
   const [offset, setOffset] = useState<string>(isDepthLog ? "0" : "00:00:00");
   const isValidOffset = isDepthLog
     ? isValidDepthOffset(offset)
@@ -43,7 +56,9 @@ export const OffsetLogCurveModal = (
         ComponentType.Mnemonic
       ),
       timeOffsetMilliseconds: timeOffsetMilliseconds,
-      depthOffset: depthOffset
+      depthOffset: depthOffset,
+      startIndex: startIndex.toString(),
+      endIndex: endIndex.toString()
     };
     await JobService.orderJob(JobType.OffsetLogCurves, offsetLogCurveJob);
   };
@@ -70,39 +85,67 @@ export const OffsetLogCurveModal = (
             </Accordion.Item>
           </Accordion>
           {isDepthLog ? (
-            <TextField
-              id={"depthOffset"}
-              label="Offset"
-              type="number"
-              value={offset}
-              onChange={handleOffsetChange}
-              helperText={
-                !isValidOffset
-                  ? "The offset must be a number and must not be 0"
-                  : null
-              }
-            />
+            <>
+              <AdjustNumberRangeModal
+                minValue={indexToNumber(selectedLog.startIndex)}
+                maxValue={indexToNumber(selectedLog.endIndex)}
+                isDescending={
+                  selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING
+                }
+                onStartValueChanged={setStartIndex}
+                onEndValueChanged={setEndIndex}
+                onValidChange={(isValid: boolean) =>
+                  setIsValidInterval(isValid)
+                }
+              />
+              <TextField
+                id={"depthOffset"}
+                label="Offset"
+                type="number"
+                value={offset}
+                onChange={handleOffsetChange}
+                helperText={
+                  !isValidOffset
+                    ? "The offset must be a number and must not be 0"
+                    : null
+                }
+              />
+            </>
           ) : (
-            <TextField
-              id={"timeOffset"}
-              label="Offset"
-              value={offset}
-              onChange={handleOffsetChange}
-              placeholder="hh:mm:ss"
-              maxLength={9}
-              helperText={
-                !isValidOffset
-                  ? "The offset must be in format +-hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must not be 00:00:00"
-                  : null
-              }
-            />
+            <>
+              <AdjustDateTimeModal
+                minDate={selectedLog.startIndex}
+                maxDate={selectedLog.endIndex}
+                isDescending={
+                  selectedLog.direction == WITSML_LOG_ORDERTYPE_DECREASING
+                }
+                onStartDateChanged={setStartIndex}
+                onEndDateChanged={setEndIndex}
+                onValidChange={(isValid: boolean) =>
+                  setIsValidInterval(isValid)
+                }
+              />
+              <TextField
+                id={"timeOffset"}
+                label="Offset"
+                value={offset}
+                onChange={handleOffsetChange}
+                placeholder="hh:mm:ss"
+                maxLength={9}
+                helperText={
+                  !isValidOffset
+                    ? "The offset must be in format +-hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must not be 00:00:00"
+                    : null
+                }
+              />
+            </>
           )}
         </Layout>
       }
       onSubmit={onSubmit}
       isLoading={false}
       confirmText={"Save"}
-      confirmDisabled={!isValidOffset}
+      confirmDisabled={!isValidOffset || !isValidInterval}
     />
   );
 };

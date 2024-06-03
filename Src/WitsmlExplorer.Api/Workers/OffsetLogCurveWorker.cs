@@ -40,13 +40,15 @@ namespace WitsmlExplorer.Api.Workers
             {
                 WitsmlLog log = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), logReference, ReturnElements.HeaderOnly) ?? throw new ArgumentException("Failed to find log");
                 bool isDepthLog = log.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
+                Index startIndex = Index.Start(log, job.StartIndex);
+                Index endIndex = Index.End(log, job.EndIndex);
                 List<WitsmlLogCurveInfo> logCurveInfos = log.LogCurveInfo.Where(lci => logCurveInfoReferences.ComponentUids.Contains(lci.Uid)).ToList();
 
                 foreach (WitsmlLogCurveInfo logCurveInfo in logCurveInfos)
                 {
-                    WitsmlLogData logData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), log, logCurveInfo.Mnemonic, Logger);
+                    WitsmlLogData logData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), log, logCurveInfo.Mnemonic, Logger, startIndex, endIndex);
                     WitsmlLogData offsetLogData = OffsetLogData(logData, depthOffset, timeOffset, isDepthLog);
-                    await DeleteLogData(log, logCurveInfo, isDepthLog);
+                    await DeleteLogData(log, logCurveInfo, startIndex, endIndex);
                     await UpdateLogData(log, logCurveInfo, offsetLogData);
                 }
             }
@@ -65,11 +67,8 @@ namespace WitsmlExplorer.Api.Workers
             return (workerResult, refreshAction);
         }
 
-        private async Task DeleteLogData(WitsmlLog log, WitsmlLogCurveInfo logCurveInfo, bool isDepthLog)
+        private async Task DeleteLogData(WitsmlLog log, WitsmlLogCurveInfo logCurveInfo, Index startIndex, Index endIndex)
         {
-            Index startIndex = Index.Start(log, isDepthLog ? logCurveInfo.MinIndex.Value : logCurveInfo.MinDateTimeIndex);
-            Index endIndex = Index.End(log, isDepthLog ? logCurveInfo.MaxIndex.Value : logCurveInfo.MaxDateTimeIndex);
-
             var query = LogQueries.DeleteLogCurveContent(log.UidWell, log.UidWellbore, log.Uid, log.IndexType, logCurveInfo.AsItemInList(), startIndex, endIndex);
             var result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(query);
             if (!result.IsSuccessful)

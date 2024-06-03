@@ -9,11 +9,13 @@ namespace WitsmlExplorer.Api.Jobs
         public ComponentReferences LogCurveInfoReferences { get; init; }
         public double? DepthOffset { get; init; }
         public long? TimeOffsetMilliseconds { get; set; }
+        public string StartIndex { get; init; }
+        public string EndIndex { get; init; }
 
         public override string Description()
         {
             TimeSpan timeOffset = TimeSpan.FromMilliseconds(TimeOffsetMilliseconds ?? 0);
-            return $"ToOffset - {LogCurveInfoReferences.Description()}; DepthOffset: {DepthOffset}; TimeOffset: {timeOffset};";
+            return $"ToOffset - {LogCurveInfoReferences.Description()}; DepthOffset: {DepthOffset}; TimeOffset: {timeOffset}; StartIndex: {StartIndex}; EndIndex: {EndIndex};";
         }
 
         public override string GetObjectName()
