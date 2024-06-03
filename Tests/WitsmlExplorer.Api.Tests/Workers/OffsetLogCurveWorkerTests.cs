@@ -11,7 +11,6 @@ using Serilog;
 
 using Witsml;
 using Witsml.Data;
-using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -58,7 +57,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             [(10,0), (11,1), (12,2), (13,3), (14,4), (15,5)]
             */
 
-            var job = CreateJob(depthOffset: 10);
+            var job = CreateJob("0", "5", depthOffset: 10);
             SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_MD);
             var expectedData = new List<string>
             {
@@ -90,10 +89,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             [(2024-01-16T16:00:00.000Z,0), (2024-01-16T16:15:00.000Z,1), (2024-01-16T16:30:00.000Z,2), (2024-01-16T16:45:00.000Z,3), (2024-01-16T17:00:00.000Z,4)]
             */
 
-            DateTime test = new(2024, 1, 16);
-            string testString = test.ToISODateTimeString();
-
-            var job = CreateJob(timeOffsetMilliseconds: 60 * 60 * 1000);
+            var job = CreateJob("2024-01-16T15:00:00.000Z", "2024-01-16T16:00:00.000Z", timeOffsetMilliseconds: 60 * 60 * 1000);
             SetupClient(_witsmlClient, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             var expectedData = new List<string>
             {
@@ -122,7 +118,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return true;
         }
 
-        private OffsetLogCurveJob CreateJob(double? depthOffset = null, long? timeOffsetMilliseconds = null)
+        private OffsetLogCurveJob CreateJob(string startIndex, string endIndex, double? depthOffset = null, long? timeOffsetMilliseconds = null)
         {
             return new OffsetLogCurveJob
             {
@@ -141,6 +137,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 },
                 DepthOffset = depthOffset,
                 TimeOffsetMilliseconds = timeOffsetMilliseconds,
+                StartIndex = startIndex,
+                EndIndex = endIndex,
                 JobInfo = new JobInfo
                 {
                     Id = "123"
