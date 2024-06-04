@@ -164,7 +164,7 @@ const ExampleDepthOffset = (): ReactElement => {
       style={{ whiteSpace: "pre-line", fontVariantNumeric: "tabular-nums" }}
     >
       The curves are offset by adding the offset value to the index of each data
-      point for the curve.
+      point for the curve. Data in the target range will be overwritten.
       <br />
       <br />
       Before: <br />
@@ -186,7 +186,7 @@ const ExampleTimeOffset = (): ReactElement => {
       style={{ whiteSpace: "pre-line", fontVariantNumeric: "tabular-nums" }}
     >
       The curves are offset by adding the offset value to the index of each data
-      point for the curve.
+      point for the curve. Data in the target range will be overwritten.
       <br />
       <br />
       Before: <br />
