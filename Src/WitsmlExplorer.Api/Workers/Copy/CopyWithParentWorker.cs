@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     Phase = "Copy well",
                     Message = wellResult.result.Message,
-                    Status =  GetJobStatus(wellResult.result.IsSuccess, cancellationToken)
+                    Status = GetJobStatus(wellResult.result.IsSuccess, cancellationToken)
                 });
 
                 if (!wellResult.result.IsSuccess)
@@ -66,7 +66,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     Phase = "Copy wellbore",
                     Message = wellboreResult.result.Message,
-                    Status =  GetJobStatus(wellboreResult.result.IsSuccess, cancellationToken)
+                    Status = GetJobStatus(wellboreResult.result.IsSuccess, cancellationToken)
                 });
 
                 if (!wellboreResult.result.IsSuccess)
@@ -92,7 +92,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 Phase = "Copy objects",
                 Message = objectsResult.Message,
-                Status =  GetJobStatus(objectsResult.IsSuccess, cancellationToken)
+                Status = GetJobStatus(objectsResult.IsSuccess, cancellationToken)
             });
             job.JobInfo.Report = CreateCopyWithParentReport(copyLogReportItems);
             return (objectsResult, refreshAction);

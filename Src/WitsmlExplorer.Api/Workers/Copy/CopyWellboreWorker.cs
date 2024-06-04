@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (cancellationToken is { IsCancellationRequested: true })
             {
-                return (new WorkerResult(targetClient.GetServerHostname(), false, JobStatus.Cancelled.ToString(),JobStatus.Cancelled.ToString(), sourceServerUrl: sourceClient.GetServerHostname()), null);
+                return (new WorkerResult(targetClient.GetServerHostname(), false, JobStatus.Cancelled.ToString(), JobStatus.Cancelled.ToString(), sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
             // May be the same UID and name or a different one

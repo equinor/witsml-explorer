@@ -34,7 +34,7 @@ namespace WitsmlExplorer.Api.Workers
             {
                 Phase = "Deleted Components",
                 Message = result.WorkerResult.Message,
-                Status =  GetJobStatus(result.WorkerResult.IsSuccess, cancellationToken)
+                Status = GetJobStatus(result.WorkerResult.IsSuccess, cancellationToken)
             });
             if (!result.WorkerResult.IsSuccess)
             {
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Workers
                 Message = copyResult.Item1.Reason,
                 Status = GetJobStatus(copyResult.Item1.IsSuccess, cancellationToken)
             });
-            job.JobInfo.Report= CreateReplaceComponentReport(replaceComponentReportItems);
+            job.JobInfo.Report = CreateReplaceComponentReport(replaceComponentReportItems);
             return copyResult;
         }
 

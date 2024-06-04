@@ -48,7 +48,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     Source = job.Source,
                     Target = job.Target,
-                }, cancellationToken) ;
+                }, cancellationToken);
             }
 
             _job = job;
