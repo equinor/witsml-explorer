@@ -50,6 +50,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             CopyWithParentJob job = CreateJobTemplate(true, true);
 
+            JobInfo jobInfo = new();
+            job.JobInfo = jobInfo;
+
             _copyWellWorker.Setup(w => w.Execute(job.CopyWellJob, null)).ReturnsAsync(SuccessResult());
             _copyWellboreWorker.Setup(w => w.Execute(job.CopyWellboreJob, null)).ReturnsAsync(SuccessResult());
 
@@ -65,6 +68,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             CopyWithParentJob job = CreateJobTemplate(false, false);
 
+            JobInfo jobInfo = new();
+            job.JobInfo = jobInfo;
+
             _copyWorker.Setup(w => w.Execute(It.Is<CopyObjectsJob>(j => j.Source == job.Source && j.Target == job.Target), null)).ReturnsAsync(SuccessResult());
 
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
@@ -79,6 +85,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_ErrorOnWellCopy_ReasonInResult()
         {
             CopyWithParentJob job = CreateJobTemplate(true, true);
+
+            JobInfo jobInfo = new();
+            job.JobInfo = jobInfo;
 
             string failReason = "test";
 
@@ -97,7 +106,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_ErrorOnWellboreCopy_ReasonInResult()
         {
-            CopyWithParentJob job = CreateJobTemplate(true, true);
+            CopyWithParentJob job = CreateJobTemplate(true, true)
+                ;
+            JobInfo jobInfo = new();
+            job.JobInfo = jobInfo;
 
             string failReason = "test";
 
@@ -117,6 +129,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_ErrorOnLogCopy_ReasonInResult()
         {
             CopyWithParentJob job = CreateJobTemplate(true, true);
+
+            JobInfo jobInfo = new();
+            job.JobInfo = jobInfo;
 
             string failReason = "test";
 
