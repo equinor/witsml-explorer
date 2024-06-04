@@ -54,6 +54,10 @@ namespace WitsmlExplorer.Api.Jobs
 
     public record CopyWithParentJob : ICopyJob<ObjectReferences, WellboreReference>
     {
+        public override string GetObjectName()
+        {
+            return GetType().Name;
+        }
         public CopyWellJob CopyWellJob { get; init; }
 
         public CopyWellboreJob CopyWellboreJob { get; init; }

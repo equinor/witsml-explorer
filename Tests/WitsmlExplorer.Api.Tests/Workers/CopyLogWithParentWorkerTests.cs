@@ -158,7 +158,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 },
                 Target = wellboreRef,
                 CopyWellJob = wellJob,
-                CopyWellboreJob = wellboreJob
+                CopyWellboreJob = wellboreJob,
+                JobInfo = new ()
             };
         }
     }
