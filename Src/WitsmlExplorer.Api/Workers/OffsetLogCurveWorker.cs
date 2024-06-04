@@ -96,7 +96,7 @@ namespace WitsmlExplorer.Api.Workers
                 var result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query), Logger);
                 if (!result.IsSuccessful)
                 {
-                    throw new Exception($"Failed to update log data for mnemonic {logCurveinfo.Mnemonic}");
+                    throw new Exception($"Failed to update log data for mnemonic {logCurveinfo.Mnemonic}. {result.Reason}.");
                 }
             }
         }
@@ -159,7 +159,9 @@ namespace WitsmlExplorer.Api.Workers
                 throw new Exception($"Failed to parse index to double: {stringIndex}");
             }
 
-            return $"{index + depthOffset}";
+            string offsetIndex = (index + depthOffset).ToString(CultureInfo.InvariantCulture);
+
+            return offsetIndex;
         }
 
         private static string OffsetTimeIndex(string stringIndex, TimeSpan timeOffset)
@@ -169,7 +171,7 @@ namespace WitsmlExplorer.Api.Workers
                 throw new Exception($"Failed to parse index to TimeSpan: {stringIndex}");
             }
 
-            return $"{index.Add(timeOffset).ToISODateTimeString()}";
+            return index.Add(timeOffset).ToISODateTimeString();
         }
     }
 }
