@@ -39,6 +39,16 @@ namespace WitsmlExplorer.Api.Workers
             return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Source);
         }
 
+        protected string GetJobStatus(bool status,
+            CancellationToken? cancellationToken)
+        {
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return JobStatus.Cancelled.ToString();
+            }
+            return status ? "Success" : "Fail";
+        }
+
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
         {
             T job = await jobStream.Deserialize<T>();

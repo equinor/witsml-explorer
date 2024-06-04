@@ -56,7 +56,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, errorMessage, copyLogTasks.First((task) => !task.Result.IsSuccessful).Result.Reason, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
-
+            cancellationToken?.ThrowIfCancellationRequested();
             ConcurrentDictionary<string, double> progressDict = new ConcurrentDictionary<string, double>();
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log, progressDict));
             List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(x => _copyLogDataWorker.Execute(x, cancellationToken)).ToList();

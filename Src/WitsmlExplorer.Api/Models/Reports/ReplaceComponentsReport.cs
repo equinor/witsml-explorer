@@ -1,21 +1,21 @@
 namespace WitsmlExplorer.Api.Models.Reports;
 
 /// <summary>
-/// The report of replaced components.
+/// Common copy report.
 /// </summary>
-public class ReplaceComponentsReport : BaseReport
+public class CommonCopyReport : BaseReport
 {
 }
 
 /// <summary>
 /// The item contains information of replaced item.
 /// </summary>
-public class ReplaceComponentsReportItem
+public class CommonCopyReportItem
 {
     /// <summary>
     /// Object identifier.
     /// </summary>
-    public string Object { get; set; }
+    public string Phase { get; set; }
     /// <summary>
     /// Message.
     /// </summary>

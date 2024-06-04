@@ -64,7 +64,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 VerifyValidInterval(sourceLog);
                 VerifyIndexCurveIsIncludedInMnemonics(sourceLog, newMnemonicsInTarget, existingMnemonicsInTarget);
                 await VerifyTargetHasRequiredLogCurveInfos(sourceLog, job.Source.ComponentUids, targetLog);
-                cancellationToken?.ThrowIfCancellationRequested();
             }
             catch (Exception e)
             {
@@ -158,6 +157,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<CopyResult> CopyLogData(WitsmlLog sourceLog, WitsmlLog targetLog, CopyLogDataJob job, List<string> mnemonics, int sourceDepthLogDecimals, int targetDepthLogDecimals, CancellationToken? cancellationToken = null)
         {
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return new CopyResult { Success = false, NumberOfRowsCopied = 0, ErrorReason = JobStatus.Cancelled.ToString() };
+            }
             if (sourceLog.IsEmpty())
             {
                 return new CopyResult { Success = true, NumberOfRowsCopied = 0 };
@@ -174,6 +177,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
             while (sourceLogData != null)
             {
+                if (cancellationToken is { IsCancellationRequested: true })
+                {
+                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = JobStatus.Cancelled.ToString() };
+                }
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogData);
                 QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
                 if (result.IsSuccessful)
@@ -185,11 +192,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
-                }
-
-                if (cancellationToken is { IsCancellationRequested: true })
-                {
-                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = JobStatus.Cancelled.ToString() };
                 }
 
                 sourceLogData = await logDataReader.GetNextBatch();

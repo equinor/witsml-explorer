@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
@@ -34,25 +36,42 @@ namespace WitsmlExplorer.Api.Workers.Copy
         public override async Task<(WorkerResult WorkerResult, RefreshAction RefreshAction)> Execute(CopyWithParentJob job, CancellationToken? cancellationToken = null)
         {
             RefreshAction refreshAction = null;
+            List<CommonCopyReportItem> copyLogReportItems = new();
 
             if (job.CopyWellJob != null)
             {
-                (WorkerResult result, RefreshAction refresh) wellResult = await _copyWellWorker.Execute(job.CopyWellJob);
+                (WorkerResult result, RefreshAction refresh) wellResult = await _copyWellWorker.Execute(job.CopyWellJob, cancellationToken);
                 refreshAction = wellResult.refresh;
+
+                copyLogReportItems.Add(new CommonCopyReportItem
+                {
+                    Phase = "Copy well",
+                    Message = wellResult.result.Message,
+                    Status =  GetJobStatus(wellResult.result.IsSuccess, cancellationToken)
+                });
 
                 if (!wellResult.result.IsSuccess)
                 {
+                    job.JobInfo.Report = CreateCopyWithParentReport(copyLogReportItems);
                     return wellResult;
                 }
             }
 
             if (job.CopyWellboreJob != null)
             {
-                (WorkerResult result, RefreshAction refresh) wellboreResult = await _copyWellboreWorker.Execute(job.CopyWellboreJob);
+                (WorkerResult result, RefreshAction refresh) wellboreResult = await _copyWellboreWorker.Execute(job.CopyWellboreJob, cancellationToken);
                 refreshAction ??= wellboreResult.refresh;
+
+                copyLogReportItems.Add(new CommonCopyReportItem
+                {
+                    Phase = "Copy wellbore",
+                    Message = wellboreResult.result.Message,
+                    Status =  GetJobStatus(wellboreResult.result.IsSuccess, cancellationToken)
+                });
 
                 if (!wellboreResult.result.IsSuccess)
                 {
+                    job.JobInfo.Report = CreateCopyWithParentReport(copyLogReportItems);
                     return wellboreResult;
                 }
             }
@@ -67,9 +86,26 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     if (job.JobInfo != null) job.JobInfo.Progress = progress;
                 })
             };
-            (WorkerResult objectsResult, RefreshAction objectsRefresh) = await _copyObjectsWorker.Execute(copyObjectsJob);
+            (WorkerResult objectsResult, RefreshAction objectsRefresh) = await _copyObjectsWorker.Execute(copyObjectsJob, cancellationToken);
             refreshAction ??= objectsRefresh;
+            copyLogReportItems.Add(new CommonCopyReportItem
+            {
+                Phase = "Copy objects",
+                Message = objectsResult.Message,
+                Status =  GetJobStatus(objectsResult.IsSuccess, cancellationToken)
+            });
+            job.JobInfo.Report = CreateCopyWithParentReport(copyLogReportItems);
             return (objectsResult, refreshAction);
+        }
+
+        private CommonCopyReport CreateCopyWithParentReport(List<CommonCopyReportItem> reportItems)
+        {
+            return new CommonCopyReport
+            {
+                Title = $"Copy with parent report",
+                Summary = "Copy with parent report",
+                ReportItems = reportItems
+            };
         }
     }
 }

@@ -48,6 +48,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                 return (new WorkerResult(targetClient.GetServerHostname(), false, JobStatus.Cancelled.ToString(),JobStatus.Cancelled.ToString(), sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
+
             // May be the same UID and name or a different one
             sourceWell.Uid = job.Target.WellUid;
             sourceWell.Name = job.Target.WellName;

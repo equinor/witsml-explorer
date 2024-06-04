@@ -9,7 +9,14 @@ namespace WitsmlExplorer.Api.Jobs
         /// </summary>
         public override bool IsCancelable => true;
     }
-    public record CopyObjectsJob : ICopyJob<ObjectReferences, WellboreReference> { }
+
+    public record CopyObjectsJob : ICopyJob<ObjectReferences, WellboreReference>
+    {
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
+    }
 
     public record CopyLogDataJob : ICopyJob<ComponentReferences, ObjectReference>
     {
@@ -28,8 +35,22 @@ namespace WitsmlExplorer.Api.Jobs
         }
     }
 
-    public record CopyWellJob : ICopyJob<WellReference, WellReference> { }
-    public record CopyWellboreJob : ICopyJob<WellboreReference, WellboreReference> { }
+    public record CopyWellJob : ICopyJob<WellReference, WellReference>
+    {
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
+    }
+
+    public record
+        CopyWellboreJob : ICopyJob<WellboreReference, WellboreReference>
+    {
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
+    }
 
     public record CopyWithParentJob : ICopyJob<ObjectReferences, WellboreReference>
     {
@@ -41,5 +62,10 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return $"{GetType().Name} - Source - {Source.Description()}\t\nTarget - {Target.Description()}";
         }
+
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
     }
 }

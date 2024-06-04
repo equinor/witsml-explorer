@@ -27,12 +27,12 @@ namespace WitsmlExplorer.Api.Workers
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ReplaceComponentsJob job, CancellationToken? cancellationToken = null)
         {
-            List<ReplaceComponentsReportItem> replaceComponentReportItems = new();
+            List<CommonCopyReportItem> replaceComponentReportItems = new();
             (WorkerResult WorkerResult, RefreshAction) result = await _deleteWorker.Execute(job.DeleteJob, cancellationToken);
 
-            replaceComponentReportItems.Add(new ReplaceComponentsReportItem
+            replaceComponentReportItems.Add(new CommonCopyReportItem
             {
-                Object = "Deleted Components",
+                Phase = "Deleted Components",
                 Message = result.WorkerResult.Message,
                 Status =  GetJobStatus(result.WorkerResult.IsSuccess, cancellationToken)
             });
@@ -41,34 +41,24 @@ namespace WitsmlExplorer.Api.Workers
                 return result;
             }
             var copyResult = await _copyWorker.Execute(job.CopyJob, cancellationToken);
-            replaceComponentReportItems.Add(new ReplaceComponentsReportItem
+            replaceComponentReportItems.Add(new CommonCopyReportItem
             {
-                Object = "Replaced Components",
+                Phase = "Replaced Components",
                 Message = copyResult.Item1.Reason,
                 Status = GetJobStatus(copyResult.Item1.IsSuccess, cancellationToken)
             });
-            job.JobInfo.Report= GetReplaceComponentReport(replaceComponentReportItems);
+            job.JobInfo.Report= CreateReplaceComponentReport(replaceComponentReportItems);
             return copyResult;
         }
 
-        private ReplaceComponentsReport GetReplaceComponentReport(List<ReplaceComponentsReportItem> reportItems)
+        private CommonCopyReport CreateReplaceComponentReport(List<CommonCopyReportItem> reportItems)
         {
-            return new ReplaceComponentsReport
+            return new CommonCopyReport
             {
                 Title = $"Replace component report",
                 Summary = "Replace component report",
                 ReportItems = reportItems
             };
-        }
-
-        private string GetJobStatus(bool status,
-            CancellationToken? cancellationToken)
-        {
-            if (cancellationToken is { IsCancellationRequested: true })
-            {
-                return JobStatus.Cancelled.ToString();
-            }
-            return status ? "Success" : "Fail";
         }
     }
 }

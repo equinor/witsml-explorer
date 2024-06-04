@@ -36,12 +36,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             if (job.Source.ObjectType == EntityType.Log)
             {
-                return await _copyLogWorker.Execute(job);
+                return await _copyLogWorker.Execute(job, cancellationToken);
             }
-            return await GenericCopy(job);
+            return await GenericCopy(job, cancellationToken);
         }
 
-        private async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job)
+        private async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job, CancellationToken? cancellationToken = null)
         {
             Witsml.IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
             Witsml.IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
@@ -59,6 +59,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (!objectsToCopy.Objects.Any())
             {
                 return (new WorkerResult(targetClient.GetServerHostname(), false, "Could not find any objects to copy", sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return (new WorkerResult(targetClient.GetServerHostname(), false, JobStatus.Cancelled.ToString(),JobStatus.Cancelled.ToString(), sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
             ICollection<WitsmlObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectsToCopy.Objects, targetWellbore);
