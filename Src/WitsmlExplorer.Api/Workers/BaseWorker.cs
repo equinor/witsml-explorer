@@ -42,13 +42,23 @@ namespace WitsmlExplorer.Api.Workers
         protected string GetJobStatus(bool status,
             CancellationToken? cancellationToken)
         {
+            if (status) return "Success";
             if (cancellationToken is { IsCancellationRequested: true })
             {
                 return JobStatus.Cancelled.ToString();
             }
-            return status ? "Success" : "Fail";
+            return "Fail";
         }
 
+        protected string CancellationMessage()
+        {
+            return "The job was cancelled.";
+        }
+
+        protected string CancellationReason()
+        {
+            return "The job was cancelled by the user.";
+        }
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
         {
             T job = await jobStream.Deserialize<T>();

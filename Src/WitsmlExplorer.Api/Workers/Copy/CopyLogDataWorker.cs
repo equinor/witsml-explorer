@@ -159,7 +159,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             if (cancellationToken is { IsCancellationRequested: true })
             {
-                return new CopyResult { Success = false, NumberOfRowsCopied = 0, ErrorReason = JobStatus.Cancelled.ToString() };
+                return new CopyResult { Success = false, NumberOfRowsCopied = 0, ErrorReason = CancellationReason() };
             }
             if (sourceLog.IsEmpty())
             {
@@ -179,7 +179,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 if (cancellationToken is { IsCancellationRequested: true })
                 {
-                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = JobStatus.Cancelled.ToString() };
+                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = CancellationReason() };
                 }
                 WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogData);
                 QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
@@ -204,7 +204,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             double progress = LogWorkerTools.CalculateProgressBasedOnIndex(sourceLog, copiedData);
             job.ProgressReporter?.Report(progress);
-            if (job.JobInfo != null) job.JobInfo.Progress = progress;
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
         }
 

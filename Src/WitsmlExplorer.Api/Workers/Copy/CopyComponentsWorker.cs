@@ -41,7 +41,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyComponentsJob job, CancellationToken? cancellationToken = null)
         {
-            // cancellationToken?.ThrowIfCancellationRequested();
             if (job.Source.ComponentType == ComponentType.Mnemonic)
             {
                 return await _copyLogDataWorker.Execute(new CopyLogDataJob()

@@ -50,7 +50,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Status = GetJobStatus(wellResult.result.IsSuccess, cancellationToken)
                 });
 
-                if (!wellResult.result.IsSuccess)
+                if (!wellResult.result.IsSuccess )
                 {
                     job.JobInfo.Report = CreateCopyWithParentReport(copyLogReportItems);
                     return wellResult;
