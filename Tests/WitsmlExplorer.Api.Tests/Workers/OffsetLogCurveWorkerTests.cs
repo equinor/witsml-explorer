@@ -41,7 +41,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<OffsetLogCurveJob> logger = loggerFactory.CreateLogger<OffsetLogCurveJob>();
-            _worker = new OffsetLogCurveWorker(logger, witsmlClientProvider.Object);
+            _worker = new OffsetLogCurveWorker(logger, witsmlClientProvider.Object, null, null);
         }
 
         [Fact]

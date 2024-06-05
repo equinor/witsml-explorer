@@ -8,9 +8,10 @@ namespace WitsmlExplorer.Api.Jobs
     {
         public ComponentReferences LogCurveInfoReferences { get; init; }
         public double? DepthOffset { get; init; }
-        public long? TimeOffsetMilliseconds { get; set; }
+        public long? TimeOffsetMilliseconds { get; init; }
         public string StartIndex { get; init; }
         public string EndIndex { get; init; }
+        public bool UseBackup { get; init; }
 
         public override string Description()
         {

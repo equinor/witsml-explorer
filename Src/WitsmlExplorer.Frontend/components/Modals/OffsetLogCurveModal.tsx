@@ -1,4 +1,10 @@
-import { Accordion, TextField, Typography } from "@equinor/eds-core-react";
+import {
+  Accordion,
+  Icon,
+  TextField,
+  Tooltip,
+  Typography
+} from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE_MD,
   WITSML_LOG_ORDERTYPE_DECREASING
@@ -6,7 +12,9 @@ import {
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import WarningBar from "components/WarningBar";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { OffsetLogCurveJob } from "models/jobs/offsetLogCurveJob";
@@ -35,6 +43,7 @@ export const OffsetLogCurveModal = (
     startIndex: initialStartIndex,
     endIndex: initialEndIndex
   } = props;
+  const { connectedServer } = useConnectedServer();
   const { operationState, dispatchOperation } = useContext(OperationContext);
   const { colors } = operationState;
   const isDepthLog = selectedLog.indexType === WITSML_INDEX_TYPE_MD;
@@ -46,6 +55,7 @@ export const OffsetLogCurveModal = (
     isDepthLog ? indexToNumber(initialEndIndex) : initialEndIndex
   );
   const [offset, setOffset] = useState<string>(isDepthLog ? "0" : "00:00:00");
+  const [useBackup, setUseBackup] = useState<boolean>(true);
   const isValidOffset = isDepthLog
     ? isValidDepthOffset(offset)
     : isValidTimeOffset(offset);
@@ -65,9 +75,15 @@ export const OffsetLogCurveModal = (
       timeOffsetMilliseconds: timeOffsetMilliseconds,
       depthOffset: depthOffset,
       startIndex: startIndex.toString(),
-      endIndex: endIndex.toString()
+      endIndex: endIndex.toString(),
+      useBackup
     };
-    await JobService.orderJob(JobType.OffsetLogCurves, offsetLogCurveJob);
+    await JobService.orderJobAtServer(
+      JobType.OffsetLogCurves,
+      offsetLogCurveJob,
+      connectedServer,
+      connectedServer // Set both source and target servers so the backup is created on the same server.
+    );
   };
 
   const handleOffsetChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +163,26 @@ export const OffsetLogCurveModal = (
               />
             </>
           )}
-          <WarningBar message="Data within the specified range will be deleted before attempting to write the new data with the offset. If writing the offset data fails, the original data will be lost!" />
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <Checkbox
+              color={"primary"}
+              checked={useBackup}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setUseBackup(event.target.checked)
+              }
+              label={"Use temporary backup"}
+              colors={colors}
+            />
+            <Tooltip title="This will create a temporary log with the data you are offsetting. If the job succeeds, it will be deleted afterwards. If the job fails, you can use it to restore any deleted data.">
+              <Icon
+                style={{ alignSelf: "center", marginLeft: "8px" }}
+                name="infoCircle"
+                color={colors.interactive.primaryResting}
+                size={18}
+              />
+            </Tooltip>
+          </div>
+          <WarningBar message="Data within the specified range will be deleted before attempting to write the new data with the offset. If writing the offset data fails, the original data will be lost! Make sure 'Use temporary backup' is enabled to create a backup if something goes wrong." />
         </Layout>
       }
       onSubmit={onSubmit}

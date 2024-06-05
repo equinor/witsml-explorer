@@ -6,4 +6,5 @@ export interface OffsetLogCurveJob {
   depthOffset: number;
   startIndex: string;
   endIndex: string;
+  useBackup: boolean;
 }

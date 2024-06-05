@@ -16,6 +16,8 @@ using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Workers.Copy;
+using WitsmlExplorer.Api.Workers.Delete;
 
 using Index = Witsml.Data.Curves.Index;
 
@@ -24,8 +26,14 @@ namespace WitsmlExplorer.Api.Workers
     public class OffsetLogCurveWorker : BaseWorker<OffsetLogCurveJob>, IWorker
     {
         public JobType JobType => JobType.OffsetLogCurves;
+        private readonly ICopyLogDataWorker _copyLogDataWorker;
+        private readonly IDeleteObjectsWorker _deleteObjectsWorker;
 
-        public OffsetLogCurveWorker(ILogger<OffsetLogCurveJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
+        public OffsetLogCurveWorker(ILogger<OffsetLogCurveJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyLogDataWorker copyLogDataWorker, IDeleteObjectsWorker deleteObjectsWorker) : base(witsmlClientProvider, logger)
+        {
+            _copyLogDataWorker = copyLogDataWorker;
+            _deleteObjectsWorker = deleteObjectsWorker;
+        }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(OffsetLogCurveJob job, CancellationToken? cancellationToken = null)
         {
@@ -33,6 +41,7 @@ namespace WitsmlExplorer.Api.Workers
             ObjectReference logReference = logCurveInfoReferences.Parent;
             double depthOffset = job.DepthOffset ?? 0;
             TimeSpan timeOffset = TimeSpan.FromMilliseconds(job.TimeOffsetMilliseconds ?? 0);
+            bool useBackup = job.UseBackup;
 
             Logger.LogInformation("Started {JobType}. {jobDescription}", JobType, job.Description());
 
@@ -44,6 +53,12 @@ namespace WitsmlExplorer.Api.Workers
                 Index endIndex = Index.End(log, job.EndIndex);
                 List<WitsmlLogCurveInfo> logCurveInfos = log.LogCurveInfo.Where(lci => logCurveInfoReferences.ComponentUids.Contains(lci.Mnemonic)).ToList();
 
+                ObjectReference backupReference = null;
+                if (useBackup)
+                {
+                    backupReference = await CreateTemporaryBackupOrThrow(job, log);
+                }
+
                 double totalIterations = logCurveInfos.Count * 2;
                 for (int i = 0; i < logCurveInfos.Count; i++)
                 {
@@ -54,6 +69,11 @@ namespace WitsmlExplorer.Api.Workers
                     ReportProgress(job, ((i * 2) + 1) / totalIterations);
                     await UpdateLogData(log, logCurveInfo, offsetLogData);
                     ReportProgress(job, ((i * 2) + 2) / totalIterations);
+                }
+
+                if (useBackup)
+                {
+                    await DeleteTemporaryBackup(backupReference);
                 }
             }
             catch (Exception e)
@@ -69,6 +89,73 @@ namespace WitsmlExplorer.Api.Workers
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Successfully offset curves {string.Join(", ", logCurveInfoReferences.ComponentUids)}", null, null, job.JobInfo.Id);
 
             return (workerResult, refreshAction);
+        }
+
+        private async Task<ObjectReference> CreateTemporaryBackupOrThrow(OffsetLogCurveJob job, WitsmlLog log)
+        {
+
+            WitsmlLog backupLog = new()
+            {
+                UidWell = log.UidWell,
+                UidWellbore = log.UidWellbore,
+                Uid = $"{log.Uid}-tempbackup",
+                NameWell = log.NameWell,
+                NameWellbore = log.NameWellbore,
+                Name = $"{log.Name}-tempbackup",
+                IndexType = log.IndexType,
+                IndexCurve = log.IndexCurve,
+                Direction = log.Direction,
+                LogCurveInfo = log.LogCurveInfo.Find(lci => lci.Mnemonic == log.IndexCurve.Value).AsItemInList()
+            };
+            var createLogResult = await GetTargetWitsmlClientOrThrow().AddToStoreAsync(backupLog.AsItemInWitsmlList());
+            if (!createLogResult.IsSuccessful)
+            {
+                throw new Exception("Failed to create temporary backup. No values were attempted to offset.");
+            }
+
+            ObjectReference backupReference = new ObjectReference()
+            {
+                WellUid = backupLog.UidWell,
+                WellboreUid = backupLog.UidWellbore,
+                Uid = backupLog.Uid,
+                WellName = backupLog.NameWell,
+                WellboreName = backupLog.NameWellbore,
+                Name = backupLog.Name
+            };
+
+            CopyLogDataJob backupJob = new()
+            {
+                StartIndex = job.StartIndex,
+                EndIndex = job.EndIndex,
+                Source = job.LogCurveInfoReferences,
+                Target = backupReference
+            };
+
+            (WorkerResult result, _) = await _copyLogDataWorker.Execute(backupJob);
+            if (result.IsSuccess)
+            {
+                return backupReference;
+            }
+            throw new Exception("Failed add data to temporary backup. No values were attempted to offset.");
+        }
+
+        private async Task DeleteTemporaryBackup(ObjectReference backupReference)
+        {
+            DeleteObjectsJob deleteJob = new()
+            {
+                ToDelete = new ObjectReferences
+                {
+                    WellUid = backupReference.WellUid,
+                    WellboreUid = backupReference.WellboreUid,
+                    ObjectUids = new string[] { backupReference.Uid },
+                    ObjectType = EntityType.Log
+                }
+            };
+            (WorkerResult result, _) = await _deleteObjectsWorker.Execute(deleteJob);
+            if (!result.IsSuccess)
+            {
+                throw new Exception("Failed to delete the temporary backup after successfully offsetting the values.");
+            }
         }
 
         private static void ReportProgress(OffsetLogCurveJob job, double progress)
