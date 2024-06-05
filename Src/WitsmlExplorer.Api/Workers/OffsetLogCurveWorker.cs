@@ -246,7 +246,7 @@ namespace WitsmlExplorer.Api.Workers
                 throw new Exception($"Failed to parse index to double: {stringIndex}");
             }
 
-            string offsetIndex = (index + depthOffset).ToString(CultureInfo.InvariantCulture);
+            string offsetIndex = ((decimal)index + (decimal)depthOffset).ToString(CultureInfo.InvariantCulture); // Use decimal for higher precision to reduce floating point errors
 
             return offsetIndex;
         }
