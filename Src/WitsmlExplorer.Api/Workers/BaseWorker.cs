@@ -39,6 +39,26 @@ namespace WitsmlExplorer.Api.Workers
             return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Source);
         }
 
+        protected string GetJobStatus(bool status,
+            CancellationToken? cancellationToken)
+        {
+            if (status) return "Success";
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return JobStatus.Cancelled.ToString();
+            }
+            return "Fail";
+        }
+
+        protected string CancellationMessage()
+        {
+            return "The job was cancelled.";
+        }
+
+        protected string CancellationReason()
+        {
+            return "The job was cancelled by the user.";
+        }
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
         {
             T job = await jobStream.Deserialize<T>();
@@ -55,6 +75,10 @@ namespace WitsmlExplorer.Api.Workers
                 job.JobInfo.Status = task.WorkerResult.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
                 if (!task.WorkerResult.IsSuccess)
                 {
+                    if (cancellationToken is { IsCancellationRequested: true })
+                    {
+                        job.JobInfo.Status = JobStatus.Cancelled;
+                    }
                     job.JobInfo.FailedReason = task.WorkerResult.Reason;
                 }
 
