@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,19 +46,28 @@ namespace WitsmlExplorer.Api.Services
                     IsActive = canQueryByIsActive ? "true" : ""
                 }.AsItemInList()
             };
-            WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            foreach (WitsmlWellbore wellbore in wellbores.Wellbores)
+            try
             {
-                if (wellbore.IsActive == "true")
+                WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
+                foreach (WitsmlWellbore wellbore in wellbores.Wellbores)
                 {
-                    Well well = wells.FirstOrDefault(well => well.Uid == wellbore.UidWell);
-                    if (well != null)
+                    if (wellbore.IsActive == "true")
                     {
-                        well.IsActive = true;
+                        Well well = wells.FirstOrDefault(well => well.Uid == wellbore.UidWell);
+                        if (well != null)
+                        {
+                            well.IsActive = true;
+                        }
                     }
-                }
-            };
-            return wells;
+                };
+                return wells;
+            }
+            catch (Exception)
+            {
+                // As some servers won't allow querying without specifying uidWell, we can't find out if it is active without querying each well separately.
+                // For now, we don't want to do that. So we return the wells without setting IsActive.
+                return wells;
+            }
         }
 
         private async Task<bool> CanQueryByIsActive()
