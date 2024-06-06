@@ -35,24 +35,41 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task<IList<Well>> SetWellIsActive(IList<Well> wells) // Sets the IsActive property of each well to true if any of its wellbores are active
         {
+            bool canQueryByIsActive = await CanQueryByIsActive();
+
             var query = new WitsmlWellbores
             {
                 Wellbores = new WitsmlWellbore
                 {
                     UidWell = "",
-                    IsActive = "true"
+                    IsActive = canQueryByIsActive ? "true" : ""
                 }.AsItemInList()
             };
             WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             foreach (WitsmlWellbore wellbore in wellbores.Wellbores)
             {
-                Well well = wells.FirstOrDefault(well => well.Uid == wellbore.UidWell);
-                if (well != null)
+                if (wellbore.IsActive == "true")
                 {
-                    well.IsActive = true;
+                    Well well = wells.FirstOrDefault(well => well.Uid == wellbore.UidWell);
+                    if (well != null)
+                    {
+                        well.IsActive = true;
+                    }
                 }
             };
             return wells;
+        }
+
+        private async Task<bool> CanQueryByIsActive()
+        {
+            // send a request to see if the server is capable of querying by IsActive
+            WitsmlWellbores capabilityQuery = new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore().AsItemInList()
+            };
+            WitsmlWellbores capabilityResult = await _witsmlClient.GetFromStoreNullableAsync(capabilityQuery, new OptionsIn(RequestObjectSelectionCapability: true));
+            WitsmlWellbore capabilities = capabilityResult?.Wellbores?.FirstOrDefault();
+            return capabilities?.IsActive != null;
         }
 
         private async Task<Well> SetWellIsActive(Well well) // Sets the IsActive property of the well to true if any of its wellbores are active
@@ -62,12 +79,12 @@ namespace WitsmlExplorer.Api.Services
                 Wellbores = new WitsmlWellbore
                 {
                     UidWell = well.Uid,
-                    IsActive = "true"
+                    IsActive = ""
                 }.AsItemInList()
             };
 
             WitsmlWellbores wellbores = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
-            if (wellbores.Wellbores.Any())
+            if (wellbores.Wellbores.Any(wellbore => wellbore.IsActive == "true"))
             {
                 well.IsActive = true;
             }
