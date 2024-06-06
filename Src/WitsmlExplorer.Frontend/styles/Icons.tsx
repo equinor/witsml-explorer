@@ -49,6 +49,7 @@ import {
   settings,
   sync,
   text_field as textField,
+  tune,
   update,
   upload,
   world
@@ -103,6 +104,7 @@ const icons = {
   settings,
   sync,
   textField,
+  tune,
   update,
   upload,
   world
