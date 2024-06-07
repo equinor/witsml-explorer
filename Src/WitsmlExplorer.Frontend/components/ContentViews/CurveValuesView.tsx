@@ -658,12 +658,16 @@ const getIndexRanges = (
   tableData: CurveValueRow[],
   selectedLog: LogObject
 ): IndexRange[] => {
+  const isDecreasing =
+    selectedLog.direction === WITSML_LOG_ORDERTYPE_DECREASING;
   const sortedItems = checkedContentItems.sort((a, b) => {
     const idA =
       selectedLog.indexType === "datetime" ? new Date(a.id) : Number(a.id);
     const idB =
       selectedLog.indexType === "datetime" ? new Date(b.id) : Number(b.id);
-    return idA < idB ? -1 : idA > idB ? 1 : 0;
+    if (idA < idB) return isDecreasing ? 1 : -1;
+    if (idA > idB) return isDecreasing ? -1 : 1;
+    return 0;
   });
   const indexCurve = selectedLog.indexCurve;
   const idList = tableData.map((row) => String(row[indexCurve]));
