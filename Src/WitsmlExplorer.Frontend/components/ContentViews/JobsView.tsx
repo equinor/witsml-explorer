@@ -10,6 +10,7 @@ import JobInfoContextMenu, {
   JobInfoContextMenuProps
 } from "components/ContextMenus/JobInfoContextMenu";
 import formatDateString from "components/DateFormatter";
+import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { generateReport } from "components/ReportCreationHelper";
 import { Button } from "components/StyledComponents/Button";
@@ -20,6 +21,7 @@ import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
 import useExport from "hooks/useExport";
 import JobStatus from "models/jobStatus";
+import JobInfo from "models/jobs/jobInfo";
 import ReportType from "models/reportType";
 import { Server } from "models/server";
 import {
@@ -49,6 +51,8 @@ export const JobsView = (): React.ReactElement => {
     : "";
 
   const { exportData } = useExport();
+
+  const [cancellingJobs, setCancellingJobs] = useState<string[]>([]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -89,6 +93,15 @@ export const JobsView = (): React.ReactElement => {
     }
   };
 
+  const getJobStatus = (jobInfo: JobInfo, cancellingJobs: string[]) => {
+    const isCancelling = cancellingJobs.includes(jobInfo.id);
+    if (jobInfo.status === JobStatus.Started) {
+      if (isCancelling) return "Cancelling";
+      if (jobInfo.progress) return `${Math.round(jobInfo.progress * 100)}%`;
+    }
+    return jobInfo.status;
+  };
+
   const columns: ContentTableColumn[] = [
     { property: "startTime", label: "Start time", type: ContentType.DateTime },
     { property: "jobType", label: "Job Type", type: ContentType.String },
@@ -125,9 +138,33 @@ export const JobsView = (): React.ReactElement => {
     { property: "username", label: "Ordered by", type: ContentType.String }
   ];
 
-  const cancelJob = async (jobId: string) => {
+  const cancel = async (jobId: string) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    JobService.cancelJob(jobId);
+    dispatchOperation({ type: OperationType.HideModal });
+    let currentlyCancellingJobs = cancellingJobs;
+    currentlyCancellingJobs.push(jobId);
+    setCancellingJobs(currentlyCancellingJobs);
+    await JobService.cancelJob(jobId); 
+  };
+
+  const onClickCancel = async (jobId: string) => {
+    const confirmation = (
+      <ConfirmModal
+        heading={"Cancel job?"}
+        content={<span>Do you like to cancel running job?</span>}
+        onConfirm={() => {
+          cancel(jobId);
+        }}
+        confirmColor={"danger"}
+        confirmText={"Yes"}
+        cancelText={"No"}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
   };
 
   const jobInfoRows = useMemo(
@@ -145,12 +182,14 @@ export const JobsView = (): React.ReactElement => {
                 ? `${Math.round(jobInfo.progress * 100)}%`
                 : jobInfo.status,
             cancel:
-              jobInfo.isCancelable === true && jobInfo.status === "Started" ? (
+              jobInfo.isCancelable === true &&
+              jobInfo.status === JobStatus.Started
+              && getJobStatus(jobInfo,cancellingJobs) !== "Cancelling" ? (
                 <Button
                   key="cancelJob"
                   color="danger"
                   variant="table_icon"
-                  onClick={() => cancelJob(jobInfo.id)}
+                  onClick={() => onClickCancel(jobInfo.id)}
                 >
                   <Icon name="clear" size={18} />
                 </Button>

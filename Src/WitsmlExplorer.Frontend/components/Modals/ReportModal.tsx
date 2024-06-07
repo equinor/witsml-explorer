@@ -26,6 +26,7 @@ import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
+import ConfirmModal from "./ConfirmModal";
 
 export interface ReportModal {
   report?: BaseReport;
@@ -85,9 +86,31 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     [report]
   );
 
-  const onCancelButtonClick = () => {
-    JobService.cancelJob(jobId);
+  const cancel = async (jobId: string) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
+    await JobService.cancelJob(jobId);
+    dispatchOperation({ type: OperationType.HideModal });
+  };
+
+  const onClickCancel = async () => {
+    const confirmation = (
+      <ConfirmModal
+        heading={"Cancel job?"}
+        content={<span>Do you like to cancel running job?</span>}
+        onConfirm={() => {
+          cancel(jobId);
+        }}
+        confirmColor={"danger"}
+        confirmText={"Yes"}
+        cancelText={"No"}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
   };
 
   return (
@@ -173,7 +196,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         </ContentLayout>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
-      onCancel={() => onCancelButtonClick()}
+      onCancel={() => onClickCancel()}
       isLoading={false}
     />
   );
