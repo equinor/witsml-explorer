@@ -1,17 +1,37 @@
 version: '3.7'
 services:
+
+  mongo: # Remove this if you are not using mongodb.
+    image: mongo:4.4.1
+    container_name: witsmlexplorer-mongodb
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=<username> # Configure this
+      - MONGO_INITDB_ROOT_PASSWORD=<password> # Configure this
+
   api:
     image: witsmlexplorer-api:latest
+    restart: unless-stopped
     container_name: witsmlexplorer-api
     volumes:
       - ./config.json:/app/config.json:ro #May be changed
+    depends_on: # Remove this if you are not using mongodb.
+      - mongo
+    links: # Remove this if you are not using mongodb.
+      - mongo:mongo
 
   web:
     image: witsmlexplorer-frontend:latest
+    restart: unless-stopped
     container_name: witsmlexplorer-frontend
 
   nginx:
     image: nginx:1.21-alpine
+    restart: unless-stopped
     container_name: witsmlexplorer-nginx
     ports:
       - 80:80
