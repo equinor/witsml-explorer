@@ -22,7 +22,7 @@ The volume `/etc/nginx` requires both an [`nginx.conf`](nginx.conf) file, and a 
 
 ## Build docker images
 
-Follow [Run locally with docker](../README.md#build-frontend-and-backend-images) to build the docker images. You can either clone the application and build the images locally on the server, or create a workflow to build the images and then push them to a container registry. Make sure you use the same name in the building process and in docker-compose.yml.
+Follow [Run locally with docker](../README.md#build-api-and-frontend-images) to build the docker images. You can either clone the application and build the images locally on the server, or create a workflow to build the images and then push them to a container registry. Make sure you use the same name in the building process and in docker-compose.yml.
 
 ## Start docker containers
 
