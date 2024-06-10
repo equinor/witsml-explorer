@@ -141,7 +141,7 @@ export const JobsView = (): React.ReactElement => {
   const cancel = async (jobId: string) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
-    let currentlyCancellingJobs = cancellingJobs;
+    const currentlyCancellingJobs = cancellingJobs;
     currentlyCancellingJobs.push(jobId);
     setCancellingJobs(currentlyCancellingJobs);
     await JobService.cancelJob(jobId);
