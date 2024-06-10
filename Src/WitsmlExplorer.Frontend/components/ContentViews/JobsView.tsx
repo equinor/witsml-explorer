@@ -144,7 +144,7 @@ export const JobsView = (): React.ReactElement => {
     let currentlyCancellingJobs = cancellingJobs;
     currentlyCancellingJobs.push(jobId);
     setCancellingJobs(currentlyCancellingJobs);
-    await JobService.cancelJob(jobId); 
+    await JobService.cancelJob(jobId);
   };
 
   const onClickCancel = async (jobId: string) => {
@@ -177,14 +177,11 @@ export const JobsView = (): React.ReactElement => {
             wellName: jobInfo.wellName,
             wellboreName: jobInfo.wellboreName,
             objectName: jobInfo.objectName,
-            status:
-              jobInfo.progress && jobInfo.status === JobStatus.Started
-                ? `${Math.round(jobInfo.progress * 100)}%`
-                : jobInfo.status,
+            status: getJobStatus(jobInfo, cancellingJobs),
             cancel:
               jobInfo.isCancelable === true &&
-              jobInfo.status === JobStatus.Started
-              && getJobStatus(jobInfo,cancellingJobs) !== "Cancelling" ? (
+              jobInfo.status === JobStatus.Started &&
+              getJobStatus(jobInfo, cancellingJobs) !== "Cancelling" ? (
                 <Button
                   key="cancelJob"
                   color="danger"
