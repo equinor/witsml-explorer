@@ -25,6 +25,7 @@ interface ModalDialogProps {
   showConfirmButton?: boolean;
   showCancelButton?: boolean;
   buttonPosition?: ControlButtonPosition;
+  cancelText?: string;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -42,7 +43,8 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     width = ModalWidth.MEDIUM,
     showConfirmButton = true,
     showCancelButton = true,
-    buttonPosition: ButtonPosition = ControlButtonPosition.BOTTOM
+    buttonPosition: ButtonPosition = ControlButtonPosition.BOTTOM,
+    cancelText
   } = props;
   const context = React.useContext(OperationContext);
   const [confirmButtonIsFocused, setConfirmButtonIsFocused] =
@@ -101,7 +103,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
         color={confirmColor ?? "primary"}
         variant="outlined"
       >
-        Cancel
+        {cancelText ?? "Cancel"}
       </StyledButton>
     ) : (
       <></>
