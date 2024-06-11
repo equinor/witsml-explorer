@@ -20,7 +20,7 @@ const ConfirmModal = (props: ConfirmProps): React.ReactElement => {
       onSubmit={props.onConfirm}
       isLoading={false}
       confirmText={props.confirmText ?? "Yes"}
-      cancelText={props.cancelText ?? null}
+      cancelText={props.cancelText}
       confirmColor={props.confirmColor}
       switchButtonPlaces={props.switchButtonPlaces}
       showCancelButton={props.showCancelButton}

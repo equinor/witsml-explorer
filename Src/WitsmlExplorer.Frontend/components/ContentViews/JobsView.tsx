@@ -75,7 +75,7 @@ export const JobsView = (): React.ReactElement => {
   const onClickCancel = async (jobId: string) => {
     const confirmation = (
       <ConfirmModal
-        heading={"Confirm job cancellation?"}
+        heading={"Confirm job cancellation"}
         content={
           <Typography>Do you really want to cancel this job?</Typography>
         }
