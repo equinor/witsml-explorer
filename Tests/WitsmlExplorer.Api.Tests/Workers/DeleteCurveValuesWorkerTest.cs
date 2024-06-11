@@ -116,6 +116,24 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
+        public async Task SingleIndexRangeDecreasing_ShouldRunSingleDeleteQuery()
+        {
+            SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(100), new DepthIndex(10), WitsmlLog.WITSML_DIRECTION_DECREASING);
+            DeleteCurveValuesJob job = CreateJobTemplate() with
+            {
+                IndexRanges = new List<IndexRange>
+                {
+                    new() {StartIndex = "20", EndIndex = "10"},
+                }
+            };
+            (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
+
+            _witsmlClient.Verify(client => client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly)), Times.Once);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.Is<WitsmlLogs>(logs => logs.Logs.First().StartIndex.Value == "20" && logs.Logs.First().EndIndex.Value == "10")), Times.Once());
+            Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
         public async Task TwoIndexRanges_ShouldRunTwoDeleteQueries_DepthIndexed()
         {
             SetupLog(WitsmlLog.WITSML_INDEX_TYPE_MD, new DepthIndex(10), new DepthIndex(100));
@@ -216,11 +234,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
 
-        private void SetupLog(string indexType, Index startIndex, Index endIndex)
+        private void SetupLog(string indexType, Index startIndex, Index endIndex, string direction = null)
         {
             _witsmlClient.Setup(client =>
                     client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly)))
-                .ReturnsAsync(GetLogs(indexType, startIndex, endIndex));
+                .ReturnsAsync(GetLogs(indexType, startIndex, endIndex, direction));
 
             _witsmlClient.Setup(client =>
                     client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid != LogUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly)))
@@ -231,7 +249,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .ReturnsAsync(new QueryResult(true));
         }
 
-        private static WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex)
+        private static WitsmlLogs GetLogs(string indexType, Index startIndex, Index endIndex, string direction)
         {
             WitsmlLog witsmlLog = new()
             {
@@ -239,6 +257,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 UidWellbore = WellboreUid,
                 Uid = LogUid,
                 IndexType = indexType,
+                Direction = direction,
                 LogCurveInfo = new List<WitsmlLogCurveInfo>
                 {
                     new() {Mnemonic = "DEPTH"},

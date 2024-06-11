@@ -1,11 +1,18 @@
 ﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog from "components/Modals/ModalDialog";
+import WarningBar from "components/WarningBar";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { ComponentType } from "models/componentType";
+import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
 import ObjectReference from "models/jobs/objectReference";
+import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
 import React, { useCallback, useContext, useState } from "react";
@@ -31,10 +38,19 @@ const LogDataImportModal = (
   props: LogDataImportModalProps
 ): React.ReactElement => {
   const { targetLog } = props;
+  const { connectedServer } = useConnectedServer();
   const {
     dispatchOperation,
     operationState: { colors }
   } = useContext(OperationContext);
+  const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
+    useGetComponents(
+      connectedServer,
+      targetLog.wellUid,
+      targetLog.wellboreUid,
+      targetLog.uid,
+      ComponentType.Mnemonic
+    );
   const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
   const [uploadedFileColumns, setUploadedFileColumns] = useState<
@@ -43,6 +59,12 @@ const LogDataImportModal = (
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const separator = ",";
+  const hasOverlap = checkOverlap(
+    targetLog,
+    uploadedFileColumns,
+    uploadedFileData,
+    logCurveInfoList
+  );
 
   const validate = (fileColumns: ImportColumn[]) => {
     setError("");
@@ -157,9 +179,12 @@ const LogDataImportModal = (
                   </Accordion.Panel>
                 </Accordion.Item>
               </Accordion>
+              {hasOverlap && (
+                <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
+              )}
             </Container>
           }
-          confirmDisabled={!uploadedFile || !!error}
+          confirmDisabled={!uploadedFile || !!error || isFetchingLogCurveInfo}
           confirmText={"Import"}
           onSubmit={() => onSubmit()}
           isLoading={isLoading}
@@ -185,5 +210,98 @@ const Container = styled.div`
   flex-direction: column;
   gap: 1.5rem;
 `;
+
+const checkOverlap = (
+  targetLog: LogObject,
+  uploadedFileColumns: ImportColumn[],
+  uploadedFileData: string[],
+  logCurveInfoList: LogCurveInfo[]
+) => {
+  if (!uploadedFileColumns || !uploadedFileData || !logCurveInfoList)
+    return false;
+  const importDataRanges = getDataRanges(
+    targetLog,
+    uploadedFileColumns,
+    uploadedFileData
+  );
+
+  for (let index = 1; index < uploadedFileColumns.length; index++) {
+    const mnemonic = uploadedFileColumns[index].name;
+    const logCurveInfo = logCurveInfoList.find(
+      (lci) => lci.mnemonic === mnemonic
+    );
+    const importDataRange = importDataRanges[index];
+    if (logCurveInfo && importDataRange.startIndex) {
+      if (targetLog.indexType === WITSML_INDEX_TYPE_MD) {
+        if (
+          Math.max(
+            parseFloat(importDataRange.startIndex),
+            parseFloat(logCurveInfo.minDepthIndex)
+          ) <=
+          Math.min(
+            parseFloat(importDataRange.endIndex),
+            parseFloat(logCurveInfo.maxDepthIndex)
+          )
+        ) {
+          return true;
+        }
+      } else {
+        if (
+          Math.max(
+            new Date(importDataRange.startIndex).valueOf(),
+            new Date(logCurveInfo.minDateTimeIndex).valueOf()
+          ) <=
+          Math.min(
+            new Date(importDataRange.endIndex).valueOf(),
+            new Date(logCurveInfo.maxDateTimeIndex).valueOf()
+          )
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+};
+
+const getDataRanges = (
+  targetLog: LogObject,
+  uploadedFileColumns: ImportColumn[],
+  uploadedFileData: string[]
+): IndexRange[] => {
+  const dataRanges: IndexRange[] = [];
+
+  for (let index = 0; index < uploadedFileColumns.length; index++) {
+    const firstRowWithData = uploadedFileData.find((dataRow) => {
+      const data = dataRow.split(",")[index];
+      if (data) return true;
+    });
+
+    const lastRowWithData = uploadedFileData.findLast((dataRow) => {
+      const data = dataRow.split(",")[index];
+      if (data) return true;
+    });
+
+    const firstRowWithDataIndex = firstRowWithData?.split(",")[0];
+    const lastRowWithDataIndex = lastRowWithData?.split(",")[0];
+
+    if (
+      targetLog.indexType === WITSML_INDEX_TYPE_MD &&
+      parseFloat(firstRowWithDataIndex) > parseFloat(lastRowWithDataIndex)
+    ) {
+      dataRanges.push({
+        startIndex: lastRowWithDataIndex,
+        endIndex: firstRowWithDataIndex
+      });
+    } else {
+      dataRanges.push({
+        startIndex: firstRowWithDataIndex,
+        endIndex: lastRowWithDataIndex
+      });
+    }
+  }
+
+  return dataRanges;
+};
 
 export default LogDataImportModal;

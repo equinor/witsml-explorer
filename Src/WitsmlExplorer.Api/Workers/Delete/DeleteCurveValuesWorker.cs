@@ -76,10 +76,26 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         private static ICollection<WitsmlLogs> CreateDeleteQueries(DeleteCurveValuesJob job, WitsmlLog witsmlLog, List<WitsmlLogCurveInfo> logCurveInfos)
         {
-            return job.IndexRanges.ToList().Select(range => (Index.Start(witsmlLog, range.StartIndex), Index.End(witsmlLog, range.EndIndex)))
-                .Where(range => range.Item1 >= Index.Start(witsmlLog) && range.Item2 <= Index.End(witsmlLog))
-                .Select(range => LogQueries.DeleteLogCurveContent(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, witsmlLog.IndexType,
-                    logCurveInfos, range.Item1, range.Item2)).ToList();
+            var isDecreasing = witsmlLog.Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
+            Index logStart = Index.Start(witsmlLog);
+            Index logEnd = Index.End(witsmlLog);
+            return job.IndexRanges
+                .Select(range => (
+                    Start: Index.Start(witsmlLog, range.StartIndex),
+                    End: Index.End(witsmlLog, range.EndIndex)
+                ))
+                .Where(range => isDecreasing
+                    ? range.Start <= logStart && range.End >= logEnd
+                    : range.Start >= logStart && range.End <= logEnd)
+                .Select(range => LogQueries.DeleteLogCurveContent(
+                    job.LogReference.WellUid,
+                    job.LogReference.WellboreUid,
+                    job.LogReference.Uid,
+                    witsmlLog.IndexType,
+                    logCurveInfos,
+                    range.Start,
+                    range.End))
+                .ToList();
         }
     }
 }
