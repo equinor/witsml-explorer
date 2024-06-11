@@ -1,5 +1,15 @@
+import OperationContext from "contexts/operationContext";
+import { ReactElement, useContext } from "react";
 import { createGlobalStyle } from "styled-components";
 import { Colors } from "styles/Colors";
+
+export const GlobalStylesWrapper = (): ReactElement => {
+  const {
+    operationState: { colors }
+  } = useContext(OperationContext);
+
+  return <GlobalStyles colors={colors} />;
+};
 
 const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
 *,
