@@ -5,7 +5,7 @@ import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
 
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 
@@ -128,10 +128,6 @@ export default function MultiLogsCurveInfoListView() {
     });
   };
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Logs.`} />;
-  }
-
   const panelElements = [
     <CommonPanelContainer key="hideEmptyMnemonics">
       <Switch
@@ -155,38 +151,40 @@ export default function MultiLogsCurveInfoListView() {
   ];
 
   return (
-    logObjects &&
-    logCurveInfoList && (
-      <ContentTable
-        viewId={
-          isDepthIndex
-            ? "depthLogCurveInfoListView"
-            : "timeLogCurveInfoListView"
-        }
-        panelElements={panelElements}
-        columns={getColumns(
-          isDepthIndex,
-          showOnlyPrioritizedCurves,
-          prioritizedCurves,
-          logObjects,
-          hideEmptyMnemonics
-        )}
-        data={getTableData(
-          allLogs,
-          logCurveInfoList,
-          logObjects,
-          timeZone,
-          dateTimeFormat,
-          curveThreshold,
-          isDepthIndex
-        )}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        downloadToCsvFileName={`LogCurveInfo_${logsSearchParams
-          .replace("[", "")
-          .replace("]", "")}`}
-      />
-    )
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Logs." />}
+      {logObjects && logCurveInfoList && (
+        <ContentTable
+          viewId={
+            isDepthIndex
+              ? "depthLogCurveInfoListView"
+              : "timeLogCurveInfoListView"
+          }
+          panelElements={panelElements}
+          columns={getColumns(
+            isDepthIndex,
+            showOnlyPrioritizedCurves,
+            prioritizedCurves,
+            logObjects,
+            hideEmptyMnemonics
+          )}
+          data={getTableData(
+            allLogs,
+            logCurveInfoList,
+            logObjects,
+            timeZone,
+            dateTimeFormat,
+            curveThreshold,
+            isDepthIndex
+          )}
+          onContextMenu={onContextMenu}
+          checkableRows
+          showRefresh
+          downloadToCsvFileName={`LogCurveInfo_${logsSearchParams
+            .replace("[", "")
+            .replace("]", "")}`}
+        />
+      )}
+    </>
   );
 }

@@ -73,7 +73,7 @@ export default function TubularsListView() {
     navigate(encodeURIComponent(tubular.uid));
   };
 
-  const tubularRows = tubulars.map((tubular) => {
+  const tubularRows = tubulars?.map((tubular) => {
     return {
       ...tubular,
       dTimCreation: formatDateString(

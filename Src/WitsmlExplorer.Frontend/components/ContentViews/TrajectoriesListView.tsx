@@ -105,7 +105,7 @@ export default function TrajectoriesListView() {
     navigate(encodeURIComponent(trajectory.uid));
   };
 
-  const trajectoryRows = trajectories.map((trajectory) => {
+  const trajectoryRows = trajectories?.map((trajectory) => {
     return {
       ...trajectory,
       ...trajectory.commonData,

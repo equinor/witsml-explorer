@@ -41,7 +41,7 @@ export default function WbGeometriesListView() {
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const getTableData = () => {
-    return wbGeometries.map((wbGeometry) => {
+    return wbGeometries?.map((wbGeometry) => {
       return {
         ...wbGeometry,
         mdBottom: measureToString(wbGeometry.mdBottom),

@@ -8,7 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
   GeologyIntervalContextMenuProps
 } from "components/ContextMenus/GeologyIntervalContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
@@ -138,25 +138,24 @@ export default function MudLogView() {
     }
   );
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching MudLog.`} />;
-  }
-
   if (isFetchedMudLog && !mudLog) {
     return <ItemNotFound itemType={ObjectType.MudLog} />;
   }
 
   return (
-    <ContentTable
-      viewId="mudLogView"
-      columns={columns}
-      data={geologyIntervalRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      insetColumns={insetColumns}
-      showRefresh
-      downloadToCsvFileName={`MudLog_${mudLog?.name}`}
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching MudLog." />}
+      <ContentTable
+        viewId="mudLogView"
+        columns={columns}
+        data={geologyIntervalRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        insetColumns={insetColumns}
+        showRefresh
+        downloadToCsvFileName={`MudLog_${mudLog?.name}`}
+      />
+    </>
   );
 }
 
