@@ -86,24 +86,25 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     [report]
   );
 
-  const cancel = async (jobId: string) => {
+  const cancelJob = async (jobId: string) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     await JobService.cancelJob(jobId);
-    dispatchOperation({ type: OperationType.HideModal });
   };
 
   const onClickCancel = async () => {
     const confirmation = (
       <ConfirmModal
-        heading={"Cancel job?"}
-        content={<span>Do you like to cancel running job?</span>}
+        heading={"Confirm job cancellation?"}
+        content={
+          <Typography>Do you really want to cancel this job?</Typography>
+        }
         onConfirm={() => {
-          cancel(jobId);
+          cancelJob(jobId);
         }}
         confirmColor={"danger"}
         confirmText={"Yes"}
-        cancelText={"No"}
+        cancelText="{No}"
         switchButtonPlaces={true}
       />
     );

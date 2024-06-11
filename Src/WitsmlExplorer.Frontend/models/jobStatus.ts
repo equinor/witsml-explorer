@@ -2,8 +2,7 @@ enum JobStatus {
   Started = "Started",
   Finished = "Finished",
   Failed = "Failed",
-  Cancelled = "Cancelled",
-  Cancelling = "Cancelling"
+  Cancelled = "Cancelled"
 }
 
 export default JobStatus;

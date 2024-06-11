@@ -97,8 +97,7 @@ namespace WitsmlExplorer.Api.Jobs
         Started,
         Finished,
         Failed,
-        Cancelled,
-        Cancelling
+        Cancelled
     }
 
     public enum ReportType

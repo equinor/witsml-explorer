@@ -72,6 +72,27 @@ export const JobsView = (): React.ReactElement => {
     });
   };
 
+  const onClickCancel = async (jobId: string) => {
+    const confirmation = (
+      <ConfirmModal
+        heading={"Confirm job cancellation?"}
+        content={
+          <Typography>Do you really want to cancel this job?</Typography>
+        }
+        onConfirm={() => {
+          cancelJob(jobId);
+        }}
+        confirmColor={"danger"}
+        confirmText={"Yes"}
+        cancelText={"No"}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
+  };
   const onClickReport = async (jobId: string) => {
     const report = await JobService.getReport(jobId);
     if (report.downloadImmediately === true) {
@@ -138,33 +159,11 @@ export const JobsView = (): React.ReactElement => {
     { property: "username", label: "Ordered by", type: ContentType.String }
   ];
 
-  const cancel = async (jobId: string) => {
+  const cancelJob = async (jobId: string) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
-    const currentlyCancellingJobs = cancellingJobs;
-    currentlyCancellingJobs.push(jobId);
-    setCancellingJobs(currentlyCancellingJobs);
+    setCancellingJobs((jobs) => [...jobs, jobId]);
     await JobService.cancelJob(jobId);
-  };
-
-  const onClickCancel = async (jobId: string) => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Cancel job?"}
-        content={<span>Do you like to cancel running job?</span>}
-        onConfirm={() => {
-          cancel(jobId);
-        }}
-        confirmColor={"danger"}
-        confirmText={"Yes"}
-        cancelText={"No"}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: confirmation
-    });
   };
 
   const jobInfoRows = useMemo(
@@ -181,7 +180,7 @@ export const JobsView = (): React.ReactElement => {
             cancel:
               jobInfo.isCancelable === true &&
               jobInfo.status === JobStatus.Started &&
-              getJobStatus(jobInfo, cancellingJobs) !== "Cancelling" ? (
+              !cancellingJobs.includes(jobInfo.id) ? (
                 <Button
                   key="cancelJob"
                   color="danger"
