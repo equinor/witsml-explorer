@@ -120,6 +120,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
       showCancelButton={!fetchedReport && isCancelable}
+      cancelText="Cancel job"
       content={
         <ContentLayout>
           {report ? (
