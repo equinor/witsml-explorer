@@ -8,17 +8,17 @@ import ProgressSpinner from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
@@ -34,8 +34,8 @@ export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  } = useOperationState();
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();

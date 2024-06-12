@@ -45,11 +45,11 @@ import {
   ContentTableColumn,
   ContentTableProps
 } from "components/ContentViews/table/tableParts";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
+import { useOperationState } from "hooks/useOperationState";
 import { indexToNumber } from "models/logObject";
 import * as React from "react";
-import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
@@ -83,7 +83,7 @@ export const ContentTable = React.memo(
     } = contentTableProps;
     const {
       operationState: { colors, theme }
-    } = useContext(OperationContext);
+    } = useOperationState();
     const [previousIndex, setPreviousIndex] = useState<number>(null);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>(
       Object.assign(

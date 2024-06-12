@@ -9,19 +9,19 @@ import { EmptyTreeItem } from "components/Sidebar/EmptyTreeItem";
 import TreeItem from "components/Sidebar/TreeItem";
 import WellboreItem from "components/Sidebar/WellboreItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useSidebar } from "contexts/sidebarContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbores } from "hooks/query/useGetWellbores";
+import { useOperationState } from "hooks/useOperationState";
 import { useWellboreFilter } from "hooks/useWellboreFilter";
 import Well from "models/well";
 import Wellbore, {
   calculateWellNodeId,
   calculateWellboreNodeId
 } from "models/wellbore";
-import React, { MouseEvent, useContext } from "react";
+import React, { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
 
@@ -30,7 +30,7 @@ interface WellItemProps {
 }
 
 export default function WellItem({ wellUid }: WellItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
   const { wellUid: urlWellUid, wellboreUid: urlWellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();

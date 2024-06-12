@@ -4,7 +4,6 @@ import ModalDialog from "components/Modals/ModalDialog";
 import { StyledNativeSelect } from "components/Select";
 import { Button } from "components/StyledComponents/Button";
 import { Checkbox } from "components/StyledComponents/Checkbox";
-import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,
   DecimalPreference,
@@ -12,8 +11,9 @@ import {
   UserTheme
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { getAccountInfo, msalEnabled, signOut } from "msal/MsalAuthProvider";
-import React, { CSSProperties, ChangeEvent, useContext, useState } from "react";
+import React, { CSSProperties, ChangeEvent, useState } from "react";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { dark, light } from "styles/Colors";
@@ -54,7 +54,7 @@ const SettingsModal = (): React.ReactElement => {
       hotKeysEnabled
     },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [checkedDecimalPreference, setCheckedDecimalPreference] =
     useState<string>(() => {
       return decimals === DecimalPreference.Raw

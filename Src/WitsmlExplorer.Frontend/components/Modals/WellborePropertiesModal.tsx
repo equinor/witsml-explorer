@@ -4,12 +4,12 @@ import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
 import { invalidStringInput } from "components/Modals/PropertiesModalUtils";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import MaxLength from "models/maxLength";
 import Wellbore, { wellboreHasChanges } from "models/wellbore";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
@@ -35,7 +35,7 @@ const WellborePropertiesModal = (
   const { mode, wellbore, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableWellbore, setEditableWellbore] = useState<Wellbore>(null);
   const [pristineWellbore, setPristineWellbore] = useState<Wellbore>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

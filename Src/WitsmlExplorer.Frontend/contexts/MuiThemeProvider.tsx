@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@mui/material";
-import OperationContext from "contexts/operationContext";
-import { ReactElement, ReactNode, useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { ReactElement, ReactNode } from "react";
 import { getTheme } from "styles/material-eds";
 
 interface MuiThemeProviderProps {
@@ -12,7 +12,7 @@ export const MuiThemeProvider = ({
 }: MuiThemeProviderProps): ReactElement => {
   const {
     operationState: { theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   return <ThemeProvider theme={getTheme(theme)}>{children}</ThemeProvider>;
 };

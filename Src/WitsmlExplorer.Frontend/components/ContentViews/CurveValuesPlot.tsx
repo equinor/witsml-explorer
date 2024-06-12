@@ -4,10 +4,10 @@ import {
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import { ContentViewDimensionsContext } from "components/PageLayout";
-import OperationContext from "contexts/operationContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
+import { useOperationState } from "hooks/useOperationState";
 import { CurveSpecification } from "models/logData";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -46,7 +46,7 @@ export const CurveValuesPlot = React.memo(
     );
     const {
       operationState: { colors, dateTimeFormat }
-    } = useContext(OperationContext);
+    } = useOperationState();
     const chart = useRef<ECharts>(null);
     const selectedLabels = useRef<Record<string, boolean>>(null);
     const scrollIndex = useRef<number>(0);

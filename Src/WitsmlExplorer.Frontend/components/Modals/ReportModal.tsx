@@ -16,10 +16,10 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { generateReport } from "components/ReportCreationHelper";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
 import { useLiveJobProgress } from "hooks/useLiveJobProgress";
+import { useOperationState } from "hooks/useOperationState";
 import BaseReport, { createReport } from "models/reports/BaseReport";
 import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
@@ -49,7 +49,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   const {
     dispatchOperation,
     operationState: { colors }
-  } = React.useContext(OperationContext);
+  } = useOperationState();
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
   const jobProgress = useLiveJobProgress(jobId);

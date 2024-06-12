@@ -10,14 +10,14 @@ import {
 import formatDateString from "components/DateFormatter";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
@@ -34,7 +34,7 @@ interface CurveValueRow extends LogDataRow, ContentTableRow {}
 export const MultiLogCurveValuesView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const mnemonicsSearchParams = searchParams.get("mnemonics");

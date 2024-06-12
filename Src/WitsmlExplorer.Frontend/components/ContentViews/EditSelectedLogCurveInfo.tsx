@@ -11,17 +11,16 @@ import formatDateString, {
 } from "components/DateFormatter";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetMnemonics } from "hooks/useGetMnemonics";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import {
   CSSProperties,
   ChangeEvent,
   Dispatch,
   SetStateAction,
-  useContext,
   useEffect,
   useState
 } from "react";
@@ -49,7 +48,7 @@ const EditSelectedLogCurveInfo = (
 ): React.ReactElement => {
   const { disabled, overrideStartIndex, overrideEndIndex, onClickRefresh } =
     props;
-  const { operationState } = useContext(OperationContext);
+  const { operationState } = useOperationState();
   const { theme, colors, timeZone } = operationState;
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const isTimeLog = logType === RouterLogType.TIME;

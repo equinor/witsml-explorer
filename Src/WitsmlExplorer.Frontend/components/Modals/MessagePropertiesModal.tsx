@@ -2,12 +2,12 @@ import { TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import MessageObject from "models/messageObject";
 import { ObjectType } from "models/objectType";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface MessagePropertiesModalProps {
@@ -22,7 +22,7 @@ const MessagePropertiesModal = (
   const { mode, messageObject, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableMessageObject, setEditableMessageObject] =
     useState<MessageObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

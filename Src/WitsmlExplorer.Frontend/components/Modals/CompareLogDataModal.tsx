@@ -3,11 +3,11 @@ import ModalDialog, {
   ModalWidth
 } from "components/Modals/ModalDialog";
 import { Checkbox } from "components/StyledComponents/Checkbox";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { Server } from "models/server";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 
@@ -30,7 +30,7 @@ export default function CompareLogDataModal({
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [checkedCompareAllLogIndexes, setCheckedCompareAllLogIndexes] =
     useState(false);
   const onSubmit = async () => {

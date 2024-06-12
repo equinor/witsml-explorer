@@ -14,14 +14,14 @@ import {
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import GeologyIntervalPropertiesModal from "components/Modals/GeologyIntervalPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import GeologyInterval from "models/geologyInterval";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import MudLog from "models/mudLog";
-import React, { useContext } from "react";
+import React from "react";
 import { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
@@ -34,7 +34,7 @@ const GeologyIntervalContextMenu = (
   props: GeologyIntervalContextMenuProps
 ): React.ReactElement => {
   const { checkedGeologyIntervals, mudLog } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(

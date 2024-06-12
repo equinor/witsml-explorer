@@ -2,8 +2,8 @@ import { Accordion, TextField, Typography } from "@equinor/eds-core-react";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { validText } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import SpliceLogsJob from "models/jobs/spliceLogsJob";
 import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
@@ -12,7 +12,6 @@ import {
   ChangeEvent,
   DragEvent,
   ReactElement,
-  useContext,
   useEffect,
   useState
 } from "react";
@@ -32,7 +31,7 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [draggedId, setDraggedId] = useState(null);
   const [draggedOverId, setDraggedOverId] = useState(null);
   const [orderedLogs, setOrderedLogs] = useState<LogObject[]>([]);

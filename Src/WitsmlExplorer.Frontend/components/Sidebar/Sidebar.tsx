@@ -9,14 +9,14 @@ import ProgressSpinner from "components/ProgressSpinner";
 import SearchFilter from "components/Sidebar/SearchFilter";
 import WellItem from "components/Sidebar/WellItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useSidebar } from "contexts/sidebarContext";
 import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
+import { useOperationState } from "hooks/useOperationState";
 import { useWellFilter } from "hooks/useWellFilter";
 import Well from "models/well";
-import { Fragment, useContext, useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
@@ -30,7 +30,7 @@ export default function Sidebar() {
   const isDeepLink = useRef<boolean>(!!wellUid);
   const {
     operationState: { colors, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const isCompactMode = theme === UserTheme.Compact;
   const filteredWells = useWellFilter(wells);
   const containerRef = useRef<HTMLDivElement>(null);

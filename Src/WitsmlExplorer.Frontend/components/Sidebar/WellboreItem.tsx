@@ -26,14 +26,14 @@ import WellboreContextMenu, {
 import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import Wellbore from "models/wellbore";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
@@ -55,11 +55,11 @@ export default function WellboreItem({
   const {
     dispatchOperation,
     operationState: { theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const isCompactMode = theme === UserTheme.Compact;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { wellbore, isFetching } = useGetWellbore(
     connectedServer,

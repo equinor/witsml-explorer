@@ -7,14 +7,14 @@ import ModalDialog, {
 import { Banner } from "components/StyledComponents/Banner";
 import { Button } from "components/StyledComponents/Button";
 import { Checkbox } from "components/StyledComponents/Checkbox";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import MaxLength from "models/maxLength";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import ObjectService from "services/objectService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
@@ -43,7 +43,7 @@ const ObjectPickerModal = ({
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [targetServer, setTargetServer] = useState<Server>();
   const [wellUid, setWellUid] = useState<string>(sourceObject.wellUid);
   const [wellboreUid, setWellboreUid] = useState<string>(

@@ -9,13 +9,13 @@ import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems"
 import RigContextMenu from "components/ContextMenus/RigContextMenu";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 
 export interface RigRow extends ContentTableRow, Rig {
@@ -26,7 +26,7 @@ export default function RigsListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { objects: rigs } = useGetObjects(

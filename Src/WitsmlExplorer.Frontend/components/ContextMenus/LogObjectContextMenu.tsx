@@ -37,11 +37,11 @@ import { ReportModal } from "components/Modals/ReportModal";
 import SpliceLogsModal from "components/Modals/SpliceLogsModal";
 import TrimLogObjectModal from "components/Modals/TrimLogObject/TrimLogObjectModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
 import CompareLogDataJob from "models/jobs/compareLogData";
@@ -50,7 +50,7 @@ import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import React, { useContext } from "react";
+import React from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
@@ -69,7 +69,7 @@ const LogObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);

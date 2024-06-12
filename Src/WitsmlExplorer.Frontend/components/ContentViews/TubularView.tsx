@@ -10,15 +10,15 @@ import TubularComponentContextMenu, {
 } from "components/ContextMenus/TubularComponentContextMenu";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { ObjectType } from "models/objectType";
 import TubularComponent from "models/tubularComponent";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 
@@ -35,7 +35,7 @@ export interface TubularComponentRow extends ContentTableRow {
 }
 
 export default function TubularView() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { object: tubular, isFetched: isFetchedTubular } = useGetObject(

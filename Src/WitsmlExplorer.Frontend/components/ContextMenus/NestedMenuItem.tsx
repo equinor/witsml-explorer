@@ -2,13 +2,8 @@ import { Icon, Typography } from "@equinor/eds-core-react";
 import MenuItem, { MenuItemProps } from "@mui/material/MenuItem";
 import { StyledMenu } from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
-import OperationContext from "contexts/operationContext";
-import React, {
-  useContext,
-  useImperativeHandle,
-  useRef,
-  useState
-} from "react";
+import { useOperationState } from "hooks/useOperationState";
+import React, { useImperativeHandle, useRef, useState } from "react";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
   label: string;
@@ -31,7 +26,7 @@ const NestedMenuItem = React.forwardRef<
   } = props;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp;
 

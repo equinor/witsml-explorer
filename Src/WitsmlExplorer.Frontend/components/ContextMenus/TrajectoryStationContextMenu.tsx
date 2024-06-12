@@ -17,15 +17,15 @@ import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import TrajectoryStationPropertiesModal from "components/Modals/TrajectoryStationPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Trajectory from "models/trajectory";
-import React, { useContext } from "react";
+import React from "react";
 import { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
@@ -38,7 +38,7 @@ const TrajectoryStationContextMenu = (
   props: TrajectoryStationContextMenuProps
 ): React.ReactElement => {
   const { checkedTrajectoryStations, trajectory } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(

@@ -1,10 +1,10 @@
 import { Breadcrumbs as EdsBreadcrumbs } from "@equinor/eds-core-react";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useGetActiveRoute } from "hooks/useGetActiveRoute";
+import { useOperationState } from "hooks/useOperationState";
 import { capitalize } from "lodash";
 import {
   ObjectType,
@@ -14,7 +14,7 @@ import {
 import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   NavLink,
   NavigateFunction,
@@ -42,7 +42,7 @@ import { v4 as uuid } from "uuid";
 export function Breadcrumbs() {
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
   const {
     isJobsView,

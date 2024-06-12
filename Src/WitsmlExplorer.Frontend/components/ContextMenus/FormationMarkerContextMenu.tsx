@@ -11,20 +11,20 @@ import FormationMarkerPropertiesModal, {
   FormationMarkerPropertiesModalProps
 } from "components/Modals/FormationMarkerPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import FormationMarker from "models/formationMarker";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const FormationMarkerContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();

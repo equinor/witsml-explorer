@@ -30,7 +30,6 @@ import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerM
 import ProgressSpinner from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DispatchOperation, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -38,6 +37,7 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import useExport from "hooks/useExport";
 import { useGetMnemonics } from "hooks/useGetMnemonics";
+import { useOperationState } from "hooks/useOperationState";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
@@ -48,7 +48,6 @@ import { ObjectType } from "models/objectType";
 import React, {
   CSSProperties,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -90,7 +89,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat, colors, theme },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [searchParams, setSearchParams] = useSearchParams();
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");

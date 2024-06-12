@@ -1,23 +1,23 @@
 import { Radio, Typography } from "@equinor/eds-core-react";
 import ModalDialog from "components/Modals/ModalDialog";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { useContext, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { useState } from "react";
 import styled from "styled-components";
-import ObjectReference from "../../models/jobs/objectReference";
+import { ComponentType, getParentType } from "../../models/componentType";
 import ComponentReferences, {
   createComponentReferences
 } from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
-import JobService, { JobType } from "../../services/jobService";
 import { DeleteComponentsJob } from "../../models/jobs/deleteJobs";
+import ObjectReference from "../../models/jobs/objectReference";
 import { ReplaceComponentsJob } from "../../models/jobs/replaceComponentsJob";
-import { ComponentType, getParentType } from "../../models/componentType";
-import ComponentService from "../../services/componentService";
-import { Server } from "../../models/server";
-import ObjectService from "../../services/objectService";
-import AuthorizationService from "../../services/authorizationService";
 import LogObject from "../../models/logObject";
+import { Server } from "../../models/server";
+import AuthorizationService from "../../services/authorizationService";
+import ComponentService from "../../services/componentService";
+import JobService, { JobType } from "../../services/jobService";
+import ObjectService from "../../services/objectService";
 
 enum CopyMnemonicsType {
   DeleteInsert = "deleteInsert",
@@ -45,7 +45,7 @@ const CopyMnemonicsModal = (
     endIndex
   } = props;
 
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
 
   const [selectedCopyMnemonicsType, setCopyMnemonicsType] = useState<string>(
     CopyMnemonicsType.Paste
