@@ -1,5 +1,7 @@
 import "ace-builds/src-noconflict/ace";
 import "ace-builds/src-noconflict/ext-language_tools";
+import "ace-builds/src-noconflict/ext-prompt";
+import "ace-builds/src-noconflict/ext-searchbox";
 import "ace-builds/src-noconflict/mode-xml";
 import "ace-builds/src-noconflict/theme-merbivore";
 import "ace-builds/src-noconflict/theme-xcode";
