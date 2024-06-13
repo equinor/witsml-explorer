@@ -12,10 +12,10 @@ import { QueryEditor } from "components/QueryEditor";
 import { getTag } from "components/QueryEditorUtils";
 import { StyledNativeSelect } from "components/Select";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
+import { useOperationState } from "hooks/useOperationState";
 import React, { ChangeEvent, useContext, useState } from "react";
 import QueryService from "services/queryService";
 import styled from "styled-components";
@@ -26,7 +26,7 @@ const QueryView = (): React.ReactElement => {
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const {
     queryState: { queries, tabIndex },
     dispatchQuery

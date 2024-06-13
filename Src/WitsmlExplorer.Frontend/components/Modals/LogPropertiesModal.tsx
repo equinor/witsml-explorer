@@ -3,12 +3,12 @@ import { WITSML_INDEX_TYPE_DATE_TIME } from "components/Constants";
 import formatDateString from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export enum IndexCurve {
@@ -28,7 +28,7 @@ const LogPropertiesModal = (
   const { mode, logObject, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableLogObject, setEditableLogObject] = useState<LogObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;

@@ -1,12 +1,11 @@
-import { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
 import { Colors } from "../../styles/Colors";
 
 export function ViewNotFound() {
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   return (
     <>
       <Heading colors={colors}>404 Not Found</Heading>

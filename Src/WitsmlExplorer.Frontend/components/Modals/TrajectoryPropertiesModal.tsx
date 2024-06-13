@@ -2,12 +2,12 @@
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import Trajectory, { aziRefValues } from "models/trajectory";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { itemStateTypes } from "../../models/itemStateTypes";
 export interface TrajectoryPropertiesModalProps {
@@ -22,7 +22,7 @@ const TrajectoryPropertiesModal = (
   const { mode, trajectory, dispatchOperation } = props;
   const {
     operationState: { timeZone }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableTrajectory, setEditableTrajectory] =
     useState<Trajectory>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

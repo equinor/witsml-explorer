@@ -23,10 +23,10 @@ import {
   ObjectFilterType,
   filterTypeToProperty
 } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetObjectSearch } from "hooks/query/useGetObjectSearch";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -58,7 +58,7 @@ export interface ObjectSearchRow extends ContentTableRow, ObjectOnWellbore {
 
 export const ObjectSearchListView = (): ReactElement => {
   const { connectedServer } = useConnectedServer();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const [searchParams] = useSearchParams();
   const { filterType } = useParams<{ filterType: ObjectFilterType }>();

@@ -5,12 +5,12 @@ import {
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { calculateObjectNodeId } from "models/wellbore";
-import { ComponentType, MouseEvent, useContext } from "react";
+import { ComponentType, MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 import { getObjectViewPath } from "routes/utils/pathBuilder";
 
@@ -31,7 +31,7 @@ export default function ObjectOnWellboreItem({
   wellUid,
   wellboreUid
 }: ObjectOnWellboreItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const {
     wellUid: urlWellUid,

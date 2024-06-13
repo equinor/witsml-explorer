@@ -5,9 +5,9 @@ import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog from "components/Modals/ModalDialog";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
@@ -15,7 +15,7 @@ import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 
@@ -42,7 +42,7 @@ const LogDataImportModal = (
   const {
     dispatchOperation,
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,

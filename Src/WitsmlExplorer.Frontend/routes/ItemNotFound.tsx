@@ -1,7 +1,6 @@
 import { Typography } from "@equinor/eds-core-react";
-import { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
 import styled from "styled-components";
-import OperationContext from "../contexts/operationContext";
 import { Colors } from "../styles/Colors";
 
 export interface ItemNotFoundProps {
@@ -12,7 +11,7 @@ export function ItemNotFound(props: ItemNotFoundProps) {
   const { itemType } = props;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   return (
     <>
       <Heading colors={colors}>{`${itemType} Not Found`}</Heading>

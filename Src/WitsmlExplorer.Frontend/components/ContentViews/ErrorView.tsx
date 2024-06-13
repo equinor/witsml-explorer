@@ -1,6 +1,5 @@
-import { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
 import { useErrorMessage } from "../../hooks/useErrorMessage";
 import { Colors } from "../../styles/Colors";
 import Icon from "../../styles/Icons";
@@ -9,7 +8,7 @@ export function ErrorView() {
   const errorMessage = useErrorMessage();
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   return (
     <>

@@ -15,14 +15,14 @@ import { useClipboardComponentReferencesOfType } from "components/ContextMenus/U
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import TubularPropertiesModal from "components/Modals/TubularPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { ObjectType } from "models/objectType";
 import Tubular from "models/tubular";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const TubularContextMenu = (
@@ -30,7 +30,7 @@ const TubularContextMenu = (
 ): React.ReactElement => {
   const { checkedObjects } = props;
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
   );

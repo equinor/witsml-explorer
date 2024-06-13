@@ -4,6 +4,7 @@ import {
   CustomSeriesRenderItemAPI,
   CustomSeriesRenderItemParams
 } from "echarts";
+import { useOperationState } from "hooks/useOperationState";
 
 import {
   ReactEChartsProps,
@@ -11,10 +12,9 @@ import {
 } from "components/ContentViews/Charts/ReactLogChart";
 import { ContentTableRow } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
-import OperationContext from "contexts/operationContext";
 import { DateTimeFormat } from "contexts/operationStateReducer";
 import LogObject from "models/logObject";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 
@@ -57,11 +57,11 @@ export const LogsGraph = (props: LogsGraphProps): React.ReactElement => {
   const categories: number[] = [];
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { logs } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { logType } = useParams();
 
   const isTimeIndexed = logType === RouterLogType.TIME;

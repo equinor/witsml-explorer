@@ -1,14 +1,14 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
 import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
-import { useContext, useEffect } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { useEffect } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "../components/Modals/UserCredentialsModal";
 import { useConnectedServer } from "../contexts/connectedServerContext";
-import OperationContext from "../contexts/operationContext";
 import OperationType from "../contexts/operationType";
 import { useGetServers } from "../hooks/query/useGetServers";
 import { Server } from "../models/server";
@@ -19,7 +19,7 @@ import AuthorizationService, {
 } from "../services/authorizationService";
 
 export default function AuthRoute() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const isAuthenticated = !msalEnabled || useIsAuthenticated();
   const { servers } = useGetServers({ enabled: isAuthenticated });
   const { serverUrl } = useParams();

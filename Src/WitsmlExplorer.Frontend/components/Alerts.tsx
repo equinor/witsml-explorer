@@ -2,9 +2,9 @@ import { Icon } from "@equinor/eds-core-react";
 import { Alert, AlertTitle, Collapse } from "@mui/material";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
+import { useOperationState } from "hooks/useOperationState";
 import { capitalize } from "lodash";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -21,7 +21,7 @@ const Alerts = (): React.ReactElement => {
   const { connectedServer } = useConnectedServer();
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   useEffect(() => {
     const unsubscribeOnConnectionStateChanged =

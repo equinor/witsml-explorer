@@ -15,15 +15,15 @@ import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumber
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { OffsetLogCurveJob } from "models/jobs/offsetLogCurveJob";
 import LogObject from "models/logObject";
-import React, { ChangeEvent, ReactElement, useContext, useState } from "react";
+import React, { ChangeEvent, ReactElement, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import { indexToNumber } from "tools/IndexHelpers";
-import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ModalDialog from "./ModalDialog";
 
@@ -44,7 +44,7 @@ export const OffsetLogCurveModal = (
     endIndex: initialEndIndex
   } = props;
   const { connectedServer } = useConnectedServer();
-  const { operationState, dispatchOperation } = useContext(OperationContext);
+  const { operationState, dispatchOperation } = useOperationState();
   const { colors } = operationState;
   const isDepthLog = selectedLog.indexType === WITSML_INDEX_TYPE_MD;
   const [isValidInterval, setIsValidInterval] = useState<boolean>();

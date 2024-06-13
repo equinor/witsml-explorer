@@ -1,7 +1,7 @@
 import { Dialog, Progress, Typography } from "@equinor/eds-core-react";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import React, { ReactElement, useState } from "react";
 import styled from "styled-components";
 import { Colors, dark, light } from "styles/Colors";
@@ -46,7 +46,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     buttonPosition: ButtonPosition = ControlButtonPosition.BOTTOM,
     cancelText
   } = props;
-  const context = React.useContext(OperationContext);
+  const context = useOperationState();
   const [confirmButtonIsFocused, setConfirmButtonIsFocused] =
     useState<boolean>(false);
   const { operationState } = context;

@@ -18,12 +18,12 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { getSearchRegex } from "contexts/filter";
 import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
 import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { Server, emptyServer } from "models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getWellsViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
@@ -44,7 +44,7 @@ const ServerManager = (): React.ReactElement => {
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const navigate = useNavigate();
   const { connectedServer, setConnectedServer } = useConnectedServer();
@@ -269,7 +269,7 @@ const ConnectButton = ({ isConnected, ...props }: ConnectButtonProps) => {
   const [isHovered, setIsHovered] = React.useState(false);
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   return (
     <StyledConnectButton

@@ -10,8 +10,8 @@ import {
   OffsetLogCurveModal,
   OffsetLogCurveModalProps
 } from "components/Modals/OffsetLogCurveModal";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import {
   DeleteLogCurveValuesJob,
@@ -19,7 +19,7 @@ import {
 } from "models/jobs/deleteLogCurveValuesJob";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useContext } from "react";
+import React from "react";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
@@ -32,7 +32,7 @@ export interface MnemonicsContextMenuProps {
 const MnemonicsContextMenu = (
   props: MnemonicsContextMenuProps
 ): React.ReactElement => {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { log, mnemonics, indexRanges } = props;
 
   const deleteLogCurveValues = async () => {

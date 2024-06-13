@@ -1,7 +1,7 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
-import { ChangeEvent, ReactElement, useContext, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { ChangeEvent, ReactElement, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import ModalDialog from "./ModalDialog";
 
@@ -22,7 +22,7 @@ export const BatchModifyPropertiesModal = (
   props: BatchModifyModalProps
 ): ReactElement => {
   const { title, properties, onSubmit } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [batchUpdates, setBatchUpdates] = useState<{ [key: string]: string }>(
     properties.reduce((acc, prop) => ({ ...acc, [prop.property]: "" }), {})
   );

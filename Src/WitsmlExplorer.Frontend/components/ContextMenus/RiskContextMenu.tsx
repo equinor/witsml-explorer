@@ -12,13 +12,13 @@ import RiskPropertiesModal, {
   RiskPropertiesModalProps
 } from "components/Modals/RiskPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import RiskObject from "models/riskObject";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const RiskObjectContextMenu = (
@@ -26,7 +26,7 @@ const RiskObjectContextMenu = (
 ): React.ReactElement => {
   const { checkedObjects } = props;
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();

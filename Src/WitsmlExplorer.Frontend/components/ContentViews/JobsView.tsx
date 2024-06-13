@@ -14,12 +14,12 @@ import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { generateReport } from "components/ReportCreationHelper";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
 import useExport from "hooks/useExport";
+import { useOperationState } from "hooks/useOperationState";
 import JobStatus from "models/jobStatus";
 import JobInfo from "models/jobs/jobInfo";
 import ReportType from "models/reportType";
@@ -30,7 +30,7 @@ import {
   getUserAppRoles,
   msalEnabled
 } from "msal/MsalAuthProvider";
-import React, { ChangeEvent, useContext, useMemo, useState } from "react";
+import React, { ChangeEvent, useMemo, useState } from "react";
 import JobService from "services/jobService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -39,7 +39,7 @@ export const JobsView = (): React.ReactElement => {
   const {
     dispatchOperation,
     operationState: { timeZone, colors, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
   const [showAll, setShowAll] = useState(false);

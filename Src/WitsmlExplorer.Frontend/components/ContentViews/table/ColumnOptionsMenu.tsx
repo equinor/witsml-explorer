@@ -18,17 +18,11 @@ import {
   ContentType
 } from "components/ContentViews/table/tableParts";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
+import { useOperationState } from "hooks/useOperationState";
 import { debounce } from "lodash";
-import {
-  ChangeEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState
-} from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
@@ -65,7 +59,7 @@ export const ColumnOptionsMenu = (props: {
   } = props;
   const {
     operationState: { colors, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [draggedId, setDraggedId] = useState<string | null>();
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);

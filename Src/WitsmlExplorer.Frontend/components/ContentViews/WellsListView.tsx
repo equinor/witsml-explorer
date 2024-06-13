@@ -12,12 +12,12 @@ import WellContextMenu, {
 import formatDateString from "components/DateFormatter";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWells } from "hooks/query/useGetWells";
+import { useOperationState } from "hooks/useOperationState";
 import Well from "models/well";
-import React, { useContext } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { WELLBORES_PATH } from "routes/routerConstants";
 
@@ -32,7 +32,7 @@ export default function WellsListView() {
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
 
   const columns: ContentTableColumn[] = [
