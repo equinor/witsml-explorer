@@ -6,14 +6,13 @@ import CopyRangeModal, {
   CopyRangeModalProps
 } from "components/Modals/CopyRangeModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import LogCurveInfo from "models/logCurveInfo";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { Server } from "models/server";
-import { useContext } from "react";
 import { copyComponentsToServer } from "./CopyComponentsToServerUtils";
 
 export interface CopyComponentsToServerMenuItemProps {
@@ -38,7 +37,7 @@ export const CopyComponentsToServerMenuItem = (
   } = props;
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const menuComponents = menuItemText("copy", componentType, componentsToCopy);
   const menuText =
     withRange === true

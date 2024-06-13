@@ -10,16 +10,16 @@ import WbGeometrySectionContextMenu, {
 } from "components/ContextMenus/WbGeometrySectionContextMenu";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import WbGeometrySection from "models/wbGeometrySection";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 
@@ -28,7 +28,7 @@ interface WbGeometrySectionRow extends ContentTableRow {
 }
 
 export default function WbGeometryView() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { object: wbGeometry, isFetched: isFetchedWbGeometry } = useGetObject(

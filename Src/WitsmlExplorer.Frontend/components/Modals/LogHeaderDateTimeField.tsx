@@ -3,9 +3,9 @@ import formatDateString, {
   getOffset,
   getOffsetFromTimeZone
 } from "components/DateFormatter";
-import OperationContext from "contexts/operationContext";
 import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 
 interface DateTimeFieldProps {
@@ -33,7 +33,7 @@ export const LogHeaderDateTimeField = (
   const { value, label, updateObject, minValue, maxValue } = props;
   const {
     operationState: { timeZone }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const offset =
     timeZone === TimeZone.Raw
       ? getOffset(value)

@@ -31,19 +31,19 @@ import WellborePropertiesModal, {
   WellborePropertiesModalProps
 } from "components/Modals/WellborePropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
@@ -60,7 +60,7 @@ const WellboreContextMenu = (
   props: WellboreContextMenuProps
 ): React.ReactElement => {
   const { wellbore, checkedWellboreRows, servers } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
   const { connectedServer } = useConnectedServer();

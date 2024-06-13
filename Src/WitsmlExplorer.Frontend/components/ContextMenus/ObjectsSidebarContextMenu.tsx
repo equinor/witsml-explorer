@@ -17,14 +17,14 @@ import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -37,7 +37,7 @@ const ObjectsSidebarContextMenu = (
   props: ObjectsSidebarContextMenuProps
 ): React.ReactElement => {
   const { wellbore, objectType } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
   const objectReferences = useClipboardReferencesOfType(objectType);
   const openInQueryView = useOpenInQueryView();

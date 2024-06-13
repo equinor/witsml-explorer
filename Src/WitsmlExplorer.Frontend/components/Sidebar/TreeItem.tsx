@@ -1,9 +1,9 @@
 import { DotProgress } from "@equinor/eds-core-react";
 import { Tooltip } from "@mui/material";
 import { TreeItem, TreeItemProps } from "@mui/x-tree-view";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
-import React, { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -22,12 +22,12 @@ const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
     props;
   const {
     operationState: { theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const isCompactMode = theme === UserTheme.Compact;
 
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   return (
     <TreeItem

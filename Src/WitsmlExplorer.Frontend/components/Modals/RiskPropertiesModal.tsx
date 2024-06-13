@@ -3,9 +3,9 @@ import formatDateString from "components/DateFormatter";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
 import { riskAffectedPersonnel } from "models/riskAffectedPersonnel";
@@ -13,7 +13,7 @@ import { riskCategory } from "models/riskCategory";
 import RiskObject from "models/riskObject";
 import { riskSubCategory } from "models/riskSubCategory";
 import { riskType } from "models/riskType";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface RiskPropertiesModalProps {
@@ -28,7 +28,7 @@ const RiskPropertiesModal = (
   const { mode, riskObject, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableRiskObject, setEditableRiskObject] =
     useState<RiskObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

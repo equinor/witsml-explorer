@@ -16,14 +16,14 @@ import MudLogPropertiesModal, {
   MudLogPropertiesModalProps
 } from "components/Modals/MudLogPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import MudLog from "models/mudLog";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const MudLogContextMenu = (
@@ -34,7 +34,7 @@ const MudLogContextMenu = (
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
   );
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();

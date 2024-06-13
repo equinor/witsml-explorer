@@ -8,21 +8,21 @@ import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems"
 import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import Trajectory from "models/trajectory";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function TrajectoriesListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();

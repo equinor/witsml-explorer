@@ -16,15 +16,15 @@ import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems"
 import formatDateString from "components/DateFormatter";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import { MouseEvent, useContext, useState } from "react";
+import { MouseEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
@@ -42,7 +42,7 @@ export default function LogsListView() {
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const navigate = useNavigate();

@@ -2,13 +2,13 @@ import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
 import WbGeometryObject from "models/wbGeometry";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface WbGeometryPropertiesModalProps {
@@ -23,7 +23,7 @@ const WbGeometryPropertiesModal = (
   const { mode, wbGeometryObject, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableWbGeometryObject, setEditableWbGeometryObject] =
     useState<WbGeometryObject>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

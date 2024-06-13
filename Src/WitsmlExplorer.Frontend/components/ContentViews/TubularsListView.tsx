@@ -8,20 +8,20 @@ import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems"
 import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import Tubular from "models/tubular";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function TubularsListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();

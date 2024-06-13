@@ -14,10 +14,10 @@ import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import LogItem from "components/Sidebar/LogItem";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import { calculateObjectNodeId } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -29,7 +29,7 @@ import Wellbore, {
   calculateMultipleLogsNodeItem,
   calculateObjectNodeId as calculateWellboreObjectNodeId
 } from "models/wellbore";
-import { Fragment, MouseEvent, useContext } from "react";
+import { Fragment, MouseEvent } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
@@ -48,7 +48,7 @@ export default function LogTypeItem({
   wellUid,
   wellboreUid
 }: LogTypeItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [searchParams] = useSearchParams();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();

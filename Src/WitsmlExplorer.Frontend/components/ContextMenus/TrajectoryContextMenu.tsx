@@ -17,14 +17,14 @@ import TrajectoryPropertiesModal, {
   TrajectoryPropertiesModalProps
 } from "components/Modals/TrajectoryPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { ObjectType } from "models/objectType";
 import Trajectory from "models/trajectory";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const TrajectoryContextMenu = (
@@ -32,7 +32,7 @@ const TrajectoryContextMenu = (
 ): React.ReactElement => {
   const { checkedObjects } = props;
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(
     ComponentType.TrajectoryStation
   );

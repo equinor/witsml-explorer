@@ -9,8 +9,8 @@ import { Checkbox } from "components/StyledComponents/Checkbox";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
@@ -29,7 +29,7 @@ const FilterPanel = (): React.ReactElement => {
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)

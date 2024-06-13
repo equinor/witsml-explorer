@@ -12,20 +12,20 @@ import BhaRunPropertiesModal, {
 } from "components/Modals/BhaRunPropertiesModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import BhaRun from "models/bhaRun";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const BhaRunContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();

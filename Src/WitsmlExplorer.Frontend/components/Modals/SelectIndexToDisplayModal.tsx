@@ -8,12 +8,12 @@ import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeM
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetActiveRoute } from "hooks/useGetActiveRoute";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
@@ -40,7 +40,7 @@ const SelectIndexToDisplayModal = (
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
   const [startIndex, setStartIndex] = useState<string | number>(
     getStartIndex(log, logCurveInfoRows, isMultiLog)
