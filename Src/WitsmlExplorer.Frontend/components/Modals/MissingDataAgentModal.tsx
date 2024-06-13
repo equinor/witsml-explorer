@@ -236,6 +236,7 @@ const MissingDataAgentModal = (
       confirmText={`OK`}
       showCancelButton={true}
       width={ModalWidth.MEDIUM}
+      height= "700px"
       isLoading={false}
       content={
         <ModalContentLayout>
@@ -261,6 +262,7 @@ const MissingDataAgentModal = (
           {missingDataChecks.map((missingDataCheck) => (
             <CheckLayout key={missingDataCheck.id}>
               <Autocomplete
+                dropdownHeight={300}
                 id={`object${missingDataCheck.id}`}
                 label="Select object"
                 options={missingDataObjectOptions}
@@ -270,7 +272,8 @@ const MissingDataAgentModal = (
                   onObjectsChange(selectedItems, missingDataCheck)
                 }
               />
-              <Autocomplete
+              <Autocomplete  
+                dropdownHeight={300}
                 id={`properties${missingDataCheck.id}`}
                 disabled={
                   !missingDataObjectOptions.includes(

@@ -25,6 +25,7 @@ interface ModalDialogProps {
   showConfirmButton?: boolean;
   showCancelButton?: boolean;
   buttonPosition?: ControlButtonPosition;
+  height?: string;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -40,6 +41,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     errorMessage,
     switchButtonPlaces,
     width = ModalWidth.MEDIUM,
+    height,
     showConfirmButton = true,
     showCancelButton = true,
     buttonPosition: ButtonPosition = ControlButtonPosition.BOTTOM
@@ -156,6 +158,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   );
   const dialogStyle = {
     width: width,
+    height:height,
     background: colors.ui.backgroundDefault,
     color: colors.text.staticIconsDefault
   };
