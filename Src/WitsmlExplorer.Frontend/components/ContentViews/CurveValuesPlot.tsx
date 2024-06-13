@@ -1,10 +1,16 @@
+import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
 import {
   ContentType,
   ExportableContentTableColumn
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import { ContentViewDimensionsContext } from "components/PageLayout";
-import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
+import { CommonPanelContainer } from "components/StyledComponents/Container";
+import {
+  DateTimeFormat,
+  TimeZone,
+  UserTheme
+} from "contexts/operationStateReducer";
 import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { useOperationState } from "hooks/useOperationState";
@@ -45,8 +51,9 @@ export const CurveValuesPlot = React.memo(
       (col, index) => col.type === ContentType.Number || index === 0
     );
     const {
-      operationState: { colors, dateTimeFormat }
+      operationState: { colors, dateTimeFormat, theme }
     } = useOperationState();
+    const [enableScatter, setEnableScatter] = useState<boolean>(false);
     const chart = useRef<ECharts>(null);
     const selectedLabels = useRef<Record<string, boolean>>(null);
     const scrollIndex = useRef<number>(0);
@@ -90,7 +97,8 @@ export const CurveValuesPlot = React.memo(
       scrollIndex.current,
       horizontalZoom.current,
       verticalZoom.current,
-      isTimeLog
+      isTimeLog,
+      enableScatter
     );
 
     const onMouseOver = (e: any) => {
@@ -183,44 +191,58 @@ export const CurveValuesPlot = React.memo(
     };
 
     return (
-      <div
-        style={{ position: "relative", height: "100%", marginTop: "0.5rem" }}
-      >
-        <ReactEcharts
-          option={chartOption}
-          onEvents={handleEvents}
-          onChartReady={(c) => (chart.current = c)}
-          style={{
-            height: "100%",
-            minWidth: `${width}px`,
-            maxWidth: `${width}px`
-          }}
-        />
+      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <CommonPanelContainer>
+          <EdsProvider density={theme}>
+            <Switch
+              checked={enableScatter}
+              onChange={() => setEnableScatter(!enableScatter)}
+              size={theme === UserTheme.Compact ? "small" : "default"}
+            />
+            <Typography style={{ minWidth: "max-content" }}>
+              Scatter Plot
+            </Typography>
+          </EdsProvider>
+        </CommonPanelContainer>
         <div
-          style={{
-            // The style is added inline as using styled-components caused "flash of unstyled content"
-            position: "absolute",
-            maxWidth: "50%",
-            backgroundColor: "#fff",
-            color: "#333",
-            padding: "5px 15px",
-            borderRadius: "2px",
-            boxShadow: "0 0 2px #aaa",
-            transition: "opacity 0.1s ease-in-out",
-            opacity: controlledTooltip.visible ? 1 : 0,
-            transformOrigin: "bottom",
-            top: controlledTooltip.position
-              ? `${controlledTooltip.position.y}px`
-              : "0px",
-            left: controlledTooltip.position
-              ? `${controlledTooltip.position.x}px`
-              : "0px",
-            border: "1px solid black",
-            transform: "translate(-50%, 0)",
-            whiteSpace: "pre"
-          }}
+          style={{ position: "relative", height: "100%", marginTop: "0.5rem" }}
         >
-          {controlledTooltip.content}
+          <ReactEcharts
+            option={chartOption}
+            onEvents={handleEvents}
+            onChartReady={(c) => (chart.current = c)}
+            style={{
+              height: "100%",
+              minWidth: `${width}px`,
+              maxWidth: `${width}px`
+            }}
+          />
+          <div
+            style={{
+              // The style is added inline as using styled-components caused "flash of unstyled content"
+              position: "absolute",
+              maxWidth: "50%",
+              backgroundColor: "#fff",
+              color: "#333",
+              padding: "5px 15px",
+              borderRadius: "2px",
+              boxShadow: "0 0 2px #aaa",
+              transition: "opacity 0.1s ease-in-out",
+              opacity: controlledTooltip.visible ? 1 : 0,
+              transformOrigin: "bottom",
+              top: controlledTooltip.position
+                ? `${controlledTooltip.position.y}px`
+                : "0px",
+              left: controlledTooltip.position
+                ? `${controlledTooltip.position.x}px`
+                : "0px",
+              border: "1px solid black",
+              transform: "translate(-50%, 0)",
+              whiteSpace: "pre"
+            }}
+          >
+            {controlledTooltip.content}
+          </div>
         </div>
       </div>
     );
@@ -241,7 +263,8 @@ const getChartOption = (
   scrollIndex: number,
   horizontalZoom: [number, number],
   verticalZoom: [number, number],
-  isTimeLog: boolean
+  isTimeLog: boolean,
+  enableScatter: boolean
 ) => {
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
@@ -441,7 +464,8 @@ const getChartOption = (
         large: true,
         symbolSize: data.length > 200 ? 2 : 5,
         name: col.label,
-        type: "scatter",
+        type: enableScatter ? "scatter" : "line",
+        showSymbol: false,
         data: data.map((row) => {
           const index = row[indexCurve];
           const value = row[col.columnOf.mnemonic];
