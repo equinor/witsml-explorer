@@ -10,7 +10,7 @@ import WellContextMenu, {
   WellContextMenuProps
 } from "components/ContextMenus/WellContextMenu";
 import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -94,24 +94,25 @@ export default function WellsListView() {
     });
   };
 
-  if (isFetching) {
-    return (
-      <ProgressSpinner message="Fetching wells. This may take some time." />
-    );
-  }
-
-  return wells?.length === 0 ? (
-    <Typography style={{ padding: "1rem" }}>No wells found.</Typography>
-  ) : (
-    <ContentTable
-      viewId="wellsListView"
-      columns={columns}
-      data={getTableData()}
-      onSelect={onSelect}
-      onContextMenu={onContextMenu}
-      checkableRows
-      downloadToCsvFileName="Wells"
-      showRefresh
-    />
+  return (
+    <>
+      {isFetching && (
+        <ProgressSpinnerOverlay message="Fetching wells. This may take some time." />
+      )}
+      {!isFetching && wells?.length === 0 ? (
+        <Typography style={{ padding: "1rem" }}>No wells found.</Typography>
+      ) : (
+        <ContentTable
+          viewId="wellsListView"
+          columns={columns}
+          data={getTableData()}
+          onSelect={onSelect}
+          onContextMenu={onContextMenu}
+          checkableRows
+          downloadToCsvFileName="Wells"
+          showRefresh
+        />
+      )}
+    </>
   );
 }

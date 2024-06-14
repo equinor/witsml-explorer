@@ -8,7 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
 } from "components/ContextMenus/TubularComponentContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -138,23 +138,22 @@ export default function TubularView() {
     };
   });
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Tubular.`} />;
-  }
-
   if (isFetchedTubular && !tubular) {
     return <ItemNotFound itemType={ObjectType.Tubular} />;
   }
 
   return (
-    <ContentTable
-      viewId="tubularView"
-      columns={columns}
-      data={tubularComponentRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`Tubular_${tubular?.name}`}
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Trajectory." />}
+      <ContentTable
+        viewId="tubularView"
+        columns={columns}
+        data={tubularComponentRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName={`Tubular_${tubular?.name}`}
+      />
+    </>
   );
 }

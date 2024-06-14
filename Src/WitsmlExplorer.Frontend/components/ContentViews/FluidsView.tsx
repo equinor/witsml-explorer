@@ -8,7 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "components/ContextMenus/FluidContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -270,24 +270,25 @@ export default function FluidsView() {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching FluidsReport.`} />;
-  }
-
   if (isFetched && !fluidsReport) {
     return <ItemNotFound itemType={ObjectType.FluidsReport} />;
   }
 
   return (
-    <ContentTable
-      viewId="fluidView"
-      columns={columns}
-      data={fluidRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      insetColumns={insetColumns}
-      showRefresh
-      downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
-    />
+    <>
+      {isFetching && (
+        <ProgressSpinnerOverlay message={`Fetching FluidsReport.`} />
+      )}
+      <ContentTable
+        viewId="fluidView"
+        columns={columns}
+        data={fluidRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        insetColumns={insetColumns}
+        showRefresh
+        downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
+      />
+    </>
   );
 }

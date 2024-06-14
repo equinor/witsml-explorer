@@ -14,7 +14,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -151,47 +151,46 @@ export default function LogsListView() {
     navigate(encodeURIComponent(log.uid));
   };
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Logs`} />;
-  }
-
   if (isFetchedWellbore && !wellbore) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (
-    <ContentContainer>
-      <EdsProvider density={theme}>
-        <CommonPanelContainer>
-          <Switch
-            checked={showGraph}
-            onChange={() => setShowGraph(!showGraph)}
-            size={theme === UserTheme.Compact ? "small" : "default"}
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Logs" />}
+      <ContentContainer>
+        <EdsProvider density={theme}>
+          <CommonPanelContainer>
+            <Switch
+              checked={showGraph}
+              onChange={() => setShowGraph(!showGraph)}
+              size={theme === UserTheme.Compact ? "small" : "default"}
+            />
+            <Typography>
+              Gantt view{selectedRows.length > 0 && " (selected logs only)"}
+            </Typography>
+          </CommonPanelContainer>
+        </EdsProvider>
+        {showGraph ? (
+          <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
+        ) : (
+          <ContentTable
+            viewId={isTimeIndexed ? "timeLogsListView" : "depthLogsListView"}
+            columns={columns}
+            onSelect={onSelect}
+            data={getTableData()}
+            onContextMenu={onContextMenu}
+            onRowSelectionChange={(rows) =>
+              setSelectedRows(rows as LogObjectRow[])
+            }
+            checkableRows
+            showRefresh
+            initiallySelectedRows={selectedRows}
+            downloadToCsvFileName={isTimeIndexed ? "TimeLogs" : "DepthLogs"}
           />
-          <Typography>
-            Gantt view{selectedRows.length > 0 && " (selected logs only)"}
-          </Typography>
-        </CommonPanelContainer>
-      </EdsProvider>
-      {showGraph ? (
-        <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
-      ) : (
-        <ContentTable
-          viewId={isTimeIndexed ? "timeLogsListView" : "depthLogsListView"}
-          columns={columns}
-          onSelect={onSelect}
-          data={getTableData()}
-          onContextMenu={onContextMenu}
-          onRowSelectionChange={(rows) =>
-            setSelectedRows(rows as LogObjectRow[])
-          }
-          checkableRows
-          showRefresh
-          initiallySelectedRows={selectedRows}
-          downloadToCsvFileName={isTimeIndexed ? "TimeLogs" : "DepthLogs"}
-        />
-      )}
-    </ContentContainer>
+        )}
+      </ContentContainer>
+    </>
   );
 }
 
