@@ -26,6 +26,8 @@ interface ModalDialogProps {
   showCancelButton?: boolean;
   buttonPosition?: ControlButtonPosition;
   cancelText?: string;
+  height?: string;
+  minHeight?: string;
 }
 
 const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
@@ -41,10 +43,12 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     errorMessage,
     switchButtonPlaces,
     width = ModalWidth.MEDIUM,
+    height,
     showConfirmButton = true,
     showCancelButton = true,
     buttonPosition: ButtonPosition = ControlButtonPosition.BOTTOM,
-    cancelText
+    cancelText,
+    minHeight
   } = props;
   const context = useOperationState();
   const [confirmButtonIsFocused, setConfirmButtonIsFocused] =
@@ -158,6 +162,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   );
   const dialogStyle = {
     width: width,
+    height: height,
     background: colors.ui.backgroundDefault,
     color: colors.text.staticIconsDefault
   };
@@ -165,7 +170,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   return (
     <Dialog onKeyDown={onKeyPress} open={true} style={dialogStyle}>
       {ButtonPosition == ControlButtonPosition.TOP ? top : header}
-      <Content colors={colors}>
+      <Content colors={colors} minHeight={minHeight}>
         {content}
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       </Content>
@@ -196,9 +201,13 @@ export enum ControlButtonPosition {
   BOTTOM = "bottom"
 }
 
-const Content = styled(Dialog.CustomContent)<{ colors: Colors }>`
+const Content = styled(Dialog.CustomContent)<{
+  colors: Colors;
+  minHeight: string;
+}>`
   margin-top: 0.5em;
   max-height: 75vh;
+  min-height: ${(props) => (props.minHeight ? props.minHeight : "")};
   overflow-y: auto;
   background-color: ${(props) => props.colors.ui.backgroundDefault};
   color: ${(props) => props.colors.text.staticIconsDefault};
