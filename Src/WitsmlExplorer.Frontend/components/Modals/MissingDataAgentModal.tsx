@@ -273,7 +273,7 @@ const MissingDataAgentModal = (
                   onObjectsChange(selectedItems, missingDataCheck)
                 }
               />
-              <Autocomplete  
+              <Autocomplete
                 dropdownHeight={300}
                 id={`properties${missingDataCheck.id}`}
                 disabled={
