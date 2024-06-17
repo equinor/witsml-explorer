@@ -236,7 +236,8 @@ const MissingDataAgentModal = (
       confirmText={`OK`}
       showCancelButton={true}
       width={ModalWidth.MEDIUM}
-      height= "700px"
+      height="800px"
+      minHeight="650px"
       isLoading={false}
       content={
         <ModalContentLayout>
