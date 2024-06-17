@@ -9,7 +9,7 @@ import TrajectoryStationContextMenu, {
   TrajectoryStationContextMenuProps
 } from "components/ContextMenus/TrajectoryStationContextMenu";
 import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -124,23 +124,22 @@ export default function TrajectoryView() {
     };
   });
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Trajectory.`} />;
-  }
-
   if (isFetchedTrajectory && !trajectory) {
     return <ItemNotFound itemType={ObjectType.Trajectory} />;
   }
 
   return (
-    <ContentTable
-      viewId="trajectoryView"
-      columns={columns}
-      data={trajectoryStationRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Trajectory." />}
+      <ContentTable
+        viewId="trajectoryView"
+        columns={columns}
+        data={trajectoryStationRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
+      />
+    </>
   );
 }

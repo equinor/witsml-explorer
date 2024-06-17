@@ -59,11 +59,12 @@ export default function AuthRoute() {
   }, []);
 
   useEffect(() => {
-    if (servers && !connectedServer) {
+    if (servers && (!connectedServer || connectedServer.url != serverUrl)) {
+      setConnectedServer(null);
       const server = servers.find((server) => server.url === serverUrl);
       if (server) showCredentialsModal(server, true);
     }
-  }, [servers]);
+  }, [servers, serverUrl]);
 
   const showCredentialsModal = (server: Server, initialLogin: boolean) => {
     const userCredentialsModalProps: UserCredentialsModalProps = {

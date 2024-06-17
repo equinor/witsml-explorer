@@ -27,7 +27,7 @@ import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { DispatchOperation, UserTheme } from "contexts/operationStateReducer";
@@ -340,7 +340,6 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [startIndex, endIndex, mnemonics, log]);
 
   const refreshData = () => {
-    setTableData([]);
     setIsLoading(true);
     setAutoRefresh(false);
 
@@ -566,16 +565,15 @@ export const CurveValuesView = (): React.ReactElement => {
     ]
   );
 
-  if (isFetching) {
-    return <ProgressSpinner message="Fetching Log." />;
-  }
-
   if (isFetchedLog && !log) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (
     <>
+      {(isFetching || isLoading) && (
+        <ProgressSpinnerOverlay message="Fetching data" />
+      )}
       <ContentContainer>
         <CommonPanelContainer>
           <EditSelectedLogCurveInfo
@@ -615,7 +613,6 @@ export const CurveValuesView = (): React.ReactElement => {
             </>
           )}
         </CommonPanelContainer>
-        {isLoading && <ProgressSpinner message="Fetching data" />}
         {!isLoading && !tableData.length && (
           <Message>
             <Typography>No data</Typography>
