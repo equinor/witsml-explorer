@@ -9,7 +9,7 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
 import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -117,24 +117,23 @@ export default function WellboresListView() {
     );
   };
 
-  if (isFetching) {
-    return <ProgressSpinner message="Fetching wellbores." />;
-  }
-
   if (isFetchedWell && !well) {
     return <ItemNotFound itemType={EntityType.Well} />;
   }
 
   return (
-    <ContentTable
-      viewId="wellboresListView"
-      columns={columns}
-      data={getTableData()}
-      onSelect={onSelect}
-      onContextMenu={onContextMenu}
-      downloadToCsvFileName="Wellbores"
-      checkableRows
-      showRefresh
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Wellbores." />}
+      <ContentTable
+        viewId="wellboresListView"
+        columns={columns}
+        data={getTableData()}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        downloadToCsvFileName="Wellbores"
+        checkableRows
+        showRefresh
+      />
+    </>
   );
 }

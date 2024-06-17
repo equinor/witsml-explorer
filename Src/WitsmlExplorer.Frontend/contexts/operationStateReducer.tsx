@@ -1,3 +1,4 @@
+import UserCredentialsModal from "components/Modals/UserCredentialsModal";
 import OperationType from "contexts/operationType";
 import { Dispatch, ReactElement, useReducer } from "react";
 import { Colors, light } from "styles/Colors";
@@ -179,7 +180,14 @@ const displayModal = (
   state: OperationState,
   { payload }: DisplayModalAction
 ) => {
-  const modals = state.modals.concat(payload);
+  const isUserCredentialsModal = payload.type === UserCredentialsModal;
+
+  const modals = isUserCredentialsModal // We don't want to stack login modals
+    ? state.modals
+        .filter((modal) => modal.type !== UserCredentialsModal)
+        .concat(payload)
+    : state.modals.concat(payload);
+
   return {
     ...state,
     contextMenu: EMPTY_CONTEXT_MENU,

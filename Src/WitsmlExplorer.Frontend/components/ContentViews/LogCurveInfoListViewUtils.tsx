@@ -118,6 +118,8 @@ export const getTableData = (
   isDepthIndex: boolean,
   logUid: string = null
 ) => {
+  if (!logCurveInfoList) return [];
+
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
       if (isDepthIndex) return true;
