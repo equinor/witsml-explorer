@@ -1,10 +1,15 @@
 import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
 import {
+  ThresholdLevel,
+  transformCurveData
+} from "components/ContentViews/CurveDataTransformation";
+import {
   ContentType,
   ExportableContentTableColumn
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import { ContentViewDimensionsContext } from "components/PageLayout";
+import { StyledNativeSelect } from "components/Select";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import {
   DateTimeFormat,
@@ -15,7 +20,14 @@ import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { useOperationState } from "hooks/useOperationState";
 import { CurveSpecification } from "models/logData";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
@@ -54,6 +66,9 @@ export const CurveValuesPlot = React.memo(
       operationState: { colors, dateTimeFormat, theme }
     } = useOperationState();
     const [enableScatter, setEnableScatter] = useState<boolean>(false);
+    const [removeOutliers, setRemoveOutliers] = useState<boolean>(false);
+    const [outliersThresholdLevel, setOutliersThresholdLevel] =
+      useState<ThresholdLevel>(ThresholdLevel.Medium);
     const chart = useRef<ECharts>(null);
     const selectedLabels = useRef<Record<string, boolean>>(null);
     const scrollIndex = useRef<number>(0);
@@ -72,6 +87,16 @@ export const CurveValuesPlot = React.memo(
       useState<ControlledTooltipProps>({
         visible: false
       } as ControlledTooltipProps);
+    const transformedData = useMemo(
+      () =>
+        transformCurveData(
+          data,
+          columns,
+          outliersThresholdLevel,
+          !autoRefresh && removeOutliers
+        ),
+      [data, columns, outliersThresholdLevel, removeOutliers, autoRefresh]
+    );
 
     useEffect(() => {
       if (contentViewWidth) {
@@ -85,7 +110,7 @@ export const CurveValuesPlot = React.memo(
     }, [contentViewWidth]);
 
     const chartOption = getChartOption(
-      data,
+      transformedData,
       columns,
       name,
       colors,
@@ -191,6 +216,7 @@ export const CurveValuesPlot = React.memo(
     };
 
     return (
+      // TODO: Check if it's feasible to move the toggles to the panel.
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <CommonPanelContainer>
           <EdsProvider density={theme}>
@@ -202,6 +228,47 @@ export const CurveValuesPlot = React.memo(
             <Typography style={{ minWidth: "max-content" }}>
               Scatter Plot
             </Typography>
+            {!autoRefresh && (
+              <>
+                <Switch
+                  checked={removeOutliers}
+                  onChange={() => setRemoveOutliers(!removeOutliers)}
+                  size={theme === UserTheme.Compact ? "small" : "default"}
+                />
+                <Typography style={{ minWidth: "max-content" }}>
+                  Hide Outliers
+                </Typography>
+                {removeOutliers && (
+                  <>
+                    <Typography
+                      style={{ minWidth: "max-content", marginLeft: "12px" }}
+                    >
+                      Sensitivity:
+                    </Typography>
+                    <StyledNativeSelect
+                      style={{ maxWidth: "100px" }}
+                      label=""
+                      id="threshold"
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                        setOutliersThresholdLevel(
+                          event.target.value as ThresholdLevel
+                        )
+                      }
+                      value={outliersThresholdLevel}
+                      colors={colors}
+                    >
+                      {Object.values(ThresholdLevel).map((value) => {
+                        return (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        );
+                      })}
+                    </StyledNativeSelect>
+                  </>
+                )}
+              </>
+            )}
           </EdsProvider>
         </CommonPanelContainer>
         <div
@@ -460,15 +527,40 @@ const getChartOption = (
       const minMaxValue = minMaxValues.find(
         (v) => v.curve == col.columnOf.mnemonic
       );
+
       return {
         large: true,
-        symbolSize: data.length > 200 ? 2 : 5,
+        connectNulls: false,
+        symbolSize: enableScatter
+          ? data.length > 200
+            ? 2
+            : 5
+          : (value: any, params: any) => {
+              const index = params.dataIndex;
+              const pre =
+                index === 0
+                  ? undefined
+                  : data[index - 1][col.columnOf.mnemonic];
+              const next =
+                index === data.length - 1
+                  ? undefined
+                  : data[index + 1][col.columnOf.mnemonic];
+              return pre === undefined &&
+                value !== undefined &&
+                next === undefined
+                ? 0.5
+                : 0;
+            },
+        emphasis: {
+          disabled: true
+        },
         name: col.label,
         type: enableScatter ? "scatter" : "line",
-        showSymbol: false,
+        showSymbol: true,
         data: data.map((row) => {
           const index = row[indexCurve];
           const value = row[col.columnOf.mnemonic];
+          // TODO: Can possibly add some logic here to only add null when I don't want the lines to connect (like if 5 rows above and below are missing add null, otherwise filter it away)
           const normalizedValue =
             (value - minMaxValue.minValue) /
             (minMaxValue.maxValue - minMaxValue.minValue || 1);
