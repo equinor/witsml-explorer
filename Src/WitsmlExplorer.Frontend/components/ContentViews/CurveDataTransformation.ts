@@ -10,7 +10,7 @@ const calculateStdDev = (arr: number[], mean: number): number => {
   return Math.sqrt(variance);
 };
 
-const zScore = (value: number, mean: number, stdDev: number): number =>
+const calculateZScore = (value: number, mean: number, stdDev: number): number =>
   (value - mean) / stdDev;
 
 interface ZScoreThreshold {
@@ -28,7 +28,7 @@ export enum ThresholdLevel {
 const zScoreThresholds: Record<ThresholdLevel, ZScoreThreshold> = {
   [ThresholdLevel.Low]: {
     global: 2,
-    local: 2.8,
+    local: 2.5,
     windowSize: 12
   },
   [ThresholdLevel.Medium]: {
@@ -48,10 +48,10 @@ const zScoreThresholds: Record<ThresholdLevel, ZScoreThreshold> = {
  *
  * @param {any[]} data - The dataset to process, where each element is an object containing various numeric properties.
  * @param {ExportableContentTableColumn<CurveSpecification>[]} columns - The columns specification, where the first column represents the index curve.
- * @param {ZScoreThreshold} zScoreThreshold - An object containing `global` and `local` thresholds for Z-score calculations.
- * @param {number} [windowSize=10] - The size of the moving window to use for local Z-score calculations.
+ * @param {ZScoreThreshold} zScoreThreshold - An object containing `global` and `local` thresholds and 'windowSize' size for Z-score calculations.
  *   - `global`: The Z-score threshold to identify potential outliers globally across the entire dataset.
  *   - `local`: The Z-score threshold to identify outliers within the moving window.
+ *   - `windowSize`: The size of the moving window.
  * @returns {any[]} The transformed dataset with outliers removed.
  */
 export const removeCurveDataOutliers = (
@@ -78,7 +78,7 @@ export const removeCurveDataOutliers = (
       if (stdDev) {
         for (let i = 0; i < columnData.length; i++) {
           const originalIndex = originalIndices[i].index;
-          const zScoreValue = zScore(columnData[i], mean, stdDev);
+          const zScoreValue = calculateZScore(columnData[i], mean, stdDev);
           if (Math.abs(zScoreValue) > zScoreThreshold.global) {
             const start = Math.max(
               0,
@@ -92,7 +92,7 @@ export const removeCurveDataOutliers = (
             const windowMean = calculateMean(window);
             const windowStdDev = calculateStdDev(window, windowMean);
             if (windowStdDev) {
-              const windowZScoreValue = zScore(
+              const windowZScoreValue = calculateZScore(
                 columnData[i],
                 windowMean,
                 windowStdDev
@@ -120,8 +120,7 @@ export const transformCurveData = (
   if (removeOutliers) {
     transformedData = removeCurveDataOutliers(data, columns, thresholdLevel);
   }
+  // Other potential transformations should be added here.
 
   return transformedData;
 };
-
-// TODO: Skriv tester for removeCurveDataOutliers.

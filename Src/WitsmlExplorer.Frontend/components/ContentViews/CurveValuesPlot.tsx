@@ -217,7 +217,6 @@ export const CurveValuesPlot = React.memo(
     };
 
     return (
-      // TODO: Check if it's feasible to move the toggles to the panel.
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <CommonPanelContainer>
           <EdsProvider density={theme}>
