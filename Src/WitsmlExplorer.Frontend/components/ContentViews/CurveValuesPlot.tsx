@@ -35,6 +35,7 @@ import { Colors } from "styles/Colors";
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
 const TOOLTIP_OFFSET_Y = 30;
+const GAP_DISTANCE = 3;
 
 interface ControlledTooltipProps {
   visible: boolean;
@@ -495,7 +496,7 @@ const getChartOption = (
             start: verticalZoom[0],
             end: verticalZoom[1],
             orient: "vertical",
-            filterMode: "empty",
+            filterMode: enableScatter ? "empty" : "none",
             type: "slider",
             labelFormatter: () => ""
           },
@@ -528,39 +529,22 @@ const getChartOption = (
         (v) => v.curve == col.columnOf.mnemonic
       );
 
-      return {
-        large: true,
-        connectNulls: false,
-        symbolSize: enableScatter
-          ? data.length > 200
-            ? 2
-            : 5
-          : (value: any, params: any) => {
-              const index = params.dataIndex;
-              const pre =
-                index === 0
-                  ? undefined
-                  : data[index - 1][col.columnOf.mnemonic];
-              const next =
-                index === data.length - 1
-                  ? undefined
-                  : data[index + 1][col.columnOf.mnemonic];
-              return pre === undefined &&
-                value !== undefined &&
-                next === undefined
-                ? 0.5
-                : 0;
-            },
-        emphasis: {
-          disabled: true
-        },
-        name: col.label,
-        type: enableScatter ? "scatter" : "line",
-        showSymbol: true,
-        data: data.map((row) => {
+      const offsetData = data
+        .map((row, rowIndex) => {
           const index = row[indexCurve];
           const value = row[col.columnOf.mnemonic];
-          // TODO: Can possibly add some logic here to only add null when I don't want the lines to connect (like if 5 rows above and below are missing add null, otherwise filter it away)
+          const isSmallGap =
+            !enableScatter &&
+            value === undefined &&
+            hasDataWithinRange(
+              data,
+              rowIndex,
+              col.columnOf.mnemonic,
+              GAP_DISTANCE
+            );
+          if (isSmallGap) {
+            return null; // Return null and filter it away later to draw lines over small gaps.
+          }
           const normalizedValue =
             (value - minMaxValue.minValue) /
             (minMaxValue.maxValue - minMaxValue.minValue || 1);
@@ -570,9 +554,54 @@ const getChartOption = (
             i;
           return [offsetNormalizedValue, index];
         })
+        .filter((r) => r !== null);
+
+      return {
+        large: true,
+        connectNulls: false,
+        symbolSize: enableScatter
+          ? data.length > 200
+            ? 2
+            : 5
+          : (value: any, params: any) => {
+              const isIsolated =
+                value !== undefined &&
+                isNaN(offsetData[Math.max(0, params.dataIndex - 1)][0]) &&
+                isNaN(
+                  offsetData[
+                    Math.min(offsetData.length - 1, params.dataIndex + 1)
+                  ][0]
+                );
+              return isIsolated ? 1 : 0; // Only isolated data points should have a symbol for the line plot
+            },
+        emphasis: {
+          disabled: true
+        },
+        name: col.label,
+        type: enableScatter ? "scatter" : "line",
+        showSymbol: true,
+        data: offsetData
       };
     })
   };
+};
+
+const hasDataWithinRange = (
+  data: any[],
+  valueIndex: number,
+  mnemonic: string,
+  distanceFromIndex: number
+): boolean => {
+  const start = Math.max(0, valueIndex - distanceFromIndex);
+  const end = Math.min(data.length, valueIndex + distanceFromIndex);
+  const window = [
+    ...data.slice(start, valueIndex),
+    ...data.slice(valueIndex + 1, end + 1)
+  ];
+  if (window.some((d) => d[mnemonic] !== undefined)) {
+    return true;
+  }
+  return false;
 };
 
 const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
