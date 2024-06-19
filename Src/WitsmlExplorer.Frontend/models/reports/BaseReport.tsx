@@ -6,6 +6,7 @@ export default interface BaseReport {
   downloadImmediately?: boolean;
   reportHeader?: string;
   jobDetails?: string;
+  reportBody?: string;
 }
 
 export const createReport = (
@@ -15,7 +16,8 @@ export const createReport = (
   warningMessage: string = null,
   downloadImmediately: boolean = null,
   reportHeader: string = null,
-  jobDetails: string = null
+  jobDetails: string = null,
+  reportBody: string = null
 ): BaseReport => {
   return {
     title,
@@ -24,6 +26,7 @@ export const createReport = (
     warningMessage,
     downloadImmediately,
     reportHeader,
-    jobDetails
+    jobDetails,
+    reportBody
   };
 };

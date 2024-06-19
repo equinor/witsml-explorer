@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,6 +47,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
             [FromBody] IEnumerable<string> mnemonics,
             ILogObjectService logObjectService)
         {
+            Trace.WriteLine("LogHandler -> GetLogData");
+
             if (mnemonics.Any())
             {
                 var logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData, CancellationToken.None);

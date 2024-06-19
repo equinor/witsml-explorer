@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   EdsProvider,
   Radio,
@@ -256,6 +257,9 @@ export const CurveValuesView = (): React.ReactElement => {
   };
 
   const exportSelectedIndexRange = useCallback(() => {
+
+    console.log('exportSelectedIndexRange');
+
     const exportColumns = columns
       .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
       .join(exportOptions.separator);
@@ -273,6 +277,9 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [columns, tableData]);
 
   const exportSelectedDataPoints = useCallback(() => {
+
+    console.log('exportSelectedDataPoints');
+
     const exportColumns = columns
       .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
       .join(exportOptions.separator);
@@ -453,6 +460,9 @@ export const CurveValuesView = (): React.ReactElement => {
   };
 
   const exportAll = async () => {
+
+    console.log('exportAll');
+
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;

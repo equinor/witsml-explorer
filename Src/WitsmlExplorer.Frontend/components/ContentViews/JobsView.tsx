@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Icon, Switch, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -69,8 +70,19 @@ export const JobsView = (): React.ReactElement => {
   };
 
   const onClickReport = async (jobId: string) => {
+
+    console.log('JobsView -> onClickReport');
+
     const report = await JobService.getReport(jobId);
     if (report.downloadImmediately === true) {
+
+      exportData(
+        report.title,
+        report.reportHeader,
+        report.reportBody
+      );
+
+      /*
       const reportProperties = generateReport(
         report.reportItems,
         report.reportHeader
@@ -80,6 +92,7 @@ export const JobsView = (): React.ReactElement => {
         reportProperties.exportColumns,
         reportProperties.data
       );
+      */
     } else {
       const reportModalProps = { report };
       dispatchOperation({

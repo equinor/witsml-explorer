@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,6 +107,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(BaseReport))]
         public static IResult GetReport(string jobId, IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
         {
+            Trace.WriteLine("JobHandler -> GetReport");
             EssentialHeaders eh = new(httpRequest);
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh.GetBearerToken(), "upn") : eh.TargetUsername;

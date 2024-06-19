@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -164,6 +166,9 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken = null, IProgress<double> progressReporter = null)
         {
+
+            Trace.WriteLine("LogObjectService -> ReadLogData");
+
             WitsmlLog log = await GetLogHeader(wellUid, wellboreUid, logUid);
 
             Index startIndex = Index.Start(log, start);
@@ -247,20 +252,46 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task<WitsmlLog> LoadData(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, string wellUid = null, string wellboreUid = null, string logUid = null)
         {
+            Trace.WriteLine($"LogObjectService -> LoadData: StartIdx:{startIndex}, EndIdx:{endIndex}, MnemonicsCnt:{mnemonics.Count}");
+
             WitsmlLogs query = LogQueries.GetLogContent(wellUid, wellboreUid, logUid, log.IndexType, mnemonics, startIndex, endIndex);
             WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             WitsmlLog witsmlLog = witsmlLogs.Logs?.FirstOrDefault();
+
+            Trace.WriteLine($"Returned items: {witsmlLog.LogData.Data.Count}");
+
+            //StringBuilder sb = new StringBuilder();
+            //sb.AppendLine($" **** returning witsmlLog Count: {witsmlLog.LogData.Data.Count}");
+            //foreach (var item in witsmlLog?.LogData.Data)
+            //{
+            //    sb.AppendLine(item.Data);
+            //}
+            //Trace.Write(sb.ToString());
+
             return witsmlLog;
         }
 
         private async Task<WitsmlLog> LoadDataRecursive(List<string> mnemonics, WitsmlLog log, Index startIndex, Index endIndex, CancellationToken? cancellationToken = null, string wellUid = null, string wellboreUid = null, string logUid = null, IProgress<double> progressReporter = null)
         {
+
+            Trace.WriteLine($"LogObjectService -> LoadDataRecursive: StartIdx:{startIndex}, EndIdx:{endIndex}");
+            Trace.WriteLine($" mnemonicsCount: {mnemonics.Count}");
+
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch(cancellationToken);
+
             var allLogData = logData;
             while (logData != null)
             {
+                Trace.WriteLine($" recursive read logData Count: {logData.Data.Count}");
+                //StringBuilder sb = new StringBuilder();
+                //sb.AppendLine($" logData Count: {logData.Data.Count}");
+                //foreach ( var item in logData.Data) {
+                //    sb.AppendLine(item.Data);
+                //}
+                //Trace.Write(sb.ToString());
+
                 if (progressReporter != null)
                 {
                     double progress = LogWorkerTools.CalculateProgressBasedOnIndex(log, logData);
