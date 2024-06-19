@@ -8,14 +8,13 @@ import Nav from "components/Nav";
 import PropertiesPanel from "components/PropertiesPanel";
 import Sidebar from "components/Sidebar/Sidebar";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
+import { useOperationState } from "hooks/useOperationState";
 import { msalEnabled } from "msal/MsalAuthProvider";
 import {
   ReactElement,
   createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState
@@ -32,7 +31,7 @@ const PageLayout = (): ReactElement => {
   const [sidebarWidth, setSidebarWidth] = useState(316);
   const { width: documentWidth, height: documentHeight } =
     useDocumentDimensions();
-  const { operationState } = useContext(OperationContext);
+  const { operationState } = useOperationState();
   const { colors } = operationState;
 
   const startResizing = useCallback(() => {

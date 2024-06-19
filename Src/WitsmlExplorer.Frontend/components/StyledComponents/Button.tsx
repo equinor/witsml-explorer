@@ -2,9 +2,9 @@ import {
   Button as EdsButton,
   ButtonProps as EdsButtonProps
 } from "@equinor/eds-core-react";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
-import React, { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import React from "react";
 import styled, { css } from "styled-components";
 import { Colors } from "styles/Colors";
 
@@ -17,7 +17,7 @@ export type Ref = HTMLButtonElement;
 export const Button = React.forwardRef<Ref, ButtonProps>((props, ref) => {
   const {
     operationState: { colors, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   if (!props.variant || props.variant === "contained") {
     return <ContainedButton ref={ref} {...props} colors={colors} />;

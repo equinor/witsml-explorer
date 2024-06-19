@@ -1,12 +1,13 @@
 import "ace-builds/src-noconflict/ace";
 import "ace-builds/src-noconflict/ext-language_tools";
+import "ace-builds/src-noconflict/ext-prompt";
+import "ace-builds/src-noconflict/ext-searchbox";
 import "ace-builds/src-noconflict/mode-xml";
 import "ace-builds/src-noconflict/theme-merbivore";
 import "ace-builds/src-noconflict/theme-xcode";
 import { customCommands, customCompleter } from "components/QueryEditorUtils";
 import { updateLinesWithWidgets } from "components/QueryEditorWidgetUtils";
-import OperationContext from "contexts/operationContext";
-import { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
 import AceEditor from "react-ace";
 import styled from "styled-components";
 import { Colors, dark } from "styles/Colors";
@@ -21,7 +22,7 @@ export const QueryEditor = (props: QueryEditorProps) => {
   const { value, onChange, readonly } = props;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   const onLoad = (editor: any) => {
     editor.renderer.setPadding(10);

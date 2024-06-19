@@ -18,4 +18,4 @@ Accessing the API without a frontend is explained at the end of each of the docu
 
 Basic mode uses a session cookie to keep track of the user. This mode is used by setting `"OAuth2Enabled": false` in the API configuration and empty `VITE_MSALENABLED=` in the frontend environment. Basic flow is explained in [BASIC_AUTH.md](./BASIC_AUTH.md).
 
-OAuth mode uses JWT authentication to keep track of the user. This mode is used by setting `"OAuth2Enabled": true` in the API configuration and `VITE_MSALENABLED=true` in the frontend environment. OAUTH flow is explained in [OAUTH.md](./OAUTH.md).
+OAuth mode uses JWT authentication to keep track of the user. This mode is used by setting `"OAuth2Enabled": true` in the API configuration and `VITE_MSALENABLED=true` in the frontend environment. Current OAUTH implementation only supports Azure Entra ID. OAUTH flow is explained in [OAUTH.md](./OAUTH.md).

@@ -5,10 +5,10 @@ import {
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TreeItem from "components/Sidebar/TreeItem";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 
 interface LogItemProps {
@@ -28,7 +28,7 @@ export default function LogItem({
   objectGrowing,
   to
 }: LogItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
@@ -52,11 +52,7 @@ export default function LogItem({
       }
       key={nodeId}
       nodeId={nodeId}
-      labelText={
-        log.runNumber
-          ? `${log.name} (${log.runNumber})`
-          : log.name + getNameOccurrenceSuffix(logObjects, log)
-      }
+      labelText={log.name + getNameOccurrenceSuffix(logObjects, log)}
       selected={selected}
       isActive={objectGrowing}
       to={to}

@@ -79,6 +79,10 @@ namespace WitsmlExplorer.Api.Jobs
         {
             get
             {
+                if (Report == null)
+                {
+                    return ReportType.None;
+                }
                 if (Report?.DownloadImmediately == true)
                 {
                     return ReportType.File;
@@ -99,6 +103,7 @@ namespace WitsmlExplorer.Api.Jobs
     public enum ReportType
     {
         File,
-        Report
+        Report,
+        None
     }
 }

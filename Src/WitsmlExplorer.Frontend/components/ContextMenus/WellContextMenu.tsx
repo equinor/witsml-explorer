@@ -283,7 +283,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
                   wellUid: well.uid
                 })
               }
-              disabled={checkedWellRows?.length !== 1}
+              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
             >
               <StyledIcon
                 name="textField"
@@ -317,6 +317,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
                   wellboreUid: uuid()
                 })
               }
+              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
             >
               <StyledIcon
                 name="add"

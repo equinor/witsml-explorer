@@ -32,6 +32,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/objects/{objectType}/{objectProperty}", ObjectHandler.GetObjectsWithParamByType, useOAuth2);
             app.MapGet("/objects/{objectType}/{objectProperty}/{objectPropertyValue}", ObjectHandler.GetObjectsWithParamByType, useOAuth2);
 
+            app.MapGet("/wellbores", WellboreHandler.GetWellbores, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores", WellboreHandler.GetWellbores, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}", ObjectHandler.GetObjectsIdOnly, useOAuth2);
@@ -59,8 +60,9 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.Log], LogHandler.GetLogs, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}", LogHandler.GetLog, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}/" + ComponentType.Mnemonic.ToPluralLowercase(), LogHandler.GetLogCurveInfo, useOAuth2);
-            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/multilog/" + ComponentType.Mnemonic.ToPluralLowercase(), LogHandler.GetMultiLogCurveInfo, useOAuth2);
             app.MapPost(routes[EntityType.Log] + "/{logUid}/logdata", LogHandler.GetLogData, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/multilog/" + ComponentType.Mnemonic.ToPluralLowercase(), LogHandler.GetMultiLogCurveInfo, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/multilog/logdata", LogHandler.GetMultiLogData, useOAuth2);
 
             app.MapGet(routes[EntityType.Message], MessageHandler.GetMessages, useOAuth2);
             app.MapGet(routes[EntityType.Message] + "/{messageUid}", MessageHandler.GetMessage, useOAuth2);

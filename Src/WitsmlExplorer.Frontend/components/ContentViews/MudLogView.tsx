@@ -8,18 +8,18 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
   GeologyIntervalContextMenuProps
 } from "components/ContextMenus/GeologyIntervalContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import GeologyInterval from "models/geologyInterval";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 
@@ -43,7 +43,7 @@ export interface GeologyIntervalRow extends ContentTableRow {
 }
 
 export default function MudLogView() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { object: mudLog, isFetched: isFetchedMudLog } = useGetObject(
@@ -138,25 +138,24 @@ export default function MudLogView() {
     }
   );
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching MudLog.`} />;
-  }
-
   if (isFetchedMudLog && !mudLog) {
     return <ItemNotFound itemType={ObjectType.MudLog} />;
   }
 
   return (
-    <ContentTable
-      viewId="mudLogView"
-      columns={columns}
-      data={geologyIntervalRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      insetColumns={insetColumns}
-      showRefresh
-      downloadToCsvFileName={`MudLog_${mudLog?.name}`}
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching MudLog." />}
+      <ContentTable
+        viewId="mudLogView"
+        columns={columns}
+        data={geologyIntervalRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        insetColumns={insetColumns}
+        showRefresh
+        downloadToCsvFileName={`MudLog_${mudLog?.name}`}
+      />
+    </>
   );
 }
 

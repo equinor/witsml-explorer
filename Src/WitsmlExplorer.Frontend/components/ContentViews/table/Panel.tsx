@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -11,8 +10,9 @@ import {
   refreshWellsQuery
 } from "hooks/query/queryRefreshHelpers";
 import useExport, { encloseCell } from "hooks/useExport";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
@@ -50,7 +50,7 @@ const Panel = (props: PanelProps) => {
   } = props;
   const {
     operationState: { theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
   const queryClient = useQueryClient();

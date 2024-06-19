@@ -1,9 +1,12 @@
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import ObjectSearchResult from "models/objectSearchResult";
 import { ObjectType } from "models/objectType";
-import React, { useEffect } from "react";
+import Wellbore from "models/wellbore";
+import React from "react";
 import {
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
+  STORAGE_FILTER_ISACTIVE_KEY,
+  STORAGE_FILTER_OBJECTGROWING_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
 
@@ -13,6 +16,7 @@ export interface Filter {
   objectGrowing: boolean;
   filterType: FilterType;
   searchResults?: ObjectSearchResult[];
+  wellboreSearchResults?: Wellbore[];
   objectVisibilityStatus: Record<ObjectType, VisibilityStatus>;
 }
 
@@ -24,6 +28,11 @@ export enum VisibilityStatus {
 // Filter by well names
 export enum WellFilterType {
   Well = "Well"
+}
+
+// Filter by wellbore names
+export enum WellboreFilterType {
+  Wellbore = "Wellbore"
 }
 
 // Filter by properties already fetched for wells
@@ -70,6 +79,7 @@ export const convertObjectTypeToObjectFilterType = (
 // For ObjectFilterType, the property can be any string property under an object.
 export const filterTypeToProperty = {
   [WellFilterType.Well]: "name",
+  [WellboreFilterType.Wellbore]: "name",
   [WellPropertyFilterType.Field]: "field",
   [WellPropertyFilterType.License]: "numLicense",
   [ObjectFilterType.Log]: "name",
@@ -86,7 +96,11 @@ export const getFilterTypeInformation = (filterType: FilterType): string => {
   const onDemandString = `${pluralize(
     filterType
   )} will be fetched on demand by typing 'Enter' or clicking the search icon.`;
-  if (isWellFilterType(filterType) || isWellPropertyFilterType(filterType)) {
+  if (
+    isWellFilterType(filterType) ||
+    isWellPropertyFilterType(filterType) ||
+    isWellboreFilterType(filterType)
+  ) {
     return wildCardString;
   } else if (isObjectFilterType(filterType)) {
     return `${onDemandString}\n${wildCardString}`;
@@ -96,16 +110,22 @@ export const getFilterTypeInformation = (filterType: FilterType): string => {
 
 export type FilterType =
   | WellFilterType
+  | WellboreFilterType
   | WellPropertyFilterType
   | ObjectFilterType;
 export const FilterType = {
   ...WellFilterType,
+  ...WellboreFilterType,
   ...WellPropertyFilterType,
   ...ObjectFilterType
 };
 
 export const isWellFilterType = (filterType: FilterType): boolean => {
   return Object.values<string>(WellFilterType).includes(filterType);
+};
+
+export const isWellboreFilterType = (filterType: FilterType): boolean => {
+  return Object.values<string>(WellboreFilterType).includes(filterType);
 };
 
 export const isWellPropertyFilterType = (filterType: FilterType): boolean => {
@@ -128,6 +148,7 @@ export const EMPTY_FILTER: Filter = {
   objectGrowing: false,
   filterType: WellFilterType.Well,
   searchResults: [],
+  wellboreSearchResults: [],
   objectVisibilityStatus: allVisibleObjects
 };
 
@@ -151,6 +172,7 @@ export function FilterContextProvider({
 }: FilterContextProviderProps) {
   const [selectedFilter, setSelectedFilter] = React.useState<Filter>({
     ...EMPTY_FILTER,
+    ...getLocalStorageFilter(),
     ...initialFilter
   });
 
@@ -163,19 +185,6 @@ export function FilterContextProvider({
     },
     []
   );
-
-  useEffect(() => {
-    // This useEffect is used to set the visibility of the objects in the filter to hidden if they are stored in the local storage.
-    const hiddenItems = getLocalStorageItem<ObjectType[]>(
-      STORAGE_FILTER_HIDDENOBJECTS_KEY,
-      { defaultValue: [] }
-    );
-    const updatedVisibility = { ...selectedFilter.objectVisibilityStatus };
-    hiddenItems.forEach((objectType) => {
-      updatedVisibility[objectType] = VisibilityStatus.Hidden;
-    });
-    updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
-  }, []);
 
   const contextValue: FilterContextProps = React.useMemo(
     () => ({
@@ -222,4 +231,34 @@ export const getSearchRegex = (str: string, exact = false): RegExp => {
   }
 
   return new RegExp(newStr, "i");
+};
+
+const getLocalStorageFilter = (): Partial<Filter> => {
+  const localStorageFilter: Partial<Filter> = {};
+
+  const hiddenItems = getLocalStorageItem<ObjectType[]>(
+    STORAGE_FILTER_HIDDENOBJECTS_KEY,
+    { defaultValue: [] }
+  );
+  if (hiddenItems) {
+    const updatedVisibility = allVisibleObjects;
+    hiddenItems.forEach((objectType) => {
+      updatedVisibility[objectType] = VisibilityStatus.Hidden;
+    });
+    localStorageFilter["objectVisibilityStatus"] = updatedVisibility;
+  }
+
+  const isActive = getLocalStorageItem<boolean>(STORAGE_FILTER_ISACTIVE_KEY);
+  if (isActive !== null) {
+    localStorageFilter["isActive"] = isActive;
+  }
+
+  const objectGrowing = getLocalStorageItem<boolean>(
+    STORAGE_FILTER_OBJECTGROWING_KEY
+  );
+  if (objectGrowing !== null) {
+    localStorageFilter["objectGrowing"] = objectGrowing;
+  }
+
+  return localStorageFilter;
 };

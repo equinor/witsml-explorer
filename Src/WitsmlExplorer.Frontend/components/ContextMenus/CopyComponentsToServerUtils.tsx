@@ -21,12 +21,12 @@ import AuthorizationService from "../../services/authorizationService";
 import ComponentService from "../../services/componentService";
 import JobService, { JobType } from "../../services/jobService";
 import ObjectService from "../../services/objectService";
-import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
-import { displayReplaceModal } from "../Modals/ReplaceModal";
-import { pluralize } from "./ContextMenuUtils";
 import CopyMnemonicsModal, {
   CopyMnemonicsModalProps
 } from "../Modals/CopyMnemonicsModal";
+import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
+import { displayReplaceModal } from "../Modals/ReplaceModal";
+import { pluralize } from "./ContextMenuUtils";
 
 export interface OnClickCopyComponentToServerProps {
   targetServer: Server;

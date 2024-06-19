@@ -2,15 +2,15 @@ import { TextField } from "@equinor/eds-core-react";
 import formatDateString from "components/DateFormatter";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import ObjectReference from "models/jobs/objectReference";
 import { measureToString } from "models/measure";
 import { toObjectReference } from "models/objectOnWellbore";
 import Trajectory from "models/trajectory";
 import TrajectoryStation from "models/trajectoryStation";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface TrajectoryStationPropertiesModalInterface {
@@ -25,7 +25,7 @@ const TrajectoryStationPropertiesModal = (
   const { trajectoryStation, trajectory, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableTrajectoryStation, setEditableTrajectoryStation] =
     useState<TrajectoryStation>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

@@ -1,23 +1,23 @@
 import { Radio, Typography } from "@equinor/eds-core-react";
 import ModalDialog from "components/Modals/ModalDialog";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { useContext, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { useState } from "react";
 import styled from "styled-components";
-import ObjectReference from "../../models/jobs/objectReference";
+import { ComponentType, getParentType } from "../../models/componentType";
 import ComponentReferences, {
   createComponentReferences
 } from "../../models/jobs/componentReferences";
 import { CopyComponentsJob } from "../../models/jobs/copyJobs";
-import JobService, { JobType } from "../../services/jobService";
 import { DeleteComponentsJob } from "../../models/jobs/deleteJobs";
+import ObjectReference from "../../models/jobs/objectReference";
 import { ReplaceComponentsJob } from "../../models/jobs/replaceComponentsJob";
-import { ComponentType, getParentType } from "../../models/componentType";
-import ComponentService from "../../services/componentService";
-import { Server } from "../../models/server";
-import ObjectService from "../../services/objectService";
-import AuthorizationService from "../../services/authorizationService";
 import LogObject from "../../models/logObject";
+import { Server } from "../../models/server";
+import AuthorizationService from "../../services/authorizationService";
+import ComponentService from "../../services/componentService";
+import JobService, { JobType } from "../../services/jobService";
+import ObjectService from "../../services/objectService";
 
 enum CopyMnemonicsType {
   DeleteInsert = "deleteInsert",
@@ -45,10 +45,10 @@ const CopyMnemonicsModal = (
     endIndex
   } = props;
 
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
 
   const [selectedCopyMnemonicsType, setCopyMnemonicsType] = useState<string>(
-    CopyMnemonicsType.DeleteInsert
+    CopyMnemonicsType.Paste
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -160,26 +160,6 @@ const CopyMnemonicsModal = (
                 <div style={{ alignItems: "top" }}>
                   <Radio
                     checked={
-                      selectedCopyMnemonicsType ===
-                      CopyMnemonicsType.DeleteInsert
-                    }
-                    onChange={() =>
-                      setCopyMnemonicsType(CopyMnemonicsType.DeleteInsert)
-                    }
-                  />
-                </div>
-                <div>
-                  <Typography variant="h5">Delete/Insert</Typography>
-                  <Typography variant="body_long">
-                    Delete target mnemonics before copying. The mnemonics will
-                    become equal on the source and target server afterwards.
-                  </Typography>
-                </div>
-              </RadioItemLayout>
-              <RadioItemLayout>
-                <div style={{ alignItems: "top" }}>
-                  <Radio
-                    checked={
                       selectedCopyMnemonicsType === CopyMnemonicsType.Paste
                     }
                     onChange={() =>
@@ -197,6 +177,25 @@ const CopyMnemonicsModal = (
                 </div>
               </RadioItemLayout>
             </RadioLayout>
+            <RadioItemLayout>
+              <div style={{ alignItems: "top" }}>
+                <Radio
+                  checked={
+                    selectedCopyMnemonicsType === CopyMnemonicsType.DeleteInsert
+                  }
+                  onChange={() =>
+                    setCopyMnemonicsType(CopyMnemonicsType.DeleteInsert)
+                  }
+                />
+              </div>
+              <div>
+                <Typography variant="h5">Delete/Insert</Typography>
+                <Typography variant="body_long">
+                  Delete target mnemonics before copying. The mnemonics will
+                  become equal on the source and target server afterwards.
+                </Typography>
+              </div>
+            </RadioItemLayout>
           </ContentLayout>
         }
         onSubmit={() => onSubmit()}

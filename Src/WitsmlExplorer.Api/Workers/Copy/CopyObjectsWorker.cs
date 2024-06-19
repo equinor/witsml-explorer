@@ -36,16 +36,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             if (job.Source.ObjectType == EntityType.Log)
             {
-                return await _copyLogWorker.Execute(job);
+                return await _copyLogWorker.Execute(job, cancellationToken);
             }
-            return await GenericCopy(job);
+            return await GenericCopy(job, cancellationToken);
         }
 
-        private async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job)
+        private async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job, CancellationToken? cancellationToken = null)
         {
             Witsml.IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
+            Witsml.IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
             IWitsmlObjectList fetchObjectsQuery = ObjectQueries.GetWitsmlObjectsByIds(job.Source.WellUid, job.Source.WellboreUid, job.Source.ObjectUids, job.Source.ObjectType);
-            Task<IWitsmlObjectList> fetchObjectsTask = GetSourceWitsmlClientOrThrow().GetFromStoreNullableAsync(fetchObjectsQuery, new OptionsIn(ReturnElements.All));
+            Task<IWitsmlObjectList> fetchObjectsTask = sourceClient.GetFromStoreNullableAsync(fetchObjectsQuery, new OptionsIn(ReturnElements.All));
             Task<WitsmlWellbore> fetchWellboreTask = WorkerTools.GetWellbore(targetClient, job.Target, retry: true);
             await Task.WhenAll(fetchObjectsTask, fetchWellboreTask);
             IWitsmlObjectList objectsToCopy = fetchObjectsTask.Result;
@@ -53,16 +54,20 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (objectsToCopy == null)
             {
-                return (new WorkerResult(targetClient.GetServerHostname(), false, "Failed to deserialize response from Witsml server when fetching objects to copy"), null);
+                return (new WorkerResult(targetClient.GetServerHostname(), false, "Failed to deserialize response from Witsml server when fetching objects to copy", sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
             if (!objectsToCopy.Objects.Any())
             {
-                return (new WorkerResult(targetClient.GetServerHostname(), false, "Could not find any objects to copy"), null);
+                return (new WorkerResult(targetClient.GetServerHostname(), false, "Could not find any objects to copy", sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return (new WorkerResult(targetClient.GetServerHostname(), false, CancellationMessage(), CancellationReason(), sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
             ICollection<WitsmlObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectsToCopy.Objects, targetWellbore);
             RefreshObjects refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Source.ObjectType);
-            return await _copyUtils.CopyObjectsOnWellbore(targetClient, queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
+            return await _copyUtils.CopyObjectsOnWellbore(targetClient, sourceClient, queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
     }
 }

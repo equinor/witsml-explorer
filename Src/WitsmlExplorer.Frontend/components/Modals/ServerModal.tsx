@@ -9,13 +9,13 @@ import UserCredentialsModal, {
 } from "components/Modals/UserCredentialsModal";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import {
   DisplayModalAction,
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
+import { useOperationState } from "hooks/useOperationState";
 import { Server } from "models/server";
 import { msalEnabled } from "msal/MsalAuthProvider";
 import React, {
@@ -23,7 +23,6 @@ import React, {
   ChangeEvent,
   Dispatch,
   SetStateAction,
-  useContext,
   useState
 } from "react";
 import AuthorizationService from "services/authorizationService";
@@ -39,7 +38,7 @@ export interface ServerModalProps {
 
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const queryClient = useQueryClient();
-  const { operationState, dispatchOperation } = useContext(OperationContext);
+  const { operationState, dispatchOperation } = useOperationState();
   const { colors } = operationState;
   const [server, setServer] = useState<Server>(props.server);
   const [connectionVerified, setConnectionVerified] = useState<boolean>(false);

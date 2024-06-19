@@ -14,6 +14,12 @@ export function useGetMnemonics(
   const [mnemonics, setMnemonics] = useState<string[]>(null);
   const { connectedServer } = useConnectedServer();
 
+  const updateMnemonics = (newMnemonics: string[]) => {
+    if (JSON.stringify(newMnemonics) !== JSON.stringify(mnemonics)) {
+      setMnemonics(newMnemonics);
+    }
+  };
+
   useEffect(() => {
     if (!isFethingLogCurveInfoList) {
       if (mnemonicsSearchParams) {
@@ -35,11 +41,11 @@ export function useGetMnemonics(
         ) {
           sendMissingMnemonicsWarning(connectedServer.url, missingMnemonics);
         }
-        setMnemonics(newMnemonics);
+        updateMnemonics(newMnemonics);
       } else if (location?.state?.mnemonics) {
-        setMnemonics(JSON.parse(location.state.mnemonics));
+        updateMnemonics(JSON.parse(location.state.mnemonics));
       } else {
-        setMnemonics(getExistingMnemonics(logCurveInfoList));
+        updateMnemonics(getExistingMnemonics(logCurveInfoList));
       }
     }
   }, [

@@ -1,10 +1,10 @@
 import { Breadcrumbs as EdsBreadcrumbs } from "@equinor/eds-core-react";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useGetActiveRoute } from "hooks/useGetActiveRoute";
+import { useOperationState } from "hooks/useOperationState";
 import { capitalize } from "lodash";
 import {
   ObjectType,
@@ -14,17 +14,20 @@ import {
 import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   NavLink,
   NavigateFunction,
+  createSearchParams,
   useNavigate,
-  useParams
+  useParams,
+  useSearchParams
 } from "react-router-dom";
 import {
   getLogObjectViewPath,
   getLogObjectsViewPath,
   getLogTypesViewPath,
+  getMultiLogCurveInfoListViewPath,
   getObjectGroupsViewPath,
   getObjectViewPath,
   getObjectsViewPath,
@@ -39,7 +42,7 @@ import { v4 as uuid } from "uuid";
 export function Breadcrumbs() {
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
   const {
     isJobsView,
@@ -54,11 +57,13 @@ export function Breadcrumbs() {
     isLogObjectsView,
     isLogObjectView,
     isLogCurveValuesView,
-    isMultiLogsCurveInfoListView
+    isMultiLogsCurveInfoListView,
+    isMultiLogCurveValuesView
   } = useGetActiveRoute();
 
   const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
     useParams();
+  const [searchParams] = useSearchParams();
   const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
   const { well } = useGetWell(connectedServer, wellUid);
@@ -98,7 +103,17 @@ export function Breadcrumbs() {
         isLogObjectView
       ),
       getLogCurveValuesCrumb(isLogCurveValuesView),
-      getLogsCurveInfoListCrumb(isMultiLogsCurveInfoListView)
+      getMultiLogsCurveInfoListCrumb(
+        serverUrl,
+        objectGroup,
+        wellbore,
+        logType,
+        navigate,
+        isMultiLogsCurveInfoListView,
+        isMultiLogCurveValuesView,
+        searchParams
+      ),
+      getMultiLogCurveValuesCrumb(isMultiLogCurveValuesView)
     ].filter((item) => item.name);
   };
 
@@ -116,7 +131,8 @@ export function Breadcrumbs() {
     isQueryView,
     isSearchView,
     isLogCurveValuesView,
-    isMultiLogsCurveInfoListView
+    isMultiLogsCurveInfoListView,
+    isMultiLogCurveValuesView
   ]);
 
   return (
@@ -307,8 +323,47 @@ const getLogCurveValuesCrumb = (isLogCurveValuesView: boolean) => {
   return isLogCurveValuesView ? { name: "Data" } : {};
 };
 
-const getLogsCurveInfoListCrumb = (isMultiLogsCurveInfoListView: boolean) => {
-  return isMultiLogsCurveInfoListView ? { name: "Multiple logs" } : {};
+const getMultiLogsCurveInfoListCrumb = (
+  serverUrl: string,
+  objectGroup: string,
+  wellbore: Wellbore,
+  logType: string,
+  navigate: NavigateFunction,
+  isMultiLogsCurveInfoListView: boolean,
+  isMultiLogCurveValuesView: boolean,
+  searchParams: URLSearchParams
+) => {
+  let newSearchParams: URLSearchParams = null;
+  if (isMultiLogCurveValuesView) {
+    const logMnemonics = searchParams.get("mnemonics");
+    if (logMnemonics) {
+      const logUids = Object.keys(JSON.parse(logMnemonics));
+      const logUidsFormatted = JSON.stringify(logUids);
+      newSearchParams = createSearchParams({ logs: logUidsFormatted });
+    }
+  }
+  return isMultiLogsCurveInfoListView || isMultiLogCurveValuesView
+    ? {
+        name: "Multiple logs",
+        onClick: () => {
+          if (isMultiLogsCurveInfoListView || !newSearchParams) return;
+          navigate({
+            pathname: getMultiLogCurveInfoListViewPath(
+              serverUrl,
+              wellbore.wellUid,
+              wellbore.uid,
+              objectGroup,
+              logType
+            ),
+            search: newSearchParams.toString()
+          });
+        }
+      }
+    : {};
+};
+
+const getMultiLogCurveValuesCrumb = (isMultiLogCurveValuesView: boolean) => {
+  return isMultiLogCurveValuesView ? { name: "Multi Data" } : {};
 };
 
 const getJobsCrumb = (isJobsView: boolean) => {

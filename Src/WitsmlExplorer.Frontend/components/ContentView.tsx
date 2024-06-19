@@ -10,5 +10,6 @@ export default function ContentView() {
 }
 
 const ContentPanel = styled.div`
+  position: relative;
   height: 100%;
 `;

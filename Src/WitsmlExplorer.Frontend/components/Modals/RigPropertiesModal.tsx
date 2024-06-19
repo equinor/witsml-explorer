@@ -7,14 +7,14 @@ import {
   validPhoneNumber,
   validText
 } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
 import { rigType } from "models/rigType";
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface RigPropertiesModalProps {
@@ -29,7 +29,7 @@ const RigPropertiesModal = (
   const { mode, rig, dispatchOperation } = props;
   const {
     operationState: { timeZone }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableRig, setEditableRig] = useState<Rig>({ ...rig });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dTimStartOpValid, setDTimStartOpValid] = useState<boolean>(true);

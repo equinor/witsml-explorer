@@ -28,10 +28,9 @@ import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DispatchOperation, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -39,21 +38,17 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import useExport from "hooks/useExport";
 import { useGetMnemonics } from "hooks/useGetMnemonics";
+import { useOperationState } from "hooks/useOperationState";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
-import {
-  DeleteLogCurveValuesJob,
-  IndexRange
-} from "models/jobs/deleteLogCurveValuesJob";
+import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
-import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import React, {
   CSSProperties,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -95,7 +90,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat, colors, theme },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [searchParams, setSearchParams] = useSearchParams();
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
@@ -219,29 +214,6 @@ export const CurveValuesView = (): React.ReactElement => {
     });
   };
 
-  const getDeleteLogCurveValuesJob = useCallback(
-    (
-      mnemonics: string[],
-      checkedContentItems: CurveValueRow[],
-      selectedLog: LogObject,
-      tableData: CurveValueRow[]
-    ) => {
-      const indexRanges = getIndexRanges(
-        checkedContentItems,
-        tableData,
-        selectedLog
-      );
-
-      const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
-        logReference: toObjectReference(selectedLog),
-        mnemonics: mnemonics,
-        indexRanges: indexRanges
-      };
-      return deleteLogCurveValuesJob;
-    },
-    [getIndexRanges, toObjectReference]
-  );
-
   const executeExport = () => {
     switch (downloadOptions) {
       case DownloadOptions.All:
@@ -305,13 +277,12 @@ export const CurveValuesView = (): React.ReactElement => {
       const originalTableData = tableData.filter((data) =>
         checkedContentItems.map((c) => c.id).includes(data.id)
       );
-      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(
-        mnemonics,
-        originalTableData,
+      const indexRanges = getIndexRanges(originalTableData, tableData, log);
+      const contextMenuProps = {
         log,
-        tableData
-      );
-      const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
+        mnemonics,
+        indexRanges
+      };
       const position = getContextMenuPosition(event);
       dispatchOperation({
         type: OperationType.DisplayContextMenu,
@@ -324,7 +295,7 @@ export const CurveValuesView = (): React.ReactElement => {
     [
       mnemonics,
       log,
-      getDeleteLogCurveValuesJob,
+      getIndexRanges,
       dispatchOperation,
       getContextMenuPosition,
       tableData
@@ -337,7 +308,7 @@ export const CurveValuesView = (): React.ReactElement => {
         columnOf: curveSpecification,
         property: curveSpecification.mnemonic,
         label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
-        type: getColumnType(curveSpecification)
+        type: getColumnType(curveSpecification, log)
       };
     });
     const prevMnemonics = columns.map((column) => column.property);
@@ -376,11 +347,10 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [startIndex, endIndex, mnemonics, log]);
 
   const refreshData = () => {
-    setTableData([]);
     setIsLoading(true);
     setAutoRefresh(false);
 
-    if (log && !isFetching && mnemonics) {
+    if (log && !isFetchingLog && mnemonics) {
       getLogData(startIndex, endIndex)
         .catch(truncateAbortHandler)
         .then(() => setIsLoading(false));
@@ -605,16 +575,15 @@ export const CurveValuesView = (): React.ReactElement => {
     ]
   );
 
-  if (isFetching) {
-    return <ProgressSpinner message="Fetching Log." />;
-  }
-
   if (isFetchedLog && !log) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (
     <>
+      {(isFetching || isLoading) && (
+        <ProgressSpinnerOverlay message="Fetching data" />
+      )}
       <ContentContainer>
         <CommonPanelContainer>
           <EditSelectedLogCurveInfo
@@ -654,7 +623,6 @@ export const CurveValuesView = (): React.ReactElement => {
             </>
           )}
         </CommonPanelContainer>
-        {isLoading && <ProgressSpinner message="Fetching data" />}
         {!isLoading && !tableData.length && (
           <Message>
             <Typography>No data</Typography>
@@ -696,12 +664,16 @@ const getIndexRanges = (
   tableData: CurveValueRow[],
   selectedLog: LogObject
 ): IndexRange[] => {
+  const isDecreasing =
+    selectedLog.direction === WITSML_LOG_ORDERTYPE_DECREASING;
   const sortedItems = checkedContentItems.sort((a, b) => {
     const idA =
       selectedLog.indexType === "datetime" ? new Date(a.id) : Number(a.id);
     const idB =
       selectedLog.indexType === "datetime" ? new Date(b.id) : Number(b.id);
-    return idA < idB ? -1 : idA > idB ? 1 : 0;
+    if (idA < idB) return isDecreasing ? 1 : -1;
+    if (idA > idB) return isDecreasing ? -1 : 1;
+    return 0;
   });
   const indexCurve = selectedLog.indexCurve;
   const idList = tableData.map((row) => String(row[indexCurve]));
@@ -752,7 +724,17 @@ const getComparatorByColumn = (
   return [comparator, column.property];
 };
 
-const getColumnType = (curveSpecification: CurveSpecification) => {
+const getColumnType = (
+  curveSpecification: CurveSpecification,
+  log: LogObject
+) => {
+  const isTimeLog = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+  if (
+    isTimeLog &&
+    curveSpecification.mnemonic.toLowerCase() === log.indexCurve.toLowerCase()
+  ) {
+    return ContentType.DateTime;
+  }
   const isTimeMnemonic = (mnemonic: string) =>
     ["time", "datetime", "date time"].indexOf(mnemonic.toLowerCase()) >= 0;
   if (isTimeMnemonic(curveSpecification.mnemonic)) {

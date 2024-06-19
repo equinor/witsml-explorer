@@ -21,9 +21,9 @@ import {
   ContentType
 } from "components/ContentViews/table/tableParts";
 import { getSearchRegex } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import { DecimalPreference, UserTheme } from "contexts/operationStateReducer";
-import { useContext, useMemo } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { useMemo } from "react";
 import Icon from "styles/Icons";
 import {
   STORAGE_CONTENTTABLE_ORDER_KEY,
@@ -47,7 +47,7 @@ export const useColumnDef = (
 ) => {
   const {
     operationState: { decimals, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const isCompactMode = theme === UserTheme.Compact;
 
   return useMemo(() => {
@@ -60,8 +60,8 @@ export const useColumnDef = (
         savedWidths?.[column.label] ??
         calculateColumnWidth(column.label, isCompactMode, column.type);
       return {
-        id: column.label,
-        accessorKey: column.property,
+        id: column.property,
+        accessorFn: (data) => data[column.property],
         header: column.label,
         size: width,
         meta: { type: column.type },

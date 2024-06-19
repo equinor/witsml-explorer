@@ -24,6 +24,10 @@ import {
   LogCurvePriorityModalProps
 } from "components/Modals/LogCurvePriorityModal";
 import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import {
+  OffsetLogCurveModal,
+  OffsetLogCurveModalProps
+} from "components/Modals/OffsetLogCurveModal";
 import SelectIndexToDisplayModal from "components/Modals/SelectIndexToDisplayModal";
 import {
   DisplayModalAction,
@@ -162,6 +166,22 @@ const LogCurveInfoContextMenu = (
     });
   };
 
+  const onClickOffset = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const offsetLogCurveModalProps: OffsetLogCurveModalProps = {
+      selectedLog,
+      mnemonics: checkedLogCurveInfoRowsWithoutIndexCurve.map(
+        (lc) => lc.logCurveInfo.mnemonic
+      ),
+      startIndex: selectedLog.startIndex,
+      endIndex: selectedLog.endIndex
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <OffsetLogCurveModal {...offsetLogCurveModalProps} />
+    });
+  };
+
   const onClickSetPriority = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const newCurvesToPrioritize = checkedLogCurveInfoRows.map(
@@ -206,7 +226,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"open"}
           onClick={onClickOpen}
-          disabled={checkedLogCurveInfoRows.length === 0 || isMultiLog}
+          disabled={checkedLogCurveInfoRows.length === 0}
         >
           <StyledIcon
             name="folderOpen"
@@ -325,6 +345,22 @@ const LogCurveInfoContextMenu = (
         >
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"offset"}
+          onClick={onClickOffset}
+          disabled={
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
+          }
+        >
+          <StyledIcon name="tune" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>
+            {menuItemText(
+              "offset",
+              ComponentType.Mnemonic,
+              checkedLogCurveInfoRowsWithoutIndexCurve
+            )}
+          </Typography>
         </MenuItem>,
         <MenuItem
           key={"setPriority"}

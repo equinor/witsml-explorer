@@ -1,8 +1,8 @@
 import { Icon, TextField } from "@equinor/eds-core-react";
 import { Button } from "components/StyledComponents/Button";
-import React, { ChangeEvent, useContext, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
 import { MousePosition } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
 import LogCurvePriorityService from "../../services/logCurvePriorityService";
@@ -34,7 +34,7 @@ export const LogCurvePriorityModal = (
   const [updatedPrioritizedCurves, setUpdatedPrioritizedCurves] =
     useState<string[]>(prioritizedCurves);
   const [newCurve, setNewCurve] = useState<string>("");
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [position, setPosition] = useState<MousePosition>({
     mouseX: null,
     mouseY: null

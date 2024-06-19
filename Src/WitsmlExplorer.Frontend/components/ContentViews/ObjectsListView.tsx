@@ -5,7 +5,7 @@ import { useGetObjects } from "../../hooks/query/useGetObjects";
 import { useGetWellbore } from "../../hooks/query/useGetWellbore";
 import { ObjectType, pluralizeObjectType } from "../../models/objectType";
 import { ItemNotFound } from "../../routes/ItemNotFound";
-import ProgressSpinner from "../ProgressSpinner";
+import { ProgressSpinnerOverlay } from "../ProgressSpinner";
 import BhaRunsListView from "./BhaRunsListView";
 import ChangeLogsListView from "./ChangeLogsListView";
 import FluidsReportsListView from "./FluidsReportListView";
@@ -61,21 +61,22 @@ export function ObjectsListView() {
     objectGroup as ObjectType
   );
 
-  if (isFetching) {
-    return (
-      <ProgressSpinner
-        message={`Fetching ${pluralizeObjectType(objectGroup as ObjectType)}`}
-      />
-    );
-  }
-
   if (isFetchedWellbore && !wellbore) {
     return (
       <ItemNotFound itemType={pluralizeObjectType(objectGroup as ObjectType)} />
     );
   }
 
-  return getObjectListView(objectGroup);
+  return (
+    <>
+      {isFetching && (
+        <ProgressSpinnerOverlay
+          message={`Fetching ${pluralizeObjectType(objectGroup as ObjectType)}`}
+        />
+      )}
+      {getObjectListView(objectGroup)}
+    </>
+  );
 }
 
 const getObjectListView = (objectType: string) => {

@@ -29,6 +29,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private CopyComponentsJob _job;
         private Uri _targetHostname;
+        private Uri _sourceHostname;
         private ComponentType _componentType;
         private string _errorMessage;
         private readonly ICopyLogDataWorker _copyLogDataWorker;
@@ -45,13 +46,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return await _copyLogDataWorker.Execute(new CopyLogDataJob()
                 {
                     Source = job.Source,
-                    Target = job.Target
-                });
+                    Target = job.Target,
+                }, cancellationToken);
             }
 
             _job = job;
             IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
             _targetHostname = targetClient.GetServerHostname();
+            IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
+            _sourceHostname = sourceClient.GetServerHostname();
             _componentType = job.Source.ComponentType;
             _errorMessage = $"Failed to copy {_componentType.ToPluralLowercase()}.";
 
@@ -78,7 +81,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 string reason = $"Could not retrieve some {_componentType.ToPluralLowercase()}, missing uids: {string.Join(", ", missingUids)}.";
                 return LogErrorAndReturnResult(reason);
             }
-
+            cancellationToken?.ThrowIfCancellationRequested();
             WitsmlObjectOnWellbore updateTargetQuery = ObjectQueries.CopyComponents(source.Objects?.FirstOrDefault(), _componentType, job.Target, toCopyUids);
             QueryResult copyResult = await targetClient.UpdateInStoreAsync(updateTargetQuery.AsItemInWitsmlList());
             if (!copyResult.IsSuccessful)
@@ -88,7 +91,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
             RefreshObjects refreshAction = new(_targetHostname, job.Target.WellUid, job.Target.WellboreUid, _componentType.ToParentType(), job.Target.Uid);
-            WorkerResult workerResult = new(_targetHostname, true, $"Components {string.Join(", ", toCopyUids)} copied to: {job.Target.Name}");
+            WorkerResult workerResult = new(_targetHostname, true, $"Components {string.Join(", ", toCopyUids)} copied to: {job.Target.Name}", sourceServerUrl: _sourceHostname);
 
             return (workerResult, refreshAction);
         }
@@ -118,7 +121,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private (WorkerResult, RefreshAction) LogErrorAndReturnResult(string reason)
         {
             Logger.LogError("{errorMessage} {reason} - {description}", _errorMessage, reason, _job.Description());
-            return (new WorkerResult(_targetHostname, false, _errorMessage, reason), null);
+            return (new WorkerResult(_targetHostname, false, _errorMessage, reason, sourceServerUrl: _sourceHostname), null);
         }
     }
 }

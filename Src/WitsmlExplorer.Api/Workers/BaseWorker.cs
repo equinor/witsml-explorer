@@ -39,6 +39,26 @@ namespace WitsmlExplorer.Api.Workers
             return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Source);
         }
 
+        protected string GetJobStatus(bool status,
+            CancellationToken? cancellationToken)
+        {
+            if (status) return "Success";
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return JobStatus.Cancelled.ToString();
+            }
+            return "Fail";
+        }
+
+        protected string CancellationMessage()
+        {
+            return "The job was cancelled.";
+        }
+
+        protected string CancellationReason()
+        {
+            return "The job was cancelled by the user.";
+        }
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
         {
             T job = await jobStream.Deserialize<T>();
@@ -55,6 +75,10 @@ namespace WitsmlExplorer.Api.Workers
                 job.JobInfo.Status = task.WorkerResult.IsSuccess ? JobStatus.Finished : JobStatus.Failed;
                 if (!task.WorkerResult.IsSuccess)
                 {
+                    if (cancellationToken is { IsCancellationRequested: true })
+                    {
+                        job.JobInfo.Status = JobStatus.Cancelled;
+                    }
                     job.JobInfo.FailedReason = task.WorkerResult.Reason;
                 }
 
@@ -65,14 +89,16 @@ namespace WitsmlExplorer.Api.Workers
                 job.JobInfo.Status = JobStatus.Cancelled;
                 job.JobInfo.FailedReason = ex.Message;
                 Logger.LogError("{jobType} was cancelled.", job.JobInfo.JobType);
-                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} cancelled", ex.Message, jobId: job.JobInfo.Id), null);
+                Uri sourceServerUrl = job.JobInfo.SourceServer != null ? new Uri(job.JobInfo.SourceServer) : null;
+                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} cancelled", ex.Message, jobId: job.JobInfo.Id, sourceServerUrl: sourceServerUrl), null);
             }
             catch (Exception ex)
             {
                 job.JobInfo.Status = JobStatus.Failed;
                 job.JobInfo.FailedReason = ex.Message;
                 Logger.LogError("An unexpected exception has occured during {jobType}: {ex}", job.JobInfo.JobType, ex);
-                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} failed", ex.Message, jobId: job.JobInfo.Id), null);
+                Uri sourceServerUrl = job.JobInfo.SourceServer != null ? new Uri(job.JobInfo.SourceServer) : null;
+                return (new WorkerResult(new Uri(job.JobInfo.TargetServer), false, $"{job.JobInfo.JobType} failed", ex.Message, jobId: job.JobInfo.Id, sourceServerUrl: sourceServerUrl), null);
             }
         }
 

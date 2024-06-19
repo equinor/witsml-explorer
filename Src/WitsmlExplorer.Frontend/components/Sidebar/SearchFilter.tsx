@@ -11,10 +11,11 @@ import {
   FilterContext,
   FilterType,
   getFilterTypeInformation,
-  isObjectFilterType
+  isObjectFilterType,
+  isWellboreFilterType
 } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { getSearchViewPath } from "routes/utils/pathBuilder";
@@ -25,13 +26,13 @@ import Icons from "styles/Icons";
 const searchOptions = Object.values(FilterType);
 
 const SearchFilter = (): React.ReactElement => {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const { connectedServer } = useConnectedServer();
   const selectedOption = selectedFilter?.filterType;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [expanded, setExpanded] = useState<boolean>(false);
   const [nameFilter, setNameFilter] = useState<string>(selectedFilter.name);
   const textFieldRef = useRef<HTMLInputElement>(null);
@@ -65,7 +66,7 @@ const SearchFilter = (): React.ReactElement => {
   }, [selectedFilter.name]);
 
   const openSearchView = (option: FilterType) => {
-    if (isObjectFilterType(option)) {
+    if (isObjectFilterType(option) || isWellboreFilterType(option)) {
       const searchParams = createSearchParams({
         value: nameFilter
       });

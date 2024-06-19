@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
-import OperationContext from "contexts/operationContext";
-import { ReactElement, forwardRef, useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { ReactElement, forwardRef } from "react";
 import OperationType from "../../contexts/operationType";
 import ObjectOnWellbore from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
@@ -24,7 +24,7 @@ export interface BatchModifyMenuItemProps {
 export const BatchModifyMenuItem = forwardRef(
   (props: BatchModifyMenuItemProps, ref: React.Ref<any>): ReactElement => {
     const { checkedObjects, objectType } = props;
-    const { dispatchOperation } = useContext(OperationContext);
+    const { dispatchOperation } = useOperationState();
     const batchModifyProperties = objectBatchModifyProperties[objectType];
 
     const onSubmitBatchModify = async (batchUpdates: {

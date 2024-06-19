@@ -24,5 +24,10 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return CopyJob.GetWellName();
         }
+
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
     }
 }

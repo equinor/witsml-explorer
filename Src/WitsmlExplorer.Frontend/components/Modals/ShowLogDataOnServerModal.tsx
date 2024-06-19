@@ -7,11 +7,11 @@ import {
 import ModalDialog from "components/Modals/ModalDialog";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { Server } from "models/server";
-import { CSSProperties, ChangeEvent, useContext, useState } from "react";
+import { CSSProperties, ChangeEvent, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import { createLogCurveValuesSearchParams } from "routes/utils/createLogCurveValuesSearchParams";
@@ -35,7 +35,7 @@ export function ShowLogDataOnServerModal() {
   const {
     operationState: { colors, theme },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { wellUid, wellboreUid, objectGroup, objectUid, logType } = useParams();
   const [isUrlTooLong, setIsUrlTooLong] = useState(false);
   const [searchParams] = useSearchParams();

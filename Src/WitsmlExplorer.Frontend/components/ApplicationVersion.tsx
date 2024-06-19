@@ -1,9 +1,9 @@
 import { EdsProvider, Typography } from "@equinor/eds-core-react";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
+import { useOperationState } from "hooks/useOperationState";
 import JobStatus from "models/jobStatus";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
@@ -58,7 +58,7 @@ interface UpdateStatus {
 function DesktopUpdateStatus() {
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [updateStatus, setUpdateStatus] = useState<UpdateStatus>(null);
 
   useEffect(() => {

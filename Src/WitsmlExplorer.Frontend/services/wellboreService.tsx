@@ -9,11 +9,10 @@ export default class WellboreService {
     abortSignal?: AbortSignal,
     server?: Server
   ): Promise<Wellbore[]> {
-    const response = await ApiClient.get(
-      `api/wells/${encodeURIComponent(wellUid)}/wellbores`,
-      abortSignal,
-      server
-    );
+    const endpoint = wellUid
+      ? `api/wells/${encodeURIComponent(wellUid)}/wellbores`
+      : "api/wellbores";
+    const response = await ApiClient.get(endpoint, abortSignal, server);
 
     if (response.ok) {
       return response.json();

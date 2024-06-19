@@ -1,6 +1,6 @@
 import { CellProps, Table } from "@equinor/eds-core-react";
-import OperationContext from "contexts/operationContext";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -37,7 +37,7 @@ const SortableEdsTable = (props: SortableEdsTableProps): React.ReactElement => {
   const { columns, data, caption } = props;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   const initColumns = (): Column[] =>
     columns.map((col) => {

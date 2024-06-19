@@ -19,15 +19,15 @@ import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import TubularComponentPropertiesModal from "components/Modals/TubularComponentPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Tubular from "models/tubular";
-import React, { useContext } from "react";
+import React from "react";
 import { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
@@ -41,7 +41,7 @@ const TubularComponentContextMenu = (
 ): React.ReactElement => {
   const { checkedTubularComponents, tubular } = props;
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
   );

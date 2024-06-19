@@ -44,6 +44,7 @@ namespace WitsmlExplorer.Api.Models
         CompareLogData,
         CountLogDataRows,
         BatchModifyLogCurveInfo,
-        DownloadAllLogData
+        DownloadAllLogData,
+        OffsetLogCurves
     }
 }

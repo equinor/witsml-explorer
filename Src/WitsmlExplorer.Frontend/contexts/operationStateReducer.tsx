@@ -1,3 +1,4 @@
+import UserCredentialsModal from "components/Modals/UserCredentialsModal";
 import OperationType from "contexts/operationType";
 import { Dispatch, ReactElement, useReducer } from "react";
 import { Colors, light } from "styles/Colors";
@@ -23,7 +24,8 @@ export enum TimeZone {
 
 export enum DateTimeFormat {
   Raw = "raw",
-  Natural = "natural"
+  Natural = "natural",
+  RawNoOffset = "rawNoOffset"
 }
 
 export enum DecimalPreference {
@@ -77,6 +79,11 @@ export interface SetDateTimeFormatAction extends PayloadAction {
   payload: DateTimeFormat;
 }
 
+export interface SetHotKeysEnabledAction extends PayloadAction {
+  type: OperationType.SetHotKeysEnabled;
+  payload: boolean;
+}
+
 export interface SetDecimalAction extends PayloadAction {
   type: OperationType.SetDecimal;
   payload: DecimalPreference;
@@ -91,6 +98,7 @@ export interface OperationState {
   colors: Colors;
   dateTimeFormat: DateTimeFormat;
   decimals: DecimalPreference;
+  hotKeysEnabled: boolean;
 }
 
 export interface MousePosition {
@@ -122,7 +130,8 @@ export const initOperationStateReducer = (): [
     timeZone: TimeZone.Raw,
     colors: Light,
     dateTimeFormat: DateTimeFormat.Raw,
-    decimals: DecimalPreference.Raw
+    decimals: DecimalPreference.Raw,
+    hotKeysEnabled: false
   };
   return useReducer(reducer, initialState);
 };
@@ -150,6 +159,8 @@ export const reducer = (
       return setDateTimeFormat(state, action as SetDateTimeFormatAction);
     case OperationType.SetDecimal:
       return setDecimal(state, action as SetDecimalAction);
+    case OperationType.SetHotKeysEnabled:
+      return setHotKeysEnabled(state, action as SetHotKeysEnabledAction);
     default:
       throw new Error();
   }
@@ -169,7 +180,14 @@ const displayModal = (
   state: OperationState,
   { payload }: DisplayModalAction
 ) => {
-  const modals = state.modals.concat(payload);
+  const isUserCredentialsModal = payload.type === UserCredentialsModal;
+
+  const modals = isUserCredentialsModal // We don't want to stack login modals
+    ? state.modals
+        .filter((modal) => modal.type !== UserCredentialsModal)
+        .concat(payload)
+    : state.modals.concat(payload);
+
   return {
     ...state,
     contextMenu: EMPTY_CONTEXT_MENU,
@@ -232,6 +250,16 @@ const setDecimal = (state: OperationState, { payload }: SetDecimalAction) => {
   };
 };
 
+const setHotKeysEnabled = (
+  state: OperationState,
+  { payload }: SetHotKeysEnabledAction
+) => {
+  return {
+    ...state,
+    hotKeysEnabled: payload
+  };
+};
+
 export type OperationAction =
   | DisplayModalAction
   | HideModalAction
@@ -241,6 +269,7 @@ export type OperationAction =
   | SetTimeZoneAction
   | SetModeAction
   | SetDateTimeFormatAction
-  | SetDecimalAction;
+  | SetDecimalAction
+  | SetHotKeysEnabledAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

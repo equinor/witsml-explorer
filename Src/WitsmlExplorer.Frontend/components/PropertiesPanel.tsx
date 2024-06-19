@@ -1,20 +1,20 @@
 import { Typography } from "@equinor/eds-core-react";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useOperationState } from "hooks/useOperationState";
 import { getObjectOnWellboreProperties } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { getWellProperties } from "models/well";
 import { getWellboreProperties } from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
 const PropertiesPanel = (): React.ReactElement => {
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid, objectGroup, objectUid } = useParams();
   const { well } = useGetWell(connectedServer, wellUid);

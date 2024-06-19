@@ -8,18 +8,18 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "components/ContextMenus/FluidContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import Fluid from "models/fluid";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 
@@ -32,7 +32,7 @@ interface FluidsRow extends ContentTableRow, FluidAsStrings {
 }
 
 export default function FluidsView() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { object: fluidsReport } = useGetObject(
@@ -270,24 +270,25 @@ export default function FluidsView() {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching FluidsReport.`} />;
-  }
-
   if (isFetched && !fluidsReport) {
     return <ItemNotFound itemType={ObjectType.FluidsReport} />;
   }
 
   return (
-    <ContentTable
-      viewId="fluidView"
-      columns={columns}
-      data={fluidRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      insetColumns={insetColumns}
-      showRefresh
-      downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
-    />
+    <>
+      {isFetching && (
+        <ProgressSpinnerOverlay message={`Fetching FluidsReport.`} />
+      )}
+      <ContentTable
+        viewId="fluidView"
+        columns={columns}
+        data={fluidRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        insetColumns={insetColumns}
+        showRefresh
+        downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
+      />
+    </>
   );
 }
