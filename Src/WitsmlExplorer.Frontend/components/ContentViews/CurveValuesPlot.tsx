@@ -1,15 +1,33 @@
+import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
+import {
+  ThresholdLevel,
+  transformCurveData
+} from "components/ContentViews/CurveDataTransformation";
 import {
   ContentType,
   ExportableContentTableColumn
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import { ContentViewDimensionsContext } from "components/PageLayout";
-import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
+import { StyledNativeSelect } from "components/Select";
+import { CommonPanelContainer } from "components/StyledComponents/Container";
+import {
+  DateTimeFormat,
+  TimeZone,
+  UserTheme
+} from "contexts/operationStateReducer";
 import { ECharts } from "echarts";
 import ReactEcharts from "echarts-for-react";
 import { useOperationState } from "hooks/useOperationState";
 import { CurveSpecification } from "models/logData";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
@@ -17,6 +35,7 @@ import { Colors } from "styles/Colors";
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
 const TOOLTIP_OFFSET_Y = 30;
+const GAP_DISTANCE = 3;
 
 interface ControlledTooltipProps {
   visible: boolean;
@@ -45,8 +64,12 @@ export const CurveValuesPlot = React.memo(
       (col, index) => col.type === ContentType.Number || index === 0
     );
     const {
-      operationState: { colors, dateTimeFormat }
+      operationState: { colors, dateTimeFormat, theme }
     } = useOperationState();
+    const [enableScatter, setEnableScatter] = useState<boolean>(false);
+    const [removeOutliers, setRemoveOutliers] = useState<boolean>(false);
+    const [outliersThresholdLevel, setOutliersThresholdLevel] =
+      useState<ThresholdLevel>(ThresholdLevel.Medium);
     const chart = useRef<ECharts>(null);
     const selectedLabels = useRef<Record<string, boolean>>(null);
     const scrollIndex = useRef<number>(0);
@@ -65,6 +88,16 @@ export const CurveValuesPlot = React.memo(
       useState<ControlledTooltipProps>({
         visible: false
       } as ControlledTooltipProps);
+    const transformedData = useMemo(
+      () =>
+        transformCurveData(
+          data,
+          columns,
+          outliersThresholdLevel,
+          !autoRefresh && removeOutliers
+        ),
+      [data, columns, outliersThresholdLevel, removeOutliers, autoRefresh]
+    );
 
     useEffect(() => {
       if (contentViewWidth) {
@@ -78,7 +111,7 @@ export const CurveValuesPlot = React.memo(
     }, [contentViewWidth]);
 
     const chartOption = getChartOption(
-      data,
+      transformedData,
       columns,
       name,
       colors,
@@ -90,7 +123,8 @@ export const CurveValuesPlot = React.memo(
       scrollIndex.current,
       horizontalZoom.current,
       verticalZoom.current,
-      isTimeLog
+      isTimeLog,
+      enableScatter
     );
 
     const onMouseOver = (e: any) => {
@@ -183,44 +217,99 @@ export const CurveValuesPlot = React.memo(
     };
 
     return (
-      <div
-        style={{ position: "relative", height: "100%", marginTop: "0.5rem" }}
-      >
-        <ReactEcharts
-          option={chartOption}
-          onEvents={handleEvents}
-          onChartReady={(c) => (chart.current = c)}
-          style={{
-            height: "100%",
-            minWidth: `${width}px`,
-            maxWidth: `${width}px`
-          }}
-        />
+      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <CommonPanelContainer>
+          <EdsProvider density={theme}>
+            <Switch
+              checked={enableScatter}
+              onChange={() => setEnableScatter(!enableScatter)}
+              size={theme === UserTheme.Compact ? "small" : "default"}
+            />
+            <Typography style={{ minWidth: "max-content" }}>
+              Scatter Plot
+            </Typography>
+            {!autoRefresh && (
+              <>
+                <Switch
+                  checked={removeOutliers}
+                  onChange={() => setRemoveOutliers(!removeOutliers)}
+                  size={theme === UserTheme.Compact ? "small" : "default"}
+                />
+                <Typography style={{ minWidth: "max-content" }}>
+                  Hide Outliers
+                </Typography>
+                {removeOutliers && (
+                  <>
+                    <Typography
+                      style={{ minWidth: "max-content", marginLeft: "12px" }}
+                    >
+                      Sensitivity:
+                    </Typography>
+                    <StyledNativeSelect
+                      style={{ maxWidth: "100px" }}
+                      label=""
+                      id="threshold"
+                      onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                        setOutliersThresholdLevel(
+                          event.target.value as ThresholdLevel
+                        )
+                      }
+                      value={outliersThresholdLevel}
+                      colors={colors}
+                    >
+                      {Object.values(ThresholdLevel).map((value) => {
+                        return (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        );
+                      })}
+                    </StyledNativeSelect>
+                  </>
+                )}
+              </>
+            )}
+          </EdsProvider>
+        </CommonPanelContainer>
         <div
-          style={{
-            // The style is added inline as using styled-components caused "flash of unstyled content"
-            position: "absolute",
-            maxWidth: "50%",
-            backgroundColor: "#fff",
-            color: "#333",
-            padding: "5px 15px",
-            borderRadius: "2px",
-            boxShadow: "0 0 2px #aaa",
-            transition: "opacity 0.1s ease-in-out",
-            opacity: controlledTooltip.visible ? 1 : 0,
-            transformOrigin: "bottom",
-            top: controlledTooltip.position
-              ? `${controlledTooltip.position.y}px`
-              : "0px",
-            left: controlledTooltip.position
-              ? `${controlledTooltip.position.x}px`
-              : "0px",
-            border: "1px solid black",
-            transform: "translate(-50%, 0)",
-            whiteSpace: "pre"
-          }}
+          style={{ position: "relative", height: "100%", marginTop: "0.5rem" }}
         >
-          {controlledTooltip.content}
+          <ReactEcharts
+            option={chartOption}
+            onEvents={handleEvents}
+            onChartReady={(c) => (chart.current = c)}
+            style={{
+              height: "100%",
+              minWidth: `${width}px`,
+              maxWidth: `${width}px`
+            }}
+          />
+          <div
+            style={{
+              // The style is added inline as using styled-components caused "flash of unstyled content"
+              position: "absolute",
+              maxWidth: "50%",
+              backgroundColor: "#fff",
+              color: "#333",
+              padding: "5px 15px",
+              borderRadius: "2px",
+              boxShadow: "0 0 2px #aaa",
+              transition: "opacity 0.1s ease-in-out",
+              opacity: controlledTooltip.visible ? 1 : 0,
+              transformOrigin: "bottom",
+              top: controlledTooltip.position
+                ? `${controlledTooltip.position.y}px`
+                : "0px",
+              left: controlledTooltip.position
+                ? `${controlledTooltip.position.x}px`
+                : "0px",
+              border: "1px solid black",
+              transform: "translate(-50%, 0)",
+              whiteSpace: "pre"
+            }}
+          >
+            {controlledTooltip.content}
+          </div>
         </div>
       </div>
     );
@@ -241,7 +330,8 @@ const getChartOption = (
   scrollIndex: number,
   horizontalZoom: [number, number],
   verticalZoom: [number, number],
-  isTimeLog: boolean
+  isTimeLog: boolean,
+  enableScatter: boolean
 ) => {
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
@@ -405,7 +495,7 @@ const getChartOption = (
             start: verticalZoom[0],
             end: verticalZoom[1],
             orient: "vertical",
-            filterMode: "empty",
+            filterMode: enableScatter ? "empty" : "none",
             type: "slider",
             labelFormatter: () => ""
           },
@@ -437,14 +527,23 @@ const getChartOption = (
       const minMaxValue = minMaxValues.find(
         (v) => v.curve == col.columnOf.mnemonic
       );
-      return {
-        large: true,
-        symbolSize: data.length > 200 ? 2 : 5,
-        name: col.label,
-        type: "scatter",
-        data: data.map((row) => {
+
+      const offsetData = data
+        .map((row, rowIndex) => {
           const index = row[indexCurve];
           const value = row[col.columnOf.mnemonic];
+          const isSmallGap =
+            !enableScatter &&
+            value === undefined &&
+            hasDataWithinRange(
+              data,
+              rowIndex,
+              col.columnOf.mnemonic,
+              GAP_DISTANCE
+            );
+          if (isSmallGap) {
+            return null; // Return null and filter it away later to draw lines over small gaps.
+          }
           const normalizedValue =
             (value - minMaxValue.minValue) /
             (minMaxValue.maxValue - minMaxValue.minValue || 1);
@@ -454,9 +553,54 @@ const getChartOption = (
             i;
           return [offsetNormalizedValue, index];
         })
+        .filter((r) => r !== null);
+
+      return {
+        large: true,
+        connectNulls: false,
+        symbolSize: enableScatter
+          ? data.length > 200
+            ? 2
+            : 5
+          : (value: any, params: any) => {
+              const isIsolated =
+                value !== undefined &&
+                isNaN(offsetData[Math.max(0, params.dataIndex - 1)][0]) &&
+                isNaN(
+                  offsetData[
+                    Math.min(offsetData.length - 1, params.dataIndex + 1)
+                  ][0]
+                );
+              return isIsolated ? 1 : 0; // Only isolated data points should have a symbol for the line plot
+            },
+        emphasis: {
+          disabled: true
+        },
+        name: col.label,
+        type: enableScatter ? "scatter" : "line",
+        showSymbol: true,
+        data: offsetData
       };
     })
   };
+};
+
+const hasDataWithinRange = (
+  data: any[],
+  valueIndex: number,
+  mnemonic: string,
+  distanceFromIndex: number
+): boolean => {
+  const start = Math.max(0, valueIndex - distanceFromIndex);
+  const end = Math.min(data.length, valueIndex + distanceFromIndex);
+  const window = [
+    ...data.slice(start, valueIndex),
+    ...data.slice(valueIndex + 1, end + 1)
+  ];
+  if (window.some((d) => d[mnemonic] !== undefined)) {
+    return true;
+  }
+  return false;
 };
 
 const timeFormatter = (params: number, dateTimeFormat: DateTimeFormat) => {
