@@ -49,6 +49,7 @@ export default function FluidsReportsListView() {
         fluidsReport: fluidsReport,
         md: measureToString(fluidsReport.md),
         tvd: measureToString(fluidsReport.tvd),
+        dTim: formatDateString(fluidsReport.dTim, timeZone, dateTimeFormat),
         dTimCreation: formatDateString(
           fluidsReport.commonData.dTimCreation,
           timeZone,
@@ -65,7 +66,7 @@ export default function FluidsReportsListView() {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "dTim", label: "dTim", type: ContentType.String },
+    { property: "dTim", label: "dTim", type: ContentType.DateTime },
     { property: "md", label: "md", type: ContentType.Measure },
     { property: "tvd", label: "tvd", type: ContentType.Measure },
     { property: "numReport", label: "numReport", type: ContentType.String },
