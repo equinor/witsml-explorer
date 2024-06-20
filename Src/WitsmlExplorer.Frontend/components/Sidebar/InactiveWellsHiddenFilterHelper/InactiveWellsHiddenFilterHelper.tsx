@@ -9,7 +9,6 @@ import { info_circle } from "@equinor/eds-icons";
 
 Icon.add({ info_circle });
 
-
 export const InactiveWellsHiddenFilterHelper: FC = () => {
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
 
@@ -20,8 +19,10 @@ export const InactiveWellsHiddenFilterHelper: FC = () => {
 
   if (!selectedFilter.isActive) return null;
 
-  return <Chip onDelete={handleClearFilterProperty}>
-    <Icon name="info_circle" />
-    Inactive Wells are hidden
-  </Chip>;
+  return (
+    <Chip onDelete={handleClearFilterProperty}>
+      <Icon name="info_circle" />
+      Inactive Wells are hidden
+    </Chip>
+  );
 };

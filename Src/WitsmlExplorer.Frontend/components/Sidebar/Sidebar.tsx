@@ -21,9 +21,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
-import {
-  InactiveWellsHiddenFilterHelper
-} from "./InactiveWellsHiddenFilterHelper";
+import { InactiveWellsHiddenFilterHelper } from "./InactiveWellsHiddenFilterHelper";
 import { Stack } from "@mui/material";
 
 export default function Sidebar() {
@@ -68,27 +66,27 @@ export default function Sidebar() {
     }
   };
 
-  if (isFetching) return <>
-    <SearchFilter />
-    {!!connectedServer && (
-      <SidebarTreeView ref={containerRef}>
-        <ProgressSpinner message="Fetching wells. This may take some time." />
-      </SidebarTreeView>
-    )}
-  </>;
+  if (isFetching)
+    return (
+      <>
+        <SearchFilter />
+        {!!connectedServer && (
+          <SidebarTreeView ref={containerRef}>
+            <ProgressSpinner message="Fetching wells. This may take some time." />
+          </SidebarTreeView>
+        )}
+      </>
+    );
 
   return (
     <Fragment>
       <SearchFilter />
       {!!connectedServer && (
         <SidebarTreeView ref={containerRef}>
-          {
-            filteredWells &&
+          {filteredWells &&
             (filteredWells.length === 0 ? (
               <Stack gap="1rem" pt="1rem">
-                <Typography>
-                  No wells match the current filter
-                </Typography>
+                <Typography>No wells match the current filter</Typography>
                 <InactiveWellsHiddenFilterHelper />
               </Stack>
             ) : (
@@ -137,8 +135,7 @@ export default function Sidebar() {
                   );
                 })}
               </StyledVirtualTreeView>
-            ))
-          }
+            ))}
         </SidebarTreeView>
       )}
     </Fragment>
