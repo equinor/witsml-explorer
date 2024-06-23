@@ -4,10 +4,8 @@ import {
   setLocalStorageItem,
   STORAGE_FILTER_ISACTIVE_KEY
 } from "../../../tools/localStorageHelpers.tsx";
-import { Chip, Icon } from "@equinor/eds-core-react";
-import { info_circle } from "@equinor/eds-icons";
-
-Icon.add({ info_circle });
+import { Icon } from "@equinor/eds-core-react";
+import { Chip } from "../../StyledComponents/Chip";
 
 export const InactiveWellsHiddenFilterHelper: FC = () => {
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
@@ -20,8 +18,8 @@ export const InactiveWellsHiddenFilterHelper: FC = () => {
   if (!selectedFilter.isActive) return null;
 
   return (
-    <Chip onDelete={handleClearFilterProperty}>
-      <Icon name="info_circle" />
+    <Chip onDelete={handleClearFilterProperty} variant="default">
+      <Icon name="infoCircle" />
       Inactive Wells are hidden
     </Chip>
   );
