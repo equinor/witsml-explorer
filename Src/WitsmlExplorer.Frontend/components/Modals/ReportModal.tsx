@@ -13,7 +13,6 @@ import {
 import { LabelsLayout } from "components/Modals/ComparisonModalStyles";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
-import { generateReport } from "components/ReportCreationHelper";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -226,14 +225,10 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
             } else {
               setReport(report);
               if (report.downloadImmediately === true) {
-                const reportProperties = generateReport(
-                  report.reportItems,
-                  report.reportHeader
-                );
                 exportData(
                   report.title,
-                  reportProperties.exportColumns,
-                  reportProperties.data
+                  report.reportHeader,
+                  report.reportBody
                 );
               }
             }

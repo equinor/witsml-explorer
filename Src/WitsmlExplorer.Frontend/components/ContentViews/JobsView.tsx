@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Icon, Switch, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -13,7 +12,6 @@ import JobInfoContextMenu, {
 import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
-import { generateReport } from "components/ReportCreationHelper";
 import { Button } from "components/StyledComponents/Button";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
@@ -95,29 +93,9 @@ export const JobsView = (): React.ReactElement => {
     });
   };
   const onClickReport = async (jobId: string) => {
-
-    console.log('JobsView -> onClickReport');
-
     const report = await JobService.getReport(jobId);
     if (report.downloadImmediately === true) {
-
-      exportData(
-        report.title,
-        report.reportHeader,
-        report.reportBody
-      );
-
-      /*
-      const reportProperties = generateReport(
-        report.reportItems,
-        report.reportHeader
-      );
-      exportData(
-        report.title,
-        reportProperties.exportColumns,
-        reportProperties.data
-      );
-      */
+      exportData(report.title, report.reportHeader, report.reportBody);
     } else {
       const reportModalProps = { report };
       dispatchOperation({

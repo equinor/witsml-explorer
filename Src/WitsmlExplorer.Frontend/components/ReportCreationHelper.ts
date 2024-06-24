@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { ContentTableColumn, ContentType } from "./ContentViews/table";
 import { defaultExportProperties } from "models/exportProperties";
 
@@ -17,16 +16,12 @@ export const generateReport = (reportItems: any[], reportHeader: string) => {
         }))
       : [];
 
-  console.log('ReportCreationHelper -> generateReport');
-
   const exportColumns =
     reportHeader !== null
       ? reportHeader
       : columns
           .map((column) => `${column.property}`)
           .join(defaultExportProperties.separator);
-
-  console.log('ReportCreationHelper -> ' + JSON.stringify(exportColumns, null, 2));
 
   const data = reportItems
     .map((row) =>

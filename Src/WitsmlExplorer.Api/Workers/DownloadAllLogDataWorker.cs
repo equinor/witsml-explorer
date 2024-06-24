@@ -45,10 +45,6 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
         });
         var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
 
-        System.Diagnostics.Trace.WriteLine("LogData:");
-        System.Diagnostics.Trace.WriteLine($" StartIndex: {logData.StartIndex}, EndIndex: {logData.EndIndex}");
-        System.Diagnostics.Trace.WriteLine($" DataCount: {logData.Data?.Count}, Direction: {logData.Direction}");
-
         return DownloadAllLogDataResult(job, logData.Data, logData.CurveSpecifications);
     }
 
@@ -71,7 +67,7 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             LogReference = logReference,
             ReportItems = reportItems,
             DownloadImmediately = true,
-            ReportHeader = reportHeader,
+            ReportHeader = result.header,
             ReportBody = result.body
         };
     }

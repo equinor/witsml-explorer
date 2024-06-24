@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
   ExportProperties,
   defaultExportProperties
@@ -26,9 +25,6 @@ function appendDateTime(append: boolean): string {
 }
 
 function useExport(props?: Partial<ExportProperties>): ExportObject {
-
-  console.log('useExport');
-
   const exportOptions = useMemo(
     () => ({ ...defaultExportProperties, ...props }),
     [defaultExportProperties, props]
@@ -36,13 +32,6 @@ function useExport(props?: Partial<ExportProperties>): ExportObject {
 
   const exportData = useCallback(
     (fileName: string, header: string, data: string) => {
-
-      console.log(`useCallback:
-          fileName: ${fileName}
-          header: ${header}
-          dataCount: ${data.length}
-          `);
-
       const link = document.createElement("a");
       link.href = window.URL.createObjectURL(
         new Blob([header, header ? exportOptions.newLineCharacter : "", data], {
