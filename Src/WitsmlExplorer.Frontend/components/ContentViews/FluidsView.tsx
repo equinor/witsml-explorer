@@ -8,6 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "components/ContextMenus/FluidContextMenu";
+import formatDateString from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -32,7 +33,10 @@ interface FluidsRow extends ContentTableRow, FluidAsStrings {
 }
 
 export default function FluidsView() {
-  const { dispatchOperation } = useOperationState();
+  const {
+    operationState: { timeZone, dateTimeFormat },
+    dispatchOperation
+  } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { object: fluidsReport } = useGetObject(
@@ -85,7 +89,7 @@ export default function FluidsView() {
       label: "locationSample",
       type: ContentType.String
     },
-    { property: "dTim", label: "dTim", type: ContentType.String },
+    { property: "dTim", label: "dTim", type: ContentType.DateTime },
     { property: "md", label: "md", type: ContentType.Measure },
     { property: "tvd", label: "tvd", type: ContentType.Measure },
     {
@@ -189,7 +193,7 @@ export default function FluidsView() {
       uid: fluid.uid,
       type: fluid.type,
       locationSample: fluid.locationSample,
-      dTim: fluid.dTim,
+      dTim: formatDateString(fluid.dTim, timeZone, dateTimeFormat),
       md: measureToString(fluid.md),
       tvd: measureToString(fluid.tvd),
       presBopRating: measureToString(fluid.presBopRating),
