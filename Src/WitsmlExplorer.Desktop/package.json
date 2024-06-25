@@ -1,7 +1,7 @@
 {
   "name": "WEx-Desktop",
   "description": "Witsml Explorer Desktop Edition",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "author": "Witsml Explorer Team",
   "repository": "https://github.com/equinor/witsml-explorer",
