@@ -4,13 +4,13 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
+import { useOperationState } from "hooks/useOperationState";
 
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -19,7 +19,7 @@ import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import { truncateAbortHandler } from "services/apiClient";
@@ -35,8 +35,8 @@ export default function MultiLogsCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  } = useOperationState();
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType } = useParams();
   const { connectedServer } = useConnectedServer();
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>();
@@ -128,10 +128,6 @@ export default function MultiLogsCurveInfoListView() {
     });
   };
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Logs.`} />;
-  }
-
   const panelElements = [
     <CommonPanelContainer key="hideEmptyMnemonics">
       <Switch
@@ -155,38 +151,40 @@ export default function MultiLogsCurveInfoListView() {
   ];
 
   return (
-    logObjects &&
-    logCurveInfoList && (
-      <ContentTable
-        viewId={
-          isDepthIndex
-            ? "depthLogCurveInfoListView"
-            : "timeLogCurveInfoListView"
-        }
-        panelElements={panelElements}
-        columns={getColumns(
-          isDepthIndex,
-          showOnlyPrioritizedCurves,
-          prioritizedCurves,
-          logObjects,
-          hideEmptyMnemonics
-        )}
-        data={getTableData(
-          allLogs,
-          logCurveInfoList,
-          logObjects,
-          timeZone,
-          dateTimeFormat,
-          curveThreshold,
-          isDepthIndex
-        )}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        downloadToCsvFileName={`LogCurveInfo_${logsSearchParams
-          .replace("[", "")
-          .replace("]", "")}`}
-      />
-    )
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Logs." />}
+      {logObjects && logCurveInfoList && (
+        <ContentTable
+          viewId={
+            isDepthIndex
+              ? "depthLogCurveInfoListView"
+              : "timeLogCurveInfoListView"
+          }
+          panelElements={panelElements}
+          columns={getColumns(
+            isDepthIndex,
+            showOnlyPrioritizedCurves,
+            prioritizedCurves,
+            logObjects,
+            hideEmptyMnemonics
+          )}
+          data={getTableData(
+            allLogs,
+            logCurveInfoList,
+            logObjects,
+            timeZone,
+            dateTimeFormat,
+            curveThreshold,
+            isDepthIndex
+          )}
+          onContextMenu={onContextMenu}
+          checkableRows
+          showRefresh
+          downloadToCsvFileName={`LogCurveInfo_${logsSearchParams
+            .replace("[", "")
+            .replace("]", "")}`}
+        />
+      )}
+    </>
   );
 }

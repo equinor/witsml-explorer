@@ -1,8 +1,8 @@
 import { Icon, Label, TextField } from "@equinor/eds-core-react";
 import { Tooltip } from "@mui/material";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
-import { ChangeEvent, ReactElement, useContext, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { ChangeEvent, ReactElement, useState } from "react";
 import styled from "styled-components";
 import { TooltipLayout } from "../StyledComponents/Tooltip";
 
@@ -24,7 +24,7 @@ const EditNumber = (props: EditNumberProps): ReactElement => {
   } = props;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [isEdited, setIsEdited] = useState(false);
   const [value, setValue] = useState<string>(String(defaultValue));
 

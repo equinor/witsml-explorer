@@ -3,16 +3,16 @@ import formatDateString from "components/DateFormatter";
 import { DateTimeField } from "components/Modals/DateTimeField";
 import ModalDialog from "components/Modals/ModalDialog";
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import {
   DateTimeFormat,
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import BhaRun from "models/bhaRun";
 import { itemStateTypes } from "models/itemStateTypes";
 import { ObjectType } from "models/objectType";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 const typesOfBhaStatus = ["final", "progress", "plan", "unknown"];
@@ -29,7 +29,7 @@ const BhaRunPropertiesModal = (
   const { mode, bhaRun, dispatchOperation } = props;
   const {
     operationState: { timeZone }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableBhaRun, setEditableBhaRun] = useState<BhaRun>(null);
   const [dTimStartValid, setDTimStartValid] = useState<boolean>(true);
   const [dTimStopValid, setDTimStopValid] = useState<boolean>(true);

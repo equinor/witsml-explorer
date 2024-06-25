@@ -1,8 +1,8 @@
 import { Menu } from "@mui/material";
-import OperationContext from "contexts/operationContext";
 import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import React, { ReactElement, useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import React, { ReactElement } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 
@@ -25,7 +25,7 @@ export const getContextMenuPosition = (
 };
 
 const ContextMenu = (props: ContextMenuProps): React.ReactElement => {
-  const { operationState, dispatchOperation } = useContext(OperationContext);
+  const { operationState, dispatchOperation } = useOperationState();
   const { contextMenu, colors } = operationState;
 
   const handleClose = () => {

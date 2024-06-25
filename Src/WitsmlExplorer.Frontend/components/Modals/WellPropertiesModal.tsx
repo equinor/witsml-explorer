@@ -6,11 +6,11 @@ import {
   validText,
   validTimeZone
 } from "components/Modals/ModalParts";
-import OperationContext from "contexts/operationContext";
 import { HideModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import Well from "models/well";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface WellPropertiesModalProps {
@@ -25,7 +25,7 @@ const WellPropertiesModal = (
   const { mode, well, dispatchOperation } = props;
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableWell, setEditableWell] = useState<Well>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const editMode = mode === PropertiesModalMode.Edit;

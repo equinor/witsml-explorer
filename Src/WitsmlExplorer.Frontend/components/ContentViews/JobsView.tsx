@@ -10,16 +10,18 @@ import JobInfoContextMenu, {
   JobInfoContextMenuProps
 } from "components/ContextMenus/JobInfoContextMenu";
 import formatDateString from "components/DateFormatter";
+import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { generateReport } from "components/ReportCreationHelper";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
 import useExport from "hooks/useExport";
+import { useOperationState } from "hooks/useOperationState";
 import JobStatus from "models/jobStatus";
+import JobInfo from "models/jobs/jobInfo";
 import ReportType from "models/reportType";
 import { Server } from "models/server";
 import {
@@ -28,7 +30,7 @@ import {
   getUserAppRoles,
   msalEnabled
 } from "msal/MsalAuthProvider";
-import React, { ChangeEvent, useContext, useMemo, useState } from "react";
+import React, { ChangeEvent, useMemo, useState } from "react";
 import JobService from "services/jobService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -37,7 +39,7 @@ export const JobsView = (): React.ReactElement => {
   const {
     dispatchOperation,
     operationState: { timeZone, colors, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
   const [showAll, setShowAll] = useState(false);
@@ -49,6 +51,8 @@ export const JobsView = (): React.ReactElement => {
     : "";
 
   const { exportData } = useExport();
+
+  const [cancellingJobs, setCancellingJobs] = useState<string[]>([]);
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -68,6 +72,27 @@ export const JobsView = (): React.ReactElement => {
     });
   };
 
+  const onClickCancel = async (jobId: string) => {
+    const confirmation = (
+      <ConfirmModal
+        heading={"Confirm job cancellation"}
+        content={
+          <Typography>Do you really want to cancel this job?</Typography>
+        }
+        onConfirm={() => {
+          cancelJob(jobId);
+        }}
+        confirmColor={"danger"}
+        confirmText={"Yes"}
+        cancelText={"No"}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
+  };
   const onClickReport = async (jobId: string) => {
     const report = await JobService.getReport(jobId);
     if (report.downloadImmediately === true) {
@@ -87,6 +112,15 @@ export const JobsView = (): React.ReactElement => {
         payload: <ReportModal {...reportModalProps} />
       });
     }
+  };
+
+  const getJobStatus = (jobInfo: JobInfo, cancellingJobs: string[]) => {
+    const isCancelling = cancellingJobs.includes(jobInfo.id);
+    if (jobInfo.status === JobStatus.Started) {
+      if (isCancelling) return "Cancelling";
+      if (jobInfo.progress) return `${Math.round(jobInfo.progress * 100)}%`;
+    }
+    return jobInfo.status;
   };
 
   const columns: ContentTableColumn[] = [
@@ -127,7 +161,9 @@ export const JobsView = (): React.ReactElement => {
 
   const cancelJob = async (jobId: string) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    JobService.cancelJob(jobId);
+    dispatchOperation({ type: OperationType.HideModal });
+    setCancellingJobs((jobs) => [...jobs, jobId]);
+    await JobService.cancelJob(jobId);
   };
 
   const jobInfoRows = useMemo(
@@ -140,17 +176,16 @@ export const JobsView = (): React.ReactElement => {
             wellName: jobInfo.wellName,
             wellboreName: jobInfo.wellboreName,
             objectName: jobInfo.objectName,
-            status:
-              jobInfo.progress && jobInfo.status === JobStatus.Started
-                ? `${Math.round(jobInfo.progress * 100)}%`
-                : jobInfo.status,
+            status: getJobStatus(jobInfo, cancellingJobs),
             cancel:
-              jobInfo.isCancelable === true && jobInfo.status === "Started" ? (
+              jobInfo.isCancelable === true &&
+              jobInfo.status === JobStatus.Started &&
+              !cancellingJobs.includes(jobInfo.id) ? (
                 <Button
                   key="cancelJob"
                   color="danger"
                   variant="table_icon"
-                  onClick={() => cancelJob(jobInfo.id)}
+                  onClick={() => onClickCancel(jobInfo.id)}
                 >
                   <Icon name="clear" size={18} />
                 </Button>

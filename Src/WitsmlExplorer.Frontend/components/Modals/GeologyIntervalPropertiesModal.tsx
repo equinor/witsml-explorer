@@ -7,8 +7,8 @@ import {
   invalidStringInput,
   undefinedOnUnchagedEmptyString
 } from "components/Modals/PropertiesModalUtils";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import GeologyInterval from "models/geologyInterval";
 import ObjectReference from "models/jobs/objectReference";
 import { lithologySources } from "models/lithologySources";
@@ -22,7 +22,6 @@ import React, {
   ChangeEvent,
   Dispatch,
   SetStateAction,
-  useContext,
   useEffect,
   useState
 } from "react";
@@ -75,7 +74,7 @@ const GeologyIntervalPropertiesModal = (
   props: GeologyIntervalPropertiesModalInterface
 ): React.ReactElement => {
   const { geologyInterval, mudLog: selectedMudLog } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [editable, setEditable] = useState<EditableGeologyInterval>({});
   const [editableLithologies, setEditableLithologies] = useState<
     Record<string, EditableLithology>

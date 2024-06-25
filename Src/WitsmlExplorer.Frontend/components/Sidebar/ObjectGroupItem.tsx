@@ -20,7 +20,6 @@ import {
   isObjectFilterType,
   objectFilterTypeToObjects
 } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import { OperationAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useSidebar } from "contexts/sidebarContext";
@@ -29,6 +28,7 @@ import { useGetObjectCount } from "hooks/query/useGetObjectCount";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useObjectFilter } from "hooks/useObjectFilter";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import ObjectOnWellbore, {
   calculateObjectNodeId
@@ -60,7 +60,7 @@ export default function ObjectGroupItem({
   ObjectContextMenu,
   onGroupContextMenu
 }: ObjectGroupItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { selectedFilter } = useContext(FilterContext);
   const { expandedTreeNodes } = useSidebar();
   const {

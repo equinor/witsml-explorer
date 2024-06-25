@@ -1,5 +1,3 @@
-import React, { Dispatch, useEffect } from "react";
-import { v4 as uuid } from "uuid";
 import {
   QueryTemplatePreset,
   ReturnElements,
@@ -7,10 +5,12 @@ import {
   getQueryTemplateWithPreset
 } from "components/ContentViews/QueryViewUtils";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
+import React, { Dispatch, useEffect } from "react";
 import {
   STORAGE_QUERYVIEW_DATA,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
+import { v4 as uuid } from "uuid";
 
 export interface QueryElement {
   query: string;

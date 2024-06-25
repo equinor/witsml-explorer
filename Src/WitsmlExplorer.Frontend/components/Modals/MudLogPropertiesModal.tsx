@@ -5,14 +5,14 @@ import {
   invalidStringInput,
   undefinedOnUnchagedEmptyString
 } from "components/Modals/PropertiesModalUtils";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { itemStateValues } from "models/commonData";
 import MaxLength from "models/maxLength";
 import MudLog from "models/mudLog";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { Layout } from "../StyledComponents/Layout";
 
@@ -33,7 +33,7 @@ const MudLogPropertiesModal = (
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [editableMudLog, setEditableMudLog] = useState<EditableMudLog>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

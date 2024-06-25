@@ -5,8 +5,8 @@ import {
   invalidStringInput,
   undefinedOnUnchagedEmptyString
 } from "components/Modals/PropertiesModalUtils";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import FormationMarker from "models/formationMarker";
 import { itemStateTypes } from "models/itemStateTypes";
 import MaxLength from "models/maxLength";
@@ -14,13 +14,7 @@ import Measure from "models/measure";
 import MeasureWithDatum from "models/measureWithDatum";
 import { ObjectType } from "models/objectType";
 import StratigraphicStruct from "models/stratigraphicStruct";
-import React, {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useState
-} from "react";
+import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { Layout } from "../StyledComponents/Layout";
 
@@ -66,7 +60,7 @@ const FormationMarkerPropertiesModal = (
   props: FormationMarkerPropertiesModalProps
 ): React.ReactElement => {
   const { formationMarker } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [editable, setEditable] = useState<EditableFormationMarker>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

@@ -8,10 +8,10 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { validText } from "components/Modals/ModalParts";
 import { Button } from "components/StyledComponents/Button";
 import { Checkbox } from "components/StyledComponents/Checkbox";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { Server } from "models/server";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import AuthorizationService, {
   AuthorizationStatus,
   BasicServerCredentials,
@@ -34,7 +34,7 @@ const UserCredentialsModal = (
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);

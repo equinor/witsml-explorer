@@ -1,26 +1,28 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { TreeView } from "@mui/x-tree-view";
 import {
+  useVirtualizer,
   VirtualItem,
-  Virtualizer,
-  useVirtualizer
+  Virtualizer
 } from "@tanstack/react-virtual";
 import ProgressSpinner from "components/ProgressSpinner";
 import SearchFilter from "components/Sidebar/SearchFilter";
 import WellItem from "components/Sidebar/WellItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useSidebar } from "contexts/sidebarContext";
 import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
+import { useOperationState } from "hooks/useOperationState";
 import { useWellFilter } from "hooks/useWellFilter";
 import Well from "models/well";
-import { Fragment, useContext, useEffect, useRef } from "react";
+import { Fragment, SyntheticEvent, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
+import { InactiveWellsHiddenFilterHelper } from "./InactiveWellsHiddenFilterHelper";
+import { Stack } from "@mui/material";
 
 export default function Sidebar() {
   const { connectedServer } = useConnectedServer();
@@ -30,7 +32,7 @@ export default function Sidebar() {
   const isDeepLink = useRef<boolean>(!!wellUid);
   const {
     operationState: { colors, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const isCompactMode = theme === UserTheme.Compact;
   const filteredWells = useWellFilter(wells);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,7 +57,7 @@ export default function Sidebar() {
     }
   }, [filteredWells]);
 
-  const onNodeToggle = (_: React.SyntheticEvent, nodeIds: string[]) => {
+  const onNodeToggle = (_: SyntheticEvent, nodeIds: string[]) => {
     if (nodeIds !== expandedTreeNodes) {
       dispatchSidebar({
         type: SidebarActionType.SetTreeNodes,
@@ -64,19 +66,29 @@ export default function Sidebar() {
     }
   };
 
+  if (isFetching)
+    return (
+      <>
+        <SearchFilter />
+        {!!connectedServer && (
+          <SidebarTreeView ref={containerRef}>
+            <ProgressSpinner message="Fetching wells. This may take some time." />
+          </SidebarTreeView>
+        )}
+      </>
+    );
+
   return (
     <Fragment>
       <SearchFilter />
       {!!connectedServer && (
         <SidebarTreeView ref={containerRef}>
-          {isFetching ? (
-            <ProgressSpinner message="Fetching wells. This may take some time." />
-          ) : (
-            filteredWells &&
+          {filteredWells &&
             (filteredWells.length === 0 ? (
-              <Typography style={{ paddingTop: "1rem" }}>
-                No wells match the current filter
-              </Typography>
+              <Stack gap="1rem" pt="1rem">
+                <Typography>No wells match the current filter</Typography>
+                <InactiveWellsHiddenFilterHelper />
+              </Stack>
             ) : (
               <StyledVirtualTreeView
                 defaultCollapseIcon={
@@ -123,8 +135,7 @@ export default function Sidebar() {
                   );
                 })}
               </StyledVirtualTreeView>
-            ))
-          )}
+            ))}
         </SidebarTreeView>
       )}
     </Fragment>
@@ -144,13 +155,17 @@ const SidebarTreeView = styled.div`
   height: 70%;
   padding-left: 1em;
   padding-right: 0.3em;
+
   .MuiTreeItem-root {
     min-width: 0;
+
     .MuiTreeItem-iconContainer {
       flex: none;
     }
+
     .MuiTreeItem-label {
       min-width: 0;
+
       p {
         white-space: nowrap;
         overflow: hidden;

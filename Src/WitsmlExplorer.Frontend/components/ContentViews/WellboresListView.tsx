@@ -9,17 +9,17 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
 import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbores } from "hooks/query/useGetWellbores";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import EntityType from "models/entityType";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { OBJECT_GROUPS_PATH } from "routes/routerConstants";
@@ -43,7 +43,7 @@ export default function WellboresListView() {
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
 
   useExpandSidebarNodes(wellUid);
@@ -117,24 +117,23 @@ export default function WellboresListView() {
     );
   };
 
-  if (isFetching) {
-    return <ProgressSpinner message="Fetching wellbores." />;
-  }
-
   if (isFetchedWell && !well) {
     return <ItemNotFound itemType={EntityType.Well} />;
   }
 
   return (
-    <ContentTable
-      viewId="wellboresListView"
-      columns={columns}
-      data={getTableData()}
-      onSelect={onSelect}
-      onContextMenu={onContextMenu}
-      downloadToCsvFileName="Wellbores"
-      checkableRows
-      showRefresh
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Wellbores." />}
+      <ContentTable
+        viewId="wellboresListView"
+        columns={columns}
+        data={getTableData()}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        downloadToCsvFileName="Wellbores"
+        checkableRows
+        showRefresh
+      />
+    </>
   );
 }

@@ -30,7 +30,7 @@ Example `mysettings.json` file for API:
     }
 ```
 
-Required environment variables in frontend:
+Required environment variables in frontend [Dockerfile](../Dockerfile-frontend).
 
 ```bash
 # To disable MSAL, leave VITE_MSALENABLED empty

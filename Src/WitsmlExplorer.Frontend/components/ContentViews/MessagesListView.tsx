@@ -9,13 +9,13 @@ import MessageObjectContextMenu from "components/ContextMenus/MessageObjectConte
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import MessageObject from "models/messageObject";
 import { ObjectType } from "models/objectType";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 
 export interface MessageObjectRow extends ContentTableRow {
@@ -26,7 +26,7 @@ export default function MessagesListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { objects: messages } = useGetObjects(

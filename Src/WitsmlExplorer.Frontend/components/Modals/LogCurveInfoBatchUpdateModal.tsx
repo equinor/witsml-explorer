@@ -1,8 +1,8 @@
 import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { Grid } from "@mui/material";
-import React, { ChangeEvent, useContext, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
-import OperationContext from "../../contexts/operationContext";
 import OperationType from "../../contexts/operationType";
 import BatchModifyLogCurveInfoJob from "../../models/jobs/batchModifyLogCurveInfoJob";
 import LogCurveInfo, { EmptyLogCurveInfo } from "../../models/logCurveInfo";
@@ -26,7 +26,7 @@ const LogCurveInfoBatchUpdateModal = (
   props: LogCurveInfoBatchUpdateModalProps
 ): React.ReactElement => {
   const { logCurveInfoRows, selectedLog } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [editableLogCurveInfo, setEditableLogCurveInfo] =
     useState<LogCurveInfo>(EmptyLogCurveInfo);
   const [isLoading, setIsLoading] = useState<boolean>(false);

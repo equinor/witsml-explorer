@@ -4,21 +4,21 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
@@ -34,8 +34,8 @@ export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  } = useOperationState();
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
@@ -114,10 +114,6 @@ export default function LogCurveInfoListView() {
     });
   };
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Log.`} />;
-  }
-
   if (isFetchedLog && !logObject) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
@@ -145,37 +141,40 @@ export default function LogCurveInfoListView() {
   ];
 
   return (
-    logObjects && (
-      <ContentTable
-        viewId={
-          isDepthIndex
-            ? "depthLogCurveInfoListView"
-            : "timeLogCurveInfoListView"
-        }
-        panelElements={panelElements}
-        columns={getColumns(
-          isDepthIndex,
-          showOnlyPrioritizedCurves,
-          prioritizedCurves,
-          logObjects,
-          hideEmptyMnemonics,
-          true
-        )}
-        data={getTableData(
-          [logObject],
-          logCurveInfoList,
-          logObjects,
-          timeZone,
-          dateTimeFormat,
-          curveThreshold,
-          isDepthIndex,
-          objectUid
-        )}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
-      />
-    )
+    <>
+      {isFetching && <ProgressSpinnerOverlay message={`Fetching Log.`} />}
+      {logObject && (
+        <ContentTable
+          viewId={
+            isDepthIndex
+              ? "depthLogCurveInfoListView"
+              : "timeLogCurveInfoListView"
+          }
+          panelElements={panelElements}
+          columns={getColumns(
+            isDepthIndex,
+            showOnlyPrioritizedCurves,
+            prioritizedCurves,
+            logObjects,
+            hideEmptyMnemonics,
+            true
+          )}
+          data={getTableData(
+            [logObject],
+            logCurveInfoList,
+            logObjects,
+            timeZone,
+            dateTimeFormat,
+            curveThreshold,
+            isDepthIndex,
+            objectUid
+          )}
+          onContextMenu={onContextMenu}
+          checkableRows
+          showRefresh
+          downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
+        />
+      )}
+    </>
   );
 }

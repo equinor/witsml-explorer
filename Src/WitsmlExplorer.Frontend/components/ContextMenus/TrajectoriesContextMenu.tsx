@@ -19,16 +19,16 @@ import TrajectoryPropertiesModal, {
   TrajectoryPropertiesModalProps
 } from "components/Modals/TrajectoryPropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Trajectory from "models/trajectory";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -41,7 +41,7 @@ const TrajectoriesContextMenu = (
   props: TrajectoriesContextMenuProps
 ): React.ReactElement => {
   const { wellbore, servers } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const trajectoryReferences = useClipboardReferencesOfType(
     ObjectType.Trajectory
   );

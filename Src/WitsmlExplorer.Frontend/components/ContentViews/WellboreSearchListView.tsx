@@ -17,11 +17,11 @@ import {
   WellboreFilterType,
   filterTypeToProperty
 } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWellboreSearch } from "hooks/query/useGetWellboreSearch";
+import { useOperationState } from "hooks/useOperationState";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React, { ReactElement, useContext, useEffect } from "react";
@@ -37,7 +37,7 @@ export interface WellboreSearchRow extends ContentTableRow, Wellbore {
 
 export const WellboreSearchListView = (): ReactElement => {
   const { connectedServer } = useConnectedServer();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const [searchParams] = useSearchParams();
   const { filterType } = useParams<{ filterType: WellboreFilterType }>();

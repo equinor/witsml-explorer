@@ -5,17 +5,16 @@ import {
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
-import { useContext } from "react";
 import { useParams } from "react-router-dom";
 
 export default function ChangeLogsListView() {
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
 
