@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using WitsmlExplorer.Api.Helpers;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
@@ -43,6 +44,7 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
         });
         var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
+
         return DownloadAllLogDataResult(job, logData.Data, logData.CurveSpecifications);
     }
 
@@ -56,6 +58,8 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
 
     private DownloadAllLogDataReport DownloadAllLogDataReport(ICollection<Dictionary<string, LogDataValue>> reportItems, LogObject logReference, string reportHeader)
     {
+        var result = ReportHelper.GenerateReport(reportItems, reportHeader);
+
         return new DownloadAllLogDataReport
         {
             Title = $"{logReference.WellboreName} - {logReference.Name}",
@@ -63,7 +67,8 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             LogReference = logReference,
             ReportItems = reportItems,
             DownloadImmediately = true,
-            ReportHeader = reportHeader
+            ReportHeader = result.header,
+            ReportBody = result.body
         };
     }
 
