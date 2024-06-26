@@ -16,12 +16,12 @@ import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import {
+  setLocalStorageItem,
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
   STORAGE_FILTER_INACTIVE_TIME_CURVES_KEY,
   STORAGE_FILTER_INACTIVE_TIME_CURVES_VALUE_KEY,
   STORAGE_FILTER_ISACTIVE_KEY,
-  STORAGE_FILTER_OBJECTGROWING_KEY,
-  setLocalStorageItem
+  STORAGE_FILTER_OBJECTGROWING_KEY
 } from "tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
@@ -242,6 +242,7 @@ const StyledTextField = styled(TextField)<{ colors: Colors }>`
   label {
     color: ${(props) => props.colors.text.staticTextLabel};
   }
+
   div {
     background: ${(props) => props.colors.text.staticTextFieldDefault};
   }
