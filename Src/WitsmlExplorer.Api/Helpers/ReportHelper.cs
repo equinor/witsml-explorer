@@ -46,7 +46,6 @@ namespace WitsmlExplorer.Api.Helpers
 
             var exportColumns = reportHeader ?? string.Join(Separator, columns.Select(column => column.Property));
 
-
             var data = string.Join(NewLineCharacter,
                 reportItems.Select(row =>
                 string.Join(Separator,
