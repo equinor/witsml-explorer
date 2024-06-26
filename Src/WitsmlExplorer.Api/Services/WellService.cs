@@ -73,13 +73,21 @@ namespace WitsmlExplorer.Api.Services
         private async Task<bool> CanQueryByIsActive()
         {
             // send a request to see if the server is capable of querying by IsActive
-            WitsmlWellbores capabilityQuery = new WitsmlWellbores
+            try
             {
-                Wellbores = new WitsmlWellbore().AsItemInList()
-            };
-            WitsmlWellbores capabilityResult = await _witsmlClient.GetFromStoreNullableAsync(capabilityQuery, new OptionsIn(RequestObjectSelectionCapability: true));
-            WitsmlWellbore capabilities = capabilityResult?.Wellbores?.FirstOrDefault();
-            return capabilities?.IsActive != null;
+                WitsmlWellbores capabilityQuery = new WitsmlWellbores
+                {
+                    Wellbores = new WitsmlWellbore().AsItemInList()
+                };
+                WitsmlWellbores capabilityResult = await _witsmlClient.GetFromStoreNullableAsync(capabilityQuery, new OptionsIn(RequestObjectSelectionCapability: true));
+                WitsmlWellbore capabilities = capabilityResult?.Wellbores?.FirstOrDefault();
+                return capabilities?.IsActive != null;
+            }
+            catch (Exception)
+            {
+                // The try/catch is used as a workaround for the servers that can't handle RequestObjectSelectionCapability.
+                return false;
+            }
         }
 
         private async Task<Well> SetWellIsActive(Well well) // Sets the IsActive property of the well to true if any of its wellbores are active
