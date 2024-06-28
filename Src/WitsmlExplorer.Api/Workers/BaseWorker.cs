@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
+using Witsml.Data;
 
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
@@ -21,19 +22,25 @@ namespace WitsmlExplorer.Api.Workers
         protected ILogger<T> Logger { get; }
         private IWitsmlClientProvider WitsmlClientProvider { get; }
 
+        private WitsmlCapServers _targetServerCapabilities;
+        private WitsmlCapServers _sourceServerCapabilities;
+
         public BaseWorker(ILogger<T> logger = null)
         {
             Logger = logger;
         }
+
         public BaseWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<T> logger = null)
         {
             Logger = logger;
             WitsmlClientProvider = witsmlClientProvider;
         }
+
         protected IWitsmlClient GetTargetWitsmlClientOrThrow()
         {
             return WitsmlClientProvider.GetClient() ?? throw new WitsmlClientProviderException($"Missing Target WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Target);
         }
+
         protected IWitsmlClient GetSourceWitsmlClientOrThrow()
         {
             return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Source);
@@ -59,6 +66,24 @@ namespace WitsmlExplorer.Api.Workers
         {
             return "The job was cancelled by the user.";
         }
+        protected async Task<WitsmlCapServers> GetTargetServerCapabilities()
+        {
+            if (_targetServerCapabilities == null)
+            {
+                _targetServerCapabilities = await GetTargetWitsmlClientOrThrow().GetCap();
+            }
+            return _targetServerCapabilities;
+        }
+
+        protected async Task<WitsmlCapServers> GetSourceServerCapabilities()
+        {
+            if (_sourceServerCapabilities == null)
+            {
+                _sourceServerCapabilities = await GetSourceWitsmlClientOrThrow().GetCap();
+            }
+            return _sourceServerCapabilities;
+        }
+
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
         {
             T job = await jobStream.Deserialize<T>();
