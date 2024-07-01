@@ -89,6 +89,10 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 EntityType.FluidsReport, new HashSet<string>
                 {
                     nameof(FluidsReport.Name),
+                    nameof(FluidsReport.DTim),
+                    nameof(FluidsReport.Md),
+                    nameof(FluidsReport.Tvd),
+                    nameof(FluidsReport.NumReport),
                     nameof(FormationMarker.CommonData)
                 }
             },

@@ -9,6 +9,7 @@ import { getRiskProperties } from "components/Modals/PropertiesModal/Properties/
 import { getTrajectoryProperties } from "components/Modals/PropertiesModal/Properties/TrajectoryProperties";
 import { getTubularProperties } from "components/Modals/PropertiesModal/Properties/TubularProperties";
 import { getWbGeometryProperties } from "components/Modals/PropertiesModal/Properties/WbGeometryProperties";
+import { getFluidsReportProperties } from "components/Modals/PropertiesModal/Properties/getFluidsReportProperties";
 import { PropertiesModalProperty } from "components/Modals/PropertiesModal/PropertiesModal";
 import { ObjectType, ObjectTypeToModel } from "models/objectType";
 
@@ -26,7 +27,9 @@ export const getObjectOnWellboreProperties = <T extends ObjectType>(
     case ObjectType.ChangeLog:
       return [];
     case ObjectType.FluidsReport:
-      return [];
+      return getFluidsReportProperties(mode) as PropertiesModalProperty<
+        ObjectTypeToModel[T]
+      >[];
     case ObjectType.FormationMarker:
       return getFormationMarkerProperties(mode) as PropertiesModalProperty<
         ObjectTypeToModel[T]
