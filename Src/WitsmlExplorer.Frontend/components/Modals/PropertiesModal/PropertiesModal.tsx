@@ -15,7 +15,7 @@ import {
   isPropertyValid
 } from "components/Modals/PropertiesModal/ValidationHelpers";
 import { cloneDeep } from "lodash";
-import { ChangeEvent, ReactElement, useState } from "react";
+import { ChangeEvent, KeyboardEvent, ReactElement, useState } from "react";
 import styled from "styled-components";
 import ModalDialog from "../ModalDialog";
 
@@ -325,7 +325,11 @@ export const PropertiesModal = <T,>(
                         ? "number"
                         : undefined
                     }
-                    multiline={prop.multiline} // TODO: multiline fields should capture 'Enter'.
+                    multiline={prop.multiline}
+                    onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                      if (prop.multiline && e.key === "Enter")
+                        e.stopPropagation();
+                    }}
                     disabled={prop.disabled}
                     defaultValue={getNestedValue(object, prop.property)}
                     helperText={getHelperText(prop, object, updates)}
