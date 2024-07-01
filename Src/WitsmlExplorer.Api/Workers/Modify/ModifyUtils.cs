@@ -11,6 +11,14 @@ namespace WitsmlExplorer.Api.Workers.Modify
 {
     public static class ModifyUtils
     {
+        public static void VerifyNotNull(object value, string name)
+        {
+            if (value == null)
+            {
+                throw new InvalidOperationException($"{name} cannot be null");
+            }
+        }
+
         public static void VerifyMeasure(Measure measure, string name)
         {
             if (measure == null)
@@ -46,6 +54,13 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 throw new InvalidOperationException($"{value} is not an allowed value for {name}");
             }
         }
+
+        private static readonly List<string> ObjectReferenceProperties = new List<string>
+        {
+            nameof(ObjectOnWellbore.Uid),
+            nameof(ObjectOnWellbore.WellUid),
+            nameof(ObjectOnWellbore.WellboreUid)
+        };
 
         // Properties not used when converting to WITSML can safely be added here.
         private static readonly Dictionary<EntityType, HashSet<string>> AllowedPropertiesToChange = new Dictionary<EntityType, HashSet<string>>
@@ -161,6 +176,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     nameof(Risk.DTimEnd),
                     nameof(Risk.MdBitStart),
                     nameof(Risk.MdBitEnd),
+                    nameof(Risk.SeverityLevel),
                     nameof(Risk.ProbabilityLevel),
                     nameof(Risk.Summary),
                     nameof(Risk.Details),
@@ -196,53 +212,43 @@ namespace WitsmlExplorer.Api.Workers.Modify
             },
         };
 
-        public static ObjectOnWellbore PrepareModification(ObjectOnWellbore obj, EntityType objectType, ILogger logger)
+        public static void VerifyModificationProperties(ObjectOnWellbore obj, EntityType objectType, ILogger logger)
         {
             if (!AllowedPropertiesToChange.TryGetValue(objectType, out var allowedProperties))
             {
                 throw new NotSupportedException($"ObjectType '{objectType}' is not supported");
             }
 
-            return SetNotAllowedPropertiesToNull(obj, allowedProperties, logger);
-        }
-
-        private static ObjectOnWellbore SetNotAllowedPropertiesToNull(ObjectOnWellbore obj, HashSet<string> allowedPropertiesToChange, ILogger logger)
-        {
-            // The uids should not be changed, but are needed to identify the object
-            allowedPropertiesToChange.Add(nameof(obj.WellUid));
-            allowedPropertiesToChange.Add(nameof(obj.WellboreUid));
-            allowedPropertiesToChange.Add(nameof(obj.Uid));
-
             foreach (var property in obj.GetType().GetProperties())
             {
-                if (!allowedPropertiesToChange.Contains(property.Name) && property.GetValue(obj) != null)
+                if (!allowedProperties.Contains(property.Name) && !ObjectReferenceProperties.Contains(property.Name) && property.GetValue(obj) != null)
                 {
-                    logger.LogWarning("Property '{propertyName}' should not be changed and will be set to null. If the change is intended, please update the AllowedPropertiesToChange list in ModifyUtils.cs", property.Name);
-                    property.SetValue(obj, null);
+                    throw new ArgumentException($"Modifying {property.Name} for a {objectType} is prohibited");
                 }
             }
-
-            return obj;
         }
 
-        public static void VerifyModification(ObjectOnWellbore obj)
+        public static void VerifyCreationValues(ObjectOnWellbore obj)
         {
-            if (obj == null)
+            VerifyModificationValues(obj);
+            VerifyNotNull(obj.Name, nameof(obj.Name));
+            switch (obj)
             {
-                throw new InvalidOperationException("Object cannot be null");
+                case LogObject log:
+                    VerifyLogCreation(log);
+                    break;
             }
-            if (string.IsNullOrEmpty(obj.WellUid))
-            {
-                throw new InvalidOperationException("WellUid cannot be empty");
-            }
-            if (string.IsNullOrEmpty(obj.WellboreUid))
-            {
-                throw new InvalidOperationException("WellboreUid cannot be empty");
-            }
-            if (string.IsNullOrEmpty(obj.Uid))
-            {
-                throw new InvalidOperationException("Uid cannot be empty");
-            }
+        }
+
+        public static void VerifyModificationValues(ObjectOnWellbore obj)
+        {
+            VerifyNotNull(obj, obj.GetType().Name);
+            VerifyNotNull(obj.WellUid, nameof(obj.WellUid));
+            VerifyNotNull(obj.WellboreUid, nameof(obj.WellboreUid));
+            VerifyNotNull(obj.Uid, nameof(obj.Uid));
+            VerifyString(obj.WellUid, nameof(obj.WellUid));
+            VerifyString(obj.WellboreUid, nameof(obj.WellboreUid));
+            VerifyString(obj.Uid, nameof(obj.Uid));
             VerifyString(obj.Name, nameof(obj.Name));
 
             switch (obj)
@@ -326,9 +332,17 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         private static void VerifyLog(LogObject log)
         {
+            VerifyString(log.IndexType, nameof(log.IndexType));
+            VerifyString(log.IndexCurve, nameof(log.IndexCurve));
             VerifyString(log.ServiceCompany, nameof(log.ServiceCompany));
             VerifyString(log.RunNumber, nameof(log.RunNumber), 16);
             VerifyAllowedValues(log.CommonData?.ItemState, _allowedItemStates, "CommonData.ItemState");
+        }
+
+        private static void VerifyLogCreation(LogObject log)
+        {
+            VerifyNotNull(log.IndexType, nameof(log.IndexType));
+            VerifyNotNull(log.IndexCurve, nameof(log.IndexCurve));
         }
 
         private static void VerifyMessage(MessageObject message)

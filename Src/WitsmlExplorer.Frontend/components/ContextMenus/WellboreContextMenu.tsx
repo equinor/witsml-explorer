@@ -1,6 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction,
@@ -19,14 +20,11 @@ import ConfirmModal from "components/Modals/ConfirmModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
-import LogPropertiesModal, {
-  IndexCurve,
-  LogPropertiesModalInterface
-} from "components/Modals/LogPropertiesModal";
 import MissingDataAgentModal, {
   MissingDataAgentModalProps
 } from "components/Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import WellborePropertiesModal, {
   WellborePropertiesModalProps
 } from "components/Modals/WellborePropertiesModal";
@@ -37,6 +35,7 @@ import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { IndexCurve } from "models/indexCurve";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
@@ -102,18 +101,15 @@ const WellboreContextMenu = (
       wellName: wellbore.wellName,
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
+      indexType: WITSML_INDEX_TYPE_MD,
       indexCurve: IndexCurve.Depth
     };
-    const logPropertiesModalProps: LogPropertiesModalInterface = {
-      mode: PropertiesModalMode.New,
-      logObject: newLog,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <LogPropertiesModal {...logPropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openObjectOnWellboreProperties(
+      ObjectType.Log,
+      newLog,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   const deleteWellbore = async () => {

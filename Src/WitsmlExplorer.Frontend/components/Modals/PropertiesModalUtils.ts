@@ -1,5 +1,5 @@
 import Measure from "models/measure";
-
+// TODO: Check if this file is used
 export const undefinedOnUnchagedEmptyString = (
   original?: string,
   edited?: string

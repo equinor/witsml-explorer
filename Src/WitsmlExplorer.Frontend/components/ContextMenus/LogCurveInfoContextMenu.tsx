@@ -23,7 +23,6 @@ import {
   LogCurvePriorityModal,
   LogCurvePriorityModalProps
 } from "components/Modals/LogCurvePriorityModal";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import {
   OffsetLogCurveModal,
   OffsetLogCurveModalProps
@@ -36,6 +35,7 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { ComponentType } from "models/componentType";
+import { IndexCurve } from "models/indexCurve";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";

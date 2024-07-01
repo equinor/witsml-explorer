@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string WellboreUid = "B-5209671";
         private const string WellboreName = "NO 34/10-A-25 C - Main Wellbore";
         private readonly Mock<IWitsmlClient> _witsmlClient;
-        private readonly CreateLogWorker _worker;
+        private readonly CreateObjectOnWellboreWorker _worker;
 
         public CreateLogWorkerTests()
         {
@@ -39,19 +39,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<CreateLogJob> logger = loggerFactory.CreateLogger<CreateLogJob>();
-            _worker = new CreateLogWorker(logger, witsmlClientProvider.Object);
+            ILogger<CreateObjectOnWellboreJob> logger = loggerFactory.CreateLogger<CreateObjectOnWellboreJob>();
+            _worker = new CreateObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
         public async Task CreateDepthIndexedLog_OK()
         {
-            CreateLogJob job = CreateJobTemplate();
-            SetupGetWellbore();
+            CreateObjectOnWellboreJob job = CreateJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_MD);
             List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(createdLogs.Add)
+                    client.AddToStoreAsync(It.IsAny<IWitsmlQueryType>()))
+                .Callback<IWitsmlQueryType>(logs => createdLogs.Add(logs as WitsmlLogs))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -73,12 +72,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task CreateTimeIndexedLog_OK()
         {
-            CreateLogJob job = CreateJobTemplate("Time");
-            SetupGetWellbore();
+            CreateObjectOnWellboreJob job = CreateJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
             List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(createdLogs.Add)
+                    client.AddToStoreAsync(It.IsAny<IWitsmlQueryType>()))
+                .Callback<IWitsmlQueryType>(logs => createdLogs.Add(logs as WitsmlLogs))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
@@ -97,56 +95,23 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(CommonConstants.Unit.Second, indexLogCurve.Unit);
         }
 
-        [Fact]
-        public async Task CreateTimeIndexedLog_UseTimeAsIndexIfUnknown()
+        private static CreateObjectOnWellboreJob CreateJobTemplate(string indexType)
         {
-            CreateLogJob job = CreateJobTemplate("strange");
-            SetupGetWellbore();
-            List<WitsmlLogs> createdLogs = new();
-            _witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlLogs>()))
-                .Callback<WitsmlLogs>(createdLogs.Add)
-                .ReturnsAsync(new QueryResult(true));
-
-            await _worker.Execute(job);
-            WitsmlLog createdLog = createdLogs.First().Logs.First();
-            WitsmlLogCurveInfo indexLogCurve = createdLog.LogCurveInfo.First();
-            Assert.Equal("Time", indexLogCurve.Mnemonic);
-            Assert.Equal(CommonConstants.Unit.Second, indexLogCurve.Unit);
-        }
-
-        private static CreateLogJob CreateJobTemplate(string indexCurve = "Depth")
-        {
-            return new CreateLogJob
+            return new CreateObjectOnWellboreJob
             {
-                LogObject = new LogObject
+                Object = new LogObject
                 {
                     Uid = LogUid,
                     Name = LogName,
                     WellUid = WellUid,
+                    WellName = WellName,
                     WellboreUid = WellboreUid,
-                    IndexCurve = indexCurve
-                }
+                    WellboreName = WellboreName,
+                    IndexCurve = indexType == WitsmlLog.WITSML_INDEX_TYPE_MD ? "Depth" : "Time",
+                    IndexType = indexType
+                },
+                ObjectType = EntityType.Log
             };
-        }
-
-        private void SetupGetWellbore()
-        {
-            _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.Requested)))
-                .ReturnsAsync(new WitsmlWellbores
-                {
-                    Wellbores = new List<WitsmlWellbore>
-                    {
-                        new WitsmlWellbore
-                        {
-                            UidWell = WellUid,
-                            Uid = WellboreUid,
-                            Name = WellboreName,
-                            NameWell = WellName
-                        }
-                    }
-                });
         }
     }
 }

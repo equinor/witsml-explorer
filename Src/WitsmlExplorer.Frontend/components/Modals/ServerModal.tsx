@@ -222,7 +222,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                     style={labelStyle}
                     htmlFor="creds"
                   />
-                  <Tooltip title="If this (space \ndelimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
+                  <Tooltip title="If this (space delimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
                     <Icon
                       name="infoCircle"
                       color={colors.interactive.primaryResting}

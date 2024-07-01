@@ -26,9 +26,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string WellUid = "wellUid";
         private const string WellName = "wellName";
         private const string WellboreUid = "wellboreUid";
+        private const string WellboreName = "wellboreName";
+        private const string Uid = "riskUid";
         private const string Name = "riskname";
         private readonly Mock<IWitsmlClient> _witsmlClient;
-        private readonly CreateRiskWorker _worker;
+        private readonly CreateObjectOnWellboreWorker _worker;
 
         public CreateRiskWorkerTests()
         {
@@ -37,22 +39,20 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
-            ILogger<CreateRiskJob> logger = loggerFactory.CreateLogger<CreateRiskJob>();
-            _worker = new CreateRiskWorker(logger, witsmlClientProvider.Object);
+            ILogger<CreateObjectOnWellboreJob> logger = loggerFactory.CreateLogger<CreateObjectOnWellboreJob>();
+            _worker = new CreateObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
         }
 
         [Fact]
-        public async Task ValidCreateRiskJobExecute()
+        public async Task ValidCreateObjectOnWellboreJobExecute()
         {
-            CreateRiskJob job = CreateJobTemplate();
+            CreateObjectOnWellboreJob job = CreateJobTemplate();
 
             List<WitsmlRisks> createdRisks = new();
             _witsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlRisks>()))
-                .Callback<WitsmlRisks>(risk => createdRisks.Add(risk))
+                    client.AddToStoreAsync(It.IsAny<IWitsmlQueryType>()))
+                .Callback<IWitsmlQueryType>(risk => createdRisks.Add(risk as WitsmlRisks))
                 .ReturnsAsync(new QueryResult(true));
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlRisks>(), It.IsAny<OptionsIn>()))
-                .ReturnsAsync(new WitsmlRisks() { Risks = new List<WitsmlRisk>() { new WitsmlRisk() } });
 
             await _worker.Execute(job);
 
@@ -64,23 +64,25 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(WellName, createdRisk.NameWell);
         }
 
-        private static CreateRiskJob CreateJobTemplate(string uid = WellboreUid, string name = Name,
-            string wellUid = WellUid, string wellName = WellName)
+        private static CreateObjectOnWellboreJob CreateJobTemplate()
         {
-            return new CreateRiskJob
+            return new CreateObjectOnWellboreJob
             {
-                Risk = new Risk
+                Object = new Risk
                 {
-                    Uid = uid,
-                    Name = name,
-                    WellUid = wellUid,
-                    WellName = wellName,
+                    Uid = Uid,
+                    Name = Name,
+                    WellUid = WellUid,
+                    WellName = WellName,
+                    WellboreUid = WellboreUid,
+                    WellboreName = WellboreName,
                     CommonData = new CommonData
                     {
                         ItemState = "model",
                         SourceName = "SourceName"
                     }
-                }
+                },
+                ObjectType = EntityType.Risk
             };
         }
     }

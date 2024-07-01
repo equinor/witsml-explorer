@@ -14,6 +14,7 @@ interface DateTimeFieldProps {
   updateObject: (dateTime: string) => void;
   minValue?: string;
   maxValue?: string;
+  disabled?: boolean;
 }
 
 /**
@@ -30,7 +31,7 @@ interface DateTimeFieldProps {
 export const LogHeaderDateTimeField = (
   props: DateTimeFieldProps
 ): React.ReactElement => {
-  const { value, label, updateObject, minValue, maxValue } = props;
+  const { disabled, value, label, updateObject, minValue, maxValue } = props;
   const {
     operationState: { timeZone }
   } = useOperationState();
@@ -85,11 +86,12 @@ export const LogHeaderDateTimeField = (
           disabled
           style={{
             fontFeatureSettings: '"tnum"',
-            width: "92px"
+            width: "94px"
           }}
         />
         <TextField
           id={label}
+          label={label}
           value={getParsedValue(value, timeZone) ?? ""}
           helperText={getHelperText()}
           variant={validate(value) ? undefined : "error"}
@@ -97,9 +99,9 @@ export const LogHeaderDateTimeField = (
           step="0.001"
           onChange={onTextFieldChange}
           style={{
-            paddingTop: "16px",
             fontFeatureSettings: '"tnum"'
           }}
+          disabled={disabled}
         />
       </Horizontal>
     </Layout>

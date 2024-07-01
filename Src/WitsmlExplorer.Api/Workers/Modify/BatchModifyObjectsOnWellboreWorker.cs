@@ -29,11 +29,11 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
             Logger.LogInformation("Started {JobType}. {jobDescription}", JobType, job.Description());
 
-            objects = objects.Select(obj => ModifyUtils.PrepareModification(obj, objectType, Logger)).ToList();
-
             try
             {
-                objects.ForEach(ModifyUtils.VerifyModification);
+                // TODO: Test that this works properly for batch modifications.
+                objects.ForEach(obj => ModifyUtils.VerifyModificationProperties(obj, objectType, Logger));
+                objects.ForEach(ModifyUtils.VerifyModificationValues);
             }
             catch (Exception e)
             {
