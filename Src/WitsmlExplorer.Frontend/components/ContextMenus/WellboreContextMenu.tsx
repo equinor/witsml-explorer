@@ -24,10 +24,10 @@ import MissingDataAgentModal, {
   MissingDataAgentModalProps
 } from "components/Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
-import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
-import WellborePropertiesModal, {
-  WellborePropertiesModalProps
-} from "components/Modals/WellborePropertiesModal";
+import {
+  openObjectOnWellboreProperties,
+  openWellboreProperties
+} from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -74,23 +74,18 @@ const WellboreContextMenu = (
       name: "",
       wellUid: wellbore.wellUid,
       wellName: wellbore.wellName,
-      wellStatus: "",
-      wellType: "",
+      wellboreStatus: "",
+      wellboreType: "",
       isActive: false,
       wellboreParentUid: wellbore.uid,
       wellboreParentName: wellbore.name,
       wellborePurpose: "unknown"
     };
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      wellbore: newWellbore,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <WellborePropertiesModal {...wellborePropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openWellboreProperties(
+      newWellbore,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   const onClickNewLog = () => {
@@ -190,18 +185,6 @@ const WellboreContextMenu = (
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <MissingDataAgentModal {...missingDataAgentModalProps} />
-    });
-  };
-
-  const onClickProperties = async () => {
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = {
-      mode: PropertiesModalMode.Edit,
-      wellbore,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <WellborePropertiesModal {...wellborePropertiesModalProps} />
     });
   };
 
@@ -363,7 +346,10 @@ const WellboreContextMenu = (
           <Typography color={"primary"}>Missing Data Agent</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties}>
+        <MenuItem
+          key={"properties"}
+          onClick={() => openWellboreProperties(wellbore, dispatchOperation)}
+        >
           <StyledIcon
             name="settings"
             color={colors.interactive.primaryResting}

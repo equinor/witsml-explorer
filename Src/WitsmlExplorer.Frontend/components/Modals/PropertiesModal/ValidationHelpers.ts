@@ -87,6 +87,10 @@ export const getMaxLengthHelperText = (property: string, maxLength: number) => {
   return `${property} must be 1-${maxLength} characters`;
 };
 
+export const getTimeZoneHelperText = (property: string) => {
+  return `${property} has to be 'Z' or in the format -hh:mm or +hh:mm within the range (-12:00 to +14:00) and minutes has to be 00, 30 or 45`;
+};
+
 export const getPhoneNumberHelperText = (property: string) => {
   return `${property} must be an integer of 1-32 characters. Whitespace, dash and plus is accepted`;
 };

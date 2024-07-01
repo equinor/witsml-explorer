@@ -1,14 +1,25 @@
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { getObjectOnWellboreProperties } from "components/Modals/PropertiesModal/Properties/ObjectOnWellboreProperties";
+import { getWellProperties } from "components/Modals/PropertiesModal/Properties/WellProperties";
+import { getWellboreProperties } from "components/Modals/PropertiesModal/Properties/WellboreProperties";
 import {
   PropertiesModal,
   PropertiesModalProps
 } from "components/Modals/PropertiesModal/PropertiesModal";
+import {
+  orderCreateObjectOnWellboreJob,
+  orderCreateWellJob,
+  orderCreateWellboreJob,
+  orderModifyObjectOnWellboreJob,
+  orderModifyWellJob,
+  orderModifyWellboreJob
+} from "components/Modals/PropertiesModal/orderPropertyJobHelpers";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import LogObject from "models/logObject";
 import { ObjectType, ObjectTypeToModel } from "models/objectType";
-import JobService, { JobType } from "services/jobService";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 
 export const openObjectOnWellboreProperties = async <T extends ObjectType>(
   objectType: T,
@@ -31,8 +42,8 @@ export const openObjectOnWellboreProperties = async <T extends ObjectType>(
     onSubmit: async (updates) => {
       dispatchOperation({ type: OperationType.HideModal });
       mode === PropertiesModalMode.Edit
-        ? orderModifyJob(objectType, object, updates)
-        : orderCreateJob(objectType, object, updates);
+        ? orderModifyObjectOnWellboreJob(objectType, object, updates)
+        : orderCreateObjectOnWellboreJob(objectType, object, updates);
     }
   };
   dispatchOperation({
@@ -41,37 +52,58 @@ export const openObjectOnWellboreProperties = async <T extends ObjectType>(
   });
 };
 
-const orderModifyJob = async <T extends ObjectType>(
-  objectType: T,
-  object: ObjectTypeToModel[T],
-  updates: Partial<ObjectTypeToModel[T]>
+export const openWellProperties = async (
+  well: Well,
+  dispatchOperation: DispatchOperation,
+  mode: PropertiesModalMode = PropertiesModalMode.Edit
 ) => {
-  const modifyJob = {
-    object: {
-      // updates only contains modified properties, so we need to add uids for a correct reference to the object.
-      uid: object.uid,
-      wellUid: object.wellUid,
-      wellboreUid: object.wellboreUid,
-      ...updates,
-      objectType: objectType
-    },
-    objectType: objectType
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  const properties = getWellProperties(mode);
+
+  const propertyModalProps: PropertiesModalProps<Well> = {
+    title:
+      mode === PropertiesModalMode.Edit
+        ? `Edit properties for ${well.name}`
+        : "Create new Well",
+    object: well,
+    properties,
+    onSubmit: async (updates) => {
+      dispatchOperation({ type: OperationType.HideModal });
+      mode === PropertiesModalMode.Edit
+        ? orderModifyWellJob(well, updates)
+        : orderCreateWellJob(well, updates);
+    }
   };
-  await JobService.orderJob(JobType.ModifyObjectOnWellbore, modifyJob);
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: <PropertiesModal {...propertyModalProps} />
+  });
 };
 
-const orderCreateJob = async <T extends ObjectType>(
-  objectType: T,
-  object: ObjectTypeToModel[T],
-  updates: Partial<ObjectTypeToModel[T]>
+export const openWellboreProperties = async (
+  wellbore: Wellbore,
+  dispatchOperation: DispatchOperation,
+  mode: PropertiesModalMode = PropertiesModalMode.Edit
 ) => {
-  const createJob = {
-    object: {
-      ...object,
-      ...updates,
-      objectType: objectType
-    },
-    objectType: objectType
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  const properties = getWellboreProperties(mode);
+
+  const propertyModalProps: PropertiesModalProps<Wellbore> = {
+    title:
+      mode === PropertiesModalMode.Edit
+        ? `Edit properties for ${wellbore.name}`
+        : "Create new Wellbore",
+    object: wellbore,
+    properties,
+    onSubmit: async (updates) => {
+      dispatchOperation({ type: OperationType.HideModal });
+      mode === PropertiesModalMode.Edit
+        ? orderModifyWellboreJob(wellbore, updates)
+        : orderCreateWellboreJob(wellbore, updates);
+    }
   };
-  await JobService.orderJob(JobType.CreateObjectOnWellbore, createJob);
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: <PropertiesModal {...propertyModalProps} />
+  });
 };
