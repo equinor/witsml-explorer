@@ -76,8 +76,6 @@ export const PropertiesModal = <T,>(
   );
 };
 
-// TODO: Fix the styling so the enabled fields are more visible in dark mode
-
 // TODO: When everything is finished, test the modal properly (both manually and with tests)
 
 // TODO: Test disabled: true for all property types.
