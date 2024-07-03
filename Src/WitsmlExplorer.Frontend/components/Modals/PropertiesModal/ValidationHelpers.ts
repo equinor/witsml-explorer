@@ -41,7 +41,7 @@ export const isPropertyValid = <T>(
       );
     });
   }
-  if (prop.validator && actualValue) {
+  if (prop.validator && (actualValue || typeof actualValue === "boolean")) {
     return prop.validator(actualValue, originalValue);
   }
   const isRequired = prop.required || !!originalValue;
@@ -99,15 +99,20 @@ export const formatPropertyValue = (
   propertyType: PropertyType,
   value: string
 ) => {
-  if (propertyType === PropertyType.Number) {
-    return parseFloat(value);
-  }
-  if (
-    propertyType === PropertyType.Measure &&
-    property.endsWith(".value") &&
-    value !== ""
-  ) {
-    return parseFloat(value);
+  switch (propertyType) {
+    case PropertyType.Boolean:
+      if (!["true", "false"].includes(value)) return "null";
+      return value === "true";
+    case PropertyType.Number:
+      return parseFloat(value);
+    case PropertyType.Measure:
+      if (
+        propertyType === PropertyType.Measure &&
+        property.endsWith(".value") &&
+        value !== ""
+      ) {
+        return parseFloat(value);
+      }
   }
   return value;
 };
@@ -130,6 +135,10 @@ export const getNumberHelperText = (property: string) => {
 
 export const getMeasureHelperText = (property: string) => {
   return `${property} must have a valid number and unit`;
+};
+
+export const getBooleanHelperText = (property: string) => {
+  return `${property} must be true or false`;
 };
 
 export const getStratigraphicStructHelperText = (property: string) => {

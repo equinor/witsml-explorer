@@ -32,7 +32,7 @@ export const PropertiesRenderer = <T,>({
   onChange
 }: PropertiesRendererProps<T>): ReactElement => {
   const getInitialSelectedOptions = (prop: PropertiesModalProperty<T>) => {
-    const optionsString = getNestedValue(object, prop.property);
+    const optionsString = getNestedValue(object, prop.property).toString();
     if (!optionsString) return [];
     return prop.multiSelect ? optionsString.split(", ") : [optionsString];
   };
@@ -121,13 +121,18 @@ export const PropertiesRenderer = <T,>({
               </Fragment>
             );
           }
-          case PropertyType.Options:
+          case PropertyType.Boolean:
+          case PropertyType.Options: {
+            const options =
+              (prop.propertyType === PropertyType.Boolean
+                ? ["true", "false"]
+                : prop.options) ?? [];
             return (
               <Autocomplete
                 key={prop.property}
                 label={prop.property}
                 disabled={prop.disabled}
-                options={prop.options || []}
+                options={options}
                 initialSelectedOptions={getInitialSelectedOptions(prop)}
                 helperText={getHelperText(prop, object, updates)}
                 variant={getVariant(prop, object, updates)}
@@ -143,6 +148,7 @@ export const PropertiesRenderer = <T,>({
                 multiple={prop.multiSelect}
               />
             );
+          }
           case PropertyType.DateTime:
             return (
               <LogHeaderDateTimeField

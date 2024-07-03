@@ -56,6 +56,10 @@ export const validMeasure = (measure: Measure): boolean => {
   );
 };
 
+export const validBoolean = (value: any): boolean => {
+  return typeof value === "boolean";
+};
+
 export const validStratigraphicStruct = (
   stratigraphicStruct: StratigraphicStruct
 ): boolean => {

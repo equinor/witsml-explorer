@@ -14,19 +14,23 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import WbGeometrySectionPropertiesModal from "components/Modals/WbGeometrySectionPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { getWbGeometrySectionProperties } from "components/Modals/PropertiesModal/Properties/WbGeometrySectionProperties";
+import { PropertiesModal } from "components/Modals/PropertiesModal/PropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
+import ObjectReference from "models/jobs/objectReference";
+import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import WbGeometry from "models/wbGeometry";
 import WbGeometrySection from "models/wbGeometrySection";
 import React from "react";
-import { JobType } from "services/jobService";
+import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface WbGeometrySectionContextMenuProps {
@@ -48,17 +52,29 @@ const WbGeometrySectionContextMenu = (
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const wbGeometrySectionPropertiesModalProps = {
-      wbGeometrySection: checkedWbGeometrySections[0],
-      wbGeometry,
-      dispatchOperation
+      title: `Edit properties for ${checkedWbGeometrySections[0].uid}`,
+      properties: getWbGeometrySectionProperties(PropertiesModalMode.Edit),
+      object: checkedWbGeometrySections[0],
+      onSubmit: async (updates: Partial<WbGeometrySection>) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        const wbGeometryReference: ObjectReference =
+          toObjectReference(wbGeometry);
+        const modifyWbGeometrySectionJob = {
+          wbGeometrySection: {
+            ...checkedWbGeometrySections[0],
+            ...updates
+          },
+          wbGeometryReference
+        };
+        await JobService.orderJob(
+          JobType.ModifyWbGeometrySection,
+          modifyWbGeometrySectionJob
+        );
+      }
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: (
-        <WbGeometrySectionPropertiesModal
-          {...wbGeometrySectionPropertiesModalProps}
-        />
-      )
+      payload: <PropertiesModal {...wbGeometrySectionPropertiesModalProps} />
     });
   };
 

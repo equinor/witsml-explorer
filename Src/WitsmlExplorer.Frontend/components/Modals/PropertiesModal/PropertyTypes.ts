@@ -7,5 +7,6 @@ export enum PropertyType {
   Options,
   RefNameString,
   StratigraphicStruct,
+  Boolean,
   List
 }
