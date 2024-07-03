@@ -1,6 +1,6 @@
 import { Variants } from "@equinor/eds-core-react/dist/types/components/types";
 import { getNestedValue } from "components/Modals/PropertiesModal/NestedPropertyHelpers";
-import { PropertiesModalProperty } from "components/Modals/PropertiesModal/PropertiesModal";
+import { PropertiesModalProperty } from "components/Modals/PropertiesModal/propertiesModalProperty";
 import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
 
 const getActualValue = (
@@ -22,7 +22,7 @@ export const isPropertyValid = <T>(
   prop: PropertiesModalProperty<T>,
   originalObject: T,
   updates: Partial<T>
-) => {
+): boolean => {
   const originalValue = getNestedValue(originalObject, prop.property);
   const updatedValue = getNestedValue(updates, prop.property);
   const actualValue = getActualValue(
@@ -30,6 +30,17 @@ export const isPropertyValid = <T>(
     updatedValue,
     originalValue
   );
+  if (prop.propertyType === PropertyType.List) {
+    if (updatedValue === undefined) return true;
+    return (updatedValue as any[]).every((subValue) => {
+      const originalSubObject = (originalValue as any[]).find(
+        (oV) => oV.uid === subValue.uid
+      );
+      return prop.subProps.every((subProp) =>
+        isPropertyValid(subProp, originalSubObject, subValue)
+      );
+    });
+  }
   if (prop.validator && actualValue) {
     return prop.validator(actualValue, originalValue);
   }
@@ -62,6 +73,18 @@ export const hasPropertyChanged = (
   originalValue: any
 ) => {
   switch (propertyType) {
+    case PropertyType.List: {
+      const updatedUids = (value as any[]).map((v) => v.uid);
+      const originalFiltered = (originalValue as any[])
+        .map((obj) =>
+          Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null))
+        )
+        .filter((obj) => updatedUids.includes(obj.uid));
+      const valueFiltered = (value as any[]).map((obj) =>
+        Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null))
+      );
+      return JSON.stringify(originalFiltered) !== JSON.stringify(valueFiltered);
+    }
     case PropertyType.DateTime:
       return Date.parse(originalValue) !== Date.parse(value);
     default:
@@ -93,6 +116,10 @@ export const getTimeZoneHelperText = (property: string) => {
 
 export const getPhoneNumberHelperText = (property: string) => {
   return `${property} must be an integer of 1-32 characters. Whitespace, dash and plus is accepted`;
+};
+
+export const getNumberHelperText = (property: string) => {
+  return `${property} must be a valid number`;
 };
 
 export const getMeasureHelperText = (property: string) => {

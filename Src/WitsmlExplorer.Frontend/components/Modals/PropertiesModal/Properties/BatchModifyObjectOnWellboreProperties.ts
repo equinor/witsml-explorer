@@ -1,6 +1,6 @@
 import { getBatchModifyLogObjectProperties } from "components/Modals/PropertiesModal/Properties/LogObjectProperties";
 import { getBatchModifyRigProperties } from "components/Modals/PropertiesModal/Properties/RigProperties";
-import { PropertiesModalProperty } from "components/Modals/PropertiesModal/PropertiesModal";
+import { PropertiesModalProperty } from "components/Modals/PropertiesModal/propertiesModalProperty";
 import { ObjectType, ObjectTypeToModel } from "models/objectType";
 
 // Note: Only add properties that can be updated directly (without having to create a new object and delete the old one)

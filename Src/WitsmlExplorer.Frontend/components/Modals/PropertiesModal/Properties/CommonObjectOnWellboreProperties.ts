@@ -1,5 +1,5 @@
 import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
-import { PropertiesModalProperty } from "components/Modals/PropertiesModal/PropertiesModal";
+import { PropertiesModalProperty } from "components/Modals/PropertiesModal/propertiesModalProperty";
 import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
 import { getMaxLengthHelperText } from "components/Modals/PropertiesModal/ValidationHelpers";
 import MaxLength from "models/maxLength";

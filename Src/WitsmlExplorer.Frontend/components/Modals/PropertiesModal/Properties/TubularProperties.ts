@@ -1,6 +1,6 @@
 import { PropertiesModalMode, validOption } from "components/Modals/ModalParts";
 import { getCommonObjectOnWellboreProperties } from "components/Modals/PropertiesModal/Properties/CommonObjectOnWellboreProperties";
-import { PropertiesModalProperty } from "components/Modals/PropertiesModal/PropertiesModal";
+import { PropertiesModalProperty } from "components/Modals/PropertiesModal/propertiesModalProperty";
 import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
 import { getOptionHelperText } from "components/Modals/PropertiesModal/ValidationHelpers";
 import Tubular from "models/tubular";

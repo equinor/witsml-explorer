@@ -5,5 +5,6 @@ export enum PropertyType {
   Measure,
   Options,
   RefNameString,
-  StratigraphicStruct
+  StratigraphicStruct,
+  List
 }

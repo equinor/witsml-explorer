@@ -10,7 +10,7 @@ import { getTrajectoryProperties } from "components/Modals/PropertiesModal/Prope
 import { getTubularProperties } from "components/Modals/PropertiesModal/Properties/TubularProperties";
 import { getWbGeometryProperties } from "components/Modals/PropertiesModal/Properties/WbGeometryProperties";
 import { getFluidsReportProperties } from "components/Modals/PropertiesModal/Properties/getFluidsReportProperties";
-import { PropertiesModalProperty } from "components/Modals/PropertiesModal/PropertiesModal";
+import { PropertiesModalProperty } from "components/Modals/PropertiesModal/propertiesModalProperty";
 import { ObjectType, ObjectTypeToModel } from "models/objectType";
 
 // Note: Only add properties that can be updated directly (without having to create a new object and delete the old one)

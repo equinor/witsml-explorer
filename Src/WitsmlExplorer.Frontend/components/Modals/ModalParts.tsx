@@ -27,7 +27,7 @@ export const validTimeZone = (timeZone: string): boolean => {
   return timeZoneValidator.test(timeZone);
 };
 
-export const validNumber = (num: string): boolean => {
+export const validInteger = (num: string): boolean => {
   let result = true;
   if (num) {
     const arr: Array<string> = num.split("");
@@ -40,8 +40,12 @@ export const validNumber = (num: string): boolean => {
   return result;
 };
 
+export const validNumber = (num: string): boolean => {
+  return !isNaN(parseFloat(num)) && isFinite(parseFloat(num));
+};
+
 export const validPhoneNumber = (telnum: string): boolean => {
-  return validNumber(telnum) && validText(telnum, 1, MaxLength.String32);
+  return validInteger(telnum) && validText(telnum, 1, MaxLength.String32);
 };
 
 export const validMeasure = (measure: Measure): boolean => {
