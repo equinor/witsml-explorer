@@ -19,7 +19,6 @@ import { lithologySources } from "models/lithologySources";
 import { lithologyTypes } from "models/lithologyTypes";
 import MaxLength from "models/maxLength";
 
-// Note: Only add properties that can be updated directly (without having to create a new object and delete the old one)
 export const getGeologyIntervalProperties = (
   mode: PropertiesModalMode
 ): PropertiesModalProperty<GeologyInterval>[] => [
@@ -114,7 +113,7 @@ export const getGeologyIntervalProperties = (
   },
   {
     property: "dxcAv",
-    propertyType: PropertyType.Number,
+    propertyType: PropertyType.StringNumber,
     validator: validNumber,
     helperText: getNumberHelperText("dxcAv")
   },
@@ -151,7 +150,7 @@ export const getLithologyProps = (
   },
   {
     property: "lithPc",
-    propertyType: PropertyType.Number,
+    propertyType: PropertyType.StringNumber,
     validator: validNumber,
     helperText: getNumberHelperText("lithPc")
   }

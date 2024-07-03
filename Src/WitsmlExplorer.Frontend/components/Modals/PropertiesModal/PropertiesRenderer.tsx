@@ -249,6 +249,7 @@ export const PropertiesRenderer = <T,>({
             );
           }
           case PropertyType.String:
+          case PropertyType.StringNumber:
           case PropertyType.Number:
             return (
               <TextField
@@ -256,7 +257,8 @@ export const PropertiesRenderer = <T,>({
                 id={prop.property}
                 label={prop.property}
                 type={
-                  prop.propertyType === PropertyType.Number
+                  prop.propertyType === PropertyType.Number ||
+                  prop.propertyType === PropertyType.StringNumber
                     ? "number"
                     : undefined
                 }

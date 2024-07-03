@@ -12,7 +12,6 @@ import {
 import MaxLength from "models/maxLength";
 import Well from "models/well";
 
-// Note: Only add properties that can be updated directly (without having to create a new object and delete the old one)
 export const getWellProperties = (
   mode: PropertiesModalMode
 ): PropertiesModalProperty<Well>[] => [

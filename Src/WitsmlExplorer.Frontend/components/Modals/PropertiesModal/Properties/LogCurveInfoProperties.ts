@@ -6,7 +6,6 @@ import AxisDefinition from "models/AxisDefinition";
 import LogCurveInfo from "models/logCurveInfo";
 import MaxLength from "models/maxLength";
 
-// Note: Only add properties that can be updated directly (without having to create a new object and delete the old one)
 export const getLogCurveInfoProperties = (
   mode: PropertiesModalMode,
   isIndexCurve: boolean

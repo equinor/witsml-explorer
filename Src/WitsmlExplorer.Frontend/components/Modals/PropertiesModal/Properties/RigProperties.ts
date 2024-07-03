@@ -41,7 +41,7 @@ export const getRigProperties = (
   },
   {
     property: "yearEntService",
-    propertyType: PropertyType.Number,
+    propertyType: PropertyType.StringNumber,
     validator: (num: string) =>
       validPositiveInteger(num) && validText(num, 4, 4),
     helperText: "yearEntService must be a 4 digit positive integer"

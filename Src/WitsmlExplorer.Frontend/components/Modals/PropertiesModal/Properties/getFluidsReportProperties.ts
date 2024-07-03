@@ -39,7 +39,7 @@ export const getFluidsReportProperties = (
   },
   {
     property: "numReport",
-    propertyType: PropertyType.Number,
+    propertyType: PropertyType.StringNumber,
     validator: validPositiveInteger,
     helperText: "numReport must be a positive integer"
   },

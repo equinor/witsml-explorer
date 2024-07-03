@@ -79,7 +79,7 @@ export const getBhaRunProperties = (
   },
   {
     property: "numStringRun",
-    propertyType: PropertyType.Number,
+    propertyType: PropertyType.StringNumber,
     validator: validPositiveInteger,
     helperText: "numStringRun must be a positive integer"
   },

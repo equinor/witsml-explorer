@@ -15,7 +15,6 @@ import MaxLength from "models/maxLength";
 import Wellbore from "models/wellbore";
 import { wellborePurposeValues } from "models/wellborePurposeValues";
 
-// Note: Only add properties that can be updated directly (without having to create a new object and delete the old one)
 export const getWellboreProperties = (
   mode: PropertiesModalMode
 ): PropertiesModalProperty<Wellbore>[] => [

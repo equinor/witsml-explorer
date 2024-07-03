@@ -99,11 +99,17 @@ export const formatPropertyValue = (
   propertyType: PropertyType,
   value: string
 ) => {
-  return propertyType === PropertyType.Measure &&
+  if (propertyType === PropertyType.Number) {
+    return parseFloat(value);
+  }
+  if (
+    propertyType === PropertyType.Measure &&
     property.endsWith(".value") &&
     value !== ""
-    ? parseFloat(value)
-    : value;
+  ) {
+    return parseFloat(value);
+  }
+  return value;
 };
 
 export const getMaxLengthHelperText = (property: string, maxLength: number) => {
