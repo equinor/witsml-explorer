@@ -89,7 +89,10 @@ export const hasPropertyChanged = (
       return Date.parse(originalValue) !== Date.parse(value);
     default:
       return (
-        !(value === "" && originalValue === null) && value !== originalValue
+        !(
+          value === "" &&
+          (originalValue === null || originalValue === undefined)
+        ) && value !== originalValue
       );
   }
 };

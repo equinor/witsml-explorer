@@ -32,7 +32,7 @@ export const PropertiesRenderer = <T,>({
   onChange
 }: PropertiesRendererProps<T>): ReactElement => {
   const getInitialSelectedOptions = (prop: PropertiesModalProperty<T>) => {
-    const optionsString = getNestedValue(object, prop.property).toString();
+    const optionsString = getNestedValue(object, prop.property)?.toString();
     if (!optionsString) return [];
     return prop.multiSelect ? optionsString.split(", ") : [optionsString];
   };
@@ -67,10 +67,8 @@ export const PropertiesRenderer = <T,>({
       {properties.map((prop) => {
         switch (prop.propertyType) {
           case PropertyType.List: {
-            const subObjectList =
-              getNestedValue(object, prop.property) ?? ([] as any[]);
-            const subUpdatesList =
-              getNestedValue(updates, prop.property) ?? ([] as any[]);
+            const subObjectList = getNestedValue(object, prop.property) ?? [];
+            const subUpdatesList = getNestedValue(updates, prop.property) ?? [];
             const onSubObjectChange = (
               subObject: any,
               updates: Partial<any>
