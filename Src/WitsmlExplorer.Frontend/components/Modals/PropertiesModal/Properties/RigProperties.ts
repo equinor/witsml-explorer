@@ -127,7 +127,6 @@ export const getRigProperties = (
   }
 ];
 
-// TODO: Test the batch rig properties
 export const getBatchModifyRigProperties =
   (): PropertiesModalProperty<Rig>[] => [
     {

@@ -31,7 +31,6 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
             try
             {
-                // TODO: Test that this works properly for batch modifications.
                 objects.ForEach(obj => ModifyUtils.VerifyModificationProperties(obj, objectType, Logger));
                 objects.ForEach(ModifyUtils.VerifyModificationValues);
             }

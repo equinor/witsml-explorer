@@ -24,6 +24,7 @@ interface CommonProps<T> {
   validator?: (value: any, originalValue: string) => boolean;
   helperText?: string;
   required?: boolean;
+  disabled?: boolean;
 }
 
 // options are only allowed for PropertyType.Options
@@ -50,11 +51,6 @@ type MultiLineProps =
       multiline?: never;
     };
 
-// required props cannot be disabled
-type DisabledProps =
-  | { required?: true; disabled?: false }
-  | { required?: false; disabled?: boolean };
-
 // subproperties for list types
 type SubProps<K> =
   | {
@@ -71,6 +67,5 @@ type SubProps<K> =
 export type PropertiesModalProperty<T, K = any> = CommonProps<T> &
   OptionsPropertyProps &
   MultiSelectOptionProps &
-  DisabledProps &
   MultiLineProps &
   SubProps<K>;

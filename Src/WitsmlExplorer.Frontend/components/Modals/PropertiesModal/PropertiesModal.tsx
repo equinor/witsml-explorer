@@ -15,7 +15,27 @@ export interface PropertiesModalProps<T> {
   onSubmit: (updates: Partial<T>) => void;
 }
 
-// TODO: Add docstring. Specify that onSubmit only receives whatever has been actually changed (when that is implemented).
+/**
+ * PropertiesModal component
+ *
+ * A modal dialog for editing properties of a given object. It renders a list of properties,
+ * validates the input, and submits only the modified properties via the onSubmit callback.
+ *
+ * @template T - The type of the object whose properties are being edited.
+ *
+ * @param {PropertiesModalProps<T>} props - The props for the PropertiesModal component.
+ * @param {string} props.title - The title of the modal dialog.
+ * @param {T} props.object - The object whose properties are to be edited.
+ * @param {PropertiesModalProperty<T>[]} props.properties - The list of properties available for editing.
+ * @param {(updates: Partial<T>) => void} props.onSubmit - Callback for submitting the modified properties.
+ *
+ * @returns {ReactElement} A React element representing the properties modal dialog.
+ *
+ * @remarks
+ * - The `onSubmit` callback only receives modified properties.
+ * - The modal validates each property before enabling the submit button.
+ */
+
 export const PropertiesModal = <T,>(
   props: PropertiesModalProps<T>
 ): ReactElement => {
@@ -75,10 +95,6 @@ export const PropertiesModal = <T,>(
     />
   );
 };
-
-// TODO: When everything is finished, test the modal properly (both manually and with tests)
-
-// TODO: Test disabled: true for all property types.
 
 const Layout = styled.div`
   margin-top: 12px;

@@ -119,7 +119,7 @@ const LogCurveInfoContextMenu = (
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
     const logCurveInfoPropertiesModalProps = {
-      title: "TODO: Edit this",
+      title: `Edit properties for LogCurve: ${logCurveInfo.mnemonic}`,
       properties: getLogCurveInfoProperties(
         PropertiesModalMode.Edit,
         logCurveInfo?.mnemonic === selectedLog?.indexCurve
