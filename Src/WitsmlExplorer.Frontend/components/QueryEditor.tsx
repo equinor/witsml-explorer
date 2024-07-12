@@ -11,54 +11,83 @@ import { useOperationState } from "hooks/useOperationState";
 import AceEditor from "react-ace";
 import styled from "styled-components";
 import { Colors, dark } from "styles/Colors";
+import React, { FC, useState } from "react";
+import { Stack } from "@mui/material";
+import { Chip } from "./StyledComponents/Chip";
+import Icon from "../styles/Icons.tsx";
 
 export interface QueryEditorProps {
   value: string;
   onChange?: (newValue: string) => void;
+  showCommandPaletteOption?: boolean;
   readonly?: boolean;
 }
 
-export const QueryEditor = (props: QueryEditorProps) => {
-  const { value, onChange, readonly } = props;
+export const QueryEditor: FC<QueryEditorProps> = ({
+  value,
+  onChange,
+  readonly,
+  showCommandPaletteOption
+}) => {
+  const [ace, setAce] = useState<null | any>(null);
+
   const {
     operationState: { colors }
   } = useOperationState();
 
-  const onLoad = (editor: any) => {
+  const onLoadInternal = (editor: any) => {
     editor.renderer.setPadding(10);
     editor.renderer.setScrollMargin(10);
     if (readonly) {
       editor.renderer.$cursorLayer.element.style.display = "none";
     } else {
       editor.completers = [customCompleter];
-      editor.renderer.on("afterRender", (_: any, renderer: any) =>
-        updateLinesWithWidgets(editor, renderer)
-      );
+      editor.renderer.on("afterRender", (_: any, renderer: any) => {
+        updateLinesWithWidgets(editor, renderer);
+      });
+      if (showCommandPaletteOption) setAce(editor);
     }
   };
 
+  const canSeeCommandPalette = showCommandPaletteOption && ace && !readonly;
+
   return (
-    <StyledAceEditor
-      value={value}
-      colors={colors}
-      mode="xml"
-      theme={colors === dark ? "merbivore" : "xcode"}
-      onChange={onChange}
-      onLoad={onLoad}
-      readOnly={readonly}
-      fontSize={13}
-      showPrintMargin={false}
-      highlightActiveLine={false}
-      setOptions={{
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: true,
-        tabSize: 2,
-        useWorker: false,
-        highlightGutterLine: false
-      }}
-      commands={customCommands}
-    />
+    <>
+      <StyledAceEditor
+        value={value}
+        colors={colors}
+        mode="xml"
+        theme={colors === dark ? "merbivore" : "xcode"}
+        onChange={onChange}
+        onLoad={onLoadInternal}
+        readOnly={readonly}
+        fontSize={13}
+        showPrintMargin={false}
+        highlightActiveLine={false}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableSnippets: true,
+          enableLiveAutocompletion: true,
+          tabSize: 2,
+          useWorker: false,
+          highlightGutterLine: false
+        }}
+        commands={customCommands}
+      />
+      {canSeeCommandPalette && (
+        <Stack direction="row" justifyContent="flex-end">
+          <Chip
+            onClick={() => {
+              ace.execCommand("openCommandPalette");
+            }}
+            title="Show command palette [F1]"
+          >
+            <Icon name="keyboard" />
+            Command Palette
+          </Chip>
+        </Stack>
+      )}
+    </>
   );
 };
 

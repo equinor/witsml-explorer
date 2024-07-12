@@ -1,17 +1,15 @@
 import { Menu, Tabs, TextField } from "@equinor/eds-core-react";
 import {
-  ReturnElements,
-  StoreFunction,
-  TemplateObjects,
   formatXml,
   getParserError,
-  getQueryTemplate
+  getQueryTemplate,
+  ReturnElements,
+  StoreFunction,
+  TemplateObjects
 } from "components/ContentViews/QueryViewUtils";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { QueryEditor } from "components/QueryEditor";
 import { getTag } from "components/QueryEditorUtils";
-import { StyledNativeSelect } from "components/Select";
-import { Button } from "components/StyledComponents/Button";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
@@ -21,6 +19,9 @@ import QueryService from "services/queryService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import { StyledNativeSelect } from "../Select.tsx";
+import { Button } from "../StyledComponents/Button.tsx";
+import { Box, Stack } from "@mui/material";
 
 const QueryView = (): React.ReactElement => {
   const {
@@ -134,35 +135,53 @@ const QueryView = (): React.ReactElement => {
 
   return (
     <Layout>
-      <Tabs
-        activeTab={tabIndex}
-        onChange={onTabChange}
-        scrollable
-        style={{ overflowX: "auto", whiteSpace: "nowrap" }}
+      <Stack
+        direction="row"
+        gap="1rem"
+        justifyContent="space-between"
+        alignItems="flex-end"
       >
-        <Tabs.List>
-          {queries.map((query) => (
-            <StyledTab key={query.tabId} colors={colors}>
-              {getTabName(query.query)}
-              <StyledClearIcon
-                name="clear"
-                size={16}
-                onClick={(event) => onCloseTab(event, query.tabId)}
-              />
-            </StyledTab>
-          ))}
-          <StyledTab colors={colors}>
-            <Icon name="add" />
-          </StyledTab>
-        </Tabs.List>
-      </Tabs>
+        <Box
+          sx={{
+            flexBasis: "100%",
+            width: 0,
+            minWidth: 0
+          }}
+        >
+          <Tabs
+            activeTab={tabIndex}
+            onChange={onTabChange}
+            scrollable
+            style={{ overflowX: "auto", whiteSpace: "nowrap" }}
+          >
+            <Tabs.List>
+              {queries.map((query) => (
+                <StyledTab key={query.tabId} colors={colors}>
+                  {getTabName(query.query)}
+                  <StyledClearIcon
+                    name="clear"
+                    size={16}
+                    onClick={(event) => onCloseTab(event, query.tabId)}
+                  />
+                </StyledTab>
+              ))}
+              <StyledTab colors={colors}>
+                <Icon name="add" />
+              </StyledTab>
+            </Tabs.List>
+          </Tabs>
+        </Box>
+        <Button onClick={sendQuery} disabled={isLoading}>
+          <Icon name="play" />
+          Execute
+        </Button>
+      </Stack>
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "1rem",
           height: "100%",
-          padding: "1rem"
+          padding: "1rem 0rem"
         }}
       >
         <div
@@ -173,7 +192,11 @@ const QueryView = (): React.ReactElement => {
             height: "100%"
           }}
         >
-          <QueryEditor value={query} onChange={onQueryChange} />
+          <QueryEditor
+            value={query}
+            onChange={onQueryChange}
+            showCommandPaletteOption
+          />
           <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
             <StyledNativeSelect
               label="Function"
@@ -243,9 +266,6 @@ const QueryView = (): React.ReactElement => {
                 );
               })}
             </StyledMenu>
-            <Button onClick={sendQuery} disabled={isLoading}>
-              Execute
-            </Button>
           </div>
         </div>
         <div>
@@ -278,7 +298,6 @@ const displayConfirmation = (
 
 const StyledMenu = styled(Menu)<{ colors: Colors }>`
   background: ${(props) => props.colors.ui.backgroundLight};
-  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
   max-height: 80vh;
   overflow-y: scroll;
 `;
@@ -288,6 +307,7 @@ const StyledMenuItem = styled(Menu.Item)<{ colors: Colors }>`
     background-color: ${(props) =>
       props.colors.interactive.contextMenuItemHover};
   }
+
   color: ${(props) => props.colors.text.staticIconsDefault};
   padding: 4px;
 `;
@@ -296,6 +316,7 @@ const StyledTextField = styled(TextField)<{ colors: Colors }>`
   label {
     color: ${(props) => props.colors.text.staticIconsDefault};
   }
+
   div {
     background: ${(props) => props.colors.text.staticTextFieldDefault};
   }
@@ -305,11 +326,13 @@ const Layout = styled.div`
   display: grid;
   grid-template-rows: auto 1fr;
   height: 100%;
+  padding: 1rem;
 `;
 
 const StyledClearIcon = styled(Icon)`
   margin-left: 8px;
   border-radius: 50%;
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.1);
   }

@@ -26,13 +26,14 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
 Chip.displayName = "WitsmlExplorerChip";
 
 const WitsmlDefaultChip = styled(EquinorChip)<WithTheme>`
-  ${({ colors: { ui, mode, interactive } }) => {
+  ${({ colors: { ui, mode, interactive, text } }) => {
     if (mode === "light") return;
 
     return css`
       --eds_ui_background__light: ${ui.backgroundLight};
       --eds_interactive_primary__resting: ${interactive.primaryResting};
       --eds_interactive_primary__hover_alt: ${ui.backgroundDefault};
+      --eds_interactive_primary__hover: ${text.staticPropertyValue};
     `;
   }}
 `;
