@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
@@ -82,6 +85,49 @@ namespace WitsmlExplorer.Api.Workers
                 _sourceServerCapabilities = await GetSourceWitsmlClientOrThrow().GetCap();
             }
             return _sourceServerCapabilities;
+        }
+
+        protected  List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData,  int chunkSize)
+        {
+
+            // TODO: Base this on maxDataNodes/maxDataPoints once issue #1957 is implemented.
+            List<WitsmlLogs> batchedQueries = offsetLogData.Data.Chunk(chunkSize).Select(chunk =>
+                new WitsmlLogs
+                {
+                    Logs = new WitsmlLog
+                    {
+                        Uid = log.Uid,
+                        UidWell = log.UidWell,
+                        UidWellbore = log.UidWellbore,
+                        LogData = new WitsmlLogData
+                        {
+                            MnemonicList = offsetLogData.MnemonicList,
+                            UnitList = offsetLogData.UnitList,
+                            Data = chunk.ToList(),
+                        }
+                    }.AsItemInList()
+                }
+            ).ToList();
+
+            return batchedQueries;
+        }
+
+        protected async Task<int> GetMaxBatchSize(List<string> mnemonics)
+        {
+            var targetServerCapabilities = await GetTargetServerCapabilities();
+            var serverCapabilites =
+                targetServerCapabilities.ServerCapabilities;
+
+            var functions = serverCapabilites.Select(x => x.Functions.Find(y => y.Name.Equals("WMLS_UpdateInStore")));
+            var logCapabilities = functions.Select(x =>
+                x.DataObjects.Find(y => y.Name.Equals("log")));
+
+            var maxDataRows = logCapabilities.FirstOrDefault().MaxDataNodes;
+            var maxDataPoints = logCapabilities.FirstOrDefault().MaxDataPoints;
+
+            var maxBatchSize =
+                Math.Min(maxDataRows, maxDataPoints / mnemonics.Count());
+            return maxBatchSize;
         }
 
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)

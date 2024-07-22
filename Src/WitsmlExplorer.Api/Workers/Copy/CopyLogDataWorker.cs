@@ -173,46 +173,27 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             int numberOfDataRowsCopied = 0;
 
-            var targetServerCapabilities = await GetTargetServerCapabilities();
-            var serverCapabilites =
-                targetServerCapabilities.ServerCapabilities;
-
-            var functions = serverCapabilites.Select(x => x.Functions.Find(y => y.Name.Equals("WMLS_UpdateInStore")));
-            var logCapabilities = functions.Select(x =>
-                x.DataObjects.Find(y => y.Name.Equals("log")));
-
-            var maxDataRows = logCapabilities.FirstOrDefault().MaxDataNodes;
-            var maxDataPoints = logCapabilities.FirstOrDefault().MaxDataPoints;
-
-            var maxBatchSize =
-                Math.Min(maxDataRows, maxDataPoints / mnemonics.Count());
-
             await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics);
+
             while (sourceLogData != null)
             {
-                var dataRows = sourceLogData;
+                var updateLogDataQueries = GetUpdateLogDataQueries(targetLog, sourceLogData, chunkMaxSize);
                 if (cancellationToken is { IsCancellationRequested: true })
                 {
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = CancellationReason() };
                 }
-                for (int i = 0; i < dataRows.Data.Count; i += maxBatchSize)
+                foreach (var query in updateLogDataQueries)
                 {
-                    var currentLogData = dataRows.Data.Skip(i).Take(maxBatchSize).ToList();
-                    dataRows.Data = currentLogData;
-                    WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogData);
-                    QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
-                    if (result.IsSuccessful)
+
+                    var result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query), Logger);
+                    if (!result.IsSuccessful)
                     {
-                        numberOfDataRowsCopied += sourceLogData.Data.Count;
-                        UpdateJobProgress(job, sourceLog, sourceLogData);
-                    }
-                    else
-                    {
-                        Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
-                        return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
+                        throw new Exception($"Failed to update log data for mnemonic . {result.Reason}.");
                     }
                 }
+
                 sourceLogData = await logDataReader.GetNextBatch();
             }
 
@@ -457,5 +438,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
             public int OriginalNumberOfRows { get; init; }
             public string ErrorReason { get; init; }
         }
+
+
+
     }
 }
