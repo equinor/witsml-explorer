@@ -202,6 +202,9 @@ export default function LogTypeItem({
           labelText={subLogsNodeName(log.name)}
           key={getMultipleLogsNode(log.name)}
           nodeId={getMultipleLogsNode(log.name)}
+          isActive={logObjects
+            .filter((x) => x.name === log.name)
+            ?.some((log) => log.objectGrowing)}
           to={`${getNavPath(
             getLogTypeGroup(logType)
           )}?${createColumnFilterSearchParams(searchParams, {
