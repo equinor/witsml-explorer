@@ -15,6 +15,7 @@ export const getTubularProperties = (
     propertyType: PropertyType.Options,
     validator: (value: string) => validOption(value, typeTubularAssy),
     helperText: getOptionHelperText("typeTubularAssy"),
-    options: typeTubularAssy
+    options: typeTubularAssy,
+    required: true
   }
 ];
