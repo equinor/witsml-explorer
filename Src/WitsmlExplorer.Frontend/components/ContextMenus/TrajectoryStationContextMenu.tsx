@@ -108,6 +108,7 @@ const TrajectoryStationContextMenu = (
               trajectory
             )
           }
+          disabled={trajectoryStationReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>
