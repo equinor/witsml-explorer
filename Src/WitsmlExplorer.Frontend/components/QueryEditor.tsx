@@ -9,6 +9,7 @@ import { customCommands, customCompleter } from "components/QueryEditorUtils";
 import { updateLinesWithWidgets } from "components/QueryEditorWidgetUtils";
 import { useOperationState } from "hooks/useOperationState";
 import AceEditor from "react-ace";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Colors, dark } from "styles/Colors";
 
@@ -20,6 +21,8 @@ export interface QueryEditorProps {
 
 export const QueryEditor = (props: QueryEditorProps) => {
   const { value, onChange, readonly } = props;
+  const navigate = useNavigate();
+  const { serverUrl } = useParams();
   const {
     operationState: { colors }
   } = useOperationState();
@@ -31,10 +34,10 @@ export const QueryEditor = (props: QueryEditorProps) => {
       editor.renderer.$cursorLayer.element.style.display = "none";
     } else {
       editor.completers = [customCompleter];
-      editor.renderer.on("afterRender", (_: any, renderer: any) =>
-        updateLinesWithWidgets(editor, renderer)
-      );
     }
+    editor.renderer.on("afterRender", (_: any, renderer: any) =>
+      updateLinesWithWidgets(editor, renderer, navigate, serverUrl, readonly)
+    );
   };
 
   return (
