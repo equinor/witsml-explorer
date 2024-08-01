@@ -43,33 +43,11 @@ public static class CommonConstants
 
     public static class WitsmlQueryTypeName
     {
-        public const string BhaRun = "bhaRun";
-        public const string ChangeLog = "changeLog";
-        public const string Data = "data";
-        public const string FluidsReport = "fluidsReport";
-        public const string FormationMarker = "formationMarker";
-        public const string GeologyInterval = "geologyInterval";
-        public const string LogCurveInfo = "logCurveInfo";
         public const string Log = "log";
-        public const string Message = "message";
-        public const string MudLog = "mudLog";
-        public const string Rig = "rig";
-        public const string Risk = "risk";
-        public const string Trajectory = "trajectory";
-        public const string Tubular = "tubular";
-        public const string WbGeometry = "wbGeometry";
-        public const string Wellbore = "wellbore";
-        public const string Well = "well";
     }
 
     public static class WitsmlFunctionType
     {
-        public const string WMLS_GetCap = "WMLS_GetCap";
-        public const string WMLS_GetFromStore = "WMLS_GetFromStore";
-        public const string WMLS_AddToStore = "WMLS_AddToStore";
-        public const string WMLS_UpdateInStore = "WMLS_UpdateInStore";
-        public const string WMLS_DeleteFromStore = "WMLS_DeleteFromStore";
-        public const string WMLS_GetVersion = "WMLS_GetVersion";
-        public const string WMLS_GetBaseMsg = "WMLS_GetBaseMsg";
+        public const string WMLSUpdateInStore = "WMLS_UpdateInStore";
     };
 }

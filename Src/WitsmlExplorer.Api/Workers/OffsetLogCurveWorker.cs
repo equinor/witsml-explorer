@@ -178,7 +178,7 @@ namespace WitsmlExplorer.Api.Workers
         private async Task UpdateLogData(WitsmlLog log, WitsmlLogCurveInfo logCurveinfo, WitsmlLogData offsetLogData)
         {
             var mnemonics = log.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
-            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
             var mnemonicList = offsetLogData.MnemonicList;
 
             var queries = GetUpdateLogDataQueries(log, offsetLogData, chunkMaxSize, mnemonicList);
@@ -191,30 +191,6 @@ namespace WitsmlExplorer.Api.Workers
                     throw new Exception($"Failed to update log data for mnemonic {logCurveinfo.Mnemonic}. {result.Reason}.");
                 }
             }
-        }
-
-        private static List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData)
-        {
-            int chunkSize = 5000; // TODO: Base this on maxDataNodes/maxDataPoints once issue #1957 is implemented.
-            List<WitsmlLogs> batchedQueries = offsetLogData.Data.Chunk(chunkSize).Select(chunk =>
-                new WitsmlLogs
-                {
-                    Logs = new WitsmlLog
-                    {
-                        Uid = log.Uid,
-                        UidWell = log.UidWell,
-                        UidWellbore = log.UidWellbore,
-                        LogData = new WitsmlLogData
-                        {
-                            MnemonicList = offsetLogData.MnemonicList,
-                            UnitList = offsetLogData.UnitList,
-                            Data = chunk.ToList(),
-                        }
-                    }.AsItemInList()
-                }
-            ).ToList();
-
-            return batchedQueries;
         }
 
         private static WitsmlLogData OffsetLogData(WitsmlLogData logData, double depthOffset, TimeSpan timeOffset, bool isDepthLog)

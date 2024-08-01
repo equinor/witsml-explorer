@@ -76,9 +76,9 @@ namespace WitsmlExplorer.Api.Workers
             return _targetServerCapabilities;
         }
 
-        protected List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData, int chunkSize, string mnemonicList)
+        protected List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData logData, int chunkSize, string mnemonicList)
         {
-            List<WitsmlLogs> batchedQueries = offsetLogData.Data.Chunk(chunkSize).Select(chunk =>
+            List<WitsmlLogs> batchedQueries = logData.Data.Chunk(chunkSize).Select(chunk =>
                 new WitsmlLogs
                 {
                     Logs = new WitsmlLog
@@ -89,7 +89,7 @@ namespace WitsmlExplorer.Api.Workers
                         LogData = new WitsmlLogData
                         {
                             MnemonicList = mnemonicList,
-                            UnitList = offsetLogData.UnitList,
+                            UnitList = logData.UnitList,
                             Data = chunk.ToList(),
                         }
                     }.AsItemInList()

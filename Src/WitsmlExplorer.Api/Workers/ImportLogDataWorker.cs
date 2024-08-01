@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Workers
             var mnemonicList =
                 string.Join(CommonConstants.DataSeparator, job.Mnemonics);
 
-            var chunkMaxSize = await GetMaxBatchSize(job.Mnemonics.ToList(), CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var chunkMaxSize = await GetMaxBatchSize(job.Mnemonics.ToList(), CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
 
             var queries = GetUpdateLogDataQueries(witsmlLog, logData, chunkMaxSize, mnemonicList).ToArray();
 

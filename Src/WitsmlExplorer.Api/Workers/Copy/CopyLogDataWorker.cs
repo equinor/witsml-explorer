@@ -175,7 +175,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
-            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
 
             while (sourceLogData != null)
             {
