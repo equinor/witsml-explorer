@@ -87,10 +87,9 @@ namespace WitsmlExplorer.Api.Workers
             return _sourceServerCapabilities;
         }
 
-        protected  List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData,  int chunkSize)
+        protected List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData, int chunkSize)
         {
             var mnemonicList = log.IndexCurve.Value + offsetLogData.MnemonicList[offsetLogData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
-            // TODO: Base this on maxDataNodes/maxDataPoints once issue #1957 is implemented.
             List<WitsmlLogs> batchedQueries = offsetLogData.Data.Chunk(chunkSize).Select(chunk =>
                 new WitsmlLogs
                 {

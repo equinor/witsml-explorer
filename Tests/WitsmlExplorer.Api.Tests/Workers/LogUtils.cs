@@ -442,7 +442,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 }
 
             };
-           witsmlClient.Setup(client => client.GetCap()).ReturnsAsync(serverCapabalities);
+            witsmlClient.Setup(client => client.GetCap()).ReturnsAsync(serverCapabalities);
         }
     }
 }
