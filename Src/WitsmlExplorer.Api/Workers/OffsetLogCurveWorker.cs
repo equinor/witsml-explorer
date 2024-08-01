@@ -179,7 +179,9 @@ namespace WitsmlExplorer.Api.Workers
         {
             var mnemonics = log.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
             var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
-            var queries = GetUpdateLogDataQueries(log, offsetLogData, chunkMaxSize);
+            var mnemonicList = offsetLogData.MnemonicList;
+
+            var queries = GetUpdateLogDataQueries(log, offsetLogData, chunkMaxSize, mnemonicList);
             foreach (var query in queries)
             {
 

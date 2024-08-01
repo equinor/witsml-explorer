@@ -78,18 +78,8 @@ namespace WitsmlExplorer.Api.Workers
             return _targetServerCapabilities;
         }
 
-        protected async Task<WitsmlCapServers> GetSourceServerCapabilities()
+        protected List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData, int chunkSize, string mnemonicList)
         {
-            if (_sourceServerCapabilities == null)
-            {
-                _sourceServerCapabilities = await GetSourceWitsmlClientOrThrow().GetCap();
-            }
-            return _sourceServerCapabilities;
-        }
-
-        protected List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData, int chunkSize)
-        {
-            var mnemonicList = log.IndexCurve.Value + offsetLogData.MnemonicList[offsetLogData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
             List<WitsmlLogs> batchedQueries = offsetLogData.Data.Chunk(chunkSize).Select(chunk =>
                 new WitsmlLogs
                 {

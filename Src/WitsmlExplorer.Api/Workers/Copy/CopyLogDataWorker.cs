@@ -179,7 +179,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             while (sourceLogData != null)
             {
-                var updateLogDataQueries = GetUpdateLogDataQueries(targetLog, sourceLogData, chunkMaxSize);
+                var mnemonicList = targetLog.IndexCurve.Value + sourceLogData.MnemonicList[sourceLogData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
+                var updateLogDataQueries = GetUpdateLogDataQueries(targetLog, sourceLogData, chunkMaxSize, mnemonicList);
                 if (cancellationToken is { IsCancellationRequested: true })
                 {
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = CancellationReason() };

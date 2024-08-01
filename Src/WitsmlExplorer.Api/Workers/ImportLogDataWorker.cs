@@ -65,13 +65,14 @@ namespace WitsmlExplorer.Api.Workers
             var logData = new WitsmlLogData()
             {
                 Data = ro.ToList(),
-                MnemonicList = string.Join(CommonConstants.DataSeparator, job.Mnemonics),
                 UnitList = string.Join(CommonConstants.DataSeparator, job.Units)
             };
+            var mnemonicList =
+                string.Join(CommonConstants.DataSeparator, job.Mnemonics);
 
             var chunkMaxSize = await GetMaxBatchSize(job.Mnemonics.ToList(), CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
 
-            var queries = GetUpdateLogDataQueries(witsmlLog, logData, chunkMaxSize).ToArray();
+            var queries = GetUpdateLogDataQueries(witsmlLog, logData, chunkMaxSize, mnemonicList).ToArray();
 
             for (int i = 0; i < queries.Length; i++)
             {
