@@ -281,7 +281,9 @@ namespace WitsmlExplorer.Api.Workers
             var mnemonicList = data.MnemonicList;
             var log = new WitsmlLog()
             {
-                Uid = logUid, UidWell = wellUid, UidWellbore = wellboreUid
+                Uid = logUid,
+                UidWell = wellUid,
+                UidWellbore = wellboreUid
             };
             var queries = GetUpdateLogDataQueries(log, data, chunkMaxSize, mnemonicList);
 
