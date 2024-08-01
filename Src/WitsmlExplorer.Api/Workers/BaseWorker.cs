@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +25,6 @@ namespace WitsmlExplorer.Api.Workers
         private IWitsmlClientProvider WitsmlClientProvider { get; }
 
         private WitsmlCapServers _targetServerCapabilities;
-        private WitsmlCapServers _sourceServerCapabilities;
 
         public BaseWorker(ILogger<T> logger = null)
         {
