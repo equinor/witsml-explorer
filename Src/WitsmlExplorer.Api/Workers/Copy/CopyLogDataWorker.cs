@@ -175,7 +175,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
-            var chunkMaxSize = await GetMaxBatchSize(mnemonics);
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
 
             while (sourceLogData != null)
             {
@@ -190,10 +190,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     var result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query), Logger);
                     if (!result.IsSuccessful)
                     {
-                        throw new Exception($"Failed to update log data for mnemonic . {result.Reason}.");
+                        Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
+                        return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
                     }
                 }
-
+                numberOfDataRowsCopied += sourceLogData.Data.Count;
+                UpdateJobProgress(job, sourceLog, sourceLogData);
                 sourceLogData = await logDataReader.GetNextBatch();
             }
 

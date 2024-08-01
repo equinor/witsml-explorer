@@ -112,15 +112,15 @@ namespace WitsmlExplorer.Api.Workers
             return batchedQueries;
         }
 
-        protected async Task<int> GetMaxBatchSize(List<string> mnemonics)
+        protected async Task<int> GetMaxBatchSize(List<string> mnemonics, string functionType, string queryTypeName)
         {
             var targetServerCapabilities = await GetTargetServerCapabilities();
             var serverCapabilites =
                 targetServerCapabilities.ServerCapabilities;
 
-            var functions = serverCapabilites.Select(x => x.Functions.Find(y => y.Name.Equals("WMLS_UpdateInStore")));
+            var functions = serverCapabilites.Select(x => x.Functions.Find(y => y.Name.Equals(functionType)));
             var logCapabilities = functions.Select(x =>
-                x.DataObjects.Find(y => y.Name.Equals("log")));
+                x.DataObjects.Find(y => y.Name.Equals(queryTypeName)));
 
             var maxDataRows = logCapabilities.FirstOrDefault().MaxDataNodes;
             var maxDataPoints = logCapabilities.FirstOrDefault().MaxDataPoints;

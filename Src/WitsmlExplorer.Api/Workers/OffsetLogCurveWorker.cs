@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
@@ -176,7 +177,9 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task UpdateLogData(WitsmlLog log, WitsmlLogCurveInfo logCurveinfo, WitsmlLogData offsetLogData)
         {
-            var queries = GetUpdateLogDataQueries(log, offsetLogData);
+            var mnemonics = log.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var queries = GetUpdateLogDataQueries(log, offsetLogData, chunkMaxSize);
             foreach (var query in queries)
             {
 

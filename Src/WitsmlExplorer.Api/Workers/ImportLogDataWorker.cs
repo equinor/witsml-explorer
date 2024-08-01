@@ -55,7 +55,23 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             //Todo: find a way to determine the maximum amount of rows that can be sent to the WITSML server then pass that amount to the CreateImportQueries method
-            WitsmlLogs[] queries = CreateImportQueries(job, chunkSize).ToArray();
+            var ro = job.DataRows
+                .Where(d => d.Count() > 1)
+                .Select(row => new WitsmlData
+                {
+                    Data = string.Join(CommonConstants.DataSeparator, row)
+                });
+
+            var logData = new WitsmlLogData()
+            {
+                Data = ro.ToList(),
+                MnemonicList = string.Join(CommonConstants.DataSeparator, job.Mnemonics),
+                UnitList = string.Join(CommonConstants.DataSeparator, job.Units)
+            };
+
+            var chunkMaxSize = await GetMaxBatchSize(job.Mnemonics.ToList(), CommonConstants.WitsmlFunctionType.WMLS_UpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+
+            var queries = GetUpdateLogDataQueries(witsmlLog, logData, chunkMaxSize).ToArray();
 
             for (int i = 0; i < queries.Length; i++)
             {
