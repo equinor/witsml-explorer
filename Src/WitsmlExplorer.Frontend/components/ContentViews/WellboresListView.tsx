@@ -50,9 +50,13 @@ export default function WellboresListView() {
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "wellType", label: "typeWellbore", type: ContentType.String },
     {
-      property: "wellStatus",
+      property: "wellboreType",
+      label: "typeWellbore",
+      type: ContentType.String
+    },
+    {
+      property: "wellboreStatus",
       label: "statusWellbore",
       type: ContentType.String
     },

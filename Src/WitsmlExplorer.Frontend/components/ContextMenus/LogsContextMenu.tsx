@@ -2,6 +2,11 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  WITSML_INDEX_TYPE,
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
+import {
   StoreFunction,
   TemplateObjects
 } from "components/ContentViews/QueryViewUtils";
@@ -15,19 +20,16 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import LogPropertiesModal, {
-  IndexCurve,
-  LogPropertiesModalInterface
-} from "components/Modals/LogPropertiesModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
   HideModalAction
 } from "contexts/operationStateReducer";
-import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { IndexCurve } from "models/indexCurve";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
@@ -43,11 +45,11 @@ export interface LogsContextMenuProps {
   ) => void;
   wellbore: Wellbore;
   servers: Server[];
-  indexCurve?: IndexCurve;
+  indexType?: WITSML_INDEX_TYPE;
 }
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers, indexCurve } = props;
+  const { dispatchOperation, wellbore, servers, indexType } = props;
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
@@ -61,19 +63,18 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       wellName: wellbore.wellName,
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
+      indexType: indexType ?? WITSML_INDEX_TYPE_MD,
       indexCurve:
-        indexCurve === IndexCurve.Time ? IndexCurve.Time : IndexCurve.Depth
+        indexType === WITSML_INDEX_TYPE_DATE_TIME
+          ? IndexCurve.Time
+          : IndexCurve.Depth
     };
-    const logPropertiesModalProps: LogPropertiesModalInterface = {
-      mode: PropertiesModalMode.New,
-      logObject: newLog,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <LogPropertiesModal {...logPropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openObjectOnWellboreProperties(
+      ObjectType.Log,
+      newLog,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   return (
@@ -129,7 +130,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
                   server,
                   wellbore,
                   ObjectType.Log,
-                  indexCurve
+                  indexType
                 )
               }
             >

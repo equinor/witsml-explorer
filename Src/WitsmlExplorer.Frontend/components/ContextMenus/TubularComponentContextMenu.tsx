@@ -17,18 +17,23 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import TubularComponentPropertiesModal from "components/Modals/TubularComponentPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { getTubularComponentProperties } from "components/Modals/PropertiesModal/Properties/TubularComponentProperties";
+import { PropertiesModal } from "components/Modals/PropertiesModal/PropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
+import ObjectReference from "models/jobs/objectReference";
+import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Tubular from "models/tubular";
+import TubularComponent from "models/tubularComponent";
 import React from "react";
-import { JobType } from "services/jobService";
+import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface TubularComponentContextMenuProps {
@@ -50,18 +55,30 @@ const TubularComponentContextMenu = (
 
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
+    const tubularComponent = checkedTubularComponents[0].tubularComponent;
     const tubularComponentPropertiesModalProps = {
-      tubularComponent: checkedTubularComponents[0].tubularComponent,
-      tubular,
-      dispatchOperation
+      title: `Edit properties for Sequence ${tubularComponent.sequence} - ${tubularComponent.typeTubularComponent} - ${tubularComponent.uid}`,
+      properties: getTubularComponentProperties(PropertiesModalMode.Edit),
+      object: tubularComponent,
+      onSubmit: async (updates: Partial<TubularComponent>) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        const tubularReference: ObjectReference = toObjectReference(tubular);
+        const modifyTubularComponentJob = {
+          tubularComponent: {
+            ...tubularComponent,
+            ...updates
+          },
+          tubularReference
+        };
+        await JobService.orderJob(
+          JobType.ModifyTubularComponent,
+          modifyTubularComponentJob
+        );
+      }
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: (
-        <TubularComponentPropertiesModal
-          {...tubularComponentPropertiesModalProps}
-        />
-      )
+      payload: <PropertiesModal {...tubularComponentPropertiesModalProps} />
     });
   };
 

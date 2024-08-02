@@ -18,16 +18,17 @@ import AnalyzeGapModal, {
 import CopyRangeModal, {
   CopyRangeModalProps
 } from "components/Modals/CopyRangeModal";
-import LogCurveInfoPropertiesModal from "components/Modals/LogCurveInfoPropertiesModal";
 import {
   LogCurvePriorityModal,
   LogCurvePriorityModalProps
 } from "components/Modals/LogCurvePriorityModal";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
 import {
   OffsetLogCurveModal,
   OffsetLogCurveModalProps
 } from "components/Modals/OffsetLogCurveModal";
+import { getLogCurveInfoProperties } from "components/Modals/PropertiesModal/Properties/LogCurveInfoProperties";
+import { PropertiesModal } from "components/Modals/PropertiesModal/PropertiesModal";
 import SelectIndexToDisplayModal from "components/Modals/SelectIndexToDisplayModal";
 import {
   DisplayModalAction,
@@ -36,12 +37,16 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { ComponentType } from "models/componentType";
+import { IndexCurve } from "models/indexCurve";
 import { createComponentReferences } from "models/jobs/componentReferences";
+import ModifyLogCurveInfoJob from "models/jobs/modifyLogCurveInfoJob";
+import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
-import { JobType } from "services/jobService";
+import JobService, { JobType } from "services/jobService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
 import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
@@ -114,15 +119,27 @@ const LogCurveInfoContextMenu = (
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
     const logCurveInfoPropertiesModalProps = {
-      logCurveInfo,
-      dispatchOperation,
-      selectedLog
+      title: `Edit properties for LogCurve: ${logCurveInfo.mnemonic}`,
+      properties: getLogCurveInfoProperties(
+        PropertiesModalMode.Edit,
+        logCurveInfo?.mnemonic === selectedLog?.indexCurve
+      ),
+      object: logCurveInfo,
+      onSubmit: async (updates: Partial<LogCurveInfo>) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        const job: ModifyLogCurveInfoJob = {
+          logReference: toObjectReference(selectedLog),
+          logCurveInfo: {
+            ...logCurveInfo,
+            ...updates
+          }
+        };
+        await JobService.orderJob(JobType.ModifyLogCurveInfo, job);
+      }
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: (
-        <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} />
-      )
+      payload: <PropertiesModal {...logCurveInfoPropertiesModalProps} />
     });
   };
 

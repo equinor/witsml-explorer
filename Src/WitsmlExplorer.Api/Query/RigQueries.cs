@@ -23,6 +23,8 @@ namespace WitsmlExplorer.Api.Query
                     IsOffshore = "",
                     Manufacturer = "",
                     Name = "",
+                    NameWell = "",
+                    NameWellbore = "",
                     NameContact = "",
                     Owner = "",
                     Registration = "",
