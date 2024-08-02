@@ -45,6 +45,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient = new Mock<IWitsmlClient>();
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
+            LogUtils.SetUpGetServerCapabilites(_witsmlClient);
+
             Mock<ILogger<CopyLogDataJob>> logger = new();
             Mock<IDocumentRepository<Server, Guid>> documentRepository = new();
             documentRepository.Setup(client => client.GetDocumentsAsync())

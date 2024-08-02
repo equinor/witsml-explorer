@@ -41,6 +41,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _logger = new Mock<ILogger<SpliceLogsJob>>();
             _witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             _worker = new SpliceLogsWorker(_logger.Object, _witsmlClientProvider.Object);
+            LogUtils.SetUpGetServerCapabilites(_witsmlClient);
         }
 
         [Theory]

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
@@ -176,7 +177,11 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task UpdateLogData(WitsmlLog log, WitsmlLogCurveInfo logCurveinfo, WitsmlLogData offsetLogData)
         {
-            var queries = GetUpdateLogDataQueries(log, offsetLogData);
+            var mnemonics = offsetLogData.MnemonicList.Split(CommonConstants.DataSeparator).ToList();
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var mnemonicList = offsetLogData.MnemonicList;
+
+            var queries = LogWorkerTools.GetUpdateLogDataQueries(log.Uid, log.UidWell, log.UidWellbore, offsetLogData, chunkMaxSize, mnemonicList);
             foreach (var query in queries)
             {
 
@@ -186,30 +191,6 @@ namespace WitsmlExplorer.Api.Workers
                     throw new Exception($"Failed to update log data for mnemonic {logCurveinfo.Mnemonic}. {result.Reason}.");
                 }
             }
-        }
-
-        private static List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData offsetLogData)
-        {
-            int chunkSize = 5000; // TODO: Base this on maxDataNodes/maxDataPoints once issue #1957 is implemented.
-            List<WitsmlLogs> batchedQueries = offsetLogData.Data.Chunk(chunkSize).Select(chunk =>
-                new WitsmlLogs
-                {
-                    Logs = new WitsmlLog
-                    {
-                        Uid = log.Uid,
-                        UidWell = log.UidWell,
-                        UidWellbore = log.UidWellbore,
-                        LogData = new WitsmlLogData
-                        {
-                            MnemonicList = offsetLogData.MnemonicList,
-                            UnitList = offsetLogData.UnitList,
-                            Data = chunk.ToList(),
-                        }
-                    }.AsItemInList()
-                }
-            ).ToList();
-
-            return batchedQueries;
         }
 
         private static WitsmlLogData OffsetLogData(WitsmlLogData logData, double depthOffset, TimeSpan timeOffset, bool isDepthLog)
