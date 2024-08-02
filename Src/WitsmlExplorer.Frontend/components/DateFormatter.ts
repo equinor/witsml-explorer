@@ -55,7 +55,7 @@ export function getOffsetFromTimeZone(timeZone: TimeZone): string {
 }
 
 export function getOffset(dateString: string): string | null {
-  if (dateString.indexOf("Z") == dateString.length - 1) {
+  if (!dateString || dateString.indexOf("Z") == dateString.length - 1) {
     return "Z";
   }
 
