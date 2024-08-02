@@ -26,7 +26,6 @@ namespace WitsmlExplorer.Api.Workers
         public ImportLogDataWorker(ILogger<ImportLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
         public override async Task<(WorkerResult, RefreshAction)> Execute(ImportLogDataJob job, CancellationToken? cancellationToken = null)
         {
-            int chunkSize = 1000;
             int maxUpdateAttempts = 2;
             string wellUid = job.TargetLog.WellUid;
             string wellboreUid = job.TargetLog.WellboreUid;
@@ -89,10 +88,10 @@ namespace WitsmlExplorer.Api.Workers
                             job.Description(),
                             i,
                             maxUpdateAttempts,
-                            chunkSize,
+                            chunkMaxSize,
                             queries.Length);
 
-                        return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkSize}", result.Reason, witsmlLog.GetDescription()), null);
+                        return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), result.IsSuccessful, $"Failed to import curve data from row: {i * chunkMaxSize}", result.Reason, witsmlLog.GetDescription()), null);
                     }
                 }
                 double progress = (i + 1) / (double)queries.Length;
