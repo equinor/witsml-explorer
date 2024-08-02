@@ -177,11 +177,11 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task UpdateLogData(WitsmlLog log, WitsmlLogCurveInfo logCurveinfo, WitsmlLogData offsetLogData)
         {
-            var mnemonics = log.LogCurveInfo.Select(lci => lci.Mnemonic).ToList();
-            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var mnemonics = offsetLogData.MnemonicList.Split(CommonConstants.DataSeparator).ToList();
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
             var mnemonicList = offsetLogData.MnemonicList;
 
-            var queries = GetUpdateLogDataQueries(log, offsetLogData, chunkMaxSize, mnemonicList);
+            var queries = LogWorkerTools.GetUpdateLogDataQueries(log.Uid, log.UidWell, log.UidWellbore, offsetLogData, chunkMaxSize, mnemonicList);
             foreach (var query in queries)
             {
 

@@ -175,12 +175,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
-            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
 
             while (sourceLogData != null)
             {
                 var mnemonicList = targetLog.IndexCurve.Value + sourceLogData.MnemonicList[sourceLogData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
-                var updateLogDataQueries = GetUpdateLogDataQueries(targetLog, sourceLogData, chunkMaxSize, mnemonicList);
+                var updateLogDataQueries = LogWorkerTools.GetUpdateLogDataQueries(targetLog.Uid, targetLog.UidWell, targetLog.UidWellbore, sourceLogData, chunkMaxSize, mnemonicList);
                 if (cancellationToken is { IsCancellationRequested: true })
                 {
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = CancellationReason() };
@@ -441,8 +441,5 @@ namespace WitsmlExplorer.Api.Workers.Copy
             public int OriginalNumberOfRows { get; init; }
             public string ErrorReason { get; init; }
         }
-
-
-
     }
 }

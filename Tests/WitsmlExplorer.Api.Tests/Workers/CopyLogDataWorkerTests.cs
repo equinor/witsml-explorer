@@ -246,7 +246,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             (WorkerResult result, RefreshAction _) = await _worker.Execute(job);
             Assert.True(result.IsSuccess);
             Assert.Equal(3, updatedLogs.First().Logs.First().LogCurveInfo.Count);
-            var aa = updatedLogs[1].Logs.First().LogData.MnemonicList;
             Assert.StartsWith(targetIndexCurve, updatedLogs[1].Logs.First().LogData.MnemonicList);
         }
 

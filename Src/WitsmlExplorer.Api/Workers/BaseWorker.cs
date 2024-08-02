@@ -76,44 +76,21 @@ namespace WitsmlExplorer.Api.Workers
             return _targetServerCapabilities;
         }
 
-        protected List<WitsmlLogs> GetUpdateLogDataQueries(WitsmlLog log, WitsmlLogData logData, int chunkSize, string mnemonicList)
-        {
-            List<WitsmlLogs> batchedQueries = logData.Data.Chunk(chunkSize).Select(chunk =>
-                new WitsmlLogs
-                {
-                    Logs = new WitsmlLog
-                    {
-                        Uid = log.Uid,
-                        UidWell = log.UidWell,
-                        UidWellbore = log.UidWellbore,
-                        LogData = new WitsmlLogData
-                        {
-                            MnemonicList = mnemonicList,
-                            UnitList = logData.UnitList,
-                            Data = chunk.ToList(),
-                        }
-                    }.AsItemInList()
-                }
-            ).ToList();
-
-            return batchedQueries;
-        }
-
-        protected async Task<int> GetMaxBatchSize(List<string> mnemonics, string functionType, string queryTypeName)
+        protected async Task<int> GetMaxBatchSize(int objectsCount, string functionType, string queryTypeName)
         {
             var targetServerCapabilities = await GetTargetServerCapabilities();
             var serverCapabilites =
                 targetServerCapabilities.ServerCapabilities;
 
             var functions = serverCapabilites.Select(x => x.Functions.Find(y => y.Name.Equals(functionType)));
-            var logCapabilities = functions.Select(x =>
+            var objectCapabilities = functions.Select(x =>
                 x.DataObjects.Find(y => y.Name.Equals(queryTypeName)));
 
-            var maxDataRows = logCapabilities.FirstOrDefault().MaxDataNodes;
-            var maxDataPoints = logCapabilities.FirstOrDefault().MaxDataPoints;
+            var maxDataRows = objectCapabilities.FirstOrDefault().MaxDataNodes;
+            var maxDataPoints = objectCapabilities.FirstOrDefault().MaxDataPoints;
 
             var maxBatchSize =
-                Math.Min(maxDataRows, maxDataPoints / mnemonics.Count());
+                Math.Min(maxDataRows, maxDataPoints / objectsCount);
             return maxBatchSize;
         }
 

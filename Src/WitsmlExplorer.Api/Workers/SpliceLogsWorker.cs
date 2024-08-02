@@ -277,15 +277,9 @@ namespace WitsmlExplorer.Api.Workers
         private async Task AddDataToLog(string wellUid, string wellboreUid, string logUid, WitsmlLogData data)
         {
             var mnemonics = data.MnemonicList.Split(CommonConstants.DataSeparator).ToList();
-            var chunkMaxSize = await GetMaxBatchSize(mnemonics, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
             var mnemonicList = data.MnemonicList;
-            var log = new WitsmlLog()
-            {
-                Uid = logUid,
-                UidWell = wellUid,
-                UidWellbore = wellboreUid
-            };
-            var queries = GetUpdateLogDataQueries(log, data, chunkMaxSize, mnemonicList);
+            var queries = LogWorkerTools.GetUpdateLogDataQueries(logUid, wellUid, wellboreUid, data, chunkMaxSize, mnemonicList);
 
             foreach (var query in queries)
             {

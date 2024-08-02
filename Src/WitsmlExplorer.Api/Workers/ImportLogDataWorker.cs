@@ -54,8 +54,7 @@ namespace WitsmlExplorer.Api.Workers
                 }
             }
 
-            //Todo: find a way to determine the maximum amount of rows that can be sent to the WITSML server then pass that amount to the CreateImportQueries method
-            var ro = job.DataRows
+            var dataRows = job.DataRows
                 .Where(d => d.Count() > 1)
                 .Select(row => new WitsmlData
                 {
@@ -64,15 +63,15 @@ namespace WitsmlExplorer.Api.Workers
 
             var logData = new WitsmlLogData()
             {
-                Data = ro.ToList(),
+                Data = dataRows.ToList(),
                 UnitList = string.Join(CommonConstants.DataSeparator, job.Units)
             };
             var mnemonicList =
                 string.Join(CommonConstants.DataSeparator, job.Mnemonics);
 
-            var chunkMaxSize = await GetMaxBatchSize(job.Mnemonics.ToList(), CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var chunkMaxSize = await GetMaxBatchSize(job.Mnemonics.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
 
-            var queries = GetUpdateLogDataQueries(witsmlLog, logData, chunkMaxSize, mnemonicList).ToArray();
+            var queries = LogWorkerTools.GetUpdateLogDataQueries(witsmlLog.Uid, witsmlLog.UidWell, witsmlLog.UidWellbore, logData, chunkMaxSize, mnemonicList).ToArray();
 
             for (int i = 0; i < queries.Length; i++)
             {
@@ -114,32 +113,6 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLogs query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
             WitsmlLogs result = await GetTargetWitsmlClientOrThrow().GetFromStoreAsync(query, new OptionsIn(ReturnElements.HeaderOnly));
             return result?.Logs.FirstOrDefault();
-        }
-
-        private static IEnumerable<WitsmlLogs> CreateImportQueries(ImportLogDataJob job, int chunkSize)
-        {
-            return job.DataRows
-                .Where(d => d.Count() > 1)
-                .Select(row => new WitsmlData { Data = string.Join(CommonConstants.DataSeparator, row) })
-                .Chunk(chunkSize)
-                .Select(logData => new WitsmlLogs
-                {
-                    Logs = new List<WitsmlLog>
-                    {
-                        new WitsmlLog
-                        {
-                            Uid = job.TargetLog.Uid,
-                            UidWellbore = job.TargetLog.WellboreUid,
-                            UidWell = job.TargetLog.WellUid,
-                            LogData = new WitsmlLogData
-                            {
-                                Data = logData.ToList(),
-                                MnemonicList = string.Join(CommonConstants.DataSeparator, job.Mnemonics),
-                                UnitList = string.Join(CommonConstants.DataSeparator, job.Units)
-                            }
-                        }
-                    },
-                });
         }
 
         private static WitsmlLogs CreateAddMnemonicsQuery(ImportLogDataJob job, WitsmlLog witsmlLog)
