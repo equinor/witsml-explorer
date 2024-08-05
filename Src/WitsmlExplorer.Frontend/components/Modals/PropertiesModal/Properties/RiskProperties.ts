@@ -41,14 +41,16 @@ export const getRiskProperties = (
     propertyType: PropertyType.Options,
     validator: (value: string) => validOption(value, riskType),
     helperText: getOptionHelperText("type"),
-    options: riskType
+    options: riskType,
+    required: true
   },
   {
     property: "category",
     propertyType: PropertyType.Options,
     validator: (value: string) => validOption(value, riskCategory),
     helperText: getOptionHelperText("category"),
-    options: riskCategory
+    options: riskCategory,
+    required: true
   },
   {
     property: "subCategory",

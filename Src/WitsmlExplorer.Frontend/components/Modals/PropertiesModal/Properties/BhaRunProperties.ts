@@ -28,7 +28,8 @@ export const getBhaRunProperties = (
     property: "tubular",
     propertyType: PropertyType.RefNameString,
     validator: validRefNameString,
-    helperText: getRefNameStringHelperText("tubular")
+    helperText: getRefNameStringHelperText("tubular"),
+    required: true
   },
   {
     property: "dTimStart",

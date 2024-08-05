@@ -45,7 +45,8 @@ export const getFormationMarkerProperties = (
     property: "mdTopSample",
     propertyType: PropertyType.Measure,
     validator: validMeasure,
-    helperText: getMeasureHelperText("mdTopSample")
+    helperText: getMeasureHelperText("mdTopSample"),
+    required: true
   },
   {
     property: "tvdTopSample",
