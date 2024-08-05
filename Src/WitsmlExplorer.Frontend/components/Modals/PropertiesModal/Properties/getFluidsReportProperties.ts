@@ -23,13 +23,15 @@ export const getFluidsReportProperties = (
   ...getCommonObjectOnWellboreProperties(mode),
   {
     property: "dTim",
-    propertyType: PropertyType.DateTime
+    propertyType: PropertyType.DateTime,
+    required: true
   },
   {
     property: "md",
     propertyType: PropertyType.Measure,
     validator: validMeasure,
-    helperText: getMeasureHelperText("md")
+    helperText: getMeasureHelperText("md"),
+    required: true
   },
   {
     property: "tvd",

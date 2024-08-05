@@ -157,6 +157,7 @@ export const PropertiesRenderer = <T,>({
                 }
                 label={prop.property}
                 disabled={prop.disabled}
+                required={prop.required}
                 updateObject={(dateTime: string) => {
                   onChangeProperty(prop.property, prop.propertyType, dateTime);
                 }}

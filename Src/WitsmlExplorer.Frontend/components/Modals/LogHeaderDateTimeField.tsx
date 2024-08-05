@@ -15,6 +15,7 @@ interface DateTimeFieldProps {
   minValue?: string;
   maxValue?: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 /**
@@ -31,7 +32,8 @@ interface DateTimeFieldProps {
 export const LogHeaderDateTimeField = (
   props: DateTimeFieldProps
 ): React.ReactElement => {
-  const { disabled, value, label, updateObject, minValue, maxValue } = props;
+  const { disabled, required, value, label, updateObject, minValue, maxValue } =
+    props;
   const {
     operationState: { timeZone }
   } = useOperationState();
@@ -46,6 +48,7 @@ export const LogHeaderDateTimeField = (
   }, []);
 
   const validate = (current: string) => {
+    if (required && !current) return false;
     return (
       ((!minValue || current >= minValue) &&
         (!maxValue || current <= maxValue)) ||
@@ -55,6 +58,7 @@ export const LogHeaderDateTimeField = (
 
   const getHelperText = () => {
     if (!validate(value)) {
+      if (required && !value) return "This field is required";
       if (!initiallyEmpty && (value == null || value === "")) {
         return "This field cannot be deleted.";
       }

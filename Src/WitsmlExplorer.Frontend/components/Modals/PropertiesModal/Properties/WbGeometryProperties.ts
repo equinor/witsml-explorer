@@ -33,7 +33,8 @@ export const getWbGeometryProperties = (
   {
     property: "dTimReport",
     propertyType: PropertyType.DateTime,
-    disabled: true
+    required: true,
+    disabled: mode !== PropertiesModalMode.New
   },
   {
     property: "commonData.sourceName",
