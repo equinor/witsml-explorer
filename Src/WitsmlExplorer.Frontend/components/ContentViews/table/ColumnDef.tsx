@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-table";
 import {
   activeId,
+  booleanSortingFn,
   calculateColumnWidth,
   componentSortingFn,
   expanderId,
@@ -35,6 +36,7 @@ declare module "@tanstack/react-table" {
   interface SortingFns {
     [measureSortingFn]: SortingFn<unknown>;
     [componentSortingFn]: SortingFn<unknown>;
+    [booleanSortingFn]: SortingFn<unknown>;
   }
 }
 
@@ -65,7 +67,7 @@ export const useColumnDef = (
         header: column.label,
         size: width,
         meta: { type: column.type },
-        sortingFn: getSortingFn(column.type),
+        sortingFn: getSortingFn(column),
         enableColumnFilter: column.type !== ContentType.Component,
         filterFn: getFilterFn(column),
         ...addComponentCell(column.type),
@@ -235,11 +237,13 @@ const getCheckableRowsColumnDef = (
   };
 };
 
-const getSortingFn = (contentType: ContentType) => {
-  if (contentType == ContentType.Measure) {
+const getSortingFn = (column: ContentTableColumn) => {
+  if (column.type == ContentType.Measure) {
     return measureSortingFn;
-  } else if (contentType == ContentType.Number) {
+  } else if (column.type == ContentType.Number) {
     return "alphanumeric";
+  } else if (column.label === activeId) {
+    return booleanSortingFn;
   }
   return "text";
 };
