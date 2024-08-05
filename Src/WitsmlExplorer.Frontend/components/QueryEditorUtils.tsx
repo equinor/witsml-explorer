@@ -92,14 +92,19 @@ const getTemplateObject = (rows: string[]): TemplateObjects | null => {
  *
  * @param rows - An array of strings representing xml content.
  * @param currentRow - The row number for which to find the parent tag.
- * @returns The parent tag or null if not found.
+ * @param fullLine - Wheter to return the full line, or only the tag (default).
+ * @returns The parent tag (or full line of text), or null if not found.
  */
-const getParentTag = (rows: string[], currentRow: number): string => {
+export const getParentTag = (
+  rows: string[],
+  currentRow: number,
+  fullLine: boolean = false
+): string => {
   const openTags = [];
   for (let index = 0; index < currentRow; index++) {
     const tag = getTag(rows[index]);
     if (tag && !rows[index].includes("</") && !rows[index].includes("/>")) {
-      openTags.push(tag);
+      openTags.push(fullLine ? rows[index] : tag);
     }
     if (tag && /^\s*<\//.test(rows[index])) {
       openTags.pop();
