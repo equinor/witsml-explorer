@@ -1,11 +1,9 @@
-import { Menu, Tabs, TextField } from "@equinor/eds-core-react";
+import { Tabs } from "@equinor/eds-core-react";
 import {
   formatXml,
   getParserError,
-  getQueryTemplate,
   ReturnElements,
-  StoreFunction,
-  TemplateObjects
+  StoreFunction
 } from "components/ContentViews/QueryViewUtils";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { QueryEditor } from "components/QueryEditor";
@@ -14,14 +12,15 @@ import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { useOperationState } from "hooks/useOperationState";
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import QueryService from "services/queryService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
-import { StyledNativeSelect } from "../Select.tsx";
-import { Button } from "../StyledComponents/Button.tsx";
+
 import { Box, Stack } from "@mui/material";
+import { Button } from "../../StyledComponents/Button.tsx";
+import QueryOptions from "./components/QueryOptions";
 
 const QueryView = (): React.ReactElement => {
   const {
@@ -33,8 +32,7 @@ const QueryView = (): React.ReactElement => {
     dispatchQuery
   } = useContext(QueryContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
-  const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
+
   const { query, result, storeFunction, returnElements, optionsIn } =
     queries[tabIndex];
 
@@ -84,35 +82,6 @@ const QueryView = (): React.ReactElement => {
 
   const onQueryChange = (newValue: string) => {
     dispatchQuery({ type: QueryActionType.SetQuery, query: newValue });
-  };
-
-  const onFunctionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatchQuery({
-      type: QueryActionType.SetStoreFunction,
-      storeFunction: event.target.value as StoreFunction
-    });
-  };
-
-  const onReturnElementsChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    dispatchQuery({
-      type: QueryActionType.SetReturnElements,
-      returnElements: event.target.value as ReturnElements
-    });
-  };
-
-  const onOptionsInChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    dispatchQuery({
-      type: QueryActionType.SetOptionsIn,
-      optionsIn: event.target.value
-    });
-  };
-
-  const onTemplateSelect = (templateObject: TemplateObjects) => {
-    const template = getQueryTemplate(templateObject, returnElements);
-    if (template != undefined) {
-      dispatchQuery({ type: QueryActionType.SetQuery, query: template });
-    }
-    setIsTemplateMenuOpen(false);
   };
 
   const onTabChange = (index: number) => {
@@ -185,90 +154,20 @@ const QueryView = (): React.ReactElement => {
           padding: "1rem 0rem"
         }}
       >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateRows: "1fr auto",
-            gap: "1rem",
-            height: "100%"
-          }}
+        <Box
+          display="grid"
+          gridTemplateRows="auto 1fr auto"
+          gap="1rem"
+          height="100%"
+          pr="2px"
         >
+          <QueryOptions />
           <QueryEditor
             value={query}
             onChange={onQueryChange}
             showCommandPaletteOption
           />
-          <div style={{ display: "flex", alignItems: "flex-end", gap: "1rem" }}>
-            <StyledNativeSelect
-              label="Function"
-              id="function"
-              onChange={onFunctionChange}
-              value={storeFunction}
-              colors={colors}
-            >
-              {Object.values(StoreFunction).map((value) => {
-                return (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                );
-              })}
-            </StyledNativeSelect>
-            <StyledNativeSelect
-              label="Return elements"
-              id="return-elements"
-              onChange={onReturnElementsChange}
-              value={returnElements}
-              colors={colors}
-            >
-              {Object.values(ReturnElements).map((value) => {
-                return (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                );
-              })}
-            </StyledNativeSelect>
-            <StyledTextField
-              id="optionsIn"
-              label="Options In"
-              value={optionsIn}
-              onChange={onOptionsInChange}
-              colors={colors}
-            />
-            <Button
-              ref={setMenuAnchor}
-              id="anchor-default"
-              aria-haspopup="true"
-              aria-expanded={isTemplateMenuOpen}
-              aria-controls="menu-default"
-              onClick={() => setIsTemplateMenuOpen(!isTemplateMenuOpen)}
-            >
-              Template
-              <Icon name="chevronUp" />
-            </Button>
-            <StyledMenu
-              open={isTemplateMenuOpen}
-              id="menu-default"
-              aria-labelledby="anchor-default"
-              onClose={() => setIsTemplateMenuOpen(false)}
-              anchorEl={menuAnchor}
-              colors={colors}
-            >
-              {Object.values(TemplateObjects).map((value) => {
-                return (
-                  <StyledMenuItem
-                    colors={colors}
-                    key={value}
-                    onClick={() => onTemplateSelect(value)}
-                  >
-                    {value}
-                  </StyledMenuItem>
-                );
-              })}
-            </StyledMenu>
-          </div>
-        </div>
+        </Box>
         <div>
           <QueryEditor value={result} readonly />
         </div>
@@ -296,32 +195,6 @@ const displayConfirmation = (
     payload: confirmation
   });
 };
-
-const StyledMenu = styled(Menu)<{ colors: Colors }>`
-  background: ${(props) => props.colors.ui.backgroundLight};
-  max-height: 80vh;
-  overflow-y: scroll;
-`;
-
-const StyledMenuItem = styled(Menu.Item)<{ colors: Colors }>`
-  &&:hover {
-    background-color: ${(props) =>
-      props.colors.interactive.contextMenuItemHover};
-  }
-
-  color: ${(props) => props.colors.text.staticIconsDefault};
-  padding: 4px;
-`;
-
-const StyledTextField = styled(TextField)<{ colors: Colors }>`
-  label {
-    color: ${(props) => props.colors.text.staticIconsDefault};
-  }
-
-  div {
-    background: ${(props) => props.colors.text.staticTextFieldDefault};
-  }
-`;
 
 const Layout = styled.div`
   display: grid;

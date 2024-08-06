@@ -12,10 +12,10 @@ import AceEditor from "react-ace";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Colors, dark } from "styles/Colors";
-import React, { useState } from "react";
-import { Stack } from "@mui/material";
+import React, { FC, useState } from "react";
 import { Chip } from "./StyledComponents/Chip";
 import Icon from "../styles/Icons.tsx";
+import { Stack } from "@mui/material";
 
 export interface QueryEditorProps {
   value: string;
@@ -24,12 +24,12 @@ export interface QueryEditorProps {
   readonly?: boolean;
 }
 
-export const QueryEditor = ({
+export const QueryEditor: FC<QueryEditorProps> = ({
   value,
   onChange,
   readonly,
   showCommandPaletteOption
-}: QueryEditorProps) => {
+}) => {
   const [ace, setAce] = useState<null | any>(null);
 
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ export const QueryEditor = ({
         commands={customCommands}
       />
       {canSeeCommandPalette && (
-        <Stack direction="row" justifyContent="flex-end">
+        <Stack pl="1rem" justifyContent="flex-end" direction="row">
           <Chip
             onClick={() => {
               ace.execCommand("openCommandPalette");
