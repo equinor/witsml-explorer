@@ -54,7 +54,8 @@ const QueryView = (): React.ReactElement => {
       dispatchOperation?.({ type: OperationType.HideModal });
       setIsLoading(true);
       const requestReturnElements =
-        storeFunction === StoreFunction.GetFromStore
+        storeFunction === StoreFunction.GetFromStore &&
+        returnElements !== ReturnElements.None
           ? returnElements
           : undefined;
       let response = await QueryService.postQuery(

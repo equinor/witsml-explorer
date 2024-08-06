@@ -1,4 +1,5 @@
 import {
+  WITSML_INDEX_TYPE,
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
 } from "components/Constants";
@@ -10,7 +11,6 @@ import {
 import LogsContextMenu, {
   LogsContextMenuProps
 } from "components/ContextMenus/LogsContextMenu";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import LogItem from "components/Sidebar/LogItem";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
@@ -88,14 +88,14 @@ export default function LogTypeItem({
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,
     wellbore: Wellbore,
-    indexCurve: IndexCurve
+    indexType: WITSML_INDEX_TYPE
   ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: LogsContextMenuProps = {
       dispatchOperation,
       wellbore,
       servers,
-      indexCurve
+      indexType
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -202,6 +202,9 @@ export default function LogTypeItem({
           labelText={subLogsNodeName(log.name)}
           key={getMultipleLogsNode(log.name)}
           nodeId={getMultipleLogsNode(log.name)}
+          isActive={logObjects
+            .filter((x) => x.name === log.name)
+            ?.some((log) => log.objectGrowing)}
           to={`${getNavPath(
             getLogTypeGroup(logType)
           )}?${createColumnFilterSearchParams(searchParams, {
@@ -255,7 +258,7 @@ export default function LogTypeItem({
         nodeId={logTypeGroupDepth}
         to={getNavPath(logTypeGroupDepth)}
         onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
-          onContextMenu(event, wellbore, IndexCurve.Depth)
+          onContextMenu(event, wellbore, WITSML_INDEX_TYPE_MD)
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
         selected={
@@ -279,7 +282,7 @@ export default function LogTypeItem({
         labelText={"Time"}
         to={getNavPath(logTypeGroupTime)}
         onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
-          onContextMenu(event, wellbore, IndexCurve.Time)
+          onContextMenu(event, wellbore, WITSML_INDEX_TYPE_DATE_TIME)
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
         selected={

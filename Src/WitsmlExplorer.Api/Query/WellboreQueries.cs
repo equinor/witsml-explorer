@@ -143,35 +143,44 @@ namespace WitsmlExplorer.Api.Query
 
         public static WitsmlWellbores CreateWitsmlWellbore(Wellbore wellbore)
         {
-            return !string.IsNullOrEmpty(wellbore.WellboreParentUid)
-                ? new WitsmlWellbores
+            WitsmlParentWellbore parentWellbore = (wellbore.WellboreParentUid == null && wellbore.WellboreParentName == null) ? null
+                : new WitsmlParentWellbore
                 {
-                    Wellbores = new WitsmlWellbore
-                    {
-                        Uid = wellbore.Uid,
-                        Name = wellbore.Name,
-                        UidWell = wellbore.WellUid,
-                        NameWell = wellbore.WellName,
-                        ParentWellbore = new WitsmlParentWellbore
-                        {
-                            UidRef = wellbore.WellboreParentUid,
-                            Value = wellbore.WellboreParentName
-                        },
-                        PurposeWellbore = wellbore.WellborePurpose
-
-                    }.AsItemInList()
-                }
-                : new WitsmlWellbores
-                {
-                    Wellbores = new WitsmlWellbore
-                    {
-                        Uid = wellbore.Uid,
-                        Name = wellbore.Name,
-                        UidWell = wellbore.WellUid,
-                        NameWell = wellbore.WellName,
-                        PurposeWellbore = wellbore.WellborePurpose
-                    }.AsItemInList()
+                    UidRef = wellbore.WellboreParentUid,
+                    Value = wellbore.WellboreParentName
                 };
+            return new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    Uid = wellbore.Uid,
+                    Name = wellbore.Name,
+                    UidWell = wellbore.WellUid,
+                    NameWell = wellbore.WellName,
+                    ParentWellbore = parentWellbore,
+                    StatusWellbore = wellbore.WellboreStatus,
+                    TypeWellbore = wellbore.WellboreType,
+                    Number = wellbore.Number,
+                    SuffixAPI = wellbore.SuffixAPI,
+                    NumGovt = wellbore.NumGovt,
+                    Shape = wellbore.Shape,
+                    DTimKickoff = wellbore.DTimeKickoff,
+                    PurposeWellbore = wellbore.WellborePurpose,
+                    Md = wellbore.Md?.ToWitsml<WitsmlMeasuredDepthCoord>(),
+                    Tvd = wellbore.Tvd?.ToWitsml<WitsmlWellVerticalDepthCoord>(),
+                    MdKickoff = wellbore.MdKickoff?.ToWitsml<WitsmlMeasuredDepthCoord>(),
+                    TvdKickoff = wellbore.TvdKickoff?.ToWitsml<WitsmlWellVerticalDepthCoord>(),
+                    MdPlanned = wellbore.MdPlanned?.ToWitsml<WitsmlMeasuredDepthCoord>(),
+                    TvdPlanned = wellbore.TvdPlanned?.ToWitsml<WitsmlWellVerticalDepthCoord>(),
+                    MdSubSeaPlanned = wellbore.MdSubSeaPlanned?.ToWitsml<WitsmlMeasuredDepthCoord>(),
+                    TvdSubSeaPlanned = wellbore.TvdSubSeaPlanned?.ToWitsml<WitsmlWellVerticalDepthCoord>(),
+                    DayTarget = wellbore.DayTarget?.ToWitsml(),
+                    CommonData = wellbore.Comments == null ? null : new WitsmlCommonData
+                    {
+                        Comments = wellbore.Comments
+                    }
+                }.AsItemInList()
+            };
         }
 
         public static WitsmlWellbores DeleteWitsmlWellbore(string wellUid, string wellboreUid)

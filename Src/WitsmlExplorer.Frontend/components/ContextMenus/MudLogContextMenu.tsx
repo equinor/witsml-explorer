@@ -12,11 +12,8 @@ import {
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import MudLogPropertiesModal, {
-  MudLogPropertiesModalProps
-} from "components/Modals/MudLogPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -38,17 +35,6 @@ const MudLogContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
-
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const modifyMudLogProps: MudLogPropertiesModalProps = {
-      mudLog: checkedObjects[0] as MudLog
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <MudLogPropertiesModal {...modifyMudLogProps} />
-    });
-  };
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
@@ -78,7 +64,13 @@ const MudLogContextMenu = (
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.MudLog,
+            checkedObjects?.[0] as MudLog,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

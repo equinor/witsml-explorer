@@ -11,8 +11,8 @@ namespace WitsmlExplorer.Api.Models
         public string WellborePurpose { get; set; }
         public string WellboreParentUid { get; set; }
         public string WellboreParentName { get; set; }
-        public string WellStatus { get; set; }
-        public string WellType { get; set; }
+        public string WellboreStatus { get; set; }
+        public string WellboreType { get; set; }
         public bool? IsActive { get; set; }
         public string DateTimeCreation { get; set; }
         public string DateTimeLastChange { get; set; }

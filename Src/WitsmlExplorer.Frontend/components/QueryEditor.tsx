@@ -9,9 +9,10 @@ import { customCommands, customCompleter } from "components/QueryEditorUtils";
 import { updateLinesWithWidgets } from "components/QueryEditorWidgetUtils";
 import { useOperationState } from "hooks/useOperationState";
 import AceEditor from "react-ace";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { Colors, dark } from "styles/Colors";
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import { Stack } from "@mui/material";
 import { Chip } from "./StyledComponents/Chip";
 import Icon from "../styles/Icons.tsx";
@@ -23,14 +24,16 @@ export interface QueryEditorProps {
   readonly?: boolean;
 }
 
-export const QueryEditor: FC<QueryEditorProps> = ({
+export const QueryEditor = ({
   value,
   onChange,
   readonly,
   showCommandPaletteOption
-}) => {
+}: QueryEditorProps) => {
   const [ace, setAce] = useState<null | any>(null);
 
+  const navigate = useNavigate();
+  const { serverUrl } = useParams();
   const {
     operationState: { colors }
   } = useOperationState();
@@ -43,9 +46,9 @@ export const QueryEditor: FC<QueryEditorProps> = ({
     } else {
       editor.completers = [customCompleter];
       editor.renderer.on("afterRender", (_: any, renderer: any) => {
-        updateLinesWithWidgets(editor, renderer);
+        updateLinesWithWidgets(editor, renderer, navigate, serverUrl, readonly);
+        if (showCommandPaletteOption) setAce(editor);
       });
-      if (showCommandPaletteOption) setAce(editor);
     }
   };
 

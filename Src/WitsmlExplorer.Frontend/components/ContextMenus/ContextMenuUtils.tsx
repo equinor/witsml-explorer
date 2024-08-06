@@ -1,12 +1,13 @@
 import { TextField } from "@equinor/eds-core-react";
 import { QueryClient } from "@tanstack/react-query";
+import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "components/Constants";
 import ConfirmModal from "components/Modals/ConfirmModal";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import { isExpandableGroupObject } from "components/Sidebar/ObjectGroupItem";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshObjectsQuery } from "hooks/query/queryRefreshHelpers";
 import { getParentType } from "models/componentType";
+import { IndexCurve } from "models/indexCurve";
 import ComponentReferences from "models/jobs/componentReferences";
 import { DeleteComponentsJob, DeleteObjectsJob } from "models/jobs/deleteJobs";
 import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
@@ -108,13 +109,13 @@ export const onClickShowGroupOnServer = async (
   server: Server,
   wellbore: Wellbore,
   objectType: ObjectType,
-  indexCurve: IndexCurve = null
+  indexType: WITSML_INDEX_TYPE = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   let url = "";
-  if (objectType === ObjectType.Log && indexCurve) {
+  if (objectType === ObjectType.Log && indexType) {
     const logTypePath =
-      indexCurve === IndexCurve.Depth
+      indexType === WITSML_INDEX_TYPE_MD
         ? RouterLogType.DEPTH
         : RouterLogType.TIME;
     url = getLogObjectsViewPath(
