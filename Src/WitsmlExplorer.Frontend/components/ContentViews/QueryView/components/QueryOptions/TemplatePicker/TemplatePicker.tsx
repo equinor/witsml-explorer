@@ -50,8 +50,8 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
         color="secondary"
         onClick={() => setIsTemplateMenuOpen(!isTemplateMenuOpen)}
       >
-        Apply template
-        <Icon name="chevronDown" />
+        <Icon name="style" />
+        Pick template
       </Button>
       <StyledMenu
         open={isTemplateMenuOpen}
