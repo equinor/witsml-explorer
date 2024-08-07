@@ -153,7 +153,7 @@ const QueryOptions: FC<QueryOptionsProps> = ({ onQueryChange }) => {
           <Box component="details" open>
             <StyledSummary
               component="summary"
-              sx={{ cursor: "pointer" }}
+              sx={{ cursor: "pointer", width: "fit-content" }}
               colors={colors}
             >
               More options
