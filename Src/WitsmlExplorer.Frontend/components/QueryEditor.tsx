@@ -41,15 +41,14 @@ export const QueryEditor: FC<QueryEditorProps> = ({
   const onLoadInternal = (editor: any) => {
     editor.renderer.setPadding(10);
     editor.renderer.setScrollMargin(10);
-    if (readonly) {
-      editor.renderer.$cursorLayer.element.style.display = "none";
-    } else {
-      editor.completers = [customCompleter];
-      editor.renderer.on("afterRender", (_: any, renderer: any) => {
-        updateLinesWithWidgets(editor, renderer, navigate, serverUrl, readonly);
-        if (showCommandPaletteOption) setAce(editor);
-      });
-    }
+
+    if (readonly) editor.renderer.$cursorLayer.element.style.display = "none";
+    else editor.completers = [customCompleter];
+
+    editor.renderer.on("afterRender", (_: any, renderer: any) => {
+      updateLinesWithWidgets(editor, renderer, navigate, serverUrl, readonly);
+      if (showCommandPaletteOption) setAce(editor);
+    });
   };
 
   const canSeeCommandPalette = showCommandPaletteOption && ace && !readonly;
