@@ -81,7 +81,7 @@
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-react": "^7.34.1",
     "jsdom": "^24.0.0",
-    "lint-staged": "^13.0.3",
+    "lint-staged": "^15.2.4",
     "typescript": "^5.4.3",
     "vite": "^5.2.8",
     "vite-tsconfig-paths": "^4.3.2",
