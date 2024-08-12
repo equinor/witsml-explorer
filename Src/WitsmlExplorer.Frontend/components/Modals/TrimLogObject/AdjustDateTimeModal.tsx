@@ -1,8 +1,8 @@
-import { Button } from "@equinor/eds-core-react";
 import { LogHeaderDateTimeField } from "components/Modals/LogHeaderDateTimeField";
 import { addMilliseconds } from "date-fns";
 import { toDate } from "date-fns-tz";
 import React, { useEffect, useState } from "react";
+import { Button } from "../../StyledComponents/Button.tsx";
 
 export interface AdjustDateTimeModelProps {
   minDate: string;
