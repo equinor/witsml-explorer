@@ -3,12 +3,14 @@ import { QueryEditor } from "components/QueryEditor";
 import { getTag } from "components/QueryEditorUtils";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { useOperationState } from "hooks/useOperationState";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
 import { Box } from "@mui/material";
+import QueryDataGrid from "components/ContentViews/QueryDataGrid";
+import { QueryEditorTypes } from "components/ContentViews/QueryView/components/QueryOptions/QueryOptions";
 import QueryOptions from "./components/QueryOptions";
 
 const QueryView = (): React.ReactElement => {
@@ -19,6 +21,9 @@ const QueryView = (): React.ReactElement => {
     queryState: { queries, tabIndex },
     dispatchQuery
   } = useContext(QueryContext);
+  const [editorType, setEditorType] = useState<QueryEditorTypes>(
+    QueryEditorTypes.AceEditor
+  );
 
   const { query, result } = queries[tabIndex];
 
@@ -84,12 +89,19 @@ const QueryView = (): React.ReactElement => {
           height="100%"
           pr="2px"
         >
-          <QueryOptions onQueryChange={onQueryChange} />
-          <QueryEditor
-            value={query}
-            onChange={onQueryChange}
-            showCommandPaletteOption
+          <QueryOptions
+            onQueryChange={onQueryChange}
+            onChangeEditorType={setEditorType}
           />
+          {editorType === QueryEditorTypes.DataGrid ? (
+            <QueryDataGrid />
+          ) : (
+            <QueryEditor
+              value={query}
+              onChange={onQueryChange}
+              showCommandPaletteOption
+            />
+          )}
         </Box>
         <div>
           <QueryEditor value={result} readonly />

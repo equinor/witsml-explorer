@@ -3,6 +3,7 @@ import {
   ColumnSizingState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFilteredRowModel,
   getSortedRowModel,
   Header,
@@ -96,6 +97,8 @@ export const ContentTable = React.memo(
       onContextMenu,
       checkableRows,
       insetColumns,
+      nested,
+      nestedProperty,
       panelElements,
       showPanel = true,
       showRefresh = false,
@@ -128,6 +131,7 @@ export const ContentTable = React.memo(
       viewId,
       columns,
       insetColumns,
+      nested,
       checkableRows,
       stickyLeftColumns
     );
@@ -172,6 +176,9 @@ export const ContentTable = React.memo(
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
+      getExpandedRowModel: getExpandedRowModel(),
+      getSubRows: (originalRow) =>
+        nested && nestedProperty ? originalRow[nestedProperty] : undefined,
       getRowId: (originalRow, index) => originalRow.id ?? index,
       getRowCanExpand:
         insetColumns != null
@@ -188,8 +195,27 @@ export const ContentTable = React.memo(
         if (!checkableRows && Object.keys(newRowSelection).length == 0)
           newRowSelection = rowSelection;
         setRowSelection(newRowSelection);
+
+        const flattenDataRecursively = (dataRow: any) => {
+          return dataRow[nestedProperty]
+            ? [
+              dataRow,
+              ...dataRow[nestedProperty].flatMap((nestedRow: any) =>
+                flattenDataRecursively(nestedRow)
+              )
+            ]
+            : [dataRow];
+        };
+
+        const flattenedData =
+          nested && nestedProperty
+            ? data.flatMap((dataRow) => flattenDataRecursively(dataRow))
+            : data;
+
         onRowSelectionChange?.(
-          data.filter((dataRow, index) => newRowSelection[dataRow.id ?? index])
+          flattenedData.filter(
+            (dataRow, index) => newRowSelection[dataRow.id ?? index]
+          )
         );
       },
       meta: {
@@ -197,7 +223,7 @@ export const ContentTable = React.memo(
         setPreviousIndex,
         colors
       },
-      enableExpanding: insetColumns != null,
+      enableExpanding: insetColumns != null || nested,
       enableRowSelection: checkableRows,
       ...constantTableOptions
     });
@@ -305,7 +331,7 @@ export const ContentTable = React.memo(
             table={table}
             viewId={viewId}
             columns={columns}
-            expandableRows={insetColumns != null}
+            expandableRows={insetColumns != null || nested}
             showRefresh={showRefresh}
             downloadToCsvFileName={downloadToCsvFileName}
             stickyLeftColumns={stickyLeftColumns}
@@ -345,7 +371,7 @@ export const ContentTable = React.memo(
                       >
                         {header.column.getIsSorted() &&
                           sortingIcons[
-                            header.column.getIsSorted() as SortDirection
+                          header.column.getIsSorted() as SortDirection
                           ]}
                         {flexRender(
                           header.column.columnDef.header,
@@ -370,6 +396,7 @@ export const ContentTable = React.memo(
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const row = rows[virtualRow.index] as Row<any>;
                 return (
+                  // <Fragment key={`${row.depth}-${row.id}`}>
                   <Fragment key={row.id}>
                     <StyledTr
                       selected={row.getIsSelected()}
@@ -391,8 +418,8 @@ export const ContentTable = React.memo(
                       colors={colors}
                       className={
                         autoRefresh &&
-                        oldDataCountRef.current &&
-                        virtualRow.index + 1 > oldDataCountRef.current
+                          oldDataCountRef.current &&
+                          virtualRow.index + 1 > oldDataCountRef.current
                           ? "fading-row"
                           : ""
                       }
@@ -435,16 +462,17 @@ export const ContentTable = React.memo(
                       })}
                       <td style={{ width: `${spaceRight}px` }} />
                     </StyledTr>
-                    {row.getIsExpanded() && row.original.inset?.length != 0 && (
-                      <Inset
-                        parentStart={virtualRow.start}
-                        cellHeight={cellHeight}
-                        headCellHeight={headCellHeight}
-                        data={row.original.inset}
-                        columns={insetColumns}
-                        colors={colors}
-                      />
-                    )}
+                    {row.getIsExpanded() &&
+                      (row.original.inset?.length || 0) !== 0 && (
+                        <Inset
+                          parentStart={virtualRow.start}
+                          cellHeight={cellHeight}
+                          headCellHeight={headCellHeight}
+                          data={row.original.inset}
+                          columns={insetColumns}
+                          colors={colors}
+                        />
+                      )}
                   </Fragment>
                 );
               })}

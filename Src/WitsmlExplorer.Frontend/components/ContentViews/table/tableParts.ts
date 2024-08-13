@@ -29,6 +29,8 @@ export interface ContentTableProps {
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[]) => void;
   insetColumns?: ContentTableColumn[];
+  nested?: boolean;
+  nestedProperty?: string;
   panelElements?: React.ReactElement[];
   showPanel?: boolean;
   showRefresh?: boolean;

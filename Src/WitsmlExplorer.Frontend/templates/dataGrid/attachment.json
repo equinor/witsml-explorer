@@ -1,0 +1,95 @@
+{
+  "id": "attachments",
+  "name": "attachments",
+  "documentation": "attachments",
+  "properties": [
+    {
+      "id": "attachment",
+      "name": "attachment",
+      "documentation": "attachment",
+      "multiple": true,
+      "properties": [
+        {
+          "id": "uidWell",
+          "name": "uidWell",
+          "documentation": "well uid",
+          "isAttribute": true
+        },
+        {
+          "id": "uidWellbore",
+          "name": "uidWellbore",
+          "documentation": "wellbore uid",
+          "isAttribute": true
+        },
+        {
+          "id": "uid",
+          "name": "uid",
+          "documentation": "attachment uid",
+          "isAttribute": true
+        },
+        {
+          "id": "nameWell",
+          "name": "nameWell",
+          "documentation": "well name"
+        },
+        {
+          "id": "nameWellbore",
+          "name": "nameWellbore",
+          "documentation": "wellbore name"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "documentation": "attachment name"
+        },
+        {
+          "id": "commonData",
+          "name": "commonData",
+          "documentation": "common data",
+          "properties": [
+            {
+              "id": "commonData-sourceName",
+              "name": "sourceName",
+              "documentation": "source name"
+            },
+            {
+              "id": "commonData-itemState",
+              "name": "itemState",
+              "documentation": "item state"
+            },
+            {
+              "id": "commonData-extensionNameValue",
+              "name": "extensionNameValue",
+              "documentation": "extension name value",
+              "properties": [
+                {
+                  "id": "commonData-extensionNameValue-uid",
+                  "name": "uid",
+                  "documentation": "extensionNameValue Uid",
+                  "isAttribute": true
+                },
+                {
+                  "id": "commonData-extensionNameValue-name",
+                  "name": "name",
+                  "documentation": "extensionNameValue Name"
+                },
+                {
+                  "id": "commonData-extensionNameValue-value",
+                  "name": "value",
+                  "documentation": "extensionNameValue Value",
+                  "properties": [
+                    {
+                      "id": "commonData-extensionNameValue-value-uom",
+                      "name": "uom",
+                      "documentation": "extensionNameValue value uom"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

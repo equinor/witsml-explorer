@@ -1,6 +1,21 @@
-import React, { ChangeEvent, FC, useContext, useState } from "react";
+import { Switch, TextField, Typography } from "@equinor/eds-core-react";
 import { Box, Stack } from "@mui/material";
+import { CommonPanelContainer } from "components/StyledComponents/Container.tsx";
+import { ChangeEvent, FC, useContext, useState } from "react";
+import styled, { css } from "styled-components";
+import { DispatchOperation } from "../../../../../contexts/operationStateReducer.tsx";
+import OperationType from "../../../../../contexts/operationType.ts";
+import {
+  QueryActionType,
+  QueryContext
+} from "../../../../../contexts/queryContext.tsx";
+import { useOperationState } from "../../../../../hooks/useOperationState.tsx";
+import QueryService from "../../../../../services/queryService.ts";
+import { Colors } from "../../../../../styles/Colors.tsx";
+import Icon from "../../../../../styles/Icons.tsx";
+import ConfirmModal from "../../../../Modals/ConfirmModal.tsx";
 import { StyledNativeSelect } from "../../../../Select.tsx";
+import { Button } from "../../../../StyledComponents/Button.tsx";
 import {
   formatXml,
   getParserError,
@@ -8,26 +23,21 @@ import {
   StoreFunction
 } from "../../../QueryViewUtils.tsx";
 import TemplatePicker from "./TemplatePicker";
-import {
-  QueryActionType,
-  QueryContext
-} from "../../../../../contexts/queryContext.tsx";
-import styled, { css } from "styled-components";
-import { TextField } from "@equinor/eds-core-react";
-import { Colors } from "../../../../../styles/Colors.tsx";
-import { useOperationState } from "../../../../../hooks/useOperationState.tsx";
-import { Button } from "../../../../StyledComponents/Button.tsx";
-import Icon from "../../../../../styles/Icons.tsx";
-import { DispatchOperation } from "../../../../../contexts/operationStateReducer.tsx";
-import OperationType from "../../../../../contexts/operationType.ts";
-import QueryService from "../../../../../services/queryService.ts";
-import ConfirmModal from "../../../../Modals/ConfirmModal.tsx";
+
+export enum QueryEditorTypes {
+  AceEditor = "AceEditor",
+  DataGrid = "DataGrid"
+}
 
 type QueryOptionsProps = {
   onQueryChange: (newValue: string) => void;
+  onChangeEditorType: (type: QueryEditorTypes) => void;
 };
 
-const QueryOptions: FC<QueryOptionsProps> = ({ onQueryChange }) => {
+const QueryOptions: FC<QueryOptionsProps> = ({
+  onQueryChange,
+  onChangeEditorType
+}) => {
   const {
     dispatchQuery,
     queryState: { queries, tabIndex }
@@ -137,6 +147,19 @@ const QueryOptions: FC<QueryOptionsProps> = ({ onQueryChange }) => {
           gap="0.5rem"
           direction="row"
         >
+          <CommonPanelContainer>
+            <Switch
+              onChange={(event) =>
+                onChangeEditorType(
+                  event.target.checked
+                    ? QueryEditorTypes.DataGrid
+                    : QueryEditorTypes.AceEditor
+                )
+              }
+              size="small"
+            />
+            <Typography>Data Grid</Typography>
+          </CommonPanelContainer>
           <TemplatePicker
             dispatchQuery={dispatchQuery}
             returnElements={returnElements}

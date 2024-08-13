@@ -108,7 +108,7 @@ export function calculateRowHeight(
   headCellHeight: number,
   cellHeight: number
 ): number {
-  if (row.getIsExpanded() && row.original.inset?.length != 0) {
+  if (row.getIsExpanded() && (row.original.inset?.length || 0) !== 0) {
     return (
       headCellHeight +
       cellHeight +

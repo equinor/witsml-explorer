@@ -44,6 +44,7 @@ export const useColumnDef = (
   viewId: string,
   columns: ContentTableColumn[],
   insetColumns: ContentTableColumn[],
+  nested: boolean,
   checkableRows: boolean,
   stickyLeftColumns: number
 ) => {
@@ -93,12 +94,12 @@ export const useColumnDef = (
 
     columnDef = [
       ...(checkableRows ? [getCheckableRowsColumnDef(isCompactMode)] : []),
-      ...(insetColumns ? [getExpanderColumnDef(isCompactMode)] : []),
+      ...(insetColumns || nested ? [getExpanderColumnDef(isCompactMode)] : []),
       ...columnDef
     ];
 
     const firstToggleableIndex = Math.max(
-      (checkableRows ? 1 : 0) + (insetColumns ? 1 : 0),
+      (checkableRows ? 1 : 0) + (insetColumns || nested ? 1 : 0),
       stickyLeftColumns
     );
 
@@ -182,7 +183,7 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
     ),
     cell: ({ row, table }) => {
       return row.getCanExpand() ? (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", paddingLeft: `${row.depth * 0.5}em` }}>
           <IconButton
             onClick={(event) => {
               event.stopPropagation();
