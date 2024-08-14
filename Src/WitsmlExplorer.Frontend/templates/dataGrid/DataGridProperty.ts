@@ -1,8 +1,8 @@
 export interface DataGridProperty {
-  id: string;
   name: string;
   documentation: string;
   isAttribute?: boolean;
-  multiple?: boolean;
+  isContainer?: boolean;
+  isMultiple?: boolean;
   properties?: DataGridProperty[];
 }

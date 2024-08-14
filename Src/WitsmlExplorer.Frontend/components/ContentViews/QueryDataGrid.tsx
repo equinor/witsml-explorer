@@ -20,16 +20,24 @@ export default function QueryDataGrid() {
   } = useContext(QueryContext);
   const { query } = queries[tabIndex];
   const queryLines = query.split("\n");
-  const queryObject = queryLines.length >= 2 ? getTag(queryLines[1]) : null;
+  const templateObject = queryLines.length >= 2 ? getTag(queryLines[1]) : null;
 
   const template = useMemo(
-    () => getDataGridTemplate(queryObject as TemplateObjects),
+    () => getDataGridTemplate(templateObject as TemplateObjects),
     []
   );
-  const initiallySelectedRows = useMemo(
-    () => getInitiallySelectedRows(query, template),
-    []
+
+  const parser = useMemo(() => new XMLParser({ ignoreAttributes: false }), []);
+  const queryObj = useMemo(() => parser.parse(query), [query]);
+
+  const data = useMemo(
+    () => mergeTemplateWithQuery(template, queryObj),
+    [template, queryObj]
   );
+  // const initiallySelectedRows = useMemo(
+  //   () => getInitiallySelectedRows(query, template),
+  //   []
+  // );
 
   const columns: ContentTableColumn[] = [
     {
@@ -58,80 +66,78 @@ export default function QueryDataGrid() {
   return (
     <ContentTable
       columns={columns}
-      data={template.properties}
+      data={data}
       nested
-      nestedProperty="properties"
+      nestedProperty="children"
       checkableRows
       onRowSelectionChange={onRowSelectionChange}
-      initiallySelectedRows={initiallySelectedRows}
+      // initiallySelectedRows={initiallySelectedRows}
     />
   );
 }
 
-const getInitiallySelectedRows = (
-  query: string,
-  template: DataGridProperty
-): DataGridProperty[] => {
-  // Parse the query XML into an object
-  const parser = new XMLParser({ ignoreAttributes: false });
-  const queryObj = parser.parse(query);
+interface QueryGridDataRow {
+  id: string;
+  name: string;
+  documentation: string;
+  value: any;
+  isAttribute?: boolean;
+  isContainer?: boolean;
+  isMultiple?: boolean;
+  children?: QueryGridDataRow[];
+}
 
-  const initiallySelectedRows: DataGridProperty[] = [];
+function mergeTemplateWithQuery(
+  template: DataGridProperty,
+  queryObj: any
+): QueryGridDataRow[] {
+  function processTemplate(
+    templateNode: DataGridProperty,
+    queryNode: any,
+    parentId: string = "",
+    index: number | null = null
+  ): QueryGridDataRow {
+    const { name, documentation, isContainer, isAttribute, properties } =
+      templateNode;
+    const uniqueId =
+      (parentId ? `${parentId}--` : "") +
+      name +
+      (index != null ? `[${index}]` : "");
 
-  function processTemplate(template: DataGridProperty, queryObj: any) {
-    for (const key in queryObj) {
-      const cleanKey = key.replace(/^@_/, ""); // Remove "@_" for attribute keys
+    let value = null;
+    const children: QueryGridDataRow[] = [];
 
-      if (template.name === cleanKey) {
-        initiallySelectedRows.push(template);
-
-        if (template.multiple && Array.isArray(queryObj[key])) {
-          for (const item of queryObj[key]) {
-            if (template.properties) {
-              for (const prop of template.properties) {
-                processTemplate(prop, item);
-              }
-            }
-          }
-        } else if (template.properties && queryObj[key]) {
-          for (const prop of template.properties) {
-            processTemplate(prop, queryObj[key]);
-          }
-        }
-      }
+    if (!isContainer) {
+      value = queryNode?.["#text"] || queryNode;
     }
+
+    if (properties) {
+      properties.forEach((prop) => {
+        const propQueryName = prop.isAttribute ? `@_${prop.name}` : prop.name;
+        const childQueryNode = queryNode?.[propQueryName];
+        if (prop.isMultiple && Array.isArray(childQueryNode)) {
+          const multiChildren = childQueryNode.map((child, index) =>
+            processTemplate(prop, child, uniqueId, index)
+          );
+          children.push(...multiChildren);
+        } else {
+          children.push(processTemplate(prop, childQueryNode, uniqueId));
+        }
+      });
+    }
+
+    return {
+      id: uniqueId,
+      name,
+      documentation,
+      value,
+      isAttribute,
+      children: children.length > 0 ? children : undefined
+    };
   }
 
-  processTemplate(template, queryObj);
+  const mergedRows =
+    processTemplate(template, queryObj[template.name])?.children ?? [];
 
-  return initiallySelectedRows;
-};
-
-// const getInitiallySelectedRows = (query: string, template: DataGridProperty) => {
-//     // Match the query to the template to find the template rows that should be selected initially.
-
-//     const parser = new XMLParser({ ignoreAttributes: false });
-//     const queryObj = parser.parse(query);
-
-//     console.log("queryObj", queryObj)
-
-//     const initiallySelectedRows: DataGridProperty[] = [];
-
-//     function processTemplate(template: DataGridProperty, queryObj: any) {
-//         for (const key in queryObj) {
-//             const cleanKey = key.replace(/^@_/, ''); // Remove "@_" for attribute keys
-//             if (template.name === cleanKey) {
-//                 initiallySelectedRows.push(template);
-//                 if (template.properties && queryObj[key]) {
-//                     for (const prop of template.properties) {
-//                         processTemplate(prop, queryObj[key]);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//     processTemplate(template, queryObj);
-
-//     return initiallySelectedRows
-// }
+  return mergedRows;
+}
