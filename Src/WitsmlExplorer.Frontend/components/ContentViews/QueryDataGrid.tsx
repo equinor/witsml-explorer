@@ -34,10 +34,10 @@ export default function QueryDataGrid() {
     () => mergeTemplateWithQuery(template, queryObj),
     [template, queryObj]
   );
-  // const initiallySelectedRows = useMemo(
-  //   () => getInitiallySelectedRows(query, template),
-  //   []
-  // );
+  const initiallySelectedRows = useMemo(
+    () => getInitiallySelectedRows(data),
+    []
+  );
 
   const columns: ContentTableColumn[] = [
     {
@@ -71,13 +71,12 @@ export default function QueryDataGrid() {
       nestedProperty="children"
       checkableRows
       onRowSelectionChange={onRowSelectionChange}
-      // initiallySelectedRows={initiallySelectedRows}
+      initiallySelectedRows={initiallySelectedRows}
     />
   );
 }
 
-interface QueryGridDataRow {
-  id: string;
+interface QueryGridDataRow extends ContentTableRow {
   name: string;
   documentation: string;
   value: any;
@@ -85,20 +84,22 @@ interface QueryGridDataRow {
   isContainer?: boolean;
   isMultiple?: boolean;
   children?: QueryGridDataRow[];
+  presentInQuery?: boolean;
 }
 
-function mergeTemplateWithQuery(
+const mergeTemplateWithQuery = (
   template: DataGridProperty,
   queryObj: any
-): QueryGridDataRow[] {
-  function processTemplate(
+): QueryGridDataRow[] => {
+  const processTemplate = (
     templateNode: DataGridProperty,
     queryNode: any,
     parentId: string = "",
     index: number | null = null
-  ): QueryGridDataRow {
+  ): QueryGridDataRow => {
     const { name, documentation, isContainer, isAttribute, properties } =
       templateNode;
+
     const uniqueId =
       (parentId ? `${parentId}--` : "") +
       name +
@@ -106,6 +107,7 @@ function mergeTemplateWithQuery(
 
     let value = null;
     const children: QueryGridDataRow[] = [];
+    const presentInQuery = !!queryNode;
 
     if (!isContainer) {
       value = queryNode?.["#text"] || queryNode;
@@ -132,12 +134,34 @@ function mergeTemplateWithQuery(
       documentation,
       value,
       isAttribute,
+      isContainer,
+      presentInQuery,
       children: children.length > 0 ? children : undefined
     };
-  }
+  };
 
   const mergedRows =
     processTemplate(template, queryObj[template.name])?.children ?? [];
 
   return mergedRows;
-}
+};
+
+const getInitiallySelectedRows = (
+  data: QueryGridDataRow[]
+): QueryGridDataRow[] => {
+  const result: QueryGridDataRow[] = [];
+
+  const traverse = (rows: QueryGridDataRow[]) => {
+    for (const row of rows) {
+      if (row.presentInQuery) {
+        result.push(row);
+      }
+      if (row.children) {
+        traverse(row.children);
+      }
+    }
+  };
+
+  traverse(data);
+  return result;
+};
