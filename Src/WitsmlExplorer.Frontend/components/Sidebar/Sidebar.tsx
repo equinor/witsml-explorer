@@ -1,13 +1,8 @@
-import { Divider, Typography } from "@equinor/eds-core-react";
+import { Typography } from "@equinor/eds-core-react";
 import { TreeView } from "@mui/x-tree-view";
-import {
-  useVirtualizer,
-  VirtualItem,
-  Virtualizer
-} from "@tanstack/react-virtual";
+import { useVirtualizer, Virtualizer } from "@tanstack/react-virtual";
 import ProgressSpinner from "components/ProgressSpinner";
 import SearchFilter from "components/Sidebar/SearchFilter";
-import WellItem from "components/Sidebar/WellItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useSidebar } from "contexts/sidebarContext";
@@ -15,16 +10,15 @@ import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
 import { useOperationState } from "hooks/useOperationState";
 import { useWellFilter } from "hooks/useWellFilter";
-import Well from "models/well";
-import { Fragment, SyntheticEvent, useEffect, useRef } from "react";
+import { FC, SyntheticEvent, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
-import { WellIndicator } from "../StyledComponents/WellIndicator";
 import { InactiveWellsHiddenFilterHelper } from "./InactiveWellsHiddenFilterHelper";
 import { Stack } from "@mui/material";
+import SidebarVirtualItem from "./SidebarVirtualItem";
 
-export default function Sidebar() {
+const Sidebar: FC = () => {
   const { connectedServer } = useConnectedServer();
   const { wells, isFetching } = useGetWells(connectedServer);
   const { expandedTreeNodes, dispatchSidebar } = useSidebar();
@@ -34,7 +28,7 @@ export default function Sidebar() {
     operationState: { colors, theme }
   } = useOperationState();
   const isCompactMode = theme === UserTheme.Compact;
-  const filteredWells = useWellFilter(wells);
+  const filteredWells = useWellFilter(wells) || [];
   const containerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
     getScrollElement: () => containerRef.current,
@@ -79,75 +73,51 @@ export default function Sidebar() {
     );
 
   return (
-    <Fragment>
+    <>
       <SearchFilter />
       {!!connectedServer && (
         <SidebarTreeView ref={containerRef}>
-          {filteredWells &&
-            (filteredWells.length === 0 ? (
-              <Stack gap="1rem" pt="1rem">
-                <Typography>No wells match the current filter</Typography>
-                <InactiveWellsHiddenFilterHelper />
-              </Stack>
-            ) : (
-              <StyledVirtualTreeView
-                defaultCollapseIcon={
-                  <Icon
-                    name="chevronDown"
-                    color={colors.interactive.primaryResting}
-                  />
-                }
-                defaultExpandIcon={
-                  <Icon
-                    name="chevronRight"
-                    color={colors.interactive.primaryResting}
-                  />
-                }
-                defaultEndIcon={<div style={{ width: 24 }} />}
-                expanded={expandedTreeNodes}
-                onNodeToggle={onNodeToggle}
-                virtualizer={virtualizer}
-              >
-                {virtualizer.getVirtualItems().map((virtualItem) => {
-                  const well: Well = filteredWells[virtualItem.index];
-                  return (
-                    <StyledVirtualItem
-                      key={well.uid}
-                      data-index={virtualItem.index}
-                      ref={(node) => virtualizer.measureElement(node)}
-                      virtualItem={virtualItem}
-                    >
-                      <WellListing>
-                        <WellItem wellUid={well.uid} />
-                        <WellIndicator
-                          compactMode={isCompactMode}
-                          active={well.isActive}
-                          colors={colors}
-                        />
-                      </WellListing>
-                      <Divider
-                        style={{
-                          margin: "0px",
-                          backgroundColor: colors.interactive.disabledBorder
-                        }}
-                      />
-                    </StyledVirtualItem>
-                  );
-                })}
-              </StyledVirtualTreeView>
-            ))}
+          {!filteredWells.length ? (
+            <Stack gap="1rem" pt="1rem">
+              <Typography>No wells match the current filter</Typography>
+              <InactiveWellsHiddenFilterHelper />
+            </Stack>
+          ) : (
+            <StyledVirtualTreeView
+              defaultCollapseIcon={
+                <Icon
+                  name="chevronDown"
+                  color={colors.interactive.primaryResting}
+                />
+              }
+              defaultExpandIcon={
+                <Icon
+                  name="chevronRight"
+                  color={colors.interactive.primaryResting}
+                />
+              }
+              defaultEndIcon={<div style={{ width: 24 }} />}
+              expanded={expandedTreeNodes}
+              onNodeToggle={onNodeToggle}
+              virtualizer={virtualizer}
+            >
+              {virtualizer.getVirtualItems().map((virtualItem) => (
+                <SidebarVirtualItem
+                  key={`item_${virtualItem.key}`}
+                  virtualItem={virtualItem}
+                  well={filteredWells[virtualItem.index]}
+                  virtualizer={virtualizer}
+                />
+              ))}
+            </StyledVirtualTreeView>
+          )}
         </SidebarTreeView>
       )}
-    </Fragment>
+    </>
   );
-}
+};
 
-const WellListing = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 18px;
-  justify-content: center;
-  align-content: stretch;
-`;
+export default Sidebar;
 
 const SidebarTreeView = styled.div`
   overflow-y: scroll;
@@ -181,15 +151,4 @@ const StyledVirtualTreeView = styled(TreeView)<{
   position: relative;
   width: 100%;
   height: ${(props) => props.virtualizer.getTotalSize()}px;
-`;
-
-const StyledVirtualItem = styled.div.attrs<{ virtualItem: VirtualItem }>(
-  (props) => ({
-    style: {
-      transform: `translateY(${props.virtualItem.start}px)`
-    }
-  })
-)<{ virtualItem: VirtualItem }>`
-  position: absolute;
-  width: 100%;
 `;
