@@ -38,6 +38,7 @@ export interface ContentTableProps {
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
   downloadToCsvFileName?: string;
   initiallySelectedRows?: ContentTableRow[];
+  initiallyExpandedRows?: ContentTableRow[];
   autoRefresh?: boolean;
 }
 

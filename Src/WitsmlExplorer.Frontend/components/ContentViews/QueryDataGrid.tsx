@@ -51,6 +51,11 @@ export default function QueryDataGrid() {
     []
   );
 
+  const initiallyExpandedRows = useMemo(
+    () => getInitiallyExpandedRows(data),
+    []
+  );
+
   const columns: ContentTableColumn[] = [
     {
       property: "name",
@@ -102,6 +107,7 @@ export default function QueryDataGrid() {
       checkableRows
       onRowSelectionChange={onRowSelectionChange}
       initiallySelectedRows={initiallySelectedRows}
+      initiallyExpandedRows={initiallyExpandedRows}
     />
   ) : (
     <Typography>Unable to parse query</Typography>
@@ -242,5 +248,25 @@ const getInitiallySelectedRows = (
   };
 
   traverse(data);
+  return result;
+};
+
+const getInitiallyExpandedRows = (
+  data: QueryGridDataRow[],
+  expandLevels: number = 2 // By default expand the first two levels (the main object - logs and each log)
+): QueryGridDataRow[] => {
+  const result: QueryGridDataRow[] = [];
+
+  const traverse = (rows: QueryGridDataRow[], level: number) => {
+    for (const row of rows) {
+      if (row.children) {
+        result.push(row);
+        if (level < expandLevels) {
+          traverse(row.children, level + 1);
+        }
+      }
+    }
+  };
+  traverse(data, 1);
   return result;
 };
