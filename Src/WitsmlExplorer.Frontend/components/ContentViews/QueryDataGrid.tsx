@@ -1,39 +1,51 @@
-import { TemplateObjects } from "components/ContentViews/QueryViewUtils";
+import { Typography } from "@equinor/eds-core-react";
+import {
+  formatXml,
+  TemplateObjects
+} from "components/ContentViews/QueryViewUtils";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table";
-import { getTag } from "components/QueryEditorUtils";
-import { QueryContext } from "contexts/queryContext";
-import { XMLParser } from "fast-xml-parser";
+import { QueryActionType, QueryContext } from "contexts/queryContext";
+import { XMLBuilder, XMLParser } from "fast-xml-parser";
+import { cloneDeep } from "lodash";
 import { useContext, useMemo } from "react";
 import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 import { getDataGridTemplate } from "templates/dataGrid/DataGridTemplates";
 
 export interface QueryDataGridProps {}
 
+const parserOptions = {
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_"
+};
+
 export default function QueryDataGrid() {
   const {
-    queryState: { queries, tabIndex }
+    queryState: { queries, tabIndex },
+    dispatchQuery
   } = useContext(QueryContext);
   const { query } = queries[tabIndex];
-  const queryLines = query.split("\n");
-  const templateObject = queryLines.length >= 2 ? getTag(queryLines[1]) : null;
+
+  const parser = useMemo(() => new XMLParser(parserOptions), []);
+  const builder = useMemo(() => new XMLBuilder(parserOptions), []);
+  const queryObj = useMemo(() => parser.parse(query), [query]);
+
+  const templateObject = Object.keys(queryObj)?.[0]?.slice(0, -1);
 
   const template = useMemo(
     () => getDataGridTemplate(templateObject as TemplateObjects),
     []
   );
 
-  const parser = useMemo(() => new XMLParser({ ignoreAttributes: false }), []);
-  const queryObj = useMemo(() => parser.parse(query), [query]);
-
   const data = useMemo(
     () => mergeTemplateWithQuery(template, queryObj),
     [template, queryObj]
   );
+
   const initiallySelectedRows = useMemo(
     () => getInitiallySelectedRows(data),
     []
@@ -57,13 +69,31 @@ export default function QueryDataGrid() {
     }
   ];
 
-  const onRowSelectionChange = (rows: ContentTableRow[]) => {
-    // TODO: Update the query accordingly.
-    // eslint-disable-next-line no-console
-    console.log("onRowSelectionChange", rows);
+  const onRowSelectionChange = (rows: QueryGridDataRow[]) => {
+    const dataClone = cloneDeep(data);
+    const selectedRowIds = new Set(rows.map((row) => row.id));
+
+    const updatePresentInQuery = (node: QueryGridDataRow) => {
+      node.presentInQuery = selectedRowIds.has(node.id);
+
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child) => updatePresentInQuery(child));
+      }
+    };
+
+    dataClone.forEach((node) => updatePresentInQuery(node));
+
+    const generatedQueryObj = extractQueryFromData(dataClone);
+    const generatedQuery = builder.build(generatedQueryObj);
+    const formattedGeneratedQuery = formatXml(generatedQuery);
+
+    dispatchQuery({
+      type: QueryActionType.SetQuery,
+      query: formattedGeneratedQuery
+    });
   };
 
-  return (
+  return data?.length > 0 ? (
     <ContentTable
       columns={columns}
       data={data}
@@ -73,6 +103,8 @@ export default function QueryDataGrid() {
       onRowSelectionChange={onRowSelectionChange}
       initiallySelectedRows={initiallySelectedRows}
     />
+  ) : (
+    <Typography>Unable to parse query</Typography>
   );
 }
 
@@ -107,10 +139,10 @@ const mergeTemplateWithQuery = (
 
     let value = null;
     const children: QueryGridDataRow[] = [];
-    const presentInQuery = !!queryNode;
+    const presentInQuery = queryNode !== undefined;
 
     if (!isContainer) {
-      value = queryNode?.["#text"] || queryNode;
+      value = typeof queryNode === "object" ? queryNode?.["#text"] : queryNode;
     }
 
     if (properties) {
@@ -140,10 +172,57 @@ const mergeTemplateWithQuery = (
     };
   };
 
-  const mergedRows =
-    processTemplate(template, queryObj[template.name])?.children ?? [];
+  if (!template) return [];
+
+  const mergedRows = [processTemplate(template, queryObj[template.name])];
 
   return mergedRows;
+};
+
+const extractQueryFromData = (data: QueryGridDataRow[]): any => {
+  function buildQuery(row: QueryGridDataRow): any {
+    const { value, isAttribute, children, presentInQuery } = row;
+
+    if (!presentInQuery) {
+      return undefined;
+    }
+
+    const queryNode: any = {};
+
+    if (isAttribute) {
+      return value ?? "";
+    } else {
+      queryNode["#text"] = value ?? "";
+    }
+
+    children?.forEach((child) => {
+      const childQuery = buildQuery(child);
+      if (childQuery !== undefined) {
+        const childName = child.isAttribute ? `@_${child.name}` : child.name;
+        if (Array.isArray(queryNode[childName])) {
+          queryNode[childName].push(childQuery);
+        } else if (queryNode[childName]) {
+          // If we have multiple of the same object, move the items to an array.
+          queryNode[childName] = [queryNode[childName], childQuery];
+        } else {
+          queryNode[childName] = childQuery;
+        }
+      }
+    });
+
+    return Object.keys(queryNode).length ? queryNode : undefined;
+  }
+
+  const queryObj: any = {};
+
+  data.forEach((row) => {
+    const rowQuery = buildQuery(row);
+    if (rowQuery !== undefined) {
+      queryObj[row.name] = rowQuery;
+    }
+  });
+
+  return queryObj;
 };
 
 const getInitiallySelectedRows = (
