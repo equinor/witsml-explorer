@@ -55,14 +55,8 @@ const WellListing = styled.div`
   align-content: stretch;
 `;
 
-const StyledVirtualItem = styled.div.attrs<{ virtualItem: VirtualItem }>(
-  (props) => ({
-    style: {
-      transform: `translateY(${props.virtualItem.start}px)`
-    }
-  })
-)<{ virtualItem: VirtualItem }>`
-  position: absolute;
+const StyledVirtualItem = styled.div<{ virtualItem: VirtualItem }>`
+  position: relative;
   width: 100%;
 `;
 
