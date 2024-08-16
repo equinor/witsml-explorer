@@ -41,7 +41,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_GeometryStation()
         {
-            string expectedGrade = "a";
             ModifyTrajectoryStationJob job = CreateJobTemplate();
             List<WitsmlTrajectories> updatedGeometrys = await MockJob(job);
 
