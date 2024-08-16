@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             LogUtils.SetupGetDepthIndexed(_witsmlClient, (logs) => logs.Logs.First().StartIndex?.Value == "123.12",
                 new() { new() { Data = "123.12,,2" } });
-            var sourceLog = await LogWorkerTools.GetLogDataForCurve(_witsmlClient.Object, log, "mnemonic", null );
+            var sourceLog = await LogWorkerTools.GetLogDataForCurve(_witsmlClient.Object, log, "mnemonic", null);
         }
 
         [Fact]
