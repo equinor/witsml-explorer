@@ -14,6 +14,7 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers.Modify;
 
@@ -40,9 +41,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_GeometryStation()
         {
+            string expectedGrade = "a";
             ModifyTrajectoryStationJob job = CreateJobTemplate();
             List<WitsmlTrajectories> updatedGeometrys = await MockJob(job);
+
             Assert.Single(updatedGeometrys);
+           // Assert.Equal(expectedGrade, updatedGeometrys.First().TypeTrajStation.First());
         }
 
         private async Task<List<WitsmlTrajectories>> MockJob(ModifyTrajectoryStationJob job)
@@ -62,7 +66,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 TrajectoryStation = new TrajectoryStation()
                 {
-                    Uid = "gs_uid"
+                    Uid = "gs_uid",
+                    Md = new LengthMeasure()
+                    {
+                        Uom = "uom",
+                        Value = 20
+                    }
                 },
 
                 TrajectoryReference = new ObjectReference()
