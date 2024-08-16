@@ -43,9 +43,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             ModifyTrajectoryStationJob job = CreateJobTemplate();
             List<WitsmlTrajectories> updatedGeometrys = await MockJob(job);
-
             Assert.Single(updatedGeometrys);
-           // Assert.Equal(expectedGrade, updatedGeometrys.First().TypeTrajStation.First());
         }
 
         private async Task<List<WitsmlTrajectories>> MockJob(ModifyTrajectoryStationJob job)
