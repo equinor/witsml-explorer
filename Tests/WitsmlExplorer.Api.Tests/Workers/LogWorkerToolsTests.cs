@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
 
-            Task<WitsmlLog> sourceLog = LogWorkerTools.GetLog(_witsmlClient.Object, job.Object, ReturnElements.HeaderOnly);
+            var log = await LogWorkerTools.GetLog(_witsmlClient.Object, job.Object, ReturnElements.HeaderOnly);
         }
 
         [Fact]

@@ -1,12 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Logging;
-
 using Moq;
-
-using Serilog;
 
 using Witsml;
 using Witsml.Data;
@@ -32,7 +27,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string WellboreUid = "B-5209671";
         private const string WellboreName = "NO 34/10-A-25 C - Main Wellbore";
         private readonly Mock<IWitsmlClient> _witsmlClient;
-        private readonly CreateObjectOnWellboreWorker _worker;
 
         public WorkerToolsTests()
         {
