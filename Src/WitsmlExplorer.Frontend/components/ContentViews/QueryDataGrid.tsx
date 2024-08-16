@@ -12,7 +12,7 @@ import {
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { XMLBuilder, XMLParser } from "fast-xml-parser";
 import { cloneDeep } from "lodash";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 import { getDataGridTemplate } from "templates/dataGrid/DataGridTemplates";
 
@@ -28,33 +28,16 @@ export default function QueryDataGrid() {
     queryState: { queries, tabIndex },
     dispatchQuery
   } = useContext(QueryContext);
-  const { query } = queries[tabIndex];
+  const { query, tabId } = queries[tabIndex];
 
-  const parser = useMemo(() => new XMLParser(parserOptions), []);
-  const builder = useMemo(() => new XMLBuilder(parserOptions), []);
-  const queryObj = useMemo(() => parser.parse(query), [query]);
-
+  const parser = new XMLParser(parserOptions);
+  const builder = new XMLBuilder(parserOptions);
+  const queryObj = parser.parse(query);
   const templateObject = Object.keys(queryObj)?.[0]?.slice(0, -1);
-
-  const template = useMemo(
-    () => getDataGridTemplate(templateObject as TemplateObjects),
-    []
-  );
-
-  const data = useMemo(
-    () => mergeTemplateWithQuery(template, queryObj),
-    [template, queryObj]
-  );
-
-  const initiallySelectedRows = useMemo(
-    () => getInitiallySelectedRows(data),
-    []
-  );
-
-  const initiallyExpandedRows = useMemo(
-    () => getInitiallyExpandedRows(data),
-    []
-  );
+  const template = getDataGridTemplate(templateObject as TemplateObjects);
+  const data = mergeTemplateWithQuery(template, queryObj);
+  const initiallySelectedRows = getInitiallySelectedRows(data);
+  const initiallyExpandedRows = getInitiallyExpandedRows(data);
 
   const columns: ContentTableColumn[] = [
     {
@@ -100,6 +83,7 @@ export default function QueryDataGrid() {
 
   return data?.length > 0 ? (
     <ContentTable
+      key={tabId}
       columns={columns}
       data={data}
       nested
