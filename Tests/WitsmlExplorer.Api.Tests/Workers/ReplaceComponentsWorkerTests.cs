@@ -114,7 +114,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 CopyJob = copyTubularComponentJob,
                 DeleteJob = deleteObjectsJob,
-                JobInfo = new ()
+                JobInfo = new()
             };
 
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceComponentsWorker.Execute(replaceObjectsJob);

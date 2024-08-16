@@ -49,7 +49,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             _witsmlClient.Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(CreateWellbores());
-            var wellboreReference = new WellboreReference() { WellName = "wellname", WellboreName = "wellborename"};
+            var wellboreReference = new WellboreReference() { WellName = "wellname", WellboreName = "wellborename" };
             var wellbore = await WorkerTools.GetWellbore(_witsmlClient.Object, wellboreReference, ReturnElements.HeaderOnly);
         }
 

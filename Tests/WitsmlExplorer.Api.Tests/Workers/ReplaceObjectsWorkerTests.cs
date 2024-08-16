@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string WellUid = "wellUid";
         private const string SourceWellboreUid = "sourceWellboreUid";
         private const string TargetWellboreUid = "targetWellboreUid";
-        private const string ObjectUid = "objectUid";    
+        private const string ObjectUid = "objectUid";
         private static readonly string[] ObjectUids = { "objectUid1", "objectUid2" };
 
         public ReplaceObjectsWorkerTests()
@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _deleteObjectsWorker = new DeleteObjectsWorker(deleteObjectsLogger, _witsmlClientProvider.Object);
             ILogger<ReplaceObjectsJob> replaceObjectsLogger = new Mock<ILogger<ReplaceObjectsJob>>().Object;
             _replaceObjectWorker = new ReplaceObjectsWorker(replaceObjectsLogger, _copyObjectsWorker, _deleteObjectsWorker);
-        }           
+        }
 
         [Fact]
         public async Task Execute_Delete_ThrowsError()
@@ -115,7 +115,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         private void SetUpStoreForCopy(bool emptyResult = false)
-        {            
+        {
             _witsmlClient.Setup(client =>
                     client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.All)))
                 .ReturnsAsync(emptyResult ? GetEmptySourceObjects() : GetSourceObjects());
