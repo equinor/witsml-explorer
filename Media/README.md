@@ -46,7 +46,7 @@ https://github.com/user-attachments/assets/eff8fa63-e34c-4b1e-b90c-6da247fd7f56
 
 ### Log Agents
 
-https://github.com/user-attachments/assets/88f8544c-892f-4260-8e98-f3d9528393bb
+https://github.com/user-attachments/assets/f87806c7-c0ec-4750-a39d-22002131187f
 
 ### Export and Import
 
