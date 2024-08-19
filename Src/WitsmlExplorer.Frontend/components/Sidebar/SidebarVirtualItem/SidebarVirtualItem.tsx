@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import { FC, useLayoutEffect, useRef } from "react";
 import { VirtualItem, Virtualizer } from "@tanstack/react-virtual";
 import Well from "../../../models/well.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
@@ -9,19 +9,20 @@ import { Divider } from "@equinor/eds-core-react";
 import styled from "styled-components";
 
 const SidebarVirtualItem: FC<{
-  virtualItem: VirtualItem;
+  virtualItem: VirtualItem<HTMLDivElement>;
   well: Well;
   virtualizer: Virtualizer<HTMLDivElement, Element>;
-}> = ({ virtualItem, well, virtualizer }) => {
+  isExpanded: boolean;
+}> = ({ virtualItem, well, virtualizer, isExpanded }) => {
   const {
     operationState: { colors, theme }
   } = useOperationState();
   const rowRef = useRef<HTMLDivElement>();
   const isCompactMode = theme === UserTheme.Compact;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (rowRef.current) virtualizer.measureElement(rowRef.current);
-  }, [rowRef]);
+  }, [isExpanded]);
 
   return (
     <StyledVirtualItem
@@ -55,8 +56,16 @@ const WellListing = styled.div`
   align-content: stretch;
 `;
 
-const StyledVirtualItem = styled.div<{ virtualItem: VirtualItem }>`
-  position: relative;
+const StyledVirtualItem = styled.div.attrs<{
+  virtualItem: VirtualItem<HTMLDivElement>;
+}>((props) => ({
+  style: {
+    transform: `translateY(${props.virtualItem.start}px)`
+  }
+}))<{ virtualItem: VirtualItem<HTMLDivElement> }>`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
 `;
 

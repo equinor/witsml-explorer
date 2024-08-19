@@ -17,6 +17,7 @@ import Icon from "styles/Icons";
 import { InactiveWellsHiddenFilterHelper } from "./InactiveWellsHiddenFilterHelper";
 import { Stack } from "@mui/material";
 import SidebarVirtualItem from "./SidebarVirtualItem";
+import { calculateWellNodeId } from "../../models/wellbore.tsx";
 
 const Sidebar: FC = () => {
   const { connectedServer } = useConnectedServer();
@@ -101,14 +102,20 @@ const Sidebar: FC = () => {
               onNodeToggle={onNodeToggle}
               virtualizer={virtualizer}
             >
-              {virtualizer.getVirtualItems().map((virtualItem) => (
-                <SidebarVirtualItem
-                  key={`item_${virtualItem.key}`}
-                  virtualItem={virtualItem}
-                  well={filteredWells[virtualItem.index]}
-                  virtualizer={virtualizer}
-                />
-              ))}
+              {virtualizer.getVirtualItems().map((virtualItem) => {
+                const well = filteredWells[virtualItem.index];
+                return (
+                  <SidebarVirtualItem
+                    key={`item_${virtualItem.key}`}
+                    virtualItem={virtualItem}
+                    well={well}
+                    virtualizer={virtualizer}
+                    isExpanded={expandedTreeNodes.includes(
+                      calculateWellNodeId(well.uid)
+                    )}
+                  />
+                );
+              })}
             </StyledVirtualTreeView>
           )}
         </SidebarTreeView>
