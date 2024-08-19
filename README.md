@@ -18,7 +18,9 @@ Witsml Explorer is a data management tool used for browsing and editing data dir
 * URL deep linking directly to objects
 
 ## Witsml Explorer Demo & Tutorial Videos
-<video controls src="./Media/Overview.mp4" title="Witsml Explorer Overview"></video>
+
+https://github.com/user-attachments/assets/e8c1c9d8-afe3-4374-8239-530ed2b65c0d
+
 
 ## Witsml as a Nuget package
 Please see [nuget_witsml.md](/Docs/nuget_witsml.md)
