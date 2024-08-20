@@ -1,4 +1,4 @@
-import { Typography } from "@equinor/eds-core-react";
+import { EdsProvider, TextField, Typography } from "@equinor/eds-core-react";
 import {
   formatXml,
   TemplateObjects
@@ -11,8 +11,16 @@ import {
 } from "components/ContentViews/table";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { XMLBuilder, XMLParser } from "fast-xml-parser";
-import { cloneDeep } from "lodash";
-import { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { cloneDeep, debounce } from "lodash";
+import {
+  ChangeEvent,
+  MouseEvent,
+  useCallback,
+  useContext,
+  useMemo
+} from "react";
+import styled from "styled-components";
 import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 import { getDataGridTemplate } from "templates/dataGrid/DataGridTemplates";
 
@@ -25,11 +33,15 @@ const parserOptions = {
 
 export default function QueryDataGrid() {
   const {
+    operationState: { theme }
+  } = useOperationState();
+
+  const {
     queryState: { queries, tabIndex },
     dispatchQuery
   } = useContext(QueryContext);
-  const { query, tabId } = queries[tabIndex];
 
+  const { query, tabId } = queries[tabIndex];
   const parser = new XMLParser(parserOptions);
   const builder = new XMLBuilder(parserOptions);
   const queryObj = parser.parse(query);
@@ -48,7 +60,7 @@ export default function QueryDataGrid() {
     {
       property: "value",
       label: "value",
-      type: ContentType.String //TODO: component?
+      type: ContentType.Component //TODO: component?
     },
     {
       property: "documentation",
@@ -71,7 +83,11 @@ export default function QueryDataGrid() {
 
     dataClone.forEach((node) => updatePresentInQuery(node));
 
-    const generatedQueryObj = extractQueryFromData(dataClone);
+    updateQueryFromData(dataClone);
+  };
+
+  const updateQueryFromData = (data: QueryGridDataRow[]) => {
+    const generatedQueryObj = extractQueryFromData(data);
     const generatedQuery = builder.build(generatedQueryObj);
     const formattedGeneratedQuery = formatXml(generatedQuery);
 
@@ -81,18 +97,51 @@ export default function QueryDataGrid() {
     });
   };
 
-  return data?.length > 0 ? (
-    <ContentTable
-      key={tabId}
-      columns={columns}
-      data={data}
-      nested
-      nestedProperty="children"
-      checkableRows
-      onRowSelectionChange={onRowSelectionChange}
-      initiallySelectedRows={initiallySelectedRows}
-      initiallyExpandedRows={initiallyExpandedRows}
-    />
+  const handleChangeDebounced = useCallback(
+    debounce((e: ChangeEvent<HTMLInputElement>, row: QueryGridDataRow) => {
+      const value = e.target.value;
+      row.value = value;
+      updateQueryFromData(data);
+    }, 500),
+    []
+  );
+
+  const tableData = useMemo(() => {
+    const getTableData = (dataRows: QueryGridDataRow[]): QueryGridDataRow[] => {
+      return dataRows.map((row) => ({
+        ...row,
+        value: (
+          <StyledTextField
+            id={row.id}
+            defaultValue={row.value ?? ""}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleChangeDebounced(e, row)
+            }
+            onClick={(e: MouseEvent<HTMLInputElement>) => e.stopPropagation()}
+          />
+        ),
+        children: row.children ? getTableData(row.children) : undefined
+      }));
+    };
+
+    return getTableData(data);
+  }, [data]);
+
+  return tableData?.length > 0 ? (
+    <EdsProvider density={theme}>
+      <ContentTable
+        key={tabId}
+        viewId="queryDataGrid"
+        columns={columns}
+        data={tableData}
+        nested
+        nestedProperty="children"
+        checkableRows
+        onRowSelectionChange={onRowSelectionChange}
+        initiallySelectedRows={initiallySelectedRows}
+        initiallyExpandedRows={initiallyExpandedRows}
+      />
+    </EdsProvider>
   ) : (
     <Typography>Unable to parse query</Typography>
   );
@@ -254,3 +303,10 @@ const getInitiallyExpandedRows = (
   traverse(data, 1);
   return result;
 };
+
+const StyledTextField = styled(TextField)`
+  div {
+    background-color: transparent;
+  }
+  width: 100%;
+`;
