@@ -8,7 +8,8 @@ export enum ReturnElements {
   DataOnly = "dataOnly",
   StationLocationOnly = "stationLocationOnly",
   LatestChangeOnly = "latestChangeOnly",
-  Requested = "requested"
+  Requested = "requested",
+  None = ""
 }
 
 export enum StoreFunction {

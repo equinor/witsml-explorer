@@ -14,12 +14,15 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
+import Tubular from "models/tubular";
 import Wellbore from "models/wellbore";
 import React from "react";
 import { colors } from "styles/Colors";
@@ -39,6 +42,25 @@ const TubularsContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
+
+  const onClickNewTubular = () => {
+    const newTubular: Tubular = {
+      uid: uuid(),
+      name: "",
+      wellUid: wellbore.wellUid,
+      wellName: wellbore.wellName,
+      wellboreUid: wellbore.uid,
+      wellboreName: wellbore.name,
+      typeTubularAssy: null,
+      commonData: null
+    };
+    openObjectOnWellboreProperties(
+      ObjectType.Tubular,
+      newTubular,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
+  };
 
   return (
     <ContextMenu
@@ -61,6 +83,10 @@ const TubularsContextMenu = (
             color={colors.interactive.primaryResting}
           />
           <Typography color={"primary"}>Refresh tubulars</Typography>
+        </MenuItem>,
+        <MenuItem key={"newObject"} onClick={onClickNewTubular}>
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>New Tubular</Typography>
         </MenuItem>,
         <MenuItem
           key={"paste"}

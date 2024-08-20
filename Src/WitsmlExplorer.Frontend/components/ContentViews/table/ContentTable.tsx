@@ -30,6 +30,7 @@ import {
   TableContainer
 } from "components/ContentViews/table/contentTableStyles";
 import {
+  booleanSortingFn,
   calculateHorizontalSpace,
   calculateRowHeight,
   componentSortingFn,
@@ -133,6 +134,15 @@ export const ContentTable = React.memo(
           const a = rowA.getValue(columnId) == null;
           const b = rowB.getValue(columnId) == null;
           return a === b ? 0 : a ? -1 : 1;
+        },
+        [booleanSortingFn]: (
+          rowA: Row<any>,
+          rowB: Row<any>,
+          columnId: string
+        ) => {
+          const a = rowA.getValue(columnId);
+          const b = rowB.getValue(columnId);
+          return a === b ? 0 : a ? 1 : -1;
         }
       },
       columnResizeMode: "onChange",

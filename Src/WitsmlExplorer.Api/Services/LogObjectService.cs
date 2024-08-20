@@ -359,6 +359,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlLogs witsmlLogs = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
 
             WitsmlLog witsmlLog = witsmlLogs.Logs?.FirstOrDefault();
+
             return witsmlLog;
         }
 
@@ -366,6 +367,7 @@ namespace WitsmlExplorer.Api.Services
         {
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch(cancellationToken);
+
             var allLogData = logData;
             while (logData != null)
             {

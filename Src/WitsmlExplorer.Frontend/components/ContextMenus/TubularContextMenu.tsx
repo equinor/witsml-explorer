@@ -12,10 +12,8 @@ import {
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
-import TubularPropertiesModal from "components/Modals/TubularPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -37,19 +35,6 @@ const TubularContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
-
-  const onClickProperties = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const tubularPropertiesModalProps = {
-      mode: PropertiesModalMode.Edit,
-      tubular: checkedObjects[0] as Tubular,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <TubularPropertiesModal {...tubularPropertiesModalProps} />
-    });
-  };
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
@@ -79,7 +64,13 @@ const TubularContextMenu = (
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickProperties}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Tubular,
+            checkedObjects?.[0] as Tubular,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

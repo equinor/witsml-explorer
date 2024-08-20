@@ -4,7 +4,11 @@ import {
 } from "@equinor/eds-core-react";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useOperationState } from "hooks/useOperationState";
-import React from "react";
+import React, {
+  forwardRef,
+  ForwardRefExoticComponent,
+  RefAttributes
+} from "react";
 import styled, { css } from "styled-components";
 import { Colors } from "styles/Colors";
 
@@ -14,7 +18,13 @@ export interface ButtonProps extends Omit<EdsButtonProps, "variant"> {
 
 export type Ref = HTMLButtonElement;
 
-export const Button = React.forwardRef<Ref, ButtonProps>((props, ref) => {
+type ComposedExoticButton = ForwardRefExoticComponent<
+  ButtonProps & RefAttributes<HTMLButtonElement>
+> & {
+  Group: typeof EdsButton.Group;
+};
+
+const ExoticButton = forwardRef<Ref, ButtonProps>((props, ref) => {
   const {
     operationState: { colors, theme }
   } = useOperationState();
@@ -46,7 +56,11 @@ export const Button = React.forwardRef<Ref, ButtonProps>((props, ref) => {
   }
 });
 
-Button.displayName = "WitsmlExplorerButton";
+ExoticButton.displayName = "WitsmlExplorerButton";
+
+export const Button: ComposedExoticButton = Object.assign(ExoticButton, {
+  Group: EdsButton.Group
+});
 
 const ContainedButton = styled(EdsButton)<{ colors: Colors }>`
   ${(props) =>
@@ -84,6 +98,7 @@ const TableIconButton = styled(EdsButton)<{
     css`
       height: 22px;
       width: 22px;
+
       &::after {
         width: 22px;
         height: 22px;

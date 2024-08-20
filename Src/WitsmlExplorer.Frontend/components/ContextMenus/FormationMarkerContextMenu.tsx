@@ -7,11 +7,8 @@ import {
   ObjectContextMenuProps,
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
-import FormationMarkerPropertiesModal, {
-  FormationMarkerPropertiesModalProps
-} from "components/Modals/FormationMarkerPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -30,25 +27,18 @@ const FormationMarkerContextMenu = (
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
 
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const modifyFormationMarkerProps: FormationMarkerPropertiesModalProps = {
-      formationMarker: checkedObjects[0] as FormationMarker
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: (
-        <FormationMarkerPropertiesModal {...modifyFormationMarkerProps} />
-      )
-    });
-  };
-
   const extraMenuItems = (): React.ReactElement[] => {
     return [
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.FormationMarker,
+            checkedObjects?.[0] as FormationMarker,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

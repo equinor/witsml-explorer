@@ -15,12 +15,8 @@ import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
-import RigPropertiesModal, {
-  RigPropertiesModalProps
-} from "components/Modals/RigPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { DisplayModalAction } from "contexts/operationStateReducer";
-import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
@@ -71,16 +67,12 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
       typeRig: "unknown",
       yearEntService: null
     };
-    const rigPropertiesModalProps: RigPropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      rig: newRig,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <RigPropertiesModal {...rigPropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openObjectOnWellboreProperties(
+      ObjectType.Rig,
+      newRig,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   return (

@@ -12,12 +12,8 @@ import {
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
-import TrajectoryPropertiesModal, {
-  TrajectoryPropertiesModalProps
-} from "components/Modals/TrajectoryPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -39,20 +35,6 @@ const TrajectoryContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
-
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const mode = PropertiesModalMode.Edit;
-    const modifyObjectProps: TrajectoryPropertiesModalProps = {
-      mode,
-      trajectory: checkedObjects[0] as Trajectory,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <TrajectoryPropertiesModal {...modifyObjectProps} />
-    });
-  };
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
@@ -82,7 +64,13 @@ const TrajectoryContextMenu = (
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Trajectory,
+            checkedObjects?.[0] as Trajectory,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +41,14 @@ namespace WitsmlExplorer.Api.Workers
             {
                 return result;
             }
+
+            job.CopyJob.ProgressReporter = new Progress<double>(progress =>
+                {
+                    job.ProgressReporter?.Report(progress);
+                    if (job.JobInfo != null) job.JobInfo.Progress = progress;
+                }
+            );
+
             var copyResult = await _copyWorker.Execute(job.CopyJob, cancellationToken);
             replaceComponentReportItems.Add(new CommonCopyReportItem
             {

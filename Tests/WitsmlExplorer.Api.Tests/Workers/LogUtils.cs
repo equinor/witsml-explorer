@@ -413,5 +413,36 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     }.AsItemInList()
                 });
         }
+
+        public static void SetUpGetServerCapabilites(Mock<IWitsmlClient> witsmlClient)
+        {
+            var serverCapabalities = new WitsmlCapServers()
+            {
+                ServerCapabilities = new List<WitsmlServerCapabilities>()
+                {
+                    new WitsmlServerCapabilities()
+                    {
+                        Functions = new List<WitsmlFunction>()
+                        {
+                            new WitsmlFunction()
+                            {
+                                DataObjects = new List<WitsmlFunctionDataObject>()
+                                {
+                                    new WitsmlFunctionDataObject()
+                                    {
+                                        MaxDataNodes = 10000,
+                                        MaxDataPoints = 8000000,
+                                        Name = "log"
+                                    }
+                                },
+                                Name = "WMLS_UpdateInStore"
+                            }
+                        }
+                    }
+                }
+
+            };
+            witsmlClient.Setup(client => client.GetCap()).ReturnsAsync(serverCapabalities);
+        }
     }
 }

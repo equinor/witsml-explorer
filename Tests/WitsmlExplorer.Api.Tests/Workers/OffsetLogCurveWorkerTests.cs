@@ -40,6 +40,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
+            LogUtils.SetUpGetServerCapabilites(_witsmlClient);
             ILogger<OffsetLogCurveJob> logger = loggerFactory.CreateLogger<OffsetLogCurveJob>();
             _worker = new OffsetLogCurveWorker(logger, witsmlClientProvider.Object, null, null);
         }
