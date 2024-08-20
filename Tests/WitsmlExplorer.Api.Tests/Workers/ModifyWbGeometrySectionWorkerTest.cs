@@ -27,13 +27,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private readonly ModifyWbGeometrySectionWorker _worker;
-        private static string uid = "gs_uid";
-        private static string grade = "a";
-        private static string uom = "uom";
-        private static double value = 1.2;
-        private static decimal decimal_value = 1.2m;
-        private static string datum = "2023-04-19T00:00:04Z";
-        private static string fastFabric = "1.2";
+        private readonly static string uid = "gs_uid";
+        private readonly static string grade = "a";
+        private readonly static string uom = "uom";
+        private readonly static double value = 1.2;
+        private readonly static decimal decimal_value = 1.2m;
+        private readonly static string datum = "2023-04-19T00:00:04Z";
+        private readonly static string fastFabric = "1.2";
         public ModifyWbGeometrySectionWorkerTest()
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
