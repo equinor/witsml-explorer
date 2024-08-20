@@ -130,12 +130,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         Uom = uom,
                         Value = value
                     },
-                    WtPerLen  = new LengthMeasure()
+                    WtPerLen = new LengthMeasure()
                     {
                         Uom = uom,
                         Value = decimal_value
                     },
-                    FactFric  = value
+                    FactFric = value
                 },
 
                 WbGeometryReference = new ObjectReference()

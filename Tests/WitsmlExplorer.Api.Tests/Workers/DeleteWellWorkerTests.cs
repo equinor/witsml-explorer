@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new()
             {
-                ToDelete = new ()
+                ToDelete = new()
                 {
                     WellUid = WellUid
                 }

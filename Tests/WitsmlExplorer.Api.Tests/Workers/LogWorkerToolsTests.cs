@@ -54,9 +54,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
 
             var log = await LogWorkerTools.GetLog(_witsmlClient.Object, job.Object, ReturnElements.HeaderOnly);
-            Assert.Equal("51bb71c2-5e6f-4e15-ae5f-0fbc866bdad6",log.Uid);
-            Assert.Equal("2023-04-19T00:00:09Z",log.EndDateTimeIndex);
-            Assert.Equal("2023-04-19T00:00:04Z",log.StartDateTimeIndex);
+            Assert.Equal("51bb71c2-5e6f-4e15-ae5f-0fbc866bdad6", log.Uid);
+            Assert.Equal("2023-04-19T00:00:09Z", log.EndDateTimeIndex);
+            Assert.Equal("2023-04-19T00:00:04Z", log.StartDateTimeIndex);
             Assert.Equal(3, log.LogCurveInfo.Count);
         }
 
@@ -89,7 +89,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             string mnemonicList = "Depth,BPOS";
             var witmslLogData = GetTestLogData(mnemonicList);
             var result = LogWorkerTools.CalculateProgressBasedOnIndex(log, witmslLogData);
-            Assert.Equal(1.2,result);
+            Assert.Equal(1.2, result);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witmslLogData = GetTestLogData(mnemonicList);
             var batchedQuueries = LogWorkerTools.GetUpdateLogDataQueries("uid",
                 "uidwell", "uidwellbore", witmslLogData, 2, mnemonicList);
-            Assert.Equal(5,batchedQuueries.Count);
+            Assert.Equal(5, batchedQuueries.Count);
         }
 
         private static WitsmlLogs ReturnedWitsmlLog()

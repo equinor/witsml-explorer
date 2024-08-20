@@ -41,10 +41,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             return new()
             {
-                ToDelete = new ()
+                ToDelete = new()
                 {
-                   WellboreUid = WellboreUid,
-                   WellUid = WellUid
+                    WellboreUid = WellboreUid,
+                    WellUid = WellUid
                 }
             };
         }

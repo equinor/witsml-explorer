@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(CreateWells());
             var wellReference = new WellReference() { WellName = WellName };
             var well = await WorkerTools.GetWell(_witsmlClient.Object, wellReference, ReturnElements.HeaderOnly);
-            Assert.Equal(WellName,well.Name);
+            Assert.Equal(WellName, well.Name);
         }
 
         [Fact]
@@ -44,9 +44,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             _witsmlClient.Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(CreateWellbores());
-            var wellboreReference = new WellboreReference() { WellName = WellName, WellboreName = WellboreName};
+            var wellboreReference = new WellboreReference() { WellName = WellName, WellboreName = WellboreName };
             var wellbore = await WorkerTools.GetWellbore(_witsmlClient.Object, wellboreReference, ReturnElements.HeaderOnly);
-            Assert.Equal(WellboreName,wellbore.Name);
+            Assert.Equal(WellboreName, wellbore.Name);
         }
 
         private static WitsmlWells CreateWells()
