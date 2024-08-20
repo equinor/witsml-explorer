@@ -26,6 +26,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private readonly ModifyTrajectoryStationWorker _worker;
+        private const string WellUid = "wellUid";
+        private const string WellboreUid = "wellboreUid";
+        private const string TsUid = "ts_uid";
+        private const string Uom = "uom";
+        private const string GeometrySectionUid = "GeometrySectionUid";
+        private const decimal Value = 20;
 
         public ModifyTrajectoryStationWorkerTest()
         {
@@ -39,11 +45,28 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task Update_GeometryStation()
+        public async Task Update_TrajectoryStation_ResultOK()
         {
             ModifyTrajectoryStationJob job = CreateJobTemplate();
-            List<WitsmlTrajectories> updatedGeometrys = await MockJob(job);
-            Assert.Single(updatedGeometrys);
+            List<WitsmlTrajectories> updatedTrajectories = new();
+            _witsmlClient.Setup(client =>
+                    client.UpdateInStoreAsync(It.IsAny<WitsmlTrajectories>())).Callback<WitsmlTrajectories>(trajectories => updatedTrajectories.Add(trajectories))
+                .ReturnsAsync(new QueryResult(true));
+
+            var (workerResult, _) = await _worker.Execute(job);
+            Assert.True(workerResult.IsSuccess);
+            Assert.Single(updatedTrajectories);
+            Assert.NotNull(updatedTrajectories);
+            var ts = updatedTrajectories.FirstOrDefault().Trajectories.FirstOrDefault().TrajectoryStations.FirstOrDefault();
+            Assert.NotNull(ts);
+            Assert.Equal(Uom, ts.Md.Uom);
+            Assert.Equal(Value.ToString(), ts.Md.Value);
+            Assert.Equal(Uom, ts.Tvd.Uom);
+            Assert.Equal(Value.ToString(), ts.Tvd.Value);
+            Assert.Equal(Uom, ts.Incl.Uom);
+            Assert.Equal(Value.ToString(), ts.Incl.Value);
+            Assert.Equal(Uom, ts.Azi.Uom);
+            Assert.Equal(Value.ToString(), ts.Azi.Value);
         }
 
         private async Task<List<WitsmlTrajectories>> MockJob(ModifyTrajectoryStationJob job)
@@ -63,19 +86,33 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 TrajectoryStation = new TrajectoryStation()
                 {
-                    Uid = "gs_uid",
+                    Uid = TsUid,
                     Md = new LengthMeasure()
                     {
-                        Uom = "uom",
-                        Value = 20
+                        Uom = Uom,
+                        Value = Value
+                    },
+                    Tvd = new LengthMeasure()
+                    {
+                        Uom = Uom,
+                        Value = Value
+                    },
+                    Incl = new LengthMeasure()
+                    {
+                        Uom = Uom,
+                        Value = Value
+                    },
+                    Azi = new LengthMeasure()
+                    {
+                        Uom = Uom,
+                        Value = Value
                     }
                 },
-
                 TrajectoryReference = new ObjectReference()
                 {
-                    WellUid = "welluid",
-                    WellboreUid = "wellboreuid",
-                    Uid = "geometrysectionuid"
+                    WellUid = WellUid,
+                    WellboreUid = WellboreUid,
+                    Uid = GeometrySectionUid
                 }
             };
         }

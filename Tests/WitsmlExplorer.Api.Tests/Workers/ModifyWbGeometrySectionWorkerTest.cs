@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ using Witsml.Data;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Services;
 using WitsmlExplorer.Api.Workers.Modify;
 
@@ -25,7 +27,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
     {
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private readonly ModifyWbGeometrySectionWorker _worker;
-
+        private static string uid = "gs_uid";
+        private static string grade = "a";
+        private static string uom = "uom";
+        private static double value = 1.2;
+        private static decimal decimal_value = 1.2m;
+        private static string datum = "2023-04-19T00:00:04Z";
+        private static string fastFabric = "1.2";
         public ModifyWbGeometrySectionWorkerTest()
         {
             Mock<IWitsmlClientProvider> witsmlClientProvider = new();
@@ -40,12 +48,32 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Update_GeometryStation()
         {
-            string expectedGrade = "a";
             ModifyWbGeometrySectionJob job = CreateJobTemplate();
             List<WitsmlWbGeometrys> updatedGeometrys = await MockJob(job);
-
             Assert.Single(updatedGeometrys);
-            Assert.Equal(expectedGrade, updatedGeometrys.First().WbGeometrys.First().WbGeometrySections.First().Grade);
+            var wbGeometrySection = updatedGeometrys.First().WbGeometrys.First()
+                .WbGeometrySections.First();
+            Assert.Equal(grade, wbGeometrySection.Grade);
+            Assert.Equal(uom, wbGeometrySection.DiaDrift.Uom);
+            Assert.Equal(value.ToString(CultureInfo.InvariantCulture), wbGeometrySection.DiaDrift.Value);
+            Assert.Equal(uom, wbGeometrySection.MdBottom.Uom);
+            Assert.Equal(value.ToString(CultureInfo.InvariantCulture), wbGeometrySection.MdBottom.Value);
+            Assert.Equal(datum, wbGeometrySection.MdBottom.Datum);
+            Assert.Equal(uom, wbGeometrySection.MdTop.Uom);
+            Assert.Equal(value.ToString(CultureInfo.InvariantCulture), wbGeometrySection.MdTop.Value);
+            Assert.Equal(datum, wbGeometrySection.MdTop.Datum);
+            Assert.Equal(uom, wbGeometrySection.TvdBottom.Uom);
+            Assert.Equal(value.ToString(CultureInfo.InvariantCulture), wbGeometrySection.TvdBottom.Value);
+            Assert.Equal(datum, wbGeometrySection.TvdBottom.Datum);
+            Assert.Equal(uom, wbGeometrySection.TvdTop.Uom);
+            Assert.Equal(value.ToString(CultureInfo.InvariantCulture), wbGeometrySection.TvdTop.Value);
+            Assert.Equal(datum, wbGeometrySection.TvdTop.Datum);
+            Assert.Equal(uom, wbGeometrySection.OdSection.Uom);
+            Assert.Equal(value.ToString(CultureInfo.InvariantCulture), wbGeometrySection.OdSection.Value);
+            Assert.Equal(uom, wbGeometrySection.WtPerLen.Uom);
+            Assert.Equal(value.ToString(CultureInfo.InvariantCulture), wbGeometrySection.WtPerLen.Value);
+            Assert.Equal(fastFabric, wbGeometrySection.FactFric);
+            Assert.Equal(uid, wbGeometrySection.Uid);
         }
 
         private async Task<List<WitsmlWbGeometrys>> MockJob(ModifyWbGeometrySectionJob job)
@@ -66,8 +94,48 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 WbGeometrySection = new WbGeometrySection()
                 {
                     Uid = "gs_uid",
-                    Grade = "a"
-
+                    Grade = grade,
+                    TypeHoleCasing = "typeholecasing",
+                    MdTop = new MeasureWithDatum()
+                    {
+                        Datum = datum,
+                        Uom = uom,
+                        Value = value
+                    },
+                    MdBottom = new MeasureWithDatum()
+                    {
+                        Datum = datum,
+                        Uom = uom,
+                        Value = value
+                    },
+                    TvdBottom = new MeasureWithDatum()
+                    {
+                        Datum = datum,
+                        Uom = uom,
+                        Value = value
+                    },
+                    DiaDrift = new LengthMeasure()
+                    {
+                        Uom = uom,
+                        Value = decimal_value
+                    },
+                    OdSection = new LengthMeasure()
+                    {
+                        Uom = uom,
+                        Value = decimal_value
+                    },
+                    TvdTop = new MeasureWithDatum
+                    {
+                        Datum = datum,
+                        Uom = uom,
+                        Value = value
+                    },
+                    WtPerLen  = new LengthMeasure()
+                    {
+                        Uom = uom,
+                        Value = decimal_value
+                    },
+                    FactFric  = value
                 },
 
                 WbGeometryReference = new ObjectReference()

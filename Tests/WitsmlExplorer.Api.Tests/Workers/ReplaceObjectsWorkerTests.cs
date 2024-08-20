@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 
 using Moq;
 
-using Serilog;
-
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Tubular;
@@ -58,23 +56,25 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task Execute_Delete_ThrowsError()
+        public async Task Execute_Delete_Part_ThrowsError()
         {
             SetUpStoreForCopy(true);
             SetUpStoreForDelete(false);
             ReplaceObjectsJob replaceObjectsJob = SetUpReplaceObjectsJob();
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceObjectWorker.Execute(replaceObjectsJob);
             Assert.False(workerResult.IsSuccess);
+            Assert.Equal(" Failed to delete some WitsmlTubulars", workerResult.Message);
         }
 
         [Fact]
-        public async Task Execute_Copy_ThrowsError()
+        public async Task Execute_Copy_Part_ThrowsError()
         {
             SetUpStoreForCopy(true);
             SetUpStoreForDelete();
             ReplaceObjectsJob replaceObjectsJob = SetUpReplaceObjectsJob();
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceObjectWorker.Execute(replaceObjectsJob);
             Assert.False(workerResult.IsSuccess);
+            Assert.Equal("Could not find any objects to copy", workerResult.Message);
         }
 
         [Fact]
@@ -86,6 +86,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceObjectWorker.Execute(replaceObjectsJob);
             Assert.True(workerResult.IsSuccess);
             Assert.Equal(EntityType.Tubular, refreshAction.EntityType);
+            Assert.Equal("Copied WitsmlTubulars: objectUid.", workerResult.Message);
         }
 
         private static ReplaceObjectsJob SetUpReplaceObjectsJob()

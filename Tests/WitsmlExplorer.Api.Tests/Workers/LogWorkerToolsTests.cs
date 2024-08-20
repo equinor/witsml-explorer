@@ -24,12 +24,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
 {
     public class LogWorkerToolsTests
     {
-        private const string LogUid = "8cfad887-3e81-40f0-9034-178be642df65";
+        private const string LogUid = "51bb71c2-5e6f-4e15-ae5f-0fbc866bdad6";
         private const string LogName = "Test log";
-        private const string WellUid = "W-5209671";
-        private const string WellName = "NO 34/10-A-25 C";
-        private const string WellboreUid = "B-5209671";
-        private const string WellboreName = "NO 34/10-A-25 C - Main Wellbore";
+        private const string WellUid = "welluid";
+        private const string WellName = "wellname";
+        private const string WellboreUid = "wellboreuid";
+        private const string WellboreName = "wellborename";
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private readonly CreateObjectOnWellboreWorker _worker;
 
@@ -54,14 +54,16 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
 
             var log = await LogWorkerTools.GetLog(_witsmlClient.Object, job.Object, ReturnElements.HeaderOnly);
+            Assert.Equal("51bb71c2-5e6f-4e15-ae5f-0fbc866bdad6",log.Uid);
+            Assert.Equal("2023-04-19T00:00:09Z",log.EndDateTimeIndex);
+            Assert.Equal("2023-04-19T00:00:04Z",log.StartDateTimeIndex);
+            Assert.Equal(3, log.LogCurveInfo.Count);
         }
 
         [Fact]
         public async Task GetLogDataForCurveTest_OK()
         {
             WitsmlLogs returnedWitsmlLog = ReturnedWitsmlLog();
-            CreateObjectOnWellboreJob job = CreateJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_MD);
-            List<WitsmlLogs> createdLogs = new();
             _witsmlClient.Setup(client =>
                 client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(returnedWitsmlLog);
             WitsmlLog log = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.11, 123.12, "Depth").Logs.First();
@@ -71,6 +73,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
             LogUtils.SetupGetDepthIndexed(_witsmlClient, (logs) => logs.Logs.First().StartIndex?.Value == "123.12",
                 new() { new() { Data = "123.12,,2" } });
             var sourceLog = await LogWorkerTools.GetLogDataForCurve(_witsmlClient.Object, log, "mnemonic", null);
+            Assert.Equal("123.11,1,", sourceLog.Data[0].Data);
+            Assert.Equal("123.12,,2", sourceLog.Data[1].Data);
+            Assert.Equal("data", sourceLog.Data[0].TypeName);
+            Assert.Equal("data", sourceLog.Data[1].TypeName);
+            Assert.Equal("Depth,DepthBit,DepthHole", sourceLog.MnemonicList);
+            Assert.Equal("data", sourceLog.TypeName);
+            Assert.Equal("m,m,m", sourceLog.UnitList);
         }
 
         [Fact]
@@ -80,6 +89,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             string mnemonicList = "Depth,BPOS";
             var witmslLogData = GetTestLogData(mnemonicList);
             var result = LogWorkerTools.CalculateProgressBasedOnIndex(log, witmslLogData);
+            Assert.Equal(1.2,result);
         }
 
         [Fact]
@@ -89,6 +99,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var witmslLogData = GetTestLogData(mnemonicList);
             var batchedQuueries = LogWorkerTools.GetUpdateLogDataQueries("uid",
                 "uidwell", "uidwellbore", witmslLogData, 2, mnemonicList);
+            Assert.Equal(5,batchedQuueries.Count);
         }
 
         private static WitsmlLogs ReturnedWitsmlLog()

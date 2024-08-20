@@ -6,11 +6,8 @@ using Microsoft.Extensions.Logging;
 
 using Moq;
 
-using Serilog;
-
 using Witsml;
 using Witsml.Data;
-using Witsml.Data.Tubular;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -35,10 +32,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private const string Uid3 = "Uid3";
         private const string Uid4 = "Uid4";
 
-        private readonly Mock<IWitsmlClientProvider> _witsmlClientProvider;
         private readonly ReplaceComponentsWorker _replaceComponentsWorker;
-        private readonly CopyComponentsWorker _copyComponentsWorker;
-        private readonly DeleteComponentsWorker _deleteComponentsWorker;
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private const string WellUid = "wellUid";
         private const string ObjectUid = "objectUid";
@@ -46,31 +40,28 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public ReplaceComponentsWorkerTests()
         {
-            _witsmlClientProvider = new();
+            Mock<IWitsmlClientProvider> witsmlClientProvider = new();
             _witsmlClient = new Mock<IWitsmlClient>();
-            _witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
-            _witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
+            witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_witsmlClient.Object);
             Mock<ILogger<CopyComponentsJob>> copyComponentLogger = new();
-            CopyUtils copyUtils = new(new Mock<ILogger<CopyUtils>>().Object);
-            CopyLogWorker copyLogWorker = new(new Mock<ILogger<CopyObjectsJob>>().Object, _witsmlClientProvider.Object);
 
-            _copyComponentsWorker = new CopyComponentsWorker(copyComponentLogger.Object, _witsmlClientProvider.Object, new Mock<ICopyLogDataWorker>().Object);
+            CopyComponentsWorker copyComponentsWorker = new(copyComponentLogger.Object, witsmlClientProvider.Object, new Mock<ICopyLogDataWorker>().Object);
             ILogger<DeleteComponentsJob> deleteComponentLogger = new Mock<ILogger<DeleteComponentsJob>>().Object;
-            _deleteComponentsWorker = new DeleteComponentsWorker(deleteComponentLogger, _witsmlClientProvider.Object);
+            DeleteComponentsWorker deleteComponentsWorker = new(deleteComponentLogger, witsmlClientProvider.Object);
             ILogger<ReplaceComponentsJob> replaceComponentLogger = new Mock<ILogger<ReplaceComponentsJob>>().Object;
-            _replaceComponentsWorker = new ReplaceComponentsWorker(replaceComponentLogger, _copyComponentsWorker, _deleteComponentsWorker);
+            _replaceComponentsWorker = new ReplaceComponentsWorker(replaceComponentLogger, copyComponentsWorker, deleteComponentsWorker);
         }
 
         [Fact]
         public async Task Execute_ReplaceTubularComponents_Delete_Failure()
         {
-            List<IWitsmlQueryType> copyTubularComponentQuery = SetupUpdateInStoreAsync();
             CopyComponentsJob copyTubularComponentJob = CreateJobTemplate(new string[] { Uid2, Uid3 }, ComponentType.TubularComponent);
             SetupGetFromStoreAsync(ComponentType.TubularComponent, copyTubularComponentJob.Source.ComponentUids, new string[] { Uid4 });
             SetUpStoreForDelete(false);
 
             var deleteObjectsJob = CreateJob(ComponentType.TubularComponent);
-            ReplaceComponentsJob replaceObjectsJob = new ReplaceComponentsJob()
+            var replaceObjectsJob = new ReplaceComponentsJob()
             {
                 CopyJob = copyTubularComponentJob,
                 DeleteJob = deleteObjectsJob
@@ -78,10 +69,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceComponentsWorker.Execute(replaceObjectsJob);
             Assert.False(workerResult.IsSuccess);
+            Assert.Equal("Failed to delete tubularcomponents", workerResult.Message);
         }
 
         [Fact]
-        public async Task Execute_ReplaceTubularComponents_CopyFailureSuccess()
+        public async Task Execute_ReplaceTubularComponents_CopyFailure()
         {
             SetupUpdateInStoreAsync();
             string missingUid = "uidOfMissingTubularComponent123123";
@@ -99,6 +91,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceComponentsWorker.Execute(replaceObjectsJob);
             Assert.False(workerResult.IsSuccess);
+            Assert.Equal("Failed to delete tubularcomponents", workerResult.Message);
         }
 
         [Fact]
@@ -110,7 +103,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             SetUpStoreForDelete();
 
             var deleteObjectsJob = CreateJob(ComponentType.TubularComponent);
-            ReplaceComponentsJob replaceObjectsJob = new ReplaceComponentsJob()
+            var replaceObjectsJob = new ReplaceComponentsJob()
             {
                 CopyJob = copyTubularComponentJob,
                 DeleteJob = deleteObjectsJob,
