@@ -91,7 +91,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceComponentsWorker.Execute(replaceObjectsJob);
             Assert.False(workerResult.IsSuccess);
-            Assert.Equal("Failed to delete tubularcomponents", workerResult.Message);
+            Assert.Equal("Failed to copy tubularcomponents.", workerResult.Message);
         }
 
         [Fact]
