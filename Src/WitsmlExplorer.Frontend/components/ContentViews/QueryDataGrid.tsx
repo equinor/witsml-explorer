@@ -60,7 +60,7 @@ export default function QueryDataGrid() {
     {
       property: "value",
       label: "value",
-      type: ContentType.Component //TODO: component?
+      type: ContentType.Component
     },
     {
       property: "documentation",
@@ -98,24 +98,39 @@ export default function QueryDataGrid() {
   };
 
   const handleChangeDebounced = useCallback(
-    debounce((e: ChangeEvent<HTMLInputElement>, row: QueryGridDataRow) => {
+    debounce((e: ChangeEvent<HTMLInputElement>, rowId: string) => {
+      const dataClone = cloneDeep(data);
       const value = e.target.value;
-      row.value = value;
-      updateQueryFromData(data);
-    }, 500),
-    []
+
+      const updateRowValueById = (rows: QueryGridDataRow[]) => {
+        for (const row of rows) {
+          if (row.id === rowId) {
+            row.value = value;
+            row.presentInQuery = true;
+            return;
+          }
+
+          if (row.children) {
+            updateRowValueById(row.children);
+          }
+        }
+      };
+      updateRowValueById(dataClone);
+      updateQueryFromData(dataClone);
+    }, 1000),
+    [data]
   );
 
   const tableData = useMemo(() => {
     const getTableData = (dataRows: QueryGridDataRow[]): QueryGridDataRow[] => {
       return dataRows.map((row) => ({
         ...row,
-        value: (
+        value: !row.isContainer && (
           <StyledTextField
             id={row.id}
             defaultValue={row.value ?? ""}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              handleChangeDebounced(e, row)
+              handleChangeDebounced(e, row.id)
             }
             onClick={(e: MouseEvent<HTMLInputElement>) => e.stopPropagation()}
           />
