@@ -25,7 +25,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private const string WellboreUid = "wellboreUid";
         private const string WellUid = "wellUid";
-        private static readonly string ObjectUid = "objectUid1";
 
         public DeleteWellboreWorkerTests()
         {

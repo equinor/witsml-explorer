@@ -24,7 +24,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private readonly DeleteWellWorker _worker;
         private readonly Mock<IWitsmlClient> _witsmlClient;
         private const string WellUid = "wellUid";
-        private static readonly string ObjectUid = "objectUid1";
 
         public DeleteWellWorkerTests()
         {
