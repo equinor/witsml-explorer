@@ -1,59 +1,61 @@
 # Witsml Explorer Demo & Tutorial Videos
 
 ## Overview
-
-https://github.com/user-attachments/assets/e8c1c9d8-afe3-4374-8239-530ed2b65c0d
+https://github.com/user-attachments/assets/76b98f20-5ded-4ed8-9c21-a34625fcd355
 
 ## Manage Servers
-
-https://github.com/user-attachments/assets/5bd9f162-2d6e-44bf-a6ab-a85a72f6b676
+https://github.com/user-attachments/assets/4e8bfb7c-b2c1-4989-a3dd-ef70357abd7f
 
 ## Desktop Installation
-
+https://github.com/user-attachments/assets/527260ca-76e7-4267-bbc9-5e35c2b0c257
 
 ## Azure Integration
-
+https://github.com/user-attachments/assets/55b5e5b8-6603-4156-8d4c-f8dfdfde4d5e
 
 ## Settings
-
-https://github.com/user-attachments/assets/e8701e06-3ce7-4bca-a3ab-9dd9654dfb43
-
+https://github.com/user-attachments/assets/33947d09-577a-45b2-887b-01e04eebc17b
 
 ## Search and Filter
-
+https://github.com/user-attachments/assets/bbeff67f-bef9-4919-8efc-86d4ce3070f5
 
 ## Table Overview
-
-https://github.com/user-attachments/assets/a02cbe7c-71d5-4b1d-b376-70551e13ba1d
+https://github.com/user-attachments/assets/4055d50d-9996-4fee-83ae-1aeceb939274
 
 ## Query View
-
-https://github.com/user-attachments/assets/ac93fbd3-4499-49bf-9ef6-39f73d5d27dc
+https://github.com/user-attachments/assets/3b3608ff-9587-4c34-90f2-432661350269
 
 ## Deeplinking
-
-https://github.com/user-attachments/assets/1724bf55-c7f7-44c2-b724-1437fa715722
+https://github.com/user-attachments/assets/b4ceb129-dd6e-4a3f-8878-15b1a6abade6
 
 ## Object Overview
-
-https://github.com/user-attachments/assets/eff8fa63-e34c-4b1e-b90c-6da247fd7f56
-
-## Copy and Paste
-
+https://github.com/user-attachments/assets/e86798ad-c8f9-4213-8f4f-b0e11bf30c57
 
 ## Log Overview
-
+https://github.com/user-attachments/assets/28f4417c-45ed-4c16-acaf-99d2a103ddf6
 
 ### Log Agents
-
-https://github.com/user-attachments/assets/f87806c7-c0ec-4750-a39d-22002131187f
+https://github.com/user-attachments/assets/6848c50d-3995-4bf7-a875-9a9be512413a
 
 ### Export and Import
-
+https://github.com/user-attachments/assets/e0a64ec7-4254-4976-902f-9088dc5d61b5
 
 ### Splice
-
+https://github.com/user-attachments/assets/bd340c2f-56c1-4d37-a017-878a17f047ce
 
 ### Curve Offset
+https://github.com/user-attachments/assets/9a403460-8178-4b75-9eaf-72302f3a2b71
 
-https://github.com/user-attachments/assets/f0f47989-472f-44f4-b650-74241f8120e0
+## Copy and Paste
+https://github.com/user-attachments/assets/ab54c690-3fb0-45e5-a467-ce884935c65e
+
+### Copy Mnemonics
+https://github.com/user-attachments/assets/cb21aa1e-7018-40f2-8374-1df1f0516633
+
+### Copy Other Objects
+https://github.com/user-attachments/assets/32cedf8c-8811-436e-949a-9fc63f93ded2
+
+### Copy With Range
+https://github.com/user-attachments/assets/e82b2ac8-4c5b-42b8-8172-3a894da6af3a
+
+### Copy Within Server
+https://github.com/user-attachments/assets/5aa1332c-3524-45dd-babe-18ae82078eba
