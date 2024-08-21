@@ -1,5 +1,26 @@
 # Witsml Explorer Demo & Tutorial Videos
 
+- [Overview](#overview)
+- [Manage Servers](#manage-servers)
+- [Desktop Installation](#desktop-installation)
+- [Azure Integration](#azure-integration)
+- [Settings](#settings)
+- [Search and Filter](#search-and-filter)
+- [Table Overview](#table-overview)
+- [Query View](#query-view)
+- [Deeplinking](#deeplinking)
+- [Object Overview](#object-overview)
+- [Log Overview](#log-overview)
+  - [Log Agents](#log-agents)
+  - [Export and Import](#export-and-import)
+  - [Splice](#splice)
+  - [Curve Offset](#curve-offset)
+- [Copy and Paste](#copy-and-paste)
+  - [Copy Mnemonics](#copy-mnemonics)
+  - [Copy Other Objects](#copy-other-objects)
+  - [Copy With Range](#copy-with-range)
+  - [Copy Within Server](#copy-within-server)
+
 ## Overview
 https://github.com/user-attachments/assets/76b98f20-5ded-4ed8-9c21-a34625fcd355
 
