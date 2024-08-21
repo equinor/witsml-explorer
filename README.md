@@ -6,7 +6,10 @@
 
 Witsml Explorer is a data management tool used for browsing and editing data directly on [WITSML](https://en.wikipedia.org/wiki/Wellsite_information_transfer_standard_markup_language) servers.
 
-<img src="./we-demo.png" alt="witsml-explorer interface">
+https://github.com/user-attachments/assets/b1a8fdde-a129-4656-87dd-cd10b7a46fb0
+
+## Demo Videos
+Please see [Demo Videos](/Media/README.md)
 
 ## Key features
 * Runs directly in your browser, no need to install additional software.
@@ -16,12 +19,6 @@ Witsml Explorer is a data management tool used for browsing and editing data dir
 * Trim log objects and individual curves.
 * Copy objects and sub objects (also between different servers!).
 * URL deep linking directly to objects
-
-## Witsml Explorer Demo & Tutorial Videos
-
-https://github.com/user-attachments/assets/e8c1c9d8-afe3-4374-8239-530ed2b65c0d
-
-Please see [demo and tutorial videos](/Media/README.md)
 
 ## Witsml as a Nuget package
 Please see [nuget_witsml.md](/Docs/nuget_witsml.md)
