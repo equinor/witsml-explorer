@@ -70,13 +70,13 @@ https://github.com/user-attachments/assets/9a403460-8178-4b75-9eaf-72302f3a2b71
 https://github.com/user-attachments/assets/ab54c690-3fb0-45e5-a467-ce884935c65e
 
 ### Copy Mnemonics
-https://github.com/user-attachments/assets/cb21aa1e-7018-40f2-8374-1df1f0516633
+https://github.com/user-attachments/assets/3f7b9154-001c-49a7-8244-c22e1bb3e278
 
 ### Copy Other Objects
 https://github.com/user-attachments/assets/32cedf8c-8811-436e-949a-9fc63f93ded2
 
 ### Copy With Range
-https://github.com/user-attachments/assets/e82b2ac8-4c5b-42b8-8172-3a894da6af3a
+https://github.com/user-attachments/assets/3dce1b20-8504-4df6-8e28-13761c17380e
 
 ### Copy Within Server
 https://github.com/user-attachments/assets/5aa1332c-3524-45dd-babe-18ae82078eba
