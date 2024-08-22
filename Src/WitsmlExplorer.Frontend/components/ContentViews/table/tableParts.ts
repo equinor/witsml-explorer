@@ -1,4 +1,8 @@
-import { FilterFn } from "@tanstack/react-table";
+import {
+  ExpandedState,
+  FilterFn,
+  RowSelectionState
+} from "@tanstack/react-table";
 import React from "react";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
@@ -28,6 +32,7 @@ export interface ContentTableProps {
   ) => void;
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[]) => void;
+  onExpandedChange?: (expanded: ExpandedState) => void;
   insetColumns?: ContentTableColumn[];
   nested?: boolean;
   nestedProperty?: string;
@@ -38,7 +43,8 @@ export interface ContentTableProps {
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
   downloadToCsvFileName?: string;
   initiallySelectedRows?: ContentTableRow[];
-  initiallyExpandedRows?: ContentTableRow[];
+  rowSelection?: RowSelectionState; // Use this for a controlled row selection state
+  expanded?: ExpandedState; // Use this for a controlled expanded state
   autoRefresh?: boolean;
 }
 

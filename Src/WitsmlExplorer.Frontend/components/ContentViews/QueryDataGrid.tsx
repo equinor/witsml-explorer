@@ -1,4 +1,5 @@
 import { EdsProvider, TextField, Typography } from "@equinor/eds-core-react";
+import { ExpandedState, RowSelectionState } from "@tanstack/react-table";
 import {
   formatXml,
   TemplateObjects
@@ -18,13 +19,13 @@ import {
   MouseEvent,
   useCallback,
   useContext,
-  useMemo
+  useEffect,
+  useMemo,
+  useState
 } from "react";
 import styled from "styled-components";
 import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 import { getDataGridTemplate } from "templates/dataGrid/DataGridTemplates";
-
-export interface QueryDataGridProps {}
 
 const parserOptions = {
   ignoreAttributes: false,
@@ -42,46 +43,71 @@ export default function QueryDataGrid() {
   } = useContext(QueryContext);
 
   const { query, tabId } = queries[tabIndex];
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+
   const parser = new XMLParser(parserOptions);
   const builder = new XMLBuilder(parserOptions);
   const queryObj = parser.parse(query);
   const templateObject = Object.keys(queryObj)?.[0]?.slice(0, -1);
   const template = getDataGridTemplate(templateObject as TemplateObjects);
   const data = mergeTemplateWithQuery(template, queryObj);
-  const initiallySelectedRows = getInitiallySelectedRows(data);
-  const initiallyExpandedRows = getInitiallyExpandedRows(data);
+  const rowSelection = getRowSelectionFromQuery(data);
 
-  const columns: ContentTableColumn[] = [
-    {
-      property: "name",
-      label: "variable",
-      type: ContentType.String
-    },
-    {
-      property: "value",
-      label: "value",
-      type: ContentType.Component
-    },
-    {
-      property: "documentation",
-      label: "documentation",
-      type: ContentType.String
-    }
-  ];
+  useEffect(() => {
+    const newExpanded = getExpandedRowsFromQuery(data);
+    setExpanded(newExpanded);
+  }, [tabIndex]);
+
+  const columns: ContentTableColumn[] = useMemo(
+    () => [
+      {
+        property: "name",
+        label: "variable",
+        type: ContentType.String
+      },
+      {
+        property: "value",
+        label: "value",
+        type: ContentType.Component
+      },
+      {
+        property: "documentation",
+        label: "documentation",
+        type: ContentType.String
+      }
+    ],
+    []
+  );
 
   const onRowSelectionChange = (rows: QueryGridDataRow[]) => {
     const dataClone = cloneDeep(data);
     const selectedRowIds = new Set(rows.map((row) => row.id));
+    const rowWasAdded = rows.length > Object.keys(rowSelection).length;
 
-    const updatePresentInQuery = (node: QueryGridDataRow) => {
-      node.presentInQuery = selectedRowIds.has(node.id);
+    const updatePresentInQuery = (
+      node: QueryGridDataRow,
+      parentRows: QueryGridDataRow[]
+    ) => {
+      if (selectedRowIds.has(node.id)) {
+        node.presentInQuery = true;
+        if (rowWasAdded) {
+          parentRows.forEach((row) => {
+            row.presentInQuery = true;
+          });
+        }
+      } else {
+        node.presentInQuery = false;
+        node.value = null;
+      }
 
       if (node.children && node.children.length > 0) {
-        node.children.forEach((child) => updatePresentInQuery(child));
+        node.children.forEach((child) =>
+          updatePresentInQuery(child, [...parentRows, node])
+        );
       }
     };
 
-    dataClone.forEach((node) => updatePresentInQuery(node));
+    dataClone.forEach((node) => updatePresentInQuery(node, []));
 
     updateQueryFromData(dataClone);
   };
@@ -102,22 +128,28 @@ export default function QueryDataGrid() {
       const dataClone = cloneDeep(data);
       const value = e.target.value;
 
-      const updateRowValueById = (rows: QueryGridDataRow[]) => {
+      const updateRowValueById = (
+        rows: QueryGridDataRow[],
+        parentRows: QueryGridDataRow[]
+      ) => {
         for (const row of rows) {
           if (row.id === rowId) {
             row.value = value;
             row.presentInQuery = true;
+            parentRows.forEach((row) => {
+              row.presentInQuery = true;
+            });
             return;
           }
 
           if (row.children) {
-            updateRowValueById(row.children);
+            updateRowValueById(row.children, [...parentRows, row]);
           }
         }
       };
-      updateRowValueById(dataClone);
+      updateRowValueById(dataClone, []);
       updateQueryFromData(dataClone);
-    }, 1000),
+    }, 700),
     [data]
   );
 
@@ -125,14 +157,16 @@ export default function QueryDataGrid() {
     const getTableData = (dataRows: QueryGridDataRow[]): QueryGridDataRow[] => {
       return dataRows.map((row) => ({
         ...row,
-        value: !row.isContainer && (
+        value: (
           <StyledTextField
+            key={row.value === undefined ? `toggle-${row.id}` : row.id}
             id={row.id}
             defaultValue={row.value ?? ""}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               handleChangeDebounced(e, row.id)
             }
             onClick={(e: MouseEvent<HTMLInputElement>) => e.stopPropagation()}
+            disabled={row.isContainer}
           />
         ),
         children: row.children ? getTableData(row.children) : undefined
@@ -153,8 +187,9 @@ export default function QueryDataGrid() {
         nestedProperty="children"
         checkableRows
         onRowSelectionChange={onRowSelectionChange}
-        initiallySelectedRows={initiallySelectedRows}
-        initiallyExpandedRows={initiallyExpandedRows}
+        onExpandedChange={setExpanded}
+        rowSelection={rowSelection}
+        expanded={expanded}
       />
     </EdsProvider>
   ) : (
@@ -279,15 +314,15 @@ const extractQueryFromData = (data: QueryGridDataRow[]): any => {
   return queryObj;
 };
 
-const getInitiallySelectedRows = (
+const getRowSelectionFromQuery = (
   data: QueryGridDataRow[]
-): QueryGridDataRow[] => {
-  const result: QueryGridDataRow[] = [];
+): RowSelectionState => {
+  const result: RowSelectionState = {};
 
   const traverse = (rows: QueryGridDataRow[]) => {
     for (const row of rows) {
       if (row.presentInQuery) {
-        result.push(row);
+        result[row.id] = true;
       }
       if (row.children) {
         traverse(row.children);
@@ -299,16 +334,16 @@ const getInitiallySelectedRows = (
   return result;
 };
 
-const getInitiallyExpandedRows = (
+const getExpandedRowsFromQuery = (
   data: QueryGridDataRow[],
   expandLevels: number = 2 // By default expand the first two levels (the main object - logs and each log)
-): QueryGridDataRow[] => {
-  const result: QueryGridDataRow[] = [];
+): ExpandedState => {
+  const result: ExpandedState = {};
 
   const traverse = (rows: QueryGridDataRow[], level: number) => {
     for (const row of rows) {
       if (row.children) {
-        result.push(row);
+        result[row.id] = true;
         if (level < expandLevels) {
           traverse(row.children, level + 1);
         }
