@@ -44,10 +44,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             const string expectedNewName = "NewName";
             ModifyObjectOnWellboreJob job = CreateJobTemplate(TrajectoryUid, expectedNewName);
             Trajectory trajectory = (Trajectory)job.Object;
-
             List<WitsmlTrajectories> updatedTrajectories = new();
-            _witsmlClient.Setup(client =>
-                    client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>())).Callback<IWitsmlQueryType>(trajectories => updatedTrajectories.Add(trajectories as WitsmlTrajectories))
+            _witsmlClient.Setup(client => client.UpdateInStoreAsync(It.IsAny<IWitsmlQueryType>())).Callback<IWitsmlQueryType>(trajectories => updatedTrajectories.Add(trajectories as WitsmlTrajectories))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);
