@@ -27,6 +27,7 @@ export const constantTableOptions = {
 };
 
 const sortingIconSize = 16;
+
 export function calculateColumnWidth(
   label: string,
   isCompactMode: boolean,
@@ -127,7 +128,7 @@ export const useInitFilterFns = (table: Table<any>) => {
 };
 
 export const calculateHorizontalSpace = (
-  columnItems: VirtualItem[],
+  columnItems: VirtualItem<HTMLDivElement>[],
   totalSize: number,
   stickyLeftColumns: number
 ) => {
