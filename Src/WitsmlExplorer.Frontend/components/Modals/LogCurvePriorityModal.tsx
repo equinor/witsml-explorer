@@ -1,4 +1,4 @@
-import { Icon, TextField } from "@equinor/eds-core-react";
+import { Checkbox, Icon, Label, TextField } from "@equinor/eds-core-react";
 import { Button } from "components/StyledComponents/Button";
 import { useOperationState } from "hooks/useOperationState";
 import React, { ChangeEvent, useState } from "react";
@@ -13,6 +13,7 @@ import {
 } from "../ContextMenus/ContextMenu";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
+import { property } from "lodash";
 
 export interface LogCurvePriorityModalProps {
   wellUid: string;
@@ -46,7 +47,13 @@ export const LogCurvePriorityModal = (
       property: "mnemonic",
       label: "mnemonic",
       type: ContentType.String,
-      width: 500
+      width: 440
+    },
+    {
+      property: "global",
+      label: "global",
+      type: ContentType.Component,
+      width: 60
     }
   ];
 
@@ -54,7 +61,11 @@ export const LogCurvePriorityModal = (
     return updatedPrioritizedCurves.sort().map((mnemonic) => {
       return {
         id: mnemonic,
-        mnemonic: mnemonic
+        mnemonic: mnemonic,
+        global:<div style={{ display: "flex"}}> <Checkbox
+        label = ""
+        style={{ margin: "auto", padding: "0.5px"  }}
+      /></div>
       };
     });
   };
@@ -143,7 +154,7 @@ const Layout = styled.div`
   display: grid;
   grid-template-rows: 1fr auto;
   max-height: 100%;
-  gap: 20px;
+  gap: 40px;
 `;
 
 const AddItemLayout = styled.div`
