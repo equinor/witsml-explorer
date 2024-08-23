@@ -69,17 +69,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(Value.ToString(), ts.Azi.Value);
         }
 
-        private async Task<List<WitsmlTrajectories>> MockJob(ModifyTrajectoryStationJob job)
-        {
-            List<WitsmlTrajectories> updatedTrajectories = new();
-            _witsmlClient.Setup(client =>
-                client.UpdateInStoreAsync(It.IsAny<WitsmlTrajectories>())).Callback<WitsmlTrajectories>(trajectories => updatedTrajectories.Add(trajectories))
-                .ReturnsAsync(new QueryResult(true));
-
-            await _worker.Execute(job);
-            return updatedTrajectories;
-        }
-
         private static ModifyTrajectoryStationJob CreateJobTemplate()
         {
             return new ModifyTrajectoryStationJob

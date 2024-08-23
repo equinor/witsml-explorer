@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             ReplaceObjectsJob replaceObjectsJob = SetUpReplaceObjectsJob();
             (WorkerResult workerResult, RefreshAction refreshAction) = await _replaceObjectWorker.Execute(replaceObjectsJob);
             Assert.False(workerResult.IsSuccess);
-            Assert.Equal(" Failed to delete some WitsmlTubulars", workerResult.Message);
+            Assert.Equal("Failed to delete some WitsmlTubulars", workerResult.Message);
         }
 
         [Fact]
