@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             string mnemonicList = "Depth,BPOS";
             var witmslLogData = GetTestLogData(mnemonicList);
             var result = LogWorkerTools.CalculateProgressBasedOnIndex(log, witmslLogData);
-            Assert.Equal(0.77777777777777779, result);
+            Assert.Equal(0.5, result);
         }
 
         [Fact]
@@ -104,8 +104,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 UidWell = WellUid,
                 UidWellbore = WellboreUid,
                 Uid = LogUid,
-                StartDateTimeIndex = "2023-04-19T00:00:03Z",
-                EndDateTimeIndex = "2023-04-19T00:00:12Z",
+                StartDateTimeIndex = "2023-04-19T00:00:00Z",
+                EndDateTimeIndex = "2023-04-19T00:00:20Z",
                 LogCurveInfo = new List<WitsmlLogCurveInfo>
                 {
                     new WitsmlLogCurveInfo
