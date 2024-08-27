@@ -32,6 +32,10 @@ const parserOptions = {
   attributeNamePrefix: "@_"
 };
 
+// TODO: Cleanup this file (move stuff to different files and folders)
+// TODO: Get data for all objects
+// TODO: Fix "Reset ordering" changing an unchanged order.
+
 export default function QueryDataGrid() {
   const {
     operationState: { theme }
@@ -190,6 +194,7 @@ export default function QueryDataGrid() {
         onExpandedChange={setExpanded}
         rowSelection={rowSelection}
         expanded={expanded}
+        stickyLeftColumns={2}
       />
     </EdsProvider>
   ) : (

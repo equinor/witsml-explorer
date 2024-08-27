@@ -46,6 +46,7 @@ export interface ContentTableProps {
   rowSelection?: RowSelectionState; // Use this for a controlled row selection state
   expanded?: ExpandedState; // Use this for a controlled expanded state
   autoRefresh?: boolean;
+  disableFilters?: boolean; // Hides the input-fields that can be used as user-specified column filters. Does not disable other provided filters.
 }
 
 export enum Order {

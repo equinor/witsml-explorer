@@ -111,7 +111,8 @@ export const ContentTable = React.memo(
       initiallySelectedRows = [],
       rowSelection: controlledRowSelection = null,
       expanded: controlledExpansionState = null,
-      autoRefresh = false
+      autoRefresh = false,
+      disableFilters = false
     } = contentTableProps;
     const {
       operationState: { colors, theme }
@@ -363,10 +364,11 @@ export const ContentTable = React.memo(
             table={table}
             viewId={viewId}
             columns={columns}
-            expandableRows={insetColumns != null || nested}
+            expandableRows={insetColumns != null}
             showRefresh={showRefresh}
             downloadToCsvFileName={downloadToCsvFileName}
             stickyLeftColumns={stickyLeftColumns}
+            disableFilters={disableFilters || nested}
           />
         ) : null}
         <div

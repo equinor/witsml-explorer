@@ -31,9 +31,13 @@ const sortingIconSize = 16;
 export function calculateColumnWidth(
   label: string,
   isCompactMode: boolean,
-  type?: ContentType
+  type?: ContentType,
+  isPrimaryNestedColumn?: boolean
 ): number {
-  const padding = (isCompactMode ? 8 : 32) + sortingIconSize;
+  const padding =
+    (isCompactMode ? 8 : 32) +
+    (isPrimaryNestedColumn ? 150 : 0) +
+    sortingIconSize;
   switch (label) {
     case "name":
     case "Name":
