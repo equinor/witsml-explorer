@@ -340,7 +340,7 @@ export const ColumnOptionsMenu = (props: {
               table.setColumnOrder([
                 ...(checkableRows ? [selectId] : []),
                 ...(expandableRows ? [expanderId] : []),
-                ...columns.map((column) => column.label)
+                ...columns.map((column) => column.property)
               ]);
               if (viewId)
                 removeLocalStorageItem(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);

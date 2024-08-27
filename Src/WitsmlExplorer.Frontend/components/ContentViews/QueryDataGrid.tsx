@@ -34,7 +34,6 @@ const parserOptions = {
 
 // TODO: Cleanup this file (move stuff to different files and folders)
 // TODO: Get data for all objects
-// TODO: Fix "Reset ordering" changing an unchanged order.
 
 export default function QueryDataGrid() {
   const {
