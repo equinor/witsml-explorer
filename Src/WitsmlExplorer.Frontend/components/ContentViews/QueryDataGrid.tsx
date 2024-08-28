@@ -180,22 +180,24 @@ export default function QueryDataGrid() {
   }, [data]);
 
   return tableData?.length > 0 ? (
-    <EdsProvider density={theme}>
-      <ContentTable
-        key={tabId}
-        viewId="queryDataGrid"
-        columns={columns}
-        data={tableData}
-        nested
-        nestedProperty="children"
-        checkableRows
-        onRowSelectionChange={onRowSelectionChange}
-        onExpandedChange={setExpanded}
-        rowSelection={rowSelection}
-        expanded={expanded}
-        stickyLeftColumns={2}
-      />
-    </EdsProvider>
+    <div style={{ height: "0", minHeight: "100%" }}>
+      <EdsProvider density={theme}>
+        <ContentTable
+          key={tabId}
+          viewId="queryDataGrid"
+          columns={columns}
+          data={tableData}
+          nested
+          nestedProperty="children"
+          checkableRows
+          onRowSelectionChange={onRowSelectionChange}
+          onExpandedChange={setExpanded}
+          rowSelection={rowSelection}
+          expanded={expanded}
+          stickyLeftColumns={2}
+        />
+      </EdsProvider>
+    </div>
   ) : (
     <Typography>Unable to parse query</Typography>
   );
