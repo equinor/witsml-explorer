@@ -202,9 +202,6 @@ const LogDataImportModal = (
                     <List>
                       <List.Item>Supported filetypes: csv, las.</List.Item>
                       <List.Item>
-                        Supported logs: depth (csv + las), time (csv).
-                      </List.Item>
-                      <List.Item>
                         Only curve names, units and data is imported.
                       </List.Item>
                       <List.Item>
