@@ -62,6 +62,7 @@ export default function LogCurveInfoListView() {
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
+  const [prioritizedGlobalCurves, setPrioritizedGlobalCurves] = useState<string[]>([]);
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
   const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
@@ -83,6 +84,7 @@ export default function LogCurveInfoListView() {
             wellboreUid
           );
         setPrioritizedCurves(prioritizedCurves);
+        setPrioritizedGlobalCurves(prioritizedCurves);
       };
 
       getLogCurvePriority().catch(truncateAbortHandler);
@@ -102,7 +104,8 @@ export default function LogCurveInfoListView() {
       selectedServer: connectedServer,
       servers,
       prioritizedCurves,
-      setPrioritizedCurves
+      setPrioritizedCurves,
+      prioritizedGlobalCurves
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

@@ -61,6 +61,7 @@ export interface LogCurveInfoContextMenuProps {
   servers: Server[];
   prioritizedCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
+  prioritizedGlobalCurves: string[];
   isMultiLog?: boolean;
 }
 
@@ -75,6 +76,7 @@ const LogCurveInfoContextMenu = (
     servers,
     prioritizedCurves,
     setPrioritizedCurves,
+    prioritizedGlobalCurves,
     isMultiLog = false
   } = props;
 
@@ -175,7 +177,8 @@ const LogCurveInfoContextMenu = (
       wellUid: selectedLog.wellUid,
       wellboreUid: selectedLog.wellboreUid,
       prioritizedCurves,
-      setPrioritizedCurves
+      setPrioritizedCurves,
+      prioritizedGlobalCurves
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
@@ -211,7 +214,8 @@ const LogCurveInfoContextMenu = (
       await LogCurvePriorityService.setPrioritizedCurves(
         selectedLog.wellUid,
         selectedLog.wellboreUid,
-        curvesToPrioritize
+        curvesToPrioritize,
+        null
       );
     setPrioritizedCurves(newPrioritizedCurves);
   };
@@ -226,7 +230,8 @@ const LogCurveInfoContextMenu = (
       await LogCurvePriorityService.setPrioritizedCurves(
         selectedLog.wellUid,
         selectedLog.wellboreUid,
-        curvesToPrioritize
+        curvesToPrioritize,
+        null
       );
     setPrioritizedCurves(newPrioritizedCurves);
   };

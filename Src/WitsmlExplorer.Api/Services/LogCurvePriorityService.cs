@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Services
     public interface ILogCurvePriorityService
     {
         Task<IList<string>> GetPrioritizedCurves(string wellUid, string wellboreUid);
-        Task<IList<string>> SetPrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves);
+        Task<IList<string>> SetPrioritizedCurves(string wellUid, string wellboreUid, LogCurvePriorities priorities);
     }
 
     public class LogCurvePriorityService : ILogCurvePriorityService
@@ -30,12 +30,13 @@ namespace WitsmlExplorer.Api.Services
         {
             string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
             LogCurvePriority logCurvePriority = await logCurvePriorityRepository.GetDocumentAsync(logCurvePriorityId);
+            LogCurvePriority logCurvePriorityGlobal = await logCurvePriorityRepository.GetDocumentAsync("global");
             return logCurvePriority?.PrioritizedCurves;
         }
 
-        public async Task<IList<string>> SetPrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves)
+        public async Task<IList<string>> SetPrioritizedCurves(string wellUid, string wellboreUid, LogCurvePriorities priorities)
         {
-            if (prioritizedCurves.IsNullOrEmpty())
+            if (priorities.PrioritizedCurves.IsNullOrEmpty())
             {
                 await DeleteLogCurvePriorityObject(wellUid, wellboreUid);
                 return null;
@@ -44,18 +45,27 @@ namespace WitsmlExplorer.Api.Services
             IList<string> currentPrioritizedCurves = await GetPrioritizedCurves(wellUid, wellboreUid);
             if (currentPrioritizedCurves == null)
             {
-                return await CreatePrioritizedCurves(wellUid, wellboreUid, prioritizedCurves);
+                return await CreatePrioritizedCurves(wellUid, wellboreUid, priorities);
             }
-
-            string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
-            LogCurvePriority logCurvePriorityToUpdate = CreateLogCurvePriorityObject(wellUid, wellboreUid, prioritizedCurves);
-            LogCurvePriority updatedLogCurvePriority = await logCurvePriorityRepository.UpdateDocumentAsync(logCurvePriorityId, logCurvePriorityToUpdate);
-            return updatedLogCurvePriority.PrioritizedCurves;
+            return await CreatePrioritizedGlobalCurves( priorities);
+          //  string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
+          //  LogCurvePriority logCurvePriorityToUpdate = CreateLogCurvePriorityObject(wellUid, wellboreUid, priorities);
+            var globalist = CreateLogCurveGlobalPriorityObject(priorities);
+        //    LogCurvePriority updatedLogCurvePriority = await logCurvePriorityRepository.UpdateDocumentAsync(logCurvePriorityId, logCurvePriorityToUpdate);
+            var updateGlobal = await logCurvePriorityRepository.CreateDocumentAsync( globalist);
+            return updateGlobal.PrioritizedCurves;
         }
 
-        private async Task<IList<string>> CreatePrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves)
+        private async Task<IList<string>> CreatePrioritizedCurves(string wellUid, string wellboreUid, LogCurvePriorities logCurvePriorities)
         {
-            LogCurvePriority logCurvePriorityToCreate = CreateLogCurvePriorityObject(wellUid, wellboreUid, prioritizedCurves);
+            LogCurvePriority logCurvePriorityToCreate = CreateLogCurvePriorityObject(wellUid, wellboreUid, logCurvePriorities);
+            LogCurvePriority inserted = await logCurvePriorityRepository.CreateDocumentAsync(logCurvePriorityToCreate);
+            return inserted.PrioritizedCurves;
+        }
+
+        private async Task<IList<string>> CreatePrioritizedGlobalCurves( LogCurvePriorities logCurvePriorities)
+        {
+            LogCurvePriority logCurvePriorityToCreate = CreateLogCurveGlobalPriorityObject( logCurvePriorities);
             LogCurvePriority inserted = await logCurvePriorityRepository.CreateDocumentAsync(logCurvePriorityToCreate);
             return inserted.PrioritizedCurves;
         }
@@ -76,12 +86,22 @@ namespace WitsmlExplorer.Api.Services
             return $"{wellUid}-{wellboreUid}";
         }
 
-        private LogCurvePriority CreateLogCurvePriorityObject(string wellUid, string wellboreUid, IList<string> prioritizedCurves)
+        private LogCurvePriority CreateLogCurvePriorityObject(string wellUid, string wellboreUid, LogCurvePriorities prioritizedCurves)
         {
             string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
             LogCurvePriority logCurvePriorityObject = new(logCurvePriorityId)
             {
-                PrioritizedCurves = prioritizedCurves
+                PrioritizedCurves = prioritizedCurves.PrioritizedCurves
+            };
+            return logCurvePriorityObject;
+        }
+
+        private LogCurvePriority CreateLogCurveGlobalPriorityObject(LogCurvePriorities prioritizedCurves)
+        {
+            string logCurvePriorityId = "global";
+            LogCurvePriority logCurvePriorityObject = new(logCurvePriorityId)
+            {
+                PrioritizedCurves = prioritizedCurves.PrioritizedGlobalCurves.Where(x => x.Equals("WOB")).ToList()
             };
             return logCurvePriorityObject;
         }

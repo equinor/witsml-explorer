@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.HttpHandlers
@@ -18,9 +19,9 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(IList<string>))]
-        public static async Task<IResult> SetPrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
+        public static async Task<IResult> SetPrioritizedCurves(string wellUid, string wellboreUid, LogCurvePriorities priorities, ILogCurvePriorityService logCurvePriorityService)
         {
-            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, prioritizedCurves) ?? new List<string>();
+            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, priorities) ?? new List<string>();
             return TypedResults.Ok(createdPrioritizedCurves);
         }
     }

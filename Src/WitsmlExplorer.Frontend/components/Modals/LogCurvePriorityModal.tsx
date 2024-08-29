@@ -13,12 +13,12 @@ import {
 } from "../ContextMenus/ContextMenu";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
-import { property } from "lodash";
 
 export interface LogCurvePriorityModalProps {
   wellUid: string;
   wellboreUid: string;
   prioritizedCurves: string[];
+  prioritizedGlobalCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
 }
 
@@ -30,10 +30,12 @@ export interface LogCurvePriorityRow {
 export const LogCurvePriorityModal = (
   props: LogCurvePriorityModalProps
 ): React.ReactElement => {
-  const { wellUid, wellboreUid, prioritizedCurves, setPrioritizedCurves } =
+  const { wellUid, wellboreUid, prioritizedCurves, prioritizedGlobalCurves, setPrioritizedCurves} =
     props;
   const [updatedPrioritizedCurves, setUpdatedPrioritizedCurves] =
     useState<string[]>(prioritizedCurves);
+  const [updatedPrioritizedGlobalCurves, setUpdatedPrioritizedGlobalCurves] =
+    useState<string[]>(prioritizedGlobalCurves);
   const [newCurve, setNewCurve] = useState<string>("");
   const { dispatchOperation } = useOperationState();
   const [position, setPosition] = useState<MousePosition>({
@@ -65,15 +67,34 @@ export const LogCurvePriorityModal = (
         global:<div style={{ display: "flex"}}> <Checkbox
         label = ""
         style={{ margin: "auto", padding: "0.5px"  }}
+        checked = {updatedPrioritizedGlobalCurves.includes(mnemonic)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          console.log(e)
+          if (e.target.checked) {
+            addPrioritizedGlobalCurve(mnemonic);
+          } else {
+            deleteGlobalCurve(mnemonic);
+          }
+        }}
       /></div>
       };
     });
   };
+  
+  const addPrioritizedGlobalCurve = (mnemonic: string) => {
+    setUpdatedPrioritizedGlobalCurves([...updatedPrioritizedGlobalCurves, mnemonic]);
+  }
+  
 
   const onDelete = (curvesToDelete: string[]) => {
     setUpdatedPrioritizedCurves(
       updatedPrioritizedCurves.filter((c) => !curvesToDelete.includes(c))
     );
+  };
+
+  const deleteGlobalCurve = (curveToDelete: string) => {
+    const toDelete = updatedPrioritizedGlobalCurves.filter((c) => curveToDelete !== c);
+    setUpdatedPrioritizedGlobalCurves(toDelete);
   };
 
   const onContextMenu = (
@@ -91,13 +112,15 @@ export const LogCurvePriorityModal = (
     await LogCurvePriorityService.setPrioritizedCurves(
       wellUid,
       wellboreUid,
-      updatedPrioritizedCurves
+      updatedPrioritizedCurves,
+      updatedPrioritizedGlobalCurves
     );
     dispatchOperation({ type: OperationType.HideModal });
     setPrioritizedCurves(updatedPrioritizedCurves);
   };
 
   const addCurve = () => {
+    console.log("add curev")
     setUpdatedPrioritizedCurves([...updatedPrioritizedCurves, newCurve]);
     setNewCurve("");
   };
