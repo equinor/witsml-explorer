@@ -18,6 +18,11 @@ import { toObjectReference } from "models/objectOnWellbore";
 import React, { useCallback, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
+import {
+  extractLASSection,
+  parseLASData,
+  parseLASHeader
+} from "tools/lasFileTools";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;
@@ -96,19 +101,32 @@ const LogDataImportModal = (
     async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
       const file = e.target.files.item(0);
       if (!file) return;
-
       const text = await file.text();
-      const header = text.split("\n", 1)[0];
-      const data = text.split("\n").slice(1);
 
+      let header: ImportColumn[] = null;
+      let data: string[] = null;
+
+      if (text.startsWith("~V")) {
+        // LAS files should start with ~V.
+        const curveSection = extractLASSection(text, "CURVE INFORMATION");
+        const dataSection =
+          extractLASSection(text, "ASCII") || extractLASSection(text, "A"); // ~ASCII or ~A represents data sections in LAS files.
+        header = parseLASHeader(curveSection);
+        data = parseLASData(dataSection);
+      } else {
+        const headerLine = text.split("\n", 1)[0];
+        header = parseCSVHeader(headerLine);
+        data = text.split("\n").slice(1);
+      }
+      validate(header);
       setUploadedFile(file);
-      updateUploadedFileColumns(header);
+      setUploadedFileColumns(header);
       setUploadedFileData(data);
     },
     []
   );
 
-  const updateUploadedFileColumns = (header: string): void => {
+  const parseCSVHeader = (header: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
     const fileColumns = header.split(separator).map((col, index) => {
       const columnName = col.substring(0, col.indexOf("["));
@@ -118,8 +136,7 @@ const LogDataImportModal = (
         unit: unitRegex.exec(col) ? unitRegex.exec(col)[0] : UNITLESS_UNIT
       };
     });
-    setUploadedFileColumns(fileColumns);
-    validate(fileColumns);
+    return fileColumns;
   };
 
   return (
@@ -139,7 +156,7 @@ const LogDataImportModal = (
                   <Typography noWrap>Upload File</Typography>
                   <input
                     type="file"
-                    accept=".csv,text/csv"
+                    accept=".csv,text/csv,.las,.txt"
                     hidden
                     onChange={handleFileChange}
                   />
@@ -159,6 +176,7 @@ const LogDataImportModal = (
                     style={{ backgroundColor: colors.ui.backgroundLight }}
                   >
                     <List>
+                      <List.Item>Supported filetypes: csv, las.</List.Item>
                       <List.Item>
                         Currently, only double values are supported as
                         TypeLogData.
@@ -172,6 +190,28 @@ const LogDataImportModal = (
                             195.99,,2500
                             <br />
                             196.00,1,2501
+                          </List.Item>
+                        </List>
+                      </List.Item>
+                      <List.Item>
+                        The las is expected to have these sections:
+                        <List>
+                          <List.Item>
+                            ~CURVE INFORMATION
+                            <br />
+                            [...]
+                            <br />
+                            IndexCurve .unit [...]
+                            <br />
+                            Curve1 .unit [...]
+                            <br />
+                            [...]
+                            <br />
+                            ~A (or ~ASCII)
+                            <br />
+                            195.99 -999.25 2500
+                            <br />
+                            196.00 1 2501
                           </List.Item>
                         </List>
                       </List.Item>
