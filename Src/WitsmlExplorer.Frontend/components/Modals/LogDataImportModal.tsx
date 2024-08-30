@@ -1,8 +1,14 @@
 ﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
-import ModalDialog from "components/Modals/ModalDialog";
+import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -15,7 +21,7 @@ import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import {
@@ -31,6 +37,10 @@ interface ImportColumn {
   index: number;
   name: string;
   unit: string;
+}
+
+interface ContentTableCustomRow extends ContentTableRow {
+  [key: string]: any;
 }
 
 const IMPORT_FORMAT_INVALID =
@@ -142,6 +152,16 @@ const LogDataImportModal = (
     return fileColumns;
   };
 
+  const contentTableColumns: ContentTableColumn[] = useMemo(
+    () =>
+      uploadedFileColumns.map((col) => ({
+        property: col.name,
+        label: `${col.name}[${col.unit}]`,
+        type: ContentType.String
+      })),
+    [uploadedFileColumns]
+  );
+
   return (
     <>
       {
@@ -221,12 +241,39 @@ const LogDataImportModal = (
                     </List>
                   </Accordion.Panel>
                 </Accordion.Item>
+                {uploadedFileColumns?.length &&
+                  uploadedFileData?.length &&
+                  targetLog?.indexCurve &&
+                  !error && (
+                    <Accordion.Item>
+                      <StyledAccordionHeader colors={colors}>
+                        Preview
+                      </StyledAccordionHeader>
+                      <Accordion.Panel
+                        style={{
+                          backgroundColor: colors.ui.backgroundLight,
+                          padding: 0
+                        }}
+                      >
+                        <ContentTable
+                          showPanel={false}
+                          columns={contentTableColumns}
+                          data={getTableData(
+                            uploadedFileData,
+                            uploadedFileColumns,
+                            targetLog.indexCurve
+                          )}
+                        />
+                      </Accordion.Panel>
+                    </Accordion.Item>
+                  )}
               </Accordion>
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
             </Container>
           }
+          width={ModalWidth.LARGE}
           confirmDisabled={!uploadedFile || !!error || isFetchingLogCurveInfo}
           confirmText={"Import"}
           onSubmit={() => onSubmit()}
@@ -345,6 +392,25 @@ const getDataRanges = (
   }
 
   return dataRanges;
+};
+
+const getTableData = (
+  data: string[],
+  columns: ImportColumn[],
+  indexCurve: string
+): ContentTableCustomRow[] => {
+  const indexCurveColumn = columns.find((col) => col.name === indexCurve);
+  if (!indexCurveColumn) return [];
+  return data?.map((dataLine) => {
+    const dataCells = dataLine.split(",");
+    const result: ContentTableCustomRow = {
+      id: dataCells[indexCurveColumn.index]
+    };
+    columns.forEach((col, i) => {
+      result[col.name] = dataCells[i];
+    });
+    return result;
+  });
 };
 
 export default LogDataImportModal;
