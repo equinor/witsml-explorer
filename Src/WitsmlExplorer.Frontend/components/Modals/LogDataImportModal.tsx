@@ -108,9 +108,12 @@ const LogDataImportModal = (
 
       if (text.startsWith("~V")) {
         // LAS files should start with ~V.
-        const curveSection = extractLASSection(text, "CURVE INFORMATION");
-        const dataSection =
-          extractLASSection(text, "ASCII") || extractLASSection(text, "A"); // ~ASCII or ~A represents data sections in LAS files.
+        const curveSection = extractLASSection(
+          text,
+          "CURVE INFORMATION",
+          "Curve"
+        );
+        const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
         data = parseLASData(dataSection);
       } else {
