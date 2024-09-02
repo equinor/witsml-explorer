@@ -1,6 +1,9 @@
-﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
+﻿import { Accordion, Icon, List, TextField } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
-import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
 import {
   ContentTable,
   ContentTableColumn,
@@ -12,6 +15,8 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
+import { parse } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
@@ -21,7 +26,7 @@ import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import {
@@ -73,10 +78,12 @@ const LogDataImportModal = (
   >([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
   const separator = ",";
 
-  const validate = (fileColumns: ImportColumn[]) => {
+  const validate = (fileColumns: ImportColumn[], parseError?: string) => {
     setError("");
+    if (parseError) setError(parseError);
     if (fileColumns.length) {
       if (fileColumns.map((col) => col.name).some((value) => value === ""))
         setError(IMPORT_FORMAT_INVALID);
@@ -85,10 +92,40 @@ const LogDataImportModal = (
     }
   };
 
+  const getParsedData = () => {
+    if (
+      uploadedFileData &&
+      uploadedFileColumns &&
+      targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME
+    ) {
+      const indexCurveColumn = uploadedFileColumns?.find(
+        (x) => x.name === targetLog.indexCurve
+      )?.index;
+      try {
+        return parseDateTimeColumn(
+          uploadedFileData,
+          indexCurveColumn,
+          dateTimeFormat
+        );
+      } catch (error) {
+        validate(
+          uploadedFileColumns,
+          dateTimeFormat ? `Unable to parse data. ${error}` : null
+        );
+        return null;
+      }
+    }
+    return uploadedFileData;
+  };
+  const parsedData = useMemo(
+    () => getParsedData(),
+    [uploadedFileData, uploadedFileColumns, targetLog, dateTimeFormat]
+  );
+
   const hasOverlap = checkOverlap(
     targetLog,
     uploadedFileColumns,
-    uploadedFileData,
+    parsedData,
     logCurveInfoList
   );
 
@@ -100,7 +137,7 @@ const LogDataImportModal = (
       targetLog: logReference,
       mnemonics: uploadedFileColumns.map((col) => col.name),
       units: uploadedFileColumns.map((col) => col.unit),
-      dataRows: uploadedFileData.map((line) => line.split(separator))
+      dataRows: parsedData.map((line) => line.split(separator))
     };
 
     await JobService.orderJob(JobType.ImportLogData, job);
@@ -127,6 +164,16 @@ const LogDataImportModal = (
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
         data = parseLASData(dataSection);
+        const indexCurveColumn = header.find(
+          (x) => x.name === targetLog.indexCurve
+        )?.index;
+        if (
+          targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+          indexCurveColumn !== null
+        ) {
+          const dateTimeFormat = findDateTimeFormat(data, indexCurveColumn);
+          setDateTimeFormat(dateTimeFormat);
+        }
       } else {
         const headerLine = text.split("\n", 1)[0];
         header = parseCSVHeader(headerLine);
@@ -246,7 +293,7 @@ const LogDataImportModal = (
                   </Accordion.Panel>
                 </Accordion.Item>
                 {uploadedFileColumns?.length &&
-                  uploadedFileData?.length &&
+                  parsedData?.length &&
                   targetLog?.indexCurve &&
                   !error && (
                     <Accordion.Item>
@@ -264,7 +311,7 @@ const LogDataImportModal = (
                             showPanel={false}
                             columns={contentTableColumns}
                             data={getTableData(
-                              uploadedFileData,
+                              parsedData,
                               uploadedFileColumns,
                               targetLog.indexCurve
                             )}
@@ -274,6 +321,17 @@ const LogDataImportModal = (
                     </Accordion.Item>
                   )}
               </Accordion>
+              {targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+                !!uploadedFileData?.length && (
+                  <TextField
+                    id="indexCurveFormat"
+                    label="Index Curve Format"
+                    value={dateTimeFormat ?? ""}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setDateTimeFormat(e.target.value);
+                    }}
+                  />
+                )}
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
@@ -416,6 +474,50 @@ const getTableData = (
     });
     return result;
   });
+};
+
+const inputDateFormats: string[] = [
+  "YYYY-MM-DDTHH:mm:ss.sssZ", // ISO 8601 format
+  "HH:mm:ss/dd-MMM-yyyy"
+];
+
+const findDateTimeFormat = (
+  data: string[],
+  selectedColumn: number
+): string | null => {
+  const dateString = data[0].split(",")[selectedColumn];
+  for (const format of inputDateFormats) {
+    try {
+      parseDateFromFormat(dateString, format);
+      return format;
+    } catch (error) {
+      // Ignore error, try next format.
+    }
+  }
+  return null;
+};
+
+const parseDateTimeColumn = (
+  data: string[],
+  selectedColumn: number,
+  inputFormat: string
+) => {
+  const dataWithISOTimeColumn = data.map((dataRow) => {
+    const rowValues = dataRow.split(",");
+    rowValues[selectedColumn] = parseDateFromFormat(
+      rowValues[selectedColumn],
+      inputFormat
+    );
+    return rowValues.join(",");
+  });
+  return dataWithISOTimeColumn;
+};
+
+const parseDateFromFormat = (dateString: string, format: string) => {
+  const parsed = parse(dateString, format, new Date());
+  if (parsed.toString() === "Invalid Date")
+    throw new Error(`Unable to parse date ${dateString} with format ${format}`);
+  return zonedTimeToUtc(parsed, "UTC").toISOString();
 };
 
 export default LogDataImportModal;
