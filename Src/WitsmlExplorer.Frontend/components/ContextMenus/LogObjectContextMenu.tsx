@@ -438,7 +438,7 @@ const LogObjectContextMenu = (
         disabled={checkedObjects.length === 0}
       >
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>Import log data from .csv</Typography>
+        <Typography color={"primary"}>Import log data</Typography>
       </MenuItem>,
       <Divider key={uuid()} />,
       <MenuItem
