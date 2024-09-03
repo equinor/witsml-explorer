@@ -48,6 +48,7 @@ export const parseLASData = (sectionData: string) => {
  * @param lasData - A string containing the entire LAS data.
  * @param sectionNames - One or more section names to search for, e.g., 'CURVE INFORMATION'.
  *                        The function will return the content of the first section that matches.
+ *                        If no exact line matches are found, it will look for matches that starts on the given strings.
  * @returns The content of the first matching section as a string. Returns an empty string
  *          if none of the specified sections are found or if the section is incorrectly formatted.
  */
@@ -55,19 +56,26 @@ export const extractLASSection = (
   lasData: string,
   ...sectionNames: string[]
 ): string => {
-  for (const sectionName of sectionNames) {
-    const sectionPattern = new RegExp(`\n~${sectionName}\\s*$`, "m");
-    const sectionMatch = sectionPattern.exec(lasData);
-    if (sectionMatch) {
-      const sectionIndex = sectionMatch.index;
-      const startIndex =
-        lasData.indexOf("\n", sectionIndex + sectionMatch[0].length) + 1;
-      if (startIndex === -1) return "";
-      const endIndex = lasData.indexOf("\n~", startIndex);
-      const sectionEndIndex = endIndex !== -1 ? endIndex : undefined;
-      const sectionData = lasData.slice(startIndex, sectionEndIndex);
-      return sectionData;
+  const getSection = (exactMatch: boolean) => {
+    for (const sectionName of sectionNames) {
+      const searchString = exactMatch
+        ? `\n~${sectionName}\\s*$`
+        : `\n~${sectionName}`;
+      const sectionPattern = new RegExp(searchString, "m");
+      const sectionMatch = sectionPattern.exec(lasData);
+      if (sectionMatch) {
+        const sectionIndex = sectionMatch.index;
+        const startIndex =
+          lasData.indexOf("\n", sectionIndex + sectionMatch[0].length) + 1;
+        if (startIndex === -1) return "";
+        const endIndex = lasData.indexOf("\n~", startIndex);
+        const sectionEndIndex = endIndex !== -1 ? endIndex : undefined;
+        const sectionData = lasData.slice(startIndex, sectionEndIndex);
+        return sectionData;
+      }
     }
-  }
-  return "";
+    return null;
+  };
+
+  return getSection(true) ?? getSection(false) ?? "";
 };
