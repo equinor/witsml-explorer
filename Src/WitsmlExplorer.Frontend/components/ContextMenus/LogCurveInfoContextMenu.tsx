@@ -62,6 +62,7 @@ export interface LogCurveInfoContextMenuProps {
   prioritizedCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
   prioritizedGlobalCurves: string[];
+  setPrioritizedGlobalCurves: (prioritizedGlobalCurves: string[]) => void;
   isMultiLog?: boolean;
 }
 
@@ -77,6 +78,7 @@ const LogCurveInfoContextMenu = (
     prioritizedCurves,
     setPrioritizedCurves,
     prioritizedGlobalCurves,
+    setPrioritizedGlobalCurves,
     isMultiLog = false
   } = props;
 
@@ -178,7 +180,8 @@ const LogCurveInfoContextMenu = (
       wellboreUid: selectedLog.wellboreUid,
       prioritizedCurves,
       setPrioritizedCurves,
-      prioritizedGlobalCurves
+      prioritizedGlobalCurves,
+      setPrioritizedGlobalCurves
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
@@ -217,7 +220,8 @@ const LogCurveInfoContextMenu = (
         curvesToPrioritize,
         null
       );
-    setPrioritizedCurves(newPrioritizedCurves);
+    setPrioritizedCurves(newPrioritizedCurves.prioritizedCurves);
+    setPrioritizedGlobalCurves(newPrioritizedCurves.prioritizedGlobalCurves);
   };
 
   const onClickRemovePriority = async () => {
@@ -233,7 +237,8 @@ const LogCurveInfoContextMenu = (
         curvesToPrioritize,
         null
       );
-    setPrioritizedCurves(newPrioritizedCurves);
+    setPrioritizedCurves(newPrioritizedCurves.prioritizedCurves);
+    setPrioritizedGlobalCurves(newPrioritizedCurves.prioritizedGlobalCurves)
   };
 
   const toDelete = createComponentReferences(

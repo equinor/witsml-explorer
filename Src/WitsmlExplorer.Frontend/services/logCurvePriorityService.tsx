@@ -1,3 +1,4 @@
+import LogCurvePriorites from "models/logCurvePriorities";
 import { ApiClient } from "./apiClient";
 
 export default class LogCurvePriorityService {
@@ -5,7 +6,7 @@ export default class LogCurvePriorityService {
     wellUid: string,
     wellboreUid: string,
     abortSignal?: AbortSignal
-  ): Promise<string[]> {
+  ): Promise<LogCurvePriorites> {
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
@@ -15,7 +16,7 @@ export default class LogCurvePriorityService {
     if (response.ok) {
       return response.json();
     } else {
-      return [];
+      return null;
     }
   }
 
@@ -25,12 +26,11 @@ export default class LogCurvePriorityService {
     prioritizedCurves: string[],
     prioritizedGlogalCurves: string[],
     abortSignal?: AbortSignal
-  ): Promise<string[]> {
+  ): Promise<LogCurvePriorites> {
     const payload = {
       prioritizedCurves: prioritizedCurves,
       prioritizedGlobalCurves: prioritizedGlogalCurves,
     };
-    console.log(payload)
     const response = await ApiClient.post(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
@@ -41,7 +41,7 @@ export default class LogCurvePriorityService {
     if (response.ok) {
       return response.json();
     } else {
-      return [];
+      return null;
     }
   }
 }

@@ -20,6 +20,7 @@ export interface LogCurvePriorityModalProps {
   prioritizedCurves: string[];
   prioritizedGlobalCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
+  setPrioritizedGlobalCurves: (prioritizedGlobalCurves: string[]) => void;
 }
 
 export interface LogCurvePriorityRow {
@@ -30,7 +31,7 @@ export interface LogCurvePriorityRow {
 export const LogCurvePriorityModal = (
   props: LogCurvePriorityModalProps
 ): React.ReactElement => {
-  const { wellUid, wellboreUid, prioritizedCurves, prioritizedGlobalCurves, setPrioritizedCurves} =
+  const { wellUid, wellboreUid, prioritizedCurves, prioritizedGlobalCurves, setPrioritizedCurves, setPrioritizedGlobalCurves} =
     props;
   const [updatedPrioritizedCurves, setUpdatedPrioritizedCurves] =
     useState<string[]>(prioritizedCurves);
@@ -117,6 +118,8 @@ export const LogCurvePriorityModal = (
     );
     dispatchOperation({ type: OperationType.HideModal });
     setPrioritizedCurves(updatedPrioritizedCurves);
+    console.log(updatedPrioritizedCurves)
+    setPrioritizedGlobalCurves(updatedPrioritizedGlobalCurves)
   };
 
   const addCurve = () => {

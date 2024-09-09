@@ -83,8 +83,8 @@ export default function LogCurveInfoListView() {
             wellUid,
             wellboreUid
           );
-        setPrioritizedCurves(prioritizedCurves);
-        setPrioritizedGlobalCurves(prioritizedCurves);
+        setPrioritizedCurves(prioritizedCurves.prioritizedCurves);
+        setPrioritizedGlobalCurves(prioritizedCurves.prioritizedGlobalCurves);
       };
 
       getLogCurvePriority().catch(truncateAbortHandler);
@@ -105,7 +105,8 @@ export default function LogCurveInfoListView() {
       servers,
       prioritizedCurves,
       setPrioritizedCurves,
-      prioritizedGlobalCurves
+      prioritizedGlobalCurves,
+      setPrioritizedGlobalCurves
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
