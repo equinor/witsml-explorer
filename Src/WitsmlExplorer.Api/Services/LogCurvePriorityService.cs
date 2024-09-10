@@ -31,6 +31,7 @@ namespace WitsmlExplorer.Api.Services
         {
             string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
             LogCurvePriority logCurvePriority = await logCurvePriorityRepository.GetDocumentAsync(logCurvePriorityId);
+
             return logCurvePriority?.PrioritizedCurves;
         }
 
@@ -66,15 +67,21 @@ namespace WitsmlExplorer.Api.Services
             }
 
 
-            var globalist = await GetPrioritizedGlobalCurves();
 
-            if (globalist != null)
             {
                 LogCurvePriority logCurvePriorityToUpdate = CreateLogCurveGlobalPriorityObject( priorities);
                 var globalDocument = await logCurvePriorityRepository.GetDocumentAsync("global");
-                LogCurvePriority updatedLogCurvePriority = await logCurvePriorityRepository.UpdateDocumentAsync("global", logCurvePriorityToUpdate);
-                result.PrioritizedGlobalCurves = updatedLogCurvePriority.PrioritizedCurves;
+                if (globalDocument == null)
+                {
+                    var s = CreatePrioritizedGlobalCurves(priorities);
+                }
+                else
+                {
+                    var s = UpdatePrioritizedGlobalCurves(priorities);
+                }
+
             }
+
 
             return result;
         }
@@ -90,6 +97,13 @@ namespace WitsmlExplorer.Api.Services
         {
             LogCurvePriority logCurvePriorityToCreate = CreateLogCurveGlobalPriorityObject( logCurvePriorities);
             LogCurvePriority inserted = await logCurvePriorityRepository.CreateDocumentAsync(logCurvePriorityToCreate);
+            return inserted.PrioritizedCurves;
+        }
+
+        private async Task<IList<string>> UpdatePrioritizedGlobalCurves( LogCurvePriorities logCurvePriorities)
+        {
+            LogCurvePriority logCurvePriorityToCreate = CreateLogCurveGlobalPriorityObject( logCurvePriorities);
+            LogCurvePriority inserted = await logCurvePriorityRepository.UpdateDocumentAsync("global",logCurvePriorityToCreate);
             return inserted.PrioritizedCurves;
         }
 

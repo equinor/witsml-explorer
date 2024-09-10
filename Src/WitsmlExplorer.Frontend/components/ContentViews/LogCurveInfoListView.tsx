@@ -84,6 +84,7 @@ export default function LogCurveInfoListView() {
             wellboreUid
           );
         setPrioritizedCurves(prioritizedCurves.prioritizedCurves);
+        console.log(prioritizedCurves.prioritizedGlobalCurves)
         setPrioritizedGlobalCurves(prioritizedCurves.prioritizedGlobalCurves);
       };
 

@@ -15,12 +15,11 @@ import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityCon
 import ModalDialog from "./ModalDialog";
 
 export interface LogCurvePriorityModalProps {
-  wellUid: string;
-  wellboreUid: string;
+  wellUid?: string;
+  wellboreUid?: string;
   prioritizedCurves: string[];
-  prioritizedGlobalCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
-  setPrioritizedGlobalCurves: (prioritizedGlobalCurves: string[]) => void;
+  isGlobal: boolean;
 }
 
 export interface LogCurvePriorityRow {
@@ -31,12 +30,10 @@ export interface LogCurvePriorityRow {
 export const LogCurvePriorityModal = (
   props: LogCurvePriorityModalProps
 ): React.ReactElement => {
-  const { wellUid, wellboreUid, prioritizedCurves, prioritizedGlobalCurves, setPrioritizedCurves, setPrioritizedGlobalCurves} =
+  const { wellUid, wellboreUid, prioritizedCurves, setPrioritizedCurves} =
     props;
   const [updatedPrioritizedCurves, setUpdatedPrioritizedCurves] =
     useState<string[]>(prioritizedCurves);
-  const [updatedPrioritizedGlobalCurves, setUpdatedPrioritizedGlobalCurves] =
-    useState<string[]>(prioritizedGlobalCurves);
   const [newCurve, setNewCurve] = useState<string>("");
   const { dispatchOperation } = useOperationState();
   const [position, setPosition] = useState<MousePosition>({
@@ -51,12 +48,6 @@ export const LogCurvePriorityModal = (
       label: "mnemonic",
       type: ContentType.String,
       width: 440
-    },
-    {
-      property: "global",
-      label: "global",
-      type: ContentType.Component,
-      width: 60
     }
   ];
 
@@ -65,37 +56,14 @@ export const LogCurvePriorityModal = (
       return {
         id: mnemonic,
         mnemonic: mnemonic,
-        global:<div style={{ display: "flex"}}> <Checkbox
-        label = ""
-        style={{ margin: "auto", padding: "0.5px"  }}
-        checked = {updatedPrioritizedGlobalCurves.includes(mnemonic)}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          console.log(e)
-          if (e.target.checked) {
-            addPrioritizedGlobalCurve(mnemonic);
-          } else {
-            deleteGlobalCurve(mnemonic);
-          }
-        }}
-      /></div>
       };
     });
   };
-  
-  const addPrioritizedGlobalCurve = (mnemonic: string) => {
-    setUpdatedPrioritizedGlobalCurves([...updatedPrioritizedGlobalCurves, mnemonic]);
-  }
-  
-
+    
   const onDelete = (curvesToDelete: string[]) => {
     setUpdatedPrioritizedCurves(
       updatedPrioritizedCurves.filter((c) => !curvesToDelete.includes(c))
     );
-  };
-
-  const deleteGlobalCurve = (curveToDelete: string) => {
-    const toDelete = updatedPrioritizedGlobalCurves.filter((c) => curveToDelete !== c);
-    setUpdatedPrioritizedGlobalCurves(toDelete);
   };
 
   const onContextMenu = (
@@ -114,12 +82,11 @@ export const LogCurvePriorityModal = (
       wellUid,
       wellboreUid,
       updatedPrioritizedCurves,
-      updatedPrioritizedGlobalCurves
+      props.isGlobal
     );
     dispatchOperation({ type: OperationType.HideModal });
     setPrioritizedCurves(updatedPrioritizedCurves);
     console.log(updatedPrioritizedCurves)
-    setPrioritizedGlobalCurves(updatedPrioritizedGlobalCurves)
   };
 
   const addCurve = () => {
@@ -130,7 +97,7 @@ export const LogCurvePriorityModal = (
 
   return (
     <ModalDialog
-      heading={`Log Curve Priority`}
+      heading={props.isGlobal ? `Log Curve Global Priority` : `Log Curve Priority`}
       content={
         <>
           <Layout>

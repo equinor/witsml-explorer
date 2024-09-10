@@ -40,6 +40,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedCurves, useOAuth2);
+            app.MapPost("/global/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedGlobalCurves, useOAuth2);
             app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedCurves, useOAuth2);
 
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();

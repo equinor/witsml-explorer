@@ -178,10 +178,23 @@ const LogCurveInfoContextMenu = (
     const logCurvePriorityModalProps: LogCurvePriorityModalProps = {
       wellUid: selectedLog.wellUid,
       wellboreUid: selectedLog.wellboreUid,
-      prioritizedCurves,
-      setPrioritizedCurves,
-      prioritizedGlobalCurves,
-      setPrioritizedGlobalCurves
+      prioritizedCurves: prioritizedCurves,
+      setPrioritizedCurves: setPrioritizedCurves,
+      isGlobal: false
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <LogCurvePriorityModal {...logCurvePriorityModalProps} />
+    });
+  };
+
+  const onClickEditGlobalPriority = () => {
+    console.log(prioritizedGlobalCurves)
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logCurvePriorityModalProps: LogCurvePriorityModalProps = {
+      prioritizedCurves: prioritizedGlobalCurves,
+      setPrioritizedCurves: setPrioritizedGlobalCurves,
+      isGlobal: true
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
@@ -221,7 +234,6 @@ const LogCurveInfoContextMenu = (
         null
       );
     setPrioritizedCurves(newPrioritizedCurves.prioritizedCurves);
-    setPrioritizedGlobalCurves(newPrioritizedCurves.prioritizedGlobalCurves);
   };
 
   const onClickRemovePriority = async () => {
@@ -237,9 +249,7 @@ const LogCurveInfoContextMenu = (
         curvesToPrioritize,
         null
       );
-    setPrioritizedCurves(newPrioritizedCurves.prioritizedCurves);
-    setPrioritizedGlobalCurves(newPrioritizedCurves.prioritizedGlobalCurves)
-  };
+    setPrioritizedCurves(newPrioritizedCurves.prioritizedCurves);  };
 
   const toDelete = createComponentReferences(
     checkedLogCurveInfoRowsWithoutIndexCurve.map((lc) => lc.mnemonic),
@@ -418,6 +428,13 @@ const LogCurveInfoContextMenu = (
           />
           <Typography color={"primary"}>Edit Priority</Typography>
         </MenuItem>,
+        <MenuItem key={"editGlobalPriority"} onClick={onClickEditGlobalPriority}>
+        <StyledIcon
+          name="favoriteOutlined"
+          color={colors.interactive.primaryResting}
+        />
+        <Typography color={"primary"}>Edit Global Priority</Typography>
+      </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}
