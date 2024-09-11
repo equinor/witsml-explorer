@@ -25,18 +25,17 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return TypedResults.Ok(result);
         }
 
-        [Produces(typeof(LogCurvePriorities))]
+        [Produces(typeof(List<string>))]
         public static async Task<IResult> SetPrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
         {
-            var priorities = new LogCurvePriorities();
-            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, priorities) ?? new LogCurvePriorities();
+            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, prioritizedCurves) ?? new List<string>();
             return TypedResults.Ok(createdPrioritizedCurves);
         }
 
-        [Produces(typeof(LogCurvePriorities))]
-        public static async Task<IResult> SetPrioritizedGlobalCurves(IList<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
+        [Produces(typeof(List<string>))]
+        public static async Task<IResult> SetPrioritizedGlobalCurves(List<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
         {
-            var createdPrioritizedCurves = await logCurvePriorityService.GetPrioritizedGlobalCurves();
+            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedGlobalCurves(prioritizedCurves) ?? new List<string>();
             return TypedResults.Ok(createdPrioritizedCurves);
         }
     }

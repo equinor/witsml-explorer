@@ -1,7 +1,7 @@
-import { Checkbox, Icon, Label, TextField } from "@equinor/eds-core-react";
-import { Button } from "components/StyledComponents/Button";
+import { Icon, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
+
 import { useOperationState } from "hooks/useOperationState";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useCallback, useState } from "react";
 import styled from "styled-components";
 import { MousePosition } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -13,6 +13,7 @@ import {
 } from "../ContextMenus/ContextMenu";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
+import { Button } from "@mui/material";
 
 export interface LogCurvePriorityModalProps {
   wellUid?: string;
@@ -30,7 +31,7 @@ export interface LogCurvePriorityRow {
 export const LogCurvePriorityModal = (
   props: LogCurvePriorityModalProps
 ): React.ReactElement => {
-  const { wellUid, wellboreUid, prioritizedCurves, setPrioritizedCurves} =
+  const { wellUid, wellboreUid, prioritizedCurves, setPrioritizedCurves } =
     props;
   const [updatedPrioritizedCurves, setUpdatedPrioritizedCurves] =
     useState<string[]>(prioritizedCurves);
@@ -42,6 +43,7 @@ export const LogCurvePriorityModal = (
   });
   const [checkedCurves, setCheckedCurves] = useState<string[]>([]);
 
+  const [uploadedFile, setUploadedFile] = useState<File>(null);
   const columns = [
     {
       property: "mnemonic",
@@ -55,11 +57,11 @@ export const LogCurvePriorityModal = (
     return updatedPrioritizedCurves.sort().map((mnemonic) => {
       return {
         id: mnemonic,
-        mnemonic: mnemonic,
+        mnemonic: mnemonic
       };
     });
   };
-    
+
   const onDelete = (curvesToDelete: string[]) => {
     setUpdatedPrioritizedCurves(
       updatedPrioritizedCurves.filter((c) => !curvesToDelete.includes(c))
@@ -86,18 +88,33 @@ export const LogCurvePriorityModal = (
     );
     dispatchOperation({ type: OperationType.HideModal });
     setPrioritizedCurves(updatedPrioritizedCurves);
-    console.log(updatedPrioritizedCurves)
   };
 
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+      const file = e.target.files.item(0);
+      if (!file) return;
+      const text = (await file.text()).replace(/(\r)/gm, "").trim();
+      const data = text.split("\n").slice(1);
+      const mergedArray = [...data, ...prioritizedCurves];
+      const uniqueArray = mergedArray.filter(
+        (value, index, self) => self.indexOf(value) === index && value !== ""
+      );
+      setUpdatedPrioritizedCurves(uniqueArray);
+    },
+    []
+  );
+
   const addCurve = () => {
-    console.log("add curev")
     setUpdatedPrioritizedCurves([...updatedPrioritizedCurves, newCurve]);
     setNewCurve("");
   };
 
   return (
     <ModalDialog
-      heading={props.isGlobal ? `Log Curve Global Priority` : `Log Curve Priority`}
+      heading={
+        props.isGlobal ? `Log Curve Global Priority` : `Log Curve Priority`
+      }
       content={
         <>
           <Layout>
@@ -111,7 +128,6 @@ export const LogCurvePriorityModal = (
                 value={newCurve}
               />
               <Button
-                variant="contained_icon"
                 onClick={addCurve}
                 disabled={
                   newCurve === "" || updatedPrioritizedCurves.includes(newCurve)
@@ -120,6 +136,27 @@ export const LogCurvePriorityModal = (
                 <Icon name="add" />
               </Button>
             </AddItemLayout>
+            <FileContainer>
+              <Button
+                variant="contained"
+                color={"primary"}
+                component="label"
+                startIcon={<Icon name="cloudUpload" />}
+              >
+                <Typography noWrap>Upload File</Typography>
+                <input
+                  type="file"
+                  accept=".csv,text/csv,.txt"
+                  hidden
+                  onChange={handleFileChange}
+                />
+              </Button>
+              <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
+                <Typography noWrap>
+                  {uploadedFile?.name ?? "No file chosen"}
+                </Typography>
+              </Tooltip>
+            </FileContainer>
             <ContentTable
               columns={columns}
               data={getTableData()}
@@ -155,4 +192,14 @@ const AddItemLayout = styled.div`
   grid-template-columns: 1fr 0.2fr;
   gap: 10px;
   align-items: end;
+`;
+
+const FileContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  .MuiButton-root {
+    min-width: 160px;
+  }
 `;

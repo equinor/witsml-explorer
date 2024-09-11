@@ -62,10 +62,16 @@ export default function LogCurveInfoListView() {
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
-  const [prioritizedGlobalCurves, setPrioritizedGlobalCurves] = useState<string[]>([]);
+  const [prioritizedGlobalCurves, setPrioritizedGlobalCurves] = useState<
+    string[]
+  >([]);
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
   const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+  const allPrioritizedCurves = [
+    ...prioritizedCurves,
+    ...prioritizedGlobalCurves
+  ].filter((value, index, self) => self.indexOf(value) === index);
 
   useExpandSidebarNodes(
     wellUid,
@@ -84,7 +90,6 @@ export default function LogCurveInfoListView() {
             wellboreUid
           );
         setPrioritizedCurves(prioritizedCurves.prioritizedCurves);
-        console.log(prioritizedCurves.prioritizedGlobalCurves)
         setPrioritizedGlobalCurves(prioritizedCurves.prioritizedGlobalCurves);
       };
 
@@ -135,7 +140,9 @@ export default function LogCurveInfoListView() {
     <CommonPanelContainer key="showPriority">
       <Switch
         checked={showOnlyPrioritizedCurves}
-        disabled={prioritizedCurves.length === 0 && !showOnlyPrioritizedCurves}
+        disabled={
+          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+        }
         onChange={() =>
           setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
         }
@@ -159,7 +166,7 @@ export default function LogCurveInfoListView() {
           columns={getColumns(
             isDepthIndex,
             showOnlyPrioritizedCurves,
-            prioritizedCurves,
+            allPrioritizedCurves,
             logObjects,
             hideEmptyMnemonics,
             true

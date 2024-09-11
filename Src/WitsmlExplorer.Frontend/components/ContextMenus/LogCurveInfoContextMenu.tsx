@@ -189,7 +189,6 @@ const LogCurveInfoContextMenu = (
   };
 
   const onClickEditGlobalPriority = () => {
-    console.log(prioritizedGlobalCurves)
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logCurvePriorityModalProps: LogCurvePriorityModalProps = {
       prioritizedCurves: prioritizedGlobalCurves,
@@ -249,7 +248,8 @@ const LogCurveInfoContextMenu = (
         curvesToPrioritize,
         null
       );
-    setPrioritizedCurves(newPrioritizedCurves.prioritizedCurves);  };
+    setPrioritizedCurves(newPrioritizedCurves.prioritizedCurves);
+  };
 
   const toDelete = createComponentReferences(
     checkedLogCurveInfoRowsWithoutIndexCurve.map((lc) => lc.mnemonic),
@@ -428,13 +428,16 @@ const LogCurveInfoContextMenu = (
           />
           <Typography color={"primary"}>Edit Priority</Typography>
         </MenuItem>,
-        <MenuItem key={"editGlobalPriority"} onClick={onClickEditGlobalPriority}>
-        <StyledIcon
-          name="favoriteOutlined"
-          color={colors.interactive.primaryResting}
-        />
-        <Typography color={"primary"}>Edit Global Priority</Typography>
-      </MenuItem>,
+        <MenuItem
+          key={"editGlobalPriority"}
+          onClick={onClickEditGlobalPriority}
+        >
+          <StyledIcon
+            name="favoriteOutlined"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>Edit Global Priority</Typography>
+        </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}

@@ -49,6 +49,13 @@ export default function MultiLogsCurveInfoListView() {
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
   const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
+  const [prioritizedGlobalCurves, setPrioritizedGlobalCurves] = useState<
+    string[]
+  >([]);
+  const allPrioritizedCurves = [
+    ...prioritizedCurves,
+    ...prioritizedGlobalCurves
+  ].filter((value, index, self) => self.indexOf(value) === index);
   const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
     connectedServer,
     wellUid,
@@ -93,7 +100,8 @@ export default function MultiLogsCurveInfoListView() {
             wellUid,
             wellboreUid
           );
-        setPrioritizedCurves(prioritizedCurves);
+        setPrioritizedCurves(prioritizedCurves.prioritizedCurves);
+        setPrioritizedGlobalCurves(prioritizedCurves.prioritizedGlobalCurves);
       };
 
       getLogCurvePriority().catch(truncateAbortHandler);
@@ -116,6 +124,8 @@ export default function MultiLogsCurveInfoListView() {
       servers,
       prioritizedCurves,
       setPrioritizedCurves,
+      prioritizedGlobalCurves,
+      setPrioritizedGlobalCurves,
       isMultiLog
     };
     const position = getContextMenuPosition(event);
@@ -140,7 +150,9 @@ export default function MultiLogsCurveInfoListView() {
     <CommonPanelContainer key="showPriority">
       <Switch
         checked={showOnlyPrioritizedCurves}
-        disabled={prioritizedCurves.length === 0 && !showOnlyPrioritizedCurves}
+        disabled={
+          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+        }
         onChange={() =>
           setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
         }
@@ -164,7 +176,7 @@ export default function MultiLogsCurveInfoListView() {
           columns={getColumns(
             isDepthIndex,
             showOnlyPrioritizedCurves,
-            prioritizedCurves,
+            allPrioritizedCurves,
             logObjects,
             hideEmptyMnemonics
           )}
