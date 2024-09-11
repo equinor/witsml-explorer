@@ -101,6 +101,7 @@ export const LogCurvePriorityModal = (
         (value, index, self) => self.indexOf(value) === index && value !== ""
       );
       setUpdatedPrioritizedCurves(uniqueArray);
+      setUploadedFile(file);
     },
     []
   );
@@ -141,6 +142,7 @@ export const LogCurvePriorityModal = (
                 variant="contained"
                 color={"primary"}
                 component="label"
+                hidden={!props.isGlobal}
                 startIcon={<Icon name="cloudUpload" />}
               >
                 <Typography noWrap>Upload File</Typography>
