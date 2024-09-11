@@ -16,7 +16,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             var prioritizedCurves = await logCurvePriorityService.GetPrioritizedCurves(wellUid, wellboreUid) ?? new List<string>();
             var prioritizedGlobalCurves =
-                await logCurvePriorityService.GetPrioritizedGlobalCurves()  ?? new List<string>();
+                await logCurvePriorityService.GetPrioritizedGlobalCurves() ?? new List<string>();
             var result = new LogCurvePriorities()
             {
                 PrioritizedCurves = prioritizedCurves,

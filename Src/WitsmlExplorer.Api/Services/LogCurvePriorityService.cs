@@ -65,7 +65,7 @@ namespace WitsmlExplorer.Api.Services
             var globalDocument = await logCurvePriorityRepository.GetDocumentAsync(Global);
             if (globalDocument == null)
             {
-                return await  CreatePrioritizedGlobalCurves(priorities);
+                return await CreatePrioritizedGlobalCurves(priorities);
             }
             return await UpdatePrioritizedGlobalCurves(priorities);
         }
@@ -103,17 +103,17 @@ namespace WitsmlExplorer.Api.Services
             return logCurvePriorityObject;
         }
 
-        private async Task<IList<string>> CreatePrioritizedGlobalCurves( LogCurvePriorities logCurvePriorities)
+        private async Task<IList<string>> CreatePrioritizedGlobalCurves(LogCurvePriorities logCurvePriorities)
         {
-            LogCurvePriority logCurvePriorityToCreate = CreateLogCurveGlobalPriorityObject( logCurvePriorities);
+            LogCurvePriority logCurvePriorityToCreate = CreateLogCurveGlobalPriorityObject(logCurvePriorities);
             LogCurvePriority inserted = await logCurvePriorityRepository.CreateDocumentAsync(logCurvePriorityToCreate);
             return inserted.PrioritizedCurves;
         }
 
-        private async Task<IList<string>> UpdatePrioritizedGlobalCurves( LogCurvePriorities logCurvePriorities)
+        private async Task<IList<string>> UpdatePrioritizedGlobalCurves(LogCurvePriorities logCurvePriorities)
         {
-            LogCurvePriority logCurvePriorityToCreate = CreateLogCurveGlobalPriorityObject( logCurvePriorities);
-            LogCurvePriority inserted = await logCurvePriorityRepository.UpdateDocumentAsync(Global,logCurvePriorityToCreate);
+            LogCurvePriority logCurvePriorityToCreate = CreateLogCurveGlobalPriorityObject(logCurvePriorities);
+            LogCurvePriority inserted = await logCurvePriorityRepository.UpdateDocumentAsync(Global, logCurvePriorityToCreate);
             return inserted.PrioritizedCurves;
         }
 
