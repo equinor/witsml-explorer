@@ -25,14 +25,15 @@ export default class LogCurvePriorityService {
     wellboreUid: string,
     prioritizedCurves: string[],
     isGlobal: boolean,
-    abortSignal?: AbortSignal,
+    abortSignal?: AbortSignal
   ): Promise<LogCurvePriorites> {
     const path = isGlobal
       ? `/api/global/logCurvePriority`
       : `/api/wells/${encodeURIComponent(
           wellUid
         )}/wellbores/${encodeURIComponent(wellboreUid)}/logCurvePriority`;
-    const response = await ApiClient.post(path,
+    const response = await ApiClient.post(
+      path,
       JSON.stringify(prioritizedCurves),
       abortSignal
     );

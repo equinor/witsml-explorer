@@ -137,28 +137,29 @@ export const LogCurvePriorityModal = (
                 <Icon name="add" />
               </Button>
             </AddItemLayout>
-            <FileContainer>
-              <Button
-                variant="contained"
-                color={"primary"}
-                component="label"
-                hidden={!props.isGlobal}
-                startIcon={<Icon name="cloudUpload" />}
-              >
-                <Typography noWrap>Upload File</Typography>
-                <input
-                  type="file"
-                  accept=".csv,text/csv,.txt"
-                  hidden
-                  onChange={handleFileChange}
-                />
-              </Button>
-              <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
-                <Typography noWrap>
-                  {uploadedFile?.name ?? "No file chosen"}
-                </Typography>
-              </Tooltip>
-            </FileContainer>
+            {props.isGlobal && (
+              <FileContainer>
+                <Button
+                  variant="contained"
+                  color={"primary"}
+                  component="label"
+                  startIcon={<Icon name="cloudUpload" />}
+                >
+                  <Typography noWrap>Upload File</Typography>
+                  <input
+                    type="file"
+                    accept=".csv,text/csv,.txt"
+                    hidden
+                    onChange={handleFileChange}
+                  />
+                </Button>
+                <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
+                  <Typography noWrap>
+                    {uploadedFile?.name ?? "No file chosen"}
+                  </Typography>
+                </Tooltip>
+              </FileContainer>
+            )}
             <ContentTable
               columns={columns}
               data={getTableData()}
