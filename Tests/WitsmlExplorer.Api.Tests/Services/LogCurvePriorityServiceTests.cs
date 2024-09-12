@@ -52,31 +52,31 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public async Task GetPrioritizedCurves_CorrectIds_ReturnsExpectedCurves()
+        public async Task GetPrioritizedLocalCurves_CorrectIds_ReturnsExpectedCurves()
         {
             var wellUid = "well1";
             var wellboreUid = "wellbore1";
 
-            var result = await _logCurvePriorityService.GetPrioritizedCurves(wellUid, wellboreUid);
+            var result = await _logCurvePriorityService.GetPrioritizedLocalCurves(wellUid, wellboreUid);
 
             Assert.Equal(_prioritizedCurvesWell1Wellbore1, result);
             _repository.Verify(repo => repo.GetDocumentAsync(It.Is<string>(id => id == $"{wellUid}-{wellboreUid}")), Times.Once);
         }
 
         [Fact]
-        public async Task GetPrioritizedCurves_IncorrectId_ReturnsNull()
+        public async Task GetPrioritizedLocalCurves_IncorrectId_ReturnsNull()
         {
             var wellUid = "well";
             var wellboreUid = "wellbore";
 
-            var result = await _logCurvePriorityService.GetPrioritizedCurves(wellUid, wellboreUid);
+            var result = await _logCurvePriorityService.GetPrioritizedLocalCurves(wellUid, wellboreUid);
 
             Assert.Null(result);
             _repository.Verify(repo => repo.GetDocumentAsync(It.Is<string>(id => id == $"{wellUid}-{wellboreUid}")), Times.Once);
         }
 
         [Fact]
-        public async Task SetPrioritizedCurves_NoExistingPriority_CreatesNewPriority()
+        public async Task SetPrioritizedLocalCurves_NoExistingPriority_CreatesNewPriority()
         {
             var wellUid = "well3";
             var wellboreUid = "wellbore3";
@@ -86,7 +86,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 PrioritizedCurves = curves
             };
 
-            var result = await _logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, curves);
+            var result = await _logCurvePriorityService.SetPrioritizedLocalCurves(wellUid, wellboreUid, curves);
 
             Assert.Equal(curves, result);
             _repository.Verify(repo => repo.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<LogCurvePriority>()), Times.Never);
@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public async Task SetPrioritizedCurves_ExistingPriority_ReplacesPriority()
+        public async Task SetPrioritizedLocalCurves_ExistingPriority_ReplacesPriority()
         {
             var wellUid = "well1";
             var wellboreUid = "wellbore2";
@@ -104,20 +104,20 @@ namespace WitsmlExplorer.Api.Tests.Services
                 PrioritizedCurves = curves
             };
 
-            var result = await _logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, curves);
+            var result = await _logCurvePriorityService.SetPrioritizedLocalCurves(wellUid, wellboreUid, curves);
 
             Assert.Equal(curves, result);
             _repository.Verify(repo => repo.UpdateDocumentAsync($"{wellUid}-{wellboreUid}", It.Is<LogCurvePriority>(lcp => lcp.PrioritizedCurves.SequenceEqual(curves))), Times.Once);
         }
 
         [Fact]
-        public async Task SetPrioritizedCurves_EmptyInput_RemovesPriorityObject()
+        public async Task SetPrioritizedLocalCurves_EmptyInput_RemovesPriorityObject()
         {
             var wellUid = "well2";
             var wellboreUid = "wellbore1";
             var curves = new List<string>();
 
-            var result = await _logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, curves);
+            var result = await _logCurvePriorityService.SetPrioritizedLocalCurves(wellUid, wellboreUid, curves);
 
             Assert.Null(result);
             _repository.Verify(repo => repo.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<LogCurvePriority>()), Times.Never);
