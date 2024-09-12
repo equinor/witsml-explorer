@@ -48,13 +48,15 @@ export default function MultiLogsCurveInfoListView() {
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
-  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
-  const [prioritizedGlobalCurves, setPrioritizedGlobalCurves] = useState<
+  const [prioritizedLocalCurves, setPrioritizedLocalCurves] = useState<
+    string[]
+  >([]);
+  const [prioritizedUniversalCurves, setPrioritizedUniversalCurves] = useState<
     string[]
   >([]);
   const allPrioritizedCurves = [
-    ...prioritizedCurves,
-    ...prioritizedGlobalCurves
+    ...prioritizedLocalCurves,
+    ...prioritizedUniversalCurves
   ].filter((value, index, self) => self.indexOf(value) === index);
   const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
     connectedServer,
@@ -94,17 +96,24 @@ export default function MultiLogsCurveInfoListView() {
       };
       getMnemonics();
 
-      const getLogCurvePriority = async () => {
+      const getLogCurveLocalPriority = async () => {
         const prioritizedCurves =
           await LogCurvePriorityService.getPrioritizedCurves(
+            false,
             wellUid,
             wellboreUid
           );
-        setPrioritizedCurves(prioritizedCurves.prioritizedCurves);
-        setPrioritizedGlobalCurves(prioritizedCurves.prioritizedGlobalCurves);
+        setPrioritizedLocalCurves(prioritizedCurves);
       };
 
-      getLogCurvePriority().catch(truncateAbortHandler);
+      const getLogCurveUniversalPriority = async () => {
+        const prioritizedCurves =
+          await LogCurvePriorityService.getPrioritizedCurves(true);
+        setPrioritizedUniversalCurves(prioritizedCurves);
+      };
+
+      getLogCurveLocalPriority().catch(truncateAbortHandler);
+      getLogCurveUniversalPriority().catch(truncateAbortHandler);
       setShowOnlyPrioritizedCurves(false);
     }
   }, [allLogs]);
@@ -122,10 +131,10 @@ export default function MultiLogsCurveInfoListView() {
       selectedLog: selectedLog,
       selectedServer: connectedServer,
       servers,
-      prioritizedCurves,
-      setPrioritizedCurves,
-      prioritizedGlobalCurves,
-      setPrioritizedGlobalCurves,
+      prioritizedLocalCurves,
+      setPrioritizedLocalCurves,
+      prioritizedUniversalCurves,
+      setPrioritizedUniversalCurves,
       isMultiLog
     };
     const position = getContextMenuPosition(event);

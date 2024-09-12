@@ -61,16 +61,18 @@ export default function LogCurveInfoListView() {
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
-  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
-  const [prioritizedGlobalCurves, setPrioritizedGlobalCurves] = useState<
+  const [prioritizedLocalCurves, setPrioritizedLocalCurves] = useState<
+    string[]
+  >([]);
+  const [prioritizedUniversalCurves, setPrioritizedUniversalCurves] = useState<
     string[]
   >([]);
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
   const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
   const allPrioritizedCurves = [
-    ...prioritizedCurves,
-    ...prioritizedGlobalCurves
+    ...prioritizedLocalCurves,
+    ...prioritizedUniversalCurves
   ].filter((value, index, self) => self.indexOf(value) === index);
 
   useExpandSidebarNodes(
@@ -83,17 +85,24 @@ export default function LogCurveInfoListView() {
 
   useEffect(() => {
     if (logObject) {
-      const getLogCurvePriority = async () => {
+      const getLogCurveLocalPriority = async () => {
         const prioritizedCurves =
           await LogCurvePriorityService.getPrioritizedCurves(
+            false,
             wellUid,
             wellboreUid
           );
-        setPrioritizedCurves(prioritizedCurves.prioritizedCurves);
-        setPrioritizedGlobalCurves(prioritizedCurves.prioritizedGlobalCurves);
+        setPrioritizedLocalCurves(prioritizedCurves);
       };
 
-      getLogCurvePriority().catch(truncateAbortHandler);
+      const getLogCurveUniversalPriority = async () => {
+        const prioritizedCurves =
+          await LogCurvePriorityService.getPrioritizedCurves(true);
+        setPrioritizedUniversalCurves(prioritizedCurves);
+      };
+
+      getLogCurveLocalPriority().catch(truncateAbortHandler);
+      getLogCurveUniversalPriority().catch(truncateAbortHandler);
       setShowOnlyPrioritizedCurves(false);
     }
   }, [logObject]);
@@ -109,10 +118,10 @@ export default function LogCurveInfoListView() {
       selectedLog: logObject,
       selectedServer: connectedServer,
       servers,
-      prioritizedCurves,
-      setPrioritizedCurves,
-      prioritizedGlobalCurves,
-      setPrioritizedGlobalCurves
+      prioritizedLocalCurves,
+      setPrioritizedLocalCurves,
+      prioritizedUniversalCurves,
+      setPrioritizedUniversalCurves
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({

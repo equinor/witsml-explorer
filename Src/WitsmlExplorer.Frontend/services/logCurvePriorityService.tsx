@@ -1,18 +1,18 @@
-import LogCurvePriorites from "models/logCurvePriorities";
 import { ApiClient } from "./apiClient";
 
 export default class LogCurvePriorityService {
   public static async getPrioritizedCurves(
-    wellUid: string,
-    wellboreUid: string,
+    isUniversal: boolean,
+    wellUid?: string,
+    wellboreUid?: string,
     abortSignal?: AbortSignal
-  ): Promise<LogCurvePriorites> {
-    const response = await ApiClient.get(
-      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
-        wellboreUid
-      )}/logCurvePriority`,
-      abortSignal
-    );
+  ): Promise<string[]> {
+    const path = isUniversal
+      ? `/api/universal/getLogCurvePriority`
+      : `/api/wells/${encodeURIComponent(
+          wellUid
+        )}/wellbores/${encodeURIComponent(wellboreUid)}/logCurvePriority`;
+    const response = await ApiClient.get(path, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
@@ -21,14 +21,14 @@ export default class LogCurvePriorityService {
   }
 
   public static async setPrioritizedCurves(
-    wellUid: string,
-    wellboreUid: string,
     prioritizedCurves: string[],
-    isGlobal: boolean,
+    isUniversal: boolean,
+    wellUid?: string,
+    wellboreUid?: string,
     abortSignal?: AbortSignal
-  ): Promise<LogCurvePriorites> {
-    const path = isGlobal
-      ? `/api/global/logCurvePriority`
+  ): Promise<string[]> {
+    const path = isUniversal
+      ? `/api/universal/logCurvePriority`
       : `/api/wells/${encodeURIComponent(
           wellUid
         )}/wellbores/${encodeURIComponent(wellboreUid)}/logCurvePriority`;

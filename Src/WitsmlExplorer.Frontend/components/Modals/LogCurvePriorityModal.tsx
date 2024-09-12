@@ -20,7 +20,7 @@ export interface LogCurvePriorityModalProps {
   wellboreUid?: string;
   prioritizedCurves: string[];
   setPrioritizedCurves: (prioritizedCurves: string[]) => void;
-  isGlobal: boolean;
+  isUniversal: boolean;
 }
 
 export interface LogCurvePriorityRow {
@@ -81,10 +81,10 @@ export const LogCurvePriorityModal = (
 
   const onSubmit = async () => {
     await LogCurvePriorityService.setPrioritizedCurves(
-      wellUid,
-      wellboreUid,
       updatedPrioritizedCurves,
-      props.isGlobal
+      props.isUniversal,
+      wellUid,
+      wellboreUid
     );
     dispatchOperation({ type: OperationType.HideModal });
     setPrioritizedCurves(updatedPrioritizedCurves);
@@ -114,7 +114,9 @@ export const LogCurvePriorityModal = (
   return (
     <ModalDialog
       heading={
-        props.isGlobal ? `Log Curve Global Priority` : `Log Curve Priority`
+        props.isUniversal
+          ? `Log Curve Universal Priority`
+          : `Log Curve Local Priority`
       }
       content={
         <>
@@ -137,7 +139,7 @@ export const LogCurvePriorityModal = (
                 <Icon name="add" />
               </Button>
             </AddItemLayout>
-            {props.isGlobal && (
+            {props.isUniversal && (
               <FileContainer>
                 <Button
                   variant="contained"
