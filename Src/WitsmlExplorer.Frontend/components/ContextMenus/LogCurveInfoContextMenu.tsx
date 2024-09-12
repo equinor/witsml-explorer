@@ -236,7 +236,6 @@ const LogCurveInfoContextMenu = (
       : Array.from(
           new Set(prioritizedLocalCurves.concat(newCurvesToPrioritize))
         );
-    console.log(curvesToPrioritize);
     const newPrioritizedCurves =
       await LogCurvePriorityService.setPrioritizedCurves(
         curvesToPrioritize,
