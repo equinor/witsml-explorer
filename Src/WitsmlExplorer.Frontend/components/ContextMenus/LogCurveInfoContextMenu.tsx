@@ -231,11 +231,12 @@ const LogCurveInfoContextMenu = (
     );
     const curvesToPrioritize = isUniversal
       ? Array.from(
-          new Set(prioritizedLocalCurves.concat(newCurvesToPrioritize))
+          new Set(prioritizedUniversalCurves.concat(newCurvesToPrioritize))
         )
       : Array.from(
-          new Set(prioritizedUniversalCurves.concat(newCurvesToPrioritize))
+          new Set(prioritizedLocalCurves.concat(newCurvesToPrioritize))
         );
+    console.log(curvesToPrioritize);
     const newPrioritizedCurves =
       await LogCurvePriorityService.setPrioritizedCurves(
         curvesToPrioritize,
@@ -253,10 +254,10 @@ const LogCurveInfoContextMenu = (
     dispatchOperation({ type: OperationType.HideContextMenu });
     const curvesToDelete = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
     const curvesToPrioritize = isUniversal
-      ? prioritizedLocalCurves.filter(
+      ? prioritizedUniversalCurves.filter(
           (curve) => !curvesToDelete.includes(curve)
         )
-      : prioritizedUniversalCurves.filter(
+      : prioritizedLocalCurves.filter(
           (curve) => !curvesToDelete.includes(curve)
         );
     const newPrioritizedCurves =
