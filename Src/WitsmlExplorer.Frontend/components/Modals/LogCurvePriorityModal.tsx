@@ -174,7 +174,11 @@ export const LogCurvePriorityModal = (
             <ContentTable
               columns={columns}
               data={getTableData()}
-              downloadToCsvFileName={`LogCurvePriority-${wellUid}-${wellboreUid}`}
+              downloadToCsvFileName={
+                props.isUniversal
+                  ? `LogCurvePriority-universal`
+                  : `LogCurvePriority-${wellUid}-${wellboreUid}`
+              }
               onContextMenu={onContextMenu}
               checkableRows
             />
