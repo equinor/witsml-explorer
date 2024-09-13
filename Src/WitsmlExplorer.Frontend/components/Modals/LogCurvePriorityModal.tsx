@@ -95,21 +95,20 @@ export const LogCurvePriorityModal = (
     setPrioritizedCurves(updatedPrioritizedCurves);
   };
 
-  const handleFileChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-      const file = e.target.files.item(0);
-      if (!file) return;
-      const text = (await file.text()).replace(/(\r)/gm, "").trim();
-      const data = text.split("\n").slice(1);
-      const mergedArray = [...data, ...updatedPrioritizedCurves];
-      const uniqueArray = mergedArray.filter(
-        (value, index, self) => self.indexOf(value) === index && value !== ""
-      );
-      setUpdatedPrioritizedCurves(uniqueArray);
-      setUploadedFile(file);
-    },
-    []
-  );
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    const file = e.target.files.item(0);
+    if (!file) return;
+    const text = (await file.text()).replace(/(\r)/gm, "").trim();
+    const data = text.split("\n").slice(1);
+    const mergedArray = [...data, ...updatedPrioritizedCurves];
+    const uniqueArray = mergedArray.filter(
+      (value, index, self) => self.indexOf(value) === index && value !== ""
+    );
+    setUpdatedPrioritizedCurves(uniqueArray);
+    setUploadedFile(file);
+  };
 
   const addCurve = () => {
     setUpdatedPrioritizedCurves([...updatedPrioritizedCurves, newCurve]);
@@ -157,10 +156,10 @@ export const LogCurvePriorityModal = (
                 component="label"
                 startIcon={<Icon name="cloudUpload" />}
               >
-                <Typography noWrap>Upload File</Typography>
+                <Typography noWrap>Upload CSV File</Typography>
                 <input
                   type="file"
-                  accept=".csv,text/csv,.txt"
+                  accept=".csv,text/csv"
                   hidden
                   onChange={handleFileChange}
                 />
