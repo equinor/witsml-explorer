@@ -1,12 +1,7 @@
 import { Icon, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
 
 import { useOperationState } from "hooks/useOperationState";
-import React, {
-  ChangeEvent,
-  KeyboardEvent,
-  useCallback,
-  useState
-} from "react";
+import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import styled from "styled-components";
 import { MousePosition } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
