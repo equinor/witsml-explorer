@@ -1,7 +1,12 @@
 import { Icon, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
 
 import { useOperationState } from "hooks/useOperationState";
-import React, { ChangeEvent, useCallback, useState } from "react";
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  useCallback,
+  useState
+} from "react";
 import styled from "styled-components";
 import { MousePosition } from "../../contexts/operationStateReducer";
 import OperationType from "../../contexts/operationType";
@@ -125,9 +130,14 @@ export const LogCurvePriorityModal = (
               <TextField
                 id={"addPrioritizedCurve"}
                 label="Add prioritized curve"
+                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                  if (e.key === "Enter") {
+                    e.stopPropagation();
+                    addCurve();
+                  }
+                }}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setNewCurve(e.target.value);
-                  e.stopPropagation();
                 }}
                 value={newCurve}
               />
