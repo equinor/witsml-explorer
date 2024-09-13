@@ -39,8 +39,10 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}/{objectUid}", ObjectHandler.GetObjectIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
 
-            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedCurves, useOAuth2);
-            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedCurves, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedLocalCurves, useOAuth2);
+            app.MapGet("/universal/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedUniversalCurves, useOAuth2);
+            app.MapPost("/universal/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedUniversalCurves, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedLocalCurves, useOAuth2);
 
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);

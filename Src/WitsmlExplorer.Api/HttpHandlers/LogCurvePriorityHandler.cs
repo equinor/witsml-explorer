@@ -10,17 +10,31 @@ namespace WitsmlExplorer.Api.HttpHandlers
 {
     public static class LogCurvePriorityHandler
     {
-        [Produces(typeof(List<string>))]
-        public static async Task<IResult> GetPrioritizedCurves(string wellUid, string wellboreUid, ILogCurvePriorityService logCurvePriorityService)
+        [Produces(typeof(string[]))]
+        public static async Task<IResult> GetPrioritizedLocalCurves(string wellUid, string wellboreUid, ILogCurvePriorityService logCurvePriorityService)
         {
-            var prioritizedCurves = await logCurvePriorityService.GetPrioritizedCurves(wellUid, wellboreUid) ?? new List<string>();
+            var prioritizedCurves = await logCurvePriorityService.GetPrioritizedLocalCurves(wellUid, wellboreUid) ?? new List<string>();
             return TypedResults.Ok(prioritizedCurves);
         }
 
-        [Produces(typeof(IList<string>))]
-        public static async Task<IResult> SetPrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
+        [Produces(typeof(string[]))]
+        public static async Task<IResult> GetPrioritizedUniversalCurves(ILogCurvePriorityService logCurvePriorityService)
         {
-            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedCurves(wellUid, wellboreUid, prioritizedCurves) ?? new List<string>();
+            var prioritizedCurves = await logCurvePriorityService.GetPrioritizedUniversalCurves() ?? new List<string>();
+            return TypedResults.Ok(prioritizedCurves);
+        }
+
+        [Produces(typeof(List<string>))]
+        public static async Task<IResult> SetPrioritizedLocalCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
+        {
+            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedLocalCurves(wellUid, wellboreUid, prioritizedCurves) ?? new List<string>();
+            return TypedResults.Ok(createdPrioritizedCurves);
+        }
+
+        [Produces(typeof(List<string>))]
+        public static async Task<IResult> SetPrioritizedUniversalCurves(List<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
+        {
+            var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedUniversalCurves(prioritizedCurves) ?? new List<string>();
             return TypedResults.Ok(createdPrioritizedCurves);
         }
     }
