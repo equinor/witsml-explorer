@@ -425,69 +425,67 @@ const LogCurveInfoContextMenu = (
           label={"Log Priority Curves"}
           icon="favoriteOutlined"
         >
-          {[
-            <MenuItem
-              key={"setPriority"}
-              onClick={() =>
+          <MenuItem
+            key={"setPriority"}
+            onClick={() =>
+              onlyPrioritizedCurvesAreChecked
+                ? onClickRemovePriority(false)
+                : onClickSetPriority(false)
+            }
+          >
+            <StyledIcon
+              name={
                 onlyPrioritizedCurvesAreChecked
-                  ? onClickRemovePriority(false)
-                  : onClickSetPriority(false)
+                  ? "favoriteFilled"
+                  : "favoriteOutlined"
               }
-            >
-              <StyledIcon
-                name={
-                  onlyPrioritizedCurvesAreChecked
-                    ? "favoriteFilled"
-                    : "favoriteOutlined"
-                }
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>
-                {onlyPrioritizedCurvesAreChecked
-                  ? "Remove Local Priority"
-                  : "Set Local Priority"}
-              </Typography>
-            </MenuItem>,
-            <MenuItem
-              key={"setUniversalPriority"}
-              onClick={() =>
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>
+              {onlyPrioritizedCurvesAreChecked
+                ? "Remove Local Priority"
+                : "Set Local Priority"}
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            key={"setUniversalPriority"}
+            onClick={() =>
+              onlyPrioritizedUniversalCurvesAreChecked
+                ? onClickRemovePriority(true)
+                : onClickSetPriority(true)
+            }
+          >
+            <StyledIcon
+              name={
                 onlyPrioritizedUniversalCurvesAreChecked
-                  ? onClickRemovePriority(true)
-                  : onClickSetPriority(true)
+                  ? "favoriteFilled"
+                  : "favoriteOutlined"
               }
-            >
-              <StyledIcon
-                name={
-                  onlyPrioritizedUniversalCurvesAreChecked
-                    ? "favoriteFilled"
-                    : "favoriteOutlined"
-                }
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>
-                {onlyPrioritizedUniversalCurvesAreChecked
-                  ? "Remove Universal Priority"
-                  : "Set Universal Priority"}
-              </Typography>
-            </MenuItem>,
-            <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
-              <StyledIcon
-                name="favoriteOutlined"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>Edit Local Priority</Typography>
-            </MenuItem>,
-            <MenuItem
-              key={"editUniversalPriority"}
-              onClick={onClickEditUniversalPriority}
-            >
-              <StyledIcon
-                name="favoriteOutlined"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>Edit Universal Priority</Typography>
-            </MenuItem>
-          ]}
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>
+              {onlyPrioritizedUniversalCurvesAreChecked
+                ? "Remove Universal Priority"
+                : "Set Universal Priority"}
+            </Typography>
+          </MenuItem>
+          <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
+            <StyledIcon
+              name="favoriteOutlined"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Edit Local Priority</Typography>
+          </MenuItem>
+          <MenuItem
+            key={"editUniversalPriority"}
+            onClick={onClickEditUniversalPriority}
+          >
+            <StyledIcon
+              name="favoriteOutlined"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Edit Universal Priority</Typography>
+          </MenuItem>
         </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

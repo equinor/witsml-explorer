@@ -32,7 +32,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(List<string>))]
-        public static async Task<IResult> SetPrioritizedGlobalUniversalCurves(List<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
+        public static async Task<IResult> SetPrioritizedUniversalCurves(List<string> prioritizedCurves, ILogCurvePriorityService logCurvePriorityService)
         {
             var createdPrioritizedCurves = await logCurvePriorityService.SetPrioritizedUniversalCurves(prioritizedCurves) ?? new List<string>();
             return TypedResults.Ok(createdPrioritizedCurves);

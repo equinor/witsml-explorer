@@ -96,7 +96,7 @@ export const LogCurvePriorityModal = (
       if (!file) return;
       const text = (await file.text()).replace(/(\r)/gm, "").trim();
       const data = text.split("\n").slice(1);
-      const mergedArray = [...data, ...prioritizedCurves];
+      const mergedArray = [...data, ...updatedPrioritizedCurves];
       const uniqueArray = mergedArray.filter(
         (value, index, self) => self.indexOf(value) === index && value !== ""
       );
@@ -125,9 +125,10 @@ export const LogCurvePriorityModal = (
               <TextField
                 id={"addPrioritizedCurve"}
                 label="Add prioritized curve"
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setNewCurve(e.target.value)
-                }
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setNewCurve(e.target.value);
+                  e.stopPropagation();
+                }}
                 value={newCurve}
               />
               <Button
@@ -139,29 +140,27 @@ export const LogCurvePriorityModal = (
                 <Icon name="add" />
               </Button>
             </AddItemLayout>
-            {props.isUniversal && (
-              <FileContainer>
-                <Button
-                  variant="contained"
-                  color={"primary"}
-                  component="label"
-                  startIcon={<Icon name="cloudUpload" />}
-                >
-                  <Typography noWrap>Upload File</Typography>
-                  <input
-                    type="file"
-                    accept=".csv,text/csv,.txt"
-                    hidden
-                    onChange={handleFileChange}
-                  />
-                </Button>
-                <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
-                  <Typography noWrap>
-                    {uploadedFile?.name ?? "No file chosen"}
-                  </Typography>
-                </Tooltip>
-              </FileContainer>
-            )}
+            <FileContainer>
+              <Button
+                variant="contained"
+                color={"primary"}
+                component="label"
+                startIcon={<Icon name="cloudUpload" />}
+              >
+                <Typography noWrap>Upload File</Typography>
+                <input
+                  type="file"
+                  accept=".csv,text/csv,.txt"
+                  hidden
+                  onChange={handleFileChange}
+                />
+              </Button>
+              <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
+                <Typography noWrap>
+                  {uploadedFile?.name ?? "No file chosen"}
+                </Typography>
+              </Tooltip>
+            </FileContainer>
             <ContentTable
               columns={columns}
               data={getTableData()}

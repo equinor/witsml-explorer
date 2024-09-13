@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Services
             logCurvePriorityRepository)
         : ILogCurvePriorityService
     {
-        private const string Global = "global";
+        private const string UniversalDbId = "universal";
         public async Task<IList<string>> GetPrioritizedLocalCurves(string wellUid, string wellboreUid)
         {
             string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
@@ -51,13 +51,13 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IList<string>> GetPrioritizedUniversalCurves()
         {
-            LogCurvePriority logCurvePriorityGlobal = await logCurvePriorityRepository.GetDocumentAsync(Global);
+            LogCurvePriority logCurvePriorityGlobal = await logCurvePriorityRepository.GetDocumentAsync(UniversalDbId);
             return logCurvePriorityGlobal?.PrioritizedCurves;
         }
 
         public async Task<IList<string>> SetPrioritizedUniversalCurves(List<string> prioritizedCurves)
         {
-            var globalDocument = await logCurvePriorityRepository.GetDocumentAsync(Global);
+            var globalDocument = await logCurvePriorityRepository.GetDocumentAsync(UniversalDbId);
             if (globalDocument == null)
             {
                 return await CreatePrioritizedUniversalCurves(prioritizedCurves);
@@ -108,13 +108,13 @@ namespace WitsmlExplorer.Api.Services
         private async Task<IList<string>> UpdatePrioritizedUniversalCurves(List<string> logCurvePriorities)
         {
             LogCurvePriority logCurvePriorityToCreate = CreateLogCurveUniversalPriorityObject(logCurvePriorities);
-            LogCurvePriority updated = await logCurvePriorityRepository.UpdateDocumentAsync(Global, logCurvePriorityToCreate);
+            LogCurvePriority updated = await logCurvePriorityRepository.UpdateDocumentAsync(UniversalDbId, logCurvePriorityToCreate);
             return updated.PrioritizedCurves;
         }
 
         private LogCurvePriority CreateLogCurveUniversalPriorityObject(List<string> prioritizedCurves)
         {
-            LogCurvePriority logCurvePriorityObject = new(Global)
+            LogCurvePriority logCurvePriorityObject = new(UniversalDbId)
             {
                 PrioritizedCurves = prioritizedCurves
             };
