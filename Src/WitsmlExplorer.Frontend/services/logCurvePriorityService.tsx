@@ -8,7 +8,7 @@ export default class LogCurvePriorityService {
     abortSignal?: AbortSignal
   ): Promise<string[]> {
     const path = isUniversal
-      ? `/api/universal/getLogCurvePriority`
+      ? `/api/universal/logCurvePriority`
       : `/api/wells/${encodeURIComponent(
           wellUid
         )}/wellbores/${encodeURIComponent(wellboreUid)}/logCurvePriority`;

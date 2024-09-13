@@ -40,7 +40,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedLocalCurves, useOAuth2);
-            app.MapGet("/universal/getLogCurvePriority", LogCurvePriorityHandler.GetPrioritizedUniversalCurves, useOAuth2);
+            app.MapGet("/universal/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedUniversalCurves, useOAuth2);
             app.MapPost("/universal/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedUniversalCurves, useOAuth2);
             app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedLocalCurves, useOAuth2);
 
