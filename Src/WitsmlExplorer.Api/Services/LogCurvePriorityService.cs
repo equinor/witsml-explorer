@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.IdentityModel.Tokens;
@@ -37,6 +38,7 @@ namespace WitsmlExplorer.Api.Services
                 return null;
             }
 
+            prioritizedCurves = prioritizedCurves.Distinct().ToList();
             string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
             LogCurvePriority logCurvePriority = await logCurvePriorityRepository.GetDocumentAsync(logCurvePriorityId);
             if (logCurvePriority == null)
@@ -57,6 +59,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<IList<string>> SetPrioritizedUniversalCurves(List<string> prioritizedCurves)
         {
+            prioritizedCurves = prioritizedCurves.Distinct().ToList();
             var globalDocument = await logCurvePriorityRepository.GetDocumentAsync(UniversalDbId);
             if (globalDocument == null)
             {
