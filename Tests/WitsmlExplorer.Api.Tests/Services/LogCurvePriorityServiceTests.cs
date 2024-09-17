@@ -93,6 +93,15 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
+        public async Task GetPrioritizedUniversalCurves_IncorrectId_ReturnsNull()
+        {
+            var result = await _logCurvePriorityService.GetPrioritizedUniversalCurves();
+
+            Assert.Null(result);
+            _repository.Verify(repo => repo.GetDocumentAsync(It.Is<string>(id => id == $"universal")), Times.Once);
+        }
+
+        [Fact]
         public async Task SetPrioritizedLocalCurves_NoExistingPriority_CreatesNewPriority()
         {
             var wellUid = "well3";
