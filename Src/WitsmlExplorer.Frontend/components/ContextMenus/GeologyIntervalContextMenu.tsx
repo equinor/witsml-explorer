@@ -12,7 +12,12 @@ import {
   pasteComponents
 } from "components/ContextMenus/CopyUtils";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import GeologyIntervalPropertiesModal from "components/Modals/GeologyIntervalPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { getGeologyIntervalProperties } from "components/Modals/PropertiesModal/Properties/GeologyIntervalProperties";
+import {
+  PropertiesModal,
+  PropertiesModalProps
+} from "components/Modals/PropertiesModal/PropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -20,9 +25,11 @@ import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import GeologyInterval from "models/geologyInterval";
 import { createComponentReferences } from "models/jobs/componentReferences";
+import ObjectReference from "models/jobs/objectReference";
 import MudLog from "models/mudLog";
+import { toObjectReference } from "models/objectOnWellbore";
 import React from "react";
-import { JobType } from "services/jobService";
+import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface GeologyIntervalContextMenuProps {
@@ -43,17 +50,30 @@ const GeologyIntervalContextMenu = (
 
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const geologyIntervalPropertiesModalProps = {
-      geologyInterval: checkedGeologyIntervals[0],
-      mudLog
-    };
+    const geologyIntervalPropertiesModalProps: PropertiesModalProps<GeologyInterval> =
+      {
+        title: `Edit properties for ${checkedGeologyIntervals[0].uid}`,
+        object: checkedGeologyIntervals[0],
+        properties: getGeologyIntervalProperties(PropertiesModalMode.Edit),
+        onSubmit: async (updates: Partial<GeologyInterval>) => {
+          dispatchOperation({ type: OperationType.HideModal });
+          const mudLogReference: ObjectReference = toObjectReference(mudLog);
+          const modifyGeologyIntervalJob = {
+            geologyInterval: {
+              uid: checkedGeologyIntervals[0].uid,
+              ...updates
+            },
+            mudLogReference
+          };
+          await JobService.orderJob(
+            JobType.ModifyGeologyInterval,
+            modifyGeologyIntervalJob
+          );
+        }
+      };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: (
-        <GeologyIntervalPropertiesModal
-          {...geologyIntervalPropertiesModalProps}
-        />
-      )
+      payload: <PropertiesModal {...geologyIntervalPropertiesModalProps} />
     });
   };
 

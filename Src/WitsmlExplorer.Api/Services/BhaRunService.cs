@@ -45,10 +45,10 @@ namespace WitsmlExplorer.Api.Services
                 WellboreName = bhaRun.NameWellbore,
                 WellboreUid = bhaRun.UidWellbore,
                 NumStringRun = bhaRun.NumStringRun,
-                Tubular = new RefNameString
+                Tubular = (bhaRun.Tubular == null) ? null : new RefNameString
                 {
-                    UidRef = bhaRun.Tubular?.UidRef,
-                    Value = bhaRun.Tubular?.Value
+                    UidRef = bhaRun.Tubular.UidRef,
+                    Value = bhaRun.Tubular.Value
                 },
                 StatusBha = bhaRun.StatusBha ?? null,
                 NumBitRun = bhaRun.NumBitRun,

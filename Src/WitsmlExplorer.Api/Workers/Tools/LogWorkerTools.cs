@@ -80,5 +80,28 @@ namespace WitsmlExplorer.Api.Workers
                 return (DateTime.Parse(index) - DateTime.Parse(startIndex)).TotalMilliseconds / (DateTime.Parse(endIndex) - DateTime.Parse(startIndex)).TotalMilliseconds;
             }
         }
+
+        public static List<WitsmlLogs> GetUpdateLogDataQueries(string uid, string uidWell, string uidWellbore, WitsmlLogData logData, int chunkSize, string mnemonicList)
+        {
+            List<WitsmlLogs> batchedQueries = logData.Data.Chunk(chunkSize).Select(chunk =>
+                new WitsmlLogs
+                {
+                    Logs = new WitsmlLog
+                    {
+                        Uid = uid,
+                        UidWell = uidWell,
+                        UidWellbore = uidWellbore,
+                        LogData = new WitsmlLogData
+                        {
+                            MnemonicList = mnemonicList,
+                            UnitList = logData.UnitList,
+                            Data = chunk.ToList(),
+                        }
+                    }.AsItemInList()
+                }
+            ).ToList();
+
+            return batchedQueries;
+        }
     }
 }

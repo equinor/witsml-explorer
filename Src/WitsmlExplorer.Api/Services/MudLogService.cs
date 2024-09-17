@@ -74,8 +74,8 @@ namespace WitsmlExplorer.Api.Services
                     Description = geologyInterval.Description,
                     CommonTime = new CommonTime
                     {
-                        DTimCreation = geologyInterval.CommonTime.DTimCreation,
-                        DTimLastChange = geologyInterval.CommonTime.DTimLastChange
+                        DTimCreation = geologyInterval.CommonTime?.DTimCreation,
+                        DTimLastChange = geologyInterval.CommonTime?.DTimLastChange
                     }
                 }).ToList();
         }

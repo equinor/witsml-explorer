@@ -1,8 +1,14 @@
 ﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
-import ModalDialog from "components/Modals/ModalDialog";
+import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -15,9 +21,14 @@ import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
+import {
+  extractLASSection,
+  parseLASData,
+  parseLASHeader
+} from "tools/lasFileTools";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;
@@ -28,10 +39,14 @@ interface ImportColumn {
   unit: string;
 }
 
+interface ContentTableCustomRow extends ContentTableRow {
+  [key: string]: any;
+}
+
 const IMPORT_FORMAT_INVALID =
-  "Can't recognize every column, the csv format may be invalid.";
+  "Can't recognize every column, the file format may be invalid.";
 const MISSING_INDEX_CURVE =
-  "The target index curve needs to be present in the csv";
+  "The target index curve needs to be present in the file";
 const UNITLESS_UNIT = "unitless";
 
 const LogDataImportModal = (
@@ -59,12 +74,6 @@ const LogDataImportModal = (
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const separator = ",";
-  const hasOverlap = checkOverlap(
-    targetLog,
-    uploadedFileColumns,
-    uploadedFileData,
-    logCurveInfoList
-  );
 
   const validate = (fileColumns: ImportColumn[]) => {
     setError("");
@@ -75,6 +84,13 @@ const LogDataImportModal = (
         setError(MISSING_INDEX_CURVE);
     }
   };
+
+  const hasOverlap = checkOverlap(
+    targetLog,
+    uploadedFileColumns,
+    uploadedFileData,
+    logCurveInfoList
+  );
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -96,19 +112,35 @@ const LogDataImportModal = (
     async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
       const file = e.target.files.item(0);
       if (!file) return;
-
       const text = await file.text();
-      const header = text.split("\n", 1)[0];
-      const data = text.split("\n").slice(1);
 
+      let header: ImportColumn[] = null;
+      let data: string[] = null;
+
+      if (text.startsWith("~V")) {
+        // LAS files should start with ~V.
+        const curveSection = extractLASSection(
+          text,
+          "CURVE INFORMATION",
+          "Curve"
+        );
+        const dataSection = extractLASSection(text, "ASCII", "A");
+        header = parseLASHeader(curveSection);
+        data = parseLASData(dataSection);
+      } else {
+        const headerLine = text.split("\n", 1)[0];
+        header = parseCSVHeader(headerLine);
+        data = text.split("\n").slice(1);
+      }
+      validate(header);
       setUploadedFile(file);
-      updateUploadedFileColumns(header);
+      setUploadedFileColumns(header);
       setUploadedFileData(data);
     },
     []
   );
 
-  const updateUploadedFileColumns = (header: string): void => {
+  const parseCSVHeader = (header: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
     const fileColumns = header.split(separator).map((col, index) => {
       const columnName = col.substring(0, col.indexOf("["));
@@ -118,9 +150,18 @@ const LogDataImportModal = (
         unit: unitRegex.exec(col) ? unitRegex.exec(col)[0] : UNITLESS_UNIT
       };
     });
-    setUploadedFileColumns(fileColumns);
-    validate(fileColumns);
+    return fileColumns;
   };
+
+  const contentTableColumns: ContentTableColumn[] = useMemo(
+    () =>
+      uploadedFileColumns.map((col) => ({
+        property: col.name,
+        label: `${col.name}[${col.unit}]`,
+        type: ContentType.String
+      })),
+    [uploadedFileColumns]
+  );
 
   return (
     <>
@@ -139,7 +180,7 @@ const LogDataImportModal = (
                   <Typography noWrap>Upload File</Typography>
                   <input
                     type="file"
-                    accept=".csv,text/csv"
+                    accept=".csv,text/csv,.las,.txt"
                     hidden
                     onChange={handleFileChange}
                   />
@@ -159,6 +200,13 @@ const LogDataImportModal = (
                     style={{ backgroundColor: colors.ui.backgroundLight }}
                   >
                     <List>
+                      <List.Item>Supported filetypes: csv, las.</List.Item>
+                      <List.Item>
+                        Supported logs: depth (csv + las), time (csv).
+                      </List.Item>
+                      <List.Item>
+                        Only curve names, units and data is imported.
+                      </List.Item>
                       <List.Item>
                         Currently, only double values are supported as
                         TypeLogData.
@@ -175,15 +223,66 @@ const LogDataImportModal = (
                           </List.Item>
                         </List>
                       </List.Item>
+                      <List.Item>
+                        The las is expected to have these sections:
+                        <List>
+                          <List.Item>
+                            ~CURVE INFORMATION (or ~C)
+                            <br />
+                            [...]
+                            <br />
+                            IndexCurve .unit [...]
+                            <br />
+                            Curve1 .unit [...]
+                            <br />
+                            [...]
+                            <br />
+                            ~ASCII (or ~A)
+                            <br />
+                            195.99 -999.25 2500
+                            <br />
+                            196.00 1 2501
+                          </List.Item>
+                        </List>
+                      </List.Item>
                     </List>
                   </Accordion.Panel>
                 </Accordion.Item>
+                {uploadedFileColumns?.length &&
+                  uploadedFileData?.length &&
+                  targetLog?.indexCurve &&
+                  !error && (
+                    <Accordion.Item>
+                      <StyledAccordionHeader colors={colors}>
+                        Preview
+                      </StyledAccordionHeader>
+                      <Accordion.Panel
+                        style={{
+                          backgroundColor: colors.ui.backgroundLight,
+                          padding: 0
+                        }}
+                      >
+                        <div style={{ height: "300px" }}>
+                          <ContentTable
+                            showPanel={false}
+                            columns={contentTableColumns}
+                            data={getTableData(
+                              uploadedFileData,
+                              uploadedFileColumns,
+                              targetLog.indexCurve
+                            )}
+                          />
+                        </div>
+                      </Accordion.Panel>
+                    </Accordion.Item>
+                  )}
               </Accordion>
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
             </Container>
           }
+          width={ModalWidth.LARGE}
           confirmDisabled={!uploadedFile || !!error || isFetchingLogCurveInfo}
           confirmText={"Import"}
           onSubmit={() => onSubmit()}
@@ -213,20 +312,15 @@ const Container = styled.div`
 
 const checkOverlap = (
   targetLog: LogObject,
-  uploadedFileColumns: ImportColumn[],
-  uploadedFileData: string[],
+  columns: ImportColumn[],
+  data: string[],
   logCurveInfoList: LogCurveInfo[]
 ) => {
-  if (!uploadedFileColumns || !uploadedFileData || !logCurveInfoList)
-    return false;
-  const importDataRanges = getDataRanges(
-    targetLog,
-    uploadedFileColumns,
-    uploadedFileData
-  );
+  if (!columns || !data || !logCurveInfoList) return false;
+  const importDataRanges = getDataRanges(targetLog, columns, data);
 
-  for (let index = 1; index < uploadedFileColumns.length; index++) {
-    const mnemonic = uploadedFileColumns[index].name;
+  for (let index = 1; index < columns.length; index++) {
+    const mnemonic = columns[index].name;
     const logCurveInfo = logCurveInfoList.find(
       (lci) => lci.mnemonic === mnemonic
     );
@@ -266,24 +360,28 @@ const checkOverlap = (
 
 const getDataRanges = (
   targetLog: LogObject,
-  uploadedFileColumns: ImportColumn[],
-  uploadedFileData: string[]
+  columns: ImportColumn[],
+  data: string[]
 ): IndexRange[] => {
   const dataRanges: IndexRange[] = [];
+  const indexCurveColumn = columns.find(
+    (col) => col.name === targetLog.indexCurve
+  )?.index;
 
-  for (let index = 0; index < uploadedFileColumns.length; index++) {
-    const firstRowWithData = uploadedFileData.find((dataRow) => {
+  for (let index = 0; index < columns.length; index++) {
+    const firstRowWithData = data.find((dataRow) => {
       const data = dataRow.split(",")[index];
       if (data) return true;
     });
 
-    const lastRowWithData = uploadedFileData.findLast((dataRow) => {
+    const lastRowWithData = data.findLast((dataRow) => {
       const data = dataRow.split(",")[index];
       if (data) return true;
     });
 
-    const firstRowWithDataIndex = firstRowWithData?.split(",")[0];
-    const lastRowWithDataIndex = lastRowWithData?.split(",")[0];
+    const firstRowWithDataIndex =
+      firstRowWithData?.split(",")[indexCurveColumn];
+    const lastRowWithDataIndex = lastRowWithData?.split(",")[indexCurveColumn];
 
     if (
       targetLog.indexType === WITSML_INDEX_TYPE_MD &&
@@ -302,6 +400,25 @@ const getDataRanges = (
   }
 
   return dataRanges;
+};
+
+const getTableData = (
+  data: string[],
+  columns: ImportColumn[],
+  indexCurve: string
+): ContentTableCustomRow[] => {
+  const indexCurveColumn = columns.find((col) => col.name === indexCurve);
+  if (!indexCurveColumn) return [];
+  return data?.map((dataLine) => {
+    const dataCells = dataLine.split(",");
+    const result: ContentTableCustomRow = {
+      id: dataCells[indexCurveColumn.index]
+    };
+    columns.forEach((col, i) => {
+      result[col.name] = dataCells[i];
+    });
+    return result;
+  });
 };
 
 export default LogDataImportModal;

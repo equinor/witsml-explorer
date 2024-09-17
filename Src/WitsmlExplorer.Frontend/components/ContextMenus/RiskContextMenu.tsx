@@ -7,12 +7,8 @@ import {
   ObjectContextMenuProps,
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
-import RiskPropertiesModal, {
-  RiskPropertiesModalProps
-} from "components/Modals/RiskPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -31,26 +27,18 @@ const RiskObjectContextMenu = (
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const mode = PropertiesModalMode.Edit;
-    const modifyRiskObjectProps: RiskPropertiesModalProps = {
-      mode,
-      riskObject: checkedObjects[0] as RiskObject,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <RiskPropertiesModal {...modifyRiskObjectProps} />
-    });
-  };
-
   const extraMenuItems = (): React.ReactElement[] => {
     return [
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Risk,
+            checkedObjects?.[0] as RiskObject,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

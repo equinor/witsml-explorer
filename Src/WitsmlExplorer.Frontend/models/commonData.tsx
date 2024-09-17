@@ -19,5 +19,3 @@ export function emptyCommonData(): CommonData {
     serviceCategory: ""
   };
 }
-
-export const itemStateValues = ["actual", "model", "plan", "unknown"];

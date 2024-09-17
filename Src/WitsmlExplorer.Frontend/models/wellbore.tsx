@@ -26,8 +26,8 @@ export interface WellboreProperties {
   name: string;
   wellUid: string;
   wellName?: string;
-  wellStatus: string;
-  wellType: string;
+  wellboreStatus: string;
+  wellboreType: string;
   isActive: boolean;
   number?: string;
   suffixAPI?: string;
@@ -78,8 +78,8 @@ export function emptyWellbore(): Wellbore {
     name: "",
     wellUid: "",
     wellName: "",
-    wellStatus: "",
-    wellType: "",
+    wellboreStatus: "",
+    wellboreType: "",
     isActive: false,
     wellboreParentUid: "",
     wellboreParentName: "",

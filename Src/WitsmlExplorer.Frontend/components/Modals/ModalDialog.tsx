@@ -213,14 +213,14 @@ const Content = styled(Dialog.CustomContent)<{
   color: ${(props) => props.colors.text.staticIconsDefault};
 
   div[class*="InputWrapper__Container"] {
-    label.dHhldd {
+    label {
       color: ${(props) => props.colors.text.staticTextLabel};
     }
   }
 
   div[class*="Input__Container"][disabled] {
     background: ${(props) => props.colors.text.staticTextFieldDefault};
-    border-bottom: 1px solid #9ca6ac;
+    border-bottom: 1px solid #575d63;
   }
 
   div[class*="Input__Container"] {

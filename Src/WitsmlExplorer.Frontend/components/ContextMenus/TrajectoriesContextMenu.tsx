@@ -15,12 +15,8 @@ import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
-import TrajectoryPropertiesModal, {
-  TrajectoryPropertiesModalProps
-} from "components/Modals/TrajectoryPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { DisplayModalAction } from "contexts/operationStateReducer";
-import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
@@ -66,16 +62,12 @@ const TrajectoriesContextMenu = (
       trajectoryStations: [],
       commonData: null
     };
-    const trajectoryPropertiesModalProps: TrajectoryPropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      trajectory: newTrajectory,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <TrajectoryPropertiesModal {...trajectoryPropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openObjectOnWellboreProperties(
+      ObjectType.Trajectory,
+      newTrajectory,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   return (

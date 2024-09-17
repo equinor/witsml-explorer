@@ -1,13 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
 using Witsml;
+using Witsml.Data;
+using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
@@ -21,19 +24,24 @@ namespace WitsmlExplorer.Api.Workers
         protected ILogger<T> Logger { get; }
         private IWitsmlClientProvider WitsmlClientProvider { get; }
 
+        private WitsmlCapServers _targetServerCapabilities;
+
         public BaseWorker(ILogger<T> logger = null)
         {
             Logger = logger;
         }
+
         public BaseWorker(IWitsmlClientProvider witsmlClientProvider, ILogger<T> logger = null)
         {
             Logger = logger;
             WitsmlClientProvider = witsmlClientProvider;
         }
+
         protected IWitsmlClient GetTargetWitsmlClientOrThrow()
         {
             return WitsmlClientProvider.GetClient() ?? throw new WitsmlClientProviderException($"Missing Target WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Target);
         }
+
         protected IWitsmlClient GetSourceWitsmlClientOrThrow()
         {
             return WitsmlClientProvider.GetSourceClient() ?? throw new WitsmlClientProviderException($"Missing Source WitsmlClient for {typeof(T)}", (int)HttpStatusCode.Unauthorized, ServerType.Source);
@@ -59,6 +67,33 @@ namespace WitsmlExplorer.Api.Workers
         {
             return "The job was cancelled by the user.";
         }
+        protected async Task<WitsmlCapServers> GetTargetServerCapabilities()
+        {
+            if (_targetServerCapabilities == null)
+            {
+                _targetServerCapabilities = await GetTargetWitsmlClientOrThrow().GetCap();
+            }
+            return _targetServerCapabilities;
+        }
+
+        protected async Task<int> GetMaxBatchSize(int objectsCount, string functionType, string queryTypeName)
+        {
+            var targetServerCapabilities = await GetTargetServerCapabilities();
+            var serverCapabilites =
+                targetServerCapabilities.ServerCapabilities;
+
+            var functions = serverCapabilites.Select(x => x.Functions.Find(y => y.Name.Equals(functionType)));
+            var objectCapabilities = functions.Select(x =>
+                x.DataObjects.Find(y => y.Name.Equals(queryTypeName)));
+
+            var maxDataRows = objectCapabilities.FirstOrDefault().MaxDataNodes;
+            var maxDataPoints = objectCapabilities.FirstOrDefault().MaxDataPoints;
+
+            var maxBatchSize =
+                Math.Min(maxDataRows, maxDataPoints / objectsCount);
+            return maxBatchSize;
+        }
+
         public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
         {
             T job = await jobStream.Deserialize<T>();
