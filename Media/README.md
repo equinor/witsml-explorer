@@ -7,10 +7,12 @@
 - [Settings](#settings)
 - [Search and Filter](#search-and-filter)
 - [Table Overview](#table-overview)
+- [Missing Data Agent](#missing-data-agent)
 - [Query View](#query-view)
 - [Deeplinking](#deeplinking)
 - [Object Overview](#object-overview)
 - [Log Overview](#log-overview)
+  - [Multi-log functionality](#multi-log-functionality)
   - [Log Agents](#log-agents)
   - [Export and Import](#export-and-import)
   - [Splice](#splice)
@@ -42,6 +44,9 @@ https://github.com/user-attachments/assets/bbeff67f-bef9-4919-8efc-86d4ce3070f5
 ## Table Overview
 https://github.com/user-attachments/assets/4055d50d-9996-4fee-83ae-1aeceb939274
 
+## Missing Data Agent
+https://github.com/user-attachments/assets/2de1f0f5-d805-4b03-a41b-985701b402bf
+
 ## Query View
 https://github.com/user-attachments/assets/3b3608ff-9587-4c34-90f2-432661350269
 
@@ -53,6 +58,9 @@ https://github.com/user-attachments/assets/e86798ad-c8f9-4213-8f4f-b0e11bf30c57
 
 ## Log Overview
 https://github.com/user-attachments/assets/28f4417c-45ed-4c16-acaf-99d2a103ddf6
+
+### Multi-log functionality
+https://github.com/user-attachments/assets/651f3040-e82d-4107-8713-62b0ad29bcef
 
 ### Log Agents
 https://github.com/user-attachments/assets/6848c50d-3995-4bf7-a875-9a9be512413a
