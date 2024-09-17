@@ -133,7 +133,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             var wellUid = "well1";
             var wellboreUid = "wellbore2";
             var curves = new List<string> { "D", "E", "D" };
-            var expectedUniqueCurves = new List<string> { "D", "E"};
+            var expectedUniqueCurves = new List<string> {"D", "E"};
             var logCurvePriority = new LogCurvePriority($"{wellUid}-{wellboreUid}")
             {
                 PrioritizedCurves = curves
@@ -150,7 +150,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             _repository.Setup(repo => repo.GetDocumentAsync("universal")).ReturnsAsync(_logCurvePriorityUniversal);
             var curves = new List<string> { "D", "E", "D" };
-            var expectedUniqueCurves = new List<string> { "D", "E"};
+            var expectedUniqueCurves = new List<string> {"D", "E"};
             var logCurvePriority = new LogCurvePriority($"universal")
             {
                 PrioritizedCurves = curves
