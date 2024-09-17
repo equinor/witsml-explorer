@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,9 +20,11 @@ namespace WitsmlExplorer.Api.Tests.Services
         private readonly List<string> _prioritizedCurvesWell1Wellbore1 = new() { "curve1", "curve2" };
         private readonly List<string> _prioritizedCurvesWell1Wellbore2 = new() { "A", "B", "C" };
         private readonly List<string> _prioritizedCurvesWell2Wellbore1 = new() { "1", "2", "3", "4" };
+        private readonly List<string> _prioritizedCurvesUniversal = new() { "A", "B", "C" };
         private readonly LogCurvePriority _logCurvePriorityWell1Wellbore1;
         private readonly LogCurvePriority _logCurvePriorityWell1Wellbore2;
         private readonly LogCurvePriority _logCurvePriorityWell2Wellbore1;
+        private readonly LogCurvePriority _logCurvePriorityUniversal;
 
         public LogCurvePriorityServiceTests()
         {
@@ -39,9 +42,14 @@ namespace WitsmlExplorer.Api.Tests.Services
             {
                 PrioritizedCurves = _prioritizedCurvesWell2Wellbore1
             };
+            _logCurvePriorityUniversal = new LogCurvePriority("universal")
+            {
+                PrioritizedCurves = _prioritizedCurvesUniversal
+            };
 
             _repository.Setup(repo => repo.GetDocumentAsync(It.IsAny<string>())).ReturnsAsync((LogCurvePriority)null);
             _repository.Setup(repo => repo.GetDocumentAsync("well1-wellbore1")).ReturnsAsync(_logCurvePriorityWell1Wellbore1);
+          //
             _repository.Setup(repo => repo.GetDocumentAsync("well1-wellbore2")).ReturnsAsync(_logCurvePriorityWell1Wellbore2);
             _repository.Setup(repo => repo.GetDocumentAsync("well2-wellbore1")).ReturnsAsync(_logCurvePriorityWell2Wellbore1);
             _repository.Setup(repo => repo.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<LogCurvePriority>()))
@@ -61,6 +69,16 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             Assert.Equal(_prioritizedCurvesWell1Wellbore1, result);
             _repository.Verify(repo => repo.GetDocumentAsync(It.Is<string>(id => id == $"{wellUid}-{wellboreUid}")), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetPrioritizedUniversalCurves_CorrectIds_ReturnsExpectedCurves()
+        {
+            _repository.Setup(repo => repo.GetDocumentAsync("universal")).ReturnsAsync(_logCurvePriorityUniversal);
+            var result = await _logCurvePriorityService.GetPrioritizedUniversalCurves();
+
+            Assert.Equal(_prioritizedCurvesUniversal, result);
+            _repository.Verify(repo => repo.GetDocumentAsync(It.Is<string>(id => id == "universal")), Times.Once);
         }
 
         [Fact]
@@ -94,6 +112,21 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
+        public async Task SetPrioritizedUniversalCurves_NoExistingPriority_CreatesNewPriority()
+        {
+            var curves = new List<string> { "AA", "AB" };
+            var logCurvePriority = new LogCurvePriority($"universal")
+            {
+                PrioritizedCurves = curves
+            };
+
+            var result = await _logCurvePriorityService.SetPrioritizedUniversalCurves(curves);
+            Assert.Equal(curves, result);
+                _repository.Verify(repo => repo.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<LogCurvePriority>()), Times.Never);
+                _repository.Verify(repo => repo.CreateDocumentAsync(It.Is<LogCurvePriority>(lcp => lcp.Id == $"universal" && lcp.PrioritizedCurves.SequenceEqual(curves))), Times.Once);
+        }
+
+        [Fact]
         public async Task SetPrioritizedLocalCurves_ExistingPriority_ReplacesPriority()
         {
             var wellUid = "well1";
@@ -111,6 +144,22 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
+        public async Task SetPrioritizedUniversalCurves_ExistingPriority_ReplacesPriority()
+        {
+            _repository.Setup(repo => repo.GetDocumentAsync("universal")).ReturnsAsync(_logCurvePriorityUniversal);
+            var curves = new List<string> { "D", "E" };
+            var logCurvePriority = new LogCurvePriority($"universal")
+            {
+                PrioritizedCurves = curves
+            };
+
+            var result = await _logCurvePriorityService.SetPrioritizedUniversalCurves(curves);
+
+            Assert.Equal(curves, result);
+            _repository.Verify(repo => repo.UpdateDocumentAsync($"universal", It.Is<LogCurvePriority>(lcp => lcp.PrioritizedCurves.SequenceEqual(curves))), Times.Once);
+        }
+
+        [Fact]
         public async Task SetPrioritizedLocalCurves_EmptyInput_RemovesPriorityObject()
         {
             var wellUid = "well2";
@@ -122,6 +171,19 @@ namespace WitsmlExplorer.Api.Tests.Services
             Assert.Null(result);
             _repository.Verify(repo => repo.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<LogCurvePriority>()), Times.Never);
             _repository.Verify(repo => repo.DeleteDocumentAsync($"{wellUid}-{wellboreUid}"), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetPrioritizedUniversalCurves_EmptyInput_RemovesPriorityObject()
+        {
+            var expectedResult = 0;
+            _repository.Setup(repo => repo.GetDocumentAsync("universal")).ReturnsAsync(_logCurvePriorityUniversal);
+            var curves = new List<string>();
+
+            var result = await _logCurvePriorityService.SetPrioritizedUniversalCurves(curves);
+
+            Assert.Equal(result.Count, expectedResult);
+            _repository.Verify(repo => repo.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<LogCurvePriority>()), Times.Once);
         }
     }
 }
