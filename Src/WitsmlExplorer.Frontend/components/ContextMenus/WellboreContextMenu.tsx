@@ -28,6 +28,7 @@ import {
   openObjectOnWellboreProperties,
   openWellboreProperties
 } from "components/Modals/PropertiesModal/openPropertiesHelpers";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -42,7 +43,7 @@ import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React from "react";
+import React, { ChangeEvent, useState } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
@@ -67,6 +68,9 @@ const WellboreContextMenu = (
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
   });
+
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>()
+  ;
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -126,10 +130,20 @@ const WellboreContextMenu = (
       <ConfirmModal
         heading={"Delete wellbore?"}
         content={
+          <>
           <span>
             This will permanently delete <strong>{wellbore.name}</strong> with
             uid: <strong>{wellbore.uid}</strong>
           </span>
+          <Checkbox
+            label={`Keep me logged in to this server for 24 hours`}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setKeepLoggedIn(e.target.checked);
+            }}
+            colors={colors}
+          />
+
+          </>
         }
         onConfirm={deleteWellbore}
         confirmColor={"danger"}
