@@ -73,7 +73,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var (result, refreshAction) = await _worker.Execute(job);
 
             Assert.True(result.IsSuccess);
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Once);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(), null), Times.Once);
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.Is<WitsmlLogs>(logs => ValidateLogs(logs, expectedData))), Times.Once);
         }
 
@@ -104,7 +104,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var (result, refreshAction) = await _worker.Execute(job);
 
             Assert.True(result.IsSuccess);
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Once);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(), null), Times.Once);
             _witsmlClient.Verify(client => client.UpdateInStoreAsync(It.Is<WitsmlLogs>(logs => ValidateLogs(logs, expectedData))), Times.Once);
         }
 

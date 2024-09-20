@@ -104,7 +104,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetUpStoreForDelete(bool queryResult = true)
         {
             List<IWitsmlQueryType> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(),null))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(), null))
             .Callback<IWitsmlQueryType>(deleteQueries.Add)
             .ReturnsAsync(new QueryResult(true));
 

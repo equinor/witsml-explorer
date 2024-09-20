@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(), null), Times.Never);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(), null), Times.Never);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(), null), Times.Never);
         }
 
         [Fact]
