@@ -123,7 +123,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .ReturnsAsync(new QueryResult(true));
 
             _witsmlClient.Setup(client =>
-                    client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(), null))
+                    client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
                 .ReturnsAsync(new QueryResult(true));
 
             await _worker.Execute(job);

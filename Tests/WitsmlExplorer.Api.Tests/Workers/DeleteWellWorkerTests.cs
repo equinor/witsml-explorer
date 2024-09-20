@@ -9,6 +9,7 @@ using Serilog;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -51,7 +52,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_DeleteWell_RefreshAction()
         {
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(), null))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>()))
                 .ReturnsAsync(new QueryResult(true));
 
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob());
@@ -63,7 +64,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_DeleteWell_ReturnResult()
         {
             WitsmlWells query = null;
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlWells>(), null))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlWells>()))
                 .Callback<WitsmlWells>((wells) => query = wells)
                 .ReturnsAsync(new QueryResult(true));
 

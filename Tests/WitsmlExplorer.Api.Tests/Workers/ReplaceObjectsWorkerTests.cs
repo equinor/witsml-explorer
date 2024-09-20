@@ -104,14 +104,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetUpStoreForDelete(bool queryResult = true)
         {
             List<IWitsmlQueryType> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(), null))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>()))
             .Callback<IWitsmlQueryType>(deleteQueries.Add)
             .ReturnsAsync(new QueryResult(true));
 
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(
             Match.Create<IWitsmlQueryType>(o =>
                 ((WitsmlTubulars)o).Tubulars.First().UidWell == WellUid &&
-                ((WitsmlTubulars)o).Tubulars.First().UidWellbore == TargetWellboreUid), null))
+                ((WitsmlTubulars)o).Tubulars.First().UidWellbore == TargetWellboreUid)))
             .ReturnsAsync(new QueryResult(queryResult));
         }
 

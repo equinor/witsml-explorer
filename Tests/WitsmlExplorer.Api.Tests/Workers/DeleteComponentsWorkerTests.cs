@@ -68,7 +68,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(
             Match.Create<IWitsmlQueryType>(o =>
                 ((WitsmlLogs)o).Logs.First().UidWell == WellUid &&
-                ((WitsmlLogs)o).Logs.First().UidWellbore == WellboreUid), null))
+                ((WitsmlLogs)o).Logs.First().UidWellbore == WellboreUid)))
             .ReturnsAsync(new QueryResult(true));
 
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(ComponentType.Mnemonic));
@@ -82,7 +82,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_DeleteTwoTubularComponents_CorrectQuery()
         {
             List<IWitsmlQueryType> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(), null))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>()))
             .Callback<IWitsmlQueryType>(deleteQueries.Add)
             .ReturnsAsync(new QueryResult(true));
 
@@ -103,7 +103,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         [Fact]
         public async Task Execute_DeleteTwoTubularComponents_ReturnResult()
         {
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(), null))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>()))
             .ReturnsAsync(new QueryResult(true));
 
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(ComponentType.TubularComponent));
