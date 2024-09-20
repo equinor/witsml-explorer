@@ -70,7 +70,6 @@ const WellboreContextMenu = (
     placeholderData: Object.entries(ObjectType)
   });
 
-  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>();
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
       uid: uuid(),

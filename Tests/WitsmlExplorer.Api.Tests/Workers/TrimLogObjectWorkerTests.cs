@@ -53,7 +53,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Never);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Never);
         }
 
         [Fact]
@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
             await _worker.Execute(job);
 
-            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()), Times.Never);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null), Times.Never);
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             List<WitsmlLogs> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
                 .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
@@ -143,7 +143,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             List<WitsmlLogs> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
                 .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
@@ -168,7 +168,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             List<WitsmlLogs> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
                 .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
@@ -195,7 +195,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             List<WitsmlLogs> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
                 .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
@@ -221,7 +221,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             List<WitsmlLogs> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
                 .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
@@ -254,7 +254,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             List<WitsmlLogs> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
                 .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 
@@ -287,7 +287,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
 
             List<WitsmlLogs> deleteQueries = new();
-            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>()))
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
                 .Callback<WitsmlLogs>(deleteQueries.Add)
                 .ReturnsAsync(new QueryResult(true));
 

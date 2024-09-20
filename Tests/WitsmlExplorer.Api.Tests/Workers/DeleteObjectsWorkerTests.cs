@@ -62,7 +62,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(
             Match.Create<IWitsmlQueryType>(o =>
                 ((WitsmlLogs)o).Logs.First().UidWell == WellUid &&
-                ((WitsmlLogs)o).Logs.First().UidWellbore == WellboreUid)))
+                ((WitsmlLogs)o).Logs.First().UidWellbore == WellboreUid),null))
             .ReturnsAsync(new QueryResult(true));
 
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(EntityType.Log));
@@ -75,7 +75,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(
             Match.Create<IWitsmlQueryType>(o =>
                 ((WitsmlTubulars)o).Tubulars.First().UidWell == WellUid &&
-                ((WitsmlTubulars)o).Tubulars.First().UidWellbore == WellboreUid)))
+                ((WitsmlTubulars)o).Tubulars.First().UidWellbore == WellboreUid),null))
             .ReturnsAsync(new QueryResult(true));
 
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(EntityType.Tubular));
