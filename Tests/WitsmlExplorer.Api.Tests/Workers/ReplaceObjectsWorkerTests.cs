@@ -111,7 +111,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(
             Match.Create<IWitsmlQueryType>(o =>
                 ((WitsmlTubulars)o).Tubulars.First().UidWell == WellUid &&
-                ((WitsmlTubulars)o).Tubulars.First().UidWellbore == TargetWellboreUid),null))
+                ((WitsmlTubulars)o).Tubulars.First().UidWellbore == TargetWellboreUid), null))
             .ReturnsAsync(new QueryResult(queryResult));
         }
 

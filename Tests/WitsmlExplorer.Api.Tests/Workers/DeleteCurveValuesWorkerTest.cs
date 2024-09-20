@@ -245,7 +245,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .ReturnsAsync(new WitsmlLogs());
 
             _witsmlClient.Setup(client =>
-                    client.DeleteFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid),null))
+                    client.DeleteFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), null))
                 .ReturnsAsync(new QueryResult(true));
         }
 

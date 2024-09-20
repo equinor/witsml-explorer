@@ -182,7 +182,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             });
 
             witsmlClient.Setup(client =>
-                client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(),null))
+                client.DeleteFromStoreAsync(It.IsAny<WitsmlLogs>(), null))
                 .Returns((WitsmlLogs logs) =>
             {
                 return Task.FromResult(new QueryResult(true));
