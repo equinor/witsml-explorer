@@ -62,7 +62,7 @@ namespace Witsml.Tests.ServiceReference
         [Fact]
         public void GetKeywords_OptionsInStringAndOtherOptions_ReturnsCorrectValue()
         {
-            OptionsIn optionsIn = new(ReturnElements.DataOnly, 50, 100, true, "foo=bar;baz=qux");
+            OptionsIn optionsIn = new(ReturnElements.DataOnly, 50, 100, true, false,"foo=bar;baz=qux");
             Assert.Equal("returnElements=data-only;maxReturnNodes=50;requestLatestValues=100;requestObjectSelectionCapability=true;foo=bar;baz=qux", optionsIn.GetKeywords());
         }
 

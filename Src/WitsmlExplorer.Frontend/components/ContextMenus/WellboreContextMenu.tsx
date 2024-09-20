@@ -44,7 +44,7 @@ import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React, { useState } from "react";
+import React from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
