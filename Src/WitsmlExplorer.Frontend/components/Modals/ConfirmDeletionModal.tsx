@@ -1,26 +1,15 @@
-import {
-  Autocomplete,
-  Progress,
-  TextField,
-  Typography
-} from "@equinor/eds-core-react";
-import ModalDialog, { ModalContentLayout, ModalWidth } from "components/Modals/ModalDialog";
-import { validText } from "components/Modals/ModalParts";
-import { Button } from "components/StyledComponents/Button";
+import { ModalContentLayout } from "components/Modals/ModalDialog";
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
-import { Server } from "models/server";
-import React, { ChangeEvent, useEffect, useState } from "react";
-
-import styled from "styled-components";
+import React, { ChangeEvent, useState } from "react";
 import ConfirmModal from "./ConfirmModal";
 import WarningBar from "components/WarningBar";
-import { WellContextMenuProps } from "components/ContextMenus/WellContextMenu";
 
 export interface ConfirmDeletionModalProps {
-  errorMessage?: string;
-  confirmText?: string;
+  componentType: string;
+  objectName: string;
+  objectUid: string;
   onSubmit: (cascadedDelete: boolean) => void;
 }
 
@@ -32,42 +21,42 @@ const ConfirmDeletionModal = (
     dispatchOperation
   } = useOperationState();
 
+  const [cascadedDelete, setCascadedDelete] = useState<boolean>(false);
 
-  const [cascadeDelete, setCascadeDelete] = useState<boolean>(false);
-
-  const name = "name";
-  const uid = "uid";
-
- 
+  const onConfirmClick = async () => {
+    props.onSubmit(cascadedDelete);
+    dispatchOperation({ type: OperationType.HideModal });
+  };
 
   return (
     <ConfirmModal
-      heading={"Delete well?"}
+      heading={"Delete " + props.componentType + " ?"}
       content={
         <>
-        <ModalContentLayout>
-          <span>
-            This will permanently delete <strong>{name}</strong> with uid:{" "}
-            <strong>{uid}</strong>
-          </span>
+          <ModalContentLayout>
+            <span>
+              This will permanently delete {props.componentType}{" "}
+              <strong>{props.objectName}</strong> with uid:{" "}
+              <strong>{props.objectUid}</strong>
+            </span>
 
-          <Checkbox
-            label={`Delete cascade?`}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setCascadeDelete(e.target.checked);
-            }}
-            colors={colors}
-          />
-
-          {cascadeDelete && (
-            <WarningBar
-              message={"This will also delete all objects under well " + name}
+            <Checkbox
+              label={`Delete cascade?`}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setCascadedDelete(e.target.checked);
+              }}
+              colors={colors}
             />
-          )}
+
+            {cascadedDelete && (
+              <WarningBar
+                message={"This will also delete all objects under well " + name}
+              />
+            )}
           </ModalContentLayout>
         </>
       }
-      onConfirm={() => props.onSubmit(cascadeDelete)}
+      onConfirm={onConfirmClick}
       confirmColor={"danger"}
       confirmText={"Delete well"}
       switchButtonPlaces={true}

@@ -16,7 +16,9 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferences } from "components/ContextMenus/UseClipboardReferences";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -28,7 +30,6 @@ import {
   openObjectOnWellboreProperties,
   openWellboreProperties
 } from "components/Modals/PropertiesModal/openPropertiesHelpers";
-import { Checkbox } from "components/StyledComponents/Checkbox";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -43,7 +44,7 @@ import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
@@ -69,9 +70,7 @@ const WellboreContextMenu = (
     placeholderData: Object.entries(ObjectType)
   });
 
-  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>()
-  ;
-
+  const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>();
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
       uid: uuid(),
@@ -111,7 +110,7 @@ const WellboreContextMenu = (
     );
   };
 
-  const deleteWellbore = async () => {
+  const deleteWellbore = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
@@ -120,40 +119,24 @@ const WellboreContextMenu = (
         wellboreUid: wellbore.uid,
         wellName: wellbore.wellName,
         wellboreName: wellbore.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWellbore, job);
   };
 
   const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete wellbore?"}
-        content={
-          <>
-          <span>
-            This will permanently delete <strong>{wellbore.name}</strong> with
-            uid: <strong>{wellbore.uid}</strong>
-          </span>
-          <Checkbox
-            label={`Keep me logged in to this server for 24 hours`}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setKeepLoggedIn(e.target.checked);
-            }}
-            colors={colors}
-          />
-
-          </>
-        }
-        onConfirm={deleteWellbore}
-        confirmColor={"danger"}
-        confirmText={"Delete wellbore"}
-        switchButtonPlaces={true}
-      />
-    );
+    const userCredentialsModalProps: ConfirmDeletionModalProps = {
+      componentType: "wellbore",
+      objectName: wellbore.name,
+      objectUid: wellbore.uid,
+      onSubmit(cascadedDelete) {
+        deleteWellbore(cascadedDelete);
+      }
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: confirmation
+      payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
 

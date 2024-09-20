@@ -9,9 +9,9 @@ import { WellRow } from "components/ContentViews/WellsListView";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
-import { ErrorFallback } from "components/ErrorBoundary";
-import ConfirmDeletionModal, { ConfirmDeletionModalProps } from "components/Modals/ConfirmDeletionModal";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -26,8 +26,6 @@ import {
 import WellBatchUpdateModal, {
   WellBatchUpdateModalProps
 } from "components/Modals/WellBatchUpdateModal";
-import { Checkbox } from "components/StyledComponents/Checkbox";
-import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
@@ -44,7 +42,7 @@ import { DeleteWellJob } from "models/jobs/deleteJobs";
 import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
-import React, { ChangeEvent, useState } from "react";
+import React from "react";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
@@ -61,7 +59,6 @@ export interface WellContextMenuProps {
 }
 
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
-  const [cascadeDelete, setCascadeDelete] = useState<boolean>(false);
   const { dispatchOperation, well, servers, checkedWellRows } = props;
   const { connectedServer } = useConnectedServer();
   const openInQueryView = useOpenInQueryView();
@@ -109,32 +106,33 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     );
   };
 
-  const deleteWell = async () => {
+  const deleteWell = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellJob = {
       toDelete: {
         wellUid: well.uid,
         wellName: well.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWell, job);
   };
 
   const onClickDelete = async () => {
     const userCredentialsModalProps: ConfirmDeletionModalProps = {
-      errorMessage: "",
-      confirmText: "",
+      componentType: "well",
+      objectName: well.name,
+      objectUid: well.uid,
       onSubmit(cascadedDelete) {
-        
-      },
+        deleteWell(cascadedDelete);
+      }
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
-
 
   const onClickDeleteEmptyMnemonics = async () => {
     const deleteEmptyMnemonicsModalProps: DeleteEmptyMnemonicsModalProps = {
