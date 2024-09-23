@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest watch"
@@ -61,6 +61,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.0.2",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.4.3",
@@ -73,13 +74,13 @@
     "@types/react-window": "^1.8.5",
     "@types/styled-components": "^5.1.26",
     "@types/uuidv4": "^5.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.3.1",
-    "@typescript-eslint/parser": "^7.3.1",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
     "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-jest": "^27.9.0",
-    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-jest": "^28.2.0",
+    "eslint-plugin-react": "^6.2.2",
     "jsdom": "^24.0.0",
     "lint-staged": "^13.0.3",
     "typescript": "^5.4.3",
