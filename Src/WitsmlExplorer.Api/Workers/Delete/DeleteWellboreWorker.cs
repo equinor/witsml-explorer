@@ -28,7 +28,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             string wellboreUid = job.ToDelete.WellboreUid;
 
             WitsmlWellbores witsmlWellbore = WellboreQueries.DeleteWitsmlWellbore(wellUid, wellboreUid);
-            QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore);
+            QueryResult result = cascadedDelete ? await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore, new OptionsIn(CascadedDelete: true)) : await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Deleted wellbore. WellUid: {WellUid}, WellboreUid: {WellboreUid}",

@@ -41,7 +41,7 @@ const ConfirmDeletionModal = (
             </span>
 
             <Checkbox
-              label={`Delete cascade?`}
+              label={`Delete all objects under ` + props.componentType + ` ?`}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 setCascadedDelete(e.target.checked);
               }}
@@ -50,7 +50,12 @@ const ConfirmDeletionModal = (
 
             {cascadedDelete && (
               <WarningBar
-                message={"This will also delete all objects under well " + name}
+                message={
+                  "This will also delete all objects under " +
+                  props.componentType +
+                  " " +
+                  props.objectName
+                }
               />
             )}
           </ModalContentLayout>
