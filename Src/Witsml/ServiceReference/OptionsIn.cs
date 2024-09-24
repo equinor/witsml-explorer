@@ -10,6 +10,7 @@ namespace Witsml.ServiceReference
         int? MaxReturnNodes = null,
         int? RequestLatestValues = null,
         bool? RequestObjectSelectionCapability = null,
+        bool? CascadedDelete = null,
         string OptionsInString = null)
     {
         public string OptionsInString { get; init; } = ValidateOptionsInString(OptionsInString);
@@ -33,6 +34,10 @@ namespace Witsml.ServiceReference
             if (RequestObjectSelectionCapability == true)
             {
                 keywords.Add($"requestObjectSelectionCapability=true");
+            }
+            if (CascadedDelete == true)
+            {
+                keywords.Add($"cascadedDelete=true");
             }
             if (!string.IsNullOrEmpty(OptionsInString))
             {

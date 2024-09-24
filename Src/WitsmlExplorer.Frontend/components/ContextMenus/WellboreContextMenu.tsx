@@ -16,7 +16,9 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferences } from "components/ContextMenus/UseClipboardReferences";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -107,7 +109,7 @@ const WellboreContextMenu = (
     );
   };
 
-  const deleteWellbore = async () => {
+  const deleteWellbore = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
@@ -116,30 +118,24 @@ const WellboreContextMenu = (
         wellboreUid: wellbore.uid,
         wellName: wellbore.wellName,
         wellboreName: wellbore.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWellbore, job);
   };
 
   const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete wellbore?"}
-        content={
-          <span>
-            This will permanently delete <strong>{wellbore.name}</strong> with
-            uid: <strong>{wellbore.uid}</strong>
-          </span>
-        }
-        onConfirm={deleteWellbore}
-        confirmColor={"danger"}
-        confirmText={"Delete wellbore"}
-        switchButtonPlaces={true}
-      />
-    );
+    const userCredentialsModalProps: ConfirmDeletionModalProps = {
+      componentType: "wellbore",
+      objectName: wellbore.name,
+      objectUid: wellbore.uid,
+      onSubmit(cascadedDelete) {
+        deleteWellbore(cascadedDelete);
+      }
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: confirmation
+      payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
 
@@ -237,7 +233,11 @@ const WellboreContextMenu = (
             )}
           </Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWellbore"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWellbore"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellboreRows && checkedWellboreRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
