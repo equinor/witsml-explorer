@@ -92,7 +92,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             WitsmlWells query = null;
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
-                .Callback<WitsmlWells, OptionsIn>((wells,_) => query = wells)
+                .Callback<WitsmlWells, OptionsIn>((wells, _) => query = wells)
                 .ReturnsAsync(new QueryResult(true));
 
             (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(true));
