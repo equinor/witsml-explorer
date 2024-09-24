@@ -51,10 +51,9 @@ const ConfirmDeletionModal = (
             {cascadedDelete && (
               <WarningBar
                 message={
-                  "This will also delete all objects under " +
-                  props.componentType +
-                  " " +
-                  props.objectName
+                  `This action will permanently delete the ${props.componentType} ` +
+                  `'${props.objectName}' and all associated objects. ` +
+                  `This cannot be undone. Please ensure you want to delete the entire structure.`
                 }
               />
             )}
@@ -63,7 +62,7 @@ const ConfirmDeletionModal = (
       }
       onConfirm={onConfirmClick}
       confirmColor={"danger"}
-      confirmText={"Delete well"}
+      confirmText={"Delete " + props.componentType}
       switchButtonPlaces={true}
     />
   );

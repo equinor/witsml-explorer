@@ -9,7 +9,6 @@ using Serilog;
 
 using Witsml;
 using Witsml.Data;
-using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;

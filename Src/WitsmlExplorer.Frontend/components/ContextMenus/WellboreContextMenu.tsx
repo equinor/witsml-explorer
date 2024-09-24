@@ -233,7 +233,11 @@ const WellboreContextMenu = (
             )}
           </Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWellbore"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWellbore"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellboreRows && checkedWellboreRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
