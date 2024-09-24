@@ -26,6 +26,7 @@ namespace Witsml
         Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<string> UpdateInStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
+        Task<QueryResult> DeleteFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType;
         Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> TestConnectionAsync();
         Task<WitsmlCapServers> GetCap();
@@ -367,7 +368,17 @@ namespace Witsml
             throw new Exception($"Error while adding to store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
-        public async Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType
+        public Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType
+        {
+            return DeleteFromStoreAsyncImplementation(query);
+        }
+
+        public Task<QueryResult> DeleteFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType
+        {
+            return DeleteFromStoreAsyncImplementation(query, optionsIn);
+        }
+
+        private async Task<QueryResult> DeleteFromStoreAsyncImplementation<T>(T query, OptionsIn optionsIn = null) where T : IWitsmlQueryType
         {
             try
             {
@@ -375,7 +386,7 @@ namespace Witsml
                 {
                     WMLtypeIn = query.TypeName,
                     QueryIn = XmlHelper.Serialize(query),
-                    OptionsIn = string.Empty,
+                    OptionsIn = optionsIn == null ? string.Empty : optionsIn.GetKeywords(),
                     CapabilitiesIn = _clientCapabilities
                 };
 

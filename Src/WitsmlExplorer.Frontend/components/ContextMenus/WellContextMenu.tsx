@@ -9,7 +9,9 @@ import { WellRow } from "components/ContentViews/WellsListView";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -104,37 +106,31 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     );
   };
 
-  const deleteWell = async () => {
+  const deleteWell = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellJob = {
       toDelete: {
         wellUid: well.uid,
         wellName: well.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWell, job);
   };
 
   const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete well?"}
-        content={
-          <span>
-            This will permanently delete <strong>{well.name}</strong> with uid:{" "}
-            <strong>{well.uid}</strong>
-          </span>
-        }
-        onConfirm={deleteWell}
-        confirmColor={"danger"}
-        confirmText={"Delete well"}
-        switchButtonPlaces={true}
-      />
-    );
+    const userCredentialsModalProps: ConfirmDeletionModalProps = {
+      componentType: "well",
+      objectName: well.name,
+      objectUid: well.uid,
+      onSubmit(cascadedDelete) {
+        deleteWell(cascadedDelete);
+      }
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: confirmation
+      payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
 
@@ -219,7 +215,11 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Wellbore</Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWell"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWell"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellRows && checkedWellRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
