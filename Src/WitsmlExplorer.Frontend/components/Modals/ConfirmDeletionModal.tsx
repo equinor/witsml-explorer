@@ -30,7 +30,7 @@ const ConfirmDeletionModal = (
 
   return (
     <ConfirmModal
-      heading={"Delete " + props.componentType + " ?"}
+      heading={"Delete " + props.componentType + "?"}
       content={
         <>
           <ModalContentLayout>
@@ -41,7 +41,7 @@ const ConfirmDeletionModal = (
             </span>
 
             <Checkbox
-              label={`Delete all objects under ` + props.componentType + ` ?`}
+              label={`Delete all objects under ` + props.componentType + `?`}
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 setCascadedDelete(e.target.checked);
               }}

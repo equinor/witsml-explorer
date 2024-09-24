@@ -215,7 +215,11 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Wellbore</Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWell"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWell"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellRows && checkedWellRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
