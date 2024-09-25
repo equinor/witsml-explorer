@@ -22,7 +22,7 @@ import Wellbore from "models/wellbore";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
-import { OBJECT_GROUPS_PATH } from "routes/routerConstants";
+import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
@@ -117,7 +117,11 @@ export default function WellboresListView() {
 
   const onSelect = async (wellboreRow: any) => {
     navigate(
-      `${encodeURIComponent(wellboreRow.wellbore.uid)}/${OBJECT_GROUPS_PATH}`
+      getObjectGroupsViewPath(
+        connectedServer?.url,
+        wellboreRow.wellUid,
+        wellboreRow.uid
+      )
     );
   };
 

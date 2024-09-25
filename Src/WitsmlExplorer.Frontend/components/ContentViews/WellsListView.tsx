@@ -19,7 +19,7 @@ import { useOperationState } from "hooks/useOperationState";
 import Well from "models/well";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { WELLBORES_PATH } from "routes/routerConstants";
+import { getWellboresViewPath } from "routes/utils/pathBuilder";
 
 export interface WellRow extends ContentTableRow, Well {}
 
@@ -54,7 +54,7 @@ export default function WellsListView() {
   ];
 
   const onSelect = (well: any) => {
-    navigate(`${encodeURIComponent(well.uid)}/${WELLBORES_PATH}`);
+    navigate(getWellboresViewPath(connectedServer?.url, well.uid));
   };
 
   const onContextMenu = (
