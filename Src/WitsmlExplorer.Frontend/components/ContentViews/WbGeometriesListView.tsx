@@ -18,6 +18,7 @@ import { ObjectType } from "models/objectType";
 import WbGeometryObject from "models/wbGeometry";
 import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 export interface WbGeometryObjectRow extends ContentTableRow, WbGeometryObject {
   wbGeometry: WbGeometryObject;
@@ -69,7 +70,15 @@ export default function WbGeometriesListView() {
   };
 
   const onSelect = (wbGeometry: any) => {
-    navigate(encodeURIComponent(wbGeometry.uid));
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.WbGeometry,
+        wbGeometry.uid
+      )
+    );
   };
 
   const columns: ContentTableColumn[] = [
