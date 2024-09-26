@@ -63,6 +63,30 @@ declare module "@tanstack/react-table" {
   }
 }
 
+type TableStyleProps = {
+  cellHeight: number;
+  headCellHeight: number;
+  fontSize?: string;
+};
+
+const sizes: { [key in UserTheme]: TableStyleProps } = {
+  [UserTheme.Comfortable]: {
+    cellHeight: 53,
+    headCellHeight: 55,
+    fontSize: undefined
+  },
+  [UserTheme.SemiCompact]: {
+    cellHeight: 30,
+    headCellHeight: 35,
+    fontSize: undefined
+  },
+  [UserTheme.Compact]: {
+    cellHeight: 26,
+    headCellHeight: 30,
+    fontSize: "0.8rem"
+  }
+};
+
 export const ContentTable = React.memo(
   (contentTableProps: ContentTableProps): React.ReactElement => {
     const {
@@ -96,9 +120,8 @@ export const ContentTable = React.memo(
       initializeColumnVisibility(viewId)
     );
     const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
-    const isSemiOrCompactMode = theme !== UserTheme.Comfortable;
-    const cellHeight = isSemiOrCompactMode ? 30 : 53;
-    const headCellHeight = isSemiOrCompactMode ? 35 : 55;
+    const cellHeight = sizes[theme].cellHeight;
+    const headCellHeight = sizes[theme].headCellHeight;
     const noData = useMemo(() => [], []);
 
     const columnDef = useColumnDef(
@@ -388,6 +411,7 @@ export const ContentTable = React.memo(
                             style={{
                               width: cell.column.getSize(),
                               height: cellHeight,
+                              fontSize: sizes[theme].fontSize,
                               left:
                                 column.index < stickyLeftColumns
                                   ? column.start
