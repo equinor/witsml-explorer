@@ -1,5 +1,5 @@
 import { FC } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Colors } from "../../../styles/Colors.tsx";
 import {
   buttonBaseClasses,
@@ -48,36 +48,37 @@ const RawStyledMenu = styled(MuiMenu)<{
 }>`
   ${({ colors, sizeVariant }) => {
     const { infographic, ui, interactive } = colors;
-    return `
-  .${paperClasses.root} {
-    background: ${ui.backgroundLight};
+    return css`
+      .${paperClasses.root} {
+        background: ${ui.backgroundLight};
 
-    p {
-      color: ${infographic.primaryMossGreen};
-    }
-
-    svg {
-      fill: ${infographic.primaryMossGreen};
-    }
-
-    .${buttonBaseClasses.root}.${menuItemClasses.root} {
-      margin: ${sizes[sizeVariant].buttonBaseMargin};
-
-        &, p {
-        font-size: ${sizes[sizeVariant].menuItemFontSize};
+        p {
+          color: ${infographic.primaryMossGreen};
         }
 
         svg {
-          height: ${sizes[sizeVariant].menuItemIconSize};
-          width: ${sizes[sizeVariant].menuItemIconSize};
+          fill: ${infographic.primaryMossGreen};
         }
 
-        &:hover {
-          text-decoration: none;
-          background-color: ${interactive.contextMenuItemHover};
+        .${buttonBaseClasses.root}.${menuItemClasses.root} {
+          margin: ${sizes[sizeVariant].buttonBaseMargin};
+
+          &,
+          p {
+            font-size: ${sizes[sizeVariant].menuItemFontSize};
+          }
+
+          svg {
+            height: ${sizes[sizeVariant].menuItemIconSize};
+            width: ${sizes[sizeVariant].menuItemIconSize};
+          }
+
+          &:hover {
+            text-decoration: none;
+            background-color: ${interactive.contextMenuItemHover};
+          }
         }
       }
-  }
-`;
+    `;
   }}
 `;

@@ -24,21 +24,67 @@ type ComposedExoticButton = ForwardRefExoticComponent<
   Group: typeof EdsButton.Group;
 };
 
+const StyledEdsButton = styled(EdsButton)<{
+  isCompact: boolean;
+}>`
+  ${({ isCompact }) =>
+    !isCompact
+      ? ""
+      : css`
+          --eds_button__padding_x: 0.5rem;
+          --eds_button__padding_y_compact: 2px;
+        `}
+  & > span > svg {
+    height: ${({ isCompact }) => (isCompact ? 18 : undefined)}px !important;
+    width: ${({ isCompact }) => (isCompact ? 18 : undefined)}px !important;
+  }
+`;
+
 const ExoticButton = forwardRef<Ref, ButtonProps>((props, ref) => {
   const {
     operationState: { colors, theme }
   } = useOperationState();
+  const isCompact = theme === UserTheme.Compact;
 
   if (!props.variant || props.variant === "contained") {
-    return <ContainedButton ref={ref} {...props} colors={colors} />;
+    return (
+      <ContainedButton
+        ref={ref}
+        {...props}
+        colors={colors}
+        isCompact={isCompact}
+      />
+    );
   } else if (props.variant === "contained_icon") {
-    return <EdsButton ref={ref} {...(props as EdsButtonProps)} />;
+    return (
+      <StyledEdsButton
+        ref={ref}
+        {...(props as EdsButtonProps)}
+        isCompact={isCompact}
+      />
+    );
   } else if (props.variant === "outlined") {
-    return <OutlinedButton ref={ref} {...props} colors={colors} />;
+    return (
+      <OutlinedButton
+        ref={ref}
+        {...props}
+        colors={colors}
+        isCompact={isCompact}
+      />
+    );
   } else if (props.variant === "ghost") {
-    return <GhostButton ref={ref} {...props} colors={colors} />;
+    return (
+      <GhostButton ref={ref} {...props} colors={colors} isCompact={isCompact} />
+    );
   } else if (props.variant === "ghost_icon") {
-    return <GhostIconButton ref={ref} {...props} colors={colors} />;
+    return (
+      <GhostIconButton
+        ref={ref}
+        {...props}
+        colors={colors}
+        isCompact={isCompact}
+      />
+    );
   } else if (props.variant === "table_icon") {
     return (
       <TableIconButtonLayout>
@@ -48,6 +94,7 @@ const ExoticButton = forwardRef<Ref, ButtonProps>((props, ref) => {
           variant="ghost_icon"
           colors={colors}
           userTheme={theme}
+          isCompact={isCompact}
         />
       </TableIconButtonLayout>
     );
@@ -62,29 +109,30 @@ export const Button: ComposedExoticButton = Object.assign(ExoticButton, {
   Group: EdsButton.Group
 });
 
-const ContainedButton = styled(EdsButton)<{ colors: Colors }>`
+const ContainedButton = styled(StyledEdsButton)<{ colors: Colors }>`
   ${(props) =>
     props?.colors?.mode === "dark"
-      ? `
-        &&:disabled {
-        background: #565656;
-        border:1px solid #565656;
-        color:#9CA6AC;
-      }`
+      ? css`
+          &&:disabled {
+            background: #565656;
+            border: 1px solid #565656;
+            color: #9ca6ac;
+          }
+        `
       : ""};
 `;
 
-const GhostButton = styled(EdsButton)<{ colors: Colors }>`
+const GhostButton = styled(StyledEdsButton)<{ colors: Colors }>`
   white-space: nowrap;
   color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
-const GhostIconButton = styled(EdsButton)<{ colors: Colors }>`
+const GhostIconButton = styled(StyledEdsButton)<{ colors: Colors }>`
   white-space: nowrap;
   color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
-const TableIconButton = styled(EdsButton)<{
+const TableIconButton = styled(StyledEdsButton)<{
   colors: Colors;
   userTheme: UserTheme;
 }>`
@@ -93,8 +141,8 @@ const TableIconButton = styled(EdsButton)<{
   top: 50%;
   left: 50%;
   transform: translate(-50%, -55%);
-  ${(props) =>
-    props.userTheme === UserTheme.Compact &&
+  ${({ isCompact }) =>
+    isCompact &&
     css`
       height: 22px;
       width: 22px;
@@ -111,7 +159,7 @@ const TableIconButton = styled(EdsButton)<{
     `}
 `;
 
-const OutlinedButton = styled(EdsButton)<{ colors: Colors }>`
+const OutlinedButton = styled(StyledEdsButton)<{ colors: Colors }>`
   white-space: nowrap;
   color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
