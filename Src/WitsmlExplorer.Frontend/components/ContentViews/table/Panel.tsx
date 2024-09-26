@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
+import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -122,7 +123,7 @@ const Panel = (props: PanelProps) => {
 
   return (
     <PanelContainer>
-      <EdsProvider density={theme}>
+      <EdsProvider density={normaliseThemeForEds(theme)}>
         <Typography>{selectedItemsText}</Typography>
         <Typography>{selectedColumnsStatus}</Typography>
         <ColumnOptionsMenu

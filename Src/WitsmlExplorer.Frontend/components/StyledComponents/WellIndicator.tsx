@@ -1,18 +1,24 @@
 import styled from "styled-components";
 import { Colors } from "../../styles/Colors";
+import { UserTheme } from "../../contexts/operationStateReducer.tsx";
+
+const dotPaddingTops: { [key in UserTheme]: string } = {
+  [UserTheme.Comfortable]: "1.125rem",
+  [UserTheme.SemiCompact]: "0.625rem",
+  [UserTheme.Compact]: "0.55rem"
+};
 
 export const WellIndicator = styled.div<{
-  compactMode: boolean;
+  themeMode: UserTheme;
   active: boolean;
   colors: Colors;
 }>`
-  width: 10px;
-  height: 10px;
+  width: 0.5em;
+  height: 0.5em;
   border-radius: 50%;
-  margin: ${(props) =>
-    props.compactMode ? "0.625rem 0 0 0.5rem" : "1.125rem 0 0 0.5rem"};
-  ${(props) =>
-    props.active
-      ? `background-color: ${props.colors.interactive.successHover};`
-      : `border: 2px solid ${props.colors.text.staticIconsTertiary};`}
+  margin: ${({ themeMode }) => `${dotPaddingTops[themeMode]} 0.3rem`};
+  ${({ colors, active }) =>
+    active
+      ? `background-color: ${colors.interactive.successHover};`
+      : `border: 2px solid ${colors.text.staticIconsTertiary};`}
 `;

@@ -1,16 +1,16 @@
 import { TableBody, TableHead } from "@mui/material";
 import {
   ColumnSizingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
   Header,
   Row,
   RowData,
   RowSelectionState,
   SortDirection,
   Table,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
@@ -96,9 +96,9 @@ export const ContentTable = React.memo(
       initializeColumnVisibility(viewId)
     );
     const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
-    const isCompactMode = theme === UserTheme.Compact;
-    const cellHeight = isCompactMode ? 30 : 53;
-    const headCellHeight = isCompactMode ? 35 : 55;
+    const isSemiOrCompactMode = theme !== UserTheme.Comfortable;
+    const cellHeight = isSemiOrCompactMode ? 30 : 53;
+    const headCellHeight = isSemiOrCompactMode ? 35 : 55;
     const noData = useMemo(() => [], []);
 
     const columnDef = useColumnDef(

@@ -160,6 +160,7 @@ const SettingsModal = (): React.ReactElement => {
               colors={colors}
             >
               <option value={UserTheme.Comfortable}>Comfortable</option>
+              <option value={UserTheme.SemiCompact}>Semi-compact</option>
               <option value={UserTheme.Compact}>Compact</option>
             </StyledNativeSelect>
           </HorizontalLayout>

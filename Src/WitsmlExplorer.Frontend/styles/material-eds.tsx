@@ -1,6 +1,7 @@
 import { createTheme, Theme } from "@mui/material";
 import { UserTheme } from "contexts/operationStateReducer";
 import { colors } from "styles/Colors";
+import { isInAnyCompactMode } from "../tools/themeHelpers.ts";
 
 const EquinorRegular = {
   fontFamily: "EquinorRegular"
@@ -170,7 +171,7 @@ const edsTheme = createTheme({
 
 const getTheme = (theme: UserTheme): Theme => {
   let themeOverrides = {};
-  if (theme === UserTheme.Compact) {
+  if (isInAnyCompactMode(theme)) {
     themeOverrides = {
       ...edsTheme,
       components: {

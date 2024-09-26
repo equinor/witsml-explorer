@@ -33,6 +33,7 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -159,7 +160,7 @@ export default function LogsListView() {
     <>
       {isFetching && <ProgressSpinnerOverlay message="Fetching Logs" />}
       <ContentContainer>
-        <EdsProvider density={theme}>
+        <EdsProvider density={normaliseThemeForEds(theme)}>
           <CommonPanelContainer>
             <Switch
               checked={showGraph}
