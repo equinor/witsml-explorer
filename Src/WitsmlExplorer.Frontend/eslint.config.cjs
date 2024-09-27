@@ -11,25 +11,28 @@ module.exports = [
   {
     settings: {
       react: {
-        version: "detect",
-      },
+        version: "detect"
+      }
     },
     languageOptions: {
       globals: globals.node,
       ecmaVersion: 2021,
       sourceType: "module",
-      parser: typescriptEslintParser,
+      parser: typescriptEslintParser
       // Assuming globals is correctly imported above; otherwise, specify globals manually
     },
     plugins: {
       "@typescript-eslint": typescriptEslintPlugin,
-      "react": reactEslintPlugin,
+      "react": reactEslintPlugin
     },
     rules: {
       // suppress errors for missing 'import React' in files
       "react/react-in-jsx-scope": "off",
       // allow jsx syntax in js files (for next.js project)
-      "react/jsx-filename-extension": ["warn", { extensions: [".js", ".jsx", ".ts", ".tsx"] }],
+      "react/jsx-filename-extension": [
+        "warn",
+        { extensions: [".js", ".jsx", ".ts", ".tsx"] }
+      ],
       "react-hooks/exhaustive-deps": "off",
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/explicit-member-accessibility": "off",
@@ -40,7 +43,7 @@ module.exports = [
       "no-console": ["error", { allow: ["warn", "error"] }],
       "react/prop-types": 1,
       "no-unused-vars": "off",
-      "no-empty-pattern": "off",
-    },
-  },
+      "no-empty-pattern": "off"
+    }
+  }
 ];
