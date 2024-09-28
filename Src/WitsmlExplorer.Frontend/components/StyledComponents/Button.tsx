@@ -33,11 +33,12 @@ const StyledEdsButton = styled(EdsButton)<{
       : css`
           --eds_button__padding_x: 0.5rem;
           --eds_button__padding_y_compact: 2px;
+
+          & > span > svg {
+            height: 18px !important;
+            width: 18px !important;
+          }
         `}
-  & > span > svg {
-    height: ${({ isCompact }) => (isCompact ? 18 : undefined)}px !important;
-    width: ${({ isCompact }) => (isCompact ? 18 : undefined)}px !important;
-  }
 `;
 
 const ExoticButton = forwardRef<Ref, ButtonProps>((props, ref) => {

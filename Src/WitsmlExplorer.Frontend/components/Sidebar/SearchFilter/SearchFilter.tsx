@@ -1,5 +1,10 @@
 import { EdsProvider } from "@equinor/eds-core-react";
-import { Stack, TextField } from "@mui/material";
+import {
+  inputBaseClasses,
+  inputLabelClasses,
+  Stack,
+  TextField
+} from "@mui/material";
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import OptionsContextMenu, {
   OptionsContextMenuProps
@@ -25,11 +30,12 @@ import React, {
 } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { getSearchViewPath } from "routes/utils/pathBuilder";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Colors } from "styles/Colors";
 import EndAdornment from "./EndAdornment";
 import StartAdornment from "./StartAdornment";
 import FilterIcon from "./FilterIcon";
+import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
 
 const searchOptions = Object.values(FilterType);
 
@@ -39,8 +45,10 @@ const SearchFilter = (): ReactElement => {
   const { connectedServer } = useConnectedServer();
   const selectedOption = selectedFilter?.filterType;
   const {
-    operationState: { colors }
+    operationState: { colors, theme }
   } = useOperationState();
+
+  const isCompact = theme === UserTheme.Compact;
   const iconColor = colors.interactive.primaryResting;
 
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -142,6 +150,7 @@ const SearchFilter = (): ReactElement => {
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
               onKeyDown={handleEnterPress}
+              isCompact={isCompact}
               InputProps={{
                 startAdornment: (
                   <StartAdornment
@@ -177,10 +186,26 @@ const SearchFilter = (): ReactElement => {
   );
 };
 
-const SearchField = styled(TextField)<{ colors: Colors }>`
+const SearchField = styled(TextField)<{ colors: Colors; isCompact: boolean }>`
   &&& > div > fieldset {
-    border-color: ${(props) => props.colors.interactive.primaryResting};
+    border-color: ${({ colors }) => colors.interactive.primaryResting};
   }
+
+  ${({ isCompact }) =>
+    !isCompact
+      ? ""
+      : css`
+          .${inputLabelClasses.root} {
+            font-size: 0.9rem;
+          }
+
+          .${inputBaseClasses.input} {
+            padding: 8px 0;
+            font-size: 0.9rem;
+          }
+        `}
+}
+
 `;
 
 const SearchBarContainer = styled.div`
