@@ -12,6 +12,7 @@ export interface DeleteComponentsJob {
 
 export interface DeleteWellboreJob {
   toDelete: WellboreReference;
+  cascadedDelete: boolean;
 }
 
 export interface DeleteWellJob {
@@ -19,4 +20,5 @@ export interface DeleteWellJob {
     wellUid: string;
     wellName: string;
   };
+  cascadedDelete: boolean;
 }

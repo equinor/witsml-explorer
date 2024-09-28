@@ -18,6 +18,7 @@ import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 export interface FluidsReportRow extends ContentTableRow, FluidsReport {
   fluidsReport: FluidsReport;
@@ -90,7 +91,15 @@ export default function FluidsReportsListView() {
   ];
 
   const onSelect = (fluidsReportRow: FluidsReportRow) => {
-    navigate(encodeURIComponent(fluidsReportRow.fluidsReport.uid));
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.FluidsReport,
+        fluidsReportRow.fluidsReport.uid
+      )
+    );
   };
 
   const onContextMenu = (

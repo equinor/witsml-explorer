@@ -23,11 +23,12 @@ namespace WitsmlExplorer.Api.Workers.Delete
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellboreJob job, CancellationToken? cancellationToken = null)
         {
+            bool cascadedDelete = job.CascadedDelete;
             string wellUid = job.ToDelete.WellUid;
             string wellboreUid = job.ToDelete.WellboreUid;
 
             WitsmlWellbores witsmlWellbore = WellboreQueries.DeleteWitsmlWellbore(wellUid, wellboreUid);
-            QueryResult result = await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore);
+            QueryResult result = cascadedDelete ? await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore, new OptionsIn(CascadedDelete: true)) : await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
                 Logger.LogInformation("Deleted wellbore. WellUid: {WellUid}, WellboreUid: {WellboreUid}",
