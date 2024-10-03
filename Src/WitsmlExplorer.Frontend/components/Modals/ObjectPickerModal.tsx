@@ -109,6 +109,7 @@ const ObjectPickerModal = ({
         setFetchError(`The target ${objectType} was not found`);
       }
     } catch (e) {
+      console.error(e);
       setFetchError("Failed to fetch");
     } finally {
       setIsLoading(false);

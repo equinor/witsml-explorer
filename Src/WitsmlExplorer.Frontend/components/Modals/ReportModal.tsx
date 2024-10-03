@@ -24,7 +24,7 @@ import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
 
-export interface ReportModal {
+export interface ReportModalI {
   report?: BaseReport;
   jobId?: string;
 }
@@ -41,7 +41,7 @@ export interface ReportModal {
  *
  * @returns {React.ReactElement} The rendered ReportModal component.
  */
-export const ReportModal = (props: ReportModal): React.ReactElement => {
+export const ReportModal = (props: ReportModalI): React.ReactElement => {
   const { jobId, report: reportProp } = props;
   const {
     dispatchOperation,

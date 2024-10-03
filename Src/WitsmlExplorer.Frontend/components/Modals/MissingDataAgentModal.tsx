@@ -69,6 +69,7 @@ const MissingDataAgentModal = (
         : [];
       return checks.map((check) => ({ ...check, id: uuid() }));
     } catch (error) {
+      console.error(error);
       return [];
     }
   };

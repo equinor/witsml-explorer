@@ -37,9 +37,11 @@ function formatDateString(
     const offset = getOffsetFromTimeZone(timeZone);
     return formatInTimeZone(parsed, offset, dateTimeFormat);
   } catch (e) {
+    console.error(e);
     return "Invalid date";
   }
 }
+
 export default formatDateString;
 
 export function getOffsetFromTimeZone(timeZone: TimeZone): string {

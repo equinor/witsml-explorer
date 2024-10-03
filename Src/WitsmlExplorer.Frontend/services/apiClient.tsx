@@ -1,6 +1,5 @@
 import { Server } from "models/server";
 import { getAccessToken, msalEnabled } from "msal/MsalAuthProvider";
-
 import AuthorizationService, {
   AuthorizationStatus
 } from "services/authorizationService";
@@ -242,6 +241,7 @@ export function getBaseUrl(): URL {
       baseUrl = new URL(`${protocol}://${host}${port}`);
     }
   } catch (e) {
+    console.error(e);
     baseUrl = new URL("http://localhost");
   }
   return baseUrl;

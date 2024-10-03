@@ -55,7 +55,8 @@ const RefreshHandler = (): React.ReactElement => {
             }
           } catch (error) {
             console.error(
-              `Unable to perform refresh action for action: ${refreshAction.refreshType} and entity: ${refreshAction.entityType}`
+              `Unable to perform refresh action for action: ${refreshAction.refreshType} and entity: ${refreshAction.entityType}`,
+              error
             );
           }
         }

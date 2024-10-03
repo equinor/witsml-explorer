@@ -10,6 +10,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   FilterContext,
   FilterType,
+  FilterTypes,
   getFilterTypeInformation,
   isObjectFilterType
 } from "contexts/filter";
@@ -22,7 +23,7 @@ import styled, { CSSProp } from "styled-components";
 import { Colors } from "styles/Colors";
 import Icons from "styles/Icons";
 
-const searchOptions = Object.values(FilterType);
+const searchOptions = Object.values(FilterTypes);
 
 const SearchFilter = (): React.ReactElement => {
   const { dispatchOperation } = useContext(OperationContext);
@@ -218,9 +219,11 @@ const SearchIconLayout = styled.div`
 
 const SearchBarContainer = styled.div`
   width: 85%;
+
   .small-padding-left {
     padding-left: 4px;
   }
+
   .small-padding-right {
     padding-right: 4px;
   }

@@ -15,6 +15,7 @@ const useClipboardComponentReferences: () => ComponentReferences | null =
             parseStringToComponentReferences(clipboardText);
           setReferences(componentReferences);
         } catch (e) {
+          console.error(e);
           //Not a valid object on the clipboard? That is fine, we won't use it.
         }
       };
@@ -40,7 +41,7 @@ export function parseStringToComponentReferences(
   try {
     jsonObject = JSON.parse(input);
   } catch (error) {
-    throw new Error("Invalid input given.");
+    throw new Error("Invalid input given.", error);
   }
   verifyRequiredProperties(jsonObject);
   return jsonObject;
