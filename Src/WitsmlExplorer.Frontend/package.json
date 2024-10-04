@@ -9,7 +9,9 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch",
+    "eslint": "eslint . --cache",
+    "eslint:fix": "eslint . --cache --fix"
   },
   "lint-staged": {
     "**/*.{js,ts,tsx}": [

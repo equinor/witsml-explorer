@@ -58,7 +58,7 @@ export default tsEslint.config(
       "@typescript-eslint/no-use-before-define": "off",
       "@typescript-eslint/no-unused-vars": ["error"],
       "@typescript-eslint/no-unused-expressions": "off",
-      "no-unused-vars": "off",
+      "no-unused-vars": "off", //we want to ignore this and handle unused vars by @typescript-eslint plugin rule
       "no-console": ["error", { allow: ["warn", "error"] }],
       "react/prop-types": 1,
       "no-empty-pattern": "off"

@@ -18,8 +18,6 @@
   "scripts": {
     "dotnet-format": "dotnet tool run dotnet-format --check",
     "dotnet-format:fix": "dotnet tool run dotnet-format",
-    "eslint": "eslint . --cache",
-    "eslint:fix": "eslint . --cache --fix",
     "prepare": "husky install"
   },
   "lint-staged": {
@@ -32,3 +30,4 @@
     "lint-staged": "^13.0.3"
   }
 }
+
