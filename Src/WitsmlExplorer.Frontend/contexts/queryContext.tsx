@@ -1,14 +1,14 @@
 import {
+  getQueryTemplateWithPreset,
   QueryTemplatePreset,
   ReturnElements,
-  StoreFunction,
-  getQueryTemplateWithPreset
+  StoreFunction
 } from "components/ContentViews/QueryViewUtils";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
 import React, { Dispatch, useEffect } from "react";
 import {
-  STORAGE_QUERYVIEW_DATA,
-  getLocalStorageItem
+  getLocalStorageItem,
+  STORAGE_QUERYVIEW_DATA
 } from "tools/localStorageHelpers";
 import { v4 as uuid } from "uuid";
 
@@ -20,6 +20,7 @@ export interface QueryElement {
   optionsIn: string;
   tabId: string;
 }
+
 export interface QueryState {
   queries: QueryElement[];
   tabIndex: number;
@@ -27,13 +28,13 @@ export interface QueryState {
 
 export type DispatchQuery = Dispatch<QueryAction>;
 
-interface QueryContext {
+interface QueryContextI {
   queryState: QueryState;
   dispatchQuery: DispatchQuery;
 }
 
-export const QueryContext = React.createContext<QueryContext>(
-  {} as QueryContext
+export const QueryContext = React.createContext<QueryContextI>(
+  {} as QueryContextI
 );
 
 const getDefaultQueryElement = (): QueryElement => ({

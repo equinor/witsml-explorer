@@ -27,7 +27,7 @@ import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import ConfirmModal from "./ConfirmModal";
 
-export interface ReportModal {
+export interface ReportModalI {
   report?: BaseReport;
   jobId?: string;
 }
@@ -44,7 +44,7 @@ export interface ReportModal {
  *
  * @returns {React.ReactElement} The rendered ReportModal component.
  */
-export const ReportModal = (props: ReportModal): React.ReactElement => {
+export const ReportModal = (props: ReportModalI): React.ReactElement => {
   const { jobId, report: reportProp } = props;
   const {
     dispatchOperation,
