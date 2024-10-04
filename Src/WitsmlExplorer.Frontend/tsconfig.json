@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
@@ -20,29 +16,17 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "*"
-      ]
+      "*": ["*"]
     },
     "useDefineForClassFields": true,
     "allowImportingTsExtensions": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": [
-      "vitest/globals"
-    ]
+    "types": ["vitest/globals"]
   },
-  "exclude": [
-    "node_modules",
-    "eslint.config.js"
-  ],
-  "include": [
-    "vite-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "."
-  ],
+  "exclude": ["node_modules", "eslint.config.js"],
+  "include": ["vite-env.d.ts", "**/*.ts", "**/*.tsx", "."],
   "references": [
     {
       "path": "./tsconfig.node.json"
