@@ -29,10 +29,12 @@ import {
   parseLASData,
   parseLASHeader
 } from "tools/lasFileTools";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;
 }
+
 interface ImportColumn {
   index: number;
   name: string;
@@ -191,7 +193,7 @@ const LogDataImportModal = (
                   </Typography>
                 </Tooltip>
               </FileContainer>
-              <Accordion>
+              <StyledAccordion>
                 <Accordion.Item>
                   <StyledAccordionHeader colors={colors}>
                     Limitations
@@ -276,7 +278,7 @@ const LogDataImportModal = (
                       </Accordion.Panel>
                     </Accordion.Item>
                   )}
-              </Accordion>
+              </StyledAccordion>
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
@@ -299,6 +301,7 @@ const FileContainer = styled.div`
   flex-direction: row;
   gap: 1rem;
   align-items: center;
+
   .MuiButton-root {
     min-width: 160px;
   }
