@@ -132,31 +132,6 @@ const LogDataImportModal = (
     return uploadedFileData;
   };
 
-  const parseDateTimeColumn = (
-    data: string[],
-    selectedColumn: number,
-    inputFormat: string
-  ) => {
-    const dataWithISOTimeColumn = data.map((dataRow) => {
-      const rowValues = dataRow.split(",");
-      rowValues[selectedColumn] = parseDateFromFormat(
-        rowValues[selectedColumn],
-        inputFormat
-      );
-      return rowValues.join(",");
-    });
-    return dataWithISOTimeColumn;
-  };
-
-  const parseDateFromFormat = (dateString: string, format: string) => {
-    const parsed = parse(dateString, format, new Date());
-    if (parsed.toString() === "Invalid Date")
-      throw new Error(
-        `Unable to parse date ${dateString} with format ${format}`
-      );
-    return zonedTimeToUtc(parsed, "UTC").toISOString();
-  };
-
   const parsedData = useMemo(
     () => getParsedData(),
     [
@@ -296,11 +271,14 @@ const LogDataImportModal = (
 
   const contentTableColumns: ContentTableColumn[] = useMemo(
     () =>
-      uploadedFileColumns.map((col) => ({
-        property: col.name,
-        label: `${col.name}[${col.unit}]`,
-        type: ContentType.String
-      })),
+      uploadedFileColumns
+        .filter((x) => selectedMnemonics.find((y) => y === x.name))
+        .map((col) => ({
+          col,
+          property: col.name,
+          label: `${col.name}[${col.unit}]`,
+          type: ContentType.String
+        })),
     [uploadedFileColumns]
   );
 
@@ -328,52 +306,7 @@ const LogDataImportModal = (
     setUploadedFileColumns(reducedHeader);
     setUploadedFileData(reducedData);
   };
-
-  const updateHeader = (
-    columns: ImportColumn[],
-    mnemonics: string[],
-    allMnemonics: ImportColumn[]
-  ) => {
-    for (let i = allMnemonics.length - 1; i >= 0; i--) {
-      const toRemove = allMnemonics[i];
-      if (mnemonics.indexOf(toRemove.name) === -1) {
-        //  columns = columns.filter(item => item.index !== i)
-        // const columnToRemove = uploadedFileColumns
-      }
-    }
-    const output = columns.filter((x) => mnemonics.indexOf(x.name) > -1);
-    return output;
-  };
-
-  function removeColumn(arr: any[][], colIndex: number): any[][] {
-    return arr.map((row) => row.filter((_, index) => index !== colIndex));
-  }
-
-  function swapArrayElements<T>(arr: T[], i: number, j: number): void {
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-
-  const inputDateFormats: string[] = [
-    "YYYY-MM-DDTHH:mm:ss.sssZ", // ISO 8601 format
-    "HH:mm:ss/dd-MMM-yyyy"
-  ];
-
-  const findDateTimeFormat = (
-    data: string[],
-    selectedColumn: number
-  ): string | null => {
-    const dateString = data[0].split(",")[selectedColumn];
-    for (const format of inputDateFormats) {
-      try {
-        parseDateFromFormat(dateString, format);
-        return format;
-      } catch (error) {
-        // Ignore error, try next format.
-      }
-    }
-    return null;
-  };
-
+  
   const countOccurrences = (arr: any[], property: string) => {
     return arr.reduce((acc, obj) => {
       const key = obj[property];
@@ -681,7 +614,9 @@ const getTableData = (
   columns: ImportColumn[],
   indexCurve: string
 ): ContentTableCustomRow[] => {
-  const indexCurveColumn = columns.find((col) => col.name === indexCurve);
+  const indexCurveColumn = columns.find(
+    (col) => col.name.toUpperCase() === indexCurve.toUpperCase()
+  );
   if (!indexCurveColumn) return [];
   return data?.map((dataLine) => {
     const dataCells = dataLine.split(",");
@@ -691,8 +626,113 @@ const getTableData = (
     columns.forEach((col, i) => {
       result[col.name] = dataCells[i];
     });
+
     return result;
   });
+};
+
+function swapColumns(
+  matrix: string[][],
+  col1: number,
+  col2: number
+): string[][] {
+  for (const row of matrix) {
+    [row[col1], row[col2]] = [row[col2], row[col1]];
+  }
+  return matrix;
+}
+
+const swapFirstColumn = (data: string[], selectedColumn: number) => {
+  const splitData = data.map((obj) => obj.split(","));
+  const tempData = swapColumns(splitData, 0, selectedColumn);
+  const result = tempData.map((obj) => obj.join(","));
+  return result;
+};
+
+const updateColumns = (
+  data: string[],
+  mnemonics: string[],
+  allMnemonics: ImportColumn[]
+) => {
+  let splitData = data.map((obj) => obj.split(","));
+
+  for (let i = allMnemonics.length - 1; i >= 0; i--) {
+    const toRemove = allMnemonics[i];
+    if (mnemonics.indexOf(toRemove.name) === -1) {
+      splitData = removeColumn(splitData, i);
+    }
+  }
+  // const tempData = swapColumns(splitData, 0, selectedColumn);
+  //  const result = tempData.map((obj) => obj.join(","));
+  return splitData.map((obj) => obj.join(","));
+};
+
+const updateHeader = (
+  columns: ImportColumn[],
+  mnemonics: string[],
+  allMnemonics: ImportColumn[]
+) => {
+  for (let i = allMnemonics.length - 1; i >= 0; i--) {
+    const toRemove = allMnemonics[i];
+    if (mnemonics.indexOf(toRemove.name) === -1) {
+      //  columns = columns.filter(item => item.index !== i)
+      // const columnToRemove = uploadedFileColumns
+    }
+  }
+  const output = columns.filter((x) => mnemonics.indexOf(x.name) > -1);
+  return output;
+};
+
+function removeColumn(arr: any[][], colIndex: number): any[][] {
+  return arr.map((row) => row.filter((_, index) => index !== colIndex));
+}
+
+function swapArrayElements<T>(arr: T[], i: number, j: number): void {
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+}
+
+const inputDateFormats: string[] = [
+  "YYYY-MM-DDTHH:mm:ss.sssZ", // ISO 8601 format
+  "HH:mm:ss/dd-MMM-yyyy"
+];
+
+const findDateTimeFormat = (
+  data: string[],
+  selectedColumn: number
+): string | null => {
+  const dateString = data[0].split(",")[selectedColumn];
+  for (const format of inputDateFormats) {
+    try {
+      parseDateFromFormat(dateString, format);
+      return format;
+    } catch (error) {
+      // Ignore error, try next format.
+    }
+  }
+  return null;
+};
+
+const parseDateTimeColumn = (
+  data: string[],
+  selectedColumn: number,
+  inputFormat: string
+) => {
+  const dataWithISOTimeColumn = data.map((dataRow) => {
+    const rowValues = dataRow.split(",");
+    rowValues[selectedColumn] = parseDateFromFormat(
+      rowValues[selectedColumn],
+      inputFormat
+    );
+    return rowValues.join(",");
+  });
+  return dataWithISOTimeColumn;
+};
+
+const parseDateFromFormat = (dateString: string, format: string) => {
+  const parsed = parse(dateString, format, new Date());
+  if (parsed.toString() === "Invalid Date")
+    throw new Error(`Unable to parse date ${dateString} with format ${format}`);
+  return zonedTimeToUtc(parsed, "UTC").toISOString();
 };
 
 export default LogDataImportModal;
