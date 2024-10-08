@@ -1,5 +1,4 @@
-﻿﻿
-import {
+﻿﻿import {
   Accordion,
   Autocomplete,
   Icon,
