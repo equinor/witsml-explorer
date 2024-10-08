@@ -82,8 +82,7 @@ const LogObjectContextMenu = (
     });
   };
 
-  const onClickImport = async () => {
-  };
+  const onClickImport = async () => {};
   const onClickAnalyzeGaps = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logObject = checkedObjects[0];
