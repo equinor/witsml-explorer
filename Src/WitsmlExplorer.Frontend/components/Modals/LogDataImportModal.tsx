@@ -219,43 +219,7 @@ const LogDataImportModal = (
     },
     []
   );
-
-  function swapColumns(
-    matrix: string[][],
-    col1: number,
-    col2: number
-  ): string[][] {
-    for (const row of matrix) {
-      [row[col1], row[col2]] = [row[col2], row[col1]];
-    }
-    return matrix;
-  }
-
-  const swapFirstColumn = (data: string[], selectedColumn: number) => {
-    const splitData = data.map((obj) => obj.split(","));
-    const tempData = swapColumns(splitData, 0, selectedColumn);
-    const result = tempData.map((obj) => obj.join(","));
-    return result;
-  };
-
-  const updateColumns = (
-    data: string[],
-    mnemonics: string[],
-    allMnemonics: ImportColumn[]
-  ) => {
-    let splitData = data.map((obj) => obj.split(","));
-
-    for (let i = allMnemonics.length - 1; i >= 0; i--) {
-      const toRemove = allMnemonics[i];
-      if (mnemonics.indexOf(toRemove.name) === -1) {
-        splitData = removeColumn(splitData, i);
-      }
-    }
-    // const tempData = swapColumns(splitData, 0, selectedColumn);
-    //  const result = tempData.map((obj) => obj.join(","));
-    return splitData.map((obj) => obj.join(","));
-  };
-
+  
   const parseCSVHeader = (headerr: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
     const fileColumns = headerr.split(separator).map((col, index) => {
