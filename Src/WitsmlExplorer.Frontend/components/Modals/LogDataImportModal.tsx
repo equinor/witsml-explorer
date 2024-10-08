@@ -204,8 +204,7 @@ const LogDataImportModal = (
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
        // const groupedByNum = countBy(header, "name");
-        header = countOccurrences(header, "name");
-        console.log(header)
+        countOccurrences(header, "name");
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
           (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
