@@ -1,4 +1,4 @@
-﻿import { Accordion, Autocomplete, Icon, List } from "@equinor/eds-core-react";
+﻿import { Accordion, Autocomplete, Icon, List, TextField } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -19,7 +19,6 @@ import { parse } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useOperationState } from "hooks/useOperationState";
-import { countBy } from "lodash";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
@@ -27,7 +26,7 @@ import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled, { CSSProperties } from "styled-components";
 import { Colors } from "styles/Colors";
@@ -204,8 +203,9 @@ const LogDataImportModal = (
         );
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
-        const groupedByNum = countBy(header, "name");
-        countOccurrences(header, groupedByNum.toString());
+       // const groupedByNum = countBy(header, "name");
+        header = countOccurrences(header, "name");
+        console.log(header)
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
           (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
@@ -379,7 +379,6 @@ const LogDataImportModal = (
       return arr;
     }, {});
   };
-
   return (
     <>
       {
@@ -437,9 +436,6 @@ const LogDataImportModal = (
                     <List>
                       <List.Item>Supported filetypes: csv, las.</List.Item>
                       <List.Item>
-                        Supported logs: depth (csv + las), time (csv).
-                      </List.Item>
-                      <List.Item>
                         Only curve names, units and data is imported.
                       </List.Item>
                       <List.Item>
@@ -484,7 +480,7 @@ const LogDataImportModal = (
                   </Accordion.Panel>
                 </Accordion.Item>
                 {uploadedFileColumns?.length &&
-                  uploadedFileData?.length &&
+                  parsedData?.length &&
                   targetLog?.indexCurve &&
                   !error && (
                     <Accordion.Item>
@@ -500,7 +496,6 @@ const LogDataImportModal = (
                         <div style={{ height: "300px" }}>
                           <ContentTable
                             key={contentTableId}
-                            showPanel={false}
                             columns={contentTableColumns}
                             data={getTableData(
                               uploadedFileData,
@@ -512,13 +507,45 @@ const LogDataImportModal = (
                       </Accordion.Panel>
                     </Accordion.Item>
                   )}
+
+                {uploadedFileColumns?.length &&
+                  parsedData?.length &&
+                  targetLog?.indexCurve &&
+                  !error && (
+                    <Accordion.Item>
+                      <StyledAccordionHeader colors={colors}>
+                        Duplicate columns
+                      </StyledAccordionHeader>
+                      <Accordion.Panel
+                        style={{
+                          backgroundColor: colors.ui.backgroundLight,
+                          padding: 0
+                        }}
+                      >
+                        <div style={{ height: "300px" }}></div>
+                      </Accordion.Panel>
+                    </Accordion.Item>
+                  )}
               </Accordion>
+              {targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+                !!uploadedFileData?.length && (
+                  <TextField
+                    id="indexCurveFormat"
+                    label="Index Curve Format"
+                    value={dateTimeFormat ?? ""}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setDateTimeFormat(e.target.value);
+                    }}
+                  />
+                )}
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
             </Container>
           }
           width={ModalWidth.LARGE}
+          height="800px"
+          minHeight="650px"
           confirmDisabled={!uploadedFile || !!error || isFetchingLogCurveInfo}
           confirmText={"Import"}
           onSubmit={() => onSubmit()}
