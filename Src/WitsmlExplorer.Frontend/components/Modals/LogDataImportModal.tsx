@@ -68,13 +68,13 @@ const LogDataImportModal = (
     );
   const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
-//  const [allUploadedFileData, setAllUploadedFileData] = useState<string[]>([]);
+  //  const [allUploadedFileData, setAllUploadedFileData] = useState<string[]>([]);
   const [uploadedFileColumns, setUploadedFileColumns] = useState<
     ImportColumn[]
   >([]);
-//  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
-//  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
-//  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
+  //  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
+  //  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
+  //  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const separator = ",";
