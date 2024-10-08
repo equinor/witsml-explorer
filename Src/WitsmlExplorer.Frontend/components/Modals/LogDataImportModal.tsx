@@ -631,7 +631,7 @@ const updateColumns = (
 ) => {
   let splitData = data.map((obj) => obj.split(","));
 
-  const all = allMnemonics.map((x) => x.name);
+  //const all = allMnemonics.map((x) => x.name);
 
   for (let i = allMnemonics.length - 1; i >= 0; i--) {
     const toRemove = allMnemonics[i];
