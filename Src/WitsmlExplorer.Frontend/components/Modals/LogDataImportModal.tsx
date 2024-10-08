@@ -1,4 +1,10 @@
-﻿import { Accordion, Autocomplete, Icon, List, TextField } from "@equinor/eds-core-react";
+﻿import {
+  Accordion,
+  Autocomplete,
+  Icon,
+  List,
+  TextField
+} from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -203,7 +209,7 @@ const LogDataImportModal = (
         );
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
-       // const groupedByNum = countBy(header, "name");
+        // const groupedByNum = countBy(header, "name");
         countOccurrences(header, "name");
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
