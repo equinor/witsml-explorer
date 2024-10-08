@@ -1,11 +1,11 @@
-﻿﻿import { Button, Tooltip, Typography } from "@mui/material";
-import {
+﻿﻿import {
   Accordion,
   Autocomplete,
   Icon,
   List,
   TextField
 } from "@equinor/eds-core-react";
+import { Button, Tooltip, Typography } from "@mui/material";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
@@ -122,7 +122,6 @@ const LogDataImportModal = (
       //   const indexCurveColumn = uploadedFileColumns?.find(
       //     (x) => x.name.toUpperCase() === targetLog.indexCurve.toUpperCase()
       //   )?.index;
-
       try {
         return parseDateTimeColumn(uploadedFileData, 0, dateTimeFormat);
       } catch (error) {
@@ -135,6 +134,7 @@ const LogDataImportModal = (
     }
     return uploadedFileData;
   };
+
   const parsedData = useMemo(
     () => getParsedData(),
     [
@@ -201,9 +201,7 @@ const LogDataImportModal = (
           data = swapFirstColumn(data, indexCurveColumn);
           setUploadedFileData(data);
           setAllUploadedFileData(data);
-
           swapArrayElements<ImportColumn>(header, 0, indexCurveColumn);
-
           setDateTimeFormat(dateTimeFormat);
           setUploadedFileColumns(header);
           const colum = header.map((col) => col.name);
@@ -220,7 +218,6 @@ const LogDataImportModal = (
         setUploadedFileColumns(header);
         setUploadedFileData(data);
       }
-      //   setAllUploadedFileData(data);
       setUploadedFile(file);
     },
     []
@@ -271,7 +268,6 @@ const LogDataImportModal = (
     setSelectedMnemonics(selectedItems);
     //   setUploadedFileColumns(allFileColumns.filter(x => selectedItems.indexOf(x.name) > 0 ));
     //  const allUploadedFileData.filter(x => selectedItems.indexOf(x) > 0 );
-
     const reducedData = updateColumns(
       allUploadedFileData,
       selectedItems,
@@ -283,12 +279,9 @@ const LogDataImportModal = (
       selectedItems,
       allFileColumns
     );
-
-    // console.log(reducedHeader)
     const timestamp = new Date().getTime();
     setContentTableId(timestamp.toString());
     setUploadedFileColumns(reducedHeader);
-
     setUploadedFileData(reducedData);
   };
 
@@ -631,17 +624,12 @@ const updateColumns = (
 ) => {
   let splitData = data.map((obj) => obj.split(","));
 
-  //const all = allMnemonics.map((x) => x.name);
-
   for (let i = allMnemonics.length - 1; i >= 0; i--) {
     const toRemove = allMnemonics[i];
     if (mnemonics.indexOf(toRemove.name) === -1) {
       splitData = removeColumn(splitData, i);
-
-      // const columnToRemove = uploadedFileColumns
     }
   }
-
   // const tempData = swapColumns(splitData, 0, selectedColumn);
   //  const result = tempData.map((obj) => obj.join(","));
   return splitData.map((obj) => obj.join(","));
@@ -659,13 +647,7 @@ const updateHeader = (
       // const columnToRemove = uploadedFileColumns
     }
   }
-
   const output = columns.filter((x) => mnemonics.indexOf(x.name) > -1);
-  // const tempData = swapColumns(splitData, 0, selectedColumn);
-  //  const result = tempData.map((obj) => obj.join(","));
-
-  // console.log(mnemonics)
-  // console.log(output)
   return output;
 };
 
