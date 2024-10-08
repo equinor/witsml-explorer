@@ -219,7 +219,7 @@ const LogDataImportModal = (
     },
     []
   );
-  
+
   const parseCSVHeader = (headerr: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
     const fileColumns = headerr.split(separator).map((col, index) => {
@@ -270,7 +270,7 @@ const LogDataImportModal = (
     setUploadedFileColumns(reducedHeader);
     setUploadedFileData(reducedData);
   };
-  
+
   const countOccurrences = (arr: any[], property: string) => {
     return arr.reduce((acc, obj) => {
       const key = obj[property];
