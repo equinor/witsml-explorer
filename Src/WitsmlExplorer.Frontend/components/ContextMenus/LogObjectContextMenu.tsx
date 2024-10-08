@@ -25,9 +25,6 @@ import DeleteEmptyMnemonicsModal, {
 import LogComparisonModal, {
   LogComparisonModalProps
 } from "components/Modals/LogComparisonModal";
-import LogDataImportModal, {
-  LogDataImportModalProps
-} from "components/Modals/LogDataImportModal";
 import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
@@ -86,13 +83,6 @@ const LogObjectContextMenu = (
   };
 
   const onClickImport = async () => {
-    const logDataImportModalProps: LogDataImportModalProps = {
-      targetLog: checkedObjects[0]
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <LogDataImportModal {...logDataImportModalProps} />
-    });
   };
   const onClickAnalyzeGaps = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
