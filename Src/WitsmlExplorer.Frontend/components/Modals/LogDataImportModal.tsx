@@ -1,4 +1,4 @@
-﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
+﻿import { Accordion, Autocomplete, Icon, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -28,7 +28,8 @@ import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
 import React, { useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
+import { Colors } from "styles/Colors";
 import {
   extractLASSection,
   parseLASData,
@@ -73,16 +74,19 @@ const LogDataImportModal = (
     );
   const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
-  //  const [allUploadedFileData, setAllUploadedFileData] = useState<string[]>([]);
+  const [allUploadedFileData, setAllUploadedFileData] = useState<string[]>([]);
   const [uploadedFileColumns, setUploadedFileColumns] = useState<
     ImportColumn[]
   >([]);
-  //  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
-  const [selectedMnemonics] = useState<string[]>([]);
-  //  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
+  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
+  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
+  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [dateTimeFormat] = useState<string>(null);
+  const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
+  const [contentTableId, setContentTableId] = useState<string>(
+    "listOfSelectedMmenomics"
+  );
   const separator = ",";
 
   const validate = (fileColumns: ImportColumn[], parseError?: string) => {
@@ -209,18 +213,18 @@ const LogDataImportModal = (
           targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
           indexCurveColumn !== null
         ) {
-          //2   const dateTimeFormat = findDateTimeFormat(data, indexCurveColumn);
-          //2   data = swapFirstColumn(data, indexCurveColumn);
+          const dateTimeFormat = findDateTimeFormat(data, indexCurveColumn);
+          data = swapFirstColumn(data, indexCurveColumn);
           setUploadedFileData(data);
-          //2    setAllUploadedFileData(data);
-          //2   swapArrayElements<ImportColumn>(header, 0, indexCurveColumn);
-          //2    setDateTimeFormat(dateTimeFormat);
+          setAllUploadedFileData(data);
+          swapArrayElements<ImportColumn>(header, 0, indexCurveColumn);
+          setDateTimeFormat(dateTimeFormat);
           setUploadedFileColumns(header);
-          //2    const colum = header.map((col) => col.name);
-          //2   setAllMnemonics(colum);
-          //2    validate(header);
-          //2    setAllFileColumns(header);
-          //2    setSelectedMnemonics(header.map((col) => col.name));
+          const colum = header.map((col) => col.name);
+          setAllMnemonics(colum);
+          validate(header);
+          setAllFileColumns(header);
+          setSelectedMnemonics(header.map((col) => col.name));
         }
       } else {
         const headerLine = text.split("\n", 1)[0];
@@ -234,6 +238,42 @@ const LogDataImportModal = (
     },
     []
   );
+
+  function swapColumns(
+    matrix: string[][],
+    col1: number,
+    col2: number
+  ): string[][] {
+    for (const row of matrix) {
+      [row[col1], row[col2]] = [row[col2], row[col1]];
+    }
+    return matrix;
+  }
+
+  const swapFirstColumn = (data: string[], selectedColumn: number) => {
+    const splitData = data.map((obj) => obj.split(","));
+    const tempData = swapColumns(splitData, 0, selectedColumn);
+    const result = tempData.map((obj) => obj.join(","));
+    return result;
+  };
+
+  const updateColumns = (
+    data: string[],
+    mnemonics: string[],
+    allMnemonics: ImportColumn[]
+  ) => {
+    let splitData = data.map((obj) => obj.split(","));
+
+    for (let i = allMnemonics.length - 1; i >= 0; i--) {
+      const toRemove = allMnemonics[i];
+      if (mnemonics.indexOf(toRemove.name) === -1) {
+        splitData = removeColumn(splitData, i);
+      }
+    }
+    // const tempData = swapColumns(splitData, 0, selectedColumn);
+    //  const result = tempData.map((obj) => obj.join(","));
+    return splitData.map((obj) => obj.join(","));
+  };
 
   const parseCSVHeader = (headerr: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
@@ -257,6 +297,76 @@ const LogDataImportModal = (
       })),
     [uploadedFileColumns]
   );
+
+  const onMnemonicsChange = ({
+    selectedItems
+  }: {
+    selectedItems: string[];
+  }) => {
+    setSelectedMnemonics(selectedItems);
+    //   setUploadedFileColumns(allFileColumns.filter(x => selectedItems.indexOf(x.name) > 0 ));
+    //  const allUploadedFileData.filter(x => selectedItems.indexOf(x) > 0 );
+    const reducedData = updateColumns(
+      allUploadedFileData,
+      selectedItems,
+      allFileColumns
+    );
+
+    const reducedHeader = updateHeader(
+      allFileColumns,
+      selectedItems,
+      allFileColumns
+    );
+    const timestamp = new Date().getTime();
+    setContentTableId(timestamp.toString());
+    setUploadedFileColumns(reducedHeader);
+    setUploadedFileData(reducedData);
+  };
+
+  const updateHeader = (
+    columns: ImportColumn[],
+    mnemonics: string[],
+    allMnemonics: ImportColumn[]
+  ) => {
+    for (let i = allMnemonics.length - 1; i >= 0; i--) {
+      const toRemove = allMnemonics[i];
+      if (mnemonics.indexOf(toRemove.name) === -1) {
+        //  columns = columns.filter(item => item.index !== i)
+        // const columnToRemove = uploadedFileColumns
+      }
+    }
+    const output = columns.filter((x) => mnemonics.indexOf(x.name) > -1);
+    return output;
+  };
+
+  function removeColumn(arr: any[][], colIndex: number): any[][] {
+    return arr.map((row) => row.filter((_, index) => index !== colIndex));
+  }
+
+  function swapArrayElements<T>(arr: T[], i: number, j: number): void {
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+
+  const inputDateFormats: string[] = [
+    "YYYY-MM-DDTHH:mm:ss.sssZ", // ISO 8601 format
+    "HH:mm:ss/dd-MMM-yyyy"
+  ];
+
+  const findDateTimeFormat = (
+    data: string[],
+    selectedColumn: number
+  ): string | null => {
+    const dateString = data[0].split(",")[selectedColumn];
+    for (const format of inputDateFormats) {
+      try {
+        parseDateFromFormat(dateString, format);
+        return format;
+      } catch (error) {
+        // Ignore error, try next format.
+      }
+    }
+    return null;
+  };
 
   return (
     <>
@@ -286,6 +396,24 @@ const LogDataImportModal = (
                   </Typography>
                 </Tooltip>
               </FileContainer>
+              <StyledAutocomplete
+                id={"mnemonics"}
+                label={""}
+                multiple={true}
+                // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
+                variant={selectedMnemonics.length === 0 ? "error" : null}
+                options={allMnemonics} // Skip the first one as it is the index curve
+                selectedOptions={selectedMnemonics}
+                onFocus={(e) => e.preventDefault()}
+                onOptionsChange={onMnemonicsChange}
+                style={
+                  {
+                    "--eds-input-background": colors.ui.backgroundDefault
+                  } as CSSProperties
+                }
+                dropdownHeight={600}
+                colors={colors}
+              />
               <Accordion>
                 <Accordion.Item>
                   <StyledAccordionHeader colors={colors}>
@@ -359,6 +487,7 @@ const LogDataImportModal = (
                       >
                         <div style={{ height: "300px" }}>
                           <ContentTable
+                            key={contentTableId}
                             showPanel={false}
                             columns={contentTableColumns}
                             data={getTableData(
@@ -388,6 +517,12 @@ const LogDataImportModal = (
     </>
   );
 };
+
+const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
+  button {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+`;
 
 const FileContainer = styled.div`
   display: flex;
