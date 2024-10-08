@@ -1,6 +1,9 @@
 ﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
-import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
 import {
   ContentTable,
   ContentTableColumn,
@@ -12,6 +15,8 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
+import { parse } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
@@ -73,10 +78,11 @@ const LogDataImportModal = (
     ImportColumn[]
   >([]);
   //  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
-  //  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
+  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
   //  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
   const separator = ",";
 
   const validate = (fileColumns: ImportColumn[], parseError?: string) => {
@@ -93,6 +99,64 @@ const LogDataImportModal = (
         setError(MISSING_INDEX_CURVE);
     }
   };
+
+  const getParsedData = () => {
+    if (
+      uploadedFileData &&
+      uploadedFileColumns &&
+      targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME
+    ) {
+      //   const indexCurveColumn = uploadedFileColumns?.find(
+      //     (x) => x.name.toUpperCase() === targetLog.indexCurve.toUpperCase()
+      //   )?.index;
+      try {
+        return parseDateTimeColumn(uploadedFileData, 0, dateTimeFormat);
+      } catch (error) {
+        validate(
+          uploadedFileColumns,
+          dateTimeFormat ? `Unable to parse data. ${error}` : null
+        );
+        return null;
+      }
+    }
+    return uploadedFileData;
+  };
+
+  const parseDateTimeColumn = (
+    data: string[],
+    selectedColumn: number,
+    inputFormat: string
+  ) => {
+    const dataWithISOTimeColumn = data.map((dataRow) => {
+      const rowValues = dataRow.split(",");
+      rowValues[selectedColumn] = parseDateFromFormat(
+        rowValues[selectedColumn],
+        inputFormat
+      );
+      return rowValues.join(",");
+    });
+    return dataWithISOTimeColumn;
+  };
+
+  const parseDateFromFormat = (dateString: string, format: string) => {
+    const parsed = parse(dateString, format, new Date());
+    if (parsed.toString() === "Invalid Date")
+      throw new Error(
+        `Unable to parse date ${dateString} with format ${format}`
+      );
+    return zonedTimeToUtc(parsed, "UTC").toISOString();
+  };
+
+  const parsedData = useMemo(
+    () => getParsedData(),
+    [
+      uploadedFileData,
+      uploadedFileColumns,
+      targetLog,
+      dateTimeFormat,
+      selectedMnemonics
+    ]
+  );
 
   const hasOverlap = checkOverlap(
     targetLog,
