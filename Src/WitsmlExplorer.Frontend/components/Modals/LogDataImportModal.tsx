@@ -78,11 +78,11 @@ const LogDataImportModal = (
     ImportColumn[]
   >([]);
   //  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
-  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
+  const [selectedMnemonics] = useState<string[]>([]);
   //  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
+  const [dateTimeFormat] = useState<string>(null);
   const separator = ",";
 
   const validate = (fileColumns: ImportColumn[], parseError?: string) => {
@@ -161,7 +161,7 @@ const LogDataImportModal = (
   const hasOverlap = checkOverlap(
     targetLog,
     uploadedFileColumns,
-    uploadedFileData,
+    parsedData,
     logCurveInfoList
   );
 
