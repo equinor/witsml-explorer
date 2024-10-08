@@ -10,5 +10,5 @@ services:
     volumes:
       - ./data:/data/db #Location for data folder can be changed.
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=<insert username>
-      - MONGO_INITDB_ROOT_PASSWORD=<insert password>
+       - MONGO_INITDB_ROOT_USERNAME=mongol
+      - MONGO_INITDB_ROOT_PASSWORD=mojeheslo
