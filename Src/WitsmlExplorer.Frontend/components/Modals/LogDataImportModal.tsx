@@ -68,19 +68,28 @@ const LogDataImportModal = (
     );
   const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
+//  const [allUploadedFileData, setAllUploadedFileData] = useState<string[]>([]);
   const [uploadedFileColumns, setUploadedFileColumns] = useState<
     ImportColumn[]
   >([]);
+//  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
+//  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
+//  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const separator = ",";
 
-  const validate = (fileColumns: ImportColumn[]) => {
+  const validate = (fileColumns: ImportColumn[], parseError?: string) => {
     setError("");
+    if (parseError) setError(parseError);
     if (fileColumns.length) {
       if (fileColumns.map((col) => col.name).some((value) => value === ""))
         setError(IMPORT_FORMAT_INVALID);
-      if (!fileColumns.map((col) => col.name).includes(targetLog.indexCurve))
+      if (
+        !fileColumns
+          .map((col) => col.name.toUpperCase())
+          .includes(targetLog.indexCurve.toLocaleUpperCase())
+      )
         setError(MISSING_INDEX_CURVE);
     }
   };
