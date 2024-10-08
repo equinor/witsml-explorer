@@ -34,15 +34,6 @@ export default tsEslint.config(
       }
     },
     files: ["**/*.js", "**/*.ts", "**/*.jsx", "**/*.tsx"],
-    ignores: [
-      "**/*.config.js",
-      "**/*.config.ts",
-      "node_modules/*",
-      "bin/*",
-      ".idea/*",
-      "dist/*",
-      "out/*"
-    ],
     plugins: {
       "@typescript-eslint": tsEslintPlugin,
       "react": reactPlugin,
@@ -63,5 +54,17 @@ export default tsEslint.config(
       "react/prop-types": 1,
       "no-empty-pattern": "off"
     }
+  },
+  // standalone global ignores config due to default behaviour of minimal matching strategy
+  {
+    ignores: [
+      "**/*.config.js",
+      "**/*.config.ts",
+      "node_modules",
+      "bin",
+      ".idea",
+      "dist",
+      "out"
+    ]
   }
 );
