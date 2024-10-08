@@ -201,7 +201,7 @@ const EditSelectedLogCurveInfo = (
             />
           </StartEndIndex>
           <StartEndIndex>
-            <StyledLabel label="Mnemonics:" colors={colors} />
+            <StyledLabel label="Mnemmonics:" colors={colors} />
             <StyledAutocomplete
               id={"mnemonics"}
               disabled={disabled || isFetching}
