@@ -19,6 +19,7 @@ import { parse } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useOperationState } from "hooks/useOperationState";
+import { countBy } from "lodash";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
@@ -203,8 +204,8 @@ const LogDataImportModal = (
         );
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
-        //2  const groupedByNum = countBy(header, "name");
-        //2  countOccurrences(header, groupedByNum.toString());
+        const groupedByNum = countBy(header, "name");
+        countOccurrences(header, groupedByNum.toString());
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
           (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
@@ -366,6 +367,17 @@ const LogDataImportModal = (
       }
     }
     return null;
+  };
+
+  const countOccurrences = (arr: any[], property: string) => {
+    return arr.reduce((acc, obj) => {
+      const key = obj[property];
+      if (key) {
+        acc[key] = (acc[key] || 0) + 1;
+        if (acc[key] > 1) obj.name = obj.name + "(" + acc[key] + ")";
+      }
+      return arr;
+    }, {});
   };
 
   return (
