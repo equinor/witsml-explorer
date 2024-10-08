@@ -199,16 +199,38 @@ const LogDataImportModal = (
         );
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
+        //2  const groupedByNum = countBy(header, "name");
+        //2  countOccurrences(header, groupedByNum.toString());
         data = parseLASData(dataSection);
+        const indexCurveColumn = header.find(
+          (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
+        )?.index;
+        if (
+          targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+          indexCurveColumn !== null
+        ) {
+          //2   const dateTimeFormat = findDateTimeFormat(data, indexCurveColumn);
+          //2   data = swapFirstColumn(data, indexCurveColumn);
+          setUploadedFileData(data);
+          //2    setAllUploadedFileData(data);
+          //2   swapArrayElements<ImportColumn>(header, 0, indexCurveColumn);
+          //2    setDateTimeFormat(dateTimeFormat);
+          setUploadedFileColumns(header);
+          //2    const colum = header.map((col) => col.name);
+          //2   setAllMnemonics(colum);
+          //2    validate(header);
+          //2    setAllFileColumns(header);
+          //2    setSelectedMnemonics(header.map((col) => col.name));
+        }
       } else {
         const headerLine = text.split("\n", 1)[0];
         header = parseCSVHeader(headerLine);
         data = text.split("\n").slice(1);
+        validate(header);
+        setUploadedFileColumns(header);
+        setUploadedFileData(data);
       }
-      validate(header);
       setUploadedFile(file);
-      setUploadedFileColumns(header);
-      setUploadedFileData(data);
     },
     []
   );
