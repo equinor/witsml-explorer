@@ -1,11 +1,11 @@
-﻿﻿import {
+﻿﻿import { Button, Tooltip, Typography } from "@mui/material";
+import {
   Accordion,
   Autocomplete,
   Icon,
   List,
   TextField
 } from "@equinor/eds-core-react";
-import { Button, Tooltip, Typography } from "@mui/material";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
