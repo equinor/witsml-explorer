@@ -13,6 +13,7 @@ export const useClipboardReferences = (
       const objectReferences = parseStringToReferences(clipboardText);
       setReferences(objectReferences);
     } catch (e) {
+      console.error(e);
       //Not a valid object on the clipboard? That is fine, we won't use it.
     }
   };
@@ -45,8 +46,8 @@ export function parseStringToReferences(input: string): ObjectReferences {
   let jsonObject: ObjectReferences;
   try {
     jsonObject = JSON.parse(input);
-  } catch (error) {
-    throw new Error("Invalid input given.");
+  } catch (e) {
+    throw new Error("Invalid input given.", e);
   }
   verifyRequiredProperties(jsonObject);
   return jsonObject;
