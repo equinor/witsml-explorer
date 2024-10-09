@@ -133,7 +133,6 @@ export const dataGridFormationMarker: DataGridProperty = {
           name: "description",
           documentation: "Description of item and details."
         },
-
         dataGridCommonData,
         dataGridCustomData
       ]

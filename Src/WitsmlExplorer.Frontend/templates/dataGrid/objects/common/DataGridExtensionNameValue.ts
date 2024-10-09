@@ -3,6 +3,8 @@ import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 export const dataGridExtensionNameValue: DataGridProperty = {
   name: "extensionNameValue",
   documentation: "Extensions to the schema based on a name-value construct.",
+  isContainer: true,
+  isMultiple: true,
   properties: [
     {
       name: "uid",

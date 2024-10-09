@@ -5,6 +5,7 @@ import { dataGridBhaRun } from "templates/dataGrid/objects/DataGridBhaRun";
 import { dataGridChangeLog } from "templates/dataGrid/objects/DataGridChangeLog";
 import { dataGridFluidsReport } from "templates/dataGrid/objects/DataGridFluidsReport";
 import { dataGridFormationMarker } from "templates/dataGrid/objects/DataGridFormationMarker";
+import { dataGridLog } from "templates/dataGrid/objects/DataGridLog";
 
 export const getDataGridTemplate = (
   templateObject: TemplateObjects
@@ -20,6 +21,8 @@ export const getDataGridTemplate = (
       return dataGridFluidsReport;
     case TemplateObjects.FormationMarker:
       return dataGridFormationMarker;
+    case TemplateObjects.Log:
+      return dataGridLog;
     default:
       console.error(
         `No data grid template is yet defined for ${templateObject}`
