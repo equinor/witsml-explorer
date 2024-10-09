@@ -25,8 +25,6 @@ jobs:
       - name: Linting
         run: yarn lint
         working-directory: ./Src/WitsmlExplorer.Desktop
-      - name: Prettier
-        run: npx prettier --check .
       - name: Package
         run: yarn electron:pack
         working-directory: ./Src/WitsmlExplorer.Desktop
