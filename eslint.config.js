@@ -1,11 +1,11 @@
-import eslint from "@eslint/js";
-import tsEslint from "typescript-eslint";
-import globals from "globals";
-import tsEslintParser from "@typescript-eslint/parser";
-import tsEslintPlugin from "@typescript-eslint/eslint-plugin";
-import reactPlugin from "eslint-plugin-react";
+const eslint = require("@eslint/js");
+const tsEslint = require("typescript-eslint");
+const globals = require("globals");
+const tsEslintParser = require("@typescript-eslint/parser");
+const tsEslintPlugin = require("@typescript-eslint/eslint-plugin");
+const reactPlugin = require("eslint-plugin-react");
 
-export default tsEslint.config(
+module.exports = tsEslint.config(
   eslint.configs.recommended,
   ...tsEslint.configs.recommended,
   {
@@ -58,10 +58,11 @@ export default tsEslint.config(
       "**/*.config.js",
       "**/*.config.ts",
       "node_modules",
-      "bin",
-      ".idea",
-      "dist",
-      "out"
+      "**/bin",
+      "**/.idea",
+      "**/dist",
+      "**/out",
+      "**/obj"
     ]
   }
 );

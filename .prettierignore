@@ -13,3 +13,4 @@ Src/WitsmlExplorer.Frontend/bin
 *.yml
 .prettierignore
 .github
+eslint.config.js
