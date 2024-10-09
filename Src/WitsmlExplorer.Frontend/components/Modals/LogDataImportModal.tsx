@@ -88,6 +88,7 @@ const LogDataImportModal = (
   const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
   const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
+  const [duplicityWarning, setDeuplicityWarning] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
   const [contentTableId, setContentTableId] = useState<string>(
@@ -96,7 +97,6 @@ const LogDataImportModal = (
   const separator = ",";
 
   const validate = (fileColumns: ImportColumn[], parseError?: string) => {
-    setError("");
     if (parseError) setError(parseError);
     if (fileColumns.length) {
       if (fileColumns.map((col) => col.name).some((value) => value === ""))
@@ -104,7 +104,7 @@ const LogDataImportModal = (
       if (
         !fileColumns
           .map((col) => col.name.toUpperCase())
-          .includes(targetLog.indexCurve.toLocaleUpperCase())
+          .includes(targetLog.indexCurve.toUpperCase())
       )
         setError(MISSING_INDEX_CURVE);
     }
@@ -158,7 +158,10 @@ const LogDataImportModal = (
       targetLog: logReference,
       mnemonics: uploadedFileColumns.map((col) => col.name),
       units: uploadedFileColumns.map((col) => col.unit),
-      dataRows: uploadedFileData.map((line) => line.split(separator))
+      dataRows:
+        parsedData !== null
+          ? parsedData.map((line) => line.split(separator))
+          : uploadedFileData.map((line) => line.split(separator))
     };
 
     await JobService.orderJob(JobType.ImportLogData, job);
@@ -185,11 +188,12 @@ const LogDataImportModal = (
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
         // const groupedByNum = countBy(header, "name");
-        countOccurrences(header, "name");
+        header = countOccurrences(header, "name");
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
           (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
         )?.index;
+        header[indexCurveColumn].name = targetLog.indexCurve;
         if (
           targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
           indexCurveColumn !== null
@@ -201,8 +205,15 @@ const LogDataImportModal = (
           swapArrayElements<ImportColumn>(header, 0, indexCurveColumn);
           setDateTimeFormat(dateTimeFormat);
           setUploadedFileColumns(header);
-          const colum = header.map((col) => col.name);
-          setAllMnemonics(colum);
+          setAllMnemonics(header.map((col) => col.name));
+          validate(header);
+          setAllFileColumns(header);
+          setSelectedMnemonics(header.map((col) => col.name));
+        } else {
+          setUploadedFileData(data);
+          setAllUploadedFileData(data);
+          setUploadedFileColumns(header);
+          setAllMnemonics(header.map((col) => col.name));
           validate(header);
           setAllFileColumns(header);
           setSelectedMnemonics(header.map((col) => col.name));
@@ -214,6 +225,11 @@ const LogDataImportModal = (
         validate(header);
         setUploadedFileColumns(header);
         setUploadedFileData(data);
+        setAllUploadedFileData(data);
+        setAllMnemonics(header.map((col) => col.name));
+        setAllFileColumns(header);
+        setSelectedMnemonics(header.map((col) => col.name));
+        setDeuplicityWarning("duplicities found");
       }
       setUploadedFile(file);
     },
@@ -315,7 +331,7 @@ const LogDataImportModal = (
                 multiple={true}
                 // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
                 variant={selectedMnemonics.length === 0 ? "error" : null}
-                options={allMnemonics} // Skip the first one as it is the index curve
+                options={allMnemonics.slice(1)} // Skip the first one as it is the index curve
                 selectedOptions={selectedMnemonics}
                 onFocus={(e) => e.preventDefault()}
                 onOptionsChange={onMnemonicsChange}
@@ -382,7 +398,6 @@ const LogDataImportModal = (
                   </Accordion.Panel>
                 </Accordion.Item>
                 {uploadedFileColumns?.length &&
-                  parsedData?.length &&
                   targetLog?.indexCurve &&
                   !error && (
                     <Accordion.Item>
@@ -400,31 +415,14 @@ const LogDataImportModal = (
                             key={contentTableId}
                             columns={contentTableColumns}
                             data={getTableData(
-                              uploadedFileData,
+                              parsedData !== null
+                                ? parsedData
+                                : uploadedFileData,
                               uploadedFileColumns,
                               targetLog.indexCurve
                             )}
                           />
                         </div>
-                      </Accordion.Panel>
-                    </Accordion.Item>
-                  )}
-
-                {uploadedFileColumns?.length &&
-                  parsedData?.length &&
-                  targetLog?.indexCurve &&
-                  !error && (
-                    <Accordion.Item>
-                      <StyledAccordionHeader colors={colors}>
-                        Duplicate columns
-                      </StyledAccordionHeader>
-                      <Accordion.Panel
-                        style={{
-                          backgroundColor: colors.ui.backgroundLight,
-                          padding: 0
-                        }}
-                      >
-                        <div style={{ height: "300px" }}></div>
                       </Accordion.Panel>
                     </Accordion.Item>
                   )}
@@ -443,6 +441,7 @@ const LogDataImportModal = (
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
+              {duplicityWarning && <WarningBar message={duplicityWarning} />}
             </Container>
           }
           width={ModalWidth.LARGE}
