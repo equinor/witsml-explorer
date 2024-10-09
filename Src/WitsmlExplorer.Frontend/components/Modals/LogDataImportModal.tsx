@@ -668,7 +668,7 @@ const findDateTimeFormat = (
     try {
       parseDateFromFormat(dateString, format);
       return format;
-    } catch (error) {
+    } catch (e) {
       // Ignore error, try next format.
     }
   }
