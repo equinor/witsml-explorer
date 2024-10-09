@@ -113,7 +113,7 @@ export type FilterType =
   | WellboreFilterType
   | WellPropertyFilterType
   | ObjectFilterType;
-export const FilterType = {
+export const FilterTypes = {
   ...WellFilterType,
   ...WellboreFilterType,
   ...WellPropertyFilterType,

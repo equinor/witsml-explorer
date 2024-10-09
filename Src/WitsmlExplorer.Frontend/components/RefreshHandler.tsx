@@ -53,9 +53,10 @@ const RefreshHandler = (): React.ReactElement => {
                 }
                 refreshSearchQueries(refreshAction);
             }
-          } catch (error) {
+          } catch (e) {
             console.error(
-              `Unable to perform refresh action for action: ${refreshAction.refreshType} and entity: ${refreshAction.entityType}`
+              `Unable to perform refresh action for action: ${refreshAction.refreshType} and entity: ${refreshAction.entityType}`,
+              e
             );
           }
         }
