@@ -2,6 +2,9 @@ import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 import { dataGridCommonData } from "templates/dataGrid/objects/common/DataGridCommonData";
 import { dataGridCustomData } from "templates/dataGrid/objects/common/DataGridCustomData";
 import { dataGridExtensionNameValue } from "templates/dataGrid/objects/common/DataGridExtensionNameValue";
+import { dataGridMeasuredDepthCoordProperties } from "templates/dataGrid/objects/common/properties/DataGridMeasuredDepthCoordProperties";
+import { dataGridRefNameStringProperties } from "templates/dataGrid/objects/common/properties/DataGridRefNameStringProperties";
+import { dataGridUomProperties } from "templates/dataGrid/objects/common/properties/DataGridUomProperties";
 
 export const dataGridBhaRun: DataGridProperty = {
   name: "bhaRuns",
@@ -59,14 +62,7 @@ export const dataGridBhaRun: DataGridProperty = {
           name: "tubular",
           documentation:
             "This represents a foreign key to the tubular (assembly) that was utilized in this run.",
-          properties: [
-            {
-              name: "uidRef",
-              documentation:
-                "A reference to the unique identifier (uid attribute) in the node referenced by the name value. This attribute is required within the context of a WITSML server.",
-              isAttribute: true
-            }
-          ]
+          properties: dataGridRefNameStringProperties
         },
         {
           name: "dTimStart",
@@ -87,35 +83,17 @@ export const dataGridBhaRun: DataGridProperty = {
         {
           name: "planDogleg",
           documentation: "Planned dogleg severity.",
-          properties: [
-            {
-              name: "uom",
-              documentation: "",
-              isAttribute: true
-            }
-          ]
+          properties: dataGridUomProperties
         },
         {
           name: "actDogleg",
           documentation: "Actual dogleg severity.",
-          properties: [
-            {
-              name: "uom",
-              documentation: "",
-              isAttribute: true
-            }
-          ]
+          properties: dataGridUomProperties
         },
         {
           name: "actDoglegMx",
           documentation: "Actual dogleg severity - Maximum.",
-          properties: [
-            {
-              name: "uom",
-              documentation: "",
-              isAttribute: true
-            }
-          ]
+          properties: dataGridUomProperties
         },
         {
           name: "statusBha",
@@ -150,493 +128,222 @@ export const dataGridBhaRun: DataGridProperty = {
             {
               name: "eTimOpBit",
               documentation: "Operating time spent by bit for run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "mdHoleStart",
               documentation: "Measured depth at start.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "The unit of measure of the quantity value.",
-                  isAttribute: true
-                },
-                {
-                  name: "datum",
-                  documentation:
-                    "A pointer to the reference datum for this coordinate value as defined in WellDatum. This value is assumed to match the uid value in a WellDatum. If not given then the default WellDatum must be assumed.",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridMeasuredDepthCoordProperties
             },
             {
               name: "mdHoleStop",
               documentation: "Measured depth at stop.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "The unit of measure of the quantity value.",
-                  isAttribute: true
-                },
-                {
-                  name: "datum",
-                  documentation:
-                    "A pointer to the reference datum for this coordinate value as defined in WellDatum. This value is assumed to match the uid value in a WellDatum. If not given then the default WellDatum must be assumed.",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridMeasuredDepthCoordProperties
             },
             {
               name: "tubular",
               documentation: "A pointer to the tubular assembly.",
-              properties: [
-                {
-                  name: "uidRef",
-                  documentation:
-                    "A reference to the unique identifier (uid attribute) in the node referenced by the name value. This attribute is required within the context of a WITSML server.",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridRefNameStringProperties
             },
             {
               name: "hkldRot",
               documentation: "Hookload - rotating.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "overPull",
               documentation: "hkldUp-hkldRot.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "slackOff",
               documentation: "hkldRot-hkldDown.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "hkldUp",
               documentation: "Hookload - string moving up.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "hkldDn",
               documentation: "Hookload - string moving down.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "tqOnBotAv",
               documentation: "Average Torque - on bottom.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "tqOnBotMx",
               documentation: "Maximum torque - on bottom.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "tqOnBotMn",
               documentation: "Minimum torque - on bottom.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "tqOffBotAv",
               documentation: "Average torque - off bottom.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "tqDhAv",
               documentation: "Average torque - downhole.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "wtAboveJar",
               documentation: "Weight above jars.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "wtBelowJar",
               documentation: "Weight below jars.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "wtMud",
               documentation: "Mud density.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "flowratePump",
               documentation: "Pump flow rate.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "powBit",
               documentation: "Bit hydraulic.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "velNozzleAv",
               documentation: "Bit nozzle average velocity.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "presDropBit",
               documentation: "Pressure drop in bit.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "cTimHold",
               documentation: "Time spent on hold from start of bit run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "cTimSteering",
               documentation: "Time spent steering from start of bit run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "cTimDrillRot",
               documentation:
                 "Time spent rotary drilling from start of bit run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "cTimDrillSlid",
               documentation: "Time spent slide drilling from start of bit run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "cTimCirc",
               documentation: "Time spent circulating from start of bit run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "cTimReam",
               documentation: "Time spent reaming from start of bit run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "distDrillRot",
               documentation: "Distance drilled - rotating.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "distDrillSlid",
               documentation: "Distance drilled - sliding.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "distReam",
               documentation: "Distance reamed.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "distHold",
               documentation:
                 "Distance covered while holding angle with a steerable drilling assembly.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "distSteering",
               documentation:
                 "Distance covered while actively steering with a steerable drilling assembly.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "rpmAv",
               documentation:
                 "Average turn rate (commonly in rpm) through Interval.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "rpmMx",
               documentation: "Maximum turn rate (commonly in rpm).",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "rpmMn",
               documentation: "Minimum turn rate (commonly in rpm).",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "rpmAvDh",
               documentation: "Average turn rate (commonly in rpm) downhole.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "ropAv",
               documentation: "Average rate of penetration through Interval.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "ropMx",
               documentation: "Maximum rate of penetration through Interval.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "ropMn",
               documentation: "Minimum rate of penetration through Interval.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "wobAv",
               documentation:
                 "Surface weight on bit - average through interval.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "wobMx",
               documentation: "Weight on bit - maximum.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "wobMn",
               documentation: "Weight on bit - minimum.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "wobAvDh",
               documentation: "Weight on bit - average downhole.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "reasonTrip",
@@ -649,101 +356,47 @@ export const dataGridBhaRun: DataGridProperty = {
             {
               name: "aziTop",
               documentation: "Azimuth at start measured depth.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "aziBottom",
               documentation: "Azimuth at stop measured depth.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "inclStart",
               documentation: "Inclination at start measured depth.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "inclMx",
               documentation: "Maximum inclination.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "inclMn",
               documentation: "Minimum inclination.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "inclStop",
               documentation: "Inclination at stop measured depth.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "tempMudDhMx",
               documentation: "Maximum mud temperature downhole during run.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "presPumpAv",
               documentation: "Average pump pressure.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "flowrateBit",
               documentation: "Flow rate at bit.",
-              properties: [
-                {
-                  name: "uom",
-                  documentation: "",
-                  isAttribute: true
-                }
-              ]
+              properties: dataGridUomProperties
             },
             {
               name: "mudClass",

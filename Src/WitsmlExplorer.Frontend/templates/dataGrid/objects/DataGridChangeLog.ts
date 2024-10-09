@@ -39,7 +39,7 @@ export const dataGridChangeLog: DataGridProperty = {
         {
           name: "uidObject",
           documentation:
-            ">Unique identifier for the changed object. This should match the value of the uid attribute in the changed object.",
+            "Unique identifier for the changed object. This should match the value of the uid attribute in the changed object.",
           isAttribute: true
         },
         {
