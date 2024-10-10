@@ -35,6 +35,7 @@ const parserOptions = {
 // TODO: Cleanup this file (move stuff to different files and folders)
 // TODO: Get data for all objects
 // TODO: Fix error when toggling the root element (or maybe disable?)
+// TODO: Fix all TODOs in other files.
 
 export default function QueryDataGrid() {
   const {
