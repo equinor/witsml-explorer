@@ -50,6 +50,7 @@ import JobService, { JobType } from "services/jobService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
 import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
+import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -81,6 +82,8 @@ const LogCurveInfoContextMenu = (
     setPrioritizedUniversalCurves,
     isMultiLog = false
   } = props;
+
+  const { connectedServer } = useConnectedServer();
 
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
     (row, index) =>
@@ -374,25 +377,28 @@ const LogCurveInfoContextMenu = (
           label={"Show on server"}
           disabled={isMultiLog}
         >
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowObjectOnServer(
-                  dispatchOperation,
-                  server,
-                  selectedLog,
-                  ObjectType.Log,
-                  selectedLog.indexType === WITSML_INDEX_TYPE_MD
-                    ? IndexCurve.Depth
-                    : IndexCurve.Time
-                )
-              }
-              disabled={isMultiLog}
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {servers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowObjectOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    selectedLog,
+                    ObjectType.Log,
+                    selectedLog.indexType === WITSML_INDEX_TYPE_MD
+                      ? IndexCurve.Depth
+                      : IndexCurve.Time
+                  )
+                }
+                disabled={isMultiLog}
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <MenuItem
           key={"analyzeGaps"}

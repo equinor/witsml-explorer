@@ -22,6 +22,8 @@ import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import ObjectService from "services/objectService";
 import WellboreService from "services/wellboreService";
+import UidMappingService from "../../services/uidMappingService.tsx";
+import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
 
 export const onClickCopyToServer = async (
   targetServer: Server,
@@ -31,28 +33,53 @@ export const onClickCopyToServer = async (
   dispatchOperation: DispatchOperation
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const wellUid = toCopy[0].wellUid;
-  const wellboreUid = toCopy[0].wellboreUid;
-  const wellName = toCopy[0].wellName;
-  const wellboreName = toCopy[0].wellboreName;
+  const sourceWellUid = toCopy[0].wellUid;
+  const sourceWellboreUid = toCopy[0].wellboreUid;
+  const sourceWellName = toCopy[0].wellName;
+  const sourceWellboreName = toCopy[0].wellboreName;
 
-  const wellboreRef = {
-    wellUid: wellUid,
-    wellboreUid: wellboreUid,
-    wellName: wellName,
-    wellboreName: wellboreName
+  let targetWellboreRef: WellboreReference;
+
+  const dbQuery: UidMappingDbQuery = {
+    sourceServerId: sourceServer.id,
+    sourceWellId: sourceWellUid,
+    sourceWellboreId: sourceWellboreUid,
+    targetServerId: targetServer.id
   };
+
+  const mappings = await UidMappingService.queryUidMapping(dbQuery);
+
+  if (mappings.length > 0) {
+    targetWellboreRef = {
+      wellUid: mappings[0].targetWellId,
+      wellboreUid: mappings[0].targetWellboreId,
+      wellName: sourceWellName,
+      wellboreName: sourceWellboreName
+    };
+  } else {
+    targetWellboreRef = {
+      wellUid: sourceWellUid,
+      wellboreUid: sourceWellboreUid,
+      wellName: sourceWellName,
+      wellboreName: sourceWellboreName
+    };
+  }
 
   let wellbore: Wellbore;
   try {
     wellbore = await WellboreService.getWellbore(
-      wellUid,
-      wellboreUid,
+      targetWellboreRef.wellUid,
+      targetWellboreRef.wellboreUid,
       null,
       targetServer
     );
   } catch {
     return; // Cancel the operation if unable to authorize to the target server.
+  }
+
+  if (!!wellbore && mappings.length > 0) {
+    targetWellboreRef.wellName = wellbore.wellName;
+    targetWellboreRef.wellboreName = wellbore.name;
   }
 
   if (!wellbore) {
@@ -62,7 +89,7 @@ export const onClickCopyToServer = async (
       const copyWithParentJob = createCopyWithParentJob(
         sourceServer,
         toCopy,
-        wellboreRef,
+        targetWellboreRef,
         objectType
       );
       AuthorizationService.setSourceServer(sourceServer);
@@ -73,14 +100,14 @@ export const onClickCopyToServer = async (
         sourceServer
       );
     };
-    displayCopyWellboreModal(wellboreUid, dispatchOperation, onConfirm);
+    displayCopyWellboreModal(sourceWellboreUid, dispatchOperation, onConfirm);
     return;
   }
 
   confirmedCopyToServer(
-    wellUid,
-    wellboreUid,
-    wellboreRef,
+    sourceWellUid,
+    sourceWellboreUid,
+    targetWellboreRef,
     targetServer,
     sourceServer,
     toCopy,
@@ -92,7 +119,7 @@ export const onClickCopyToServer = async (
 const confirmedCopyToServer = async (
   wellUid: string,
   wellboreUid: string,
-  wellbore: WellboreReference,
+  targetWellbore: WellboreReference,
   targetServer: Server,
   sourceServer: Server,
   toCopy: ObjectOnWellbore[],
@@ -125,7 +152,7 @@ const confirmedCopyToServer = async (
         sourceServer,
         toCopy,
         existingObjects,
-        wellbore,
+        targetWellbore,
         objectType,
         dispatchOperation
       );
@@ -140,7 +167,12 @@ const confirmedCopyToServer = async (
         printObject(objectOnWellbore, objectType)
     );
   } else {
-    const copyJob = createCopyJob(sourceServer, toCopy, wellbore, objectType);
+    const copyJob = createCopyJob(
+      sourceServer,
+      toCopy,
+      targetWellbore,
+      objectType
+    );
     AuthorizationService.setSourceServer(sourceServer);
     JobService.orderJobAtServer(
       JobType.CopyObjects,
