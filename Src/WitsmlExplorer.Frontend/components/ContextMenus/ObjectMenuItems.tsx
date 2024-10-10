@@ -30,6 +30,7 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -46,6 +47,7 @@ export const ObjectMenuItems = (
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
+  const { connectedServer } = useConnectedServer();
 
   return [
     <MenuItem
@@ -149,26 +151,29 @@ export const ObjectMenuItems = (
       label={"Show on server"}
       disabled={checkedObjects.length !== 1}
     >
-      {servers.map((server: Server) => (
-        <MenuItem
-          key={server.name}
-          onClick={() =>
-            onClickShowObjectOnServer(
-              dispatchOperation,
-              server,
-              checkedObjects[0],
-              objectType,
-              (checkedObjects[0] as LogObject)?.indexType ===
-                WITSML_INDEX_TYPE_MD
-                ? IndexCurve.Depth
-                : IndexCurve.Time
-            )
-          }
-          disabled={checkedObjects.length !== 1}
-        >
-          <Typography color={"primary"}>{server.name}</Typography>
-        </MenuItem>
-      ))}
+      {servers
+        .filter((server: Server) => server.id != connectedServer.id)
+        .map((server: Server) => (
+          <MenuItem
+            key={server.name}
+            onClick={() =>
+              onClickShowObjectOnServer(
+                dispatchOperation,
+                server,
+                connectedServer,
+                checkedObjects[0],
+                objectType,
+                (checkedObjects[0] as LogObject)?.indexType ===
+                  WITSML_INDEX_TYPE_MD
+                  ? IndexCurve.Depth
+                  : IndexCurve.Time
+              )
+            }
+            disabled={checkedObjects.length !== 1}
+          >
+            <Typography color={"primary"}>{server.name}</Typography>
+          </MenuItem>
+        ))}
     </NestedMenuItem>,
     <NestedMenuItem
       key={"queryItems"}

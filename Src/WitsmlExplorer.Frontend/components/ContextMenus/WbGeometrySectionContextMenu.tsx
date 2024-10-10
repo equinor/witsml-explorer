@@ -159,21 +159,24 @@ const WbGeometrySectionContextMenu = (
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowObjectOnServer(
-                  dispatchOperation,
-                  server,
-                  wbGeometry,
-                  ObjectType.WbGeometry
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {servers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowObjectOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    wbGeometry,
+                    ObjectType.WbGeometry
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem
