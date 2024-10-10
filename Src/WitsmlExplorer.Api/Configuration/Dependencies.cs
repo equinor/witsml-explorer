@@ -36,6 +36,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
             AddRepository<LogCurvePriority, string>(services, configuration);
+            AddRepository<UidMappingCollection, UidMappingKey>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
@@ -43,6 +44,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
             services.AddSingleton<IJobProgressService, JobProgressService>();
+            services.AddSingleton<IUidMappingService, UidMappingService>();
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>

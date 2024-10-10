@@ -121,22 +121,25 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowGroupOnServer(
-                  dispatchOperation,
-                  server,
-                  wellbore,
-                  ObjectType.Log,
-                  indexType
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {servers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowGroupOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    wellbore,
+                    ObjectType.Log,
+                    indexType
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
