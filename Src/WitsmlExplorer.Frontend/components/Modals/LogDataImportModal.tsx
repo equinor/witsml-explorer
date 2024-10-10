@@ -293,8 +293,8 @@ const LogDataImportModal = (
     let foundDuplicity = false;
     let warningText =
       "Mnemonics with the same names (in brackets are numbers of occurences): ";
-    for (let key in mnemonics) {
-      let value = mnemonics[key];
+    for (const key in mnemonics) {
+      const value = mnemonics[key];
       if (value > 1) {
         warningText = warningText + key + "(" + mnemonics[key] + ") ";
         foundDuplicity = true;
