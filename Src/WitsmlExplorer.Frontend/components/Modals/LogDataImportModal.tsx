@@ -25,6 +25,7 @@ import { parse } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useOperationState } from "hooks/useOperationState";
+import { countBy, Dictionary } from "lodash";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
@@ -88,7 +89,7 @@ const LogDataImportModal = (
   const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
   const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
-  const [duplicityWarning, setDeuplicityWarning] = useState<string>("");
+  const [duplicityWarning, setDuplicityWarning] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
   const [contentTableId, setContentTableId] = useState<string>(
@@ -116,9 +117,6 @@ const LogDataImportModal = (
       uploadedFileColumns &&
       targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME
     ) {
-      //   const indexCurveColumn = uploadedFileColumns?.find(
-      //     (x) => x.name.toUpperCase() === targetLog.indexCurve.toUpperCase()
-      //   )?.index;
       try {
         return parseDateTimeColumn(uploadedFileData, 0, dateTimeFormat);
       } catch (error) {
@@ -177,60 +175,55 @@ const LogDataImportModal = (
 
       let header: ImportColumn[] = null;
       let data: string[] = null;
+      setDuplicityWarning("");
 
       if (text.startsWith("~V")) {
         // LAS files should start with ~V.
         const curveSection = extractLASSection(
           text,
           "CURVE INFORMATION",
-          "Curve"
+          "Curve",
+          "Log_Definition"
         );
-        const dataSection = extractLASSection(text, "ASCII", "A");
+        const dataSection = extractLASSection(text, "ASCII", "A", "Log_Data");
         header = parseLASHeader(curveSection);
-        // const groupedByNum = countBy(header, "name");
+        const groupedByNum = countBy(header, "name");
+        createWarningOfDuplicities(groupedByNum);
         header = countOccurrences(header, "name");
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
           (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
         )?.index;
         header[indexCurveColumn].name = targetLog.indexCurve;
+        validate(header);
         if (
           targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
           indexCurveColumn !== null
         ) {
+          // las file time
           const dateTimeFormat = findDateTimeFormat(data, indexCurveColumn);
           data = swapFirstColumn(data, indexCurveColumn);
           setUploadedFileData(data);
           setAllUploadedFileData(data);
           swapArrayElements<ImportColumn>(header, 0, indexCurveColumn);
           setDateTimeFormat(dateTimeFormat);
-          setUploadedFileColumns(header);
-          setAllMnemonics(header.map((col) => col.name));
-          validate(header);
-          setAllFileColumns(header);
-          setSelectedMnemonics(header.map((col) => col.name));
         } else {
+          // las file depth
           setUploadedFileData(data);
           setAllUploadedFileData(data);
-          setUploadedFileColumns(header);
-          setAllMnemonics(header.map((col) => col.name));
-          validate(header);
-          setAllFileColumns(header);
-          setSelectedMnemonics(header.map((col) => col.name));
         }
       } else {
+        // csv files
         const headerLine = text.split("\n", 1)[0];
         header = parseCSVHeader(headerLine);
         data = text.split("\n").slice(1);
-        validate(header);
-        setUploadedFileColumns(header);
         setUploadedFileData(data);
         setAllUploadedFileData(data);
-        setAllMnemonics(header.map((col) => col.name));
-        setAllFileColumns(header);
-        setSelectedMnemonics(header.map((col) => col.name));
-        setDeuplicityWarning("duplicities found");
       }
+      setUploadedFileColumns(header);
+      setAllMnemonics(header.map((col) => col.name));
+      setAllFileColumns(header);
+      setSelectedMnemonics(header.map((col) => col.name));
       setUploadedFile(file);
     },
     []
@@ -268,8 +261,6 @@ const LogDataImportModal = (
     selectedItems: string[];
   }) => {
     setSelectedMnemonics(selectedItems);
-    //   setUploadedFileColumns(allFileColumns.filter(x => selectedItems.indexOf(x.name) > 0 ));
-    //  const allUploadedFileData.filter(x => selectedItems.indexOf(x) > 0 );
     const reducedData = updateColumns(
       allUploadedFileData,
       selectedItems,
@@ -297,6 +288,26 @@ const LogDataImportModal = (
       return arr;
     }, {});
   };
+
+  const createWarningOfDuplicities = (mnemonics: Dictionary<number>) => {
+    let foundDuplicity = false;
+    let warningText =
+      "Mnemonics with the same names (in brackets are numbers of occurences): ";
+    for (let key in mnemonics) {
+      let value = mnemonics[key];
+      if (value > 1) {
+        warningText = warningText + key + "(" + mnemonics[key] + ") ";
+        foundDuplicity = true;
+      }
+    }
+    if (foundDuplicity) {
+      warningText =
+        warningText +
+        ". Duplicate names were automatically changed by adding numbers as suffix in brackets.";
+      setDuplicityWarning(warningText);
+    }
+  };
+
   return (
     <>
       {
@@ -329,6 +340,7 @@ const LogDataImportModal = (
                 id={"mnemonics"}
                 label={""}
                 multiple={true}
+                hideClearButton={true}
                 // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
                 variant={selectedMnemonics.length === 0 ? "error" : null}
                 options={allMnemonics.slice(1)} // Skip the first one as it is the index curve
@@ -340,7 +352,7 @@ const LogDataImportModal = (
                     "--eds-input-background": colors.ui.backgroundDefault
                   } as CSSProperties
                 }
-                dropdownHeight={600}
+                dropdownHeight={700}
                 colors={colors}
               />
               <Accordion>
@@ -420,7 +432,7 @@ const LogDataImportModal = (
                                 : uploadedFileData,
                               uploadedFileColumns,
                               targetLog.indexCurve
-                            )}
+                            ).splice(0, 30)}
                           />
                         </div>
                       </Accordion.Panel>
