@@ -2,6 +2,7 @@ import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 import { dataGridCommonData } from "templates/dataGrid/objects/common/DataGridCommonData";
 import { dataGridCustomData } from "templates/dataGrid/objects/common/DataGridCustomData";
 import { dataGridExtensionNameValue } from "templates/dataGrid/objects/common/DataGridExtensionNameValue";
+import { dataGridGrpWbGeometryProperties } from "templates/dataGrid/objects/common/properties/DataGridGrpWbGeometryProperties";
 import { dataGridMeasuredDepthCoordProperties } from "templates/dataGrid/objects/common/properties/DataGridMeasuredDepthCoordProperties";
 import { dataGridUomProperties } from "templates/dataGrid/objects/common/properties/DataGridUomProperties";
 import { dataGridWellVerticalDepthCoordProperties } from "templates/dataGrid/objects/common/properties/DataGridWellVerticalDepthCoordProperties";
@@ -77,7 +78,8 @@ export const dataGridCementJob: DataGridProperty = {
         {
           name: "holeConfig",
           documentation: "Wellbore Geometry of annulus.",
-          properties: [] // TODO: Fix this after adding WbGeometry
+          isContainer: true,
+          properties: dataGridGrpWbGeometryProperties
         },
         {
           name: "nameWorkString",
