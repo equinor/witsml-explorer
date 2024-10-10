@@ -50,6 +50,11 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
+import WellboreUidMappingModal, {
+  WellboreUidMappingModalProps
+} from "../Modals/WellboreUidMappingModal.tsx";
+import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
+import UidMappingService from "../../services/uidMappingService.tsx";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -183,12 +188,45 @@ const WellboreContextMenu = (
 
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const objectGroupsViewPath = getObjectGroupsViewPath(
-      server.url,
-      wellbore.wellUid,
-      wellbore.uid
-    );
-    openRouteInNewWindow(objectGroupsViewPath);
+
+    const dbQuery: UidMappingDbQuery = {
+      sourceServerId: connectedServer.id,
+      sourceWellId: wellbore.wellUid,
+      sourceWellboreId: wellbore.uid,
+      targetServerId: server.id
+    };
+
+    const mappings = await UidMappingService.queryUidMapping(dbQuery);
+
+    if (mappings.length > 0) {
+      const objectGroupsViewPath = getObjectGroupsViewPath(
+        server.url,
+        mappings[0].targetWellId,
+        mappings[0].targetWellboreId
+      );
+      openRouteInNewWindow(objectGroupsViewPath);
+    } else {
+      const objectGroupsViewPath = getObjectGroupsViewPath(
+        server.url,
+        wellbore.wellUid,
+        wellbore.uid
+      );
+      openRouteInNewWindow(objectGroupsViewPath);
+    }
+  };
+
+  const onClickMapUidOnServer = async (wellbore: Wellbore, server: Server) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    const wellboreUidMappingModalProps: WellboreUidMappingModalProps = {
+      wellbore: wellbore,
+      targetServer: server
+    };
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: <WellboreUidMappingModal {...wellboreUidMappingModalProps} />
+    };
+    dispatchOperation(action);
   };
 
   return (
@@ -252,14 +290,32 @@ const WellboreContextMenu = (
           <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() => onClickShowOnServer(server)}
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {servers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() => onClickShowOnServer(server)}
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
+        </NestedMenuItem>,
+        <NestedMenuItem
+          key={"mapUidOnServer"}
+          label={"Map UID From Server"}
+          icon={"link"}
+        >
+          {servers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() => onClickMapUidOnServer(wellbore, server)}
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[

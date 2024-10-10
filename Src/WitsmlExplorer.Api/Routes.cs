@@ -44,6 +44,11 @@ namespace WitsmlExplorer.Api
             app.MapPost("/universal/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedUniversalCurves, useOAuth2);
             app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedLocalCurves, useOAuth2);
 
+            app.MapPost("/uidmapping/", UidMappingHandler.CreateUidMapping, useOAuth2, AuthorizationPolicyRoles.ADMIN);
+            app.MapPatch("/uidmapping/", UidMappingHandler.UpdateUidMapping, useOAuth2, AuthorizationPolicyRoles.ADMIN);
+            app.MapPost("/uidmapping/query/", UidMappingHandler.QueryUidMapping, useOAuth2);
+            app.MapPost("/uidmapping/deletequery/", UidMappingHandler.QueryDeleteUidMapping, useOAuth2, AuthorizationPolicyRoles.ADMIN);
+
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);
 
