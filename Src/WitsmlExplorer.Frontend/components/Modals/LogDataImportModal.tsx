@@ -182,10 +182,9 @@ const LogDataImportModal = (
         const curveSection = extractLASSection(
           text,
           "CURVE INFORMATION",
-          "Curve",
-          "Log_Definition"
+          "Curve"
         );
-        const dataSection = extractLASSection(text, "ASCII", "A", "Log_Data");
+        const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
         const groupedByNum = countBy(header, "name");
         createWarningOfDuplicities(groupedByNum);
