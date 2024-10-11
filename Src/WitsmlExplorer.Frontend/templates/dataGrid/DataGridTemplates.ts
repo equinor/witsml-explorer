@@ -12,6 +12,7 @@ import { dataGridMessage } from "templates/dataGrid/objects/DataGridMessage";
 import { dataGridMudLog } from "templates/dataGrid/objects/DataGridMudLog";
 import { dataGridRig } from "templates/dataGrid/objects/DataGridRig";
 import { dataGridRisk } from "templates/dataGrid/objects/DataGridRisk";
+import { dataGridTrajectory } from "templates/dataGrid/objects/DataGridTrajectory";
 import { dataGridWbGeometry } from "templates/dataGrid/objects/DataGridWbGeometry";
 
 export const getDataGridTemplate = (
@@ -42,6 +43,8 @@ export const getDataGridTemplate = (
       return dataGridRig;
     case TemplateObjects.Risk:
       return dataGridRisk;
+    case TemplateObjects.Trajectory:
+      return dataGridTrajectory;
     case TemplateObjects.WbGeometry:
       return dataGridWbGeometry;
     default:
