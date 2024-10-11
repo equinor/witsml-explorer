@@ -8,6 +8,7 @@ import { dataGridConvCore } from "templates/dataGrid/objects/DataGridConvCore";
 import { dataGridFluidsReport } from "templates/dataGrid/objects/DataGridFluidsReport";
 import { dataGridFormationMarker } from "templates/dataGrid/objects/DataGridFormationMarker";
 import { dataGridLog } from "templates/dataGrid/objects/DataGridLog";
+import { dataGridMessage } from "templates/dataGrid/objects/DataGridMessage";
 import { dataGridMudLog } from "templates/dataGrid/objects/DataGridMudLog";
 import { dataGridRisk } from "templates/dataGrid/objects/DataGridRisk";
 import { dataGridWbGeometry } from "templates/dataGrid/objects/DataGridWbGeometry";
@@ -32,6 +33,8 @@ export const getDataGridTemplate = (
       return dataGridFormationMarker;
     case TemplateObjects.Log:
       return dataGridLog;
+    case TemplateObjects.Message:
+      return dataGridMessage;
     case TemplateObjects.MudLog:
       return dataGridMudLog;
     case TemplateObjects.Risk:

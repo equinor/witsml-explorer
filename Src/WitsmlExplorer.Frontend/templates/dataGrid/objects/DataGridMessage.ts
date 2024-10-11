@@ -3,9 +3,10 @@ import { dataGridCommonData } from "templates/dataGrid/objects/common/DataGridCo
 import { dataGridCustomData } from "templates/dataGrid/objects/common/DataGridCustomData";
 import { dataGridIndexedObjectProperties } from "templates/dataGrid/objects/common/properties/DataGridIndexedObjectProperties";
 import { dataGridMeasuredDepthCoordProperties } from "templates/dataGrid/objects/common/properties/DataGridMeasuredDepthCoordProperties";
+import { dataGridRefObjectStringProperties } from "templates/dataGrid/objects/common/properties/DataGridRefObjectStringProperties";
 
-export const dataGridAttachment: DataGridProperty = {
-  name: "attachments",
+export const dataGridMessage: DataGridProperty = {
+  name: "messages",
   documentation: "",
   isContainer: true,
   properties: [
@@ -20,8 +21,8 @@ export const dataGridAttachment: DataGridProperty = {
       isAttribute: true
     },
     {
-      name: "attachment",
-      documentation: "A single attachment Object.",
+      name: "message",
+      documentation: "A single message.",
       isMultiple: true,
       isContainer: true,
       properties: [
@@ -39,7 +40,7 @@ export const dataGridAttachment: DataGridProperty = {
         },
         {
           name: "uid",
-          documentation: "Unique identifier for the object.",
+          documentation: "Unique identifier for the message.",
           isAttribute: true
         },
         {
@@ -50,60 +51,55 @@ export const dataGridAttachment: DataGridProperty = {
         {
           name: "nameWellbore",
           documentation:
-            "Human recognizable context for the wellbore that contains the (sub) object that is represented by the attachment. If no wellbore is specified then the attachment represents the well. If a wellbore is specified but no other object is specified then the attachment represents the wellbore."
+            "Human recognizable context for the wellbore that contains the message."
         },
         {
           name: "name",
-          documentation: "Human recognizable context for the attachment."
+          documentation: "Human recognizable context for the message."
         },
         {
           name: "objectReference",
           documentation:
-            "A reference to an object that is defined within the context of the specified wellbore.",
-          properties: [
-            {
-              name: "object",
-              documentation:
-                'The type of data-object being referenced (e.g., "well", "wellbore").',
-              isAttribute: true
-            },
-            {
-              name: "uidRef",
-              documentation:
-                "A reference to the unique identifier (uid attribute) in the object referenced by the name value. This attribute is required within the context of a WITSML server.",
-              isAttribute: true
-            }
-          ]
+            "A reference to an object that is defined within the context of a wellbore.",
+          properties: dataGridRefObjectStringProperties
         },
         {
           name: "subObjectReference",
           documentation:
             "A reference to an sub-object that is defined within the context of the object referenced by objectReference. This should only refer to recurring components of a growing object.",
-          properties: [
-            {
-              name: "object",
-              documentation:
-                'The type of data-object being referenced (e.g., "well", "wellbore").',
-              isAttribute: true
-            },
-            {
-              name: "uidRef",
-              documentation:
-                "A reference to the unique identifier (uid attribute) in the object referenced by the name value. This attribute is required within the context of a WITSML server.",
-              isAttribute: true
-            }
-          ]
+          properties: dataGridRefObjectStringProperties
+        },
+        {
+          name: "dTim",
+          documentation: "Date and time the information is related to."
+        },
+        {
+          name: "activityCode",
+          documentation: "A code used to define rig activity."
+        },
+        {
+          name: "detailActivity",
+          documentation: "Custom string to further define an activity."
         },
         {
           name: "md",
           documentation:
-            "Along hole measured depth represented by the attachment.",
+            "Along hole measured depth of measurement from the drill datum.",
           properties: dataGridMeasuredDepthCoordProperties
         },
         {
           name: "mdBit",
-          documentation: "Along hole measured depth of the bit.",
+          documentation:
+            "Along hole measured depth of measurement from the drill datum.",
           properties: dataGridMeasuredDepthCoordProperties
+        },
+        {
+          name: "typeMessage",
+          documentation: "Message type."
+        },
+        {
+          name: "messageText",
+          documentation: "Message text. "
         },
         {
           name: "param",
@@ -113,20 +109,12 @@ export const dataGridAttachment: DataGridProperty = {
           properties: dataGridIndexedObjectProperties
         },
         {
-          name: "fileName",
-          documentation: "A file name associated with the attachment."
+          name: "severity",
+          documentation: "Severity of incident."
         },
         {
-          name: "description",
-          documentation: "A description of attachment."
-        },
-        {
-          name: "fileType",
-          documentation: "The file type."
-        },
-        {
-          name: "content",
-          documentation: "The actual attachment content."
+          name: "warnProbability",
+          documentation: "A warning probability (applies to warning)."
         },
         dataGridCommonData,
         dataGridCustomData
