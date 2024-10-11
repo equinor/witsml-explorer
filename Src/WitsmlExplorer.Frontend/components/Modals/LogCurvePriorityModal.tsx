@@ -149,10 +149,10 @@ export const LogCurvePriorityModal = (
             <FileContainer>
               <MuiButton
                 variant="contained"
-                color={"primary"}
+                color="primary"
                 startIcon={<Icon name="cloudUpload" />}
               >
-                <Typography noWrap>Upload CSV File</Typography>
+                Upload CSV File
                 <input
                   type="file"
                   accept=".csv,text/csv"

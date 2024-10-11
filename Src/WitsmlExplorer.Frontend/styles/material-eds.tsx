@@ -1,4 +1,9 @@
-import { createTheme, Theme } from "@mui/material";
+import {
+  buttonClasses,
+  createTheme,
+  Theme,
+  typographyClasses
+} from "@mui/material";
 import { UserTheme } from "contexts/operationStateReducer";
 import { colors } from "styles/Colors";
 import { isInAnyCompactMode } from "../tools/themeHelpers.ts";
@@ -194,15 +199,38 @@ const getTheme = (theme: UserTheme): Theme => {
               padding: "0.25rem"
             }
           }
+        },
+        MuiButton: {
+          ...edsTheme.components.MuiButton,
+          styleOverrides:
+            theme !== UserTheme.Compact
+              ? edsTheme.components.MuiButton.styleOverrides
+              : {
+                  root: {
+                    // @ts-ignore
+                    ...edsTheme.components.MuiButton.styleOverrides.root,
+                    padding: "0.2rem 1rem",
+                    textTransform: "initial",
+                    width: "fit-content !important",
+                    minWidth: "fit-content !important",
+                    fontSize: "0.85rem",
+                    whiteSpace: "nowrap",
+                    [`.${typographyClasses.root}`]: {
+                      fontSize: "0.85rem"
+                    },
+                    [`span.${buttonClasses.icon} svg`]: {
+                      height: "20px",
+                      width: "20px"
+                    }
+                  }
+                }
         }
       }
     };
   }
-
   return createTheme({
     ...edsTheme,
     ...themeOverrides
   });
 };
-
 export { getTheme };
