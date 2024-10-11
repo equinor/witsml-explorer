@@ -10,6 +10,7 @@ import { dataGridFormationMarker } from "templates/dataGrid/objects/DataGridForm
 import { dataGridLog } from "templates/dataGrid/objects/DataGridLog";
 import { dataGridMessage } from "templates/dataGrid/objects/DataGridMessage";
 import { dataGridMudLog } from "templates/dataGrid/objects/DataGridMudLog";
+import { dataGridRig } from "templates/dataGrid/objects/DataGridRig";
 import { dataGridRisk } from "templates/dataGrid/objects/DataGridRisk";
 import { dataGridWbGeometry } from "templates/dataGrid/objects/DataGridWbGeometry";
 
@@ -37,6 +38,8 @@ export const getDataGridTemplate = (
       return dataGridMessage;
     case TemplateObjects.MudLog:
       return dataGridMudLog;
+    case TemplateObjects.Rig:
+      return dataGridRig;
     case TemplateObjects.Risk:
       return dataGridRisk;
     case TemplateObjects.WbGeometry:
