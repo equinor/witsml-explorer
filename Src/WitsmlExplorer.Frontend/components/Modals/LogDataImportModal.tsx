@@ -2,6 +2,7 @@
   Accordion,
   Autocomplete,
   Icon,
+  Label,
   List,
   TextField
 } from "@equinor/eds-core-react";
@@ -335,6 +336,10 @@ const LogDataImportModal = (
                   </Typography>
                 </Tooltip>
               </FileContainer>
+              <StyledLabel
+                label="You can choose mnemonics for export:"
+                colors={colors}
+              />
               <StyledAutocomplete
                 id={"mnemonics"}
                 label={""}
@@ -473,6 +478,13 @@ const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
   button {
     color: ${(props) => props.colors.infographic.primaryMossGreen};
   }
+`;
+
+const StyledLabel = styled(Label)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+  white-space: nowrap;
+  align-items: center;
+  font-style: italic;
 `;
 
 const FileContainer = styled.div`
