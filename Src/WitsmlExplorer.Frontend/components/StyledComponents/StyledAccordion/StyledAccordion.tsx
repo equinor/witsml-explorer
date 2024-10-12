@@ -9,7 +9,6 @@ type StyledAccordionProps = {
   style?: CSSProperties;
 };
 
-
 const StyledAccordion: FC<StyledAccordionProps> = ({ children, style }) => {
   const {
     operationState: { theme }
@@ -43,4 +42,3 @@ const StyledRawAccordion = styled(Accordion)<{
     return "";
   }}
 `;
-

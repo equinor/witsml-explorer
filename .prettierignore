@@ -6,6 +6,7 @@ Src/WitsmlExplorer.Console
 Src/WitsmlExplorer.Frontend/build
 Src/WitsmlExplorer.Frontend/obj
 Src/WitsmlExplorer.Frontend/bin
+Src/WitsmlExplorer.Frontend/dist
 
 .vscode/*
 
