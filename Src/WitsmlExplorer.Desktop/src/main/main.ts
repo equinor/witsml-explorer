@@ -51,6 +51,7 @@ function readOrCreateAppConfig() {
     // Merge the configs to ensure that new properties are added to the existing config.
     config = { ...defaultConfig, ...existingConfig };
   } catch (err) {
+    console.error(err);
     config = defaultConfig;
   }
 

@@ -22,6 +22,9 @@ jobs:
       - name: Install dependencies
         run: yarn --network-timeout 100000
         working-directory: ./Src/WitsmlExplorer.Desktop
+      - name: Linting
+        run: yarn lint
+        working-directory: ./Src/WitsmlExplorer.Desktop
       - name: Package
         run: yarn electron:pack
         working-directory: ./Src/WitsmlExplorer.Desktop

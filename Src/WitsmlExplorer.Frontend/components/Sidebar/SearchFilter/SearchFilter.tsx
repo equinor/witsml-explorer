@@ -13,6 +13,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   FilterContext,
   FilterType,
+  FilterTypes,
   getFilterTypeInformation,
   isObjectFilterType,
   isWellboreFilterType
@@ -37,7 +38,7 @@ import StartAdornment from "./StartAdornment";
 import FilterIcon from "./FilterIcon";
 import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
 
-const searchOptions = Object.values(FilterType);
+const searchOptions = Object.values(FilterTypes);
 
 const SearchFilter = (): ReactElement => {
   const { dispatchOperation } = useOperationState();
