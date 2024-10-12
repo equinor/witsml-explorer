@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import FilterPanel from "../../FilterPanel.tsx";
 import { Box } from "@mui/material";
 import { Icon } from "@equinor/eds-core-react";
@@ -10,11 +10,7 @@ type FilterIconProps = {
   onClick: () => void;
 };
 
-const FilterIcon: FC<FilterIconProps> & { Popup: FC } = ({
-  onClick,
-  expanded,
-  color
-}) => {
+const FilterIcon = ({ onClick, expanded, color }: FilterIconProps) => {
   return (
     <Button
       variant="ghost_icon"
@@ -26,7 +22,7 @@ const FilterIcon: FC<FilterIconProps> & { Popup: FC } = ({
   );
 };
 
-const FilterIconPopup: FC = () => (
+FilterIcon.Popup = () => (
   <Box
     sx={{
       zIndex: 10,
@@ -40,7 +36,5 @@ const FilterIconPopup: FC = () => (
     <FilterPanel />
   </Box>
 );
-
-FilterIcon.Popup = FilterIconPopup;
 
 export default FilterIcon;
