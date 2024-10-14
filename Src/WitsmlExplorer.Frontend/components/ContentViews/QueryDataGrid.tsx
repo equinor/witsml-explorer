@@ -36,6 +36,7 @@ const parserOptions = {
 // TODO: Get data for all objects
 // TODO: Fix error when toggling the root element (or maybe disable?)
 // TODO: Fix all TODOs in other files.
+// TODO: When selecting a row, should all child-rows be selected?
 
 export default function QueryDataGrid() {
   const {
