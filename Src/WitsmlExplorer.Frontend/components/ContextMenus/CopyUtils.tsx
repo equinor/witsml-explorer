@@ -99,18 +99,3 @@ export const copyComponents = async (
   );
   await navigator.clipboard.writeText(JSON.stringify(componentReferences));
 };
-
-export const duplicateObjectOnWellbore = async (
-  selectedServer: Server,
-  objectsOnWellbore: ObjectOnWellbore[],
-  dispatchOperation: DispatchOperation,
-  objectType: ObjectType
-) => {
-  dispatchOperation({ type: OperationType.HideContextMenu });
-  const objectReferences: ObjectReferences = toObjectReferences(
-    objectsOnWellbore,
-    objectType,
-    selectedServer.url
-  );
-  await navigator.clipboard.writeText(JSON.stringify(objectReferences));
-};
