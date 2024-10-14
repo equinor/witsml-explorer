@@ -276,35 +276,16 @@ namespace WitsmlExplorer.Api.Workers
 
         private async Task AddDataToLog(string wellUid, string wellboreUid, string logUid, WitsmlLogData data)
         {
-            var batchSize = 5000; // Use maxDataNodes and maxDataPoints to calculate batchSize when supported by the API.
-            var dataRows = data.Data;
-            for (int i = 0; i < dataRows.Count; i += batchSize)
+            var mnemonics = data.MnemonicList.Split(CommonConstants.DataSeparator).ToList();
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            var mnemonicList = data.MnemonicList;
+            var queries = LogWorkerTools.GetUpdateLogDataQueries(logUid, wellUid, wellboreUid, data, chunkMaxSize, mnemonicList);
+
+            foreach (var query in queries)
             {
-                var currentLogData = dataRows.Skip(i).Take(batchSize).ToList();
-                WitsmlLogs copyNewCurvesQuery = CreateAddLogDataRowsQuery(wellUid, wellboreUid, logUid, data, currentLogData);
-                QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
+                QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query), Logger);
                 if (!result.IsSuccessful) throw new ArgumentException($"Could not add log data to the new log. {result.Reason}");
             }
-        }
-
-        private static WitsmlLogs CreateAddLogDataRowsQuery(string wellUid, string wellboreUid, string logUid, WitsmlLogData logData, List<WitsmlData> currentLogData)
-        {
-            return new()
-            {
-                Logs = new List<WitsmlLog> {
-                    new(){
-                        UidWell = wellUid,
-                        UidWellbore = wellboreUid,
-                        Uid = logUid,
-                        LogData = new WitsmlLogData
-                        {
-                            MnemonicList = logData.MnemonicList,
-                            UnitList = logData.UnitList,
-                            Data = currentLogData
-                        }
-                    }
-                }
-            };
         }
     }
 }

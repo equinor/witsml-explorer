@@ -175,25 +175,28 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             await using LogDataReader logDataReader = new(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonics, Logger);
             WitsmlLogData sourceLogData = await logDataReader.GetNextBatch();
+            var chunkMaxSize = await GetMaxBatchSize(mnemonics.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+
             while (sourceLogData != null)
             {
+                var mnemonicList = targetLog.IndexCurve.Value + sourceLogData.MnemonicList[sourceLogData.MnemonicList.IndexOf(CommonConstants.DataSeparator, StringComparison.InvariantCulture)..];
+                var updateLogDataQueries = LogWorkerTools.GetUpdateLogDataQueries(targetLog.Uid, targetLog.UidWell, targetLog.UidWellbore, sourceLogData, chunkMaxSize, mnemonicList);
                 if (cancellationToken is { IsCancellationRequested: true })
                 {
                     return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = CancellationReason() };
                 }
-                WitsmlLogs copyNewCurvesQuery = CreateCopyQuery(targetLog, sourceLogData);
-                QueryResult result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(copyNewCurvesQuery), Logger);
-                if (result.IsSuccessful)
+                foreach (var query in updateLogDataQueries)
                 {
-                    numberOfDataRowsCopied += sourceLogData.Data.Count;
-                    UpdateJobProgress(job, sourceLog, sourceLogData);
-                }
-                else
-                {
-                    Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
-                    return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
-                }
 
+                    var result = await RequestUtils.WithRetry(async () => await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query), Logger);
+                    if (!result.IsSuccessful)
+                    {
+                        Logger.LogError("Failed to copy log data. - {Description} - Current index: {StartIndex}", job.Description(), logDataReader.StartIndex);
+                        return new CopyResult { Success = false, NumberOfRowsCopied = numberOfDataRowsCopied, ErrorReason = result.Reason };
+                    }
+                }
+                numberOfDataRowsCopied += sourceLogData.Data.Count;
+                UpdateJobProgress(job, sourceLog, sourceLogData);
                 sourceLogData = await logDataReader.GetNextBatch();
             }
 

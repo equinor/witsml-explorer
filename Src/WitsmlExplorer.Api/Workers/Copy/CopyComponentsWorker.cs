@@ -47,6 +47,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     Source = job.Source,
                     Target = job.Target,
+                    ProgressReporter = new Progress<double>(progress =>
+                    {
+                        job.ProgressReporter?.Report(progress);
+                        if (job.JobInfo != null) job.JobInfo.Progress = progress;
+                    })
                 }, cancellationToken);
             }
 

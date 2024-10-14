@@ -10,6 +10,7 @@ using Moq;
 using Serilog;
 
 using Witsml;
+using Witsml.Data;
 using Witsml.Data.Rig;
 
 using WitsmlExplorer.Api.Jobs;
@@ -33,7 +34,7 @@ public class CreateRigWorkerTests
     private const string WellboreUid = "wellboreUid";
 
     private readonly Mock<IWitsmlClient> _witsmlClient;
-    private readonly CreateRigWorker _worker;
+    private readonly CreateObjectOnWellboreWorker _worker;
 
     public CreateRigWorkerTests()
     {
@@ -42,31 +43,35 @@ public class CreateRigWorkerTests
         witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
         ILoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.AddSerilog(Log.Logger);
-        ILogger<CreateRigJob> logger = loggerFactory.CreateLogger<CreateRigJob>();
-        _worker = new CreateRigWorker(logger, witsmlClientProvider.Object);
+        ILogger<CreateObjectOnWellboreJob> logger = loggerFactory.CreateLogger<CreateObjectOnWellboreJob>();
+        _worker = new CreateObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
     }
 
     [Fact]
     public async Task CreateRig_Execute_MissingUid_InvalidOperationException()
     {
-        CreateRigJob job = CreateJobTemplate(uid: null);
-        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Uid cannot be empty", exception.Message);
+        CreateObjectOnWellboreJob job = CreateJobTemplate(uid: null);
+        var (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Uid cannot be null", workerResult.Message);
         job = CreateJobTemplate(uid: string.Empty);
-        exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Uid cannot be empty", exception.Message);
+        (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Uid cannot be empty", workerResult.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlRigs>()), Times.Never);
     }
 
     [Fact]
     public async Task CreateRig_Execute_MissingName_InvalidOperationException()
     {
-        CreateRigJob job = CreateJobTemplate(name: null);
-        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Name cannot be empty", exception.Message);
+        CreateObjectOnWellboreJob job = CreateJobTemplate(name: null);
+        var (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Name cannot be null", workerResult.Message);
         job = CreateJobTemplate(name: string.Empty);
-        exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Name cannot be empty", exception.Message);
+        (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Name cannot be empty", workerResult.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlRigs>()), Times.Never);
     }
 
@@ -74,12 +79,12 @@ public class CreateRigWorkerTests
     [Fact]
     public async Task CreateRig_Execute_ValidResults()
     {
-        CreateRigJob job = CreateJobTemplate();
+        CreateObjectOnWellboreJob job = CreateJobTemplate();
         List<WitsmlRigs> createdRigs = new();
 
         _witsmlClient.Setup(client =>
-                client.AddToStoreAsync(It.IsAny<WitsmlRigs>()))
-            .Callback<WitsmlRigs>(rig => createdRigs.Add(rig))
+                client.AddToStoreAsync(It.IsAny<IWitsmlQueryType>()))
+            .Callback<IWitsmlQueryType>(rig => createdRigs.Add(rig as WitsmlRigs))
             .ReturnsAsync(new QueryResult(true));
 
         await _worker.Execute(job);
@@ -94,11 +99,11 @@ public class CreateRigWorkerTests
         Assert.Equal(WellboreUid, createdRig.UidWellbore);
     }
 
-    private static CreateRigJob CreateJobTemplate(string uid = Uid, string name = Name, string wellUid = WellUid, string wellName = WellName, string wellboreUid = WellboreUid)
+    private static CreateObjectOnWellboreJob CreateJobTemplate(string uid = Uid, string name = Name, string wellUid = WellUid, string wellName = WellName, string wellboreUid = WellboreUid)
     {
-        return new CreateRigJob
+        return new CreateObjectOnWellboreJob
         {
-            Rig = new Rig()
+            Object = new Rig()
             {
                 Uid = uid,
                 Name = name,
@@ -110,7 +115,8 @@ public class CreateRigWorkerTests
                     ItemState = "plan",
                     SourceName = "sourceName"
                 }
-            }
+            },
+            ObjectType = EntityType.Rig
         };
     }
 }

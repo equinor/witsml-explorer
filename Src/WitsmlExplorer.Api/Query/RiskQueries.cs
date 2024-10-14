@@ -16,6 +16,8 @@ namespace WitsmlExplorer.Api.Query
                     UidWell = wellUid,
                     UidWellbore = wellboreUid,
                     Name = "",
+                    NameWell = "",
+                    NameWellbore = "",
                     Type = "",
                     Category = "",
                     SubCategory = "",

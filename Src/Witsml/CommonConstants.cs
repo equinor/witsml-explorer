@@ -40,4 +40,14 @@ public static class CommonConstants
         public const string Feet = "ft";
         public const string Second = "s";
     }
+
+    public static class WitsmlQueryTypeName
+    {
+        public const string Log = "log";
+    }
+
+    public static class WitsmlFunctionType
+    {
+        public const string WMLSUpdateInStore = "WMLS_UpdateInStore";
+    };
 }

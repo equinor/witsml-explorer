@@ -20,9 +20,9 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import { OpenInQueryView } from "hooks/useOpenInQueryView";
+import { IndexCurve } from "models/indexCurve";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";

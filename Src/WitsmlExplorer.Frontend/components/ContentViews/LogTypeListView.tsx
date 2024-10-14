@@ -3,10 +3,12 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
+import { getLogObjectsViewPath } from "routes/utils/pathBuilder";
 
 interface LogType {
   uid: number;
@@ -16,6 +18,7 @@ interface LogType {
 export default function LogTypeListView() {
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "Name", type: ContentType.String }
@@ -29,8 +32,16 @@ export default function LogTypeListView() {
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log);
 
   const onSelect = async (logType: any) => {
+    const logTypePath =
+      logType.uid === 0 ? RouterLogType.DEPTH : RouterLogType.TIME;
     navigate(
-      `${logType.uid === 0 ? RouterLogType.DEPTH : RouterLogType.TIME}/objects`
+      getLogObjectsViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.Log,
+        logTypePath
+      )
     );
   };
 

@@ -86,7 +86,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
             string successString = successUids.Count > 0 ? $"Deleted {witsmlObjectOnWellbore?.GetType().Name}s: {string.Join(", ", successUids)}." : "";
             return !error
                 ? (new WorkerResult(witsmlClient.GetServerHostname(), true, successString), refreshAction)
-                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString} Failed to delete some {witsmlObjectOnWellbore?.GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
+                : (new WorkerResult(witsmlClient.GetServerHostname(), false, $"{successString}Failed to delete some {witsmlObjectOnWellbore?.GetType().Name}s", errorReason, null), successUids.Count > 0 ? refreshAction : null);
         }
     }
 }

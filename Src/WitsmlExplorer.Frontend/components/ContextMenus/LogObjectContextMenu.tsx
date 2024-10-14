@@ -28,11 +28,10 @@ import LogComparisonModal, {
 import LogDataImportModal, {
   LogDataImportModalProps
 } from "components/Modals/LogDataImportModal";
-import LogPropertiesModal from "components/Modals/LogPropertiesModal";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { ReportModal } from "components/Modals/ReportModal";
 import SpliceLogsModal from "components/Modals/SpliceLogsModal";
 import TrimLogObjectModal from "components/Modals/TrimLogObject/TrimLogObjectModal";
@@ -77,20 +76,6 @@ const LogObjectContextMenu = (
   const { servers } = useGetServers();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-  const onClickProperties = () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const logObject = checkedObjects[0];
-    const logPropertiesModalProps = {
-      mode: PropertiesModalMode.Edit,
-      logObject,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <LogPropertiesModal {...logPropertiesModalProps} />
-    });
-  };
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -453,12 +438,18 @@ const LogObjectContextMenu = (
         disabled={checkedObjects.length === 0}
       >
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>Import log data from .csv</Typography>
+        <Typography color={"primary"}>Import log data</Typography>
       </MenuItem>,
       <Divider key={uuid()} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickProperties}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Log,
+            checkedObjects?.[0] as LogObject,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

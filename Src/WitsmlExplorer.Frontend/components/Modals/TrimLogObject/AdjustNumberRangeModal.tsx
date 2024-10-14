@@ -1,5 +1,6 @@
-import { Button, TextField } from "@equinor/eds-core-react";
+import { TextField } from "@equinor/eds-core-react";
 import React, { useEffect, useState } from "react";
+import { Button } from "../../StyledComponents/Button.tsx";
 
 export interface AdjustNumberRangeModalProps {
   minValue: number;

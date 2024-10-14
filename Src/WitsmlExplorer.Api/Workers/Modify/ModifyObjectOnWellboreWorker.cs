@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 using Witsml;
 using Witsml.Data;
@@ -26,17 +27,18 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
             Logger.LogInformation("Started {JobType}. {jobDescription}", JobType, job.Description());
 
-            obj = ModifyUtils.PrepareModification(obj, objectType, Logger);
-
             try
             {
-                ModifyUtils.VerifyModification(obj);
+                ModifyUtils.VerifyModificationProperties(obj, objectType, Logger);
+                ModifyUtils.VerifyModificationValues(obj);
             }
             catch (Exception e)
             {
                 Logger.LogError("{JobType} - Job validation failed", JobType);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, e.Message, ""), null);
             }
+
+            await PreModifyModifications(job);
 
             IWitsmlQueryType query = obj.ToWitsml();
             QueryResult modifyResult = await GetTargetWitsmlClientOrThrow().UpdateInStoreAsync(query);
@@ -53,6 +55,26 @@ namespace WitsmlExplorer.Api.Workers.Modify
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"{objectType} {obj.Name} updated for {obj.WellboreName}");
 
             return (workerResult, refreshAction);
+        }
+
+        private async Task PreModifyModifications(ModifyObjectOnWellboreJob job)
+        {
+            if (job.ObjectType == EntityType.Risk)
+            {
+                Risk risk = (Risk)job.Object;
+                if (!risk.AffectedPersonnel.IsNullOrEmpty())
+                {
+                    // AffectedPersonnel can't be modified. So we delete it first, and then run the modification as usual.
+                    WitsmlRisks test = new WitsmlRisk
+                    {
+                        Uid = risk.Uid,
+                        UidWell = risk.WellUid,
+                        UidWellbore = risk.WellboreUid,
+                        AffectedPersonnel = [""] // Warning: The empty string must be included to ensure that AffectedPersonnel is serialized correctly and added to the query. Otherwise we risk deleting the entire risk object!
+                    }.AsItemInWitsmlList();
+                    await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(test);
+                }
+            }
         }
     }
 }

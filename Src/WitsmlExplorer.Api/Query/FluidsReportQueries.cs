@@ -25,7 +25,9 @@ namespace WitsmlExplorer.Api.Query
                     DTimLastChange = "",
                     ItemState = "",
                     Comments = "",
-                    DefaultDatum = ""
+                    DefaultDatum = "",
+                    SourceName = "",
+                    ServiceCategory = ""
                 }
             }.AsItemInWitsmlList();
         }

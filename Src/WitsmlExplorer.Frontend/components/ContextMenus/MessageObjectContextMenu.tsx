@@ -13,13 +13,10 @@ import {
 import MessageComparisonModal, {
   MessageComparisonModalProps
 } from "components/Modals/MessageComparisonModal";
-import MessagePropertiesModal, {
-  MessagePropertiesModalProps
-} from "components/Modals/MessagePropertiesModal";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -41,20 +38,6 @@ const MessageObjectContextMenu = (
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
-
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const mode = PropertiesModalMode.Edit;
-    const modifyMessageObjectProps: MessagePropertiesModalProps = {
-      mode,
-      messageObject: checkedObjects[0] as MessageObject,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <MessagePropertiesModal {...modifyMessageObjectProps} />
-    });
-  };
 
   const onClickCompare = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -99,7 +82,13 @@ const MessageObjectContextMenu = (
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Message,
+            checkedObjects?.[0] as MessageObject,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

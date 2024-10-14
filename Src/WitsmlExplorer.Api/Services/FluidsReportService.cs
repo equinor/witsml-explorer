@@ -141,6 +141,8 @@ namespace WitsmlExplorer.Api.Services
                     ItemState = fluidsReport.CommonData.ItemState,
                     Comments = fluidsReport.CommonData.Comments,
                     DefaultDatum = fluidsReport.CommonData.DefaultDatum,
+                    SourceName = fluidsReport.CommonData.SourceName,
+                    ServiceCategory = fluidsReport.CommonData.ServiceCategory
                 }
             };
         }

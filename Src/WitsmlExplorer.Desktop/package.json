@@ -1,7 +1,7 @@
 {
   "name": "WEx-Desktop",
   "description": "Witsml Explorer Desktop Edition",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "author": "Witsml Explorer Team",
   "repository": "https://github.com/equinor/witsml-explorer",
@@ -13,7 +13,8 @@
     "preview": "yarn build:api && electron-vite preview",
     "electron:pack": "yarn build && electron-builder --dir -c electron-builder.json",
     "electron:dist": "yarn build && electron-builder -c electron-builder.json",
-    "test:pack": "cross-env ELECTRON_IS_TEST=true playwright test"
+    "test:pack": "cross-env ELECTRON_IS_TEST=true playwright test",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0"
   },
   "main": "./dist/main/main.js",
   "lint-staged": {

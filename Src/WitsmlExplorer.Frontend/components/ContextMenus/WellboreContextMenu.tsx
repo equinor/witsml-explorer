@@ -1,6 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import {
   ObjectTypeToTemplateObject,
   StoreFunction,
@@ -15,21 +16,20 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferences } from "components/ContextMenus/UseClipboardReferences";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
-import LogPropertiesModal, {
-  IndexCurve,
-  LogPropertiesModalInterface
-} from "components/Modals/LogPropertiesModal";
 import MissingDataAgentModal, {
   MissingDataAgentModalProps
 } from "components/Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
-import WellborePropertiesModal, {
-  WellborePropertiesModalProps
-} from "components/Modals/WellborePropertiesModal";
+import {
+  openObjectOnWellboreProperties,
+  openWellboreProperties
+} from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -37,6 +37,7 @@ import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { IndexCurve } from "models/indexCurve";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
@@ -75,23 +76,18 @@ const WellboreContextMenu = (
       name: "",
       wellUid: wellbore.wellUid,
       wellName: wellbore.wellName,
-      wellStatus: "",
-      wellType: "",
+      wellboreStatus: "",
+      wellboreType: "",
       isActive: false,
       wellboreParentUid: wellbore.uid,
       wellboreParentName: wellbore.name,
       wellborePurpose: "unknown"
     };
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      wellbore: newWellbore,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <WellborePropertiesModal {...wellborePropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openWellboreProperties(
+      newWellbore,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   const onClickNewLog = () => {
@@ -102,21 +98,18 @@ const WellboreContextMenu = (
       wellName: wellbore.wellName,
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
+      indexType: WITSML_INDEX_TYPE_MD,
       indexCurve: IndexCurve.Depth
     };
-    const logPropertiesModalProps: LogPropertiesModalInterface = {
-      mode: PropertiesModalMode.New,
-      logObject: newLog,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <LogPropertiesModal {...logPropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openObjectOnWellboreProperties(
+      ObjectType.Log,
+      newLog,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
-  const deleteWellbore = async () => {
+  const deleteWellbore = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
@@ -125,30 +118,24 @@ const WellboreContextMenu = (
         wellboreUid: wellbore.uid,
         wellName: wellbore.wellName,
         wellboreName: wellbore.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWellbore, job);
   };
 
   const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete wellbore?"}
-        content={
-          <span>
-            This will permanently delete <strong>{wellbore.name}</strong> with
-            uid: <strong>{wellbore.uid}</strong>
-          </span>
-        }
-        onConfirm={deleteWellbore}
-        confirmColor={"danger"}
-        confirmText={"Delete wellbore"}
-        switchButtonPlaces={true}
-      />
-    );
+    const userCredentialsModalProps: ConfirmDeletionModalProps = {
+      componentType: "wellbore",
+      objectName: wellbore.name,
+      objectUid: wellbore.uid,
+      onSubmit(cascadedDelete) {
+        deleteWellbore(cascadedDelete);
+      }
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: confirmation
+      payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
 
@@ -194,18 +181,6 @@ const WellboreContextMenu = (
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <MissingDataAgentModal {...missingDataAgentModalProps} />
-    });
-  };
-
-  const onClickProperties = async () => {
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = {
-      mode: PropertiesModalMode.Edit,
-      wellbore,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <WellborePropertiesModal {...wellborePropertiesModalProps} />
     });
   };
 
@@ -258,7 +233,11 @@ const WellboreContextMenu = (
             )}
           </Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWellbore"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWellbore"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellboreRows && checkedWellboreRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
@@ -367,7 +346,10 @@ const WellboreContextMenu = (
           <Typography color={"primary"}>Missing Data Agent</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties}>
+        <MenuItem
+          key={"properties"}
+          onClick={() => openWellboreProperties(wellbore, dispatchOperation)}
+        >
           <StyledIcon
             name="settings"
             color={colors.interactive.primaryResting}
