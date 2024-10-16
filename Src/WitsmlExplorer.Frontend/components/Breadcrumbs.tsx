@@ -166,7 +166,6 @@ export function Breadcrumbs() {
                 breadcrumbContent.length - 1 == index
                   ? "EquinorMedium"
                   : "Equinor",
-
               color: `${colors.infographic.primaryMossGreen}`
             }}
           >
