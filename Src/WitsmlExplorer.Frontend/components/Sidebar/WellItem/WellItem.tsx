@@ -18,19 +18,23 @@ import { useOperationState } from "hooks/useOperationState";
 import { useWellboreFilter } from "hooks/useWellboreFilter";
 import Well from "models/well";
 import Wellbore, {
-  calculateWellNodeId,
-  calculateWellboreNodeId
+  calculateWellboreNodeId,
+  calculateWellNodeId
 } from "models/wellbore";
 import React, { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
+import { getStyles } from "./styles.ts";
 
 interface WellItemProps {
   wellUid: string;
 }
 
 export default function WellItem({ wellUid }: WellItemProps) {
-  const { dispatchOperation } = useOperationState();
+  const {
+    dispatchOperation,
+    operationState: { theme }
+  } = useOperationState();
   const { servers } = useGetServers();
   const { wellUid: urlWellUid, wellboreUid: urlWellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
@@ -45,6 +49,9 @@ export default function WellItem({ wellUid }: WellItemProps) {
     wellUid,
     { enabled: isExpanded }
   );
+
+  const generatedSx = getStyles(theme);
+
   const filteredWellbores = useWellboreFilter(wellbores);
   const isFetching = isFetchingWell || isFetchingWellbores;
 
@@ -68,44 +75,45 @@ export default function WellItem({ wellUid }: WellItemProps) {
     });
   };
 
+  if (!well) return null;
+
   return (
-    well && (
-      <TreeItem
-        onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
-          onContextMenu(event, well)
-        }
-        selected={
-          calculateWellNodeId(wellUid) === calculateWellNodeId(urlWellUid)
-        }
-        key={wellUid}
-        labelText={well?.name}
-        nodeId={calculateWellNodeId(wellUid)}
-        isLoading={isFetching}
-        to={getWellboresViewPath(connectedServer?.url, wellUid)}
-      >
-        {filteredWellbores?.length > 0 ? (
-          filteredWellbores.map((wellbore: Wellbore) => (
-            <WellboreItem
-              wellUid={wellbore.wellUid}
-              wellboreUid={wellbore.uid}
-              selected={
-                calculateWellboreNodeId({
-                  wellUid: wellUid,
-                  uid: wellbore.uid
-                }) ===
-                calculateWellboreNodeId({
-                  wellUid: urlWellUid,
-                  uid: urlWellboreUid
-                })
-              }
-              key={calculateWellboreNodeId(wellbore)}
-              nodeId={calculateWellboreNodeId(wellbore)}
-            />
-          ))
-        ) : (
-          <EmptyTreeItem />
-        )}
-      </TreeItem>
-    )
+    <TreeItem
+      onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
+        onContextMenu(event, well)
+      }
+      selected={
+        calculateWellNodeId(wellUid) === calculateWellNodeId(urlWellUid)
+      }
+      key={wellUid}
+      labelText={well?.name}
+      nodeId={calculateWellNodeId(wellUid)}
+      isLoading={isFetching}
+      to={getWellboresViewPath(connectedServer?.url, wellUid)}
+      sx={generatedSx}
+    >
+      {filteredWellbores?.length > 0 ? (
+        filteredWellbores.map((wellbore: Wellbore) => (
+          <WellboreItem
+            wellUid={wellbore.wellUid}
+            wellboreUid={wellbore.uid}
+            selected={
+              calculateWellboreNodeId({
+                wellUid: wellUid,
+                uid: wellbore.uid
+              }) ===
+              calculateWellboreNodeId({
+                wellUid: urlWellUid,
+                uid: urlWellboreUid
+              })
+            }
+            key={calculateWellboreNodeId(wellbore)}
+            nodeId={calculateWellboreNodeId(wellbore)}
+          />
+        ))
+      ) : (
+        <EmptyTreeItem />
+      )}
+    </TreeItem>
   );
 }

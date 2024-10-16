@@ -16,6 +16,7 @@ import React, { FC, useState } from "react";
 import { Chip } from "./StyledComponents/Chip";
 import Icon from "../styles/Icons.tsx";
 import { Stack } from "@mui/material";
+import { UserTheme } from "../contexts/operationStateReducer.tsx";
 
 export interface QueryEditorProps {
   value: string;
@@ -35,8 +36,10 @@ export const QueryEditor: FC<QueryEditorProps> = ({
   const navigate = useNavigate();
   const { serverUrl } = useParams();
   const {
-    operationState: { colors }
+    operationState: { colors, theme }
   } = useOperationState();
+
+  const isCompact = theme === UserTheme.Compact;
 
   const onLoadInternal = (editor: any) => {
     editor.renderer.setPadding(10);
@@ -63,7 +66,7 @@ export const QueryEditor: FC<QueryEditorProps> = ({
         onChange={onChange}
         onLoad={onLoadInternal}
         readOnly={readonly}
-        fontSize={13}
+        fontSize={isCompact ? "0.75rem" : 13}
         showPrintMargin={false}
         highlightActiveLine={false}
         setOptions={{

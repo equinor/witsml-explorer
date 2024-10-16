@@ -19,6 +19,7 @@ import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
 import { Draggable, DummyDrop } from "../StyledComponents/DragDropTable";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 const lastId = "dummyLastId";
 
@@ -89,7 +90,7 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
       width={ModalWidth.LARGE}
       content={
         <>
-          <Accordion>
+          <StyledAccordion>
             <Accordion.Item>
               <StyledAccordionHeader colors={colors}>
                 How are the logs spliced?
@@ -100,7 +101,7 @@ const SpliceLogsModal = (props: SpliceLogsProps): ReactElement => {
                 <ExampleSplice />
               </Accordion.Panel>
             </Accordion.Item>
-          </Accordion>
+          </StyledAccordion>
           <Typography style={{ marginTop: "16px", marginBottom: "16px" }}>
             Priority:
           </Typography>

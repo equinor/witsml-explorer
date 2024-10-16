@@ -26,6 +26,7 @@ import NotificationService from "services/notificationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import ConfirmModal from "./ConfirmModal";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 export interface ReportModal {
   report?: BaseReport;
@@ -150,7 +151,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                 </Banner>
               )}
               {report.summary?.includes("\n") ? (
-                <Accordion>
+                <StyledAccordion>
                   <Accordion.Item>
                     <StyledAccordionHeader colors={colors}>
                       {report.summary.split("\n")[0]}
@@ -163,7 +164,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                       </Typography>
                     </Accordion.Panel>
                   </Accordion.Item>
-                </Accordion>
+                </StyledAccordion>
               ) : (
                 <Typography>{report.summary}</Typography>
               )}

@@ -2,10 +2,16 @@ import { TextField } from "@equinor/eds-core-react";
 import formatDateString, {
   validateIsoDateString
 } from "components/DateFormatter";
-import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
+import {
+  DateTimeFormat,
+  TimeZone,
+  UserTheme
+} from "contexts/operationStateReducer";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Icon from "styles/Icons";
+import { Box } from "@mui/material";
+import { useOperationState } from "../../hooks/useOperationState.tsx";
 
 interface DateTimeFieldProps {
   value: string;
@@ -32,6 +38,10 @@ export const DateTimeField = (
   const { value, label, updateObject, timeZone, disabled } = props;
   const [initiallyEmpty, setInitiallyEmpty] = useState(false);
   const isFirefox = navigator.userAgent.includes("Firefox");
+  const {
+    operationState: { theme }
+  } = useOperationState();
+  const isCompact = theme === UserTheme.Compact;
 
   useEffect(() => {
     setInitiallyEmpty(value == null || value === "");
@@ -68,7 +78,13 @@ export const DateTimeField = (
       />
       {disabled ? null : (
         <>
-          <PickerIcon name="calendar" />
+          <Box
+            position="absolute"
+            top={`${isCompact ? 16 : 22}px`}
+            right={`${isCompact ? 10 : 15}px`}
+          >
+            <Icon name="calendar" />
+          </Box>
           <Picker
             id={label + "picker"}
             placeholder=""
@@ -102,6 +118,7 @@ export const DateTimeField = (
 
 const Layout = styled.div`
   position: relative;
+
   input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
   }
@@ -112,10 +129,4 @@ const Picker = styled(TextField)`
   position: absolute;
   right: 0;
   top: 15px;
-`;
-
-const PickerIcon = styled(Icon)`
-  position: absolute;
-  right: 15px;
-  top: 22px;
 `;
