@@ -87,7 +87,11 @@ export const ObjectMenuItems = (
     <MenuItem
       key={"duplicate"}
       onClick={onClickDuplicateObjectOnWellbore}
-      disabled={checkedObjects.length === 0 || checkedObjects.length > 1}
+      disabled={
+        checkedObjects.length === 0 ||
+        checkedObjects.length > 1 ||
+        objectType !== ObjectType.Log
+      }
     >
       <StyledIcon name="copy" color={colors.interactive.primaryResting} />
       <Typography color={"primary"}>
