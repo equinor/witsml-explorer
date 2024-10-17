@@ -30,6 +30,8 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
+import OperationType from "../../contexts/operationType";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -46,6 +48,20 @@ export const ObjectMenuItems = (
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
+
+  const onClickDuplicateObjectOnWellbore = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: (
+        <DuplicateObjectModal
+          servers={servers}
+          objectsOnWellbore={checkedObjects}
+          objectType={objectType}
+        />
+      )
+    });
+  };
 
   return [
     <MenuItem
@@ -68,6 +84,20 @@ export const ObjectMenuItems = (
       </Typography>
     </MenuItem>,
     <Divider key={"objectMenuItemsDivider"} />,
+    <MenuItem
+      key={"duplicate"}
+      onClick={onClickDuplicateObjectOnWellbore}
+      disabled={
+        checkedObjects.length === 0 ||
+        checkedObjects.length > 1 ||
+        objectType !== ObjectType.Log
+      }
+    >
+      <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+      <Typography color={"primary"}>
+        {menuItemText("duplicate", objectType, null)}
+      </Typography>
+    </MenuItem>,
     <MenuItem
       key={"copy"}
       onClick={() =>

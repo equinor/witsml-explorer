@@ -16,6 +16,17 @@ namespace WitsmlExplorer.Api.Jobs
         /// Indicates, if the job can be cancelled
         /// </summary>
         public override bool IsCancelable => true;
+
+        /// <summary>
+        /// Target object Uid - only for log duplication purposes
+        /// </summary>
+        public string TargetObjectUid { get; init; }
+
+        /// <summary>
+        /// Target object name - only for log duplication purposes
+        /// </summary>
+        public string TargetObjectName { get; init; }
+
     }
 
     public record CopyLogDataJob : ICopyJob<ComponentReferences, ObjectReference>
