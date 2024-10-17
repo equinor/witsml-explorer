@@ -43,6 +43,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task<(WorkerResult, RefreshAction)> GenericCopy(CopyObjectsJob job, CancellationToken? cancellationToken = null)
         {
+            var duplicate = job.TargetObjectUid != null;
             Witsml.IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
             Witsml.IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
             IWitsmlObjectList fetchObjectsQuery = ObjectQueries.GetWitsmlObjectsByIds(job.Source.WellUid, job.Source.WellboreUid, job.Source.ObjectUids, job.Source.ObjectType);
@@ -66,6 +67,11 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
 
             ICollection<WitsmlObjectOnWellbore> queries = ObjectQueries.CopyObjectsQuery(objectsToCopy.Objects, targetWellbore);
+            if (duplicate)
+            {
+                queries.First().Uid = job.TargetObjectUid;
+                queries.First().Name = job.TargetObjectName;
+            }
             RefreshObjects refreshAction = new(targetClient.GetServerHostname(), job.Target.WellUid, job.Target.WellboreUid, job.Source.ObjectType);
             return await _copyUtils.CopyObjectsOnWellbore(targetClient, sourceClient, queries, refreshAction, job.Source.WellUid, job.Source.WellboreUid);
         }
