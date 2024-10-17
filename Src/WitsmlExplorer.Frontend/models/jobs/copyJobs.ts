@@ -17,6 +17,8 @@ export interface CopyWellboreJob {
 export interface CopyObjectsJob {
   source: ObjectReferences;
   target: WellboreReference;
+  targetObjectUid?: string;
+  targetObjectName?: string;
 }
 
 export interface CopyComponentsJob {
