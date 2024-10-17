@@ -1,11 +1,14 @@
-import { EdsProvider, Icon } from "@equinor/eds-core-react";
-import { Divider, TextField } from "@mui/material";
+import { EdsProvider } from "@equinor/eds-core-react";
+import {
+  inputBaseClasses,
+  inputLabelClasses,
+  Stack,
+  TextField
+} from "@mui/material";
 import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import OptionsContextMenu, {
   OptionsContextMenuProps
 } from "components/ContextMenus/OptionsContextMenu";
-import FilterPanel from "components/Sidebar/FilterPanel";
-import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   FilterContext,
@@ -17,36 +20,42 @@ import {
 } from "contexts/filter";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  ChangeEventHandler,
+  KeyboardEventHandler,
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { getSearchViewPath } from "routes/utils/pathBuilder";
-import styled, { CSSProp } from "styled-components";
+import styled, { css } from "styled-components";
 import { Colors } from "styles/Colors";
-import Icons from "styles/Icons";
+import EndAdornment from "./EndAdornment";
+import StartAdornment from "./StartAdornment";
+import FilterIcon from "./FilterIcon";
+import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
 
 const searchOptions = Object.values(FilterTypes);
 
-const SearchFilter = (): React.ReactElement => {
+const SearchFilter = (): ReactElement => {
   const { dispatchOperation } = useOperationState();
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const { connectedServer } = useConnectedServer();
   const selectedOption = selectedFilter?.filterType;
   const {
-    operationState: { colors }
+    operationState: { colors, theme }
   } = useOperationState();
+
+  const isCompact = theme === UserTheme.Compact;
+  const iconColor = colors.interactive.primaryResting;
+
   const [expanded, setExpanded] = useState<boolean>(false);
   const [nameFilter, setNameFilter] = useState<string>(selectedFilter.name);
   const textFieldRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-
-  const FilterPopup: CSSProp = {
-    zIndex: 10,
-    position: "absolute",
-    width: "inherit",
-    top: "6.3rem",
-    minWidth: "174px",
-    paddingRight: "0.1em"
-  };
 
   useEffect(() => {
     const dispatch = setTimeout(() => {
@@ -87,7 +96,7 @@ const SearchFilter = (): React.ReactElement => {
     setNameFilter("");
   };
 
-  const openOptions = () => {
+  const handleOpenOptions = () => {
     const contextMenuProps: OptionsContextMenuProps = {
       dispatchOperation,
       options: searchOptions,
@@ -108,66 +117,56 @@ const SearchFilter = (): React.ReactElement => {
     });
   };
 
+  const handleFilterReset = () => setNameFilter("");
+  const handleSearchOpen = () => openSearchView(selectedOption);
+
+  const handleEnterPress: KeyboardEventHandler = ({ key }) =>
+    key == "Enter" ? openSearchView(selectedOption) : null;
+
+  const handleInputChange: ChangeEventHandler<HTMLInputElement> = ({
+    target
+  }) => setNameFilter(target.value ?? "");
+
+  const handleExpandFiltersClick = () => setExpanded(!expanded);
+
   return (
     <>
-      <SearchLayout colors={colors}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        p="0.6rem 6px 0.5rem 1rem"
+        borderBottom={`2px solid ${colors.interactive.disabledBorder}`}
+      >
         <SearchBarContainer>
           <EdsProvider density="compact">
             <SearchField
-              value={nameFilter}
-              style={{ width: "100%" }}
-              onChange={(event) => setNameFilter(event.target.value ?? "")}
+              fullWidth
               id="searchField"
               ref={textFieldRef}
+              value={nameFilter}
+              onChange={handleInputChange}
               variant="outlined"
               colors={colors}
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
-              onKeyDown={(e) =>
-                e.key == "Enter" ? openSearchView(selectedOption) : null
-              }
+              onKeyDown={handleEnterPress}
+              isCompact={isCompact}
               InputProps={{
                 startAdornment: (
-                  <SearchIconLayout>
-                    <Button
-                      variant="ghost_icon"
-                      disabled={!connectedServer}
-                      onClick={openOptions}
-                      aria-label="Show Search Options"
-                    >
-                      <Icon
-                        name={"chevronDown"}
-                        color={colors.interactive.primaryResting}
-                      />
-                    </Button>
-                  </SearchIconLayout>
+                  <StartAdornment
+                    color={iconColor}
+                    disabled={!connectedServer}
+                    onOpenOptions={handleOpenOptions}
+                  />
                 ),
                 endAdornment: (
-                  <SearchIconLayout>
-                    {nameFilter && (
-                      <Button
-                        variant="ghost_icon"
-                        onClick={() => setNameFilter("")}
-                        aria-label="Clear"
-                      >
-                        <Icon
-                          name={"clear"}
-                          color={colors.interactive.primaryResting}
-                          size={18}
-                        />
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost_icon"
-                      onClick={() => openSearchView(selectedOption)}
-                      aria-label="Search"
-                    >
-                      <Icon
-                        name="search"
-                        color={colors.interactive.primaryResting}
-                      />
-                    </Button>
-                  </SearchIconLayout>
+                  <EndAdornment
+                    color={iconColor}
+                    searchActive={!!nameFilter}
+                    onResetFilter={handleFilterReset}
+                    onOpenSearch={handleSearchOpen}
+                  />
                 ),
                 classes: {
                   adornedStart: "small-padding-left",
@@ -177,45 +176,37 @@ const SearchFilter = (): React.ReactElement => {
             />
           </EdsProvider>
         </SearchBarContainer>
-        <Icons
-          onClick={() => setExpanded(!expanded)}
-          name={expanded ? "activeFilter" : "filter"}
-          color={colors.interactive.primaryResting}
-          size={32}
-          style={{ cursor: "pointer" }}
+        <FilterIcon
+          color={iconColor}
+          expanded={expanded}
+          onClick={handleExpandFiltersClick}
         />
-      </SearchLayout>
-      {expanded ? (
-        <div style={FilterPopup}>
-          <FilterPanel />
-        </div>
-      ) : (
-        <> </>
-      )}
-      <Divider key={"divider"} />
+      </Stack>
+      {expanded ? <FilterIcon.Popup /> : null}
     </>
   );
 };
 
-const SearchField = styled(TextField)<{ colors: Colors }>`
+const SearchField = styled(TextField)<{ colors: Colors; isCompact: boolean }>`
   &&& > div > fieldset {
-    border-color: ${(props) => props.colors.interactive.primaryResting};
+    border-color: ${({ colors }) => colors.interactive.primaryResting};
   }
-`;
 
-const SearchLayout = styled.div<{ colors: Colors }>`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 0.375rem 0.5rem 1rem;
-  position: relative;
-  padding-right: 6px;
-  border-bottom: 1px solid ${(props) => props.colors.interactive.disabledBorder};
-`;
+  ${({ isCompact }) =>
+    !isCompact
+      ? ""
+      : css`
+          .${inputLabelClasses.root} {
+            font-size: 0.9rem;
+          }
 
-const SearchIconLayout = styled.div`
-  display: flex;
-  align-items: center;
+          .${inputBaseClasses.input} {
+            padding: 8px 0;
+            font-size: 0.9rem;
+          }
+        `}
+}
+
 `;
 
 const SearchBarContainer = styled.div`

@@ -43,10 +43,12 @@ import {
   parseLASData,
   parseLASHeader
 } from "tools/lasFileTools";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 export interface LogDataImportModalProps {
   targetLog: LogObject;
 }
+
 interface ImportColumn {
   index: number;
   name: string;
@@ -359,7 +361,7 @@ const LogDataImportModal = (
                 dropdownHeight={700}
                 colors={colors}
               />
-              <Accordion>
+              <StyledAccordion>
                 <Accordion.Item>
                   <StyledAccordionHeader colors={colors}>
                     Limitations
@@ -442,7 +444,7 @@ const LogDataImportModal = (
                       </Accordion.Panel>
                     </Accordion.Item>
                   )}
-              </Accordion>
+              </StyledAccordion>
               {targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
                 !!uploadedFileData?.length && (
                   <TextField
@@ -492,6 +494,7 @@ const FileContainer = styled.div`
   flex-direction: row;
   gap: 1rem;
   align-items: center;
+
   .MuiButton-root {
     min-width: 160px;
   }

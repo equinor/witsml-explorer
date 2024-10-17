@@ -28,6 +28,7 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -163,7 +164,7 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
     <>
       <ContentContainer>
         <CommonPanelContainer>
-          <EdsProvider density={theme}>
+          <EdsProvider density={normaliseThemeForEds(theme)}>
             <Switch
               checked={showPlot}
               onChange={() => setShowPlot(!showPlot)}

@@ -35,6 +35,7 @@ import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
 import { Colors, dark } from "styles/Colors";
 import { createLogCurveValuesSearchParams } from "../../routes/utils/createLogCurveValuesSearchParams";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 interface EditSelectedLogCurveInfoProps {
   disabled?: boolean;
@@ -156,7 +157,7 @@ const EditSelectedLogCurveInfo = (
 
   return (
     selectedMnemonics && (
-      <EdsProvider density={theme}>
+      <EdsProvider density={normaliseThemeForEds(theme)}>
         <Layout colors={colors}>
           <StartEndIndex>
             <StyledLabel label="Start Index:" colors={colors} />

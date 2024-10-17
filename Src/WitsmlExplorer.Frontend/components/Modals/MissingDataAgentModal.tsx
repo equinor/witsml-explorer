@@ -28,6 +28,7 @@ import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "tools/localStorageHelpers";
 import { v4 as uuid } from "uuid";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 export interface MissingDataAgentModalProps {
   wellReferences: WellReference[];
@@ -242,7 +243,7 @@ const MissingDataAgentModal = (
       isLoading={false}
       content={
         <ModalContentLayout>
-          <Accordion style={{ paddingBottom: "30px" }}>
+          <StyledAccordion style={{ paddingBottom: "30px" }}>
             <Accordion.Item>
               <StyledAccordionHeader colors={colors}>
                 Missing Data Agent
@@ -260,7 +261,7 @@ const MissingDataAgentModal = (
                 </Typography>
               </Accordion.Panel>
             </Accordion.Item>
-          </Accordion>
+          </StyledAccordion>
           {missingDataChecks.map((missingDataCheck) => (
             <CheckLayout key={missingDataCheck.id}>
               <Autocomplete
