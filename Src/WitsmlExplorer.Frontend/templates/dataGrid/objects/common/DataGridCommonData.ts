@@ -1,4 +1,5 @@
 import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
+import { dataGridExtensionAny } from "templates/dataGrid/objects/common/DataGridExtensionAny";
 import { dataGridExtensionNameValue } from "templates/dataGrid/objects/common/DataGridExtensionNameValue";
 
 export const dataGridCommonData: DataGridProperty = {
@@ -66,10 +67,7 @@ export const dataGridCommonData: DataGridProperty = {
       documentation:
         "This is an API query parameter. See the API specification for the behavior related to this element."
     },
-    {
-      name: "extensionAny",
-      documentation: "Extensions to the schema using an xsd:any construct."
-    },
+    dataGridExtensionAny,
     dataGridExtensionNameValue
   ]
 };
