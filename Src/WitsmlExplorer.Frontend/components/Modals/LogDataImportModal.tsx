@@ -295,8 +295,7 @@ const LogDataImportModal = (
 
   const createWarningOfDuplicities = (mnemonics: Dictionary<number>) => {
     let foundDuplicity = false;
-    let warningText =
-      "Mnemonics with the same names (in brackets are numbers of occurences): ";
+    let warningText = "Found multiple mnemonics with the same name: ";
     for (const key in mnemonics) {
       const value = mnemonics[key];
       if (value > 1) {
@@ -307,7 +306,7 @@ const LogDataImportModal = (
     if (foundDuplicity) {
       warningText =
         warningText +
-        ". Duplicate names were automatically changed by adding numbers as suffix in brackets.";
+        ". Duplicate names were automatically changed by adding numbers as suffix in parenthesis.";
       setDuplicityWarning(warningText);
     }
   };
