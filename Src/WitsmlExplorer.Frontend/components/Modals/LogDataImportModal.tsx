@@ -192,12 +192,12 @@ const LogDataImportModal = (
         const groupedByNum = countBy(header, "name");
         createWarningOfDuplicities(groupedByNum);
         header = countOccurrences(header, "name");
+        validate(header);
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
           (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
         )?.index;
         header[indexCurveColumn].name = targetLog.indexCurve;
-        validate(header);
         if (
           targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
           indexCurveColumn !== null
@@ -262,22 +262,24 @@ const LogDataImportModal = (
   }: {
     selectedItems: string[];
   }) => {
-    setSelectedMnemonics(selectedItems);
-    const reducedData = updateColumns(
-      allUploadedFileData,
-      selectedItems,
-      allFileColumns
-    );
+    if (
+      selectedItems.find(
+        (option) => option.toUpperCase() === targetLog.indexCurve.toUpperCase()
+      )
+    ) {
+      setSelectedMnemonics(selectedItems);
+      const reducedData = updateColumns(
+        allUploadedFileData,
+        selectedItems,
+        allFileColumns
+      );
 
-    const reducedHeader = updateHeader(
-      allFileColumns,
-      selectedItems,
-      allFileColumns
-    );
-    const timestamp = new Date().getTime();
-    setContentTableId(timestamp.toString());
-    setUploadedFileColumns(reducedHeader);
-    setUploadedFileData(reducedData);
+      const reducedHeader = updateHeader(allFileColumns, selectedItems);
+      const timestamp = new Date().getTime();
+      setContentTableId(timestamp.toString());
+      setUploadedFileColumns(reducedHeader);
+      setUploadedFileData(reducedData);
+    }
   };
 
   const countOccurrences = (arr: any[], property: string) => {
@@ -338,29 +340,43 @@ const LogDataImportModal = (
                   </Typography>
                 </Tooltip>
               </FileContainer>
-              <StyledLabel
-                label="You can choose mnemonics for export:"
-                colors={colors}
-              />
-              <StyledAutocomplete
-                id={"mnemonics"}
-                label={""}
-                multiple={true}
-                hideClearButton={true}
-                // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
-                variant={selectedMnemonics.length === 0 ? "error" : null}
-                options={allMnemonics.slice(1)} // Skip the first one as it is the index curve
-                selectedOptions={selectedMnemonics}
-                onFocus={(e) => e.preventDefault()}
-                onOptionsChange={onMnemonicsChange}
-                style={
-                  {
-                    "--eds-input-background": colors.ui.backgroundDefault
-                  } as CSSProperties
-                }
-                dropdownHeight={700}
-                colors={colors}
-              />
+              {uploadedFile && (
+                <>
+                  <StyledLabel
+                    label="You can choose mnemonics for export:"
+                    colors={colors}
+                  />
+                  <StyledAutocomplete
+                    id={"mnemonics"}
+                    label={""}
+                    multiple={true}
+                    hideClearButton={true}
+                    variant={selectedMnemonics.length === 0 ? "error" : null}
+                    options={allMnemonics}
+                    selectedOptions={selectedMnemonics}
+                    onFocus={(e) => e.preventDefault()}
+                    onOptionsChange={onMnemonicsChange}
+                    style={
+                      {
+                        "--eds-input-background": colors.ui.backgroundDefault
+                      } as CSSProperties
+                    }
+                    dropdownHeight={700}
+                    colors={colors}
+                  />
+                </>
+              )}
+              {targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+                !!uploadedFileData?.length && (
+                  <TextField
+                    id="indexCurveFormat"
+                    label="Index Curve Format"
+                    value={dateTimeFormat ?? ""}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setDateTimeFormat(e.target.value);
+                    }}
+                  />
+                )}
               <StyledAccordion>
                 <Accordion.Item>
                   <StyledAccordionHeader colors={colors}>
@@ -432,6 +448,7 @@ const LogDataImportModal = (
                           <ContentTable
                             key={contentTableId}
                             columns={contentTableColumns}
+                            showPanel={false}
                             data={getTableData(
                               parsedData !== null
                                 ? parsedData
@@ -445,17 +462,6 @@ const LogDataImportModal = (
                     </Accordion.Item>
                   )}
               </StyledAccordion>
-              {targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
-                !!uploadedFileData?.length && (
-                  <TextField
-                    id="indexCurveFormat"
-                    label="Index Curve Format"
-                    value={dateTimeFormat ?? ""}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      setDateTimeFormat(e.target.value);
-                    }}
-                  />
-                )}
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
@@ -651,23 +657,10 @@ const updateColumns = (
       splitData = removeColumn(splitData, i);
     }
   }
-  // const tempData = swapColumns(splitData, 0, selectedColumn);
-  //  const result = tempData.map((obj) => obj.join(","));
   return splitData.map((obj) => obj.join(","));
 };
 
-const updateHeader = (
-  columns: ImportColumn[],
-  mnemonics: string[],
-  allMnemonics: ImportColumn[]
-) => {
-  for (let i = allMnemonics.length - 1; i >= 0; i--) {
-    const toRemove = allMnemonics[i];
-    if (mnemonics.indexOf(toRemove.name) === -1) {
-      //  columns = columns.filter(item => item.index !== i)
-      // const columnToRemove = uploadedFileColumns
-    }
-  }
+const updateHeader = (columns: ImportColumn[], mnemonics: string[]) => {
   const output = columns.filter((x) => mnemonics.indexOf(x.name) > -1);
   return output;
 };
