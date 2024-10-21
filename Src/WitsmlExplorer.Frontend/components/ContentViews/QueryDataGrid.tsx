@@ -1,4 +1,4 @@
-import { EdsProvider, TextField, Typography } from "@equinor/eds-core-react";
+import { TextField, Typography } from "@equinor/eds-core-react";
 import { ExpandedState, RowSelectionState } from "@tanstack/react-table";
 import {
   formatXml,
@@ -12,7 +12,6 @@ import {
 } from "components/ContentViews/table";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { XMLBuilder, XMLParser } from "fast-xml-parser";
-import { useOperationState } from "hooks/useOperationState";
 import { cloneDeep, debounce } from "lodash";
 import {
   ChangeEvent,
@@ -32,17 +31,7 @@ const parserOptions = {
   attributeNamePrefix: "@_"
 };
 
-// TODO: Cleanup this file (move stuff to different files and folders)
-// TODO: Get data for all objects
-// TODO: Fix error when toggling the root element (or maybe disable?)
-// TODO: Fix all TODOs in other files.
-// TODO: When selecting a row, should all child-rows be selected?
-
 export default function QueryDataGrid() {
-  const {
-    operationState: { theme }
-  } = useOperationState();
-
   const {
     queryState: { queries, tabIndex },
     dispatchQuery
@@ -121,7 +110,9 @@ export default function QueryDataGrid() {
   const updateQueryFromData = (data: QueryGridDataRow[]) => {
     const generatedQueryObj = extractQueryFromData(data);
     const generatedQuery = builder.build(generatedQueryObj);
-    const formattedGeneratedQuery = formatXml(generatedQuery);
+    const formattedGeneratedQuery = generatedQuery
+      ? formatXml(generatedQuery)
+      : "";
 
     dispatchQuery({
       type: QueryActionType.SetQuery,
@@ -184,22 +175,20 @@ export default function QueryDataGrid() {
 
   return tableData?.length > 0 ? (
     <div style={{ height: "0", minHeight: "100%" }}>
-      <EdsProvider density={theme}>
-        <ContentTable
-          key={tabId}
-          viewId="queryDataGrid"
-          columns={columns}
-          data={tableData}
-          nested
-          nestedProperty="children"
-          checkableRows
-          onRowSelectionChange={onRowSelectionChange}
-          onExpandedChange={setExpanded}
-          rowSelection={rowSelection}
-          expanded={expanded}
-          stickyLeftColumns={2}
-        />
-      </EdsProvider>
+      <ContentTable
+        key={tabId}
+        viewId="queryDataGrid"
+        columns={columns}
+        data={tableData}
+        nested
+        nestedProperty="children"
+        checkableRows
+        onRowSelectionChange={onRowSelectionChange}
+        onExpandedChange={setExpanded}
+        rowSelection={rowSelection}
+        expanded={expanded}
+        stickyLeftColumns={2}
+      />
     </div>
   ) : (
     <Typography>Unable to parse query</Typography>
@@ -364,8 +353,11 @@ const getExpandedRowsFromQuery = (
 };
 
 const StyledTextField = styled(TextField)`
+  display: flex;
+  align-items: center;
   div {
     background-color: transparent;
   }
   width: 100%;
+  height: 100%;
 `;

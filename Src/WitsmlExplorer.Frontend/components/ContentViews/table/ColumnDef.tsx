@@ -256,7 +256,7 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
     ),
     cell: ({ row, table }) => {
       return row.getCanExpand() ? (
-        <div style={{ display: "flex", paddingLeft: `${row.depth * 0.5}em` }}>
+        <div style={{ display: "flex" }}>
           <IconButton
             onClick={(event) => {
               event.stopPropagation();

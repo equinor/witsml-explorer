@@ -216,11 +216,11 @@ export const ContentTable = React.memo(
         const flattenDataRecursively = (dataRow: any) => {
           return dataRow[nestedProperty]
             ? [
-              dataRow,
-              ...dataRow[nestedProperty].flatMap((nestedRow: any) =>
-                flattenDataRecursively(nestedRow)
-              )
-            ]
+                dataRow,
+                ...dataRow[nestedProperty].flatMap((nestedRow: any) =>
+                  flattenDataRecursively(nestedRow)
+                )
+              ]
             : [dataRow];
         };
 
@@ -301,11 +301,11 @@ export const ContentTable = React.memo(
     const flattenDataRecursively = (dataRow: any) => {
       return dataRow[nestedProperty]
         ? [
-          dataRow,
-          ...dataRow[nestedProperty].flatMap((nestedRow: any) =>
-            flattenDataRecursively(nestedRow)
-          )
-        ]
+            dataRow,
+            ...dataRow[nestedProperty].flatMap((nestedRow: any) =>
+              flattenDataRecursively(nestedRow)
+            )
+          ]
         : [dataRow];
     };
 
@@ -358,7 +358,7 @@ export const ContentTable = React.memo(
             numberOfItems={
               nested && nestedProperty
                 ? data?.flatMap((dataRow) => flattenDataRecursively(dataRow))
-                  .length
+                    .length
                 : data?.length
             }
             table={table}
@@ -405,7 +405,7 @@ export const ContentTable = React.memo(
                       >
                         {header.column.getIsSorted() &&
                           sortingIcons[
-                          header.column.getIsSorted() as SortDirection
+                            header.column.getIsSorted() as SortDirection
                           ]}
                         {flexRender(
                           header.column.columnDef.header,
@@ -430,7 +430,6 @@ export const ContentTable = React.memo(
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const row = rows[virtualRow.index] as Row<any>;
                 return (
-                  // <Fragment key={`${row.depth}-${row.id}`}>
                   <Fragment key={row.id}>
                     <StyledTr
                       selected={row.getIsSelected()}
@@ -452,8 +451,8 @@ export const ContentTable = React.memo(
                       colors={colors}
                       className={
                         autoRefresh &&
-                          oldDataCountRef.current &&
-                          virtualRow.index + 1 > oldDataCountRef.current
+                        oldDataCountRef.current &&
+                        virtualRow.index + 1 > oldDataCountRef.current
                           ? "fading-row"
                           : ""
                       }
