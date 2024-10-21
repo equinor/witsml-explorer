@@ -46,7 +46,7 @@ const DuplicateObjectModal = (
 
     const orderCopyJob = () => {
       const copyJob: CopyObjectsJob = {
-        source: toObjectReferences(objectsOnWellbore, ObjectType.Log),
+        source: toObjectReferences(objectsOnWellbore, props.objectType),
         target: {
           wellUid: objectsOnWellbore[0].wellUid,
           wellboreUid: objectsOnWellbore[0].wellboreUid,
