@@ -16,6 +16,7 @@ import { dataGridTrajectory } from "templates/dataGrid/objects/DataGridTrajector
 import { dataGridTubular } from "templates/dataGrid/objects/DataGridTubular";
 import { dataGridWbGeometry } from "templates/dataGrid/objects/DataGridWbGeometry";
 import { dataGridWell } from "templates/dataGrid/objects/DataGridWell";
+import { dataGridWellbore } from "templates/dataGrid/objects/DataGridWellbore";
 
 export const getDataGridTemplate = (
   templateObject: TemplateObjects
@@ -53,6 +54,8 @@ export const getDataGridTemplate = (
       return dataGridWbGeometry;
     case TemplateObjects.Well:
       return dataGridWell;
+    case TemplateObjects.Wellbore:
+      return dataGridWellbore;
     default:
       console.error(
         `No data grid template is yet defined for ${templateObject}`
