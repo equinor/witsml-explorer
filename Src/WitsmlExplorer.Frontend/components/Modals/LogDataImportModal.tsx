@@ -1,6 +1,16 @@
-﻿import { Accordion, Icon, List } from "@equinor/eds-core-react";
+﻿import {
+  Accordion,
+  Autocomplete,
+  Icon,
+  Label,
+  List,
+  TextField
+} from "@equinor/eds-core-react";
 import { Button, Tooltip, Typography } from "@mui/material";
-import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import {
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "components/Constants";
 import {
   ContentTable,
   ContentTableColumn,
@@ -12,8 +22,11 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
+import { parse } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useOperationState } from "hooks/useOperationState";
+import { countBy, Dictionary } from "lodash";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
@@ -21,9 +34,10 @@ import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
-import styled from "styled-components";
+import styled, { CSSProperties } from "styled-components";
+import { Colors } from "styles/Colors";
 import {
   extractLASSection,
   parseLASData,
@@ -70,27 +84,70 @@ const LogDataImportModal = (
     );
   const [uploadedFile, setUploadedFile] = useState<File>(null);
   const [uploadedFileData, setUploadedFileData] = useState<string[]>([]);
+  const [allUploadedFileData, setAllUploadedFileData] = useState<string[]>([]);
   const [uploadedFileColumns, setUploadedFileColumns] = useState<
     ImportColumn[]
   >([]);
+  const [allFileColumns, setAllFileColumns] = useState<ImportColumn[]>([]);
+  const [selectedMnemonics, setSelectedMnemonics] = useState<string[]>([]);
+  const [allMnemonics, setAllMnemonics] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
+  const [duplicityWarning, setDuplicityWarning] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
+  const [contentTableId, setContentTableId] = useState<string>(
+    "listOfSelectedMmenomics"
+  );
   const separator = ",";
 
-  const validate = (fileColumns: ImportColumn[]) => {
-    setError("");
+  const validate = (fileColumns: ImportColumn[], parseError?: string) => {
+    if (parseError) setError(parseError);
     if (fileColumns.length) {
       if (fileColumns.map((col) => col.name).some((value) => value === ""))
         setError(IMPORT_FORMAT_INVALID);
-      if (!fileColumns.map((col) => col.name).includes(targetLog.indexCurve))
+      if (
+        !fileColumns
+          .map((col) => col.name.toUpperCase())
+          .includes(targetLog.indexCurve.toUpperCase())
+      )
         setError(MISSING_INDEX_CURVE);
     }
   };
 
+  const getParsedData = () => {
+    if (
+      uploadedFileData &&
+      uploadedFileColumns &&
+      targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME
+    ) {
+      try {
+        return parseDateTimeColumn(uploadedFileData, 0, dateTimeFormat);
+      } catch (error) {
+        validate(
+          uploadedFileColumns,
+          dateTimeFormat ? `Unable to parse data. ${error}` : null
+        );
+        return null;
+      }
+    }
+    return uploadedFileData;
+  };
+
+  const parsedData = useMemo(
+    () => getParsedData(),
+    [
+      uploadedFileData,
+      uploadedFileColumns,
+      targetLog,
+      dateTimeFormat,
+      selectedMnemonics
+    ]
+  );
+
   const hasOverlap = checkOverlap(
     targetLog,
     uploadedFileColumns,
-    uploadedFileData,
+    parsedData,
     logCurveInfoList
   );
 
@@ -102,7 +159,10 @@ const LogDataImportModal = (
       targetLog: logReference,
       mnemonics: uploadedFileColumns.map((col) => col.name),
       units: uploadedFileColumns.map((col) => col.unit),
-      dataRows: uploadedFileData.map((line) => line.split(separator))
+      dataRows:
+        parsedData !== null
+          ? parsedData.map((line) => line.split(separator))
+          : uploadedFileData.map((line) => line.split(separator))
     };
 
     await JobService.orderJob(JobType.ImportLogData, job);
@@ -118,6 +178,7 @@ const LogDataImportModal = (
 
       let header: ImportColumn[] = null;
       let data: string[] = null;
+      setDuplicityWarning("");
 
       if (text.startsWith("~V")) {
         // LAS files should start with ~V.
@@ -128,23 +189,51 @@ const LogDataImportModal = (
         );
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
+        const groupedByNum = countBy(header, "name");
+        createWarningOfDuplicities(groupedByNum);
+        header = countOccurrences(header, "name");
+        validate(header);
         data = parseLASData(dataSection);
+        const indexCurveColumn = header.find(
+          (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
+        )?.index;
+        header[indexCurveColumn].name = targetLog.indexCurve;
+        if (
+          targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+          indexCurveColumn !== null
+        ) {
+          // las file time
+          const dateTimeFormat = findDateTimeFormat(data, indexCurveColumn);
+          data = swapFirstColumn(data, indexCurveColumn);
+          setUploadedFileData(data);
+          setAllUploadedFileData(data);
+          swapArrayElements<ImportColumn>(header, 0, indexCurveColumn);
+          setDateTimeFormat(dateTimeFormat);
+        } else {
+          // las file depth
+          setUploadedFileData(data);
+          setAllUploadedFileData(data);
+        }
       } else {
+        // csv files
         const headerLine = text.split("\n", 1)[0];
         header = parseCSVHeader(headerLine);
         data = text.split("\n").slice(1);
+        setUploadedFileData(data);
+        setAllUploadedFileData(data);
       }
-      validate(header);
-      setUploadedFile(file);
       setUploadedFileColumns(header);
-      setUploadedFileData(data);
+      setAllMnemonics(header.map((col) => col.name));
+      setAllFileColumns(header);
+      setSelectedMnemonics(header.map((col) => col.name));
+      setUploadedFile(file);
     },
     []
   );
 
-  const parseCSVHeader = (header: string) => {
+  const parseCSVHeader = (headerr: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
-    const fileColumns = header.split(separator).map((col, index) => {
+    const fileColumns = headerr.split(separator).map((col, index) => {
       const columnName = col.substring(0, col.indexOf("["));
       return {
         index: index,
@@ -157,13 +246,70 @@ const LogDataImportModal = (
 
   const contentTableColumns: ContentTableColumn[] = useMemo(
     () =>
-      uploadedFileColumns.map((col) => ({
-        property: col.name,
-        label: `${col.name}[${col.unit}]`,
-        type: ContentType.String
-      })),
+      uploadedFileColumns
+        .filter((x) => selectedMnemonics.find((y) => y === x.name))
+        .map((col) => ({
+          col,
+          property: col.name,
+          label: `${col.name}[${col.unit}]`,
+          type: ContentType.String
+        })),
     [uploadedFileColumns]
   );
+
+  const onMnemonicsChange = ({
+    selectedItems
+  }: {
+    selectedItems: string[];
+  }) => {
+    if (
+      selectedItems.find(
+        (option) => option.toUpperCase() === targetLog.indexCurve.toUpperCase()
+      )
+    ) {
+      setSelectedMnemonics(selectedItems);
+      const reducedData = updateColumns(
+        allUploadedFileData,
+        selectedItems,
+        allFileColumns
+      );
+
+      const reducedHeader = updateHeader(allFileColumns, selectedItems);
+      const timestamp = new Date().getTime();
+      setContentTableId(timestamp.toString());
+      setUploadedFileColumns(reducedHeader);
+      setUploadedFileData(reducedData);
+    }
+  };
+
+  const countOccurrences = (arr: any[], property: string) => {
+    return arr.reduce((acc, obj) => {
+      const key = obj[property];
+      if (key) {
+        acc[key] = (acc[key] || 0) + 1;
+        if (acc[key] > 1) obj.name = obj.name + "(" + acc[key] + ")";
+      }
+      return arr;
+    }, {});
+  };
+
+  const createWarningOfDuplicities = (mnemonics: Dictionary<number>) => {
+    let foundDuplicity = false;
+    let warningText = "Found multiple mnemonics with the same name: ";
+    for (const key in mnemonics) {
+      const value = mnemonics[key];
+      if (value > 1) {
+        warningText = warningText + key + "(" + mnemonics[key] + ") ";
+        foundDuplicity = true;
+      }
+    }
+    if (foundDuplicity) {
+      warningText =
+        warningText +
+        ". Duplicate names were automatically changed by adding numbers as suffix in parenthesis.";
+      setDuplicityWarning(warningText);
+    }
+  };
 
   return (
     <>
@@ -193,6 +339,43 @@ const LogDataImportModal = (
                   </Typography>
                 </Tooltip>
               </FileContainer>
+              {uploadedFile && (
+                <>
+                  <StyledLabel
+                    label="You can choose mnemonics for export:"
+                    colors={colors}
+                  />
+                  <StyledAutocomplete
+                    id={"mnemonics"}
+                    label={""}
+                    multiple={true}
+                    hideClearButton={true}
+                    variant={selectedMnemonics.length === 0 ? "error" : null}
+                    options={allMnemonics}
+                    selectedOptions={selectedMnemonics}
+                    onFocus={(e) => e.preventDefault()}
+                    onOptionsChange={onMnemonicsChange}
+                    style={
+                      {
+                        "--eds-input-background": colors.ui.backgroundDefault
+                      } as CSSProperties
+                    }
+                    dropdownHeight={700}
+                    colors={colors}
+                  />
+                </>
+              )}
+              {targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+                !!uploadedFileData?.length && (
+                  <TextField
+                    id="indexCurveFormat"
+                    label="Index Curve Format"
+                    value={dateTimeFormat ?? ""}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setDateTimeFormat(e.target.value);
+                    }}
+                  />
+                )}
               <StyledAccordion>
                 <Accordion.Item>
                   <StyledAccordionHeader colors={colors}>
@@ -203,9 +386,6 @@ const LogDataImportModal = (
                   >
                     <List>
                       <List.Item>Supported filetypes: csv, las.</List.Item>
-                      <List.Item>
-                        Supported logs: depth (csv + las), time (csv).
-                      </List.Item>
                       <List.Item>
                         Only curve names, units and data is imported.
                       </List.Item>
@@ -251,7 +431,6 @@ const LogDataImportModal = (
                   </Accordion.Panel>
                 </Accordion.Item>
                 {uploadedFileColumns?.length &&
-                  uploadedFileData?.length &&
                   targetLog?.indexCurve &&
                   !error && (
                     <Accordion.Item>
@@ -266,13 +445,16 @@ const LogDataImportModal = (
                       >
                         <div style={{ height: "300px" }}>
                           <ContentTable
-                            showPanel={false}
+                            key={contentTableId}
                             columns={contentTableColumns}
+                            showPanel={false}
                             data={getTableData(
-                              uploadedFileData,
+                              parsedData !== null
+                                ? parsedData
+                                : uploadedFileData,
                               uploadedFileColumns,
                               targetLog.indexCurve
-                            )}
+                            ).splice(0, 30)}
                           />
                         </div>
                       </Accordion.Panel>
@@ -282,9 +464,12 @@ const LogDataImportModal = (
               {hasOverlap && (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
+              {duplicityWarning && <WarningBar message={duplicityWarning} />}
             </Container>
           }
           width={ModalWidth.LARGE}
+          height="800px"
+          minHeight="650px"
           confirmDisabled={!uploadedFile || !!error || isFetchingLogCurveInfo}
           confirmText={"Import"}
           onSubmit={() => onSubmit()}
@@ -295,6 +480,19 @@ const LogDataImportModal = (
     </>
   );
 };
+
+const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
+  button {
+    color: ${(props) => props.colors.infographic.primaryMossGreen};
+  }
+`;
+
+const StyledLabel = styled(Label)<{ colors: Colors }>`
+  color: ${(props) => props.colors.infographic.primaryMossGreen};
+  white-space: nowrap;
+  align-items: center;
+  font-style: italic;
+`;
 
 const FileContainer = styled.div`
   display: flex;
@@ -410,7 +608,9 @@ const getTableData = (
   columns: ImportColumn[],
   indexCurve: string
 ): ContentTableCustomRow[] => {
-  const indexCurveColumn = columns.find((col) => col.name === indexCurve);
+  const indexCurveColumn = columns.find(
+    (col) => col.name.toUpperCase() === indexCurve.toUpperCase()
+  );
   if (!indexCurveColumn) return [];
   return data?.map((dataLine) => {
     const dataCells = dataLine.split(",");
@@ -420,8 +620,100 @@ const getTableData = (
     columns.forEach((col, i) => {
       result[col.name] = dataCells[i];
     });
+
     return result;
   });
+};
+
+function swapColumns(
+  matrix: string[][],
+  col1: number,
+  col2: number
+): string[][] {
+  for (const row of matrix) {
+    [row[col1], row[col2]] = [row[col2], row[col1]];
+  }
+  return matrix;
+}
+
+const swapFirstColumn = (data: string[], selectedColumn: number) => {
+  const splitData = data.map((obj) => obj.split(","));
+  const tempData = swapColumns(splitData, 0, selectedColumn);
+  const result = tempData.map((obj) => obj.join(","));
+  return result;
+};
+
+const updateColumns = (
+  data: string[],
+  mnemonics: string[],
+  allMnemonics: ImportColumn[]
+) => {
+  let splitData = data.map((obj) => obj.split(","));
+
+  for (let i = allMnemonics.length - 1; i >= 0; i--) {
+    const toRemove = allMnemonics[i];
+    if (mnemonics.indexOf(toRemove.name) === -1) {
+      splitData = removeColumn(splitData, i);
+    }
+  }
+  return splitData.map((obj) => obj.join(","));
+};
+
+const updateHeader = (columns: ImportColumn[], mnemonics: string[]) => {
+  const output = columns.filter((x) => mnemonics.indexOf(x.name) > -1);
+  return output;
+};
+
+function removeColumn(arr: any[][], colIndex: number): any[][] {
+  return arr.map((row) => row.filter((_, index) => index !== colIndex));
+}
+
+function swapArrayElements<T>(arr: T[], i: number, j: number): void {
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+}
+
+const inputDateFormats: string[] = [
+  "YYYY-MM-DDTHH:mm:ss.sssZ", // ISO 8601 format
+  "HH:mm:ss/dd-MMM-yyyy"
+];
+
+const findDateTimeFormat = (
+  data: string[],
+  selectedColumn: number
+): string | null => {
+  const dateString = data[0].split(",")[selectedColumn];
+  for (const format of inputDateFormats) {
+    try {
+      parseDateFromFormat(dateString, format);
+      return format;
+    } catch {
+      // Ignore error, try next format.
+    }
+  }
+  return null;
+};
+
+const parseDateTimeColumn = (
+  data: string[],
+  selectedColumn: number,
+  inputFormat: string
+) => {
+  const dataWithISOTimeColumn = data.map((dataRow) => {
+    const rowValues = dataRow.split(",");
+    rowValues[selectedColumn] = parseDateFromFormat(
+      rowValues[selectedColumn],
+      inputFormat
+    );
+    return rowValues.join(",");
+  });
+  return dataWithISOTimeColumn;
+};
+
+const parseDateFromFormat = (dateString: string, format: string) => {
+  const parsed = parse(dateString, format, new Date());
+  if (parsed.toString() === "Invalid Date")
+    throw new Error(`Unable to parse date ${dateString} with format ${format}`);
+  return zonedTimeToUtc(parsed, "UTC").toISOString();
 };
 
 export default LogDataImportModal;
