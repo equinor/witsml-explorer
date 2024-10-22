@@ -10,6 +10,7 @@ import {
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table";
+import { pluralize } from "components/ContextMenus/ContextMenuUtils";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { XMLBuilder, XMLParser } from "fast-xml-parser";
 import { cloneDeep, debounce } from "lodash";
@@ -191,7 +192,13 @@ export default function QueryDataGrid() {
       />
     </div>
   ) : (
-    <Typography>Unable to parse query</Typography>
+    <Typography>
+      {Object.values(TemplateObjects).includes(
+        templateObject as TemplateObjects
+      ) && !template
+        ? `Data Grid is not yet supported for ${pluralize(templateObject)}.`
+        : "Unable to parse query."}
+    </Typography>
   );
 }
 
