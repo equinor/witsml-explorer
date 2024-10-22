@@ -31,6 +31,7 @@ export interface PanelProps {
   expandableRows?: boolean;
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
+  disableFilters?: boolean;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -47,7 +48,8 @@ const Panel = (props: PanelProps) => {
     columns,
     expandableRows = false,
     downloadToCsvFileName = null,
-    stickyLeftColumns
+    stickyLeftColumns,
+    disableFilters = false
   } = props;
   const {
     operationState: { theme }
@@ -135,6 +137,7 @@ const Panel = (props: PanelProps) => {
           stickyLeftColumns={stickyLeftColumns}
           selectedColumnsStatus={selectedColumnsStatus}
           firstToggleableIndex={firstToggleableIndex}
+          disableFilters={disableFilters}
         />
         {showRefresh && (
           <Button
