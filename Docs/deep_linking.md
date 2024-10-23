@@ -86,7 +86,8 @@ If there is a need to limit the data in result, following parameters need to be 
   - endIndex
   - mnemonics
 
-StartIndex and endIndex could be numbers for depth based logs or datetime in ISO format  - "YYYY-MM-DDTHH:mm:ss.sssZ" for time based logs
+StartIndex and endIndex could be numbers for depth based logs or datetime in ISO format  - "YYYY-MM-DDTHH:mm:ss.sssZ" for time based logs.
+Note that full url should not exceed the maximum url length accepted by most browsers - in Witsml Explorer we support maximum 2000 characters.
 
 Samples:
 
