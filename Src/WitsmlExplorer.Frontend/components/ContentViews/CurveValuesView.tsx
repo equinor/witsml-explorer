@@ -65,11 +65,11 @@ import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { formatIndexValue } from "tools/IndexHelpers";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
-import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -82,7 +82,7 @@ interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 enum DownloadOptions {
   All = "All",
-  IntervalOfData = "IntervalOfData",
+  SelectedRange = "SelectedRange",
   SelectedIndexValues = "SelectedIndexValues"
 }
 
@@ -126,7 +126,7 @@ export const CurveValuesView = (): React.ReactElement => {
   );
   const { exportData, exportOptions } = useExport();
   const justFinishedStreaming = useRef(false);
-  let downloadOptions: DownloadOptions = DownloadOptions.IntervalOfData;
+  let downloadOptions: DownloadOptions = DownloadOptions.SelectedRange;
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -219,13 +219,13 @@ export const CurveValuesView = (): React.ReactElement => {
       case DownloadOptions.All:
         exportAll();
         break;
-      case DownloadOptions.IntervalOfData:
-        exportSelectedIndexRange();
+      case DownloadOptions.SelectedRange:
+        exportSelectedRange();
         break;
       case DownloadOptions.SelectedIndexValues:
         exportSelectedDataPoints();
     }
-    downloadOptions = DownloadOptions.IntervalOfData;
+    downloadOptions = DownloadOptions.SelectedRange;
   };
 
   const exportSelectedIndexRange = useCallback(() => {
@@ -423,8 +423,20 @@ export const CurveValuesView = (): React.ReactElement => {
     }
   };
 
+  const exportSelectedRange = async () => {
+    const logReference: LogObject = log;
+    const startIndexIsInclusive = !autoRefresh;
+    const downloadAllLogDataJob: DownloadAllLogDataJob = {
+      logReference,
+      mnemonics,
+      startIndexIsInclusive,
+      startIndex,
+      endIndex
+    };
+    callExportJob(downloadAllLogDataJob);
+  };
+
   const exportAll = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
     const downloadAllLogDataJob: DownloadAllLogDataJob = {
@@ -432,6 +444,13 @@ export const CurveValuesView = (): React.ReactElement => {
       mnemonics,
       startIndexIsInclusive
     };
+    callExportJob(downloadAllLogDataJob);
+  };
+
+  const callExportJob = async (
+    downloadAllLogDataJob: DownloadAllLogDataJob
+  ) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const jobId = await JobService.orderJob(
       JobType.DownloadAllLogData,
       downloadAllLogDataJob
@@ -458,8 +477,8 @@ export const CurveValuesView = (): React.ReactElement => {
             <label style={alignLayout}>
               <Radio
                 name="group"
-                value={DownloadOptions.IntervalOfData}
-                id={DownloadOptions.IntervalOfData}
+                value={DownloadOptions.SelectedRange}
+                id={DownloadOptions.SelectedRange}
                 onChange={onChangeDownloadOption}
                 defaultChecked
               />
