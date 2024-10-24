@@ -53,7 +53,7 @@ export default class UidMappingService {
     }
   }
 
-  public static async queryRemoveUidMapping(
+  public static async removeUidMapping(
     query: UidMappingDbQuery,
     abortSignal?: AbortSignal
   ): Promise<boolean> {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,9 +6,9 @@ using WitsmlExplorer.Api.Repositories;
 
 namespace WitsmlExplorer.Api.Models
 {
-    public class UidMappingCollection : DbDocument<UidMappingKey>
+    public class UidMappingCollection : DbDocument<string>
     {
-        public UidMappingCollection(UidMappingKey id) : base(id)
+        public UidMappingCollection(string id) : base(id)
         {
             MappingCollection = new List<UidMapping>();
         }

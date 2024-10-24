@@ -53,8 +53,7 @@ import { v4 as uuid } from "uuid";
 import WellboreUidMappingModal, {
   WellboreUidMappingModalProps
 } from "../Modals/WellboreUidMappingModal.tsx";
-import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
-import UidMappingService from "../../services/uidMappingService.tsx";
+import { getTargetWellboreID } from "./UidMappingUtils.tsx";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -189,30 +188,20 @@ const WellboreContextMenu = (
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
 
-    const dbQuery: UidMappingDbQuery = {
+    const { targetWellId, targetWellboreId } = await getTargetWellboreID({
       sourceServerId: connectedServer.id,
       sourceWellId: wellbore.wellUid,
       sourceWellboreId: wellbore.uid,
       targetServerId: server.id
-    };
+    });
 
-    const mappings = await UidMappingService.queryUidMapping(dbQuery);
+    const objectGroupsViewPath = getObjectGroupsViewPath(
+      server.url,
+      targetWellId,
+      targetWellboreId
+    );
 
-    if (mappings.length > 0) {
-      const objectGroupsViewPath = getObjectGroupsViewPath(
-        server.url,
-        mappings[0].targetWellId,
-        mappings[0].targetWellboreId
-      );
-      openRouteInNewWindow(objectGroupsViewPath);
-    } else {
-      const objectGroupsViewPath = getObjectGroupsViewPath(
-        server.url,
-        wellbore.wellUid,
-        wellbore.uid
-      );
-      openRouteInNewWindow(objectGroupsViewPath);
-    }
+    openRouteInNewWindow(objectGroupsViewPath);
   };
 
   const onClickMapUidOnServer = async (wellbore: Wellbore, server: Server) => {

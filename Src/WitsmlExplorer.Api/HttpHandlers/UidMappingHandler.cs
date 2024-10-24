@@ -1,13 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-
-using Amazon.SecurityToken.Model;
 
 using LiteDB;
 
@@ -16,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.HttpHandlers
@@ -68,16 +61,22 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(ICollection<UidMapping>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public static async Task<IResult> QueryUidMapping([FromBody] UidMappingDbQuery query, [FromServices] IUidMappingService uidMappingService)
         {
+            if (!ValidateQuery(query))
+            {
+                return TypedResults.BadRequest();
+            }
+
             return TypedResults.Ok(await uidMappingService.QueryUidMapping(query));
         }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public static async Task<IResult> QueryDeleteUidMapping([FromBody] UidMappingDbQuery query, [FromServices] IUidMappingService uidMappingService)
+        public static async Task<IResult> DeleteUidMapping([FromBody] UidMappingDbQuery query, [FromServices] IUidMappingService uidMappingService)
         {
-            if (await uidMappingService.QueryDeleteUidMapping(query))
+            if (await uidMappingService.DeleteUidMapping(query))
             {
                 return TypedResults.NoContent();
             }
@@ -89,10 +88,16 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
         private static bool Validate(UidMapping uidMapping)
         {
-            return !(uidMapping == null || uidMapping.SourceServerId == Guid.Empty || uidMapping.TargetServerId == Guid.Empty
-                || uidMapping.SourceWellId.IsNullOrEmpty() || uidMapping.TargetWellId.IsNullOrEmpty()
-                || uidMapping.SourceWellboreId.IsNullOrEmpty() || uidMapping.TargetWellboreId.IsNullOrEmpty());
+            return uidMapping != null && uidMapping.SourceServerId != Guid.Empty && uidMapping.TargetServerId != Guid.Empty
+                && !uidMapping.SourceWellId.IsNullOrEmpty() && !uidMapping.TargetWellId.IsNullOrEmpty()
+                && !uidMapping.SourceWellboreId.IsNullOrEmpty() && !uidMapping.TargetWellboreId.IsNullOrEmpty();
         }
 
+        private static bool ValidateQuery(UidMappingDbQuery query)
+        {
+            return query != null && query.SourceServerId != Guid.Empty && query.TargetServerId != Guid.Empty
+                && ((query.SourceWellId.IsNullOrEmpty() && query.SourceWellboreId.IsNullOrEmpty())
+                    || (!query.SourceWellId.IsNullOrEmpty() && !query.SourceWellboreId.IsNullOrEmpty()));
+        }
     }
 }

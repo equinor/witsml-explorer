@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
             AddRepository<LogCurvePriority, string>(services, configuration);
-            AddRepository<UidMappingCollection, UidMappingKey>(services, configuration);
+            AddRepository<UidMappingCollection, string>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();
@@ -79,6 +79,9 @@ namespace WitsmlExplorer.Api.Configuration
 
             IDocumentRepository<LogCurvePriority, string> logCurvePriorityRepository = app.ApplicationServices.GetService<IDocumentRepository<LogCurvePriority, string>>();
             logCurvePriorityRepository?.InitClientAsync().GetAwaiter().GetResult();
+
+            IDocumentRepository<UidMappingCollection, string> uidMappingCollectionRepository = app.ApplicationServices.GetService<IDocumentRepository<UidMappingCollection, string>>();
+            uidMappingCollectionRepository?.InitClientAsync().GetAwaiter().GetResult();
         }
     }
 }

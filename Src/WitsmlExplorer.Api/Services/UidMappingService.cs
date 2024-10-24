@@ -1,14 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.HttpHandlers;
@@ -22,17 +17,17 @@ namespace WitsmlExplorer.Api.Services
         Task<UidMapping> CreateUidMapping(UidMapping uidMapping, HttpContext httpContext);
         Task<UidMapping> UpdateUidMapping(UidMapping uidMapping, HttpContext httpContext);
         Task<ICollection<UidMapping>> QueryUidMapping(UidMappingDbQuery query);
-        Task<bool> QueryDeleteUidMapping(UidMappingDbQuery query);
+        Task<bool> DeleteUidMapping(UidMappingDbQuery query);
     }
 
     public class UidMappingService : IUidMappingService
     {
-        private readonly IDocumentRepository<UidMappingCollection, UidMappingKey> _mappingRepository;
+        private readonly IDocumentRepository<UidMappingCollection, string> _mappingRepository;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         private readonly ICredentialsService _credentialsService;
 
         public UidMappingService(
-            IDocumentRepository<UidMappingCollection, UidMappingKey> mappingRepository,
+            IDocumentRepository<UidMappingCollection, string> mappingRepository,
             IDocumentRepository<Server, Guid> witsmlServerRepository,
             ICredentialsService credentialsService)
         {
@@ -43,7 +38,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<UidMapping> CreateUidMapping(UidMapping uidMapping, HttpContext httpContext)
         {
-            var mappings = await _mappingRepository.GetDocumentAsync(new(uidMapping.SourceServerId, uidMapping.TargetServerId));
+            var mappings = await _mappingRepository.GetDocumentAsync(new UidMappingKey(uidMapping.SourceServerId, uidMapping.TargetServerId).ToString());
 
             if (mappings != null && !mappings.MappingCollection.IsNullOrEmpty()
                 && mappings.MappingCollection.Exists(m => m.SourceWellId == uidMapping.SourceWellId && m.SourceWellboreId == uidMapping.SourceWellboreId))
@@ -58,11 +53,11 @@ namespace WitsmlExplorer.Api.Services
             {
                 mappings.MappingCollection.Add(uidMapping);
 
-                await _mappingRepository.UpdateDocumentAsync(new(uidMapping.SourceServerId, uidMapping.TargetServerId), mappings);
+                await _mappingRepository.UpdateDocumentAsync(new UidMappingKey(uidMapping.SourceServerId, uidMapping.TargetServerId).ToString(), mappings);
             }
             else
             {
-                mappings = new UidMappingCollection(new(uidMapping.SourceServerId, uidMapping.TargetServerId));
+                mappings = new UidMappingCollection(new UidMappingKey(uidMapping.SourceServerId, uidMapping.TargetServerId).ToString());
 
                 mappings.MappingCollection.Add(uidMapping);
 
@@ -74,7 +69,7 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<UidMapping> UpdateUidMapping(UidMapping uidMapping, HttpContext httpContext)
         {
-            var mappings = await _mappingRepository.GetDocumentAsync(new(uidMapping.SourceServerId, uidMapping.TargetServerId));
+            var mappings = await _mappingRepository.GetDocumentAsync(new UidMappingKey(uidMapping.SourceServerId, uidMapping.TargetServerId).ToString());
 
             if (mappings == null || mappings.MappingCollection.IsNullOrEmpty()
                 || mappings.MappingCollection.RemoveAll(m => m.SourceWellId == uidMapping.SourceWellId && m.SourceWellboreId == uidMapping.SourceWellboreId) == 0)
@@ -87,49 +82,45 @@ namespace WitsmlExplorer.Api.Services
 
             mappings.MappingCollection.Add(uidMapping);
 
-            await _mappingRepository.UpdateDocumentAsync(new(uidMapping.SourceServerId, uidMapping.TargetServerId), mappings);
+            await _mappingRepository.UpdateDocumentAsync(new UidMappingKey(uidMapping.SourceServerId, uidMapping.TargetServerId).ToString(), mappings);
 
             return uidMapping;
         }
 
         public async Task<ICollection<UidMapping>> QueryUidMapping(UidMappingDbQuery query)
         {
-            if ((query.SourceWellId.IsNullOrEmpty() && query.SourceWellboreId.IsNullOrEmpty())
-                || (!query.SourceWellId.IsNullOrEmpty() && !query.SourceWellboreId.IsNullOrEmpty()))
+            var mappings = await _mappingRepository.GetDocumentAsync(new UidMappingKey(query.SourceServerId, query.TargetServerId).ToString());
+
+            if (mappings != null && !mappings.MappingCollection.IsNullOrEmpty())
             {
-                var mappings = await _mappingRepository.GetDocumentAsync(new(query.SourceServerId, query.TargetServerId));
+                var mappingCollection = !query.SourceWellId.IsNullOrEmpty() && !query.SourceWellboreId.IsNullOrEmpty()
+                    ? mappings.MappingCollection.Where(m => m.SourceWellId == query.SourceWellId && m.SourceWellboreId == query.SourceWellboreId)
+                    : mappings.MappingCollection;
 
-                if (mappings != null && !mappings.MappingCollection.IsNullOrEmpty())
+                if (!mappingCollection.IsNullOrEmpty())
                 {
-                    var mappingCollection = !query.SourceWellId.IsNullOrEmpty() && !query.SourceWellboreId.IsNullOrEmpty()
-                        ? mappings.MappingCollection.Where(m => m.SourceWellId == query.SourceWellId && m.SourceWellboreId == query.SourceWellboreId)
-                        : mappings.MappingCollection;
-
-                    if (!mappingCollection.IsNullOrEmpty())
-                    {
-                        return mappingCollection.ToList();
-                    }
+                    return mappingCollection.ToList();
                 }
             }
 
             return new List<UidMapping>();
         }
 
-        public async Task<bool> QueryDeleteUidMapping(UidMappingDbQuery query)
+        public async Task<bool> DeleteUidMapping(UidMappingDbQuery query)
         {
-            var mappings = await _mappingRepository.GetDocumentAsync(new(query.SourceServerId, query.TargetServerId));
+            var mappings = await _mappingRepository.GetDocumentAsync(new UidMappingKey(query.SourceServerId, query.TargetServerId).ToString());
 
             if (mappings != null)
             {
                 if (mappings.MappingCollection.IsNullOrEmpty())
                 {
-                    await _mappingRepository.DeleteDocumentAsync(new(query.SourceServerId, query.TargetServerId));
+                    await _mappingRepository.DeleteDocumentAsync(new UidMappingKey(query.SourceServerId, query.TargetServerId).ToString());
 
                     return false;
                 }
                 else if (query.SourceWellId.IsNullOrEmpty() && query.SourceWellboreId.IsNullOrEmpty())
                 {
-                    await _mappingRepository.DeleteDocumentAsync(new(query.SourceServerId, query.TargetServerId));
+                    await _mappingRepository.DeleteDocumentAsync(new UidMappingKey(query.SourceServerId, query.TargetServerId).ToString());
 
                     return true;
                 }
@@ -145,11 +136,11 @@ namespace WitsmlExplorer.Api.Services
                     {
                         if (mappings.MappingCollection.Count > 0)
                         {
-                            await _mappingRepository.UpdateDocumentAsync(new(query.SourceServerId, query.TargetServerId), mappings);
+                            await _mappingRepository.UpdateDocumentAsync(new UidMappingKey(query.SourceServerId, query.TargetServerId).ToString(), mappings);
                         }
                         else
                         {
-                            await _mappingRepository.DeleteDocumentAsync(new(query.SourceServerId, query.TargetServerId));
+                            await _mappingRepository.DeleteDocumentAsync(new UidMappingKey(query.SourceServerId, query.TargetServerId).ToString());
                         }
 
                         return true;
