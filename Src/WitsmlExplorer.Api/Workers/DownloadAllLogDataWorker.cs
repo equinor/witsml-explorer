@@ -44,6 +44,17 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             job.ProgressReporter?.Report(progress);
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
         });
+
+        if (!string.IsNullOrEmpty(job.StartIndex))
+        {
+            job.LogReference.StartIndex = job.StartIndex;
+        }
+
+        if (!string.IsNullOrEmpty(job.EndIndex))
+        {
+            job.LogReference.EndIndex = job.EndIndex;
+        }
+
         var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
 
         return DownloadAllLogDataResult(job, logData.Data, logData.CurveSpecifications);

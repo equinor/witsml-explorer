@@ -599,7 +599,6 @@ const getDataRanges = (
       });
     }
   }
-
   return dataRanges;
 };
 
