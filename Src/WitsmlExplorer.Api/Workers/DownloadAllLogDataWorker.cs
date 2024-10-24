@@ -45,12 +45,12 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
         });
 
-        if (job.StartIndex != null)
+        if (!string.IsNullOrEmpty(job.StartIndex))
         {
             job.LogReference.StartIndex = job.StartIndex;
         }
 
-        if (job.EndIndex != null)
+        if (!string.IsNullOrEmpty(job.EndIndex))
         {
             job.LogReference.EndIndex = job.EndIndex;
         }

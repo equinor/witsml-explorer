@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using WitsmlExplorer.Api.Models;
@@ -27,12 +28,12 @@ public record DownloadAllLogDataJob : Job
     /// <summary>
     /// Start index for range selection
     /// </summary>
-    public string? StartIndex { get; init; }
+    public string StartIndex { get; init; }
 
     /// <summary>
     /// End index for range selection
     /// </summary>
-    public string? EndIndex { get; init; }
+    public string EndIndex { get; init; }
 
     /// <summary>
     /// Indicates, if the job can be cancelled
