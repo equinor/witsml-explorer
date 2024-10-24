@@ -448,7 +448,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const displayConfirmation = (dispatchOperation: DispatchOperation) => {
     const confirmation = (
       <ConfirmModal
-        heading={"Download"}
+        heading={`Download log data for ${mnemonics.length} mnemonics`}
         content={
           <>
             <span>
@@ -463,7 +463,7 @@ export const CurveValuesView = (): React.ReactElement => {
                 onChange={onChangeDownloadOption}
                 defaultChecked
               />
-              <Typography>Download shown interval</Typography>
+              <Typography>Download selected range</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
@@ -473,7 +473,7 @@ export const CurveValuesView = (): React.ReactElement => {
                 onChange={onChangeDownloadOption}
                 disabled={!selectedRows.length}
               />
-              <Typography>Download selected</Typography>
+              <Typography>Download selected rows</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
