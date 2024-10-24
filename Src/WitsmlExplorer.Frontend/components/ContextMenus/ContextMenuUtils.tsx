@@ -29,8 +29,7 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
-import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
-import UidMappingService from "../../services/uidMappingService.tsx";
+import { getTargetWellboreID } from "./UidMappingUtils.tsx";
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -74,7 +73,16 @@ export const onClickShowObjectOnServer = async (
   indexCurve: IndexCurve = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
+
   let url = "";
+
+  const { targetWellId, targetWellboreId } = await getTargetWellboreID({
+    sourceServerId: connectedServer.id,
+    sourceWellId: objectOnWellbore.wellUid,
+    sourceWellboreId: objectOnWellbore.wellboreUid,
+    targetServerId: targetServer.id
+  });
+
   if (objectType === ObjectType.Log) {
     const logTypePath =
       indexCurve === IndexCurve.Depth
@@ -82,8 +90,8 @@ export const onClickShowObjectOnServer = async (
         : RouterLogType.TIME;
     url = getLogObjectViewPath(
       targetServer.url,
-      objectOnWellbore.wellUid,
-      objectOnWellbore.wellboreUid,
+      targetWellId,
+      targetWellboreId,
       objectType,
       logTypePath,
       objectOnWellbore.uid
@@ -91,36 +99,18 @@ export const onClickShowObjectOnServer = async (
   } else if (isExpandableGroupObject(objectType)) {
     url = getObjectViewPath(
       targetServer.url,
-      objectOnWellbore.wellUid,
-      objectOnWellbore.wellboreUid,
+      targetWellId,
+      targetWellboreId,
       objectType,
       objectOnWellbore.uid
     );
   } else {
-    const dbQuery: UidMappingDbQuery = {
-      sourceServerId: connectedServer.id,
-      sourceWellId: objectOnWellbore.wellUid,
-      sourceWellboreId: objectOnWellbore.wellboreUid,
-      targetServerId: targetServer.id
-    };
-
-    const mappings = await UidMappingService.queryUidMapping(dbQuery);
-
-    if (mappings.length > 0) {
-      url = getObjectsViewPath(
-        targetServer.url,
-        mappings[0].targetWellId,
-        mappings[0].targetWellboreId,
-        objectType
-      );
-    } else {
-      url = getObjectsViewPath(
-        targetServer.url,
-        objectOnWellbore.wellUid,
-        objectOnWellbore.wellboreUid,
-        objectType
-      );
-    }
+    url = getObjectsViewPath(
+      targetServer.url,
+      targetWellId,
+      targetWellboreId,
+      objectType
+    );
   }
   openRouteInNewWindow(url);
 };
@@ -136,25 +126,13 @@ export const onClickShowGroupOnServer = async (
   dispatchOperation({ type: OperationType.HideContextMenu });
 
   let url = "";
-  let targetWellId = "";
-  let targetWellboreId = "";
 
-  const dbQuery: UidMappingDbQuery = {
+  const { targetWellId, targetWellboreId } = await getTargetWellboreID({
     sourceServerId: connectedServer.id,
     sourceWellId: wellbore.wellUid,
     sourceWellboreId: wellbore.uid,
     targetServerId: targetServer.id
-  };
-
-  const mappings = await UidMappingService.queryUidMapping(dbQuery);
-
-  if (mappings.length > 0) {
-    targetWellId = mappings[0].targetWellId;
-    targetWellboreId = mappings[0].targetWellboreId;
-  } else {
-    targetWellId = wellbore.wellUid;
-    targetWellboreId = wellbore.uid;
-  }
+  });
 
   if (objectType === ObjectType.Log && indexType) {
     const logTypePath =

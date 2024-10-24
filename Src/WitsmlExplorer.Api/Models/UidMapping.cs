@@ -2,8 +2,6 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using WitsmlExplorer.Api.Repositories;
-
 namespace WitsmlExplorer.Api.Models
 {
     public class UidMapping

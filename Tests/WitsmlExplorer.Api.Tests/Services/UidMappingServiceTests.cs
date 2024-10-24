@@ -20,11 +20,11 @@ namespace WitsmlExplorer.Api.Tests.Services
         private readonly string[] USERNAMES = new[] { "TestUsername1", "TestUsername2" };
 
         private IUidMappingService _service;
-        private readonly Mock<IDocumentRepository<UidMappingCollection, UidMappingKey>> _mappingRepositoryMock;
+        private readonly Mock<IDocumentRepository<UidMappingCollection, string>> _mappingRepositoryMock;
 
         public UidMappingServiceTests()
         {
-            _mappingRepositoryMock = new Mock<IDocumentRepository<UidMappingCollection, UidMappingKey>>();
+            _mappingRepositoryMock = new Mock<IDocumentRepository<UidMappingCollection, string>>();
         }
 
         [Fact]
@@ -40,23 +40,23 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore01"
             };
 
-            var mappingCollection = new UidMappingCollection(new(mapping.SourceServerId, mapping.TargetServerId))
+            var mappingCollection = new UidMappingCollection(new UidMappingKey(mapping.SourceServerId, mapping.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping.SourceServerId && k.TargetServerId == mapping.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping.SourceServerId, mapping.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection);
 
             SetupService();
 
             var result = await _service.CreateUidMapping(UidMappingClone(mapping), null);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.Null(result);
         }
@@ -75,7 +75,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping.SourceServerId && k.TargetServerId == mapping.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping.SourceServerId, mapping.TargetServerId).ToString())))
                 .ReturnsAsync((UidMappingCollection)null);
 
             var startTime = DateTime.UtcNow;
@@ -84,10 +84,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             var result = await _service.CreateUidMapping(UidMappingClone(mapping), null);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Once);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.NotNull(result);
             AssertUidMappingEqual(mapping, result);
@@ -108,13 +108,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore01"
             };
 
-            var mappingCollection = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping1 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection);
 
             var mapping2 = new UidMapping
@@ -137,10 +137,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             var result = await _service.CreateUidMapping(UidMappingClone(mapping2), null);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Once);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.NotNull(result);
             AssertUidMappingEqual(mapping2, result);
@@ -161,13 +161,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore01"
             };
 
-            var mappingCollection = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping1 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection);
 
             var mapping2 = new UidMapping
@@ -190,10 +190,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             var result = await _service.CreateUidMapping(UidMappingClone(mapping2), null);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Once);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.NotNull(result);
             AssertUidMappingEqual(mapping2, result);
@@ -215,21 +215,21 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping.SourceServerId && k.TargetServerId == mapping.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping.SourceServerId, mapping.TargetServerId).ToString())))
                 .ReturnsAsync((UidMappingCollection)null);
 
             _mappingRepositoryMock
-                .Setup(mr => mr.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()))
+                .Setup(mr => mr.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()))
                 .ReturnsAsync((UidMappingCollection)null);
 
             SetupService();
 
             var result = await _service.UpdateUidMapping(mapping, null);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.Null(result);
         }
@@ -247,13 +247,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore01"
             };
 
-            var mappingCollection = new UidMappingCollection(new(mapping.SourceServerId, mapping.TargetServerId))
+            var mappingCollection = new UidMappingCollection(new UidMappingKey(mapping.SourceServerId, mapping.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping.SourceServerId && k.TargetServerId == mapping.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping.SourceServerId, mapping.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection);
 
             var mappingUpdate = new UidMapping
@@ -267,7 +267,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()))
+                .Setup(mr => mr.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()))
                 .ReturnsAsync((UidMappingCollection)null);
 
             SetupService();
@@ -276,10 +276,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             var result = await _service.UpdateUidMapping(UidMappingClone(mappingUpdate), null);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Once);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.NotNull(result);
             AssertUidMappingEqual(mappingUpdate, result);
@@ -300,7 +300,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore01"
             };
 
-            var mappingCollection1 = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection1 = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping>
                 {
@@ -318,7 +318,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var mapping2 = new UidMapping
@@ -331,13 +331,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore02"
             };
 
-            var mappingCollection2 = new UidMappingCollection(new(mapping2.SourceServerId, mapping2.TargetServerId))
+            var mappingCollection2 = new UidMappingCollection(new UidMappingKey(mapping2.SourceServerId, mapping2.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping2 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping2.SourceServerId && k.TargetServerId == mapping2.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping2.SourceServerId, mapping2.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection2);
 
             var query = new UidMappingDbQuery
@@ -352,10 +352,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             var result = await _service.QueryUidMapping(query);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.NotNull(result);
             Assert.Empty(result);
@@ -374,7 +374,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore01"
             };
 
-            var mappingCollection1 = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection1 = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping>
                 {
@@ -392,7 +392,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var mapping2 = new UidMapping
@@ -405,13 +405,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore02"
             };
 
-            var mappingCollection2 = new UidMappingCollection(new(mapping2.SourceServerId, mapping2.TargetServerId))
+            var mappingCollection2 = new UidMappingCollection(new UidMappingKey(mapping2.SourceServerId, mapping2.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping2 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping2.SourceServerId && k.TargetServerId == mapping2.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping2.SourceServerId, mapping2.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection2);
 
             var query = new UidMappingDbQuery
@@ -426,10 +426,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             var result = await _service.QueryUidMapping(query);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
@@ -460,7 +460,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore03"
             };
 
-            var mappingCollection1 = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection1 = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping>
                 {
@@ -470,7 +470,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var mapping3 = new UidMapping
@@ -483,13 +483,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore02"
             };
 
-            var mappingCollection2 = new UidMappingCollection(new(mapping3.SourceServerId, mapping3.TargetServerId))
+            var mappingCollection2 = new UidMappingCollection(new UidMappingKey(mapping3.SourceServerId, mapping3.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping3 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping3.SourceServerId && k.TargetServerId == mapping3.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping3.SourceServerId, mapping3.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection2);
 
             var query = new UidMappingDbQuery
@@ -502,10 +502,10 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             var result = await _service.QueryUidMapping(query);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.NotNull(result);
             Assert.NotEmpty(result);
@@ -538,7 +538,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore03"
             };
 
-            var mappingCollection1 = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection1 = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping>
                 {
@@ -548,7 +548,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var mapping3 = new UidMapping
@@ -561,13 +561,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore02"
             };
 
-            var mappingCollection2 = new UidMappingCollection(new(mapping3.SourceServerId, mapping3.TargetServerId))
+            var mappingCollection2 = new UidMappingCollection(new UidMappingKey(mapping3.SourceServerId, mapping3.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping3 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var query = new UidMappingDbQuery
@@ -580,12 +580,12 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             SetupService();
 
-            var result = await _service.QueryDeleteUidMapping(query);
+            var result = await _service.DeleteUidMapping(query);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.False(result);
         }
@@ -613,7 +613,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore03"
             };
 
-            var mappingCollection1 = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection1 = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping>
                 {
@@ -623,7 +623,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var mapping3 = new UidMapping
@@ -636,13 +636,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore02"
             };
 
-            var mappingCollection2 = new UidMappingCollection(new(mapping3.SourceServerId, mapping3.TargetServerId))
+            var mappingCollection2 = new UidMappingCollection(new UidMappingKey(mapping3.SourceServerId, mapping3.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping3 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var query = new UidMappingDbQuery
@@ -655,12 +655,12 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             SetupService();
 
-            var result = await _service.QueryDeleteUidMapping(query);
+            var result = await _service.DeleteUidMapping(query);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Once);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Never);
 
             Assert.True(result);
         }
@@ -688,7 +688,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore03"
             };
 
-            var mappingCollection1 = new UidMappingCollection(new(mapping1.SourceServerId, mapping1.TargetServerId))
+            var mappingCollection1 = new UidMappingCollection(new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping>
                 {
@@ -698,7 +698,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var mapping3 = new UidMapping
@@ -711,13 +711,13 @@ namespace WitsmlExplorer.Api.Tests.Services
                 TargetWellboreId = "TargetWellbore02"
             };
 
-            var mappingCollection2 = new UidMappingCollection(new(mapping3.SourceServerId, mapping3.TargetServerId))
+            var mappingCollection2 = new UidMappingCollection(new UidMappingKey(mapping3.SourceServerId, mapping3.TargetServerId).ToString())
             {
                 MappingCollection = new List<UidMapping> { mapping3 }
             };
 
             _mappingRepositoryMock
-                .Setup(mr => mr.GetDocumentAsync(It.Is<UidMappingKey>(k => k.SourceServerId == mapping1.SourceServerId && k.TargetServerId == mapping1.TargetServerId)))
+                .Setup(mr => mr.GetDocumentAsync(It.Is<string>(k => k == new UidMappingKey(mapping1.SourceServerId, mapping1.TargetServerId).ToString())))
                 .ReturnsAsync(mappingCollection1);
 
             var query = new UidMappingDbQuery
@@ -728,12 +728,12 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             SetupService();
 
-            var result = await _service.QueryDeleteUidMapping(query);
+            var result = await _service.DeleteUidMapping(query);
 
-            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.GetDocumentAsync(It.IsAny<string>()), Times.Once);
             _mappingRepositoryMock.Verify(mrm => mrm.CreateDocumentAsync(It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<UidMappingKey>(), It.IsAny<UidMappingCollection>()), Times.Never);
-            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<UidMappingKey>()), Times.Once);
+            _mappingRepositoryMock.Verify(mrm => mrm.UpdateDocumentAsync(It.IsAny<string>(), It.IsAny<UidMappingCollection>()), Times.Never);
+            _mappingRepositoryMock.Verify(mrm => mrm.DeleteDocumentAsync(It.IsAny<string>()), Times.Once);
 
             Assert.True(result);
         }
