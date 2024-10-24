@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest run",
@@ -38,7 +38,6 @@
     "date-fns-tz": "^2.0.0",
     "echarts": "^5.5.1",
     "echarts-for-react": "^3.0.2",
-    "fast-xml-parser": "^4.4.1",
     "lodash.orderby": "^4.6.0",
     "memoize-one": "^6.0.0",
     "notistack": "^3.0.1",
@@ -85,10 +84,5 @@
     "vite": "^5.2.8",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.6.0"
-  },
-  "main": "index.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  }
 }
