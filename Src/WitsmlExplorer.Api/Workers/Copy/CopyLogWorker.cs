@@ -38,8 +38,18 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(CopyObjectsJob job, CancellationToken? cancellationToken = null)
         {
+            var duplicate = job.TargetObjectUid != null;
+
             (WitsmlLog[] sourceLogs, WitsmlWellbore targetWellbore) = await FetchSourceLogsAndTargetWellbore(job);
             ICollection<WitsmlLog> copyLogsQuery = ObjectQueries.CopyObjectsQuery(sourceLogs, targetWellbore);
+
+            // if duplicationg log, set the only one source log uid and name to the new values 
+            if (duplicate)
+            {
+                copyLogsQuery.First().Uid = job.TargetObjectUid;
+                copyLogsQuery.First().Name = job.TargetObjectName;
+            }
+
             List<Task<QueryResult>> copyLogTasks = copyLogsQuery.Select(logToCopy => GetTargetWitsmlClientOrThrow().AddToStoreAsync(logToCopy.AsItemInWitsmlList())).ToList();
 
             Task<QueryResult[]> copyLogTasksResult = Task.WhenAll(copyLogTasks);
@@ -59,6 +69,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             cancellationToken?.ThrowIfCancellationRequested();
             ConcurrentDictionary<string, double> progressDict = new ConcurrentDictionary<string, double>();
             IEnumerable<CopyLogDataJob> copyLogDataJobs = sourceLogs.Select(log => CreateCopyLogDataJob(job, log, progressDict));
+
+            if (duplicate)
+            {
+                var data = copyLogDataJobs.ToList()[0];
+                data.Source.Parent.Uid = job.Source.ObjectUids[0];
+                copyLogDataJobs = new List<CopyLogDataJob> { data };
+            }
+
             List<Task<(WorkerResult, RefreshAction)>> copyLogDataTasks = copyLogDataJobs.Select(x => _copyLogDataWorker.Execute(x, cancellationToken)).ToList();
 
             Task<(WorkerResult Result, RefreshAction)[]> copyLogDataResultTask = Task.WhenAll(copyLogDataTasks);

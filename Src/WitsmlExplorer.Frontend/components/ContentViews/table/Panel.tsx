@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
+import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -30,6 +31,7 @@ export interface PanelProps {
   expandableRows?: boolean;
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
+  disableFilters?: boolean;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -46,7 +48,8 @@ const Panel = (props: PanelProps) => {
     columns,
     expandableRows = false,
     downloadToCsvFileName = null,
-    stickyLeftColumns
+    stickyLeftColumns,
+    disableFilters = false
   } = props;
   const {
     operationState: { theme }
@@ -122,7 +125,7 @@ const Panel = (props: PanelProps) => {
 
   return (
     <PanelContainer>
-      <EdsProvider density={theme}>
+      <EdsProvider density={normaliseThemeForEds(theme)}>
         <Typography>{selectedItemsText}</Typography>
         <Typography>{selectedColumnsStatus}</Typography>
         <ColumnOptionsMenu
@@ -134,6 +137,7 @@ const Panel = (props: PanelProps) => {
           stickyLeftColumns={stickyLeftColumns}
           selectedColumnsStatus={selectedColumnsStatus}
           firstToggleableIndex={firstToggleableIndex}
+          disableFilters={disableFilters}
         />
         {showRefresh && (
           <Button

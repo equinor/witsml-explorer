@@ -69,6 +69,7 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -583,7 +584,7 @@ export const CurveValuesView = (): React.ReactElement => {
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
             onClickRefresh={() => refreshData()}
           />
-          <EdsProvider density={theme}>
+          <EdsProvider density={normaliseThemeForEds(theme)}>
             <Switch
               checked={showPlot}
               onChange={() => setShowPlot(!showPlot)}

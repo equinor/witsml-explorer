@@ -49,6 +49,9 @@ Please visit [API client access](/Docs/APICLIENT.md).
 ## Enable HTTP WITSML servers
 Please see [enable HTTP](/Docs/enable_http.md).
 
+## URL structure for deeplinking
+Please see [deep linking](/Docs/deep_linking.md).
+
 ## Community
 Please read and respect the [CODE OF CONDUCT](/CODE_OF_CONDUCT.md)
 

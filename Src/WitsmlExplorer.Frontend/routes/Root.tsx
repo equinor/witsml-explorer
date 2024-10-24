@@ -19,6 +19,7 @@ import { SidebarProvider } from "contexts/sidebarContext";
 import { authRequest, msalEnabled, msalInstance } from "msal/MsalAuthProvider";
 import { SnackbarProvider } from "notistack";
 import { isDesktopApp } from "tools/desktopAppHelpers";
+import CompactEdsProvider from "../contexts/CompactEdsProvider";
 
 export default function Root() {
   return (
@@ -34,23 +35,25 @@ export default function Root() {
           <GlobalStylesWrapper />
           <LoggedInUsernamesProvider>
             <ConnectedServerProvider>
-              <CurveThresholdProvider>
-                <SidebarProvider>
-                  <FilterContextProvider>
-                    <QueryContextProvider>
-                      {isDesktopApp() && <DesktopAppEventHandler />}
-                      <HotKeyHandler />
-                      <RefreshHandler />
-                      <SnackbarProvider>
-                        <Snackbar />
-                      </SnackbarProvider>
-                      <PageLayout />
-                      <ContextMenuPresenter />
-                      <ModalPresenter />
-                    </QueryContextProvider>
-                  </FilterContextProvider>
-                </SidebarProvider>
-              </CurveThresholdProvider>
+              <CompactEdsProvider>
+                <CurveThresholdProvider>
+                  <SidebarProvider>
+                    <FilterContextProvider>
+                      <QueryContextProvider>
+                        {isDesktopApp() && <DesktopAppEventHandler />}
+                        <HotKeyHandler />
+                        <RefreshHandler />
+                        <SnackbarProvider>
+                          <Snackbar />
+                        </SnackbarProvider>
+                        <PageLayout />
+                        <ContextMenuPresenter />
+                        <ModalPresenter />
+                      </QueryContextProvider>
+                    </FilterContextProvider>
+                  </SidebarProvider>
+                </CurveThresholdProvider>
+              </CompactEdsProvider>
             </ConnectedServerProvider>
           </LoggedInUsernamesProvider>
         </MuiThemeProvider>

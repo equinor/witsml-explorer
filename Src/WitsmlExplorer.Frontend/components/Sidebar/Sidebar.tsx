@@ -4,7 +4,6 @@ import { useVirtualizer, Virtualizer } from "@tanstack/react-virtual";
 import ProgressSpinner from "components/ProgressSpinner";
 import SearchFilter from "components/Sidebar/SearchFilter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { UserTheme } from "contexts/operationStateReducer";
 import { useSidebar } from "contexts/sidebarContext";
 import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
@@ -18,6 +17,7 @@ import { InactiveWellsHiddenFilterHelper } from "./InactiveWellsHiddenFilterHelp
 import { Stack } from "@mui/material";
 import SidebarVirtualItem from "./SidebarVirtualItem";
 import { calculateWellNodeId } from "../../models/wellbore.tsx";
+import { isInAnyCompactMode } from "../../tools/themeHelpers.ts";
 
 const Sidebar: FC = () => {
   const { connectedServer } = useConnectedServer();
@@ -28,7 +28,7 @@ const Sidebar: FC = () => {
   const {
     operationState: { colors, theme }
   } = useOperationState();
-  const isCompactMode = theme === UserTheme.Compact;
+  const isCompactMode = isInAnyCompactMode(theme);
   const filteredWells = useWellFilter(wells) || [];
   const containerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
