@@ -123,13 +123,9 @@ url encoded version which should be used:
 ```/servers/:serverUrl/wells/:wellUid/wellbores/:wellboreUid/objectgroups/:objectGroup/logtypes/:logType/multilogs?logs=<log uids>```
 
 
-#### Additional params for limiting the data in result
+#### Additional params to specify which logs to combine
 
-If there is a need to limit the in result, following parameter needs to be filled up:
-
-  - logs
-
-StartIndex and endIndex could be numbers for depth based logs or datetime in ISO format  - "YYYY-MM-DDTHH:mm:ss.sssZ" for time based logs
+The logs param must be used to specify which logs should be combined in the multi-log view
 
 Sample:
 
@@ -177,10 +173,13 @@ url encoded version which should be used:
 ```?startIndex=1&endIndex=4&mnemonics=%7B%2255823e08-6232-43a8-8e77713bc469-6674%22%3A%5B%22mnem3%22%5D%2C%22bc498d56-84f6-4c63-b1af-d845be3e6961%22%3A%5B%22mnem4%22%5D%7D%0A```
 
 ### Jobs View
-/servers/:serverUrl/jobs
+
+```/servers/:serverUrl/jobs```
 
 ### Query View
-/servers/:serverUrl/query
+
+```/servers/:serverUrl/query```
 
 ### Search View
-/servers/:serverUrl/search/:filterType
+
+```/servers/:serverUrl/search/:filterType```
