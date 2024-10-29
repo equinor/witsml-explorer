@@ -11,7 +11,10 @@ export const parseLASHeader = (sectionData: string) => {
     .filter((line) => line.trim() != "" && !line.startsWith("#"));
   const headerData = lines.map((line, index) => {
     const endOfCurveNameIndex = line.indexOf(".");
-    const curveName = line.slice(0, endOfCurveNameIndex).trim().replaceAll(" ", "_");
+    const curveName = line
+      .slice(0, endOfCurveNameIndex)
+      .trim()
+      .replaceAll(" ", "_");
     const unit = line.slice(endOfCurveNameIndex + 1).split(/\s+/)[0];
     return {
       index,
