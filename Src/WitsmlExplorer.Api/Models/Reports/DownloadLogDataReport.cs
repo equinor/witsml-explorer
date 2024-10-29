@@ -1,9 +1,9 @@
 namespace WitsmlExplorer.Api.Models.Reports;
 
 /// <summary>
-/// The report contains all log rows.
+/// The report contains log rows.
 /// </summary>
-public class DownloadAllLogDataReport : BaseReport
+public class DownloadLogDataReport : BaseReport
 {
     /// <summary>
     /// Log object data.

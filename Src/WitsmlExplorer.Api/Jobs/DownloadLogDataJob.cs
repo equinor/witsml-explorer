@@ -6,9 +6,9 @@ using WitsmlExplorer.Api.Models;
 namespace WitsmlExplorer.Api.Jobs;
 
 /// <summary>
-/// Job for downloading all log data.
+/// Job for downloading log data.
 /// </summary>
-public record DownloadAllLogDataJob : Job
+public record DownloadLogDataJob : Job
 {
     /// <summary>
     /// Log reference object

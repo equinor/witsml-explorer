@@ -1,6 +1,6 @@
 import LogObject from "models/logObject";
 
-export default interface DownloadAllLogDataJob {
+export default interface DownloadLogDataJob {
   logReference: LogObject;
   mnemonics: string[];
   startIndexIsInclusive: boolean;

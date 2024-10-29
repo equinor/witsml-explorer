@@ -41,7 +41,7 @@ import { useOperationState } from "hooks/useOperationState";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
-import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
+import DownloadLogDataJob from "models/jobs/downloadLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { ObjectType } from "models/objectType";
@@ -228,23 +228,6 @@ export const CurveValuesView = (): React.ReactElement => {
     downloadOptions = DownloadOptions.SelectedRange;
   };
 
-  const exportSelectedIndexRange = useCallback(() => {
-    const exportColumns = columns
-      .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
-      .join(exportOptions.separator);
-    const data = orderBy(tableData, getComparatorByColumn(columns[0]), [
-      Order.Ascending,
-      Order.Ascending
-    ]) //Sorted because order is important when importing data
-      .map((row) =>
-        columns
-          .map((col) => row[col.columnOf.mnemonic] as string)
-          .join(exportOptions.separator)
-      )
-      .join(exportOptions.newLineCharacter);
-    exportData(log.name, exportColumns, data);
-  }, [columns, tableData]);
-
   const exportSelectedDataPoints = useCallback(() => {
     const exportColumns = columns
       .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
@@ -426,34 +409,32 @@ export const CurveValuesView = (): React.ReactElement => {
   const exportSelectedRange = async () => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
-    const downloadAllLogDataJob: DownloadAllLogDataJob = {
+    const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
       startIndexIsInclusive,
       startIndex,
       endIndex
     };
-    callExportJob(downloadAllLogDataJob);
+    callExportJob(downloadLogDataJob);
   };
 
   const exportAll = async () => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
-    const downloadAllLogDataJob: DownloadAllLogDataJob = {
+    const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
       startIndexIsInclusive
     };
-    callExportJob(downloadAllLogDataJob);
+    callExportJob(downloadLogDataJob);
   };
 
-  const callExportJob = async (
-    downloadAllLogDataJob: DownloadAllLogDataJob
-  ) => {
+  const callExportJob = async (downloadLogDataJob: DownloadLogDataJob) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const jobId = await JobService.orderJob(
-      JobType.DownloadAllLogData,
-      downloadAllLogDataJob
+      JobType.DownloadLogData,
+      downloadLogDataJob
     );
     if (jobId) {
       const reportModalProps = { jobId };
@@ -575,14 +556,7 @@ export const CurveValuesView = (): React.ReactElement => {
         Show on server
       </Button>
     ],
-    [
-      isLoading,
-      exportSelectedDataPoints,
-      exportSelectedIndexRange,
-      selectedRows,
-      colors.mode,
-      theme
-    ]
+    [isLoading, exportSelectedDataPoints, selectedRows, colors.mode, theme]
   );
 
   if (isFetchedLog && !log) {
