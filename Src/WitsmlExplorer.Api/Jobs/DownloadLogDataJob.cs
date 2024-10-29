@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using WitsmlExplorer.Api.Models;
@@ -5,9 +6,9 @@ using WitsmlExplorer.Api.Models;
 namespace WitsmlExplorer.Api.Jobs;
 
 /// <summary>
-/// Job for downloading all log data.  
+/// Job for downloading log data.
 /// </summary>
-public record DownloadAllLogDataJob : Job
+public record DownloadLogDataJob : Job
 {
     /// <summary>
     /// Log reference object
@@ -23,6 +24,16 @@ public record DownloadAllLogDataJob : Job
     /// Is start index inclusive
     /// </summary>
     public bool StartIndexIsInclusive { get; init; }
+
+    /// <summary>
+    /// Start index for range selection
+    /// </summary>
+    public string StartIndex { get; init; }
+
+    /// <summary>
+    /// End index for range selection
+    /// </summary>
+    public string EndIndex { get; init; }
 
     /// <summary>
     /// Indicates, if the job can be cancelled

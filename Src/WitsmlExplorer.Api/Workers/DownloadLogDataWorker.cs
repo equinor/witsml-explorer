@@ -14,17 +14,17 @@ using WitsmlExplorer.Api.Services;
 namespace WitsmlExplorer.Api.Workers;
 
 /// <summary>
-/// Worker for downloading all log data.
+/// Worker for downloading log data.
 /// </summary>
-public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWorker
+public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
 {
-    public JobType JobType => JobType.DownloadAllLogData;
+    public JobType JobType => JobType.DownloadLogData;
     private readonly ILogObjectService _logObjectService;
     private readonly char _newLineCharacter = '\n';
     private readonly char _separator = ',';
 
-    public DownloadAllLogDataWorker(
-            ILogger<DownloadAllLogDataJob> logger,
+    public DownloadLogDataWorker(
+            ILogger<DownloadLogDataJob> logger,
             IWitsmlClientProvider witsmlClientProvider,
             ILogObjectService logObjectService)
             : base(witsmlClientProvider, logger)
@@ -36,7 +36,7 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
     /// </summary>
     /// <param name="job">The job model contains job-specific parameters.</param>
     /// <returns>Task of the workerResult in a report with all log data.</returns>
-    public override async Task<(WorkerResult, RefreshAction)> Execute(DownloadAllLogDataJob job, CancellationToken? cancellationToken = null)
+    public override async Task<(WorkerResult, RefreshAction)> Execute(DownloadLogDataJob job, CancellationToken? cancellationToken = null)
     {
         Logger.LogInformation("Downloading of all data started. {jobDescription}", job.Description());
         IProgress<double> progressReporter = new Progress<double>(progress =>
@@ -44,24 +44,35 @@ public class DownloadAllLogDataWorker : BaseWorker<DownloadAllLogDataJob>, IWork
             job.ProgressReporter?.Report(progress);
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
         });
+
+        if (!string.IsNullOrEmpty(job.StartIndex))
+        {
+            job.LogReference.StartIndex = job.StartIndex;
+        }
+
+        if (!string.IsNullOrEmpty(job.EndIndex))
+        {
+            job.LogReference.EndIndex = job.EndIndex;
+        }
+
         var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
 
-        return DownloadAllLogDataResult(job, logData.Data, logData.CurveSpecifications);
+        return DownloadLogDataResult(job, logData.Data, logData.CurveSpecifications);
     }
 
-    private (WorkerResult, RefreshAction) DownloadAllLogDataResult(DownloadAllLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
+    private (WorkerResult, RefreshAction) DownloadLogDataResult(DownloadLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
     {
         Logger.LogInformation("Download of all data is done. {jobDescription}", job.Description());
         var reportHeader = GetReportHeader(curveSpecifications);
         var reportBody = GetReportBody(reportItems, curveSpecifications);
-        job.JobInfo.Report = DownloadAllLogDataReport(reportItems, job.LogReference, reportHeader, reportBody);
+        job.JobInfo.Report = DownloadLogDataReport(reportItems, job.LogReference, reportHeader, reportBody);
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Download of all data is ready, jobId: ", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 
-    private DownloadAllLogDataReport DownloadAllLogDataReport(ICollection<Dictionary<string, LogDataValue>> reportItems, LogObject logReference, string reportHeader, string reportBody)
+    private DownloadLogDataReport DownloadLogDataReport(ICollection<Dictionary<string, LogDataValue>> reportItems, LogObject logReference, string reportHeader, string reportBody)
     {
-        return new DownloadAllLogDataReport
+        return new DownloadLogDataReport
         {
             Title = $"{logReference.WellboreName} - {logReference.Name}",
             Summary = "You can download the report as csv file",

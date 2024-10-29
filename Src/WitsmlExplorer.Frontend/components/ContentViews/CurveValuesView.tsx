@@ -41,7 +41,7 @@ import { useOperationState } from "hooks/useOperationState";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
-import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
+import DownloadLogDataJob from "models/jobs/downloadLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { ObjectType } from "models/objectType";
@@ -65,11 +65,11 @@ import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { formatIndexValue } from "tools/IndexHelpers";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
-import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -82,7 +82,7 @@ interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 enum DownloadOptions {
   All = "All",
-  IntervalOfData = "IntervalOfData",
+  SelectedRange = "SelectedRange",
   SelectedIndexValues = "SelectedIndexValues"
 }
 
@@ -126,7 +126,7 @@ export const CurveValuesView = (): React.ReactElement => {
   );
   const { exportData, exportOptions } = useExport();
   const justFinishedStreaming = useRef(false);
-  let downloadOptions: DownloadOptions = DownloadOptions.IntervalOfData;
+  let downloadOptions: DownloadOptions = DownloadOptions.SelectedRange;
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -219,31 +219,14 @@ export const CurveValuesView = (): React.ReactElement => {
       case DownloadOptions.All:
         exportAll();
         break;
-      case DownloadOptions.IntervalOfData:
-        exportSelectedIndexRange();
+      case DownloadOptions.SelectedRange:
+        exportSelectedRange();
         break;
       case DownloadOptions.SelectedIndexValues:
         exportSelectedDataPoints();
     }
-    downloadOptions = DownloadOptions.IntervalOfData;
+    downloadOptions = DownloadOptions.SelectedRange;
   };
-
-  const exportSelectedIndexRange = useCallback(() => {
-    const exportColumns = columns
-      .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
-      .join(exportOptions.separator);
-    const data = orderBy(tableData, getComparatorByColumn(columns[0]), [
-      Order.Ascending,
-      Order.Ascending
-    ]) //Sorted because order is important when importing data
-      .map((row) =>
-        columns
-          .map((col) => row[col.columnOf.mnemonic] as string)
-          .join(exportOptions.separator)
-      )
-      .join(exportOptions.newLineCharacter);
-    exportData(log.name, exportColumns, data);
-  }, [columns, tableData]);
 
   const exportSelectedDataPoints = useCallback(() => {
     const exportColumns = columns
@@ -423,18 +406,35 @@ export const CurveValuesView = (): React.ReactElement => {
     }
   };
 
-  const exportAll = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
+  const exportSelectedRange = async () => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
-    const downloadAllLogDataJob: DownloadAllLogDataJob = {
+    const downloadLogDataJob: DownloadLogDataJob = {
+      logReference,
+      mnemonics,
+      startIndexIsInclusive,
+      startIndex,
+      endIndex
+    };
+    callExportJob(downloadLogDataJob);
+  };
+
+  const exportAll = async () => {
+    const logReference: LogObject = log;
+    const startIndexIsInclusive = !autoRefresh;
+    const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
       startIndexIsInclusive
     };
+    callExportJob(downloadLogDataJob);
+  };
+
+  const callExportJob = async (downloadLogDataJob: DownloadLogDataJob) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const jobId = await JobService.orderJob(
-      JobType.DownloadAllLogData,
-      downloadAllLogDataJob
+      JobType.DownloadLogData,
+      downloadLogDataJob
     );
     if (jobId) {
       const reportModalProps = { jobId };
@@ -448,7 +448,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const displayConfirmation = (dispatchOperation: DispatchOperation) => {
     const confirmation = (
       <ConfirmModal
-        heading={"Download"}
+        heading={`Download log data for ${mnemonics.length} mnemonics`}
         content={
           <>
             <span>
@@ -458,12 +458,12 @@ export const CurveValuesView = (): React.ReactElement => {
             <label style={alignLayout}>
               <Radio
                 name="group"
-                value={DownloadOptions.IntervalOfData}
-                id={DownloadOptions.IntervalOfData}
+                value={DownloadOptions.SelectedRange}
+                id={DownloadOptions.SelectedRange}
                 onChange={onChangeDownloadOption}
                 defaultChecked
               />
-              <Typography>Download shown interval</Typography>
+              <Typography>Download selected range</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
@@ -473,7 +473,7 @@ export const CurveValuesView = (): React.ReactElement => {
                 onChange={onChangeDownloadOption}
                 disabled={!selectedRows.length}
               />
-              <Typography>Download selected</Typography>
+              <Typography>Download selected rows</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
@@ -556,14 +556,7 @@ export const CurveValuesView = (): React.ReactElement => {
         Show on server
       </Button>
     ],
-    [
-      isLoading,
-      exportSelectedDataPoints,
-      exportSelectedIndexRange,
-      selectedRows,
-      colors.mode,
-      theme
-    ]
+    [isLoading, exportSelectedDataPoints, selectedRows, colors.mode, theme]
   );
 
   if (isFetchedLog && !log) {
