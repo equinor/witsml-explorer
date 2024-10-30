@@ -76,9 +76,6 @@ const WellboreContextMenu = (
       name: "",
       wellUid: wellbore.wellUid,
       wellName: wellbore.wellName,
-      wellboreStatus: "",
-      wellboreType: "",
-      isActive: false,
       wellboreParentUid: wellbore.uid,
       wellboreParentName: wellbore.name,
       wellborePurpose: "unknown"
