@@ -166,6 +166,6 @@ export enum JobType {
   SpliceLogs = "SpliceLogs",
   CompareLogData = "CompareLogData",
   CountLogDataRows = "CountLogDataRows",
-  DownloadAllLogData = "DownloadAllLogData",
+  DownloadLogData = "DownloadLogData",
   OffsetLogCurves = "OffsetLogCurves"
 }

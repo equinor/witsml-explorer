@@ -1,6 +1,6 @@
 import { QueryObserverResult } from "@tanstack/react-query";
 import { useGetWellbores } from "hooks/query/useGetWellbores";
-import Wellbore, { WellboreProperties } from "models/wellbore";
+import Wellbore from "models/wellbore";
 import { useMemo } from "react";
 import {
   WellboreFilterType,
@@ -28,9 +28,7 @@ export const useGetWellboreSearch = (
 
   const filteredData = useMemo(() => {
     const regex = getSearchRegex(value, true);
-    const property = filterTypeToProperty[
-      filterType
-    ] as keyof WellboreProperties;
+    const property = filterTypeToProperty[filterType] as keyof Wellbore;
     return (
       wellbores?.filter(
         (result) =>

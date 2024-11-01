@@ -92,11 +92,6 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       name: "",
       wellUid: well.uid,
       wellName: well.name,
-      wellboreStatus: "",
-      wellboreType: "",
-      isActive: false,
-      wellboreParentUid: "",
-      wellboreParentName: "",
       wellborePurpose: "unknown"
     };
     openWellboreProperties(

@@ -418,7 +418,7 @@ const StyledBreadcrumbs = styled(EdsBreadcrumbs)<{ isCompact: boolean }>`
             padding-right: 0.5rem;
           }
         `}
-}`;
+`;
 
 const Title = styled.p`
   line-height: 1rem;
