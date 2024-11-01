@@ -2,33 +2,17 @@ import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
 } from "components/Constants";
-import BhaRun from "models/bhaRun";
-import ChangeLog from "models/changeLog";
-import FluidsReport from "models/fluidsReport";
-import FormationMarker from "models/formationMarker";
-import LogObject from "models/logObject";
 import Measure from "models/measure";
-import MessageObject from "models/messageObject";
-import MudLog from "models/mudLog";
-import {
-  ObjectType,
-  ObjectTypeToModel,
-  pluralizeObjectType
-} from "models/objectType";
-import Rig from "models/rig";
-import RiskObject from "models/riskObject";
-import Trajectory from "models/trajectory";
-import Tubular from "models/tubular";
-import WbGeometryObject from "models/wbGeometry";
+import { ObjectType } from "models/objectType";
 
-export interface WellboreProperties {
+export default interface Wellbore {
   uid: string;
   name: string;
   wellUid: string;
   wellName?: string;
-  wellStatus: string;
-  wellType: string;
-  isActive: boolean;
+  wellboreStatus?: string;
+  wellboreType?: string;
+  isActive?: boolean;
   number?: string;
   suffixAPI?: string;
   numGovt?: string;
@@ -53,62 +37,7 @@ export interface WellboreProperties {
   objectCount?: ExpandableObjectsCount;
 }
 
-export interface WellboreObjects {
-  bhaRuns?: BhaRun[];
-  changeLogs?: ChangeLog[];
-  fluidsReports?: FluidsReport[];
-  formationMarkers?: FormationMarker[];
-  logs?: LogObject[];
-  rigs?: Rig[];
-  trajectories?: Trajectory[];
-  messages?: MessageObject[];
-  mudLogs?: MudLog[];
-  tubulars?: Tubular[];
-  risks?: RiskObject[];
-  wbGeometries?: WbGeometryObject[];
-}
-
 export type ExpandableObjectsCount = Partial<Record<ObjectType, number>>;
-
-export default interface Wellbore extends WellboreProperties, WellboreObjects {}
-
-export function emptyWellbore(): Wellbore {
-  return {
-    uid: "",
-    name: "",
-    wellUid: "",
-    wellName: "",
-    wellStatus: "",
-    wellType: "",
-    isActive: false,
-    wellboreParentUid: "",
-    wellboreParentName: "",
-    wellborePurpose: "unknown",
-    dateTimeCreation: "",
-    dateTimeLastChange: "",
-    itemState: "",
-    bhaRuns: [],
-    changeLogs: [],
-    fluidsReports: [],
-    formationMarkers: [],
-    logs: [],
-    rigs: [],
-    trajectories: [],
-    tubulars: [],
-    messages: [],
-    mudLogs: [],
-    risks: [],
-    wbGeometries: [],
-    objectCount: null
-  };
-}
-
-export function wellboreHasChanges(
-  wellbore: WellboreProperties,
-  updatedWellbore: WellboreProperties
-): boolean {
-  return JSON.stringify(wellbore) !== JSON.stringify(updatedWellbore);
-}
 
 export const calculateWellNodeId = (wellUid: string): string => {
   return `w=${wellUid};`;
@@ -183,28 +112,3 @@ export const getWellboreProperties = (
     ["UID Wellbore", wellbore.uid]
   ]);
 };
-
-export function objectTypeToWellboreObjects(
-  objectType: ObjectType
-): keyof WellboreObjects {
-  return (objectType.charAt(0).toLowerCase() +
-    pluralizeObjectType(objectType).slice(1)) as keyof WellboreObjects;
-}
-
-export function getObjectsFromWellbore<Key extends ObjectType>(
-  wellbore: Wellbore,
-  objectType: Key
-): ObjectTypeToModel[Key][] {
-  return wellbore[
-    objectTypeToWellboreObjects(objectType)
-  ] as ObjectTypeToModel[Key][];
-}
-
-export function getObjectFromWellbore<Key extends ObjectType>(
-  wellbore: Wellbore,
-  uid: string,
-  objectType: Key
-): ObjectTypeToModel[Key] {
-  const objects = getObjectsFromWellbore(wellbore, objectType);
-  return objects?.find((object) => object.uid === uid);
-}

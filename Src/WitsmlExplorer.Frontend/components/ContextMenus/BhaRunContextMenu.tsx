@@ -7,43 +7,25 @@ import {
   ObjectContextMenuProps,
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
-import BhaRunPropertiesModal, {
-  BhaRunPropertiesModalProps
-} from "components/Modals/BhaRunPropertiesModal";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import BhaRun from "models/bhaRun";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const BhaRunContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
-
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const mode = PropertiesModalMode.Edit;
-    const modifyBhaRunProps: BhaRunPropertiesModalProps = {
-      mode,
-      bhaRun: checkedObjects[0] as BhaRun,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <BhaRunPropertiesModal {...modifyBhaRunProps} />
-    });
-  };
 
   return (
     <ContextMenu
@@ -61,7 +43,13 @@ const BhaRunContextMenu = (
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}
-          onClick={onClickModify}
+          onClick={() =>
+            openObjectOnWellboreProperties(
+              ObjectType.BhaRun,
+              checkedObjects?.[0] as BhaRun,
+              dispatchOperation
+            )
+          }
           disabled={checkedObjects.length !== 1}
         >
           <StyledIcon

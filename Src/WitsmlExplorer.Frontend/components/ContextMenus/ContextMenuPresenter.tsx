@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
-import OperationContext from "contexts/operationContext";
+import { useOperationState } from "hooks/useOperationState";
+import React from "react";
 
 const ContextMenuPresenter = (): React.ReactElement => {
-  const { operationState } = useContext(OperationContext);
+  const { operationState } = useOperationState();
   const { contextMenu } = operationState;
 
   return <>{contextMenu && contextMenu.component}</>;

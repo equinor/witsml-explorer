@@ -25,14 +25,9 @@ namespace WitsmlExplorer.Api.Models
         ModifyWbGeometrySection,
         ModifyWell,
         ModifyWellbore,
-        CreateLogObject,
         CreateWell,
         CreateWellbore,
-        CreateRisk,
-        CreateMudLog,
-        CreateRig,
-        CreateTrajectory,
-        CreateWbGeometry,
+        CreateObjectOnWellbore,
         BatchModifyWell,
         ImportLogData,
         ReplaceComponents,
@@ -44,6 +39,7 @@ namespace WitsmlExplorer.Api.Models
         CompareLogData,
         CountLogDataRows,
         BatchModifyLogCurveInfo,
-        DownloadAllLogData
+        DownloadLogData,
+        OffsetLogCurves
     }
 }

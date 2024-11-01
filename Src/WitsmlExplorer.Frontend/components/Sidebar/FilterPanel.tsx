@@ -9,15 +9,19 @@ import { Checkbox } from "components/StyledComponents/Checkbox";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import React, { ChangeEvent, useContext } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import {
+  setLocalStorageItem,
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
-  setLocalStorageItem
+  STORAGE_FILTER_INACTIVE_TIME_CURVES_KEY,
+  STORAGE_FILTER_INACTIVE_TIME_CURVES_VALUE_KEY,
+  STORAGE_FILTER_ISACTIVE_KEY,
+  STORAGE_FILTER_OBJECTGROWING_KEY
 } from "tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
@@ -25,7 +29,7 @@ const FilterPanel = (): React.ReactElement => {
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
@@ -47,6 +51,43 @@ const FilterPanel = (): React.ReactElement => {
     updateSelectedFilter({ objectVisibilityStatus: updatedVisibility });
   };
 
+  const onChangeIsActive = (e: ChangeEvent<HTMLInputElement>) => {
+    setLocalStorageItem<boolean>(STORAGE_FILTER_ISACTIVE_KEY, e.target.checked);
+    updateSelectedFilter({ isActive: e.target.checked });
+  };
+
+  const onChangeObjectGrowing = (e: ChangeEvent<HTMLInputElement>) => {
+    setLocalStorageItem<boolean>(
+      STORAGE_FILTER_OBJECTGROWING_KEY,
+      e.target.checked
+    );
+    updateSelectedFilter({ objectGrowing: e.target.checked });
+  };
+
+  const onChangeHideInactiveTimeCurves = (e: ChangeEvent<HTMLInputElement>) => {
+    setLocalStorageItem<boolean>(
+      STORAGE_FILTER_INACTIVE_TIME_CURVES_KEY,
+      e.target.checked
+    );
+    setCurveThreshold({
+      ...curveThreshold,
+      hideInactiveCurves: e.target.checked
+    });
+  };
+
+  const onChangeInactiveTimeCurvesValue = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    setLocalStorageItem<number>(
+      STORAGE_FILTER_INACTIVE_TIME_CURVES_VALUE_KEY,
+      Number(e.target.value)
+    );
+    setCurveThreshold({
+      ...curveThreshold,
+      timeInMinutes: Number(e.target.value)
+    });
+  };
+
   return (
     <EdsProvider density="compact">
       <Container colors={colors}>
@@ -56,16 +97,12 @@ const FilterPanel = (): React.ReactElement => {
             value={"Hide inactive Wells / Wellbores"}
             color={"primary"}
             checked={selectedFilter.isActive}
-            onChange={(event) =>
-              updateSelectedFilter({ isActive: event.target.checked })
-            }
+            onChange={onChangeIsActive}
             label={"Hide inactive Wells / Wellbores"}
             colors={colors}
           />
           <Checkbox
-            onChange={(event) =>
-              updateSelectedFilter({ objectGrowing: event.target.checked })
-            }
+            onChange={onChangeObjectGrowing}
             checked={selectedFilter.objectGrowing}
             id="filter-objectGrowing"
             value={"Only show growing logs"}
@@ -105,12 +142,7 @@ const FilterPanel = (): React.ReactElement => {
               id="curveThreshold-time"
               type="number"
               min={0}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setCurveThreshold({
-                  ...curveThreshold,
-                  timeInMinutes: Number(event.target.value)
-                })
-              }
+              onChange={onChangeInactiveTimeCurvesValue}
               value={curveThreshold.timeInMinutes}
               autoComplete={"off"}
               colors={colors}
@@ -118,12 +150,7 @@ const FilterPanel = (): React.ReactElement => {
           </NumberInputContainer>
           <Checkbox
             id="curveThreshold-hideInactive"
-            onChange={(event) =>
-              setCurveThreshold({
-                ...curveThreshold,
-                hideInactiveCurves: event.target.checked
-              })
-            }
+            onChange={onChangeHideInactiveTimeCurves}
             checked={curveThreshold.hideInactiveCurves}
             value={"Hide inactive time curves"}
             color={"primary"}
@@ -215,6 +242,7 @@ const StyledTextField = styled(TextField)<{ colors: Colors }>`
   label {
     color: ${(props) => props.colors.text.staticTextLabel};
   }
+
   div {
     background: ${(props) => props.colors.text.staticTextFieldDefault};
   }

@@ -8,6 +8,7 @@ import ObjectOnWellbore from "../models/objectOnWellbore";
 
 export interface Notification {
   serverUrl: URL;
+  sourceServerUrl?: URL;
   isSuccess: boolean;
   message: string;
   severity?: AlertSeverity;

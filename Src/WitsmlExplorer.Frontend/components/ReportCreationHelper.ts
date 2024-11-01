@@ -1,5 +1,5 @@
-import { ContentTableColumn, ContentType } from "./ContentViews/table";
 import { defaultExportProperties } from "models/exportProperties";
+import { ContentTableColumn, ContentType } from "./ContentViews/table";
 
 export interface ReportProperties {
   columns: string;

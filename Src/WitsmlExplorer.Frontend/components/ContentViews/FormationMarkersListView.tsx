@@ -9,15 +9,15 @@ import FormationMarkerContextMenu from "components/ContextMenus/FormationMarkerC
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import FormationMarker from "models/formationMarker";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import StratigraphicStruct from "models/stratigraphicStruct";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 
 export interface FormationMarkerRow extends ContentTableRow {
@@ -27,8 +27,8 @@ export interface FormationMarkerRow extends ContentTableRow {
 export default function FormationMarkersListView() {
   const {
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  } = useOperationState();
+  const { dispatchOperation } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
   const { objects: formationMarkers } = useGetObjects(

@@ -28,20 +28,19 @@ import LogComparisonModal, {
 import LogDataImportModal, {
   LogDataImportModalProps
 } from "components/Modals/LogDataImportModal";
-import LogPropertiesModal from "components/Modals/LogPropertiesModal";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { ReportModal } from "components/Modals/ReportModal";
 import SpliceLogsModal from "components/Modals/SpliceLogsModal";
 import TrimLogObjectModal from "components/Modals/TrimLogObject/TrimLogObjectModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
 import CompareLogDataJob from "models/jobs/compareLogData";
@@ -50,7 +49,7 @@ import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import React, { useContext } from "react";
+import React from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
@@ -69,7 +68,7 @@ const LogObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
@@ -77,20 +76,6 @@ const LogObjectContextMenu = (
   const { servers } = useGetServers();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-  const onClickProperties = () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const logObject = checkedObjects[0];
-    const logPropertiesModalProps = {
-      mode: PropertiesModalMode.Edit,
-      logObject,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <LogPropertiesModal {...logPropertiesModalProps} />
-    });
-  };
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -453,12 +438,18 @@ const LogObjectContextMenu = (
         disabled={checkedObjects.length === 0}
       >
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>Import log data from .csv</Typography>
+        <Typography color={"primary"}>Import log data</Typography>
       </MenuItem>,
       <Divider key={uuid()} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickProperties}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Log,
+            checkedObjects?.[0] as LogObject,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

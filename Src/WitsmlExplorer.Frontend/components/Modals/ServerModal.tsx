@@ -9,13 +9,13 @@ import UserCredentialsModal, {
 } from "components/Modals/UserCredentialsModal";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import {
   DisplayModalAction,
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
+import { useOperationState } from "hooks/useOperationState";
 import { Server } from "models/server";
 import { msalEnabled } from "msal/MsalAuthProvider";
 import React, {
@@ -23,7 +23,6 @@ import React, {
   ChangeEvent,
   Dispatch,
   SetStateAction,
-  useContext,
   useState
 } from "react";
 import AuthorizationService from "services/authorizationService";
@@ -39,7 +38,7 @@ export interface ServerModalProps {
 
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const queryClient = useQueryClient();
-  const { operationState, dispatchOperation } = useContext(OperationContext);
+  const { operationState, dispatchOperation } = useOperationState();
   const { colors } = operationState;
   const [server, setServer] = useState<Server>(props.server);
   const [connectionVerified, setConnectionVerified] = useState<boolean>(false);
@@ -223,7 +222,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                     style={labelStyle}
                     htmlFor="creds"
                   />
-                  <Tooltip title="If this (space \ndelimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
+                  <Tooltip title="If this (space delimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
                     <Icon
                       name="infoCircle"
                       color={colors.interactive.primaryResting}

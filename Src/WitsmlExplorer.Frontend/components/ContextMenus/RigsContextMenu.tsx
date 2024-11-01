@@ -15,20 +15,16 @@ import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
-import RigPropertiesModal, {
-  RigPropertiesModalProps
-} from "components/Modals/RigPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
-import { DisplayModalAction } from "contexts/operationStateReducer";
-import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -39,7 +35,7 @@ export interface RigsContextMenuProps {
 
 const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
   const { wellbore, servers } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const rigReferences = useClipboardReferencesOfType(ObjectType.Rig);
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
@@ -71,16 +67,12 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
       typeRig: "unknown",
       yearEntService: null
     };
-    const rigPropertiesModalProps: RigPropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      rig: newRig,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <RigPropertiesModal {...rigPropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openObjectOnWellboreProperties(
+      ObjectType.Rig,
+      newRig,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   return (

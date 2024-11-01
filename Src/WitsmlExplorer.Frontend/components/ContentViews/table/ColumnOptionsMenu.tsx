@@ -6,7 +6,7 @@ import {
   Typography
 } from "@equinor/eds-core-react";
 import { Checkbox } from "@mui/material";
-import { Table } from "@tanstack/react-table";
+import { Column, Table } from "@tanstack/react-table";
 import {
   activeId,
   calculateColumnWidth,
@@ -18,10 +18,13 @@ import {
   ContentType
 } from "components/ContentViews/table/tableParts";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
-import { ChangeEvent, useContext, useState } from "react";
+import { useOperationState } from "hooks/useOperationState";
+import { debounce } from "lodash";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import {
@@ -32,6 +35,8 @@ import { Draggable, DummyDrop } from "../../StyledComponents/DragDropTable";
 
 const lastId = "dummyLastId";
 
+type FilterValues = Record<string, string>;
+
 export const ColumnOptionsMenu = (props: {
   table: Table<any>;
   checkableRows: boolean;
@@ -41,6 +46,7 @@ export const ColumnOptionsMenu = (props: {
   stickyLeftColumns: number;
   selectedColumnsStatus: string;
   firstToggleableIndex: number;
+  disableFilters: boolean;
 }): React.ReactElement => {
   const {
     table,
@@ -50,11 +56,12 @@ export const ColumnOptionsMenu = (props: {
     columns,
     stickyLeftColumns,
     selectedColumnsStatus,
-    firstToggleableIndex
+    firstToggleableIndex,
+    disableFilters
   } = props;
   const {
     operationState: { colors, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [draggedId, setDraggedId] = useState<string | null>();
   const [draggedOverId, setDraggedOverId] = useState<string | null>();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -62,10 +69,20 @@ export const ColumnOptionsMenu = (props: {
   const [, saveOrderToStorage] = useLocalStorageState<string[]>(
     viewId + STORAGE_CONTENTTABLE_ORDER_KEY
   );
-  const [filterValues, setFilterValues] = useState<{ [key: string]: string }>(
-    {}
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filterValues, setFilterValues] = useState<FilterValues>({});
   const isCompactMode = theme === UserTheme.Compact;
+
+  useEffect(() => {
+    if (disableFilters) return;
+    const filterString = searchParams.get("filter");
+    const initialFilter = JSON.parse(filterString);
+    const bothEmpty =
+      !initialFilter && Object.entries(filterValues).length === 0;
+    if (filterString !== JSON.stringify(filterValues) && !bothEmpty) {
+      setInitialFilter(initialFilter);
+    }
+  }, [searchParams]);
 
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -134,7 +151,69 @@ export const ColumnOptionsMenu = (props: {
       column.setFilterValue(null);
     });
     setFilterValues({});
+    searchParams.delete("filter");
+    setSearchParams(searchParams);
   };
+
+  const setInitialFilter = useCallback(
+    debounce((filterValues: FilterValues) => {
+      // Make sure we remove previous filters
+      table.getAllLeafColumns().map((column) => {
+        column.setFilterValue(null);
+      });
+      if (!filterValues) {
+        setFilterValues({});
+      } else {
+        Object.entries(filterValues).forEach(([key, value]) => {
+          const column = table
+            .getAllLeafColumns()
+            .find((col) => col.id === key);
+          column.setFilterValue(value);
+        });
+        setFilterValues(filterValues);
+      }
+    }, 50),
+    []
+  );
+
+  const onChangeColumnFilter = (
+    e: ChangeEvent<HTMLInputElement>,
+    column: Column<any, unknown>
+  ) => {
+    const newValue = e.target.value || null; // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
+    const newFilterValues = {
+      ...filterValues,
+      [column.id]: newValue
+    };
+    if (!newValue) {
+      delete newFilterValues[column.id];
+    }
+    setFilterValues(newFilterValues);
+    // Debounce updating the column filter and search params to reduce re-renders
+    updateColumnFilter(newValue, column);
+    updateFilterSearchParams(newFilterValues);
+  };
+
+  const updateColumnFilter = useCallback(
+    debounce((value: string, column: Column<any, unknown>) => {
+      column.setFilterValue(value);
+    }, 500),
+    []
+  );
+
+  const updateFilterSearchParams = useCallback(
+    debounce((filterValues: FilterValues) => {
+      const newSearchParams = createColumnFilterSearchParams(
+        searchParams,
+        filterValues
+      );
+      if (checkIsUrlTooLong(location.pathname, newSearchParams)) {
+        newSearchParams.delete("filter"); // Remove filter from the URL if it takes too much space. The filter will still be applied, but not in the URL.
+      }
+      setSearchParams(newSearchParams);
+    }, 500),
+    []
+  );
 
   return (
     <>
@@ -191,7 +270,7 @@ export const ColumnOptionsMenu = (props: {
               column.id != selectId &&
               column.id != expanderId &&
               index >= stickyLeftColumns && (
-                <OrderingRow key={column.id}>
+                <OrderingRow key={column.id} disableFilters={disableFilters}>
                   <Checkbox
                     checked={column.getIsVisible()}
                     onChange={column.getToggleVisibilityHandler()}
@@ -224,25 +303,23 @@ export const ColumnOptionsMenu = (props: {
                       {column.columnDef.header.toString()}
                     </OrderingLabel>
                   </Draggable>
-                  <EdsProvider density="compact">
-                    <TextField
-                      id={`field-${column.id}`}
-                      value={filterValues[column.id] || ""}
-                      disabled={
-                        column.id === activeId ||
-                        (column.columnDef.meta as { type: ContentType })
-                          ?.type === ContentType.Component
-                      }
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        column.setFilterValue(e.target.value || null); // If the value is "", we use null instead. Otherwise, other filter functions will not be applied.
-                        setFilterValues({
-                          ...filterValues,
-                          [column.id]: e.target.value
-                        });
-                      }}
-                      style={{ minWidth: "100px", maxHeight: "25px" }}
-                    />
-                  </EdsProvider>
+                  {!disableFilters && (
+                    <EdsProvider density="compact">
+                      <TextField
+                        id={`field-${column.id}`}
+                        value={filterValues[column.id] || ""}
+                        disabled={
+                          column.id === activeId ||
+                          (column.columnDef.meta as { type: ContentType })
+                            ?.type === ContentType.Component
+                        }
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          onChangeColumnFilter(e, column)
+                        }
+                        style={{ minWidth: "100px", maxHeight: "25px" }}
+                      />
+                    </EdsProvider>
+                  )}
                 </OrderingRow>
               )
             );
@@ -263,7 +340,7 @@ export const ColumnOptionsMenu = (props: {
               table.setColumnOrder([
                 ...(checkableRows ? [selectId] : []),
                 ...(expandableRows ? [expanderId] : []),
-                ...columns.map((column) => column.label)
+                ...columns.map((column) => column.property)
               ]);
               if (viewId)
                 removeLocalStorageItem(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
@@ -272,16 +349,19 @@ export const ColumnOptionsMenu = (props: {
             Reset ordering
           </ResetButton>
           <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
-          <ResetButton onClick={resetFilter}>Reset filter</ResetButton>
+          {!disableFilters && (
+            <ResetButton onClick={resetFilter}>Reset filter</ResetButton>
+          )}
         </ResetContainer>
       </StyledMenu>
     </>
   );
 };
 
-const OrderingRow = styled.div`
+const OrderingRow = styled.div<{ disableFilters: boolean }>`
   display: grid;
-  grid-template-columns: 20px 25px 25px 1fr 1.5fr;
+  grid-template-columns: ${(props) =>
+    props.disableFilters ? "20px 25px 25px 1fr" : "20px 25px 25px 1fr 1.5fr"};
   align-items: center;
 `;
 
@@ -337,3 +417,15 @@ const StyledMenu = styled(Menu)<{ colors: Colors }>`
     padding: 4px;
   }
 `;
+
+export const createColumnFilterSearchParams = (
+  currentSearchParams: URLSearchParams,
+  filterValues: FilterValues
+): URLSearchParams => {
+  if (Object.entries(filterValues).length === 0) {
+    currentSearchParams.delete("filter");
+  } else {
+    currentSearchParams.set("filter", JSON.stringify(filterValues));
+  }
+  return currentSearchParams;
+};

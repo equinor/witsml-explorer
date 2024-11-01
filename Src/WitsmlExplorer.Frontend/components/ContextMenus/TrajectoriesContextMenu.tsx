@@ -15,20 +15,16 @@ import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
-import TrajectoryPropertiesModal, {
-  TrajectoryPropertiesModalProps
-} from "components/Modals/TrajectoryPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
-import { DisplayModalAction } from "contexts/operationStateReducer";
-import OperationType from "contexts/operationType";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Trajectory from "models/trajectory";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -41,7 +37,7 @@ const TrajectoriesContextMenu = (
   props: TrajectoriesContextMenuProps
 ): React.ReactElement => {
   const { wellbore, servers } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const trajectoryReferences = useClipboardReferencesOfType(
     ObjectType.Trajectory
   );
@@ -66,16 +62,12 @@ const TrajectoriesContextMenu = (
       trajectoryStations: [],
       commonData: null
     };
-    const trajectoryPropertiesModalProps: TrajectoryPropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      trajectory: newTrajectory,
-      dispatchOperation
-    };
-    const action: DisplayModalAction = {
-      type: OperationType.DisplayModal,
-      payload: <TrajectoryPropertiesModal {...trajectoryPropertiesModalProps} />
-    };
-    dispatchOperation(action);
+    openObjectOnWellboreProperties(
+      ObjectType.Trajectory,
+      newTrajectory,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
   return (

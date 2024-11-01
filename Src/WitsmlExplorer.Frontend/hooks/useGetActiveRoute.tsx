@@ -6,6 +6,7 @@ import {
   LOG_OBJECT_VIEW_NAVIGATION_PATH,
   LOG_TYPES_VIEW_NAVIGATION_PATH,
   MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH,
+  MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH,
   OBJECTS_VIEW_NAVIGATION_PATH,
   OBJECT_GROUPS_VIEW_NAVIGATION_PATH,
   OBJECT_VIEW_NAVIGATION_PATH,
@@ -33,6 +34,9 @@ export function useGetActiveRoute() {
   const isMultiLogsCurveInfoListView = !!useMatch(
     MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH
   );
+  const isMultiLogCurveValuesView = !!useMatch(
+    MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH
+  );
   return {
     isJobsView,
     isQueryView,
@@ -46,6 +50,7 @@ export function useGetActiveRoute() {
     isLogObjectsView,
     isLogObjectView,
     isLogCurveValuesView,
-    isMultiLogsCurveInfoListView
+    isMultiLogsCurveInfoListView,
+    isMultiLogCurveValuesView
   };
 }

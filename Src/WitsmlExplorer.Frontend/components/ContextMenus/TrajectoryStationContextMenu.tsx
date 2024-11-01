@@ -15,18 +15,23 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import TrajectoryStationPropertiesModal from "components/Modals/TrajectoryStationPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { getTrajectoryStationProperties } from "components/Modals/PropertiesModal/Properties/TrajectoryStationProperties";
+import { PropertiesModal } from "components/Modals/PropertiesModal/PropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
+import ObjectReference from "models/jobs/objectReference";
+import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Trajectory from "models/trajectory";
-import React, { useContext } from "react";
-import { JobType } from "services/jobService";
+import TrajectoryStation from "models/trajectoryStation";
+import React from "react";
+import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface TrajectoryStationContextMenuProps {
@@ -38,7 +43,7 @@ const TrajectoryStationContextMenu = (
   props: TrajectoryStationContextMenuProps
 ): React.ReactElement => {
   const { checkedTrajectoryStations, trajectory } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();
   const trajectoryStationReferences = useClipboardComponentReferencesOfType(
@@ -47,18 +52,31 @@ const TrajectoryStationContextMenu = (
 
   const onClickProperties = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
+    const trajectoryStation = checkedTrajectoryStations[0].trajectoryStation;
     const trajectoryStationPropertiesModalProps = {
-      trajectoryStation: checkedTrajectoryStations[0].trajectoryStation,
-      trajectory,
-      dispatchOperation
+      title: `Edit properties for Trajectory Station for Trajectory ${trajectoryStation.uid} - ${trajectoryStation.typeTrajStation}`,
+      properties: getTrajectoryStationProperties(PropertiesModalMode.Edit),
+      object: trajectoryStation,
+      onSubmit: async (updates: Partial<TrajectoryStation>) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        const trajectoryReference: ObjectReference =
+          toObjectReference(trajectory);
+        const modifyTrajectoryStationJob = {
+          trajectoryStation: {
+            ...trajectoryStation,
+            ...updates
+          },
+          trajectoryReference
+        };
+        await JobService.orderJob(
+          JobType.ModifyTrajectoryStation,
+          modifyTrajectoryStationJob
+        );
+      }
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: (
-        <TrajectoryStationPropertiesModal
-          {...trajectoryStationPropertiesModalProps}
-        />
-      )
+      payload: <PropertiesModal {...trajectoryStationPropertiesModalProps} />
     });
   };
 
@@ -108,6 +126,7 @@ const TrajectoryStationContextMenu = (
               trajectory
             )
           }
+          disabled={trajectoryStationReferences === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>

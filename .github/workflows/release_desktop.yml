@@ -39,5 +39,5 @@ jobs:
           draft: false
           tag_name: ${{ github.event.inputs.tag }}
           files: |
-            ./Src/WitsmlExplorer.Desktop/dist/WExDesktop.x64*.exe
+            ./Src/WitsmlExplorer.Desktop/dist/WExDesktopInstaller.Windows.x64*.exe
             ./Src/WitsmlExplorer.Desktop/dist/latest.yml

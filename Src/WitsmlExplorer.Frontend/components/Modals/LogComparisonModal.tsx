@@ -10,8 +10,8 @@ import {
   StyledTypography
 } from "components/Modals/ComparisonModalStyles";
 import {
-  Indexes,
-  calculateMismatchedIndexes
+  calculateMismatchedIndexes,
+  Indexes
 } from "components/Modals/LogComparisonUtils";
 import { displayMissingObjectModal } from "components/Modals/MissingObjectModals";
 import ModalDialog, {
@@ -19,19 +19,20 @@ import ModalDialog, {
   ModalWidth
 } from "components/Modals/ModalDialog";
 import ProgressSpinner from "components/ProgressSpinner";
-import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ComponentService from "services/componentService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 export interface LogComparisonModalProps {
   sourceLog: LogObject;
@@ -53,7 +54,7 @@ const LogComparisonModal = (
   } = props;
   const {
     operationState: { timeZone, colors, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [sourceLogCurveInfo, setSourceLogCurveInfo] =
     useState<LogCurveInfo[]>(null);
   const [targetLogCurveInfo, setTargetLogCurveInfo] =
@@ -243,7 +244,7 @@ const LogComparisonModal = (
                   defaultValue={targetObject.name}
                 />
               </LabelsLayout>
-              <Accordion>
+              <StyledAccordion>
                 <Accordion.Item>
                   <StyledAccordionHeader colors={colors}>
                     How are the logs compared?
@@ -280,7 +281,7 @@ const LogComparisonModal = (
                     </List>
                   </Accordion.Panel>
                 </Accordion.Item>
-              </Accordion>
+              </StyledAccordion>
               {!indexTypesMatch && (
                 <span>
                   Unable to compare the logs due to different log types. Source
@@ -357,9 +358,11 @@ export const StyledAccordionHeader = styled(Accordion.Header)<{
   colors: Colors;
 }>`
   background-color: ${(props) => props.colors.ui.backgroundDefault};
+
   &:hover {
     background-color: ${(props) => props.colors.ui.backgroundLight};
   }
+
   span {
     color: ${(props) => props.colors.infographic.primaryMossGreen};
   }

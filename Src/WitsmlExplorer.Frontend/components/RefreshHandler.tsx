@@ -53,9 +53,10 @@ const RefreshHandler = (): React.ReactElement => {
                 }
                 refreshSearchQueries(refreshAction);
             }
-          } catch (error) {
+          } catch (e) {
             console.error(
-              `Unable to perform refresh action for action: ${refreshAction.refreshType} and entity: ${refreshAction.entityType}`
+              `Unable to perform refresh action for action: ${refreshAction.refreshType} and entity: ${refreshAction.entityType}`,
+              e
             );
           }
         }
@@ -115,14 +116,30 @@ const RefreshHandler = (): React.ReactElement => {
   }
 
   function refreshWellboreObjectsBatch(refreshAction: RefreshAction) {
-    for (const object of refreshAction.objects) {
-      refreshObjectQuery(
+    const uniqueMap = new Map<
+      string,
+      { wellUid: string; wellboreUid: string }
+    >();
+
+    refreshAction.objects.forEach((obj) => {
+      const key = `${obj.wellUid}_${obj.wellboreUid}`;
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, {
+          wellUid: obj.wellUid,
+          wellboreUid: obj.wellboreUid
+        });
+      }
+    });
+
+    const uniqueCombinations = Array.from(uniqueMap.values());
+
+    for (const obj of uniqueCombinations) {
+      refreshObjectsQuery(
         queryClient,
         refreshAction.serverUrl.toString().toLowerCase(),
-        object.wellUid,
-        object.wellboreUid,
-        refreshAction.entityType as ObjectType,
-        object.uid
+        obj.wellUid,
+        obj.wellboreUid,
+        refreshAction.entityType as ObjectType
       );
     }
   }

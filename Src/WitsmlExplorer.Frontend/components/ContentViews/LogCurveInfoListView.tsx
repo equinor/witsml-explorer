@@ -4,23 +4,24 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
+import { RouterLogType } from "routes/routerConstants";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import {
@@ -33,8 +34,8 @@ export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  } = useOperationState();
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
@@ -60,10 +61,19 @@ export default function LogCurveInfoListView() {
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
-  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
+  const [prioritizedLocalCurves, setPrioritizedLocalCurves] = useState<
+    string[]
+  >([]);
+  const [prioritizedUniversalCurves, setPrioritizedUniversalCurves] = useState<
+    string[]
+  >([]);
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
+  const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+  const allPrioritizedCurves = [
+    ...prioritizedLocalCurves,
+    ...prioritizedUniversalCurves
+  ].filter((value, index, self) => self.indexOf(value) === index);
 
   useExpandSidebarNodes(
     wellUid,
@@ -75,16 +85,24 @@ export default function LogCurveInfoListView() {
 
   useEffect(() => {
     if (logObject) {
-      const getLogCurvePriority = async () => {
+      const getLogCurveLocalPriority = async () => {
         const prioritizedCurves =
           await LogCurvePriorityService.getPrioritizedCurves(
+            false,
             wellUid,
             wellboreUid
           );
-        setPrioritizedCurves(prioritizedCurves);
+        setPrioritizedLocalCurves(prioritizedCurves);
       };
 
-      getLogCurvePriority().catch(truncateAbortHandler);
+      const getLogCurveUniversalPriority = async () => {
+        const prioritizedCurves =
+          await LogCurvePriorityService.getPrioritizedCurves(true);
+        setPrioritizedUniversalCurves(prioritizedCurves);
+      };
+
+      getLogCurveLocalPriority().catch(truncateAbortHandler);
+      getLogCurveUniversalPriority().catch(truncateAbortHandler);
       setShowOnlyPrioritizedCurves(false);
     }
   }, [logObject]);
@@ -100,8 +118,10 @@ export default function LogCurveInfoListView() {
       selectedLog: logObject,
       selectedServer: connectedServer,
       servers,
-      prioritizedCurves,
-      setPrioritizedCurves
+      prioritizedLocalCurves,
+      setPrioritizedLocalCurves,
+      prioritizedUniversalCurves,
+      setPrioritizedUniversalCurves
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -112,10 +132,6 @@ export default function LogCurveInfoListView() {
       }
     });
   };
-
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Log.`} />;
-  }
 
   if (isFetchedLog && !logObject) {
     return <ItemNotFound itemType={ObjectType.Log} />;
@@ -133,7 +149,9 @@ export default function LogCurveInfoListView() {
     <CommonPanelContainer key="showPriority">
       <Switch
         checked={showOnlyPrioritizedCurves}
-        disabled={prioritizedCurves.length === 0 && !showOnlyPrioritizedCurves}
+        disabled={
+          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+        }
         onChange={() =>
           setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
         }
@@ -144,36 +162,40 @@ export default function LogCurveInfoListView() {
   ];
 
   return (
-    logObjects && (
-      <ContentTable
-        viewId={
-          isDepthIndex
-            ? "depthLogCurveInfoListView"
-            : "timeLogCurveInfoListView"
-        }
-        panelElements={panelElements}
-        columns={getColumns(
-          isDepthIndex,
-          showOnlyPrioritizedCurves,
-          prioritizedCurves,
-          logObjects,
-          hideEmptyMnemonics,
-          true
-        )}
-        data={getTableData(
-          [logObject],
-          logCurveInfoList,
-          logObjects,
-          timeZone,
-          dateTimeFormat,
-          curveThreshold,
-          objectUid
-        )}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
-      />
-    )
+    <>
+      {isFetching && <ProgressSpinnerOverlay message={`Fetching Log.`} />}
+      {logObject && (
+        <ContentTable
+          viewId={
+            isDepthIndex
+              ? "depthLogCurveInfoListView"
+              : "timeLogCurveInfoListView"
+          }
+          panelElements={panelElements}
+          columns={getColumns(
+            isDepthIndex,
+            showOnlyPrioritizedCurves,
+            allPrioritizedCurves,
+            logObjects,
+            hideEmptyMnemonics,
+            true
+          )}
+          data={getTableData(
+            [logObject],
+            logCurveInfoList,
+            logObjects,
+            timeZone,
+            dateTimeFormat,
+            curveThreshold,
+            isDepthIndex,
+            objectUid
+          )}
+          onContextMenu={onContextMenu}
+          checkableRows
+          showRefresh
+          downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
+        />
+      )}
+    </>
   );
 }

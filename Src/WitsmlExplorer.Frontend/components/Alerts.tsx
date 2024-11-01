@@ -2,9 +2,9 @@ import { Icon } from "@equinor/eds-core-react";
 import { Alert, AlertTitle, Collapse } from "@mui/material";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
+import { useOperationState } from "hooks/useOperationState";
 import { capitalize } from "lodash";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
@@ -21,7 +21,7 @@ const Alerts = (): React.ReactElement => {
   const { connectedServer } = useConnectedServer();
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   useEffect(() => {
     const unsubscribeOnConnectionStateChanged =
@@ -40,10 +40,18 @@ const Alerts = (): React.ReactElement => {
     const unsubscribeOnJobFinished =
       NotificationService.Instance.alertDispatcherAsEvent.subscribe(
         (notification) => {
+          const connectedServerUrl = connectedServer?.url?.toLowerCase();
+          const notificationServerUrl = notification.serverUrl
+            ?.toString()
+            .toLowerCase();
+          const notificationSourceServerUrl = notification.sourceServerUrl
+            ?.toString()
+            .toLowerCase();
           const shouldNotify =
-            notification.serverUrl == null ||
-            notification.serverUrl.toString().toLowerCase() ===
-              connectedServer?.url?.toLowerCase();
+            connectedServerUrl &&
+            (notificationServerUrl === null ||
+              connectedServerUrl === notificationServerUrl ||
+              connectedServerUrl === notificationSourceServerUrl);
           if (!shouldNotify) {
             return;
           }

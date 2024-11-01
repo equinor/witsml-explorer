@@ -1,12 +1,17 @@
-import { Autocomplete, TextField, Typography } from "@equinor/eds-core-react";
+import {
+  Autocomplete,
+  Progress,
+  TextField,
+  Typography
+} from "@equinor/eds-core-react";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { validText } from "components/Modals/ModalParts";
 import { Button } from "components/StyledComponents/Button";
 import { Checkbox } from "components/StyledComponents/Checkbox";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { Server } from "models/server";
-import React, { ChangeEvent, useContext, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import AuthorizationService, {
   AuthorizationStatus,
   BasicServerCredentials,
@@ -29,10 +34,11 @@ const UserCredentialsModal = (
   const {
     operationState: { colors },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSwitchingUser, setIsSwitchingUser] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const shouldFocusPasswordInput = !!username;
   const [keepLoggedIn, setKeepLoggedIn] = useState<boolean>(
@@ -134,8 +140,10 @@ const UserCredentialsModal = (
                 }}
               />
               <Button
+                disabled={isSwitchingUser}
                 onClick={async () => {
                   try {
+                    setIsSwitchingUser(true);
                     const connectionInfo: ConnectionInformation = {
                       serverUrl: server.url,
                       userName: selectedUsername
@@ -148,10 +156,12 @@ const UserCredentialsModal = (
                     setErrorMessage(
                       "Not able to authenticate to WITSML server with given credentials"
                     );
+                  } finally {
+                    setIsSwitchingUser(false);
                   }
                 }}
               >
-                Switch user
+                Switch user {isSwitchingUser && <Progress.Dots />}
               </Button>
             </Row>
           )}

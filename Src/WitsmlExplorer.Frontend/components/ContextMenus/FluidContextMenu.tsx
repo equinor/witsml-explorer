@@ -15,15 +15,15 @@ import {
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import Fluid from "models/fluid";
 import FluidsReport from "models/fluidsReport";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import React, { useContext } from "react";
+import React from "react";
 import { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 
@@ -34,7 +34,7 @@ export interface FluidContextMenuProps {
 
 const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
   const { checkedFluids, fluidsReport } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const fluidReferences = useClipboardComponentReferencesOfType(
     ComponentType.Fluid
   );

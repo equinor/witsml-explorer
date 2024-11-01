@@ -2,40 +2,45 @@ import { ApiClient } from "./apiClient";
 
 export default class LogCurvePriorityService {
   public static async getPrioritizedCurves(
-    wellUid: string,
-    wellboreUid: string,
+    isUniversal: boolean,
+    wellUid?: string,
+    wellboreUid?: string,
     abortSignal?: AbortSignal
   ): Promise<string[]> {
-    const response = await ApiClient.get(
-      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
-        wellboreUid
-      )}/logCurvePriority`,
-      abortSignal
-    );
+    const path = isUniversal
+      ? `/api/universal/logCurvePriority`
+      : `/api/wells/${encodeURIComponent(
+          wellUid
+        )}/wellbores/${encodeURIComponent(wellboreUid)}/logCurvePriority`;
+    const response = await ApiClient.get(path, abortSignal);
     if (response.ok) {
       return response.json();
     } else {
-      return [];
+      return null;
     }
   }
 
   public static async setPrioritizedCurves(
-    wellUid: string,
-    wellboreUid: string,
     prioritizedCurves: string[],
+    isUniversal: boolean,
+    wellUid?: string,
+    wellboreUid?: string,
     abortSignal?: AbortSignal
   ): Promise<string[]> {
+    const path = isUniversal
+      ? `/api/universal/logCurvePriority`
+      : `/api/wells/${encodeURIComponent(
+          wellUid
+        )}/wellbores/${encodeURIComponent(wellboreUid)}/logCurvePriority`;
     const response = await ApiClient.post(
-      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
-        wellboreUid
-      )}/logCurvePriority`,
+      path,
       JSON.stringify(prioritizedCurves),
       abortSignal
     );
     if (response.ok) {
       return response.json();
     } else {
-      return [];
+      return null;
     }
   }
 }

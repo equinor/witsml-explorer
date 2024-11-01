@@ -33,7 +33,7 @@ public class CreateTrajectoryWorkerTests
     private const string WellboreUid = "wellboreUid";
 
     private readonly Mock<IWitsmlClient> _witsmlClient;
-    private readonly CreateTrajectoryWorker _worker;
+    private readonly CreateObjectOnWellboreWorker _worker;
 
     public CreateTrajectoryWorkerTests()
     {
@@ -42,31 +42,35 @@ public class CreateTrajectoryWorkerTests
         witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_witsmlClient.Object);
         ILoggerFactory loggerFactory = new LoggerFactory();
         loggerFactory.AddSerilog(Log.Logger);
-        ILogger<CreateTrajectoryJob> logger = loggerFactory.CreateLogger<CreateTrajectoryJob>();
-        _worker = new CreateTrajectoryWorker(logger, witsmlClientProvider.Object);
+        ILogger<CreateObjectOnWellboreJob> logger = loggerFactory.CreateLogger<CreateObjectOnWellboreJob>();
+        _worker = new CreateObjectOnWellboreWorker(logger, witsmlClientProvider.Object);
     }
 
     [Fact]
     public async Task CreateTrajectory_Execute_MissingUid_InvalidOperationException()
     {
-        var job = CreateJobTemplate(uid: null);
-        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Uid cannot be empty", exception.Message);
-        job = CreateJobTemplate(uid: "");
-        exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Uid cannot be empty", exception.Message);
+        CreateObjectOnWellboreJob job = CreateJobTemplate(uid: null);
+        var (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Uid cannot be null", workerResult.Message);
+        job = CreateJobTemplate(uid: string.Empty);
+        (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Uid cannot be empty", workerResult.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlTrajectories>()), Times.Never);
     }
 
     [Fact]
     public async Task CreateTrajectory_Execute_MissingName_InvalidOperationException()
     {
-        var job = CreateJobTemplate(name: null);
-        InvalidOperationException exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Name cannot be empty", exception.Message);
+        CreateObjectOnWellboreJob job = CreateJobTemplate(name: null);
+        var (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Name cannot be null", workerResult.Message);
         job = CreateJobTemplate(name: string.Empty);
-        exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _worker.Execute(job));
-        Assert.Equal("Name cannot be empty", exception.Message);
+        (workerResult, _) = await _worker.Execute(job);
+        Assert.False(workerResult.IsSuccess);
+        Assert.Equal("Name cannot be empty", workerResult.Message);
         _witsmlClient.Verify(client => client.AddToStoreAsync(It.IsAny<WitsmlTrajectories>()), Times.Never);
     }
 
@@ -74,12 +78,12 @@ public class CreateTrajectoryWorkerTests
     [Fact]
     public async Task CreateTrajectory_Execute_ValidResults()
     {
-        CreateTrajectoryJob job = CreateJobTemplate();
+        CreateObjectOnWellboreJob job = CreateJobTemplate();
         List<WitsmlTrajectories> createdTrajectories = new();
 
         _witsmlClient.Setup(client =>
-                client.AddToStoreAsync(It.IsAny<WitsmlTrajectories>()))
-            .Callback<WitsmlTrajectories>(trajectory => createdTrajectories.Add(trajectory))
+                client.AddToStoreAsync(It.IsAny<IWitsmlQueryType>()))
+            .Callback<IWitsmlQueryType>(trajectory => createdTrajectories.Add(trajectory as WitsmlTrajectories))
             .ReturnsAsync(new QueryResult(true));
 
         await _worker.Execute(job);
@@ -94,18 +98,19 @@ public class CreateTrajectoryWorkerTests
         Assert.Equal(WellboreUid, createdObject.UidWellbore);
     }
 
-    private static CreateTrajectoryJob CreateJobTemplate(string uid = Uid, string name = Name, string wellUid = WellUid, string wellName = WellName, string wellboreUid = WellboreUid)
+    private static CreateObjectOnWellboreJob CreateJobTemplate(string uid = Uid, string name = Name, string wellUid = WellUid, string wellName = WellName, string wellboreUid = WellboreUid)
     {
-        return new CreateTrajectoryJob
+        return new CreateObjectOnWellboreJob
         {
-            Trajectory = new Trajectory()
+            Object = new Trajectory()
             {
                 Uid = uid,
                 Name = name,
                 WellUid = wellUid,
                 WellName = wellName,
                 WellboreUid = wellboreUid
-            }
+            },
+            ObjectType = EntityType.Trajectory
         };
     }
 }

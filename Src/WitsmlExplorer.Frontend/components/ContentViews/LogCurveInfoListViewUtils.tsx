@@ -115,9 +115,11 @@ export const getTableData = (
   timeZone: TimeZone,
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
+  isDepthIndex: boolean,
   logUid: string = null
 ) => {
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
+  if (!logCurveInfoList) return [];
+
   const isVisibleFunction = (isActive: boolean): (() => boolean) => {
     return () => {
       if (isDepthIndex) return true;
@@ -150,9 +152,7 @@ export const getTableData = (
           logUid === null
             ? `${logCurveInfo.uid}`
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
-        logName: logObject.runNumber
-          ? `${logObject.name} (${logObject.runNumber})`
-          : logObject.name + getNameOccurrenceSuffix(allLogs, logObject),
+        logName: logObject.name + getNameOccurrenceSuffix(allLogs, logObject),
         logUid: logObject.uid,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex

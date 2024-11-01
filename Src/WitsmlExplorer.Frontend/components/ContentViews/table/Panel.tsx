@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -11,12 +10,14 @@ import {
   refreshWellsQuery
 } from "hooks/query/queryRefreshHelpers";
 import useExport, { encloseCell } from "hooks/useExport";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
+import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -30,6 +31,7 @@ export interface PanelProps {
   expandableRows?: boolean;
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
+  disableFilters?: boolean;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -46,11 +48,12 @@ const Panel = (props: PanelProps) => {
     columns,
     expandableRows = false,
     downloadToCsvFileName = null,
-    stickyLeftColumns
+    stickyLeftColumns,
+    disableFilters = false
   } = props;
   const {
     operationState: { theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
   const queryClient = useQueryClient();
@@ -122,7 +125,7 @@ const Panel = (props: PanelProps) => {
 
   return (
     <PanelContainer>
-      <EdsProvider density={theme}>
+      <EdsProvider density={normaliseThemeForEds(theme)}>
         <Typography>{selectedItemsText}</Typography>
         <Typography>{selectedColumnsStatus}</Typography>
         <ColumnOptionsMenu
@@ -134,6 +137,7 @@ const Panel = (props: PanelProps) => {
           stickyLeftColumns={stickyLeftColumns}
           selectedColumnsStatus={selectedColumnsStatus}
           firstToggleableIndex={firstToggleableIndex}
+          disableFilters={disableFilters}
         />
         {showRefresh && (
           <Button

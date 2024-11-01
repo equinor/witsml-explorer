@@ -15,19 +15,20 @@ import ModalDialog, {
 } from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
+import { useOperationState } from "hooks/useOperationState";
 import MissingDataJob, { MissingDataCheck } from "models/jobs/missingDataJob";
 import WellReference from "models/jobs/wellReference";
 import WellboreReference from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import { STORAGE_MISSING_DATA_AGENT_CHECKS_KEY } from "tools/localStorageHelpers";
 import { v4 as uuid } from "uuid";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 export interface MissingDataAgentModalProps {
   wellReferences: WellReference[];
@@ -47,7 +48,7 @@ const MissingDataAgentModal = (
   const {
     dispatchOperation,
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [missingDataChecks, setMissingDataChecks] = useLocalStorageState<
     MissingDataCheck[]
   >(STORAGE_MISSING_DATA_AGENT_CHECKS_KEY, {
@@ -67,7 +68,8 @@ const MissingDataAgentModal = (
         ? checksObj
         : [];
       return checks.map((check) => ({ ...check, id: uuid() }));
-    } catch (error) {
+    } catch (e) {
+      console.error(e);
       return [];
     }
   };
@@ -236,10 +238,12 @@ const MissingDataAgentModal = (
       confirmText={`OK`}
       showCancelButton={true}
       width={ModalWidth.MEDIUM}
+      height="800px"
+      minHeight="650px"
       isLoading={false}
       content={
         <ModalContentLayout>
-          <Accordion style={{ paddingBottom: "30px" }}>
+          <StyledAccordion style={{ paddingBottom: "30px" }}>
             <Accordion.Item>
               <StyledAccordionHeader colors={colors}>
                 Missing Data Agent
@@ -257,10 +261,11 @@ const MissingDataAgentModal = (
                 </Typography>
               </Accordion.Panel>
             </Accordion.Item>
-          </Accordion>
+          </StyledAccordion>
           {missingDataChecks.map((missingDataCheck) => (
             <CheckLayout key={missingDataCheck.id}>
               <Autocomplete
+                dropdownHeight={300}
                 id={`object${missingDataCheck.id}`}
                 label="Select object"
                 options={missingDataObjectOptions}
@@ -271,6 +276,7 @@ const MissingDataAgentModal = (
                 }
               />
               <Autocomplete
+                dropdownHeight={300}
                 id={`properties${missingDataCheck.id}`}
                 disabled={
                   !missingDataObjectOptions.includes(

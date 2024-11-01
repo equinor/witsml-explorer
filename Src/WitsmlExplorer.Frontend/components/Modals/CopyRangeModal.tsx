@@ -7,15 +7,15 @@ import ModalDialog from "components/Modals/ModalDialog";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import {
   CopyRangeClipboard,
   createComponentReferences
 } from "models/jobs/componentReferences";
 import LogObject, { indexToNumber } from "models/logObject";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 
 export interface CopyRangeModalProps {
   logObject: LogObject;
@@ -26,7 +26,7 @@ export interface CopyRangeModalProps {
 
 const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
   const { connectedServer } = useConnectedServer();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [startIndex, setStartIndex] = useState<string | number>();
   const [endIndex, setEndIndex] = useState<string | number>();
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>(true);

@@ -16,15 +16,18 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { toWellboreReference } from "models/jobs/wellboreReference";
+import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 
@@ -37,12 +40,29 @@ const ObjectsSidebarContextMenu = (
   props: ObjectsSidebarContextMenuProps
 ): React.ReactElement => {
   const { wellbore, objectType } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
   const objectReferences = useClipboardReferencesOfType(objectType);
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
+
+  const onClickNewObject = () => {
+    const newObject: ObjectOnWellbore = {
+      uid: uuid(),
+      name: "",
+      wellUid: wellbore.wellUid,
+      wellName: wellbore.wellName,
+      wellboreUid: wellbore.uid,
+      wellboreName: wellbore.name
+    };
+    openObjectOnWellboreProperties(
+      objectType,
+      newObject,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
+  };
 
   return (
     <ContextMenu
@@ -67,6 +87,10 @@ const ObjectsSidebarContextMenu = (
           <Typography color={"primary"}>{`Refresh ${pluralize(
             objectType
           )}`}</Typography>
+        </MenuItem>,
+        <MenuItem key={"newObject"} onClick={onClickNewObject}>
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>New {objectType}</Typography>
         </MenuItem>,
         <MenuItem
           key={"paste"}

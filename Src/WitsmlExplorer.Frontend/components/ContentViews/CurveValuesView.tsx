@@ -27,10 +27,9 @@ import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DispatchOperation, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -38,21 +37,17 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import useExport from "hooks/useExport";
 import { useGetMnemonics } from "hooks/useGetMnemonics";
+import { useOperationState } from "hooks/useOperationState";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
-import {
-  DeleteLogCurveValuesJob,
-  IndexRange
-} from "models/jobs/deleteLogCurveValuesJob";
-import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
+import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
+import DownloadLogDataJob from "models/jobs/downloadLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
-import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import React, {
   CSSProperties,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -70,6 +65,7 @@ import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { formatIndexValue } from "tools/IndexHelpers";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import {
   CommonPanelContainer,
   ContentContainer
@@ -86,7 +82,7 @@ interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 enum DownloadOptions {
   All = "All",
-  IntervalOfData = "IntervalOfData",
+  SelectedRange = "SelectedRange",
   SelectedIndexValues = "SelectedIndexValues"
 }
 
@@ -94,7 +90,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat, colors, theme },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [searchParams, setSearchParams] = useSearchParams();
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
@@ -130,7 +126,7 @@ export const CurveValuesView = (): React.ReactElement => {
   );
   const { exportData, exportOptions } = useExport();
   const justFinishedStreaming = useRef(false);
-  let downloadOptions: DownloadOptions = DownloadOptions.IntervalOfData;
+  let downloadOptions: DownloadOptions = DownloadOptions.SelectedRange;
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -218,59 +214,19 @@ export const CurveValuesView = (): React.ReactElement => {
     });
   };
 
-  const getDeleteLogCurveValuesJob = useCallback(
-    (
-      mnemonics: string[],
-      checkedContentItems: CurveValueRow[],
-      selectedLog: LogObject,
-      tableData: CurveValueRow[]
-    ) => {
-      const indexRanges = getIndexRanges(
-        checkedContentItems,
-        tableData,
-        selectedLog
-      );
-
-      const deleteLogCurveValuesJob: DeleteLogCurveValuesJob = {
-        logReference: toObjectReference(selectedLog),
-        mnemonics: mnemonics,
-        indexRanges: indexRanges
-      };
-      return deleteLogCurveValuesJob;
-    },
-    [getIndexRanges, toObjectReference]
-  );
-
   const executeExport = () => {
     switch (downloadOptions) {
       case DownloadOptions.All:
         exportAll();
         break;
-      case DownloadOptions.IntervalOfData:
-        exportSelectedIndexRange();
+      case DownloadOptions.SelectedRange:
+        exportSelectedRange();
         break;
       case DownloadOptions.SelectedIndexValues:
         exportSelectedDataPoints();
     }
-    downloadOptions = DownloadOptions.IntervalOfData;
+    downloadOptions = DownloadOptions.SelectedRange;
   };
-
-  const exportSelectedIndexRange = useCallback(() => {
-    const exportColumns = columns
-      .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
-      .join(exportOptions.separator);
-    const data = orderBy(tableData, getComparatorByColumn(columns[0]), [
-      Order.Ascending,
-      Order.Ascending
-    ]) //Sorted because order is important when importing data
-      .map((row) =>
-        columns
-          .map((col) => row[col.columnOf.mnemonic] as string)
-          .join(exportOptions.separator)
-      )
-      .join(exportOptions.newLineCharacter);
-    exportData(log.name, exportColumns, data);
-  }, [columns, tableData]);
 
   const exportSelectedDataPoints = useCallback(() => {
     const exportColumns = columns
@@ -298,13 +254,12 @@ export const CurveValuesView = (): React.ReactElement => {
       const originalTableData = tableData.filter((data) =>
         checkedContentItems.map((c) => c.id).includes(data.id)
       );
-      const deleteLogCurveValuesJob = getDeleteLogCurveValuesJob(
-        mnemonics,
-        originalTableData,
+      const indexRanges = getIndexRanges(originalTableData, tableData, log);
+      const contextMenuProps = {
         log,
-        tableData
-      );
-      const contextMenuProps = { deleteLogCurveValuesJob, dispatchOperation };
+        mnemonics,
+        indexRanges
+      };
       const position = getContextMenuPosition(event);
       dispatchOperation({
         type: OperationType.DisplayContextMenu,
@@ -317,7 +272,7 @@ export const CurveValuesView = (): React.ReactElement => {
     [
       mnemonics,
       log,
-      getDeleteLogCurveValuesJob,
+      getIndexRanges,
       dispatchOperation,
       getContextMenuPosition,
       tableData
@@ -330,7 +285,7 @@ export const CurveValuesView = (): React.ReactElement => {
         columnOf: curveSpecification,
         property: curveSpecification.mnemonic,
         label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
-        type: getColumnType(curveSpecification)
+        type: getColumnType(curveSpecification, log)
       };
     });
     const prevMnemonics = columns.map((column) => column.property);
@@ -369,11 +324,10 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [startIndex, endIndex, mnemonics, log]);
 
   const refreshData = () => {
-    setTableData([]);
     setIsLoading(true);
     setAutoRefresh(false);
 
-    if (log && !isFetching && mnemonics) {
+    if (log && !isFetchingLog && mnemonics) {
       getLogData(startIndex, endIndex)
         .catch(truncateAbortHandler)
         .then(() => setIsLoading(false));
@@ -452,18 +406,35 @@ export const CurveValuesView = (): React.ReactElement => {
     }
   };
 
-  const exportAll = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
+  const exportSelectedRange = async () => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
-    const downloadAllLogDataJob: DownloadAllLogDataJob = {
+    const downloadLogDataJob: DownloadLogDataJob = {
+      logReference,
+      mnemonics,
+      startIndexIsInclusive,
+      startIndex,
+      endIndex
+    };
+    callExportJob(downloadLogDataJob);
+  };
+
+  const exportAll = async () => {
+    const logReference: LogObject = log;
+    const startIndexIsInclusive = !autoRefresh;
+    const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
       startIndexIsInclusive
     };
+    callExportJob(downloadLogDataJob);
+  };
+
+  const callExportJob = async (downloadLogDataJob: DownloadLogDataJob) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     const jobId = await JobService.orderJob(
-      JobType.DownloadAllLogData,
-      downloadAllLogDataJob
+      JobType.DownloadLogData,
+      downloadLogDataJob
     );
     if (jobId) {
       const reportModalProps = { jobId };
@@ -477,7 +448,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const displayConfirmation = (dispatchOperation: DispatchOperation) => {
     const confirmation = (
       <ConfirmModal
-        heading={"Download"}
+        heading={`Download log data for ${mnemonics.length} mnemonics`}
         content={
           <>
             <span>
@@ -487,12 +458,12 @@ export const CurveValuesView = (): React.ReactElement => {
             <label style={alignLayout}>
               <Radio
                 name="group"
-                value={DownloadOptions.IntervalOfData}
-                id={DownloadOptions.IntervalOfData}
+                value={DownloadOptions.SelectedRange}
+                id={DownloadOptions.SelectedRange}
                 onChange={onChangeDownloadOption}
                 defaultChecked
               />
-              <Typography>Download shown interval</Typography>
+              <Typography>Download selected range</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
@@ -502,7 +473,7 @@ export const CurveValuesView = (): React.ReactElement => {
                 onChange={onChangeDownloadOption}
                 disabled={!selectedRows.length}
               />
-              <Typography>Download selected</Typography>
+              <Typography>Download selected rows</Typography>
             </label>
             <label style={alignLayout}>
               <Radio
@@ -585,19 +556,8 @@ export const CurveValuesView = (): React.ReactElement => {
         Show on server
       </Button>
     ],
-    [
-      isLoading,
-      exportSelectedDataPoints,
-      exportSelectedIndexRange,
-      selectedRows,
-      colors.mode,
-      theme
-    ]
+    [isLoading, exportSelectedDataPoints, selectedRows, colors.mode, theme]
   );
-
-  if (isFetching) {
-    return <ProgressSpinner message="Fetching Log." />;
-  }
 
   if (isFetchedLog && !log) {
     return <ItemNotFound itemType={ObjectType.Log} />;
@@ -605,6 +565,9 @@ export const CurveValuesView = (): React.ReactElement => {
 
   return (
     <>
+      {(isFetching || isLoading) && (
+        <ProgressSpinnerOverlay message="Fetching data" />
+      )}
       <ContentContainer>
         <CommonPanelContainer>
           <EditSelectedLogCurveInfo
@@ -614,7 +577,7 @@ export const CurveValuesView = (): React.ReactElement => {
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
             onClickRefresh={() => refreshData()}
           />
-          <EdsProvider density={theme}>
+          <EdsProvider density={normaliseThemeForEds(theme)}>
             <Switch
               checked={showPlot}
               onChange={() => setShowPlot(!showPlot)}
@@ -644,7 +607,6 @@ export const CurveValuesView = (): React.ReactElement => {
             </>
           )}
         </CommonPanelContainer>
-        {isLoading && <ProgressSpinner message="Fetching data" />}
         {!isLoading && !tableData.length && (
           <Message>
             <Typography>No data</Typography>
@@ -686,12 +648,16 @@ const getIndexRanges = (
   tableData: CurveValueRow[],
   selectedLog: LogObject
 ): IndexRange[] => {
+  const isDecreasing =
+    selectedLog.direction === WITSML_LOG_ORDERTYPE_DECREASING;
   const sortedItems = checkedContentItems.sort((a, b) => {
     const idA =
       selectedLog.indexType === "datetime" ? new Date(a.id) : Number(a.id);
     const idB =
       selectedLog.indexType === "datetime" ? new Date(b.id) : Number(b.id);
-    return idA < idB ? -1 : idA > idB ? 1 : 0;
+    if (idA < idB) return isDecreasing ? 1 : -1;
+    if (idA > idB) return isDecreasing ? -1 : 1;
+    return 0;
   });
   const indexCurve = selectedLog.indexCurve;
   const idList = tableData.map((row) => String(row[indexCurve]));
@@ -742,7 +708,17 @@ const getComparatorByColumn = (
   return [comparator, column.property];
 };
 
-const getColumnType = (curveSpecification: CurveSpecification) => {
+const getColumnType = (
+  curveSpecification: CurveSpecification,
+  log: LogObject
+) => {
+  const isTimeLog = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+  if (
+    isTimeLog &&
+    curveSpecification.mnemonic.toLowerCase() === log.indexCurve.toLowerCase()
+  ) {
+    return ContentType.DateTime;
+  }
   const isTimeMnemonic = (mnemonic: string) =>
     ["time", "datetime", "date time"].indexOf(mnemonic.toLowerCase()) >= 0;
   if (isTimeMnemonic(curveSpecification.mnemonic)) {

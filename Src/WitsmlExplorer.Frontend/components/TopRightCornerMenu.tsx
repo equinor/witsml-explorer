@@ -6,10 +6,9 @@ import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
 import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
-import { useContext } from "react";
+import { useOperationState } from "hooks/useOperationState";
 import { useNavigate } from "react-router-dom";
 import { getJobsViewPath, getQueryViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
@@ -17,7 +16,7 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 
 export default function TopRightCornerMenu() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { width: documentWidth } = useDocumentDimensions();
   const showLabels = documentWidth > 1180;
   const { connectedServer } = useConnectedServer();

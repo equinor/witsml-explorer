@@ -8,18 +8,18 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
 } from "components/ContextMenus/WbGeometrySectionContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import WbGeometrySection from "models/wbGeometrySection";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 
@@ -28,7 +28,7 @@ interface WbGeometrySectionRow extends ContentTableRow {
 }
 
 export default function WbGeometryView() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { object: wbGeometry, isFetched: isFetchedWbGeometry } = useGetObject(
@@ -120,23 +120,22 @@ export default function WbGeometryView() {
     };
   });
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching WbGeometry.`} />;
-  }
-
   if (isFetchedWbGeometry && !wbGeometry) {
     return <ItemNotFound itemType={ObjectType.WbGeometry} />;
   }
 
   return (
-    <ContentTable
-      viewId="wbGeometryView"
-      columns={columns}
-      data={wbGeometrySectionRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`WbGeometry_${wbGeometry?.name}`}
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Trajectory." />}
+      <ContentTable
+        viewId="wbGeometryView"
+        columns={columns}
+        data={wbGeometrySectionRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName={`WbGeometry_${wbGeometry?.name}`}
+      />
+    </>
   );
 }

@@ -23,6 +23,7 @@ let isUpdateAvailableChecked = false;
 let apiProcess: any;
 
 const isDevelopment = process.env.NODE_ENV === "development";
+const isTest = process.env.ELECTRON_IS_TEST === "true";
 
 interface AppConfig {
   apiPort: string;
@@ -50,6 +51,7 @@ function readOrCreateAppConfig() {
     // Merge the configs to ensure that new properties are added to the existing config.
     config = { ...defaultConfig, ...existingConfig };
   } catch (err) {
+    console.error(err);
     config = defaultConfig;
   }
 
@@ -295,7 +297,7 @@ if (!gotTheLock) {
     ipcMain.handle("getAppVersion", () => app.getVersion());
 
     ipcMain.handle("checkForUpdates", () => {
-      if (!isUpdateAvailableChecked) {
+      if (!isUpdateAvailableChecked && !isTest) {
         isUpdateAvailableChecked = true;
         const updateCheckResult = autoUpdater.checkForUpdates();
         return updateCheckResult;

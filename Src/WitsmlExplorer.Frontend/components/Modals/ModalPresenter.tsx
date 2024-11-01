@@ -1,8 +1,8 @@
-import { Fragment, ReactElement, useContext } from "react";
-import OperationContext from "contexts/operationContext";
+import { useOperationState } from "hooks/useOperationState";
+import { Fragment, ReactElement } from "react";
 
 const ModalPresenter = (): ReactElement => {
-  const { operationState } = useContext(OperationContext);
+  const { operationState } = useOperationState();
   const { modals } = operationState;
   return (
     <>

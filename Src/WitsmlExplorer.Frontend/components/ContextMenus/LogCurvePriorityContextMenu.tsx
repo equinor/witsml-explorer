@@ -1,10 +1,11 @@
 import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
-import React, { useContext } from "react";
-import OperationContext from "../../contexts/operationContext";
+import { useOperationState } from "hooks/useOperationState";
+import React from "react";
 import { MousePosition } from "../../contexts/operationStateReducer";
-import { StyledMenu, preventContextMenuPropagation } from "./ContextMenu";
+import { preventContextMenuPropagation } from "./ContextMenu";
 import { StyledIcon } from "./ContextMenuUtils";
+import StyledMenu from "../StyledComponents/StyledMenu";
 
 export interface LogCurvePriorityContextMenuProps {
   onDelete: () => void;
@@ -17,8 +18,7 @@ export const LogCurvePriorityContextMenu = (
   props: LogCurvePriorityContextMenuProps
 ): React.ReactElement => {
   const { onDelete, onClose, position, open } = props;
-  const { operationState } = useContext(OperationContext);
-  const { colors } = operationState;
+  const { colors } = useOperationState().operationState;
 
   const onClickDelete = async () => {
     onDelete();
@@ -41,7 +41,6 @@ export const LogCurvePriorityContextMenu = (
           : undefined
       }
       onContextMenu={preventContextMenuPropagation}
-      colors={colors}
     >
       <MenuItem key={"delete"} onClick={onClickDelete}>
         <StyledIcon

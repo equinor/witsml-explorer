@@ -1,5 +1,8 @@
 export const WITSML_INDEX_TYPE_MD = "measured depth";
 export const WITSML_INDEX_TYPE_DATE_TIME = "date time";
+export type WITSML_INDEX_TYPE =
+  | typeof WITSML_INDEX_TYPE_MD
+  | typeof WITSML_INDEX_TYPE_DATE_TIME;
 export const WITSML_LOG_ORDERTYPE_DECREASING = "decreasing";
 
 export const DateFormat = {

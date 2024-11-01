@@ -6,6 +6,7 @@ const naturalDateTimeFormat = "dd.MM.yyyy HH:mm:ss.SSS";
 const rawDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
 let dateTimeFormat = rawDateTimeFormat;
 export const dateTimeFormatNoOffset = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+export const dateTimeFormatTextField = "yyyy-MM-dd'T'HH:mm:ss";
 
 // Minus character U+2212 is preferred by ISO 8601 over hyphen minus '-' so we check both
 // date-fns-tz behaves weirdly with minus so we replace it
@@ -22,6 +23,8 @@ function formatDateString(
     }
     if (dateTimeFormatString == DateTimeFormat.Natural) {
       dateTimeFormat = naturalDateTimeFormat;
+    } else if (dateTimeFormatString == DateTimeFormat.RawNoOffset) {
+      dateTimeFormat = dateTimeFormatNoOffset;
     } else if (dateTimeFormatString == DateTimeFormat.Raw) {
       dateTimeFormat = rawDateTimeFormat;
     }
@@ -37,9 +40,11 @@ function formatDateString(
     const offset = getOffsetFromTimeZone(timeZone);
     return formatInTimeZone(parsed, offset, dateTimeFormat);
   } catch (e) {
+    console.error(e);
     return "Invalid date";
   }
 }
+
 export default formatDateString;
 
 export function getOffsetFromTimeZone(timeZone: TimeZone): string {
@@ -52,7 +57,7 @@ export function getOffsetFromTimeZone(timeZone: TimeZone): string {
 }
 
 export function getOffset(dateString: string): string | null {
-  if (dateString.indexOf("Z") == dateString.length - 1) {
+  if (!dateString || dateString.indexOf("Z") == dateString.length - 1) {
     return "Z";
   }
 

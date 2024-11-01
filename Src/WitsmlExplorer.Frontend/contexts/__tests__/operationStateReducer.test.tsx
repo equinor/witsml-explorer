@@ -68,6 +68,7 @@ const getEmptyState = (): OperationState => {
     timeZone: TimeZone.Local,
     dateTimeFormat: DateTimeFormat.Raw,
     decimals: DecimalPreference.Raw,
-    colors: light
+    colors: light,
+    hotKeysEnabled: false
   };
 };
