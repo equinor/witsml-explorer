@@ -171,7 +171,8 @@ const QueryOptions: FC<QueryOptionsProps> = ({
         </Stack>
       </Stack>
 
-      {storeFunction === StoreFunction.GetFromStore && (
+      {(storeFunction === StoreFunction.GetFromStore ||
+        storeFunction === StoreFunction.DeleteFromStore) && (
         <Box height="fit-content" pt="1rem">
           <Box component="details" open>
             <StyledSummary
@@ -182,21 +183,23 @@ const QueryOptions: FC<QueryOptionsProps> = ({
               More options
             </StyledSummary>
             <Stack direction="row" alignItems="flex-end" gap="1rem" pt="1rem">
-              <StyledNativeSelect
-                label="Return elements"
-                id="return-elements"
-                onChange={onReturnElementsChange}
-                value={returnElements}
-                colors={colors}
-              >
-                {Object.values(ReturnElements).map((value) => {
-                  return (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  );
-                })}
-              </StyledNativeSelect>
+              {storeFunction === StoreFunction.GetFromStore && (
+                <StyledNativeSelect
+                  label="Return elements"
+                  id="return-elements"
+                  onChange={onReturnElementsChange}
+                  value={returnElements}
+                  colors={colors}
+                >
+                  {Object.values(ReturnElements).map((value) => {
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </StyledNativeSelect>
+              )}
               <StyledTextField
                 id="optionsIn"
                 label="Options In"
