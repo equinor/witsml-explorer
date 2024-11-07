@@ -409,6 +409,11 @@ const StyledBreadcrumbs = styled(EdsBreadcrumbs)<{ isCompact: boolean }>`
     !isCompact
       ? ""
       : css`
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          padding-top: 0;
+
           li > span {
             font-size: 0.8rem;
           }
