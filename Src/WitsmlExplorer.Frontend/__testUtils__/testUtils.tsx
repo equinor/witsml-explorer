@@ -209,8 +209,7 @@ export function getReport(overrides?: Partial<BaseReport>): BaseReport {
     summary: "testSummary",
     reportItems: [],
     warningMessage: "",
-    downloadImmediately: false,
-    reportHeader: "",
+    hasFile: false,
     ...overrides
   };
 }
