@@ -11,6 +11,7 @@ import Icon from "styles/Icons";
 import { Box } from "@mui/material";
 import QueryDataGrid from "components/ContentViews/QueryDataGrid";
 import { QueryEditorTypes } from "components/ContentViews/QueryView/components/QueryOptions/QueryOptions";
+import ResultMeta from "components/ContentViews/QueryView/components/ResultMeta";
 import QueryOptions from "./components/QueryOptions";
 
 const QueryView = (): React.ReactElement => {
@@ -103,9 +104,16 @@ const QueryView = (): React.ReactElement => {
             />
           )}
         </Box>
-        <div>
+        <Box
+          display="grid"
+          gridTemplateRows="auto 1fr"
+          gap="1rem"
+          height="100%"
+          pr="2px"
+        >
+          <ResultMeta />
           <QueryEditor value={result} readonly />
-        </div>
+        </Box>
       </div>
     </Layout>
   );
