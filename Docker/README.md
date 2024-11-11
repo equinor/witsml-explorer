@@ -10,7 +10,7 @@ See [setting up a database in Azure](../Scripts/Azure)
 
 Build dockerfiles for frontend and backend (see [build_docker_images.sh](../build_docker_images.sh), [Dockerfile-api](../Dockerfile-api) and [Dockerfile-frontend](../Dockerfile-frontend)).
 
-### **Build api and backend images**
+### **Build api and frontend images**
 ```sh
 ❯ docker build -t witsmlexplorer-api:latest -f Dockerfile-api .
 Building witsmlexplorer-api...

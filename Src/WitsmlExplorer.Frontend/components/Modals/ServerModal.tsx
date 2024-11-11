@@ -1,5 +1,4 @@
 import { Icon, Label, TextField, Tooltip } from "@equinor/eds-core-react";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import ModalDialog, {
   ControlButtonPosition,
@@ -10,20 +9,20 @@ import UserCredentialsModal, {
 } from "components/Modals/UserCredentialsModal";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import {
   DisplayModalAction,
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
+import { useOperationState } from "hooks/useOperationState";
 import { Server } from "models/server";
 import { msalEnabled } from "msal/MsalAuthProvider";
 import React, {
+  CSSProperties,
   ChangeEvent,
   Dispatch,
   SetStateAction,
-  useContext,
   useState
 } from "react";
 import AuthorizationService from "services/authorizationService";
@@ -39,7 +38,7 @@ export interface ServerModalProps {
 
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const queryClient = useQueryClient();
-  const { operationState, dispatchOperation } = useContext(OperationContext);
+  const { operationState, dispatchOperation } = useOperationState();
   const { colors } = operationState;
   const [server, setServer] = useState<Server>(props.server);
   const [connectionVerified, setConnectionVerified] = useState<boolean>(false);
@@ -154,9 +153,9 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       content={
         <>
           <ContentWrapper>
-            <Label label="Server URL" style={labelStyle} />
+            <Label label="Server URL" style={labelStyle} htmlFor="serverUrl" />
             <TextField
-              id="url"
+              id="serverUrl"
               defaultValue={server.url}
               variant={displayUrlError ? "error" : null}
               helperText={displayUrlError ? "Not a valid server url" : ""}
@@ -165,9 +164,13 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               required
               disabled={props.editDisabled}
             />
-            <Label label="Server name" style={labelStyle} />
+            <Label
+              label="Server name"
+              style={labelStyle}
+              htmlFor="serverName"
+            />
             <TextField
-              id="name"
+              id="serverName"
               defaultValue={server.name}
               variant={displayNameError ? "error" : null}
               helperText={
@@ -180,22 +183,30 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               required
               disabled={props.editDisabled}
             />
-            <Label label="Server description" style={labelStyle} />
+            <Label
+              label="Server description"
+              style={labelStyle}
+              htmlFor="description"
+            />
             <TextField
               id="description"
               defaultValue={server.description}
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setServer({ ...server, description: e.target.value })
               }
               disabled={props.editDisabled}
             />
             {msalEnabled && (
               <>
-                <Label label="Roles (space delimited)" style={labelStyle} />
+                <Label
+                  label="Roles (space delimited)"
+                  style={labelStyle}
+                  htmlFor="role"
+                />
                 <TextField
                   id="role"
                   defaultValue={server.roles?.join(" ")}
-                  onChange={(e: any) =>
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setServer({
                       ...server,
                       roles: e.target.value
@@ -206,7 +217,11 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   disabled={props.editDisabled}
                 />
                 <div style={{ display: "flex", flexDirection: "row" }}>
-                  <Label label="Credential Ids" style={labelStyle} />
+                  <Label
+                    label="Credential Ids"
+                    style={labelStyle}
+                    htmlFor="creds"
+                  />
                   <Tooltip title="If this (space delimited) field is set, the server will use the credentials with the given ids to authenticate. Otherwise, the server will use the Server URL to find the credentials.">
                     <Icon
                       name="infoCircle"
@@ -218,7 +233,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 <TextField
                   id="creds"
                   defaultValue={server.credentialIds?.join(" ") ?? ""}
-                  onChange={(e: any) =>
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setServer({
                       ...server,
                       credentialIds: e.target.value
@@ -233,6 +248,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
             <Label
               label="Number of decimals in depth log index"
               style={labelStyle}
+              htmlFor="depthLogDecimals"
             />
             <TextField
               id="depthLogDecimals"
@@ -244,7 +260,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                   : ""
               }
               type="number"
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setServer({
                   ...server,
                   depthLogDecimals: parseInt(e.target.value)

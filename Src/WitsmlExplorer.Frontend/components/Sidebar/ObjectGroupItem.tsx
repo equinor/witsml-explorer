@@ -20,16 +20,15 @@ import {
   isObjectFilterType,
   objectFilterTypeToObjects
 } from "contexts/filter";
-import OperationContext from "contexts/operationContext";
 import { OperationAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useSidebar } from "contexts/sidebarContext";
-import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useGetObjectCount } from "hooks/query/useGetObjectCount";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useObjectFilter } from "hooks/useObjectFilter";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import ObjectOnWellbore, {
   calculateObjectNodeId
@@ -37,7 +36,7 @@ import ObjectOnWellbore, {
 import { ObjectType } from "models/objectType";
 import Wellbore, { calculateObjectGroupId } from "models/wellbore";
 import { ComponentType, MouseEvent, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   getLogTypesViewPath,
   getObjectsViewPath
@@ -61,10 +60,9 @@ export default function ObjectGroupItem({
   ObjectContextMenu,
   onGroupContextMenu
 }: ObjectGroupItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { selectedFilter } = useContext(FilterContext);
-  const navigate = useNavigate();
-  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
+  const { expandedTreeNodes } = useSidebar();
   const {
     wellUid: urlWellUid,
     wellboreUid: urlWellboreUid,
@@ -100,29 +98,20 @@ export default function ObjectGroupItem({
       groupObjects && groupObjects.some((log: LogObject) => log.objectGrowing);
   }
 
-  const onSelectObjectGroup = () => {
-    navigate(
-      objectType === ObjectType.Log
-        ? getLogTypesViewPath(
-            connectedServer?.url,
-            wellUid,
-            wellboreUid,
-            objectType
-          )
-        : getObjectsViewPath(
-            connectedServer?.url,
-            wellUid,
-            wellboreUid,
-            objectType
-          )
-    );
-  };
-
-  const toggleTreeNode = () => {
-    dispatchSidebar({
-      type: SidebarActionType.ToggleTreeNode,
-      payload: { nodeId: calculateObjectGroupId(wellbore, objectType) }
-    });
+  const getNavPath = () => {
+    return objectType === ObjectType.Log
+      ? getLogTypesViewPath(
+          connectedServer?.url,
+          wellUid,
+          wellboreUid,
+          objectType
+        )
+      : getObjectsViewPath(
+          connectedServer?.url,
+          wellUid,
+          wellboreUid,
+          objectType
+        );
   };
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>) => {
@@ -149,10 +138,9 @@ export default function ObjectGroupItem({
       <TreeItem
         nodeId={calculateObjectGroupId(wellbore, objectType)}
         labelText={pluralize(objectType)}
-        onLabelClick={onSelectObjectGroup}
+        to={getNavPath()}
         onContextMenu={onContextMenu}
         isLoading={isFetching}
-        onIconClick={toggleTreeNode}
         isActive={isActive}
         selected={
           calculateObjectGroupId(wellbore, objectType) ===

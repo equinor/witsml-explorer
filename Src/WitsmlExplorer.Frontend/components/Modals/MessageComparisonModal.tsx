@@ -16,14 +16,14 @@ import ModalDialog, {
   ModalWidth
 } from "components/Modals/ModalDialog";
 import ProgressSpinner from "components/ProgressSpinner";
-import OperationContext from "contexts/operationContext";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import MessageObject from "models/messageObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ObjectService from "services/objectService";
 
 export interface MessageComparisonModalProps {
@@ -46,7 +46,7 @@ const MessageComparisonModal = (
   } = props;
   const {
     operationState: { timeZone, colors, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [targetMessage, setTargetMessage] = useState<MessageObject>(null);
   const [differenceFound, setDifferenceFound] = useState(false);
   const [data, setData] = useState(null);

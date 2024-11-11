@@ -8,10 +8,10 @@ import ModalDialog from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
 
@@ -22,7 +22,7 @@ export interface AnalyzeGapModalProps {
 
 const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
   const { logObject, mnemonics } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
   const initialTime = "00:00:00";
   const [log] = useState<LogObject>(logObject);

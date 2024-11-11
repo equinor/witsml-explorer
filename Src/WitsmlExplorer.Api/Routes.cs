@@ -32,14 +32,17 @@ namespace WitsmlExplorer.Api
             app.MapGet("/objects/{objectType}/{objectProperty}", ObjectHandler.GetObjectsWithParamByType, useOAuth2);
             app.MapGet("/objects/{objectType}/{objectProperty}/{objectPropertyValue}", ObjectHandler.GetObjectsWithParamByType, useOAuth2);
 
+            app.MapGet("/wellbores", WellboreHandler.GetWellbores, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores", WellboreHandler.GetWellbores, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}", ObjectHandler.GetObjectsIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}/{objectUid}", ObjectHandler.GetObjectIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
 
-            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedCurves, useOAuth2);
-            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedCurves, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedLocalCurves, useOAuth2);
+            app.MapGet("/universal/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedUniversalCurves, useOAuth2);
+            app.MapPost("/universal/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedUniversalCurves, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedLocalCurves, useOAuth2);
 
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);
@@ -60,6 +63,8 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.Log] + "/{logUid}", LogHandler.GetLog, useOAuth2);
             app.MapGet(routes[EntityType.Log] + "/{logUid}/" + ComponentType.Mnemonic.ToPluralLowercase(), LogHandler.GetLogCurveInfo, useOAuth2);
             app.MapPost(routes[EntityType.Log] + "/{logUid}/logdata", LogHandler.GetLogData, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/multilog/" + ComponentType.Mnemonic.ToPluralLowercase(), LogHandler.GetMultiLogCurveInfo, useOAuth2);
+            app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/multilog/logdata", LogHandler.GetMultiLogData, useOAuth2);
 
             app.MapGet(routes[EntityType.Message], MessageHandler.GetMessages, useOAuth2);
             app.MapGet(routes[EntityType.Message] + "/{messageUid}", MessageHandler.GetMessage, useOAuth2);
@@ -96,6 +101,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/jobs/alljobinfos", JobHandler.GetAllJobInfos, useOAuth2, AuthorizationPolicyRoles.ADMINORDEVELOPER);
             app.MapPost("/jobs/cancel/{jobId}", JobHandler.CancelJob, useOAuth2);
             app.MapGet("/jobs/report/{jobId}", JobHandler.GetReport, useOAuth2);
+            app.MapGet("/jobs/download/{jobId}", JobHandler.DownloadFile, useOAuth2);
 
             app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
             app.MapGet("/credentials/deauthorize", AuthorizeHandler.Deauthorize, useOAuth2);

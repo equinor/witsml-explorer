@@ -79,7 +79,11 @@ namespace WitsmlExplorer.Api.Jobs
         {
             get
             {
-                if (Report?.DownloadImmediately == true)
+                if (Report == null)
+                {
+                    return ReportType.None;
+                }
+                if (Report?.HasFile == true)
                 {
                     return ReportType.File;
                 }
@@ -99,6 +103,7 @@ namespace WitsmlExplorer.Api.Jobs
     public enum ReportType
     {
         File,
-        Report
+        Report,
+        None
     }
 }

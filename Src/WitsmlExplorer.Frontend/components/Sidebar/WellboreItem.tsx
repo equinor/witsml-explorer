@@ -1,4 +1,3 @@
-import { useTheme } from "@material-ui/core";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
@@ -25,21 +24,18 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
 import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
-import { WellIndicator } from "../StyledComponents/WellIndicator";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import { useSidebar } from "contexts/sidebarContext";
-import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import Wellbore from "models/wellbore";
-import { MouseEvent, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { MouseEvent } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
+import { WellIndicator } from "../StyledComponents/WellIndicator";
 
 interface WellboreItemProps {
   wellUid: string;
@@ -48,6 +44,13 @@ interface WellboreItemProps {
   nodeId: string;
 }
 
+type ContextEventType = MouseEvent<HTMLLIElement>;
+
+type ContextMenuActionHandler = (
+  e: ContextEventType,
+  wellbore: Wellbore
+) => void;
+
 export default function WellboreItem({
   wellUid,
   wellboreUid,
@@ -55,24 +58,22 @@ export default function WellboreItem({
   nodeId
 }: WellboreItemProps) {
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
+  const {
+    dispatchOperation,
+    operationState: { theme }
+  } = useOperationState();
+
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { connectedServer } = useConnectedServer();
-  const navigate = useNavigate();
-  const { dispatchSidebar } = useSidebar();
   const { wellbore, isFetching } = useGetWellbore(
     connectedServer,
     wellUid,
     wellboreUid
   );
 
-  const onContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: WellboreContextMenuProps = {
       servers,
@@ -88,10 +89,7 @@ export default function WellboreItem({
     });
   };
 
-  const onLogsContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onLogsContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: LogsContextMenuProps = {
       dispatchOperation,
@@ -108,10 +106,7 @@ export default function WellboreItem({
     });
   };
 
-  const onRigsContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onRigsContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: RigsContextMenuProps = {
       wellbore,
@@ -127,10 +122,7 @@ export default function WellboreItem({
     });
   };
 
-  const onTubularsContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onTubularsContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: TubularsContextMenuProps = {
       wellbore,
@@ -146,9 +138,9 @@ export default function WellboreItem({
     });
   };
 
-  const onTrajectoryContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
+  const onTrajectoryContextMenu: ContextMenuActionHandler = (
+    event,
+    wellbore
   ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: TrajectoriesContextMenuProps = {
@@ -165,29 +157,21 @@ export default function WellboreItem({
     });
   };
 
-  const onLabelClick = () => {
-    navigate(
-      getObjectGroupsViewPath(connectedServer?.url, wellUid, wellboreUid)
-    );
-  };
-
-  const onIconClick = () => {
-    dispatchSidebar({
-      type: SidebarActionType.ToggleTreeNode,
-      payload: { nodeId: nodeId }
-    });
+  const getNavPath = () => {
+    return getObjectGroupsViewPath(connectedServer?.url, wellUid, wellboreUid);
   };
 
   return (
     <WellboreLayout>
       <TreeItem
-        onContextMenu={(event) => onContextMenu(event, wellbore)}
+        onContextMenu={(event: ContextEventType) =>
+          onContextMenu(event, wellbore)
+        }
         key={nodeId}
         nodeId={nodeId}
         selected={selected}
         labelText={wellbore?.name}
-        onLabelClick={onLabelClick}
-        onIconClick={onIconClick}
+        to={getNavPath()}
         isLoading={isFetching}
       >
         <ObjectGroupItem
@@ -265,7 +249,7 @@ export default function WellboreItem({
         />
       </TreeItem>
       <WellIndicator
-        compactMode={isCompactMode}
+        themeMode={theme}
         active={wellbore?.isActive}
         colors={colors}
       />

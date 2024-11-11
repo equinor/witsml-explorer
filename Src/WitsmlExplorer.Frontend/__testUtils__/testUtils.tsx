@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import { ConnectedServerProvider } from "contexts/connectedServerContext";
@@ -43,7 +43,7 @@ import Trajectory from "models/trajectory";
 import Tubular from "models/tubular";
 import WbGeometryObject from "models/wbGeometry";
 import Well, { emptyWell } from "models/well";
-import Wellbore, { emptyWellbore } from "models/wellbore";
+import Wellbore from "models/wellbore";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -80,6 +80,7 @@ export function renderWithContexts(
         dateTimeFormat: DateTimeFormat.Raw,
         decimals: DecimalPreference.Raw,
         colors: light,
+        hotKeysEnabled: false,
         ...initialOperationState
       }
     );
@@ -169,7 +170,10 @@ export function getWell(overrides?: Partial<Well>): Well {
 
 export function getWellbore(overrides?: Partial<Wellbore>): Wellbore {
   return {
-    ...emptyWellbore(),
+    name: "wellboreName",
+    uid: "wellboreUid",
+    wellName: "wellName",
+    wellUid: "wellUid",
     ...overrides
   };
 }
@@ -205,8 +209,7 @@ export function getReport(overrides?: Partial<BaseReport>): BaseReport {
     summary: "testSummary",
     reportItems: [],
     warningMessage: "",
-    downloadImmediately: false,
-    reportHeader: "",
+    hasFile: false,
     ...overrides
   };
 }

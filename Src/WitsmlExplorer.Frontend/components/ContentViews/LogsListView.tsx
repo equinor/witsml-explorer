@@ -14,24 +14,27 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import { MouseEvent, useContext, useState } from "react";
+import { MouseEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
+import { getLogObjectViewPath } from "routes/utils/pathBuilder";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -41,7 +44,7 @@ export default function LogsListView() {
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [showGraph, setShowGraph] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const navigate = useNavigate();
@@ -85,10 +88,12 @@ export default function LogsListView() {
   };
 
   const getTableData = (): LogObjectRow[] => {
-    return logs.map((log) => {
+    const result = logs.map((log) => {
       return {
         ...log,
         id: log.uid,
+
+        name: log.name + getNameOccurrenceSuffix(logs, log),
         startIndex: isTimeIndexed
           ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
           : log.startIndex,
@@ -108,6 +113,7 @@ export default function LogsListView() {
         logObject: log
       };
     });
+    return result.sort((a, b) => a.name.localeCompare(b.name));
   };
 
   const columns: ContentTableColumn[] = [
@@ -144,50 +150,60 @@ export default function LogsListView() {
   ];
 
   const onSelect = (log: LogObjectRow) => {
-    navigate(encodeURIComponent(log.uid));
+    navigate(
+      getLogObjectViewPath(
+        connectedServer.url,
+        log.wellUid,
+        log.wellboreUid,
+        ObjectType.Log,
+        (log as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
+          ? RouterLogType.DEPTH
+          : RouterLogType.TIME,
+        log.uid
+      )
+    );
   };
-
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Logs`} />;
-  }
 
   if (isFetchedWellbore && !wellbore) {
     return <ItemNotFound itemType={ObjectType.Log} />;
   }
 
   return (
-    <ContentContainer>
-      <EdsProvider density={theme}>
-        <CommonPanelContainer>
-          <Switch
-            checked={showGraph}
-            onChange={() => setShowGraph(!showGraph)}
-            size={theme === UserTheme.Compact ? "small" : "default"}
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Logs" />}
+      <ContentContainer>
+        <EdsProvider density={normaliseThemeForEds(theme)}>
+          <CommonPanelContainer>
+            <Switch
+              checked={showGraph}
+              onChange={() => setShowGraph(!showGraph)}
+              size={theme === UserTheme.Compact ? "small" : "default"}
+            />
+            <Typography>
+              Gantt view{selectedRows.length > 0 && " (selected logs only)"}
+            </Typography>
+          </CommonPanelContainer>
+        </EdsProvider>
+        {showGraph ? (
+          <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
+        ) : (
+          <ContentTable
+            viewId={isTimeIndexed ? "timeLogsListView" : "depthLogsListView"}
+            columns={columns}
+            onSelect={onSelect}
+            data={getTableData()}
+            onContextMenu={onContextMenu}
+            onRowSelectionChange={(rows) =>
+              setSelectedRows(rows as LogObjectRow[])
+            }
+            checkableRows
+            showRefresh
+            initiallySelectedRows={selectedRows}
+            downloadToCsvFileName={isTimeIndexed ? "TimeLogs" : "DepthLogs"}
           />
-          <Typography>
-            Gantt view{selectedRows.length > 0 && " (selected logs only)"}
-          </Typography>
-        </CommonPanelContainer>
-      </EdsProvider>
-      {showGraph ? (
-        <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
-      ) : (
-        <ContentTable
-          viewId={isTimeIndexed ? "timeLogsListView" : "depthLogsListView"}
-          columns={columns}
-          onSelect={onSelect}
-          data={getTableData()}
-          onContextMenu={onContextMenu}
-          onRowSelectionChange={(rows) =>
-            setSelectedRows(rows as LogObjectRow[])
-          }
-          checkableRows
-          showRefresh
-          initiallySelectedRows={selectedRows}
-          downloadToCsvFileName={isTimeIndexed ? "TimeLogs" : "DepthLogs"}
-        />
-      )}
-    </ContentContainer>
+        )}
+      </ContentContainer>
+    </>
   );
 }
 

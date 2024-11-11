@@ -49,11 +49,18 @@ namespace WitsmlExplorer.Api.Services
             return witsmlTubular?.TubularComponents?.Select(tComponent => new TubularComponent
             {
                 Uid = tComponent.Uid,
+                TypeTubularComponent = tComponent.TypeTubularComp,
                 Sequence = tComponent.Sequence,
+                Description = tComponent.Description,
                 Id = tComponent.Id == null ? null : new LengthMeasure { Uom = tComponent.Id.Uom, Value = decimal.Parse(tComponent.Id.Value, CultureInfo.InvariantCulture) },
                 Od = tComponent.Od == null ? null : new LengthMeasure { Uom = tComponent.Od.Uom, Value = decimal.Parse(tComponent.Od.Value, CultureInfo.InvariantCulture) },
                 Len = tComponent.Len == null ? null : new LengthMeasure { Uom = tComponent.Len.Uom, Value = decimal.Parse(tComponent.Len.Value, CultureInfo.InvariantCulture) },
-                TypeTubularComponent = tComponent.TypeTubularComp,
+                NumJointStand = tComponent.NumJointStand,
+                WtPerLen = tComponent.WtPerLen == null ? null : new LengthMeasure { Uom = tComponent.WtPerLen.Uom, Value = decimal.Parse(tComponent.WtPerLen.Value, CultureInfo.InvariantCulture) },
+                ConfigCon = tComponent.ConfigCon,
+                TypeMaterial = tComponent.TypeMaterial,
+                Vendor = tComponent.Vendor,
+                Model = tComponent.Model
             }).OrderBy(tComponent => tComponent.Sequence).ToList();
         }
 

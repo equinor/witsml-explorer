@@ -8,20 +8,21 @@ import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems"
 import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import Tubular from "models/tubular";
-import { MouseEvent, useContext } from "react";
+import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 export default function TubularsListView() {
   const {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
@@ -70,10 +71,18 @@ export default function TubularsListView() {
   ];
 
   const onSelect = (tubular: any) => {
-    navigate(encodeURIComponent(tubular.uid));
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.Tubular,
+        tubular.uid
+      )
+    );
   };
 
-  const tubularRows = tubulars.map((tubular) => {
+  const tubularRows = tubulars?.map((tubular) => {
     return {
       ...tubular,
       dTimCreation: formatDateString(

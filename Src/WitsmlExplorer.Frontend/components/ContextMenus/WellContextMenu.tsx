@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   StoreFunction,
@@ -9,7 +9,9 @@ import { WellRow } from "components/ContentViews/WellsListView";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -17,15 +19,13 @@ import MissingDataAgentModal, {
   MissingDataAgentModalProps
 } from "components/Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
+import {
+  openWellProperties,
+  openWellboreProperties
+} from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import WellBatchUpdateModal, {
   WellBatchUpdateModalProps
 } from "components/Modals/WellBatchUpdateModal";
-import WellPropertiesModal, {
-  WellPropertiesModalProps
-} from "components/Modals/WellPropertiesModal";
-import WellborePropertiesModal, {
-  WellborePropertiesModalProps
-} from "components/Modals/WellborePropertiesModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
@@ -46,6 +46,7 @@ import React from "react";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
+import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
 
 export interface WellContextMenuProps {
@@ -72,15 +73,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       country: "",
       timeZone: ""
     };
-    const wellPropertiesModalProps: WellPropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      well: newWell,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <WellPropertiesModal {...wellPropertiesModalProps} />
-    });
+    openWellProperties(newWell, dispatchOperation, PropertiesModalMode.New);
   };
 
   const onClickRefresh = async () => {
@@ -99,55 +92,40 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       name: "",
       wellUid: well.uid,
       wellName: well.name,
-      wellStatus: "",
-      wellType: "",
-      isActive: false,
-      wellboreParentUid: "",
-      wellboreParentName: "",
       wellborePurpose: "unknown"
     };
-    const wellborePropertiesModalProps: WellborePropertiesModalProps = {
-      mode: PropertiesModalMode.New,
-      wellbore: newWellbore,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <WellborePropertiesModal {...wellborePropertiesModalProps} />
-    });
+    openWellboreProperties(
+      newWellbore,
+      dispatchOperation,
+      PropertiesModalMode.New
+    );
   };
 
-  const deleteWell = async () => {
+  const deleteWell = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellJob = {
       toDelete: {
         wellUid: well.uid,
         wellName: well.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWell, job);
   };
 
   const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete well?"}
-        content={
-          <span>
-            This will permanently delete <strong>{well.name}</strong> with uid:{" "}
-            <strong>{well.uid}</strong>
-          </span>
-        }
-        onConfirm={deleteWell}
-        confirmColor={"danger"}
-        confirmText={"Delete well"}
-        switchButtonPlaces={true}
-      />
-    );
+    const userCredentialsModalProps: ConfirmDeletionModalProps = {
+      componentType: "well",
+      objectName: well.name,
+      objectUid: well.uid,
+      onSubmit(cascadedDelete) {
+        deleteWell(cascadedDelete);
+      }
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: confirmation
+      payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
 
@@ -182,23 +160,10 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     });
   };
 
-  const onClickProperties = () => {
-    const wellPropertiesModalProps: WellPropertiesModalProps = {
-      mode: PropertiesModalMode.Edit,
-      well,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <WellPropertiesModal {...wellPropertiesModalProps} />
-    });
-  };
-
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    const host = `${window.location.protocol}//${window.location.host}`;
     const wellboresViewPath = getWellboresViewPath(server.url, well.uid);
-    window.open(`${host}${wellboresViewPath}`);
+    openRouteInNewWindow(wellboresViewPath);
   };
 
   const onClickBatchUpdate = () => {
@@ -245,7 +210,11 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Wellbore</Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWell"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWell"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellRows && checkedWellRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
@@ -283,7 +252,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
                   wellUid: well.uid
                 })
               }
-              disabled={checkedWellRows?.length !== 1}
+              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
             >
               <StyledIcon
                 name="textField"
@@ -317,6 +286,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
                   wellboreUid: uuid()
                 })
               }
+              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
             >
               <StyledIcon
                 name="add"
@@ -331,7 +301,10 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <Typography color={"primary"}>Missing Data Agent</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
-        <MenuItem key={"properties"} onClick={onClickProperties}>
+        <MenuItem
+          key={"properties"}
+          onClick={() => openWellProperties(well, dispatchOperation)}
+        >
           <StyledIcon
             name="settings"
             color={colors.interactive.primaryResting}

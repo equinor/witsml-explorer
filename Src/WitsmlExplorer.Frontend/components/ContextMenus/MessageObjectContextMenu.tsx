@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -13,48 +13,31 @@ import {
 import MessageComparisonModal, {
   MessageComparisonModalProps
 } from "components/Modals/MessageComparisonModal";
-import MessagePropertiesModal, {
-  MessagePropertiesModalProps
-} from "components/Modals/MessagePropertiesModal";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import MessageObject from "models/messageObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const MessageObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
-
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const mode = PropertiesModalMode.Edit;
-    const modifyMessageObjectProps: MessagePropertiesModalProps = {
-      mode,
-      messageObject: checkedObjects[0] as MessageObject,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <MessagePropertiesModal {...modifyMessageObjectProps} />
-    });
-  };
 
   const onClickCompare = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -99,7 +82,13 @@ const MessageObjectContextMenu = (
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Message,
+            checkedObjects?.[0] as MessageObject,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

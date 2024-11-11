@@ -2,6 +2,7 @@ import {
   Accordion,
   DotProgress,
   Icon,
+  TextField,
   Typography
 } from "@equinor/eds-core-react";
 import {
@@ -9,20 +10,22 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
+import { LabelsLayout } from "components/Modals/ComparisonModalStyles";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
 import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
-import { generateReport } from "components/ReportCreationHelper";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
-import useExport from "hooks/useExport";
 import { useLiveJobProgress } from "hooks/useLiveJobProgress";
+import { useOperationState } from "hooks/useOperationState";
 import BaseReport, { createReport } from "models/reports/BaseReport";
 import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
+import { Colors } from "styles/Colors";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
+import ConfirmModal from "./ConfirmModal";
 
 export interface ReportModal {
   report?: BaseReport;
@@ -46,7 +49,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   const {
     dispatchOperation,
     operationState: { colors }
-  } = React.useContext(OperationContext);
+  } = useOperationState();
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
   const jobProgress = useLiveJobProgress(jobId);
@@ -72,7 +75,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
-      report && report.reportItems.length > 0
+      report && report.reportItems?.length > 0
         ? Object.keys(report.reportItems[0]).map((key) => ({
             property: key,
             label: key,
@@ -82,9 +85,32 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     [report]
   );
 
-  const onCancelButtonClick = () => {
-    JobService.cancelJob(jobId);
+  const cancelJob = async (jobId: string) => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
+    await JobService.cancelJob(jobId);
+  };
+
+  const onClickCancel = async () => {
+    const confirmation = (
+      <ConfirmModal
+        heading={"Confirm job cancellation"}
+        content={
+          <Typography>Do you really want to cancel this job?</Typography>
+        }
+        onConfirm={() => {
+          cancelJob(jobId);
+        }}
+        confirmColor={"danger"}
+        confirmText={"Yes"}
+        cancelText={"No"}
+        switchButtonPlaces={true}
+      />
+    );
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: confirmation
+    });
   };
 
   return (
@@ -93,10 +119,28 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
       heading={report ? report.title : "Loading report..."}
       confirmText="Ok"
       showCancelButton={!fetchedReport && isCancelable}
+      cancelText="Cancel job"
       content={
         <ContentLayout>
           {report ? (
             <>
+              {report.jobDetails && (
+                <LabelsLayout>
+                  {report.jobDetails.split("|").map((jobDetail) => {
+                    const keyValuePair = jobDetail.split("::");
+                    return (
+                      <StyledTextField
+                        colors={colors}
+                        key={keyValuePair[0].trim()}
+                        readOnly
+                        id={keyValuePair[0].trim()}
+                        label={keyValuePair[0]}
+                        defaultValue={keyValuePair[1]}
+                      />
+                    );
+                  })}
+                </LabelsLayout>
+              )}
               {report.warningMessage && (
                 <Banner colors={colors}>
                   <Banner.Icon variant="warning">
@@ -106,7 +150,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                 </Banner>
               )}
               {report.summary?.includes("\n") ? (
-                <Accordion>
+                <StyledAccordion>
                   <Accordion.Item>
                     <StyledAccordionHeader colors={colors}>
                       {report.summary.split("\n")[0]}
@@ -119,11 +163,11 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                       </Typography>
                     </Accordion.Panel>
                   </Accordion.Item>
-                </Accordion>
+                </StyledAccordion>
               ) : (
                 <Typography>{report.summary}</Typography>
               )}
-              {columns.length > 0 && report.downloadImmediately !== true && (
+              {columns.length > 0 && report.hasFile !== true && (
                 <ContentTable
                   columns={columns}
                   data={report.reportItems}
@@ -153,7 +197,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         </ContentLayout>
       }
       onSubmit={() => dispatchOperation({ type: OperationType.HideModal })}
-      onCancel={() => onCancelButtonClick()}
+      onCancel={() => onClickCancel()}
       isLoading={false}
     />
   );
@@ -162,7 +206,6 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
   const { connectedServer } = useConnectedServer();
   const [report, setReport] = useState<BaseReport>(null);
-  const { exportData } = useExport();
 
   if (!jobId) return null;
 
@@ -180,16 +223,8 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
               );
             } else {
               setReport(report);
-              if (report.downloadImmediately === true) {
-                const reportProperties = generateReport(
-                  report.reportItems,
-                  report.reportHeader
-                );
-                exportData(
-                  report.title,
-                  reportProperties.exportColumns,
-                  reportProperties.data
-                );
+              if (report.hasFile === true) {
+                await JobService.downloadFile(jobId);
               }
             }
           }
@@ -212,6 +247,12 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
 
   return report;
 };
+
+const StyledTextField = styled(TextField)<{ colors: Colors }>`
+  label {
+    color: ${(props) => props.colors.interactive.primaryResting};
+  }
+`;
 
 const ContentLayout = styled.div`
   display: flex;

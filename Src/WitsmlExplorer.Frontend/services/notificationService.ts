@@ -8,6 +8,7 @@ import ObjectOnWellbore from "../models/objectOnWellbore";
 
 export interface Notification {
   serverUrl: URL;
+  sourceServerUrl?: URL;
   isSuccess: boolean;
   message: string;
   severity?: AlertSeverity;
@@ -64,7 +65,11 @@ export default class NotificationService {
   }
 
   private constructor() {
-    let notificationURL = getBaseUrl().toString();
+    this.setupConnection();
+  }
+
+  private async setupConnection() {
+    let notificationURL = (await getBaseUrl()).toString();
     if (!notificationURL.endsWith("/")) {
       notificationURL = notificationURL + "/";
     }

@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@mui/material";
 import { QueryClient } from "@tanstack/react-query";
 import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import {
@@ -20,9 +20,9 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import { OpenInQueryView } from "hooks/useOpenInQueryView";
+import { IndexCurve } from "models/indexCurve";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -30,6 +30,8 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
+import OperationType from "../../contexts/operationType";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -46,6 +48,20 @@ export const ObjectMenuItems = (
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
+
+  const onClickDuplicateObjectOnWellbore = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: (
+        <DuplicateObjectModal
+          servers={servers}
+          objectsOnWellbore={checkedObjects}
+          objectType={objectType}
+        />
+      )
+    });
+  };
 
   return [
     <MenuItem
@@ -68,6 +84,16 @@ export const ObjectMenuItems = (
       </Typography>
     </MenuItem>,
     <Divider key={"objectMenuItemsDivider"} />,
+    <MenuItem
+      key={"duplicate"}
+      onClick={onClickDuplicateObjectOnWellbore}
+      disabled={checkedObjects.length === 0 || checkedObjects.length > 1}
+    >
+      <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+      <Typography color={"primary"}>
+        {menuItemText("duplicate", objectType, null)}
+      </Typography>
+    </MenuItem>,
     <MenuItem
       key={"copy"}
       onClick={() =>

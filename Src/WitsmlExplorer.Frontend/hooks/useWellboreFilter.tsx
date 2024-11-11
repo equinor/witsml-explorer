@@ -1,5 +1,10 @@
 import { useContext, useMemo } from "react";
-import { Filter, FilterContext, isObjectFilterType } from "../contexts/filter";
+import {
+  Filter,
+  FilterContext,
+  isObjectFilterType,
+  isWellboreFilterType
+} from "../contexts/filter";
 import ObjectSearchResult from "../models/objectSearchResult";
 import Wellbore from "../models/wellbore";
 
@@ -23,6 +28,18 @@ const filterWellboresOnSearchResult = (
   );
 };
 
+const filterWellboresOnWellboreSearchResult = (
+  wellbores: Wellbore[],
+  wellboreSearchResult: Wellbore[]
+) => {
+  const wellAndWellboreUids = wellboreSearchResult.map((searchResult) =>
+    [searchResult.wellUid, searchResult.uid].join(",")
+  );
+  return wellbores.filter((wellbore) =>
+    wellAndWellboreUids.includes([wellbore.wellUid, wellbore.uid].join(","))
+  );
+};
+
 export const filterWellbores = (
   wellbores: Wellbore[],
   filter: Filter
@@ -34,6 +51,11 @@ export const filterWellbores = (
       filteredWellbores = filterWellboresOnSearchResult(
         filteredWellbores,
         filter.searchResults
+      );
+    } else if (isWellboreFilterType(filter.filterType)) {
+      filteredWellbores = filterWellboresOnWellboreSearchResult(
+        filteredWellbores,
+        filter.wellboreSearchResults
       );
     }
     filteredWellbores = filterWellboresOnIsActive(
@@ -55,7 +77,8 @@ export const useWellboreFilter = (wellbores: Wellbore[]): Wellbore[] => {
     selectedFilter.filterType,
     selectedFilter.isActive,
     selectedFilter.name,
-    selectedFilter.searchResults
+    selectedFilter.searchResults,
+    selectedFilter.wellboreSearchResults
   ]);
 
   return filteredWellbores;

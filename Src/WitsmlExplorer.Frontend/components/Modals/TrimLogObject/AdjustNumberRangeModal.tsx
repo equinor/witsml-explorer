@@ -1,6 +1,6 @@
-import { Button } from "@equinor/eds-core-react";
-import { TextField } from "@material-ui/core";
+import { TextField } from "@equinor/eds-core-react";
 import React, { useEffect, useState } from "react";
+import { Button } from "../../StyledComponents/Button.tsx";
 
 export interface AdjustNumberRangeModalProps {
   minValue: number;
@@ -95,11 +95,11 @@ const AdjustNumberRangeModal = (
         </Button>
       </Button.Group>
       <TextField
-        fullWidth
+        id="startIndex"
         label={"Start index"}
         value={startValue ?? ""}
         type={"number"}
-        error={!startIndexIsValid}
+        variant={!startIndexIsValid ? "error" : undefined}
         helperText={
           startIndexIsValid
             ? ""
@@ -111,11 +111,11 @@ const AdjustNumberRangeModal = (
         style={{ paddingBottom: startIndexIsValid ? "23px" : 0 }}
       />
       <TextField
-        fullWidth
+        id="endIndex"
         label={"End index"}
         value={endValue ?? ""}
         type={"number"}
-        error={!endIndexIsValid}
+        variant={!endIndexIsValid ? "error" : undefined}
         helperText={
           endIndexIsValid
             ? ""

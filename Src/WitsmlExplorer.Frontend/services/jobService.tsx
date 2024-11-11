@@ -30,18 +30,20 @@ export default class JobService {
       targetServer,
       sourceServer
     );
-    return this.onResponse(jobType, response, targetServer);
+    return this.onResponse(jobType, response, targetServer, sourceServer);
   }
 
   private static async onResponse(
     jobType: JobType,
     response: Response,
-    server = AuthorizationService.selectedServer
+    server = AuthorizationService.selectedServer,
+    sourceServer: Server = null
   ): Promise<any> {
     AuthorizationService.resetSourceServer();
     if (response.ok) {
       NotificationService.Instance.snackbarDispatcher.dispatch({
         serverUrl: new URL(server?.url),
+        sourceServerUrl: sourceServer ? new URL(sourceServer?.url) : null,
         message: `Ordered ${jobType} job`,
         isSuccess: true
       });
@@ -49,6 +51,7 @@ export default class JobService {
     } else {
       NotificationService.Instance.snackbarDispatcher.dispatch({
         serverUrl: new URL(server?.url),
+        sourceServerUrl: sourceServer ? new URL(sourceServer?.url) : null,
         message: `Failed ordering ${jobType} job`,
         isSuccess: false
       });
@@ -123,6 +126,29 @@ export default class JobService {
       return null;
     }
   }
+
+  public static async downloadFile(jobId: string): Promise<void> {
+    const response = await ApiClient.get(`/api/jobs/download/${jobId}`);
+
+    if (response.ok) {
+      const blob = await response.blob();
+
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filename =
+        contentDisposition?.match(/filename="?([^";]+)"?/)?.[1] || "report";
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } else {
+      throwError(response.status, response.statusText);
+    }
+  }
 }
 
 export enum JobType {
@@ -136,9 +162,7 @@ export enum JobType {
   CopyWithParent = "CopyWithParent",
   CopyObjectsWithParent = "CopyObjectsWithParent",
   CreateWellbore = "CreateWellbore",
-  CreateLogObject = "CreateLogObject",
-  CreateRig = "CreateRig",
-  CreateTrajectory = "CreateTrajectory",
+  CreateObjectOnWellbore = "CreateObjectOnWellbore",
   DeleteComponents = "DeleteComponents",
   DeleteCurveValues = "DeleteCurveValues",
   DeleteObjects = "DeleteObjects",
@@ -165,5 +189,6 @@ export enum JobType {
   SpliceLogs = "SpliceLogs",
   CompareLogData = "CompareLogData",
   CountLogDataRows = "CountLogDataRows",
-  DownloadAllLogData = "DownloadAllLogData"
+  DownloadLogData = "DownloadLogData",
+  OffsetLogCurves = "OffsetLogCurves"
 }

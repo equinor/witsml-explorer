@@ -7,11 +7,11 @@ import ModalDialog from "components/Modals/ModalDialog";
 import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
 import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
 import WarningBar from "components/WarningBar";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { createTrimLogObjectJob } from "models/jobs/trimLogObjectJob";
 import LogObject, { indexToNumber } from "models/logObject";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import JobService, { JobType } from "services/jobService";
 
 export interface TrimLogObjectModalProps {
@@ -22,7 +22,7 @@ const TrimLogObjectModal = (
   props: TrimLogObjectModalProps
 ): React.ReactElement => {
   const { logObject } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [log] = useState<LogObject>(logObject);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [startIndex, setStartIndex] = useState<string | number>();

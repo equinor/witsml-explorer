@@ -1,44 +1,41 @@
-import { Divider, Typography } from "@equinor/eds-core-react";
-import { useTheme } from "@material-ui/core";
-import { TreeView } from "@material-ui/lab";
-import {
-  VirtualItem,
-  Virtualizer,
-  useVirtualizer
-} from "@tanstack/react-virtual";
+import { Typography } from "@equinor/eds-core-react";
+import { TreeView } from "@mui/x-tree-view";
+import { useVirtualizer, Virtualizer } from "@tanstack/react-virtual";
 import ProgressSpinner from "components/ProgressSpinner";
 import SearchFilter from "components/Sidebar/SearchFilter";
-import WellItem from "components/Sidebar/WellItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
-import { UserTheme } from "contexts/operationStateReducer";
 import { useSidebar } from "contexts/sidebarContext";
+import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
+import { useOperationState } from "hooks/useOperationState";
 import { useWellFilter } from "hooks/useWellFilter";
-import Well from "models/well";
-import { Fragment, useContext, useEffect, useRef } from "react";
+import { FC, SyntheticEvent, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
-import { WellIndicator } from "../StyledComponents/WellIndicator";
+import { InactiveWellsHiddenFilterHelper } from "./InactiveWellsHiddenFilterHelper";
+import { Stack } from "@mui/material";
+import SidebarVirtualItem from "./SidebarVirtualItem";
+import { calculateWellNodeId } from "../../models/wellbore.tsx";
+import { isInAnyCompactMode } from "../../tools/themeHelpers.ts";
 
-export default function Sidebar() {
+const Sidebar: FC = () => {
   const { connectedServer } = useConnectedServer();
   const { wells, isFetching } = useGetWells(connectedServer);
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
-  const { expandedTreeNodes } = useSidebar();
+  const { expandedTreeNodes, dispatchSidebar } = useSidebar();
   const { wellUid } = useParams();
   const isDeepLink = useRef<boolean>(!!wellUid);
   const {
     operationState: { colors, theme }
-  } = useContext(OperationContext);
-  const filteredWells = useWellFilter(wells);
+  } = useOperationState();
+  const isCompactMode = isInAnyCompactMode(theme);
+  const filteredWells = useWellFilter(wells) || [];
   const containerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
     getScrollElement: () => containerRef.current,
     count: filteredWells?.length,
     overscan: 5,
-    estimateSize: () => (theme === UserTheme.Compact ? 33 : 49),
+    estimateSize: () => (isCompactMode ? 33 : 49),
     measureElement:
       typeof window !== "undefined" &&
       navigator.userAgent.indexOf("Firefox") === -1
@@ -55,78 +52,79 @@ export default function Sidebar() {
     }
   }, [filteredWells]);
 
+  const onNodeToggle = (_: SyntheticEvent, nodeIds: string[]) => {
+    if (nodeIds !== expandedTreeNodes) {
+      dispatchSidebar({
+        type: SidebarActionType.SetTreeNodes,
+        payload: { nodeIds }
+      });
+    }
+  };
+
+  if (isFetching)
+    return (
+      <>
+        <SearchFilter />
+        {!!connectedServer && (
+          <SidebarTreeView ref={containerRef}>
+            <ProgressSpinner message="Fetching wells. This may take some time." />
+          </SidebarTreeView>
+        )}
+      </>
+    );
+
   return (
-    <Fragment>
+    <>
       <SearchFilter />
       {!!connectedServer && (
         <SidebarTreeView ref={containerRef}>
-          {isFetching ? (
-            <ProgressSpinner message="Fetching wells. This may take some time." />
+          {!filteredWells.length ? (
+            <Stack gap="1rem" pt="1rem">
+              <Typography>No wells match the current filter</Typography>
+              <InactiveWellsHiddenFilterHelper />
+            </Stack>
           ) : (
-            filteredWells &&
-            (filteredWells.length === 0 ? (
-              <Typography style={{ paddingTop: "1rem" }}>
-                No wells match the current filter
-              </Typography>
-            ) : (
-              <StyledVirtualTreeView
-                defaultCollapseIcon={
-                  <Icon
-                    name="chevronDown"
-                    color={colors.interactive.primaryResting}
+            <StyledVirtualTreeView
+              defaultCollapseIcon={
+                <Icon
+                  name="chevronDown"
+                  color={colors.interactive.primaryResting}
+                />
+              }
+              defaultExpandIcon={
+                <Icon
+                  name="chevronRight"
+                  color={colors.interactive.primaryResting}
+                />
+              }
+              defaultEndIcon={<div style={{ width: 24 }} />}
+              expanded={expandedTreeNodes}
+              onNodeToggle={onNodeToggle}
+              virtualizer={virtualizer}
+            >
+              {virtualizer.getVirtualItems().map((virtualItem) => {
+                const well = filteredWells[virtualItem.index];
+                return (
+                  <SidebarVirtualItem
+                    key={`item_${virtualItem.key}`}
+                    virtualItem={virtualItem}
+                    well={well}
+                    virtualizer={virtualizer}
+                    isExpanded={expandedTreeNodes.includes(
+                      calculateWellNodeId(well.uid)
+                    )}
                   />
-                }
-                defaultExpandIcon={
-                  <Icon
-                    name="chevronRight"
-                    color={colors.interactive.primaryResting}
-                  />
-                }
-                defaultEndIcon={<div style={{ width: 24 }} />}
-                expanded={expandedTreeNodes}
-                virtualizer={virtualizer}
-              >
-                {virtualizer.getVirtualItems().map((virtualItem) => {
-                  const well: Well = filteredWells[virtualItem.index];
-                  return (
-                    <StyledVirtualItem
-                      key={well.uid}
-                      data-index={virtualItem.index}
-                      ref={(node) => virtualizer.measureElement(node)}
-                      virtualItem={virtualItem}
-                    >
-                      <WellListing>
-                        <WellItem wellUid={well.uid} />
-                        <WellIndicator
-                          compactMode={isCompactMode}
-                          active={well.isActive}
-                          colors={colors}
-                        />
-                      </WellListing>
-                      <Divider
-                        style={{
-                          margin: "0px",
-                          backgroundColor: colors.interactive.disabledBorder
-                        }}
-                      />
-                    </StyledVirtualItem>
-                  );
-                })}
-              </StyledVirtualTreeView>
-            ))
+                );
+              })}
+            </StyledVirtualTreeView>
           )}
         </SidebarTreeView>
       )}
-    </Fragment>
+    </>
   );
-}
+};
 
-const WellListing = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 18px;
-  justify-content: center;
-  align-content: stretch;
-`;
+export default Sidebar;
 
 const SidebarTreeView = styled.div`
   overflow-y: scroll;
@@ -134,13 +132,17 @@ const SidebarTreeView = styled.div`
   height: 70%;
   padding-left: 1em;
   padding-right: 0.3em;
+
   .MuiTreeItem-root {
     min-width: 0;
+
     .MuiTreeItem-iconContainer {
       flex: none;
     }
+
     .MuiTreeItem-label {
       min-width: 0;
+
       p {
         white-space: nowrap;
         overflow: hidden;
@@ -156,15 +158,4 @@ const StyledVirtualTreeView = styled(TreeView)<{
   position: relative;
   width: 100%;
   height: ${(props) => props.virtualizer.getTotalSize()}px;
-`;
-
-const StyledVirtualItem = styled.div.attrs<{ virtualItem: VirtualItem }>(
-  (props) => ({
-    style: {
-      transform: `translateY(${props.virtualItem.start}px)`
-    }
-  })
-)<{ virtualItem: VirtualItem }>`
-  position: absolute;
-  width: 100%;
 `;

@@ -1,5 +1,5 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -12,19 +12,15 @@ import {
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
-import WbGeometryPropertiesModal, {
-  WbGeometryPropertiesModalProps
-} from "components/Modals/WbGeometryPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { ObjectType } from "models/objectType";
 import WbGeometryObject from "models/wbGeometry";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const WbGeometryObjectContextMenu = (
@@ -32,27 +28,13 @@ const WbGeometryObjectContextMenu = (
 ): React.ReactElement => {
   const { checkedObjects } = props;
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(
     ComponentType.WbGeometrySection
   );
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
-
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const mode = PropertiesModalMode.Edit;
-    const modifyWbGeometryObjectProps: WbGeometryPropertiesModalProps = {
-      mode,
-      wbGeometryObject: checkedObjects[0] as WbGeometryObject,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <WbGeometryPropertiesModal {...modifyWbGeometryObjectProps} />
-    });
-  };
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
@@ -82,7 +64,13 @@ const WbGeometryObjectContextMenu = (
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.WbGeometry,
+            checkedObjects?.[0] as WbGeometryObject,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

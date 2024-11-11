@@ -1,12 +1,13 @@
 import { TextField } from "@equinor/eds-core-react";
 import { QueryClient } from "@tanstack/react-query";
+import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "components/Constants";
 import ConfirmModal from "components/Modals/ConfirmModal";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
 import { isExpandableGroupObject } from "components/Sidebar/ObjectGroupItem";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshObjectsQuery } from "hooks/query/queryRefreshHelpers";
 import { getParentType } from "models/componentType";
+import { IndexCurve } from "models/indexCurve";
 import ComponentReferences from "models/jobs/componentReferences";
 import { DeleteComponentsJob, DeleteObjectsJob } from "models/jobs/deleteJobs";
 import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
@@ -26,6 +27,7 @@ import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
+import { openRouteInNewWindow } from "tools/windowHelpers";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
 
 export const StyledIcon = styled(Icon)`
@@ -69,7 +71,6 @@ export const onClickShowObjectOnServer = async (
   indexCurve: IndexCurve = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const host = `${window.location.protocol}//${window.location.host}`;
   let url = "";
   if (objectType === ObjectType.Log) {
     const logTypePath =
@@ -100,7 +101,7 @@ export const onClickShowObjectOnServer = async (
       objectType
     );
   }
-  window.open(`${host}${url}`);
+  openRouteInNewWindow(url);
 };
 
 export const onClickShowGroupOnServer = async (
@@ -108,14 +109,13 @@ export const onClickShowGroupOnServer = async (
   server: Server,
   wellbore: Wellbore,
   objectType: ObjectType,
-  indexCurve: IndexCurve = null
+  indexType: WITSML_INDEX_TYPE = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const host = `${window.location.protocol}//${window.location.host}`;
   let url = "";
-  if (objectType === ObjectType.Log && indexCurve) {
+  if (objectType === ObjectType.Log && indexType) {
     const logTypePath =
-      indexCurve === IndexCurve.Depth
+      indexType === WITSML_INDEX_TYPE_MD
         ? RouterLogType.DEPTH
         : RouterLogType.TIME;
     url = getLogObjectsViewPath(
@@ -140,7 +140,7 @@ export const onClickShowGroupOnServer = async (
       objectType
     );
   }
-  window.open(`${host}${url}`);
+  openRouteInNewWindow(url);
 };
 
 export const onClickDeleteObjects = async (

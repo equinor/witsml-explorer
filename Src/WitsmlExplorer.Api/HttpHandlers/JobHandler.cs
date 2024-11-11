@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -84,7 +85,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static IResult GetAllJobInfos(IJobCache jobCache, IConfiguration configuration)
         {
             bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
-            if (!useOAuth2)
+            bool IsDesktopApp = StringHelpers.ToBoolean(configuration[ConfigConstants.IsDesktopApp]);
+            if (!useOAuth2 && !IsDesktopApp)
             {
                 return TypedResults.Unauthorized();
             }
@@ -118,6 +120,28 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 return TypedResults.Forbid();
             }
             return TypedResults.Ok(job.Report);
+        }
+
+        [Produces("application/octet-stream")]
+        public static IResult DownloadFile(string jobId, IJobCache jobCache, HttpRequest httpRequest, IConfiguration configuration, ICredentialsService credentialsService)
+        {
+            EssentialHeaders eh = new(httpRequest);
+            bool useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
+            string userName = useOAuth2 ? credentialsService.GetClaimFromToken(eh.GetBearerToken(), "upn") : eh.TargetUsername;
+            if (!useOAuth2)
+            {
+                credentialsService.VerifyUserIsLoggedIn(eh, ServerType.Target);
+            }
+            JobInfo job = jobCache.GetJobInfoById(jobId);
+            if (job.Username != userName && (!useOAuth2 || !IsAdminOrDeveloper(eh.GetBearerToken())))
+            {
+                return TypedResults.Forbid();
+            }
+            BaseReport report = job.Report;
+            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes(report.FileData.FileContent);
+            var stream = new MemoryStream(byteArray);
+            httpRequest.HttpContext.Response.Headers["Access-Control-Expose-Headers"] = "Content-Disposition";
+            return TypedResults.File(stream, "application/octet-stream", report.FileData.FileName);
         }
     }
 }

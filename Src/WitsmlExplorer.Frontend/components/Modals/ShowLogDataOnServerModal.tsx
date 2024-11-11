@@ -4,15 +4,14 @@ import {
   Radio,
   Typography
 } from "@equinor/eds-core-react";
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import ModalDialog from "components/Modals/ModalDialog";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { Server } from "models/server";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, CSSProperties, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import { createLogCurveValuesSearchParams } from "routes/utils/createLogCurveValuesSearchParams";
@@ -20,6 +19,8 @@ import { getLogCurveValuesViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import { openRouteInNewWindow } from "tools/windowHelpers";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 enum IndexRangeOptions {
   Full = "Full",
@@ -35,7 +36,7 @@ export function ShowLogDataOnServerModal() {
   const {
     operationState: { colors, theme },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const { wellUid, wellboreUid, objectGroup, objectUid, logType } = useParams();
   const [isUrlTooLong, setIsUrlTooLong] = useState(false);
   const [searchParams] = useSearchParams();
@@ -100,7 +101,6 @@ export function ShowLogDataOnServerModal() {
 
   const handleOnSubmit = () => {
     dispatchOperation({ type: OperationType.HideModal });
-    const host = `${window.location.protocol}//${window.location.host}`;
     const targetServerLogCurveValuesViewPath = getLogCurveValuesViewPath(
       selectedServer.url,
       wellUid,
@@ -122,8 +122,8 @@ export function ShowLogDataOnServerModal() {
       targetServerEndIndex,
       JSON.parse(targetServerMnemonics)
     ).toString();
-    window.open(
-      `${host}${targetServerLogCurveValuesViewPath}${
+    openRouteInNewWindow(
+      `${targetServerLogCurveValuesViewPath}${
         targetServerSearchParams.length !== 0
           ? `?${targetServerSearchParams}`
           : ""
@@ -135,7 +135,7 @@ export function ShowLogDataOnServerModal() {
     <ModalDialog
       heading={"Show Log Data on Server"}
       content={
-        <EdsProvider density={theme}>
+        <EdsProvider density={normaliseThemeForEds(theme)}>
           <Autocomplete
             id={"selectServerToShow"}
             label="Select a server"

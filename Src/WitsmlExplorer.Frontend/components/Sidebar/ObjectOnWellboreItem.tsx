@@ -5,13 +5,13 @@ import {
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { calculateObjectNodeId } from "models/wellbore";
-import { ComponentType, MouseEvent, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { ComponentType, MouseEvent } from "react";
+import { useParams } from "react-router-dom";
 import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 interface ObjectOnWellboreItemProps {
@@ -31,8 +31,7 @@ export default function ObjectOnWellboreItem({
   wellUid,
   wellboreUid
 }: ObjectOnWellboreItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
-  const navigate = useNavigate();
+  const { dispatchOperation } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const {
     wellUid: urlWellUid,
@@ -53,15 +52,13 @@ export default function ObjectOnWellboreItem({
     });
   };
 
-  const onLabelClick = () => {
-    navigate(
-      getObjectViewPath(
-        connectedServer?.url,
-        wellUid,
-        wellboreUid,
-        objectType,
-        objectOnWellbore.uid
-      )
+  const getNavPath = () => {
+    return getObjectViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      objectType,
+      objectOnWellbore.uid
     );
   };
 
@@ -81,7 +78,7 @@ export default function ObjectOnWellboreItem({
           objectUid
         )
       }
-      onLabelClick={onLabelClick}
+      to={getNavPath()}
       onContextMenu={(event: MouseEvent<HTMLLIElement>) => onContextMenu(event)}
     />
   );

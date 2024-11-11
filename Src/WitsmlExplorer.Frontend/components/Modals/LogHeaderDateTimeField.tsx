@@ -1,31 +1,30 @@
 import { TextField } from "@equinor/eds-core-react";
-import {
-  dateTimeFormatNoOffset,
-  validateIsoDateStringNoOffset
+import formatDateString, {
+  getOffset,
+  getOffsetFromTimeZone
 } from "components/DateFormatter";
-import { formatInTimeZone } from "date-fns-tz";
-import { useEffect, useState } from "react";
+import { DateTimeFormat, TimeZone } from "contexts/operationStateReducer";
+import { useOperationState } from "hooks/useOperationState";
+import { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
-import Icon from "styles/Icons";
 
 interface DateTimeFieldProps {
   value: string;
   label: string;
-  updateObject: (dateTime: string, valid: boolean) => void;
-  offset: string;
+  updateObject: (dateTime: string) => void;
   minValue?: string;
   maxValue?: string;
+  disabled?: boolean;
+  required?: boolean;
 }
 
 /**
- * A component to edit a date time, taking in a string in the DateFormatter.dateTimeFormatNoOffset.
+ * A component to edit a date time, taking in a string in the DateFormatter.dateTimeFormat.
  * The offset is shown beside the input in a disabled field.
  * One can either write/paste a string manually, or use the native datepicker.
- * This component should be replaced if EDS ever gets a custom datepicker.
  * @param value The current value of the field.
  * @param label Label shown above the field.
  * @param updateObject A lambda to update the value on the object to be modified.
- * @param offset A constant UTC offset to calculate the time properly
  * @param minValue Optional earliest time the value can be.
  * @param maxValue Optional latest time the value can be.
  * @returns
@@ -33,24 +32,33 @@ interface DateTimeFieldProps {
 export const LogHeaderDateTimeField = (
   props: DateTimeFieldProps
 ): React.ReactElement => {
-  const { value, label, updateObject, offset, minValue, maxValue } = props;
+  const { disabled, required, value, label, updateObject, minValue, maxValue } =
+    props;
+  const {
+    operationState: { timeZone }
+  } = useOperationState();
+  const offset =
+    timeZone === TimeZone.Raw
+      ? getOffset(value)
+      : getOffsetFromTimeZone(timeZone);
   const [initiallyEmpty, setInitiallyEmpty] = useState(false);
-  const isFirefox = navigator.userAgent.includes("Firefox");
 
   useEffect(() => {
     setInitiallyEmpty(value == null || value === "");
   }, []);
 
   const validate = (current: string) => {
+    if (required && !current) return false;
     return (
-      (validateIsoDateStringNoOffset(current, offset) &&
-        (!minValue || current >= minValue) &&
+      ((!minValue || current >= minValue) &&
         (!maxValue || current <= maxValue)) ||
       (initiallyEmpty && (current == null || current === ""))
     );
   };
+
   const getHelperText = () => {
     if (!validate(value)) {
+      if (required && !value) return "This field is required";
       if (!initiallyEmpty && (value == null || value === "")) {
         return "This field cannot be deleted.";
       }
@@ -60,10 +68,18 @@ export const LogHeaderDateTimeField = (
       if (maxValue && value > maxValue) {
         return `Must be sooner than ${maxValue}`;
       }
-      return "The input must be in the yyyy-MM-dd'T'HH:mm:ss.SSS format.";
+      return "The input must be in the yyyy-MM-dd'T'HH:mm:ss format.";
     }
     return "";
   };
+
+  const onTextFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (getUtcValue(value, offset) !== "Invalid date") {
+      updateObject(getUtcValue(value, offset));
+    }
+  };
+
   return (
     <Layout>
       <Horizontal>
@@ -74,56 +90,42 @@ export const LogHeaderDateTimeField = (
           disabled
           style={{
             fontFeatureSettings: '"tnum"',
-            width: "16%"
+            width: "94px"
           }}
         />
         <TextField
           id={label}
           label={label}
-          value={value}
+          value={getParsedValue(value, timeZone) ?? ""}
           helperText={getHelperText()}
           variant={validate(value) ? undefined : "error"}
-          autoComplete="off"
-          onChange={(
-            e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-          ) => {
-            updateObject(e.target.value, validate(e.target.value));
-          }}
+          type={"datetime-local"}
+          step="0.001"
+          onChange={onTextFieldChange}
           style={{
-            fontFeatureSettings: '"tnum"',
-            paddingBottom: validate(value) ? "24px" : 0
+            fontFeatureSettings: '"tnum"'
           }}
+          disabled={disabled}
         />
       </Horizontal>
-      <PickerIcon name="calendar" />
-      <Picker
-        id={label + "picker"}
-        placeholder=""
-        label=""
-        value=""
-        type={isFirefox ? "date" : "datetime-local"}
-        style={{ width: "44px" }}
-        tabIndex={-1} //disable tab focus due to the native datepicker including multiple invisible fields that are not to be used
-        onChange={(
-          e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-        ) => {
-          let toFormat = e.target.value;
-          if (validateIsoDateStringNoOffset(value, offset)) {
-            // preserve the ss.SSS (and also HH:mm for Firefox) part of the original value that the datepicker does not set
-            const slice = isFirefox ? value.slice(10) : value.slice(16);
-            toFormat += slice;
-          }
-          toFormat += offset;
-          const formatted = formatInTimeZone(
-            toFormat,
-            offset,
-            dateTimeFormatNoOffset
-          );
-          updateObject(formatted, validate(formatted));
-        }}
-      />
     </Layout>
   );
+};
+
+const getParsedValue = (input: string, timeZone: TimeZone) => {
+  if (!input) return null;
+  return formatDateString(input, timeZone, DateTimeFormat.RawNoOffset);
+};
+
+const getUtcValue = (input: string, offset: string) => {
+  if (!input) return null;
+  const inputWithZone = input + offset;
+  const utcInput = formatDateString(
+    inputWithZone,
+    TimeZone.Utc,
+    DateTimeFormat.Raw
+  );
+  return utcInput;
 };
 
 const Layout = styled.div`
@@ -136,17 +138,4 @@ const Layout = styled.div`
 const Horizontal = styled.div`
   display: flex;
   flex-direction: row;
-`;
-
-const Picker = styled(TextField)`
-  opacity: 0;
-  position: absolute;
-  right: 0;
-  top: 15px;
-`;
-
-const PickerIcon = styled(Icon)`
-  position: absolute;
-  right: 15px;
-  top: 22px;
 `;

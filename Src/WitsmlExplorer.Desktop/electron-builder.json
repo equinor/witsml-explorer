@@ -1,0 +1,29 @@
+{
+  "appId": "WEx-Desktop-App",
+  "productName": "Witsml Explorer Desktop",
+  "directories": {
+    "output": "dist",
+    "buildResources": "resources"
+  },
+  "files": [
+    "resources/**/*",
+    "dist/api/**/*",
+    "dist/main/**/*",
+    "dist/preload/**/*",
+    "dist/renderer/**/*"
+  ],
+  "asar": true,
+  "asarUnpack": ["dist/api/**/*"],
+  "win": {
+    "target": ["nsis"],
+    "icon": "resources/logo.png"
+  },
+  "nsis": {
+    "artifactName": "WExDesktopInstaller.Windows.x64.${version}.${ext}",
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "createStartMenuShortcut": true
+  }
+}

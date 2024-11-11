@@ -5,13 +5,14 @@ import {
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TreeItem from "components/Sidebar/TreeItem";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
-import { MouseEvent, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { MouseEvent } from "react";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 
 interface LogItemProps {
+  logObjects: LogObject[];
   log: LogObject;
   selected: boolean;
   nodeId: string;
@@ -20,14 +21,14 @@ interface LogItemProps {
 }
 
 export default function LogItem({
+  logObjects,
   log,
   selected,
   nodeId,
   objectGrowing,
   to
 }: LogItemProps) {
-  const { dispatchOperation } = useContext(OperationContext);
-  const navigate = useNavigate();
+  const { dispatchOperation } = useOperationState();
 
   const onContextMenu = (event: MouseEvent<HTMLLIElement>, log: LogObject) => {
     preventContextMenuPropagation(event);
@@ -46,15 +47,15 @@ export default function LogItem({
 
   return (
     <TreeItem
-      onContextMenu={(event) => onContextMenu(event, log)}
+      onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
+        onContextMenu(event, log)
+      }
       key={nodeId}
       nodeId={nodeId}
-      labelText={log.runNumber ? `${log.name} (${log.runNumber})` : log.name}
+      labelText={log.name + getNameOccurrenceSuffix(logObjects, log)}
       selected={selected}
       isActive={objectGrowing}
-      onLabelClick={() => {
-        navigate(to);
-      }}
+      to={to}
     />
   );
 }

@@ -9,20 +9,20 @@ import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
 import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbores } from "hooks/query/useGetWellbores";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import EntityType from "models/entityType";
 import Wellbore from "models/wellbore";
-import React, { useContext } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
-import { OBJECT_GROUPS_PATH } from "routes/routerConstants";
+import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 
 export interface WellboreRow extends ContentTableRow, Wellbore {}
 
@@ -43,16 +43,20 @@ export default function WellboresListView() {
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
-  } = useContext(OperationContext);
+  } = useOperationState();
   const navigate = useNavigate();
 
   useExpandSidebarNodes(wellUid);
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "wellType", label: "typeWellbore", type: ContentType.String },
     {
-      property: "wellStatus",
+      property: "wellboreType",
+      label: "typeWellbore",
+      type: ContentType.String
+    },
+    {
+      property: "wellboreStatus",
       label: "statusWellbore",
       type: ContentType.String
     },
@@ -113,28 +117,31 @@ export default function WellboresListView() {
 
   const onSelect = async (wellboreRow: any) => {
     navigate(
-      `${encodeURIComponent(wellboreRow.wellbore.uid)}/${OBJECT_GROUPS_PATH}`
+      getObjectGroupsViewPath(
+        connectedServer?.url,
+        wellboreRow.wellUid,
+        wellboreRow.uid
+      )
     );
   };
-
-  if (isFetching) {
-    return <ProgressSpinner message="Fetching wellbores." />;
-  }
 
   if (isFetchedWell && !well) {
     return <ItemNotFound itemType={EntityType.Well} />;
   }
 
   return (
-    <ContentTable
-      viewId="wellboresListView"
-      columns={columns}
-      data={getTableData()}
-      onSelect={onSelect}
-      onContextMenu={onContextMenu}
-      downloadToCsvFileName="Wellbores"
-      checkableRows
-      showRefresh
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Wellbores." />}
+      <ContentTable
+        viewId="wellboresListView"
+        columns={columns}
+        data={getTableData()}
+        onSelect={onSelect}
+        onContextMenu={onContextMenu}
+        downloadToCsvFileName="Wellbores"
+        checkableRows
+        showRefresh
+      />
+    </>
   );
 }

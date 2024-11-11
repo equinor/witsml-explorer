@@ -1,6 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
-import { Divider, MenuItem } from "@material-ui/core";
+import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -27,60 +28,54 @@ import LogComparisonModal, {
 import LogDataImportModal, {
   LogDataImportModalProps
 } from "components/Modals/LogDataImportModal";
-import LogPropertiesModal from "components/Modals/LogPropertiesModal";
-import { PropertiesModalMode } from "components/Modals/ModalParts";
 import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { ReportModal } from "components/Modals/ReportModal";
 import SpliceLogsModal from "components/Modals/SpliceLogsModal";
 import TrimLogObjectModal from "components/Modals/TrimLogObject/TrimLogObjectModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
 import CompareLogDataJob from "models/jobs/compareLogData";
 import { CopyRangeClipboard } from "models/jobs/componentReferences";
-import { CopyComponentsJob } from "models/jobs/copyJobs";
-import ObjectReference from "models/jobs/objectReference";
 import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import React, { useContext } from "react";
+import React from "react";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants";
+import {
+  getLogObjectViewPath,
+  getMultiLogCurveInfoListViewPath
+} from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import ObjectReference from "../../models/jobs/objectReference";
+import CopyMnemonicsModal, {
+  CopyMnemonicsModalProps
+} from "../Modals/CopyMnemonicsModal";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
 ): React.ReactElement => {
   const { checkedObjects } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const logCurvesReference: CopyRangeClipboard =
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
   const queryClient = useQueryClient();
-
-  const onClickProperties = () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const logObject = checkedObjects[0];
-    const logPropertiesModalProps = {
-      mode: PropertiesModalMode.Edit,
-      logObject,
-      dispatchOperation
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <LogPropertiesModal {...logPropertiesModalProps} />
-    });
-  };
+  const navigate = useNavigate();
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -117,13 +112,19 @@ const LogObjectContextMenu = (
     const targetReference: ObjectReference = toObjectReference(
       checkedObjects[0]
     );
-    const copyJob: CopyComponentsJob = {
-      source: logCurvesReference,
-      target: targetReference,
+
+    const copyMnemonicsModalProps: CopyMnemonicsModalProps = {
+      sourceReferences: logCurvesReference,
+      targetReference: targetReference,
       startIndex: logCurvesReference.startIndex,
-      endIndex: logCurvesReference.endIndex
+      endIndex: logCurvesReference.endIndex,
+      targetServer: connectedServer
     };
-    JobService.orderJob(JobType.CopyLogData, copyJob);
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: <CopyMnemonicsModal {...copyMnemonicsModalProps} />
+    };
+    dispatchOperation(action);
   };
 
   const onClickCompareHeader = () => {
@@ -261,6 +262,40 @@ const LogObjectContextMenu = (
       payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} />
     };
     dispatchOperation(action);
+  };
+
+  const onClickOpenSeveralLogs = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    if (checkedObjects.length === 1) {
+      navigate(
+        getLogObjectViewPath(
+          connectedServer.url,
+          checkedObjects[0].wellUid,
+          checkedObjects[0].wellboreUid,
+          ObjectType.Log,
+          (checkedObjects[0] as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
+            ? RouterLogType.DEPTH
+            : RouterLogType.TIME,
+          checkedObjects[0].uid
+        )
+      );
+    } else {
+      const path = getMultiLogCurveInfoListViewPath(
+        connectedServer.url,
+        checkedObjects[0].wellUid,
+        checkedObjects[0].wellboreUid,
+        ObjectType.Log,
+        (checkedObjects[0] as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
+          ? RouterLogType.DEPTH
+          : RouterLogType.TIME
+      );
+      let searchParams = {};
+      const logUids = checkedObjects.map((row) => row.uid);
+      const logUidsFormatted = JSON.stringify(logUids);
+
+      searchParams = createSearchParams({ logs: logUidsFormatted });
+      navigate({ pathname: path, search: searchParams.toString() });
+    }
   };
 
   const extraMenuItems = (): React.ReactElement[] => {
@@ -403,12 +438,18 @@ const LogObjectContextMenu = (
         disabled={checkedObjects.length === 0}
       >
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>Import log data from .csv</Typography>
+        <Typography color={"primary"}>Import log data</Typography>
       </MenuItem>,
       <Divider key={uuid()} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickProperties}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.Log,
+            checkedObjects?.[0] as LogObject,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />
@@ -420,6 +461,19 @@ const LogObjectContextMenu = (
   return (
     <ContextMenu
       menuItems={[
+        <MenuItem
+          key={"open"}
+          onClick={onClickOpenSeveralLogs}
+          disabled={checkedObjects.length > 8}
+        >
+          <StyledIcon
+            name="folderOpen"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            {menuItemText("Open", ObjectType.Log, checkedObjects)}
+          </Typography>
+        </MenuItem>,
         ...ObjectMenuItems(
           checkedObjects,
           ObjectType.Log,

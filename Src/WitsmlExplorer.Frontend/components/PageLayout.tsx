@@ -1,26 +1,27 @@
 import { useIsAuthenticated } from "@azure/msal-react";
-import { Icon, Typography } from "@equinor/eds-core-react";
+import { Icon } from "@equinor/eds-core-react";
 import Alerts from "components/Alerts";
+import { DesktopVersion, WebVersion } from "components/ApplicationVersion";
 import ContentView from "components/ContentView";
 import { preventContextMenuPropagation } from "components/ContextMenus/ContextMenu";
 import Nav from "components/Nav";
 import PropertiesPanel from "components/PropertiesPanel";
 import Sidebar from "components/Sidebar/Sidebar";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
+import { useOperationState } from "hooks/useOperationState";
 import { msalEnabled } from "msal/MsalAuthProvider";
 import {
   ReactElement,
   createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState
 } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
+import { isDesktopApp } from "tools/desktopAppHelpers";
 
 const PageLayout = (): ReactElement => {
   const sidebarRef = useRef(null);
@@ -30,8 +31,7 @@ const PageLayout = (): ReactElement => {
   const [sidebarWidth, setSidebarWidth] = useState(316);
   const { width: documentWidth, height: documentHeight } =
     useDocumentDimensions();
-  const version = import.meta.env.VITE_WEX_VERSION;
-  const { operationState } = useContext(OperationContext);
+  const { operationState } = useOperationState();
   const { colors } = operationState;
 
   const startResizing = useCallback(() => {
@@ -130,17 +130,7 @@ const PageLayout = (): ReactElement => {
             <Properties>
               <PropertiesPanel />
             </Properties>
-            {version && (
-              <Typography
-                token={{
-                  fontFamily: "Equinor",
-                  fontSize: "0.875rem",
-                  color: colors.text.staticIconsTertiary
-                }}
-              >
-                v.{version}
-              </Typography>
-            )}
+            {isDesktopApp() ? <DesktopVersion /> : <WebVersion />}
           </PropertyBar>
         </MainLayout>
       </div>

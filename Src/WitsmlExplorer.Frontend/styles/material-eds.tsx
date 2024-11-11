@@ -1,6 +1,12 @@
-import { createTheme, Theme } from "@material-ui/core";
+import {
+  buttonClasses,
+  createTheme,
+  Theme,
+  typographyClasses
+} from "@mui/material";
 import { UserTheme } from "contexts/operationStateReducer";
 import { colors } from "styles/Colors";
+import { isInAnyCompactMode } from "../tools/themeHelpers.ts";
 
 const EquinorRegular = {
   fontFamily: "EquinorRegular"
@@ -14,21 +20,6 @@ const edsTheme = createTheme({
       fontSize: 16
     }
   },
-  props: {
-    MuiCheckbox: {
-      disableRipple: true
-    },
-    MuiButtonBase: {
-      disableRipple: true
-    },
-    MuiMenu: {
-      getContentAnchorEl: null,
-      anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "left"
-      }
-    }
-  },
   palette: {
     secondary: {
       main: colors.interactive.dangerResting
@@ -37,107 +28,144 @@ const edsTheme = createTheme({
       main: colors.infographic.primaryMossGreen
     }
   },
-  overrides: {
+  components: {
     MuiCssBaseline: {
-      "@global": {
-        "@font-face": [EquinorRegular]
+      styleOverrides: {
+        "@global": {
+          "@font-face": [EquinorRegular]
+        }
       }
     },
     MuiOutlinedInput: {
-      notchedOutline: {
-        borderRadius: 0
+      styleOverrides: {
+        notchedOutline: {
+          borderRadius: 0
+        }
       }
     },
     MuiCheckbox: {
-      colorSecondary: {
-        "color": colors.infographic.primaryMossGreen,
-        "&$checked": colors.infographic.primaryMossGreen
+      defaultProps: {
+        disableRipple: true
       },
-      root: {
-        "&:hover": {
-          backgroundColor: "transparent"
+      styleOverrides: {
+        colorSecondary: {
+          "color": colors.infographic.primaryMossGreen,
+          "&.Mui-checked": colors.infographic.primaryMossGreen
         },
-        "padding": "0"
-      }
-    },
-    MuiSelect: {
-      root: {
-        paddingLeft: "0.5em"
-      }
-    },
-    MuiFormControlLabel: {
-      root: {
-        lineHeight: "1em",
-        marginBottom: 0
+        root: {
+          "&:hover": {
+            backgroundColor: "transparent"
+          },
+          "padding": "0"
+        }
       }
     },
     MuiButton: {
-      root: {
-        "&:hover": {
-          backgroundColor: colors.interactive.primaryHover
+      defaultProps: {
+        disableRipple: true
+      },
+      styleOverrides: {
+        root: {
+          "&:hover": {
+            backgroundColor: colors.interactive.primaryHover
+          },
+          "backgroundColor": colors.infographic.primaryMossGreen,
+          "color": colors.ui.backgroundDefault,
+          "fontFamily": "EquinorMedium,Arial,sans-serif",
+          "textTransform": "none",
+          "fontSize": "1rem",
+          "&.Mui-disabled": {
+            backgroundColor: colors.interactive.disabledBorder
+          }
         },
-        "backgroundColor": colors.infographic.primaryMossGreen,
-        "color": colors.ui.backgroundDefault,
-        "fontFamily": "EquinorMedium,Arial,sans-serif",
-        "textTransform": "none",
-        "fontSize": "1rem",
-        "&:disabled": {
-          backgroundColor: colors.interactive.disabledBorder
+        containedPrimary: {
+          "&:hover": {
+            backgroundColor: colors.interactive.primaryHover
+          },
+          "backgroundColor": colors.infographic.primaryMossGreen
+        },
+        containedSecondary: {
+          "&:hover": {
+            backgroundColor: colors.interactive.dangerHover
+          },
+          "backgroundColor": colors.interactive.dangerResting
+        },
+        outlined: {
+          backgroundColor: colors.ui.backgroundDefault
         }
-      },
-      containedPrimary: {
-        "&:hover": {
-          backgroundColor: colors.interactive.primaryHover
+      }
+    },
+    MuiMenu: {
+      defaultProps: {
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "left"
         },
-        "backgroundColor": colors.infographic.primaryMossGreen
-      },
-      containedSecondary: {
-        "&:hover": {
-          backgroundColor: colors.interactive.dangerHover
-        },
-        "backgroundColor": colors.interactive.dangerResting
-      },
-      outlined: {
-        backgroundColor: colors.ui.backgroundDefault
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "left"
+        }
+      }
+    },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        root: {
+          lineHeight: "1em",
+          marginBottom: 0
+        }
       }
     },
     MuiListItemIcon: {
-      root: {
-        minWidth: "24px"
+      styleOverrides: {
+        root: {
+          minWidth: "24px"
+        }
       }
     },
     MuiTableSortLabel: {
-      root: {
-        "fontFamily": "EquinorMedium,Arial,sans-serif",
-        "&& ": { color: colors.text.staticIconsDefault },
-        "&:active": { color: colors.text.staticIconsDefault }
+      styleOverrides: {
+        root: {
+          "fontFamily": "EquinorMedium,Arial,sans-serif",
+          "color": colors.text.staticIconsDefault,
+          "&:active": {
+            color: colors.text.staticIconsDefault
+          }
+        }
       }
     },
     MuiTableCell: {
-      root: {
-        lineHeight: "1.25rem",
-        padding: "1rem 1rem 0.75rem 1rem"
+      styleOverrides: {
+        root: {
+          lineHeight: "1.25rem",
+          padding: "1rem 1rem 0.75rem 1rem"
+        }
       }
     },
     MuiDialogTitle: {
-      root: {
-        padding: "0.75em 1.5em"
+      styleOverrides: {
+        root: {
+          padding: "0.75em 1.5em"
+        }
       }
     },
     MuiDialogActions: {
-      root: {
-        "marginTop": "1em",
-        "paddingLeft": 0,
-        "justifyContent": "flex-start",
-        "& .MuiButton-root": {
-          marginLeft: 0
+      styleOverrides: {
+        root: {
+          "marginTop": "1em",
+          "paddingLeft": 0,
+          "justifyContent": "flex-start",
+          "& .MuiButton-root": {
+            marginLeft: 0
+          }
         }
       }
     },
     MuiMenuItem: {
-      root: {
-        padding: "0 1.5rem",
-        margin: "0.75rem 0"
+      styleOverrides: {
+        root: {
+          padding: "0.35rem 1.5rem",
+          margin: "0.75rem 0"
+        }
       }
     }
   },
@@ -147,30 +175,62 @@ const edsTheme = createTheme({
 });
 
 const getTheme = (theme: UserTheme): Theme => {
-  if (theme === UserTheme.Compact) {
-    return createTheme({
+  let themeOverrides = {};
+  if (isInAnyCompactMode(theme)) {
+    themeOverrides = {
       ...edsTheme,
-      props: {
-        ...edsTheme.props,
+      components: {
+        ...edsTheme.components,
         MuiCheckbox: {
-          size: "small"
-        }
-      },
-      overrides: {
-        ...edsTheme.overrides,
-        MuiTableCell: {
-          root: {
-            lineHeight: "1.25rem",
-            padding: "0.25rem"
+          ...edsTheme.components.MuiCheckbox,
+          defaultProps: {
+            ...edsTheme.components.MuiCheckbox.defaultProps,
+            size: "small"
           }
+        },
+        MuiTableCell: {
+          ...edsTheme.components.MuiTableCell,
+          styleOverrides: {
+            ...edsTheme.components.MuiTableCell.styleOverrides,
+            root: {
+              // @ts-ignore
+              ...edsTheme.components.MuiTableCell.styleOverrides.root,
+              lineHeight: "1.25rem",
+              padding: "0.25rem"
+            }
+          }
+        },
+        MuiButton: {
+          ...edsTheme.components.MuiButton,
+          styleOverrides:
+            theme !== UserTheme.Compact
+              ? edsTheme.components.MuiButton.styleOverrides
+              : {
+                  root: {
+                    // @ts-ignore
+                    ...edsTheme.components.MuiButton.styleOverrides.root,
+                    padding: "0.2rem 1rem",
+                    textTransform: "initial",
+                    width: "fit-content !important",
+                    minWidth: "fit-content !important",
+                    fontSize: "0.85rem",
+                    whiteSpace: "nowrap",
+                    [`.${typographyClasses.root}`]: {
+                      fontSize: "0.85rem"
+                    },
+                    [`span.${buttonClasses.icon} svg`]: {
+                      height: "20px",
+                      width: "20px"
+                    }
+                  }
+                }
         }
       }
-    });
-  } else {
-    return createTheme({
-      ...edsTheme
-    });
+    };
   }
+  return createTheme({
+    ...edsTheme,
+    ...themeOverrides
+  });
 };
-
 export { getTheme };

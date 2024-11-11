@@ -1,14 +1,9 @@
 import { Icon, Typography } from "@equinor/eds-core-react";
-import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
-import { StyledMenu } from "components/ContextMenus/ContextMenu";
+import MenuItem, { MenuItemProps } from "@mui/material/MenuItem";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
-import OperationContext from "contexts/operationContext";
-import React, {
-  useContext,
-  useImperativeHandle,
-  useRef,
-  useState
-} from "react";
+import { useOperationState } from "hooks/useOperationState";
+import React, { useImperativeHandle, useRef, useState } from "react";
+import StyledMenu from "../StyledComponents/StyledMenu";
 
 export interface NestedMenuItemProps extends Omit<MenuItemProps, "button"> {
   label: string;
@@ -31,7 +26,7 @@ const NestedMenuItem = React.forwardRef<
   } = props;
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   const { ref: containerRefProp, ...ContainerProps } = ContainerPropsProp;
 
@@ -151,7 +146,6 @@ const NestedMenuItem = React.forwardRef<
         onClose={() => {
           setIsSubMenuOpen(false);
         }}
-        colors={colors}
       >
         <div ref={menuContainerRef} style={{ pointerEvents: "auto" }}>
           {children}

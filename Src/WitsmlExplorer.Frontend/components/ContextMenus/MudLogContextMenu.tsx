@@ -1,5 +1,5 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -12,18 +12,15 @@ import {
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
 import { useClipboardComponentReferencesOfType } from "components/ContextMenus/UseClipboardComponentReferences";
-import MudLogPropertiesModal, {
-  MudLogPropertiesModalProps
-} from "components/Modals/MudLogPropertiesModal";
+import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
-import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import MudLog from "models/mudLog";
 import { ObjectType } from "models/objectType";
-import React, { useContext } from "react";
+import React from "react";
 import { colors } from "styles/Colors";
 
 const MudLogContextMenu = (
@@ -34,21 +31,10 @@ const MudLogContextMenu = (
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
   );
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
-
-  const onClickModify = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const modifyMudLogProps: MudLogPropertiesModalProps = {
-      mudLog: checkedObjects[0] as MudLog
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <MudLogPropertiesModal {...modifyMudLogProps} />
-    });
-  };
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
@@ -78,7 +64,13 @@ const MudLogContextMenu = (
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}
-        onClick={onClickModify}
+        onClick={() =>
+          openObjectOnWellboreProperties(
+            ObjectType.MudLog,
+            checkedObjects?.[0] as MudLog,
+            dispatchOperation
+          )
+        }
         disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="settings" color={colors.interactive.primaryResting} />

@@ -1,110 +1,27 @@
 import { InteractionType } from "@azure/msal-browser";
 import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
-import { ThemeProvider } from "@material-ui/core";
+import ContextMenuPresenter from "components/ContextMenus/ContextMenuPresenter";
+import { DesktopAppEventHandler } from "components/DesktopAppEventHandler";
+import { GlobalStylesWrapper } from "components/GlobalStyles";
+import { HotKeyHandler } from "components/HotKeyHandler";
+import ModalPresenter from "components/Modals/ModalPresenter";
+import PageLayout from "components/PageLayout";
+import RefreshHandler from "components/RefreshHandler";
+import { Snackbar } from "components/Snackbar";
+import { MuiThemeProvider } from "contexts/MuiThemeProvider";
+import { ConnectedServerProvider } from "contexts/connectedServerContext";
+import { CurveThresholdProvider } from "contexts/curveThresholdContext";
+import { FilterContextProvider } from "contexts/filter";
 import { LoggedInUsernamesProvider } from "contexts/loggedInUsernamesContext";
+import { OperationStateProvider } from "contexts/operationStateProvider";
+import { QueryContextProvider } from "contexts/queryContext";
+import { SidebarProvider } from "contexts/sidebarContext";
+import { authRequest, msalEnabled, msalInstance } from "msal/MsalAuthProvider";
 import { SnackbarProvider } from "notistack";
-import { useEffect } from "react";
-import ContextMenuPresenter from "../components/ContextMenus/ContextMenuPresenter";
-import GlobalStyles from "../components/GlobalStyles";
-import ModalPresenter from "../components/Modals/ModalPresenter";
-import PageLayout from "../components/PageLayout";
-import RefreshHandler from "../components/RefreshHandler";
-import { Snackbar } from "../components/Snackbar";
-import { ConnectedServerProvider } from "../contexts/connectedServerContext";
-import { CurveThresholdProvider } from "../contexts/curveThresholdContext";
-import { FilterContextProvider } from "../contexts/filter";
-import OperationContext from "../contexts/operationContext";
-import {
-  DateTimeFormat,
-  DecimalPreference,
-  SetDateTimeFormatAction,
-  SetDecimalAction,
-  SetModeAction,
-  SetThemeAction,
-  SetTimeZoneAction,
-  TimeZone,
-  UserTheme,
-  initOperationStateReducer
-} from "../contexts/operationStateReducer";
-import OperationType from "../contexts/operationType";
-import { QueryContextProvider } from "../contexts/queryContext";
-import { SidebarProvider } from "../contexts/sidebarContext";
-import { enableDarkModeDebug } from "../debugUtils/darkModeDebug";
-import {
-  authRequest,
-  msalEnabled,
-  msalInstance
-} from "../msal/MsalAuthProvider";
-import { dark, light } from "../styles/Colors";
-import { getTheme } from "../styles/material-eds";
-import {
-  STORAGE_DATETIMEFORMAT_KEY,
-  STORAGE_DECIMAL_KEY,
-  STORAGE_MODE_KEY,
-  STORAGE_THEME_KEY,
-  STORAGE_TIMEZONE_KEY,
-  getLocalStorageItem
-} from "../tools/localStorageHelpers";
+import { isDesktopApp } from "tools/desktopAppHelpers";
+import CompactEdsProvider from "../contexts/CompactEdsProvider";
 
 export default function Root() {
-  const [operationState, dispatchOperation] = initOperationStateReducer();
-
-  useEffect(() => {
-    if (typeof localStorage != "undefined") {
-      const localStorageTheme =
-        getLocalStorageItem<UserTheme>(STORAGE_THEME_KEY);
-      if (localStorageTheme) {
-        const action: SetThemeAction = {
-          type: OperationType.SetTheme,
-          payload: localStorageTheme
-        };
-        dispatchOperation(action);
-      }
-      const storedTimeZone =
-        getLocalStorageItem<TimeZone>(STORAGE_TIMEZONE_KEY);
-      if (storedTimeZone) {
-        const action: SetTimeZoneAction = {
-          type: OperationType.SetTimeZone,
-          payload: storedTimeZone
-        };
-        dispatchOperation(action);
-      }
-      const storedMode = getLocalStorageItem<"light" | "dark">(
-        STORAGE_MODE_KEY
-      );
-      if (storedMode) {
-        const action: SetModeAction = {
-          type: OperationType.SetMode,
-          payload: storedMode == "light" ? light : dark
-        };
-        dispatchOperation(action);
-      }
-      const storedDateTimeFormat = getLocalStorageItem(
-        STORAGE_DATETIMEFORMAT_KEY
-      ) as DateTimeFormat;
-      if (storedDateTimeFormat) {
-        const action: SetDateTimeFormatAction = {
-          type: OperationType.SetDateTimeFormat,
-          payload: storedDateTimeFormat
-        };
-        dispatchOperation(action);
-      }
-      const storedDecimals = getLocalStorageItem(
-        STORAGE_DECIMAL_KEY
-      ) as DecimalPreference;
-      if (storedDecimals) {
-        const action: SetDecimalAction = {
-          type: OperationType.SetDecimal,
-          payload: storedDecimals
-        };
-        dispatchOperation(action);
-      }
-    }
-    if (import.meta.env.VITE_DARK_MODE_DEBUG) {
-      return enableDarkModeDebug(dispatchOperation);
-    }
-  }, []);
-
   return (
     <MsalProvider instance={msalInstance}>
       {msalEnabled && (
@@ -113,30 +30,34 @@ export default function Root() {
           authenticationRequest={authRequest}
         />
       )}
-      <OperationContext.Provider value={{ operationState, dispatchOperation }}>
-        <ThemeProvider theme={getTheme(operationState.theme)}>
-          <GlobalStyles colors={operationState.colors} />
+      <OperationStateProvider>
+        <MuiThemeProvider>
+          <GlobalStylesWrapper />
           <LoggedInUsernamesProvider>
             <ConnectedServerProvider>
-              <CurveThresholdProvider>
-                <SidebarProvider>
-                  <FilterContextProvider>
-                    <QueryContextProvider>
-                      <RefreshHandler />
-                      <SnackbarProvider>
-                        <Snackbar />
-                      </SnackbarProvider>
-                      <PageLayout />
-                      <ContextMenuPresenter />
-                      <ModalPresenter />
-                    </QueryContextProvider>
-                  </FilterContextProvider>
-                </SidebarProvider>
-              </CurveThresholdProvider>
+              <CompactEdsProvider>
+                <CurveThresholdProvider>
+                  <SidebarProvider>
+                    <FilterContextProvider>
+                      <QueryContextProvider>
+                        {isDesktopApp() && <DesktopAppEventHandler />}
+                        <HotKeyHandler />
+                        <RefreshHandler />
+                        <SnackbarProvider>
+                          <Snackbar />
+                        </SnackbarProvider>
+                        <PageLayout />
+                        <ContextMenuPresenter />
+                        <ModalPresenter />
+                      </QueryContextProvider>
+                    </FilterContextProvider>
+                  </SidebarProvider>
+                </CurveThresholdProvider>
+              </CompactEdsProvider>
             </ConnectedServerProvider>
           </LoggedInUsernamesProvider>
-        </ThemeProvider>
-      </OperationContext.Provider>
+        </MuiThemeProvider>
+      </OperationStateProvider>
     </MsalProvider>
   );
 }

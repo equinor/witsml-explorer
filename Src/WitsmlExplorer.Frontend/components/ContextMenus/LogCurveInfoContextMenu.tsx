@@ -1,7 +1,7 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import { WITSML_INDEX_TYPE_MD } from "components/Constants";
-import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListView";
+import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListViewUtils";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
   StyledIcon,
@@ -18,12 +18,17 @@ import AnalyzeGapModal, {
 import CopyRangeModal, {
   CopyRangeModalProps
 } from "components/Modals/CopyRangeModal";
-import LogCurveInfoPropertiesModal from "components/Modals/LogCurveInfoPropertiesModal";
 import {
   LogCurvePriorityModal,
   LogCurvePriorityModalProps
 } from "components/Modals/LogCurvePriorityModal";
-import { IndexCurve } from "components/Modals/LogPropertiesModal";
+import { PropertiesModalMode } from "components/Modals/ModalParts";
+import {
+  OffsetLogCurveModal,
+  OffsetLogCurveModalProps
+} from "components/Modals/OffsetLogCurveModal";
+import { getLogCurveInfoProperties } from "components/Modals/PropertiesModal/Properties/LogCurveInfoProperties";
+import { PropertiesModal } from "components/Modals/PropertiesModal/PropertiesModal";
 import SelectIndexToDisplayModal from "components/Modals/SelectIndexToDisplayModal";
 import {
   DisplayModalAction,
@@ -32,12 +37,16 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { ComponentType } from "models/componentType";
+import { IndexCurve } from "models/indexCurve";
 import { createComponentReferences } from "models/jobs/componentReferences";
+import ModifyLogCurveInfoJob from "models/jobs/modifyLogCurveInfoJob";
+import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
+import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
-import { JobType } from "services/jobService";
+import JobService, { JobType } from "services/jobService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
 import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
@@ -50,8 +59,11 @@ export interface LogCurveInfoContextMenuProps {
   selectedLog: LogObject;
   selectedServer: Server;
   servers: Server[];
-  prioritizedCurves: string[];
-  setPrioritizedCurves: (prioritizedCurves: string[]) => void;
+  prioritizedLocalCurves: string[];
+  setPrioritizedLocalCurves: (prioritizedLocalCurves: string[]) => void;
+  prioritizedUniversalCurves: string[];
+  setPrioritizedUniversalCurves: (prioritizedUniversalCurves: string[]) => void;
+  isMultiLog?: boolean;
 }
 
 const LogCurveInfoContextMenu = (
@@ -63,15 +75,25 @@ const LogCurveInfoContextMenu = (
     selectedLog,
     selectedServer,
     servers,
-    prioritizedCurves,
-    setPrioritizedCurves
+    prioritizedLocalCurves,
+    setPrioritizedLocalCurves,
+    prioritizedUniversalCurves,
+    setPrioritizedUniversalCurves,
+    isMultiLog = false
   } = props;
 
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
     (row, index) =>
-      prioritizedCurves.includes(row.mnemonic) ||
+      prioritizedLocalCurves.includes(row.mnemonic) ||
       (checkedLogCurveInfoRows.length > 1 && index === 0)
   );
+
+  const onlyPrioritizedUniversalCurvesAreChecked =
+    checkedLogCurveInfoRows.every(
+      (row, index) =>
+        prioritizedUniversalCurves.includes(row.mnemonic) ||
+        (checkedLogCurveInfoRows.length > 1 && index === 0)
+    );
 
   const checkedLogCurveInfoRowsWithoutIndexCurve =
     checkedLogCurveInfoRows.filter(
@@ -108,15 +130,27 @@ const LogCurveInfoContextMenu = (
     dispatchOperation({ type: OperationType.HideContextMenu });
     const logCurveInfo = checkedLogCurveInfoRows[0].logCurveInfo;
     const logCurveInfoPropertiesModalProps = {
-      logCurveInfo,
-      dispatchOperation,
-      selectedLog
+      title: `Edit properties for LogCurve: ${logCurveInfo.mnemonic}`,
+      properties: getLogCurveInfoProperties(
+        PropertiesModalMode.Edit,
+        logCurveInfo?.mnemonic === selectedLog?.indexCurve
+      ),
+      object: logCurveInfo,
+      onSubmit: async (updates: Partial<LogCurveInfo>) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        const job: ModifyLogCurveInfoJob = {
+          logReference: toObjectReference(selectedLog),
+          logCurveInfo: {
+            ...logCurveInfo,
+            ...updates
+          }
+        };
+        await JobService.orderJob(JobType.ModifyLogCurveInfo, job);
+      }
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: (
-        <LogCurveInfoPropertiesModal {...logCurveInfoPropertiesModalProps} />
-      )
+      payload: <PropertiesModal {...logCurveInfoPropertiesModalProps} />
     });
   };
 
@@ -151,8 +185,9 @@ const LogCurveInfoContextMenu = (
     const logCurvePriorityModalProps: LogCurvePriorityModalProps = {
       wellUid: selectedLog.wellUid,
       wellboreUid: selectedLog.wellboreUid,
-      prioritizedCurves,
-      setPrioritizedCurves
+      prioritizedCurves: prioritizedLocalCurves,
+      setPrioritizedCurves: setPrioritizedLocalCurves,
+      isUniversal: false
     };
     dispatchOperation({
       type: OperationType.DisplayModal,
@@ -160,36 +195,81 @@ const LogCurveInfoContextMenu = (
     });
   };
 
-  const onClickSetPriority = async () => {
+  const onClickEditUniversalPriority = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logCurvePriorityModalProps: LogCurvePriorityModalProps = {
+      prioritizedCurves: prioritizedUniversalCurves,
+      setPrioritizedCurves: setPrioritizedUniversalCurves,
+      isUniversal: true
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <LogCurvePriorityModal {...logCurvePriorityModalProps} />
+    });
+  };
+
+  const onClickOffset = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const offsetLogCurveModalProps: OffsetLogCurveModalProps = {
+      selectedLog,
+      mnemonics: checkedLogCurveInfoRowsWithoutIndexCurve.map(
+        (lc) => lc.logCurveInfo.mnemonic
+      ),
+      startIndex: selectedLog.startIndex,
+      endIndex: selectedLog.endIndex
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <OffsetLogCurveModal {...offsetLogCurveModalProps} />
+    });
+  };
+
+  const onClickSetPriority = async (isUniversal: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const newCurvesToPrioritize = checkedLogCurveInfoRows.map(
       (lc) => lc.mnemonic
     );
-    const curvesToPrioritize = Array.from(
-      new Set(prioritizedCurves.concat(newCurvesToPrioritize))
-    );
+    const curvesToPrioritize = isUniversal
+      ? Array.from(
+          new Set(prioritizedUniversalCurves.concat(newCurvesToPrioritize))
+        )
+      : Array.from(
+          new Set(prioritizedLocalCurves.concat(newCurvesToPrioritize))
+        );
     const newPrioritizedCurves =
       await LogCurvePriorityService.setPrioritizedCurves(
+        curvesToPrioritize,
+        isUniversal,
         selectedLog.wellUid,
         selectedLog.wellboreUid,
-        curvesToPrioritize
+        null
       );
-    setPrioritizedCurves(newPrioritizedCurves);
+    isUniversal
+      ? setPrioritizedUniversalCurves(newPrioritizedCurves)
+      : setPrioritizedLocalCurves(newPrioritizedCurves);
   };
 
-  const onClickRemovePriority = async () => {
+  const onClickRemovePriority = async (isUniversal: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     const curvesToDelete = checkedLogCurveInfoRows.map((lc) => lc.mnemonic);
-    const curvesToPrioritize = prioritizedCurves.filter(
-      (curve) => !curvesToDelete.includes(curve)
-    );
+    const curvesToPrioritize = isUniversal
+      ? prioritizedUniversalCurves.filter(
+          (curve) => !curvesToDelete.includes(curve)
+        )
+      : prioritizedLocalCurves.filter(
+          (curve) => !curvesToDelete.includes(curve)
+        );
     const newPrioritizedCurves =
       await LogCurvePriorityService.setPrioritizedCurves(
+        curvesToPrioritize,
+        isUniversal,
         selectedLog.wellUid,
         selectedLog.wellboreUid,
-        curvesToPrioritize
+        null
       );
-    setPrioritizedCurves(newPrioritizedCurves);
+    isUniversal
+      ? setPrioritizedUniversalCurves(newPrioritizedCurves)
+      : setPrioritizedLocalCurves(newPrioritizedCurves);
   };
 
   const toDelete = createComponentReferences(
@@ -223,7 +303,7 @@ const LogCurveInfoContextMenu = (
               ComponentType.Mnemonic
             )
           }
-          disabled={checkedLogCurveInfoRows.length === 0}
+          disabled={checkedLogCurveInfoRows.length === 0 || isMultiLog}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>
@@ -237,7 +317,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"copyRange"}
           onClick={onClickCopyRange}
-          disabled={checkedLogCurveInfoRows.length === 0}
+          disabled={checkedLogCurveInfoRows.length === 0 || isMultiLog}
         >
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>{`${menuItemText(
@@ -252,6 +332,7 @@ const LogCurveInfoContextMenu = (
           componentsToCopy={checkedLogCurveInfoRows}
           sourceParent={selectedLog}
           withRange
+          disableMenuItem={isMultiLog}
         />,
         <CopyComponentsToServerMenuItem
           key={"copyComponentToServer"}
@@ -261,6 +342,7 @@ const LogCurveInfoContextMenu = (
           componentsToPreserve={checkedLogCurveInfoRows.filter(
             (lci) => lci.mnemonic === selectedLog.indexCurve
           )}
+          disableMenuItem={isMultiLog}
         />,
         <MenuItem
           key={"delete"}
@@ -271,7 +353,9 @@ const LogCurveInfoContextMenu = (
               JobType.DeleteComponents
             )
           }
-          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
+          disabled={
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
+          }
         >
           <StyledIcon
             name="deleteToTrash"
@@ -285,7 +369,11 @@ const LogCurveInfoContextMenu = (
             )}
           </Typography>
         </MenuItem>,
-        <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
+        <NestedMenuItem
+          key={"showOnServer"}
+          label={"Show on server"}
+          disabled={isMultiLog}
+        >
           {servers.map((server: Server) => (
             <MenuItem
               key={server.name}
@@ -300,6 +388,7 @@ const LogCurveInfoContextMenu = (
                     : IndexCurve.Time
                 )
               }
+              disabled={isMultiLog}
             >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>
@@ -308,40 +397,96 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"analyzeGaps"}
           onClick={onClickAnalyzeGaps}
-          disabled={checkedLogCurveInfoRowsWithoutIndexCurve.length === 0}
+          disabled={
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
+          }
         >
           <StyledIcon name="beat" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Analyze gaps</Typography>
         </MenuItem>,
         <MenuItem
-          key={"setPriority"}
-          onClick={() =>
-            onlyPrioritizedCurvesAreChecked
-              ? onClickRemovePriority()
-              : onClickSetPriority()
+          key={"offset"}
+          onClick={onClickOffset}
+          disabled={
+            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
           }
         >
-          <StyledIcon
-            name={
-              onlyPrioritizedCurvesAreChecked
-                ? "favoriteFilled"
-                : "favoriteOutlined"
-            }
-            color={colors.interactive.primaryResting}
-          />
+          <StyledIcon name="tune" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>
-            {onlyPrioritizedCurvesAreChecked
-              ? "Remove Priority"
-              : "Set Priority"}
+            {menuItemText(
+              "offset",
+              ComponentType.Mnemonic,
+              checkedLogCurveInfoRowsWithoutIndexCurve
+            )}
           </Typography>
         </MenuItem>,
-        <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
-          <StyledIcon
-            name="favoriteOutlined"
-            color={colors.interactive.primaryResting}
-          />
-          <Typography color={"primary"}>Edit Priority</Typography>
-        </MenuItem>,
+        <NestedMenuItem
+          key={"logPriorityCurves"}
+          label={"Log Priority Curves"}
+          icon="favoriteOutlined"
+        >
+          <MenuItem
+            key={"setPriority"}
+            onClick={() =>
+              onlyPrioritizedCurvesAreChecked
+                ? onClickRemovePriority(false)
+                : onClickSetPriority(false)
+            }
+          >
+            <StyledIcon
+              name={
+                onlyPrioritizedCurvesAreChecked
+                  ? "favoriteFilled"
+                  : "favoriteOutlined"
+              }
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>
+              {onlyPrioritizedCurvesAreChecked
+                ? "Remove Local Priority"
+                : "Set Local Priority"}
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            key={"setUniversalPriority"}
+            onClick={() =>
+              onlyPrioritizedUniversalCurvesAreChecked
+                ? onClickRemovePriority(true)
+                : onClickSetPriority(true)
+            }
+          >
+            <StyledIcon
+              name={
+                onlyPrioritizedUniversalCurvesAreChecked
+                  ? "favoriteFilled"
+                  : "favoriteOutlined"
+              }
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>
+              {onlyPrioritizedUniversalCurvesAreChecked
+                ? "Remove Universal Priority"
+                : "Set Universal Priority"}
+            </Typography>
+          </MenuItem>
+          <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
+            <StyledIcon
+              name="favoriteOutlined"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Edit Local Priority</Typography>
+          </MenuItem>
+          <MenuItem
+            key={"editUniversalPriority"}
+            onClick={onClickEditUniversalPriority}
+          >
+            <StyledIcon
+              name="favoriteOutlined"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Edit Universal Priority</Typography>
+          </MenuItem>
+        </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}
@@ -357,7 +502,7 @@ const LogCurveInfoContextMenu = (
         <MenuItem
           key={"batchUpdate"}
           onClick={onClickBatchUpdate}
-          disabled={checkedLogCurveInfoRows.length < 2}
+          disabled={checkedLogCurveInfoRows.length < 2 || isMultiLog}
         >
           <StyledIcon
             name="settings"

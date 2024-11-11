@@ -1,12 +1,17 @@
 import Measure from "models/measure";
 
 export default interface TubularComponent {
-  sequence: number;
+  uid: string;
   typeTubularComponent: string;
+  sequence: number;
+  description: string;
   id: Measure;
   od: Measure;
   len: Measure;
-  tubularName: string;
-  typeTubularAssy: string;
-  uid: string;
+  numJointStand: number;
+  wtPerLen: Measure;
+  configCon: string;
+  typeMaterial: string;
+  vendor: string;
+  model: string;
 }

@@ -9,6 +9,7 @@ using Serilog;
 
 using Witsml.Data;
 using Witsml.Extensions;
+using Witsml.Metrics;
 using Witsml.ServiceReference;
 using Witsml.Xml;
 
@@ -25,6 +26,7 @@ namespace Witsml
         Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<string> UpdateInStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
+        Task<QueryResult> DeleteFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType;
         Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> TestConnectionAsync();
         Task<WitsmlCapServers> GetCap();
@@ -37,6 +39,7 @@ namespace Witsml
         private readonly StoreSoapPortClient _client;
         private readonly Uri _serverUrl;
         private IQueryLogger _queryLogger;
+        private readonly WitsmlMetrics _witsmlMetrics;
 
         [Obsolete("Use the WitsmlClientOptions based constructor instead")]
         public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null,
@@ -65,6 +68,7 @@ namespace Witsml
 
             _client = CreateSoapClient(witsmlClientOptions);
 
+            _witsmlMetrics = WitsmlMetrics.Instance;
             SetupQueryLogging(witsmlClientOptions.LogQueries);
         }
 
@@ -132,7 +136,11 @@ namespace Witsml
                 CapabilitiesIn = _clientCapabilities
             };
 
-            WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
+            WMLS_GetFromStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                _serverUrl,
+                WitsmlMethod.GetFromStore,
+                query.TypeName,
+                _client.WMLS_GetFromStoreAsync(request));
 
             LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn, request.QueryIn,
                 response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
@@ -164,7 +172,11 @@ namespace Witsml
                     CapabilitiesIn = _clientCapabilities
                 };
 
-                WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
+                WMLS_GetFromStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                    _serverUrl,
+                    WitsmlMethod.GetFromStore,
+                    query.TypeName,
+                    _client.WMLS_GetFromStoreAsync(request));
 
                 LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn,
                     request.QueryIn, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
@@ -182,7 +194,7 @@ namespace Witsml
             }
         }
 
-        private string GetQueryType(string query)
+        private static string GetQueryType(string query)
         {
             XmlReaderSettings settings = new()
             {
@@ -213,7 +225,12 @@ namespace Witsml
                 CapabilitiesIn = _clientCapabilities
             };
 
-            WMLS_GetFromStoreResponse response = await _client.WMLS_GetFromStoreAsync(request);
+            WMLS_GetFromStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                _serverUrl,
+                WitsmlMethod.GetFromStore,
+                type,
+                _client.WMLS_GetFromStoreAsync(request));
+
             LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_GetFromStoreAsync), _serverUrl, null, optionsIn,
                     query, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
 
@@ -237,7 +254,11 @@ namespace Witsml
                     CapabilitiesIn = _clientCapabilities
                 };
 
-                WMLS_AddToStoreResponse response = await _client.WMLS_AddToStoreAsync(request);
+                WMLS_AddToStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                    _serverUrl,
+                    WitsmlMethod.AddToStore,
+                    query.TypeName,
+                    _client.WMLS_AddToStoreAsync(request));
 
                 LogQueriesSentAndReceived(nameof(_client.WMLS_AddToStoreAsync), this._serverUrl, query, optionsIn,
                     request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
@@ -268,7 +289,12 @@ namespace Witsml
                 CapabilitiesIn = _clientCapabilities
             };
 
-            WMLS_AddToStoreResponse response = await _client.WMLS_AddToStoreAsync(request);
+            WMLS_AddToStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                _serverUrl,
+                WitsmlMethod.AddToStore,
+                type,
+                _client.WMLS_AddToStoreAsync(request));
+
             LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_AddToStoreAsync), _serverUrl, null, optionsIn,
                     query, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
@@ -291,7 +317,11 @@ namespace Witsml
                     CapabilitiesIn = _clientCapabilities
                 };
 
-                WMLS_UpdateInStoreResponse response = await _client.WMLS_UpdateInStoreAsync(request);
+                WMLS_UpdateInStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                    _serverUrl,
+                    WitsmlMethod.UpdateInStore,
+                    query.TypeName,
+                    _client.WMLS_UpdateInStoreAsync(request));
 
                 LogQueriesSentAndReceived(nameof(_client.WMLS_UpdateInStoreAsync), this._serverUrl, query, null,
                     request.XMLin, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
@@ -322,7 +352,12 @@ namespace Witsml
                 CapabilitiesIn = _clientCapabilities
             };
 
-            WMLS_UpdateInStoreResponse response = await _client.WMLS_UpdateInStoreAsync(request);
+            WMLS_UpdateInStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                _serverUrl,
+                WitsmlMethod.UpdateInStore,
+                type,
+                _client.WMLS_UpdateInStoreAsync(request));
+
             LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_UpdateInStoreAsync), _serverUrl, null, optionsIn,
                     query, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
@@ -333,7 +368,17 @@ namespace Witsml
             throw new Exception($"Error while adding to store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
-        public async Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType
+        public Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType
+        {
+            return DeleteFromStoreAsyncImplementation(query);
+        }
+
+        public Task<QueryResult> DeleteFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType
+        {
+            return DeleteFromStoreAsyncImplementation(query, optionsIn);
+        }
+
+        private async Task<QueryResult> DeleteFromStoreAsyncImplementation<T>(T query, OptionsIn optionsIn = null) where T : IWitsmlQueryType
         {
             try
             {
@@ -341,11 +386,15 @@ namespace Witsml
                 {
                     WMLtypeIn = query.TypeName,
                     QueryIn = XmlHelper.Serialize(query),
-                    OptionsIn = string.Empty,
+                    OptionsIn = optionsIn == null ? string.Empty : optionsIn.GetKeywords(),
                     CapabilitiesIn = _clientCapabilities
                 };
 
-                WMLS_DeleteFromStoreResponse response = await _client.WMLS_DeleteFromStoreAsync(request);
+                WMLS_DeleteFromStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                    _serverUrl,
+                    WitsmlMethod.DeleteFromStore,
+                    query.TypeName,
+                    _client.WMLS_DeleteFromStoreAsync(request));
 
                 LogQueriesSentAndReceived(nameof(_client.WMLS_DeleteFromStoreAsync), this._serverUrl, query, null,
                     request.QueryIn, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
@@ -376,7 +425,12 @@ namespace Witsml
                 CapabilitiesIn = _clientCapabilities
             };
 
-            WMLS_DeleteFromStoreResponse response = await _client.WMLS_DeleteFromStoreAsync(request);
+            WMLS_DeleteFromStoreResponse response = await _witsmlMetrics.MeasureQuery(
+                _serverUrl,
+                WitsmlMethod.DeleteFromStore,
+                type,
+                _client.WMLS_DeleteFromStoreAsync(request));
+
             LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_DeleteFromStoreAsync), _serverUrl, null, optionsIn,
                     query, response.IsSuccessful(), null, response.Result, response.SuppMsgOut);
 
@@ -389,11 +443,15 @@ namespace Witsml
 
         public async Task<QueryResult> TestConnectionAsync()
         {
-            WMLS_GetVersionResponse response = await _client.WMLS_GetVersionAsync();
+            WMLS_GetVersionResponse response =
+                await _witsmlMetrics.MeasureQuery(
+                    _serverUrl,
+                    WitsmlMethod.GetVersion,
+                    "",
+                    _client.WMLS_GetVersionAsync());
+
             if (string.IsNullOrEmpty(response.Result))
-            {
                 throw new Exception("Error while testing connection: Server failed to return a valid version");
-            }
 
             // Spec requires a comma-seperated list of supported versions without spaces
             var versions = response.Result.Split(CommonConstants.DataSeparator);
@@ -405,7 +463,11 @@ namespace Witsml
 
         public async Task<WitsmlCapServers> GetCap()
         {
-            WMLS_GetCapResponse response = await _client.WMLS_GetCapAsync(new WMLS_GetCapRequest("dataVersion=1.4.1.1"));
+            WMLS_GetCapResponse response = await _witsmlMetrics.MeasureQuery(
+                _serverUrl,
+                WitsmlMethod.GetCap,
+                "",
+                _client.WMLS_GetCapAsync(new WMLS_GetCapRequest("dataVersion=1.4.1.1")));
 
             if (response.IsSuccessful())
                 return XmlHelper.Deserialize(response.CapabilitiesOut, new WitsmlCapServers());

@@ -1,4 +1,4 @@
-import { TableCell } from "@material-ui/core";
+import { TableCell } from "@mui/material";
 import styled from "styled-components";
 import { Colors, light } from "styles/Colors";
 

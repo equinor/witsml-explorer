@@ -1,62 +1,41 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
-import {
-  ContentTable,
-  ContentTableColumn,
-  ContentTableRow,
-  ContentType
-} from "components/ContentViews/table";
+import { ContentTable } from "components/ContentViews/table";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
-import formatDateString from "components/DateFormatter";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import {
-  timeFromMinutesToMilliseconds,
-  useCurveThreshold
-} from "contexts/curveThresholdContext";
-import OperationContext from "contexts/operationContext";
+import { useCurveThreshold } from "contexts/curveThresholdContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
-import LogCurveInfo, { isNullOrEmptyIndex } from "models/logCurveInfo";
-import { measureToString } from "models/measure";
+import LogObject from "models/logObject";
 import { ObjectType } from "models/objectType";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
+import { RouterLogType } from "routes/routerConstants";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
-
-export interface LogCurveInfoRow extends ContentTableRow {
-  uid: string;
-  mnemonic: string;
-  minIndex: number | Date;
-  maxIndex: number | Date;
-  classWitsml: string;
-  unit: string;
-  mnemAlias: string;
-  logUid: string;
-  wellUid: string;
-  wellboreUid: string;
-  wellName: string;
-  wellboreName: string;
-  isActive: boolean;
-  logCurveInfo: LogCurveInfo;
-}
+import {
+  LogCurveInfoRow,
+  getColumns,
+  getTableData
+} from "./LogCurveInfoListViewUtils";
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
     operationState: { timeZone, dateTimeFormat, theme }
-  } = useContext(OperationContext);
-  const { dispatchOperation } = useContext(OperationContext);
+  } = useOperationState();
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
@@ -79,28 +58,51 @@ export default function LogCurveInfoListView() {
       objectUid,
       ComponentType.Mnemonic
     );
-  const isDepthIndex = !!logCurveInfoList?.[0]?.maxDepthIndex;
-  const isFetching = isFetchingLog || isFetchingLogCurveInfo;
-
-  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
-
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
-  const [prioritizedCurves, setPrioritizedCurves] = useState<string[]>([]);
+  const [prioritizedLocalCurves, setPrioritizedLocalCurves] = useState<
+    string[]
+  >([]);
+  const [prioritizedUniversalCurves, setPrioritizedUniversalCurves] = useState<
+    string[]
+  >([]);
+  const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
+  const isDepthIndex = logType === RouterLogType.DEPTH;
+  const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+  const allPrioritizedCurves = [
+    ...prioritizedLocalCurves,
+    ...prioritizedUniversalCurves
+  ].filter((value, index, self) => self.indexOf(value) === index);
+
+  useExpandSidebarNodes(
+    wellUid,
+    wellboreUid,
+    ObjectType.Log,
+    logType,
+    logObject?.name
+  );
 
   useEffect(() => {
     if (logObject) {
-      const getLogCurvePriority = async () => {
+      const getLogCurveLocalPriority = async () => {
         const prioritizedCurves =
           await LogCurvePriorityService.getPrioritizedCurves(
+            false,
             wellUid,
             wellboreUid
           );
-        setPrioritizedCurves(prioritizedCurves);
+        setPrioritizedLocalCurves(prioritizedCurves);
       };
 
-      getLogCurvePriority().catch(truncateAbortHandler);
+      const getLogCurveUniversalPriority = async () => {
+        const prioritizedCurves =
+          await LogCurvePriorityService.getPrioritizedCurves(true);
+        setPrioritizedUniversalCurves(prioritizedCurves);
+      };
+
+      getLogCurveLocalPriority().catch(truncateAbortHandler);
+      getLogCurveUniversalPriority().catch(truncateAbortHandler);
       setShowOnlyPrioritizedCurves(false);
     }
   }, [logObject]);
@@ -116,8 +118,10 @@ export default function LogCurveInfoListView() {
       selectedLog: logObject,
       selectedServer: connectedServer,
       servers,
-      prioritizedCurves,
-      setPrioritizedCurves
+      prioritizedLocalCurves,
+      setPrioritizedLocalCurves,
+      prioritizedUniversalCurves,
+      setPrioritizedUniversalCurves
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -128,139 +132,6 @@ export default function LogCurveInfoListView() {
       }
     });
   };
-
-  const calculateIsCurveActive = (
-    logCurveInfo: LogCurveInfo,
-    maxDepth: number
-  ): boolean => {
-    if (isDepthIndex) {
-      return (
-        maxDepth - parseFloat(logCurveInfo.maxDepthIndex) <
-        curveThreshold.depthInMeters
-      );
-    } else {
-      const dateDifferenceInMilliseconds =
-        new Date().valueOf() -
-        new Date(logCurveInfo.maxDateTimeIndex).valueOf();
-      return (
-        dateDifferenceInMilliseconds <
-        timeFromMinutesToMilliseconds(curveThreshold.timeInMinutes)
-      );
-    }
-  };
-
-  const getTableData = () => {
-    const maxDepth = Math.max(
-      ...logCurveInfoList.map((x) => parseFloat(x.maxDepthIndex))
-    );
-
-    return logCurveInfoList
-      .map((logCurveInfo) => {
-        const isActive =
-          logObject.objectGrowing &&
-          calculateIsCurveActive(logCurveInfo, maxDepth);
-        return {
-          id: `${objectUid}-${logCurveInfo.mnemonic}`,
-          uid: logCurveInfo.uid,
-          mnemonic: logCurveInfo.mnemonic,
-          minIndex: isDepthIndex
-            ? logCurveInfo.minDepthIndex
-            : formatDateString(
-                logCurveInfo.minDateTimeIndex,
-                timeZone,
-                dateTimeFormat
-              ),
-          maxIndex: isDepthIndex
-            ? logCurveInfo.maxDepthIndex
-            : formatDateString(
-                logCurveInfo.maxDateTimeIndex,
-                timeZone,
-                dateTimeFormat
-              ),
-          classWitsml: logCurveInfo.classWitsml,
-          unit: logCurveInfo.unit,
-          sensorOffset: measureToString(logCurveInfo.sensorOffset),
-          mnemAlias: logCurveInfo.mnemAlias,
-          logUid: objectUid,
-          wellUid: logObject.wellUid,
-          wellboreUid: logObject.wellboreUid,
-          wellName: logObject.wellName,
-          wellboreName: logObject.wellboreName,
-          traceState: logCurveInfo.traceState,
-          nullValue: logCurveInfo.nullValue,
-          isActive: isActive,
-          isVisibleFunction: isVisibleFunction(isActive),
-          logCurveInfo
-        };
-      })
-      .sort((curve, curve2) => {
-        if (
-          curve.mnemonic.toLowerCase() === logObject.indexCurve?.toLowerCase()
-        ) {
-          return -1;
-        } else if (
-          curve2.mnemonic.toLowerCase() === logObject.indexCurve?.toLowerCase()
-        ) {
-          return 1;
-        }
-        return curve.mnemonic.localeCompare(curve2.mnemonic);
-      });
-  };
-
-  const isVisibleFunction = (isActive: boolean): (() => boolean) => {
-    return () => {
-      if (isDepthIndex) return true;
-      return !(curveThreshold.hideInactiveCurves && !isActive);
-    };
-  };
-
-  const columns: ContentTableColumn[] = [
-    ...(!isDepthIndex
-      ? [{ property: "isActive", label: "active", type: ContentType.String }]
-      : []),
-    {
-      property: "mnemonic",
-      label: "mnemonic",
-      type: ContentType.String,
-      filterFn: (row) => {
-        return (
-          !showOnlyPrioritizedCurves ||
-          prioritizedCurves.includes(row.original.mnemonic) ||
-          row.original.mnemonic === logObject.indexCurve // Always show index curve
-        );
-      }
-    },
-    {
-      property: "minIndex",
-      label: "minIndex",
-      type: isDepthIndex ? ContentType.Number : ContentType.DateTime,
-      filterFn: (row) => {
-        return (
-          !hideEmptyMnemonics || !isNullOrEmptyIndex(row.original.minIndex)
-        );
-      }
-    },
-    {
-      property: "maxIndex",
-      label: "maxIndex",
-      type: isDepthIndex ? ContentType.Number : ContentType.DateTime
-    },
-    { property: "classWitsml", label: "classWitsml", type: ContentType.String },
-    { property: "unit", label: "unit", type: ContentType.String },
-    {
-      property: "sensorOffset",
-      label: "sensorOffset",
-      type: ContentType.Measure
-    },
-    { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
-    { property: "traceState", label: "traceState", type: ContentType.String },
-    { property: "nullValue", label: "nullValue", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String }
-  ];
-
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Log.`} />;
-  }
 
   if (isFetchedLog && !logObject) {
     return <ItemNotFound itemType={ObjectType.Log} />;
@@ -278,7 +149,9 @@ export default function LogCurveInfoListView() {
     <CommonPanelContainer key="showPriority">
       <Switch
         checked={showOnlyPrioritizedCurves}
-        disabled={prioritizedCurves.length === 0 && !showOnlyPrioritizedCurves}
+        disabled={
+          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+        }
         onChange={() =>
           setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
         }
@@ -289,21 +162,40 @@ export default function LogCurveInfoListView() {
   ];
 
   return (
-    logObject && (
-      <ContentTable
-        viewId={
-          isDepthIndex
-            ? "depthLogCurveInfoListView"
-            : "timeLogCurveInfoListView"
-        }
-        panelElements={panelElements}
-        columns={columns}
-        data={getTableData()}
-        onContextMenu={onContextMenu}
-        checkableRows
-        showRefresh
-        downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
-      />
-    )
+    <>
+      {isFetching && <ProgressSpinnerOverlay message={`Fetching Log.`} />}
+      {logObject && (
+        <ContentTable
+          viewId={
+            isDepthIndex
+              ? "depthLogCurveInfoListView"
+              : "timeLogCurveInfoListView"
+          }
+          panelElements={panelElements}
+          columns={getColumns(
+            isDepthIndex,
+            showOnlyPrioritizedCurves,
+            allPrioritizedCurves,
+            logObjects,
+            hideEmptyMnemonics,
+            true
+          )}
+          data={getTableData(
+            [logObject],
+            logCurveInfoList,
+            logObjects,
+            timeZone,
+            dateTimeFormat,
+            curveThreshold,
+            isDepthIndex,
+            objectUid
+          )}
+          onContextMenu={onContextMenu}
+          checkableRows
+          showRefresh
+          downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
+        />
+      )}
+    </>
   );
 }

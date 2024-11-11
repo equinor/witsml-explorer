@@ -1,10 +1,9 @@
-import { Radio, TextField } from "@equinor/eds-core-react";
-import { Typography } from "@material-ui/core";
+import { Radio, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
 import { getOffsetFromTimeZone } from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { StyledNativeSelect } from "components/Select";
 import { Button } from "components/StyledComponents/Button";
-import OperationContext from "contexts/operationContext";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import {
   DateTimeFormat,
   DecimalPreference,
@@ -12,20 +11,28 @@ import {
   UserTheme
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useOperationState } from "hooks/useOperationState";
 import { getAccountInfo, msalEnabled, signOut } from "msal/MsalAuthProvider";
-import React, { CSSProperties, useContext, useState } from "react";
+import React, { ChangeEvent, CSSProperties, FC, useState } from "react";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { dark, light } from "styles/Colors";
 import Icon from "styles/Icons";
 import {
+  setLocalStorageItem,
   STORAGE_DATETIMEFORMAT_KEY,
   STORAGE_DECIMAL_KEY,
+  STORAGE_HOTKEYS_ENABLED_KEY,
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
-  STORAGE_TIMEZONE_KEY,
-  setLocalStorageItem
+  STORAGE_TIMEZONE_KEY
 } from "tools/localStorageHelpers";
+
+const iconSizes: { [key in UserTheme]: 24 | 32 | 16 | 18 | 40 } = {
+  [UserTheme.Compact]: 24,
+  [UserTheme.SemiCompact]: 32,
+  [UserTheme.Comfortable]: 32
+};
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
@@ -44,9 +51,16 @@ const timeZoneLabels: Record<TimeZone, string> = {
 
 const SettingsModal = (): React.ReactElement => {
   const {
-    operationState: { theme, timeZone, colors, dateTimeFormat, decimals },
+    operationState: {
+      theme,
+      timeZone,
+      colors,
+      dateTimeFormat,
+      decimals,
+      hotKeysEnabled
+    },
     dispatchOperation
-  } = useContext(OperationContext);
+  } = useOperationState();
   const [checkedDecimalPreference, setCheckedDecimalPreference] =
     useState<string>(() => {
       return decimals === DecimalPreference.Raw
@@ -109,9 +123,7 @@ const SettingsModal = (): React.ReactElement => {
     }
   };
 
-  const onChangeDecimalPreference = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const onChangeDecimalPreference = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedValue = event.target.value;
     if (event.target.value === DecimalPreference.Raw) {
       setLocalStorageItem<DecimalPreference>(
@@ -126,17 +138,22 @@ const SettingsModal = (): React.ReactElement => {
     setCheckedDecimalPreference(selectedValue);
   };
 
+  const onChangeHotKeysEnabled = (event: ChangeEvent<HTMLInputElement>) => {
+    const hotKeysEnabled = event.target.checked;
+    setLocalStorageItem<boolean>(STORAGE_HOTKEYS_ENABLED_KEY, hotKeysEnabled);
+    dispatchOperation({
+      type: OperationType.SetHotKeysEnabled,
+      payload: hotKeysEnabled
+    });
+  };
+
   return (
     <ModalDialog
       heading="Settings"
       content={
         <div style={{ display: "flex", gap: "1rem", flexDirection: "column" }}>
           <HorizontalLayout>
-            <Icon
-              name="accessible"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="accessible" />
             <StyledNativeSelect
               label="Theme"
               id="native-select-theme"
@@ -145,15 +162,12 @@ const SettingsModal = (): React.ReactElement => {
               colors={colors}
             >
               <option value={UserTheme.Comfortable}>Comfortable</option>
+              <option value={UserTheme.SemiCompact}>Semi-compact</option>
               <option value={UserTheme.Compact}>Compact</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon
-              name="inProgress"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="inProgress" />
             <StyledNativeSelect
               id={"native-select-mode"}
               label={"Mode"}
@@ -166,11 +180,7 @@ const SettingsModal = (): React.ReactElement => {
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon
-              name="world"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="world" />
             <StyledNativeSelect
               label="Time Zone"
               id="native-select-timezone"
@@ -188,11 +198,7 @@ const SettingsModal = (): React.ReactElement => {
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon
-              name="calendar"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="calendar" />
             <StyledNativeSelect
               label="Datetime Format"
               id="native-select-datetimeformat"
@@ -208,11 +214,7 @@ const SettingsModal = (): React.ReactElement => {
           </HorizontalLayout>
           <HorizontalLayout>
             <div style={alignLayout}>
-              <Icon
-                name="edit"
-                size={32}
-                color={colors.infographic.primaryMossGreen}
-              />
+              <RowIcon name="edit" />
               <div style={alignLayout}>
                 <label style={alignLayout}>
                   <Radio
@@ -252,6 +254,24 @@ const SettingsModal = (): React.ReactElement => {
               </div>
             </div>
           </HorizontalLayout>
+          <HorizontalLayout>
+            <RowIcon style={{ alignSelf: "center" }} name="keyboard" />
+            <Checkbox
+              color={"primary"}
+              checked={hotKeysEnabled}
+              onChange={onChangeHotKeysEnabled}
+              label={"Enable HotKeys"}
+              colors={colors}
+            />
+            <Tooltip title="Alt+D or Alt+T: Navigate to Depth or Time logs.">
+              <Icon
+                style={{ alignSelf: "center", marginLeft: "8px" }}
+                name="infoCircle"
+                color={colors.interactive.primaryResting}
+                size={18}
+              />
+            </Tooltip>
+          </HorizontalLayout>
           {msalEnabled && (
             <HorizontalLayout>
               <Typography style={{ margin: "auto 1rem auto 0" }}>
@@ -276,6 +296,23 @@ const SettingsModal = (): React.ReactElement => {
       isLoading={false}
       showCancelButton={false}
       confirmText="Ok"
+    />
+  );
+};
+
+type RowIconType = { name: string; style?: CSSProperties };
+
+const RowIcon: FC<RowIconType> = ({ style, name }) => {
+  const {
+    operationState: { theme, colors }
+  } = useOperationState();
+
+  return (
+    <Icon
+      name={name}
+      style={{ marginRight: "0.4rem", ...style }}
+      size={iconSizes[theme]}
+      color={colors.infographic.primaryMossGreen}
     />
   );
 };

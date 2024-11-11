@@ -8,17 +8,17 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
 } from "components/ContextMenus/TubularComponentContextMenu";
-import ProgressSpinner from "components/ProgressSpinner";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import { ObjectType } from "models/objectType";
 import TubularComponent from "models/tubularComponent";
-import React, { useContext } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 
@@ -35,7 +35,7 @@ export interface TubularComponentRow extends ContentTableRow {
 }
 
 export default function TubularView() {
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { object: tubular, isFetched: isFetchedTubular } = useGetObject(
@@ -83,14 +83,24 @@ export default function TubularView() {
       label: "typeTubularComp",
       type: ContentType.String
     },
+    { property: "description", label: "description", type: ContentType.String },
     { property: "innerDiameter", label: "id", type: ContentType.Measure },
     { property: "od", label: "od", type: ContentType.Measure },
     { property: "len", label: "len", type: ContentType.Measure },
+    { property: "wtPerLen", label: "wtPerLen", type: ContentType.Measure },
     {
-      property: "tubularName",
-      label: "tubular.name",
+      property: "numJointStand",
+      label: "numJointStand",
+      type: ContentType.Number
+    },
+    { property: "configCon", label: "configCon", type: ContentType.String },
+    {
+      property: "typeMaterial",
+      label: "typeMaterial",
       type: ContentType.String
     },
+    { property: "vendor", label: "vendor", type: ContentType.String },
+    { property: "model", label: "model", type: ContentType.String },
     {
       property: "typeTubularAssy",
       label: "tubular.typeTubularAssy",
@@ -102,8 +112,9 @@ export default function TubularView() {
   const tubularComponentRows = tubularComponents.map((tubularComponent) => {
     return {
       id: tubularComponent.uid,
-      sequence: tubularComponent.sequence,
       typeTubularComponent: tubularComponent.typeTubularComponent,
+      sequence: tubularComponent.sequence,
+      description: tubularComponent.description,
       innerDiameter: `${tubularComponent.id?.value?.toFixed(4)} ${
         tubularComponent.id?.uom
       }`,
@@ -113,30 +124,36 @@ export default function TubularView() {
       len: `${tubularComponent.len?.value?.toFixed(4)} ${
         tubularComponent.len?.uom
       }`,
-      tubularName: tubular?.name,
+      numJointStand: tubularComponent.numJointStand,
+      wtPerLen: `${tubularComponent.wtPerLen?.value?.toFixed(4)} ${
+        tubularComponent.wtPerLen?.uom
+      }`,
+      configCon: tubularComponent.configCon,
+      typeMaterial: tubularComponent.typeMaterial,
+      vendor: tubularComponent.vendor,
+      model: tubularComponent.model,
       typeTubularAssy: tubular?.typeTubularAssy,
       uid: tubularComponent.uid,
       tubularComponent: tubularComponent
     };
   });
 
-  if (isFetching) {
-    return <ProgressSpinner message={`Fetching Tubular.`} />;
-  }
-
   if (isFetchedTubular && !tubular) {
     return <ItemNotFound itemType={ObjectType.Tubular} />;
   }
 
   return (
-    <ContentTable
-      viewId="tubularView"
-      columns={columns}
-      data={tubularComponentRows}
-      onContextMenu={onContextMenu}
-      checkableRows
-      showRefresh
-      downloadToCsvFileName={`Tubular_${tubular?.name}`}
-    />
+    <>
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Trajectory." />}
+      <ContentTable
+        viewId="tubularView"
+        columns={columns}
+        data={tubularComponentRows}
+        onContextMenu={onContextMenu}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName={`Tubular_${tubular?.name}`}
+      />
+    </>
   );
 }

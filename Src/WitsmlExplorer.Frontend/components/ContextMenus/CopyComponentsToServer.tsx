@@ -1,19 +1,18 @@
 import { Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import { menuItemText } from "components/ContextMenus/ContextMenuUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import CopyRangeModal, {
   CopyRangeModalProps
 } from "components/Modals/CopyRangeModal";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import OperationContext from "contexts/operationContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import LogCurveInfo from "models/logCurveInfo";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { Server } from "models/server";
-import { useContext } from "react";
 import { copyComponentsToServer } from "./CopyComponentsToServerUtils";
 
 export interface CopyComponentsToServerMenuItemProps {
@@ -22,6 +21,7 @@ export interface CopyComponentsToServerMenuItemProps {
   sourceParent: ObjectOnWellbore;
   withRange?: boolean;
   componentsToPreserve?: { uid: string }[] | LogCurveInfo[];
+  disableMenuItem?: boolean;
 }
 
 export const CopyComponentsToServerMenuItem = (
@@ -32,11 +32,12 @@ export const CopyComponentsToServerMenuItem = (
     componentType,
     withRange,
     componentsToPreserve,
-    sourceParent
+    sourceParent,
+    disableMenuItem
   } = props;
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const menuComponents = menuItemText("copy", componentType, componentsToCopy);
   const menuText =
     withRange === true
@@ -84,7 +85,7 @@ export const CopyComponentsToServerMenuItem = (
     <NestedMenuItem
       key={"copyComponentToServer"}
       label={menuText}
-      disabled={componentsToCopy.length < 1}
+      disabled={componentsToCopy.length < 1 || disableMenuItem}
     >
       {servers?.map(
         (server: Server) =>
@@ -94,7 +95,7 @@ export const CopyComponentsToServerMenuItem = (
               onClick={() => {
                 onClickHandler(server);
               }}
-              disabled={componentsToCopy.length < 1}
+              disabled={componentsToCopy.length < 1 || disableMenuItem}
             >
               <Typography color={"primary"}>{server.name}</Typography>
             </MenuItem>

@@ -1,19 +1,19 @@
 import { QueryClient } from "@tanstack/react-query";
+import { ObjectFilterType } from "../../contexts/filter";
 import { ComponentType, getParentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import {
   QUERY_KEY_COMPONENTS,
   QUERY_KEY_JOB_INFO,
   QUERY_KEY_OBJECT,
-  QUERY_KEY_OBJECT_SEARCH,
   QUERY_KEY_OBJECTS,
+  QUERY_KEY_OBJECT_SEARCH,
   QUERY_KEY_SERVERS,
   QUERY_KEY_WELL,
   QUERY_KEY_WELLBORE,
   QUERY_KEY_WELLBORES,
   QUERY_KEY_WELLS
 } from "./queryKeys";
-import { ObjectFilterType } from "../../contexts/filter";
 
 export const refreshServersQuery = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({

@@ -1,5 +1,5 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
@@ -10,10 +10,8 @@ import {
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
-import JobStatus from "models/jobStatus";
 import JobInfo from "models/jobs/jobInfo";
 import React from "react";
-import JobService from "services/jobService";
 import { colors } from "styles/Colors";
 
 export interface JobInfoContextMenuProps {
@@ -38,11 +36,6 @@ const JobInfoContextMenu = (
     });
   };
 
-  const onClickCancelAction = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    JobService.cancelJob(jobInfo.id);
-  };
-
   return (
     <ContextMenu
       menuItems={[
@@ -58,17 +51,6 @@ const JobInfoContextMenu = (
             color={colors.interactive.primaryResting}
           />
           <Typography color={"primary"}>Refresh</Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"cancelaction"}
-          disabled={
-            jobInfo.isCancelable === false ||
-            jobInfo.status !== JobStatus.Started
-          }
-          onClick={onClickCancelAction}
-        >
-          <StyledIcon name="clear" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Cancel job</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem key={"properties"} onClick={onClickProperties}>

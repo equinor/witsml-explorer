@@ -8,6 +8,7 @@ export const expanderId = "expander";
 export const activeId = "active"; //implemented specifically for LogCurveInfoListView, needs rework if other views will also use filtering
 export const measureSortingFn = "measure";
 export const componentSortingFn = "component";
+export const booleanSortingFn = "boolean";
 
 export const constantTableOptions = {
   enableColumnResizing: true,
@@ -26,12 +27,17 @@ export const constantTableOptions = {
 };
 
 const sortingIconSize = 16;
+
 export function calculateColumnWidth(
   label: string,
   isCompactMode: boolean,
-  type?: ContentType
+  type?: ContentType,
+  isPrimaryNestedColumn?: boolean
 ): number {
-  const padding = (isCompactMode ? 8 : 32) + sortingIconSize;
+  const padding =
+    (isCompactMode ? 8 : 32) +
+    (isPrimaryNestedColumn ? 150 : 0) +
+    sortingIconSize;
   switch (label) {
     case "name":
     case "Name":
@@ -106,7 +112,7 @@ export function calculateRowHeight(
   headCellHeight: number,
   cellHeight: number
 ): number {
-  if (row.getIsExpanded() && row.original.inset?.length != 0) {
+  if (row.getIsExpanded() && (row.original.inset?.length || 0) !== 0) {
     return (
       headCellHeight +
       cellHeight +
@@ -126,7 +132,7 @@ export const useInitFilterFns = (table: Table<any>) => {
 };
 
 export const calculateHorizontalSpace = (
-  columnItems: VirtualItem[],
+  columnItems: VirtualItem<HTMLDivElement>[],
   totalSize: number,
   stickyLeftColumns: number
 ) => {

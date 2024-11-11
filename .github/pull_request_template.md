@@ -32,6 +32,7 @@ This pull request fixes
 * [ ] Frontend
 * [ ] API
 * [ ] WITSML
+* [ ] Desktop
 * [ ] Other (please describe)
 
 ## Checklist:

@@ -1,71 +1,70 @@
 import { DotProgress } from "@equinor/eds-core-react";
-import { Tooltip } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
-import { TreeItem } from "@material-ui/lab";
-import { TreeItemProps } from "@material-ui/lab/TreeItem";
-import OperationContext from "contexts/operationContext";
-import { useSidebar } from "contexts/sidebarContext";
-import { SidebarActionType } from "contexts/sidebarReducer";
-import React, { useContext } from "react";
+import { Tooltip } from "@mui/material";
+import { TreeItem, TreeItemProps } from "@mui/x-tree-view";
+import { useOperationState } from "hooks/useOperationState";
+import React from "react";
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import { isInAnyCompactMode } from "../../tools/themeHelpers.ts";
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelText: string;
   selected?: boolean;
   isActive?: boolean;
   isLoading?: boolean;
+  to?: string;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps): React.ReactElement => {
-  const { labelText, selected, isActive, isLoading, ...other } = props;
-  const isCompactMode = useTheme().props.MuiCheckbox.size === "small";
-  const { dispatchSidebar } = useSidebar();
+  const { labelText, selected, isActive, isLoading, nodeId, to, ...other } =
+    props;
+  const {
+    operationState: { theme }
+  } = useOperationState();
+  const isCompactMode = isInAnyCompactMode(theme);
 
-  const toggleTreeNode = (props: StyledTreeItemProps) => {
-    dispatchSidebar({
-      type: SidebarActionType.ToggleTreeNode,
-      payload: { nodeId: props.nodeId }
-    });
-  };
   const {
     operationState: { colors }
-  } = useContext(OperationContext);
+  } = useOperationState();
 
   return (
     <TreeItem
-      onIconClick={() => toggleTreeNode(props)}
+      nodeId={nodeId}
       label={
-        <Label>
-          <Tooltip
-            title={labelText}
-            arrow
-            placement="top"
-            disableHoverListener={labelText === "" || labelText == null}
-          >
-            <NavigationDrawer
-              colors={colors}
-              selected={selected}
-              compactMode={isCompactMode}
+        <NavLink to={to} style={{ textDecoration: "none" }}>
+          <Label>
+            <Tooltip
+              title={labelText}
+              arrow
+              placement="top"
+              disableHoverListener={labelText === "" || labelText == null}
+              disableInteractive
             >
-              {labelText}
-            </NavigationDrawer>
-          </Tooltip>
-          {isLoading && <StyledDotProgress color={"primary"} size={32} />}
-          {isActive && (
-            <Icon
-              size={16}
-              name="beat"
-              color={colors.interactive.successHover}
-              style={{
-                position: "absolute",
-                right: "-20px",
-                top: isCompactMode ? "6px" : "14px"
-              }}
-            />
-          )}
-        </Label>
+              <NavigationDrawer
+                colors={colors}
+                selected={selected}
+                compactMode={isCompactMode}
+              >
+                {labelText}
+              </NavigationDrawer>
+            </Tooltip>
+            {isLoading && <StyledDotProgress color={"primary"} size={32} />}
+            {isActive && (
+              <Icon
+                size={16}
+                name="beat"
+                color={colors.interactive.successHover}
+                style={{
+                  position: "absolute",
+                  right: "-20px",
+                  top: isCompactMode ? "6px" : "14px"
+                }}
+              />
+            )}
+          </Label>
+        </NavLink>
       }
       {...other}
     />
@@ -95,8 +94,7 @@ const NavigationDrawer = styled.p<{
 
 const StyledDotProgress = styled(DotProgress)`
   z-index: 2;
-  top: 0.75rem;
-  position: relative;
+  align-self: center;
 `;
 
 export default StyledTreeItem;

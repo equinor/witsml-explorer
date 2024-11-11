@@ -1,21 +1,21 @@
-import { Grid } from "@material-ui/core";
-import React, { useContext, useState } from "react";
+import { Autocomplete, TextField } from "@equinor/eds-core-react";
+import { Grid } from "@mui/material";
+import { useOperationState } from "hooks/useOperationState";
+import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
+import OperationType from "../../contexts/operationType";
+import BatchModifyLogCurveInfoJob from "../../models/jobs/batchModifyLogCurveInfoJob";
 import LogCurveInfo, { EmptyLogCurveInfo } from "../../models/logCurveInfo";
 import LogObject from "../../models/logObject";
-import { toObjectReference } from "../../models/objectOnWellbore";
-import JobService, { JobType } from "../../services/jobService";
-import ModalDialog from "./ModalDialog";
-import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListView";
-import { Autocomplete, TextField } from "@equinor/eds-core-react";
 import { logTraceState } from "../../models/logTraceState";
-import { unitType } from "../../models/unitType";
-import { validText } from "./ModalParts";
 import Measure from "../../models/measure";
-import BatchModifyLogCurveInfoJob from "../../models/jobs/batchModifyLogCurveInfoJob";
-import OperationType from "../../contexts/operationType";
+import { toObjectReference } from "../../models/objectOnWellbore";
+import { unitType } from "../../models/unitType";
+import JobService, { JobType } from "../../services/jobService";
+import { LogCurveInfoRow } from "../ContentViews/LogCurveInfoListViewUtils";
+import ModalDialog from "./ModalDialog";
+import { validText } from "./ModalParts";
 import { ReportModal } from "./ReportModal";
-import OperationContext from "../../contexts/operationContext";
 
 export interface LogCurveInfoBatchUpdateModalProps {
   logCurveInfoRows: LogCurveInfoRow[];
@@ -26,7 +26,7 @@ const LogCurveInfoBatchUpdateModal = (
   props: LogCurveInfoBatchUpdateModalProps
 ): React.ReactElement => {
   const { logCurveInfoRows, selectedLog } = props;
-  const { dispatchOperation } = useContext(OperationContext);
+  const { dispatchOperation } = useOperationState();
   const [editableLogCurveInfo, setEditableLogCurveInfo] =
     useState<LogCurveInfo>(EmptyLogCurveInfo);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -108,7 +108,7 @@ const LogCurveInfoBatchUpdateModal = (
                     label={"SensorOffset value"}
                     type="number"
                     value={editableLogCurveInfo.sensorOffset?.value}
-                    onChange={(e: any) =>
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       setEditableLogCurveInfo({
                         ...editableLogCurveInfo,
                         sensorOffset: {
@@ -147,7 +147,7 @@ const LogCurveInfoBatchUpdateModal = (
                 label={"NullValue"}
                 type="number"
                 value={editableLogCurveInfo.nullValue}
-                onChange={(e: any) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setEditableLogCurveInfo({
                     ...editableLogCurveInfo,
                     nullValue: e.target.value

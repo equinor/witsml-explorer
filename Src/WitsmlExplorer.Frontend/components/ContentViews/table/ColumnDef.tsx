@@ -1,7 +1,15 @@
-import { Checkbox, IconButton, useTheme } from "@material-ui/core";
-import { ColumnDef, Row, SortingFn, Table } from "@tanstack/react-table";
+import { Checkbox, IconButton } from "@mui/material";
+import {
+  ColumnDef,
+  FilterFn,
+  FilterMeta,
+  Row,
+  SortingFn,
+  Table
+} from "@tanstack/react-table";
 import {
   activeId,
+  booleanSortingFn,
   calculateColumnWidth,
   componentSortingFn,
   expanderId,
@@ -13,9 +21,10 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table/tableParts";
-import OperationContext from "contexts/operationContext";
-import { DecimalPreference } from "contexts/operationStateReducer";
-import { useContext, useMemo } from "react";
+import { getSearchRegex } from "contexts/filter";
+import { DecimalPreference, UserTheme } from "contexts/operationStateReducer";
+import { useOperationState } from "hooks/useOperationState";
+import { useMemo } from "react";
 import Icon from "styles/Icons";
 import {
   STORAGE_CONTENTTABLE_ORDER_KEY,
@@ -27,6 +36,7 @@ declare module "@tanstack/react-table" {
   interface SortingFns {
     [measureSortingFn]: SortingFn<unknown>;
     [componentSortingFn]: SortingFn<unknown>;
+    [booleanSortingFn]: SortingFn<unknown>;
   }
 }
 
@@ -34,36 +44,43 @@ export const useColumnDef = (
   viewId: string,
   columns: ContentTableColumn[],
   insetColumns: ContentTableColumn[],
+  nested: boolean,
   checkableRows: boolean,
   stickyLeftColumns: number
 ) => {
-  const isCompactMode = useTheme().props.MuiCheckbox?.size === "small";
-
   const {
-    operationState: { decimals }
-  } = useContext(OperationContext);
+    operationState: { decimals, theme }
+  } = useOperationState();
+  const isCompactMode = theme === UserTheme.Compact;
 
   return useMemo(() => {
     const savedWidths = getLocalStorageItem<{ [label: string]: number }>(
       viewId + STORAGE_CONTENTTABLE_WIDTH_KEY
     );
-    let columnDef: ColumnDef<any, any>[] = columns.map((column) => {
+    let columnDef: ColumnDef<any, any>[] = columns.map((column, index) => {
+      const isPrimaryNestedColumn = nested && index === 0;
       const width =
         column.width ??
         savedWidths?.[column.label] ??
-        calculateColumnWidth(column.label, isCompactMode, column.type);
+        calculateColumnWidth(
+          column.label,
+          isCompactMode,
+          column.type,
+          isPrimaryNestedColumn
+        );
       return {
-        id: column.label,
-        accessorKey: column.property,
+        id: column.property,
+        accessorFn: (data) => data[column.property],
         header: column.label,
         size: width,
         meta: { type: column.type },
-        sortingFn: getSortingFn(column.type),
-        enableColumnFilter: column.filterFn != null,
-        filterFn: column.filterFn,
+        sortingFn: getSortingFn(column),
+        enableColumnFilter: column.type !== ContentType.Component,
+        filterFn: getFilterFn(column),
         ...addComponentCell(column.type),
         ...addActiveCurveFiltering(column.label),
-        ...addDecimalPreference(column.type, decimals)
+        ...addDecimalPreference(column.type, decimals),
+        ...addNestedCell(column, isPrimaryNestedColumn)
       };
     });
 
@@ -89,7 +106,7 @@ export const useColumnDef = (
     ];
 
     const firstToggleableIndex = Math.max(
-      (checkableRows ? 1 : 0) + (insetColumns ? 1 : 0),
+      (checkableRows ? 1 : 0) + (insetColumns || nested ? 1 : 0),
       stickyLeftColumns
     );
 
@@ -145,6 +162,72 @@ const addDecimalPreference = (
           return isNaN(numericValue)
             ? value
             : `${numericValue.toFixed(parseInt(decimals))} ${units}`;
+        }
+      }
+    : {};
+};
+
+const addNestedCell = (
+  column: ContentTableColumn,
+  isPrimaryNestedColumn: boolean
+): Partial<ColumnDef<any, any>> => {
+  return isPrimaryNestedColumn
+    ? {
+        enableHiding: false,
+        enableSorting: false,
+        header: ({ table }: { table: Table<any> }) => (
+          <>
+            <IconButton
+              onClick={() =>
+                table.toggleAllRowsExpanded(!table.getIsSomeRowsExpanded())
+              }
+              size="small"
+              style={{ margin: 0, padding: 0 }}
+            >
+              <Icon
+                name={
+                  table.getIsSomeRowsExpanded() ? "chevronUp" : "chevronDown"
+                }
+                style={{
+                  color: table.options.meta.colors.infographic.primaryMossGreen
+                }}
+              />
+            </IconButton>
+            {column.label}
+          </>
+        ),
+        cell: ({ row, table, getValue }) => {
+          return (
+            <div
+              style={{
+                display: "flex",
+                paddingLeft: `${row.depth * 16}px`,
+                alignItems: "center"
+              }}
+            >
+              {row.getCanExpand() && (
+                <IconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    row.getToggleExpandedHandler()();
+                  }}
+                  size="small"
+                  style={{ margin: 0, padding: 0 }}
+                >
+                  <Icon
+                    name={row.getIsExpanded() ? "chevronUp" : "chevronDown"}
+                    style={{
+                      color:
+                        table.options.meta.colors.infographic.primaryMossGreen
+                    }}
+                  />
+                </IconButton>
+              )}
+              <div style={{ paddingLeft: row.getCanExpand() ? "0" : "24px" }}>
+                {getValue()}
+              </div>
+            </div>
+          );
         }
       }
     : {};
@@ -228,11 +311,28 @@ const getCheckableRowsColumnDef = (
   };
 };
 
-const getSortingFn = (contentType: ContentType) => {
-  if (contentType == ContentType.Measure) {
+const getSortingFn = (column: ContentTableColumn) => {
+  if (column.type == ContentType.Measure) {
     return measureSortingFn;
-  } else if (contentType == ContentType.Number) {
+  } else if (column.type == ContentType.Number) {
     return "alphanumeric";
+  } else if (column.label === activeId) {
+    return booleanSortingFn;
   }
   return "text";
+};
+
+const getFilterFn = (column: ContentTableColumn): FilterFn<any> => {
+  return (
+    row: Row<any>,
+    id: string,
+    value: any,
+    addMeta: (meta: FilterMeta) => void
+  ): boolean => {
+    const filter = getSearchRegex(value, false);
+    return (
+      (!value || filter.test(row.getValue(id) ?? "")) &&
+      (!column.filterFn || column.filterFn(row, id, value, addMeta))
+    );
+  };
 };

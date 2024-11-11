@@ -1,0 +1,47 @@
+{
+  "name": "WEx-Desktop",
+  "description": "Witsml Explorer Desktop Edition",
+  "version": "0.4.0",
+  "private": true,
+  "author": "Witsml Explorer Team",
+  "repository": "https://github.com/equinor/witsml-explorer",
+  "scripts": {
+    "dev": "electron-vite dev -w",
+    "build:api": "dotnet publish -o ./dist/api --self-contained true /p:IncludeApiConfig=true /p:CONFIG_PATH=../WitsmlExplorer.Desktop/api.config.json ../WitsmlExplorer.Api/WitsmlExplorer.Api.csproj",
+    "build:frontend": "electron-vite build",
+    "build": "yarn build:api && yarn build:frontend",
+    "preview": "yarn build:api && electron-vite preview",
+    "electron:pack": "yarn build && electron-builder --dir -c electron-builder.json",
+    "electron:dist": "yarn build && electron-builder -c electron-builder.json",
+    "test:pack": "cross-env ELECTRON_IS_TEST=true playwright test",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0"
+  },
+  "main": "./dist/main/main.js",
+  "lint-staged": {
+    "**/*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier -w"
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/",
+    "out/"
+  ],
+  "devDependencies": {
+    "@playwright/test": "^1.43.1",
+    "@types/cross-spawn": "^6.0.6",
+    "@vitejs/plugin-react": "^4.2.1",
+    "cross-env": "^7.0.3",
+    "cross-spawn": "^7.0.3",
+    "electron": "^29.3.0",
+    "electron-builder": "^24.13.3",
+    "electron-playwright-helpers": "^1.7.1",
+    "electron-vite": "^2.1.0",
+    "lint-staged": "^13.0.3",
+    "vite-tsconfig-paths": "^4.3.2"
+  },
+  "dependencies": {
+    "electron-updater": "^6.1.8"
+  }
+}

@@ -1,5 +1,15 @@
+import { useOperationState } from "hooks/useOperationState";
+import { ReactElement } from "react";
 import { createGlobalStyle } from "styled-components";
 import { Colors } from "styles/Colors";
+
+export const GlobalStylesWrapper = (): ReactElement => {
+  const {
+    operationState: { colors }
+  } = useOperationState();
+
+  return <GlobalStyles colors={colors} />;
+};
 
 const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
 *,
@@ -127,7 +137,7 @@ const GlobalStyles = createGlobalStyle<{ colors: Colors }>`
     }
   }
 
-  p[class*="Typography__StyledTypography"] {
+  [class*="Typography__StyledTypography"] {
     color:${(props) => props.colors.text.staticIconsDefault};
   }
 

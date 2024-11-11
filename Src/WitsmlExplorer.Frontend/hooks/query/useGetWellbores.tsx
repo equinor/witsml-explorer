@@ -45,7 +45,7 @@ export const wellboresQuery = (
     return wellbores;
   },
   ...options,
-  enabled: !!server && !!wellUid && !(options?.enabled === false)
+  enabled: !!server && wellUid != null && !(options?.enabled === false)
 });
 
 type WellboresQueryResult = Omit<
