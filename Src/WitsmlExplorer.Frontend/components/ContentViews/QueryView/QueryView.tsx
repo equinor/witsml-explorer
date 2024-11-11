@@ -57,7 +57,7 @@ const QueryView = (): React.ReactElement => {
         activeTab={tabIndex}
         onChange={onTabChange}
         scrollable
-        style={{ overflowX: "auto", whiteSpace: "nowrap" }}
+        style={{ whiteSpace: "nowrap" }}
       >
         <Tabs.List>
           {queries.map((query) => (
