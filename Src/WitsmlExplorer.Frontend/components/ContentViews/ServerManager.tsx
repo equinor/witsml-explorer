@@ -26,7 +26,7 @@ import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
 import { useServerFilter } from "hooks/useServerFilter";
-import { Server, emptyServer } from "models/server";
+import { emptyServer, Server } from "models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
 import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,10 @@ import ServerService from "services/serverService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import {
+  setLocalStorageItem,
+  STORAGE_FILTER_PRIORITYSERVERS_KEY
+} from "tools/localStorageHelpers";
 
 const NEW_SERVER_ID = "1";
 
@@ -175,11 +179,15 @@ const ServerManager = (): React.ReactElement => {
           <CommonPanelContainer>
             <Switch
               checked={selectedFilter.filterPriorityServers}
-              onChange={() =>
+              onChange={() => {
+                setLocalStorageItem<boolean>(
+                  STORAGE_FILTER_PRIORITYSERVERS_KEY,
+                  !selectedFilter.filterPriorityServers
+                );
                 updateSelectedFilter({
                   filterPriorityServers: !selectedFilter.filterPriorityServers
-                })
-              }
+                });
+              }}
               size={theme === UserTheme.Compact ? "small" : "default"}
             />
             <Typography
