@@ -48,10 +48,13 @@ const Alerts = (): React.ReactElement => {
             ?.toString()
             .toLowerCase();
           const shouldNotify =
-            connectedServerUrl &&
-            (notificationServerUrl === null ||
-              connectedServerUrl === notificationServerUrl ||
-              connectedServerUrl === notificationSourceServerUrl);
+            (!connectedServerUrl &&
+              !notificationServerUrl &&
+              !notificationSourceServerUrl) ||
+            (connectedServerUrl &&
+              (notificationServerUrl === null ||
+                connectedServerUrl === notificationServerUrl ||
+                connectedServerUrl === notificationSourceServerUrl));
           if (!shouldNotify) {
             return;
           }

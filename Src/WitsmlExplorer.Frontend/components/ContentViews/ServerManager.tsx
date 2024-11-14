@@ -51,7 +51,7 @@ const ServerManager = (): React.ReactElement => {
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
   const [filter, setFilter] = useState<string>("");
   const searchRegex = getSearchRegex(filter);
-  const filteredServers = servers.filter(
+  const filteredServers = servers?.filter(
     (s) => !filter || searchRegex.test(s.name) || searchRegex.test(s.url)
   );
 
