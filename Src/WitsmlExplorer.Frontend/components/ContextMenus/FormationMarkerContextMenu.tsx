@@ -12,6 +12,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import FormationMarker from "models/formationMarker";
 import { ObjectType } from "models/objectType";
 import React from "react";
@@ -26,6 +27,7 @@ const FormationMarkerContextMenu = (
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
@@ -55,6 +57,7 @@ const FormationMarkerContextMenu = (
           ObjectType.FormationMarker,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

@@ -21,7 +21,8 @@ import {
   STORAGE_FILTER_INACTIVE_TIME_CURVES_KEY,
   STORAGE_FILTER_INACTIVE_TIME_CURVES_VALUE_KEY,
   STORAGE_FILTER_ISACTIVE_KEY,
-  STORAGE_FILTER_OBJECTGROWING_KEY
+  STORAGE_FILTER_OBJECTGROWING_KEY,
+  STORAGE_FILTER_PRIORITYSERVERS_KEY
 } from "tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
@@ -54,6 +55,14 @@ const FilterPanel = (): React.ReactElement => {
   const onChangeIsActive = (e: ChangeEvent<HTMLInputElement>) => {
     setLocalStorageItem<boolean>(STORAGE_FILTER_ISACTIVE_KEY, e.target.checked);
     updateSelectedFilter({ isActive: e.target.checked });
+  };
+
+  const onChangePriorityServers = (e: ChangeEvent<HTMLInputElement>) => {
+    setLocalStorageItem<boolean>(
+      STORAGE_FILTER_PRIORITYSERVERS_KEY,
+      e.target.checked
+    );
+    updateSelectedFilter({ filterPriorityServers: e.target.checked });
   };
 
   const onChangeObjectGrowing = (e: ChangeEvent<HTMLInputElement>) => {
@@ -92,6 +101,15 @@ const FilterPanel = (): React.ReactElement => {
     <EdsProvider density="compact">
       <Container colors={colors}>
         <InnerContainer>
+          <Checkbox
+            id="filter-serverPriority"
+            value={"Only show priority servers"}
+            color={"primary"}
+            checked={selectedFilter.filterPriorityServers}
+            onChange={onChangePriorityServers}
+            label={"Only show priority servers"}
+            colors={colors}
+          />
           <Checkbox
             id="filter-isActive"
             value={"Hide inactive Wells / Wellbores"}

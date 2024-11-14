@@ -17,6 +17,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import FluidsReport from "models/fluidsReport";
 import { ObjectType } from "models/objectType";
@@ -28,6 +29,7 @@ const FluidsReportContextMenu = (
 ): React.ReactElement => {
   const { checkedObjects } = props;
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const fluidReferences = useClipboardComponentReferencesOfType(
@@ -66,6 +68,7 @@ const FluidsReportContextMenu = (
           ObjectType.FluidsReport,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

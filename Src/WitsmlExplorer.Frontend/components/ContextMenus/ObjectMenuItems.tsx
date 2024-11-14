@@ -30,8 +30,8 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
-import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
 import OperationType from "../../contexts/operationType";
+import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -42,6 +42,7 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   selectedServer: Server,
   servers: Server[],
+  filteredServers: Server[],
   dispatchOperation: DispatchOperation,
   queryClient: QueryClient,
   openInQueryView: OpenInQueryView,

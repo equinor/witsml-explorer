@@ -22,6 +22,7 @@ import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import MessageObject from "models/messageObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -38,6 +39,7 @@ const MessageObjectContextMenu = (
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
 
   const onClickCompare = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -105,6 +107,7 @@ const MessageObjectContextMenu = (
           ObjectType.Message,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

@@ -12,6 +12,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import BhaRun from "models/bhaRun";
 import { ObjectType } from "models/objectType";
 import React from "react";
@@ -24,6 +25,7 @@ const BhaRunContextMenu = (
   const { dispatchOperation } = useOperationState();
   const openInQueryView = useOpenInQueryView();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
@@ -35,6 +37,7 @@ const BhaRunContextMenu = (
           ObjectType.BhaRun,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

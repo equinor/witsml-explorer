@@ -24,6 +24,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import ObjectReference from "models/jobs/objectReference";
@@ -46,6 +47,7 @@ const TubularComponentContextMenu = (
 ): React.ReactElement => {
   const { checkedTubularComponents, tubular } = props;
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { dispatchOperation } = useOperationState();
   const tubularComponentReferences = useClipboardComponentReferencesOfType(
     ComponentType.TubularComponent
@@ -184,7 +186,7 @@ const TubularComponentContextMenu = (
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
+          {filteredServers.map((server: Server) => (
             <MenuItem
               key={server.name}
               onClick={() =>

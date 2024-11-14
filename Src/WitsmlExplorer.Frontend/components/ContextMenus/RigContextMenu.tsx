@@ -13,6 +13,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ObjectType } from "models/objectType";
 import Rig from "models/rig";
 import React from "react";
@@ -25,6 +26,7 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
@@ -59,6 +61,7 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
           ObjectType.Rig,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

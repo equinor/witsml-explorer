@@ -1,4 +1,10 @@
-import { Icon, Label, TextField, Tooltip } from "@equinor/eds-core-react";
+import {
+  Icon,
+  Label,
+  Switch,
+  TextField,
+  Tooltip
+} from "@equinor/eds-core-react";
 import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import ModalDialog, {
   ControlButtonPosition,
@@ -11,7 +17,8 @@ import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
-  HideModalAction
+  HideModalAction,
+  UserTheme
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
@@ -39,7 +46,7 @@ export interface ServerModalProps {
 const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const queryClient = useQueryClient();
   const { operationState, dispatchOperation } = useOperationState();
-  const { colors } = operationState;
+  const { colors, theme } = operationState;
   const [server, setServer] = useState<Server>(props.server);
   const [connectionVerified, setConnectionVerified] = useState<boolean>(false);
   const [displayUrlError, setDisplayUrlError] = useState<boolean>(false);
@@ -267,6 +274,19 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 })
               }
               disabled={props.editDisabled}
+            />
+            <Label label="Priority" style={labelStyle} htmlFor="isPriority" />
+            <Switch
+              id="isPriority"
+              style={{ maxWidth: "fit-content" }}
+              checked={server.isPriority}
+              onChange={() =>
+                setServer({
+                  ...server,
+                  isPriority: !server.isPriority
+                })
+              }
+              size={theme === UserTheme.Compact ? "small" : "default"}
             />
             <ButtonWrapper>
               {connectionVerified && (
