@@ -196,7 +196,7 @@ const ServerManager = (): React.ReactElement => {
                 whiteSpace: "nowrap"
               }}
             >
-              Only show prioritized servers
+              Only show priority servers
             </Typography>
           </CommonPanelContainer>
         </div>

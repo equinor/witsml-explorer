@@ -117,7 +117,7 @@ export const ObjectMenuItems = (
       label={`${menuItemText("copy", objectType, checkedObjects)} to server`}
       disabled={checkedObjects.length === 0}
     >
-      {servers.map(
+      {filteredServers.map(
         (server: Server) =>
           server.id !== selectedServer.id && (
             <MenuItem
@@ -176,7 +176,7 @@ export const ObjectMenuItems = (
       label={"Show on server"}
       disabled={checkedObjects.length !== 1}
     >
-      {servers.map((server: Server) => (
+      {filteredServers.map((server: Server) => (
         <MenuItem
           key={server.name}
           onClick={() =>
