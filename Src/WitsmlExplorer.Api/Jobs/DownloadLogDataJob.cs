@@ -26,7 +26,7 @@ public record DownloadLogDataJob : Job
     public bool StartIndexIsInclusive { get; init; }
 
     /// <summary>
-    /// If to export to LAS format (default is CVS)
+    /// If to export to LAS format (default is CSV)
     /// </summary>
     public bool ExportToLas { get; init; }
 

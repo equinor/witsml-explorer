@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Witsml.Data;
+
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
@@ -63,36 +65,37 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         }
 
         var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
-        var well = await _wellService.GetWell(job.LogReference.WellUid);
         return (job.ExportToLas)
-            ? DownloadLogDataResultLasFile(job, logData.Data,
-                logData.CurveSpecifications, well)
-            : DownloadLogDataResultCvsFile(job, logData.Data,
+            ? await DownloadLogDataResultLasFile(job, logData.Data,
+                logData.CurveSpecifications)
+            : DownloadLogDataResultCsvFile(job, logData.Data,
                 logData.CurveSpecifications);
     }
 
-    private (WorkerResult, RefreshAction) DownloadLogDataResultCvsFile(DownloadLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
+    private (WorkerResult, RefreshAction) DownloadLogDataResultCsvFile(DownloadLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
     {
-        Logger.LogInformation("Download of all data is done. {jobDescription}", job.Description());
+        Logger.LogInformation("Download of log data is done. {jobDescription}", job.Description());
         string content = GetCsvFileContent(reportItems, curveSpecifications);
         job.JobInfo.Report = DownloadLogDataReport(job.LogReference, content, "csv");
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Download of all data is ready, jobId: ", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 
-    private (WorkerResult, RefreshAction) DownloadLogDataResultLasFile(DownloadLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications, Well well)
+    private async Task<(WorkerResult, RefreshAction)> DownloadLogDataResultLasFile(DownloadLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
     {
-        Logger.LogInformation("Download of all data is done. {jobDescription}", job.Description());
+        Logger.LogInformation("Download of log data is done. {jobDescription}", job.Description());
+        var well = await _wellService.GetWell(job.LogReference.WellUid);
+        var logObject = await _logObjectService.GetLog(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid);
         var columnLengths = CalculateColumnLength(reportItems,
             curveSpecifications);
-        var maxDataLenght = CalculateMaxDataLenght(well);
+        var maxWellDataLength = CalculateMaxWellDataLenght(well);
         var maxHeaderLength =
             CalculateMaxHeaderLength(curveSpecifications);
-        using var writer = new StringWriter();
-        WriteLogCommonInformation(writer, maxHeaderLength, maxDataLenght);
-        var limitValues = GetLimitValues(curveSpecifications, reportItems);
-        WriteWellInformationSection(writer, well, maxHeaderLength, maxDataLenght, limitValues);
-        WriteLogDefinitionSection(writer, curveSpecifications, maxHeaderLength, maxDataLenght);
+        await using var writer = new StringWriter();
+        WriteLogCommonInformation(writer, maxHeaderLength, maxWellDataLength);
+        var limitValues = GetLimitValues(curveSpecifications, reportItems, logObject);
+        WriteWellInformationSection(writer, well, maxHeaderLength, maxWellDataLength, limitValues);
+        WriteLogDefinitionSection(writer, curveSpecifications, maxHeaderLength, maxWellDataLength);
         WriteColumnHeaderSection(writer, curveSpecifications, columnLengths);
         WriteDataSection(writer, reportItems, curveSpecifications, columnLengths);
         string content = writer.ToString();
@@ -163,7 +166,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         return result;
     }
 
-    private int CalculateMaxDataLenght(Well well)
+    private int CalculateMaxWellDataLenght(Well well)
     {
         // long date time string, possible the biggest value
         var result = 28;
@@ -198,35 +201,31 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
     }
 
     private LimitValues GetLimitValues(ICollection<CurveSpecification> curveSpecifications,
-        ICollection<Dictionary<string, LogDataValue>> data)
+        ICollection<Dictionary<string, LogDataValue>> data, LogObject logObject)
     {
-        var curveSpecificationDepth =
-            curveSpecifications.FirstOrDefault(x => x.Mnemonic.ToLower() == "depth");
-        var curveSpecificationTime = curveSpecifications.FirstOrDefault(x => x.Mnemonic.ToLower() == "time");
-        var isDepthBasedSeries = curveSpecificationDepth != null;
+        var curveSpecification =
+            curveSpecifications.FirstOrDefault(x => string.Equals(x.Mnemonic, logObject.IndexCurve, StringComparison.CurrentCultureIgnoreCase));
+        var isDepthBasedSeries = logObject.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
         var result = new LimitValues();
-        if (curveSpecificationDepth == null && curveSpecificationTime == null)
+        if (curveSpecification == null)
             return result;
         var oneColumn = isDepthBasedSeries
             ? data.Select(row =>
 
-                row.TryGetValue(curveSpecificationDepth.Mnemonic, out LogDataValue value)
+                row.TryGetValue(curveSpecification.Mnemonic, out LogDataValue value)
                     ? value.Value.ToString()
                     : "0"
             ).ToList()
             : data.Select(row =>
-                row.TryGetValue(curveSpecificationTime.Mnemonic, out LogDataValue value)
+                row.TryGetValue(curveSpecification.Mnemonic, out LogDataValue value)
                     ? value.Value.ToString()
                     : DateTime.Now.ToString(CultureInfo.InvariantCulture)
             ).ToList();
         var firstValue = oneColumn.First();
-        var lastValue = oneColumn.Last();
         result.Start = firstValue;
-        result.Stop = lastValue;
+        result.Stop = oneColumn.Last();
         result.Step = CalculateStep(oneColumn, firstValue, isDepthBasedSeries);
-        result.Unit = isDepthBasedSeries
-            ? curveSpecificationDepth.Unit
-            : curveSpecificationTime.Unit;
+        result.Unit = curveSpecification.Unit;
         result.LogType = isDepthBasedSeries
             ? "DEPTH"
             : "TIME";
@@ -459,7 +458,11 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             line.Append(new string(' ', maxColumnLength - unit.Length - 1));
         }
         line.Append(data);
-        if (maxDataLength - data.Length > 0)
+        if (data == null)
+        {
+            line.Append(new string(' ', maxDataLength));
+        }
+        else if (maxDataLength - data.Length > 0)
         {
             line.Append(new string(' ', maxDataLength - data.Length));
         }
