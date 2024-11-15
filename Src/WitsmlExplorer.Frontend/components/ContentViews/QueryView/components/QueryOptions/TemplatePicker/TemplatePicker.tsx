@@ -46,6 +46,7 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
         aria-controls="menu-default"
         color="secondary"
         onClick={() => setIsTemplateMenuOpen(!isTemplateMenuOpen)}
+        style={{ whiteSpace: "nowrap" }}
       >
         <Icon name="style" />
         Pick template

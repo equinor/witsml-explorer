@@ -16,7 +16,9 @@ const StyledMenu: FC<MenuProps> = (props) => {
   const sizeVariant: SizeVariant =
     theme === UserTheme.Compact ? UserTheme.Compact : "default";
 
-  return <RawStyledMenu {...props} colors={colors} sizeVariant={sizeVariant} />;
+  return (
+    <RawStyledMenu {...props} colors={colors} $sizeVariant={sizeVariant} />
+  );
 };
 
 export default StyledMenu;
@@ -44,9 +46,9 @@ const sizes: {
 
 const RawStyledMenu = styled(MuiMenu)<{
   colors: Colors;
-  sizeVariant: SizeVariant;
+  $sizeVariant: SizeVariant;
 }>`
-  ${({ colors, sizeVariant }) => {
+  ${({ colors, $sizeVariant }) => {
     const { infographic, ui, interactive } = colors;
     return css`
       .${paperClasses.root} {
@@ -61,16 +63,16 @@ const RawStyledMenu = styled(MuiMenu)<{
         }
 
         .${buttonBaseClasses.root}.${menuItemClasses.root} {
-          margin: ${sizes[sizeVariant].buttonBaseMargin};
+          margin: ${sizes[$sizeVariant].buttonBaseMargin};
 
           &,
           p {
-            font-size: ${sizes[sizeVariant].menuItemFontSize};
+            font-size: ${sizes[$sizeVariant].menuItemFontSize};
           }
 
           svg {
-            height: ${sizes[sizeVariant].menuItemIconSize};
-            width: ${sizes[sizeVariant].menuItemIconSize};
+            height: ${sizes[$sizeVariant].menuItemIconSize};
+            width: ${sizes[$sizeVariant].menuItemIconSize};
           }
 
           &:hover {

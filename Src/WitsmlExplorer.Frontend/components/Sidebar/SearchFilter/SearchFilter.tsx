@@ -151,7 +151,7 @@ const SearchFilter = (): ReactElement => {
               size="small"
               label={`Search ${pluralize(selectedOption)}`}
               onKeyDown={handleEnterPress}
-              isCompact={isCompact}
+              $isCompact={isCompact}
               InputProps={{
                 startAdornment: (
                   <StartAdornment
@@ -187,13 +187,13 @@ const SearchFilter = (): ReactElement => {
   );
 };
 
-const SearchField = styled(TextField)<{ colors: Colors; isCompact: boolean }>`
+const SearchField = styled(TextField)<{ colors: Colors; $isCompact: boolean }>`
   &&& > div > fieldset {
     border-color: ${({ colors }) => colors.interactive.primaryResting};
   }
 
-  ${({ isCompact }) =>
-    !isCompact
+  ${({ $isCompact }) =>
+    !$isCompact
       ? ""
       : css`
           .${inputLabelClasses.root} {
@@ -205,8 +205,6 @@ const SearchField = styled(TextField)<{ colors: Colors; isCompact: boolean }>`
             font-size: 0.9rem;
           }
         `}
-}
-
 `;
 
 const SearchBarContainer = styled.div`
