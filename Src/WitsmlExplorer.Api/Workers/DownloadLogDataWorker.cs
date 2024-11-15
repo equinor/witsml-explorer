@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,13 +85,14 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         Logger.LogInformation("Download of all data is done. {jobDescription}", job.Description());
         var columnLengths = CalculateColumnLength(reportItems,
             curveSpecifications);
+        var maxDataLenght = CalculateMaxDataLenght(well);
         var maxHeaderLength =
             CalculateMaxHeaderLength(curveSpecifications);
         using var writer = new StringWriter();
-        WriteLogCommonInformation(writer, maxHeaderLength);
+        WriteLogCommonInformation(writer, maxHeaderLength, maxDataLenght);
         var limitValues = GetLimitValues(curveSpecifications, reportItems);
-        WriteWellInformationSection(writer, well, maxHeaderLength, limitValues);
-        WriteLogDefinitionSection(writer, curveSpecifications, maxHeaderLength);
+        WriteWellInformationSection(writer, well, maxHeaderLength, maxDataLenght, limitValues);
+        WriteLogDefinitionSection(writer, curveSpecifications, maxHeaderLength, maxDataLenght);
         WriteColumnHeaderSection(writer, curveSpecifications, columnLengths);
         WriteDataSection(writer, reportItems, curveSpecifications, columnLengths);
         string content = writer.ToString();
@@ -161,6 +163,26 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         return result;
     }
 
+    private int CalculateMaxDataLenght(Well well)
+    {
+        // long date time string, possible the biggest value
+        var result = 28;
+        Type objType = typeof(Well);
+            PropertyInfo[] properties = objType.GetProperties();
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(well);
+                if (value != null)
+                {
+                    if (value.ToString().Length > result)
+                    {
+                        result = value.ToString().Length;
+                    }
+                }
+            }
+        return result;
+    }
+
     private int CalculateMaxHeaderLength(
         ICollection<CurveSpecification> curveSpecifications)
     {
@@ -201,9 +223,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         var lastValue = oneColumn.Last();
         result.Start = firstValue;
         result.Stop = lastValue;
-
         result.Step = CalculateStep(oneColumn, firstValue, isDepthBasedSeries);
-
         result.Unit = isDepthBasedSeries
             ? curveSpecificationDepth.Unit
             : curveSpecificationTime.Unit;
@@ -213,7 +233,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         return result;
     }
 
-    private static string CalculateStep(List<string> oneColumn, string firstValue, bool isDepthBasedSeries)
+    private string CalculateStep(List<string> oneColumn, string firstValue, bool isDepthBasedSeries)
     {
         var result = string.Empty;
         foreach (var row in oneColumn)
@@ -231,7 +251,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         return result;
     }
 
-    private static string CalculateStepTime(string row, string firstValue)
+    private string CalculateStepTime(string row, string firstValue)
     {
         var secondValue = StringHelpers.ToDateTime(row);
         var difference = secondValue -
@@ -241,11 +261,10 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         {
             return string.Empty;
         }
-
         return difference.ToString();
     }
 
-    private static string CalculateStepDepth(string row, string firstValue)
+    private string CalculateStepDepth(string row, string firstValue)
     {
         var secondValue = StringHelpers.ToDecimal(row);
         var difference = secondValue -
@@ -258,65 +277,61 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         return difference.ToString(CultureInfo.InvariantCulture);
     }
 
-    private void WriteLogCommonInformation(StringWriter writer, int maxColumnLenght)
+    private void WriteLogCommonInformation(StringWriter writer, int maxColumnLenght, int maxDataLength)
     {
         writer.WriteLine("~VERSION INFORMATION");
-        WriteCommonParameter(writer, "VERS.", "2.0", "CWLS LOG ASCII STANDARD - VERSION 2.0", maxColumnLenght);
-        WriteCommonParameter(writer, "WRAP.", "NO", "ONE LINE PER STEP", maxColumnLenght);
-        WriteCommonParameter(writer, "PROD.", "Equinor", "LAS Producer", maxColumnLenght);
-        WriteCommonParameter(writer, "PROG.", "WITSML Explorer", "LAS Program name", maxColumnLenght);
-        WriteCommonParameter(writer, "CREA.", DateTime.Now.ToShortDateString(), "LAS Creation date", maxColumnLenght);
+        WriteCommonParameter(writer, "VERS.", "2.0", "CWLS LOG ASCII STANDARD - VERSION 2.0", maxColumnLenght ,maxDataLength);
+        WriteCommonParameter(writer, "WRAP.", "NO", "ONE LINE PER STEP", maxColumnLenght ,maxDataLength);
+        WriteCommonParameter(writer, "PROD.", "Equinor", "LAS Producer", maxColumnLenght ,maxDataLength);
+        WriteCommonParameter(writer, "PROG.", "WITSML Explorer", "LAS Program name", maxColumnLenght ,maxDataLength);
+        WriteCommonParameter(writer, "CREA.", DateTime.Now.ToShortDateString(), "LAS Creation date", maxColumnLenght ,maxDataLength);
     }
-    private void WriteLogDefinitionSection(StringWriter writer, ICollection<CurveSpecification> curveSpecifications, int maxColumnLenght)
+    private void WriteLogDefinitionSection(StringWriter writer, ICollection<CurveSpecification> curveSpecifications, int maxColumnLenght, int maxDataLenght)
     {
         writer.WriteLine("~PARAMETER INFORMATION");
         writer.WriteLine("~CURVE INFORMATION");
-        CreateHeader(writer, maxColumnLenght, "API CODE", "CURVE DESCRIPTION");
+        CreateHeader(writer, maxColumnLenght, maxDataLenght, "#MNEM", ".UNIT", "API CODE", "CURVE DESCRIPTION");
         int i = 1;
         foreach (var curveSpecification in curveSpecifications)
         {
             var line = new StringBuilder();
             line.Append(curveSpecification.Mnemonic);
             line.Append(new string(' ', maxColumnLenght - curveSpecification.Mnemonic.Length));
-            line.Append('.');
-            line.Append(curveSpecification.Unit);
+            line.Append($".{curveSpecification.Unit}");
             line.Append(new string(' ', maxColumnLenght - curveSpecification.Unit.Length));
-            line.Append(new string(' ', maxColumnLenght - 1));
-            line.Append(": ");
-            line.Append(i++);
-            line.Append(' ');
+            line.Append(new string(' ', maxDataLenght));
+            line.Append($": {i++} ");
             line.Append(curveSpecification.Mnemonic.Replace("_", " "));
-            line.Append(" (");
-            line.Append(curveSpecification.Unit);
-            line.Append(')');
+            line.Append($" ({curveSpecification.Unit})");
             writer.WriteLine(line.ToString());
         }
     }
 
-    private static void CreateHeader(StringWriter writer, int maxColumnLenght, string thirdColumn, string fourthColumn)
+    private void CreateHeader(StringWriter writer, int maxColumnLenght, int maxDataLenght, string firstColumn, string secondColumn, string thirdColumn, string fourthColumn)
     {
         var header = new StringBuilder();
         var secondHeader = new StringBuilder();
-        header.Append("#MNEM");
-        secondHeader.Append("#----");
-        if (maxColumnLenght > 5)
+        header.Append(firstColumn);
+        secondHeader.Append('#');
+        secondHeader.Append(new string('-', firstColumn.Length -1));
+        if (maxColumnLenght > firstColumn.Length)
         {
-            header.Append(new string(' ', maxColumnLenght - 5));
-            secondHeader.Append(new string(' ', maxColumnLenght - 5));
+            header.Append(new string(' ', maxColumnLenght - firstColumn.Length));
+            secondHeader.Append(new string(' ', maxColumnLenght - firstColumn.Length));
         }
-        header.Append(".UNIT");
-        secondHeader.Append(new string('-', 5));
-        if (maxColumnLenght > 5)
+        header.Append(secondColumn);
+        secondHeader.Append(new string('-', secondColumn.Length));
+        if (maxColumnLenght > secondColumn.Length)
         {
-            header.Append(new string(' ', maxColumnLenght - 5));
-            secondHeader.Append(new string(' ', maxColumnLenght - 5));
+            header.Append(new string(' ', maxColumnLenght - secondColumn.Length));
+            secondHeader.Append(new string(' ', maxColumnLenght - secondColumn.Length));
         }
         header.Append(thirdColumn);
         secondHeader.Append(new string('-', thirdColumn.Length));
-        if (maxColumnLenght > thirdColumn.Length)
+        if (maxDataLenght > thirdColumn.Length)
         {
-            header.Append(new string(' ', maxColumnLenght - thirdColumn.Length));
-            secondHeader.Append(new string(' ', maxColumnLenght - thirdColumn.Length));
+            header.Append(new string(' ', maxDataLenght - thirdColumn.Length + 1));
+            secondHeader.Append(new string(' ', maxDataLenght - thirdColumn.Length + 1));
         }
         header.Append(fourthColumn);
         secondHeader.Append(new string('-', fourthColumn.Length));
@@ -365,73 +380,72 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         writer.WriteLine("~A");
     }
 
-    private void WriteWellInformationSection(StringWriter writer, Well well, int maxColumnLength, LimitValues limitValues)
+    private void WriteWellInformationSection(StringWriter writer, Well well, int maxColumnLength, int maxDataLenght, LimitValues limitValues)
     {
         writer.WriteLine("~WELL INFORMATION BLOCK");
-        CreateHeader(writer, maxColumnLength, "DATA", "DESCRIPTION OF MNEMONIC");
-        WriteWellParameter(writer, "STRT", limitValues.Unit, limitValues.Start, $"START {limitValues.LogType}", maxColumnLength);
-        WriteWellParameter(writer, "STOP", limitValues.Unit, limitValues.Stop, $"STOP {limitValues.LogType}", maxColumnLength);
-        WriteWellParameter(writer, "STEP", limitValues.Unit, limitValues.Step, "STEP VALUE", maxColumnLength);
-        WriteWellParameter(writer, "SNULL", "", "", "NULL VALUE", maxColumnLength);
-        WriteWellParameter(writer, "SCOMP", "", well.Operator, "COMPANY NAME", maxColumnLength);
-        WriteWellParameter(writer, "SWELL", "", well.Name, "WELL NAME", maxColumnLength);
-        WriteWellParameter(writer, "SFLD", "", "", "FIELD NAME", maxColumnLength);
-        WriteWellParameter(writer, "SRIGN", "", "", "RIG NAME", maxColumnLength);
-        WriteWellParameter(writer, "SRIGTYP", "", "", "RIG TYPE", maxColumnLength);
-        WriteWellParameter(writer, "SSON", "", "", "Service Order Number", maxColumnLength);
-        WriteWellParameter(writer, "SSRVC", "", "", "SERVICE COMPANY NAME", maxColumnLength);
-        WriteWellParameter(writer, "SSRVL", "", "", "SERVICE LINE NAME", maxColumnLength);
-        WriteWellParameter(writer, "SLOGC", "", "", "LOGGING COMPANY NAME", maxColumnLength);
-        WriteWellParameter(writer, "SDEGT", "", "", "DEGASSER TYPE NAME", maxColumnLength);
-        WriteWellParameter(writer, "SDETT", "", "", "DEECTOR TYPE NAME", maxColumnLength);
-        WriteWellParameter(writer, "SAPPC", "", "", "APPLIED CORRECTIONS", maxColumnLength);
-        WriteWellParameter(writer, "SDATE", "", $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}", "DATE", maxColumnLength);
-        WriteWellParameter(writer, "SCLAB", "", "", "County label", maxColumnLength);
-        WriteWellParameter(writer, "SSLAB", "", "", "State/Province label", maxColumnLength);
-        WriteWellParameter(writer, "SPROV", "", "", "State or Province", maxColumnLength);
-        WriteWellParameter(writer, "SCTRY", "", well.Country, "COUNTRY", maxColumnLength);
-        WriteWellParameter(writer, "SCONT_REGION", "", "", "Continent Region", maxColumnLength);
-        WriteWellParameter(writer, "SSECT", "", "", "Section", maxColumnLength);
-        WriteWellParameter(writer, "STOWN", "", "", "Township", maxColumnLength);
-        WriteWellParameter(writer, "SRANGE", "", "", "Range", maxColumnLength);
-        WriteWellParameter(writer, "SAPI", "", "", "API Number", maxColumnLength);
-        WriteWellParameter(writer, "SUWI", "", "", "UNIQUE WELL IDENTIFIER", maxColumnLength);
-        WriteWellParameter(writer, "SLUL", "", "", "Logging Unit Location", maxColumnLength);
-        WriteWellParameter(writer, "SLUN", "", "", "Logging Unit Number", maxColumnLength);
-        WriteWellParameter(writer, "SLOC", "", "", "Field Location", maxColumnLength);
-        WriteWellParameter(writer, "SFL1", "", "", "Field Location line 1", maxColumnLength);
-        WriteWellParameter(writer, "SFL2", "", "", "Field Location line 2", maxColumnLength);
-        WriteWellParameter(writer, "SLATI", "deg", "", "Latitude", maxColumnLength);
-        WriteWellParameter(writer, "SLONG", "deg", "", "Local Permanent Datum", maxColumnLength);
-        WriteWellParameter(writer, "SPDAT", "", "", "Geodetic Datum", maxColumnLength);
-        WriteWellParameter(writer, "SGDAT", "", "", "Geodetic Datum", maxColumnLength);
-        WriteWellParameter(writer, "SLMF", "", "", "Logging Measured From", maxColumnLength);
-        WriteWellParameter(writer, "SAPD", limitValues.Unit, "", "Elevation of Depth Reference (LMF) above Permanent Datum", maxColumnLength);
-        WriteWellParameter(writer, "SEPD", limitValues.Unit, "", "Elevation of Permanent Datum (PDAT) above Mean Sea Level", maxColumnLength);
-        WriteWellParameter(writer, "SEKD", limitValues.Unit, "", "Elevation of Kelly Bushing above Permanent Datum", maxColumnLength);
-        WriteWellParameter(writer, "SEDF", limitValues.Unit, "", "Elevation of Drill Floor above Permanent Datum", maxColumnLength);
+        CreateHeader(writer, maxColumnLength, maxDataLenght, "#MNEM", ".UNIT", "DATA", "DESCRIPTION OF MNEMONIC");
+        WriteWellParameter(writer, "STRT", limitValues.Unit, limitValues.Start, $"START {limitValues.LogType}", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "STOP", limitValues.Unit, limitValues.Stop, $"STOP {limitValues.LogType}", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "STEP", limitValues.Unit, limitValues.Step, "STEP VALUE", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SNULL", "", "", "NULL VALUE", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SCOMP", "", well.Operator, "COMPANY NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SWELL", "", well.Name, "WELL NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SFLD", "", "", "FIELD NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SRIGN", "", "", "RIG NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SRIGTYP", "", "", "RIG TYPE", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SSON", "", "", "Service Order Number", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SSRVC", "", "", "SERVICE COMPANY NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SSRVL", "", "", "SERVICE LINE NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SLOGC", "", "", "LOGGING COMPANY NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SDEGT", "", "", "DEGASSER TYPE NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SDETT", "", "", "DEECTOR TYPE NAME", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SAPPC", "", "", "APPLIED CORRECTIONS", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SDATE", "", $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}", "DATE", maxColumnLength, maxDataLenght);;
+        WriteWellParameter(writer, "SCLAB", "", "", "County label", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SSLAB", "", "", "State/Province label", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SPROV", "", "", "State or Province", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SCTRY", "", well.Country, "COUNTRY", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SCONT_REGION", "", "", "Continent Region", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SSECT", "", "", "Section", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "STOWN", "", "", "Township", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SRANGE", "", "", "Range", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SAPI", "", "", "API Number", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SUWI", "", "", "UNIQUE WELL IDENTIFIER", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SLUL", "", "", "Logging Unit Location", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SLUN", "", "", "Logging Unit Number", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SLOC", "", "", "Field Location", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SFL1", "", "", "Field Location line 1", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SFL2", "", "", "Field Location line 2", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SLATI", "deg", "", "Latitude", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SLONG", "deg", "", "Local Permanent Datum", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SPDAT", "", "", "Geodetic Datum", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SGDAT", "", "", "Geodetic Datum", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SLMF", "", "", "Logging Measured From", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SAPD", "", "", "Elevation of Depth Reference (LMF) above Permanent Datum", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SEPD", "", "", "Elevation of Permanent Datum (PDAT) above Mean Sea Level", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SEKD", "", "", "Elevation of Kelly Bushing above Permanent Datum", maxColumnLength, maxDataLenght);
+        WriteWellParameter(writer, "SEDF", "", "", "Elevation of Drill Floor above Permanent Datum", maxColumnLength, maxDataLenght);
     }
 
-    private void WriteCommonParameter(StringWriter writer, string nameOfParemeter, string data, string description, int maxColumnLength)
+    private void WriteCommonParameter(StringWriter writer, string nameOfParameter, string data, string description, int maxColumnLength, int maxDataLenght)
     {
         var line = new StringBuilder();
-        line.Append(nameOfParemeter);
-        if (maxColumnLength - nameOfParemeter.Length > 0)
+        line.Append(nameOfParameter);
+        if (maxColumnLength - nameOfParameter.Length > 0)
         {
-            line.Append(new string(' ', maxColumnLength - nameOfParemeter.Length));
+            line.Append(new string(' ', maxColumnLength - nameOfParameter.Length));
         }
-        line.Append("  ");
-        line.Append(data);
-        if ((maxColumnLength * 2) - data.Length - 1 > 0)
+        line.Append($" {data}");
+        if (maxColumnLength - data.Length  > 0)
         {
-            line.Append(new string(' ', (maxColumnLength * 2) - data.Length - 1));
+            line.Append(new string(' ', maxColumnLength - data.Length));
         }
-        line.Append(':');
-        line.Append(description);
+        line.Append(new string(' ', maxDataLenght));
+        line.Append($":{description}");
         writer.WriteLine(line.ToString());
     }
     private void WriteWellParameter(StringWriter writer, string nameOfParemeter, string unit,
-        string data, string description, int maxColumnLength)
+        string data, string description, int maxColumnLength, int maxDataLength)
     {
         var line = new StringBuilder();
         line.Append(nameOfParemeter);
@@ -439,19 +453,17 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         {
             line.Append(new string(' ', maxColumnLength - nameOfParemeter.Length));
         }
-        line.Append('.');
-        line.Append(unit);
+        line.Append($".{unit}");
         if (maxColumnLength - unit.Length - 1 > 0)
         {
             line.Append(new string(' ', maxColumnLength - unit.Length - 1));
         }
         line.Append(data);
-        if (maxColumnLength - data.Length > 0)
+        if (maxDataLength - data.Length > 0)
         {
-            line.Append(new string(' ', maxColumnLength - data.Length));
+            line.Append(new string(' ', maxDataLength - data.Length));
         }
-        line.Append(':');
-        line.Append(description);
+        line.Append($" :{description}");
         writer.WriteLine(line.ToString());
     }
 
@@ -491,5 +503,4 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         public string Unit { get; set; }
         public string LogType { get; set; }
     }
-
 }
