@@ -168,18 +168,18 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         // long date time string, possible the biggest value
         var result = 28;
         Type objType = typeof(Well);
-            PropertyInfo[] properties = objType.GetProperties();
-            foreach (var property in properties)
+        PropertyInfo[] properties = objType.GetProperties();
+        foreach (var property in properties)
+        {
+            var value = property.GetValue(well);
+            if (value != null)
             {
-                var value = property.GetValue(well);
-                if (value != null)
+                if (value.ToString().Length > result)
                 {
-                    if (value.ToString().Length > result)
-                    {
-                        result = value.ToString().Length;
-                    }
+                    result = value.ToString().Length;
                 }
             }
+        }
         return result;
     }
 
@@ -280,11 +280,11 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
     private void WriteLogCommonInformation(StringWriter writer, int maxColumnLenght, int maxDataLength)
     {
         writer.WriteLine("~VERSION INFORMATION");
-        WriteCommonParameter(writer, "VERS.", "2.0", "CWLS LOG ASCII STANDARD - VERSION 2.0", maxColumnLenght ,maxDataLength);
-        WriteCommonParameter(writer, "WRAP.", "NO", "ONE LINE PER STEP", maxColumnLenght ,maxDataLength);
-        WriteCommonParameter(writer, "PROD.", "Equinor", "LAS Producer", maxColumnLenght ,maxDataLength);
-        WriteCommonParameter(writer, "PROG.", "WITSML Explorer", "LAS Program name", maxColumnLenght ,maxDataLength);
-        WriteCommonParameter(writer, "CREA.", DateTime.Now.ToShortDateString(), "LAS Creation date", maxColumnLenght ,maxDataLength);
+        WriteCommonParameter(writer, "VERS.", "2.0", "CWLS LOG ASCII STANDARD - VERSION 2.0", maxColumnLenght, maxDataLength);
+        WriteCommonParameter(writer, "WRAP.", "NO", "ONE LINE PER STEP", maxColumnLenght, maxDataLength);
+        WriteCommonParameter(writer, "PROD.", "Equinor", "LAS Producer", maxColumnLenght, maxDataLength);
+        WriteCommonParameter(writer, "PROG.", "WITSML Explorer", "LAS Program name", maxColumnLenght, maxDataLength);
+        WriteCommonParameter(writer, "CREA.", DateTime.Now.ToShortDateString(), "LAS Creation date", maxColumnLenght, maxDataLength);
     }
     private void WriteLogDefinitionSection(StringWriter writer, ICollection<CurveSpecification> curveSpecifications, int maxColumnLenght, int maxDataLenght)
     {
@@ -313,7 +313,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         var secondHeader = new StringBuilder();
         header.Append(firstColumn);
         secondHeader.Append('#');
-        secondHeader.Append(new string('-', firstColumn.Length -1));
+        secondHeader.Append(new string('-', firstColumn.Length -1 ));
         if (maxColumnLenght > firstColumn.Length)
         {
             header.Append(new string(' ', maxColumnLenght - firstColumn.Length));
@@ -400,7 +400,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         WriteWellParameter(writer, "SDEGT", "", "", "DEGASSER TYPE NAME", maxColumnLength, maxDataLenght);
         WriteWellParameter(writer, "SDETT", "", "", "DEECTOR TYPE NAME", maxColumnLength, maxDataLenght);
         WriteWellParameter(writer, "SAPPC", "", "", "APPLIED CORRECTIONS", maxColumnLength, maxDataLenght);
-        WriteWellParameter(writer, "SDATE", "", $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}", "DATE", maxColumnLength, maxDataLenght);;
+        WriteWellParameter(writer, "SDATE", "", $"{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}", "DATE", maxColumnLength, maxDataLenght);
         WriteWellParameter(writer, "SCLAB", "", "", "County label", maxColumnLength, maxDataLenght);
         WriteWellParameter(writer, "SSLAB", "", "", "State/Province label", maxColumnLength, maxDataLenght);
         WriteWellParameter(writer, "SPROV", "", "", "State or Province", maxColumnLength, maxDataLenght);
@@ -436,7 +436,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             line.Append(new string(' ', maxColumnLength - nameOfParameter.Length));
         }
         line.Append($" {data}");
-        if (maxColumnLength - data.Length  > 0)
+        if (maxColumnLength - data.Length > 0)
         {
             line.Append(new string(' ', maxColumnLength - data.Length));
         }
