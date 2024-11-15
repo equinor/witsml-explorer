@@ -275,7 +275,16 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               }
               disabled={props.editDisabled}
             />
-            <Label label="Priority" style={labelStyle} htmlFor="isPriority" />
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <Label label="Priority" style={labelStyle} htmlFor="isPriority" />
+              <Tooltip title="Marking a server as a priority allows you to filter and only display these servers throughout the application.">
+                <Icon
+                  name="infoCircle"
+                  color={colors.interactive.primaryResting}
+                  size={18}
+                />
+              </Tooltip>
+            </div>
             <Switch
               id="isPriority"
               style={{ maxWidth: "fit-content" }}
