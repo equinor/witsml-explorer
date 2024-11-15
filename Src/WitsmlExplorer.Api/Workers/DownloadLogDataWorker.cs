@@ -145,8 +145,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         return body;
     }
 
-     private Dictionary<string, int> CalculateColumnLength(
-        ICollection<Dictionary<string, LogDataValue>> data, ICollection<CurveSpecification> curveSpecifications)
+    private Dictionary<string, int> CalculateColumnLength(ICollection<Dictionary<string, LogDataValue>> data, ICollection<CurveSpecification> curveSpecifications)
     {
         var result = new Dictionary<string, int>();
         foreach (var curveSpecification in curveSpecifications)

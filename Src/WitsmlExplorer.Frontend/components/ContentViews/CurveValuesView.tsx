@@ -424,7 +424,6 @@ export const CurveValuesView = (): React.ReactElement => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
     const exportToLas = downloadFormat === DownloadFormat.Las;
-    console.log(exportToLas);
     const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
@@ -440,7 +439,6 @@ export const CurveValuesView = (): React.ReactElement => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
     const exportToLas = downloadFormat === DownloadFormat.Las;
-    console.log(exportToLas);
     const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
