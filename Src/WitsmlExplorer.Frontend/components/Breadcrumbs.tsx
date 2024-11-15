@@ -401,19 +401,20 @@ const StyledNavLink = styled(NavLink)`
 `;
 
 const StyledBreadcrumbs = styled(EdsBreadcrumbs)<{ $isCompact: boolean }>`
-  padding-top: 0.2em;
-  height: 1.5rem;
   overflow: clip;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: fit-content;
+
+  li > span {
+    display: inline-flex;
+  }
 
   ${({ $isCompact }) =>
     !$isCompact
       ? ""
       : css`
-          display: flex;
-          justify-content: flex-start;
-          align-items: center;
-          padding-top: 0;
-
           li > span {
             font-size: 0.8rem;
           }
