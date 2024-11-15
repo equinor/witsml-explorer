@@ -409,6 +409,7 @@ const StyledBreadcrumbs = styled(EdsBreadcrumbs)<{ $isCompact: boolean }>`
 
   li > span {
     display: inline-flex;
+    line-height: 16px;
   }
 
   ${({ $isCompact }) =>
