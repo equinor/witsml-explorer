@@ -1,7 +1,6 @@
-import { Switch, TextField, Typography } from "@equinor/eds-core-react";
+import { TextField } from "@equinor/eds-core-react";
 import { Box, Stack } from "@mui/material";
-import { CommonPanelContainer } from "components/StyledComponents/Container.tsx";
-import { ChangeEvent, FC, useContext, useState } from "react";
+import React, { ChangeEvent, FC, useContext, useState } from "react";
 import styled, { css } from "styled-components";
 import { DispatchOperation } from "../../../../../contexts/operationStateReducer.tsx";
 import OperationType from "../../../../../contexts/operationType.ts";
@@ -23,6 +22,7 @@ import {
   StoreFunction
 } from "../../../QueryViewUtils.tsx";
 import TemplatePicker from "./TemplatePicker";
+import DataGridSwitch from "./DataGridSwitch";
 
 export enum QueryEditorTypes {
   AceEditor = "AceEditor",
@@ -32,10 +32,12 @@ export enum QueryEditorTypes {
 type QueryOptionsProps = {
   onQueryChange: (newValue: string) => void;
   onChangeEditorType: (type: QueryEditorTypes) => void;
+  editorType: QueryEditorTypes;
 };
 
 const QueryOptions: FC<QueryOptionsProps> = ({
   onQueryChange,
+  editorType,
   onChangeEditorType
 }) => {
   const {
@@ -147,19 +149,6 @@ const QueryOptions: FC<QueryOptionsProps> = ({
           gap="0.5rem"
           direction="row"
         >
-          <CommonPanelContainer>
-            <Switch
-              onChange={(event) =>
-                onChangeEditorType(
-                  event.target.checked
-                    ? QueryEditorTypes.DataGrid
-                    : QueryEditorTypes.AceEditor
-                )
-              }
-              size="small"
-            />
-            <Typography>Data Grid</Typography>
-          </CommonPanelContainer>
           <TemplatePicker
             dispatchQuery={dispatchQuery}
             returnElements={returnElements}
@@ -170,7 +159,6 @@ const QueryOptions: FC<QueryOptionsProps> = ({
           </Button>
         </Stack>
       </Stack>
-
       {(storeFunction === StoreFunction.GetFromStore ||
         storeFunction === StoreFunction.DeleteFromStore) && (
         <Box height="fit-content" pt="1rem">
@@ -211,6 +199,18 @@ const QueryOptions: FC<QueryOptionsProps> = ({
           </Box>
         </Box>
       )}
+      <Stack direction="row" justifyContent="flex-end" mt="0.5rem">
+        <DataGridSwitch
+          dataGridActive={editorType === QueryEditorTypes.DataGrid}
+          onClick={(event) =>
+            onChangeEditorType(
+              event.target.checked
+                ? QueryEditorTypes.DataGrid
+                : QueryEditorTypes.AceEditor
+            )
+          }
+        />
+      </Stack>
     </Box>
   );
 };

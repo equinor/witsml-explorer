@@ -57,7 +57,7 @@ const QueryView = (): React.ReactElement => {
         activeTab={tabIndex}
         onChange={onTabChange}
         scrollable
-        style={{ overflowX: "auto", whiteSpace: "nowrap" }}
+        style={{ whiteSpace: "nowrap" }}
       >
         <Tabs.List>
           {queries.map((query) => (
@@ -86,13 +86,14 @@ const QueryView = (): React.ReactElement => {
         <Box
           display="grid"
           gridTemplateRows="auto 1fr auto"
-          gap="1rem"
+          gap="0.5rem"
           height="100%"
           pr="2px"
         >
           <QueryOptions
             onQueryChange={onQueryChange}
             onChangeEditorType={setEditorType}
+            editorType={editorType}
           />
           {editorType === QueryEditorTypes.DataGrid ? (
             <QueryDataGrid />
