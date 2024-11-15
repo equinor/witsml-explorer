@@ -22,8 +22,7 @@ import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
 import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import { refreshServersQuery } from "hooks/query/queryRefreshHelpers";
-import { useGetServers } from "hooks/query/useGetServers";
+import { getServersQueryKey, useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
 import { useServerFilter } from "hooks/useServerFilter";
 import { emptyServer, Server } from "models/server";
@@ -110,18 +109,29 @@ const ServerManager = (): React.ReactElement => {
 
   const togglePriority = async (server: Server) => {
     try {
+      // Optimistically update the query cache to avoid full rerenders and to keep the scroll position.
+      queryClient.setQueryData(getServersQueryKey(), (oldServers: Server[]) =>
+        oldServers?.map((s) =>
+          s.id === server.id ? { ...s, isPriority: !s.isPriority } : s
+        )
+      );
+
       const freshServer = await ServerService.updateServer({
         ...server,
         isPriority: !server.isPriority
       });
       if (freshServer) {
-        refreshServersQuery(queryClient);
-        AuthorizationService.onServerStateChange(server);
+        AuthorizationService.onServerStateChange(freshServer);
       }
     } catch (error) {
+      // Roll back on failure
+      queryClient.setQueryData(getServersQueryKey(), (oldServers: Server[]) =>
+        oldServers?.map((s) => (s.id === server.id ? server : s))
+      );
+
       NotificationService.Instance.alertDispatcher.dispatch({
         serverUrl: null,
-        message: error.message,
+        message: `Unable to update priority: ${error.message}`,
         isSuccess: false
       });
     }
@@ -268,6 +278,7 @@ const ServerManager = (): React.ReactElement => {
                 <Table.Cell style={CellStyle}>
                   <Button
                     variant="ghost"
+                    disabled={editDisabled || isError}
                     onClick={() => togglePriority(server)}
                   >
                     <Icon
@@ -293,7 +304,7 @@ const ServerManager = (): React.ReactElement => {
                 <Table.Cell style={CellStyle}>
                   <Button
                     data-testid="deleteServerButton"
-                    disabled={editDisabled}
+                    disabled={editDisabled || isError}
                     variant="ghost"
                     onClick={() =>
                       showDeleteServerModal(
