@@ -205,8 +205,6 @@ const SearchField = styled(TextField)<{ colors: Colors; $isCompact: boolean }>`
             font-size: 0.9rem;
           }
         `}
-}
-
 `;
 
 const SearchBarContainer = styled.div`
