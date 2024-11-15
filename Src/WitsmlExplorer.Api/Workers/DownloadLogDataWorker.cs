@@ -156,7 +156,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
                     ? value.Value.ToString()!.Length
                     : 0
             ).Max();
-            result[curveSpecification.Mnemonic] = (curveSpecification.Mnemonic.Length + curveSpecification.Unit.Length + 3) > oneColumn ? curveSpecification.Mnemonic.Length + curveSpecification.Unit.Length + 3: oneColumn ;
+            result[curveSpecification.Mnemonic] = (curveSpecification.Mnemonic.Length + curveSpecification.Unit.Length + 3) > oneColumn ? curveSpecification.Mnemonic.Length + curveSpecification.Unit.Length + 3 : oneColumn;
         }
         return result;
     }
@@ -182,7 +182,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             curveSpecifications.FirstOrDefault(x => x.Mnemonic.ToLower() == "depth");
         var curveSpecificationTime = curveSpecifications.FirstOrDefault(x => x.Mnemonic.ToLower() == "time");
         var isDepthBasedSeries = curveSpecificationDepth != null;
-        var result = new LimitValues() ;
+        var result = new LimitValues();
         if (curveSpecificationDepth == null && curveSpecificationTime == null)
             return result;
         var oneColumn = isDepthBasedSeries
@@ -236,7 +236,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         var secondValue = StringHelpers.ToDateTime(row);
         var difference = secondValue -
                          StringHelpers.ToDateTime(firstValue);
-        var newDifference = StringHelpers.ToDateTime(row) -  StringHelpers.ToDateTime(firstValue);
+        var newDifference = StringHelpers.ToDateTime(row) - StringHelpers.ToDateTime(firstValue);
         if (difference != newDifference)
         {
             return string.Empty;
@@ -250,7 +250,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         var secondValue = StringHelpers.ToDecimal(row);
         var difference = secondValue -
                          StringHelpers.ToDecimal(firstValue);
-        var newDifference = StringHelpers.ToDecimal(row) -  StringHelpers.ToDecimal(firstValue);
+        var newDifference = StringHelpers.ToDecimal(row) - StringHelpers.ToDecimal(firstValue);
         if (difference != newDifference)
         {
             return string.Empty;
@@ -281,7 +281,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             line.Append('.');
             line.Append(curveSpecification.Unit);
             line.Append(new string(' ', maxColumnLenght - curveSpecification.Unit.Length));
-            line.Append(new string(' ', maxColumnLenght -1));
+            line.Append(new string(' ', maxColumnLenght - 1));
             line.Append(": ");
             line.Append(i++);
             line.Append(' ');
@@ -340,7 +340,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             {
                 line.Append("# ");
                 if (emptySpaces > 2)
-                    line.Append(new string(' ', emptySpaces -2));
+                    line.Append(new string(' ', emptySpaces - 2));
             }
             else
             {
@@ -369,7 +369,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
     {
         writer.WriteLine("~WELL INFORMATION BLOCK");
         CreateHeader(writer, maxColumnLength, "DATA", "DESCRIPTION OF MNEMONIC");
-        WriteWellParameter(writer, "STRT", limitValues.Unit, limitValues.Start,$"START {limitValues.LogType}", maxColumnLength);
+        WriteWellParameter(writer, "STRT", limitValues.Unit, limitValues.Start, $"START {limitValues.LogType}", maxColumnLength);
         WriteWellParameter(writer, "STOP", limitValues.Unit, limitValues.Stop, $"STOP {limitValues.LogType}", maxColumnLength);
         WriteWellParameter(writer, "STEP", limitValues.Unit, limitValues.Step, "STEP VALUE", maxColumnLength);
         WriteWellParameter(writer, "SNULL", "", "", "NULL VALUE", maxColumnLength);
@@ -422,7 +422,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         }
         line.Append("  ");
         line.Append(data);
-        if ((maxColumnLength * 2)  - data.Length - 1 > 0)
+        if ((maxColumnLength * 2) - data.Length - 1 > 0)
         {
             line.Append(new string(' ', (maxColumnLength * 2) - data.Length - 1));
         }
@@ -465,7 +465,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             int i = 0;
             foreach (var curveSpecification in curveSpecifications)
             {
-                var cell =  row.TryGetValue(curveSpecification.Mnemonic, out LogDataValue value)
+                var cell = row.TryGetValue(curveSpecification.Mnemonic, out LogDataValue value)
                         ? value.Value.ToString()
                         : string.Empty;
 
@@ -474,9 +474,9 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
                 {
                     length += 2;
                 }
-                if (length > 0) line.Append(new string(' ', length ));
+                if (length > 0) line.Append(new string(' ', length));
                 line.Append(cell);
-                if (i < curveSpecifications.Count -1) line.Append(' ');
+                if (i < curveSpecifications.Count - 1) line.Append(' ');
                 i++;
             }
             writer.WriteLine(line.ToString());
