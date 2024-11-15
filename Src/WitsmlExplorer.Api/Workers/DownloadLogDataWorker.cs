@@ -313,7 +313,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         var secondHeader = new StringBuilder();
         header.Append(firstColumn);
         secondHeader.Append('#');
-        secondHeader.Append(new string('-', firstColumn.Length -1 ));
+        secondHeader.Append(new string('-', firstColumn.Length - 1));
         if (maxColumnLenght > firstColumn.Length)
         {
             header.Append(new string(' ', maxColumnLenght - firstColumn.Length));
