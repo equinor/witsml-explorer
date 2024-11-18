@@ -156,7 +156,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         var result = new Dictionary<string, int>();
         foreach (var curveSpecification in curveSpecifications)
         {
-            var  indexCurveColumn = data.Select(row =>
+            var indexCurveColumn = data.Select(row =>
 
                 row.TryGetValue(curveSpecification.Mnemonic, out LogDataValue value)
                     ? value.Value.ToString()!.Length
@@ -481,6 +481,6 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         public string Step { get; set; }
         public string Unit { get; set; }
         public string LogType { get; set; }
-        public bool IsDepthBasedSeries  { get; set; }
+        public bool IsDepthBasedSeries { get; set; }
     }
 }
