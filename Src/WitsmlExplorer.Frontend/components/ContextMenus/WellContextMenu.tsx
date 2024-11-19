@@ -38,6 +38,7 @@ import {
   refreshWellsQuery
 } from "hooks/query/queryRefreshHelpers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useServerFilter } from "hooks/useServerFilter";
 import { DeleteWellJob } from "models/jobs/deleteJobs";
 import { Server } from "models/server";
 import Well from "models/well";
@@ -63,6 +64,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { connectedServer } = useConnectedServer();
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
+  const filteredServers = useServerFilter(servers);
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -232,7 +234,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
+          {filteredServers.map((server: Server) => (
             <MenuItem
               key={server.name}
               onClick={() => onClickShowOnServer(server)}

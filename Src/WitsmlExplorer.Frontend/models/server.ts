@@ -8,6 +8,7 @@ export interface Server {
   currentUsername?: string;
   usernames?: string[];
   depthLogDecimals: number;
+  isPriority: boolean;
 }
 
 export function emptyServer(): Server {
@@ -20,6 +21,7 @@ export function emptyServer(): Server {
     credentialIds: [],
     currentUsername: undefined,
     usernames: [],
-    depthLogDecimals: 0
+    depthLogDecimals: 0,
+    isPriority: false
   };
 }

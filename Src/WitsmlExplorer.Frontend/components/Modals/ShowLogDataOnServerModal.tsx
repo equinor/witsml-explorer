@@ -10,6 +10,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter.ts";
 import { Server } from "models/server";
 import { ChangeEvent, CSSProperties, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -51,6 +52,7 @@ export function ShowLogDataOnServerModal() {
   );
   const [selectedServer, setSelectedServer] = useState<Server>(null);
   const { servers, isFetching } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { connectedServer } = useConnectedServer();
 
   const onChangeServer = async (event: any) => {
@@ -140,7 +142,7 @@ export function ShowLogDataOnServerModal() {
             id={"selectServerToShow"}
             label="Select a server"
             initialSelectedOptions={[]}
-            options={servers
+            options={filteredServers
               .filter((server) => server.id !== connectedServer.id)
               .map((server) => server.name)}
             onOptionsChange={onChangeServer}
