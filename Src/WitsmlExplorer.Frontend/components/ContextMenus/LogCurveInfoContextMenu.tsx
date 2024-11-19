@@ -36,6 +36,7 @@ import {
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import { IndexCurve } from "models/indexCurve";
 import { createComponentReferences } from "models/jobs/componentReferences";
@@ -81,6 +82,8 @@ const LogCurveInfoContextMenu = (
     setPrioritizedUniversalCurves,
     isMultiLog = false
   } = props;
+
+  const filteredServers = useServerFilter(servers);
 
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
     (row, index) =>
@@ -374,7 +377,7 @@ const LogCurveInfoContextMenu = (
           label={"Show on server"}
           disabled={isMultiLog}
         >
-          {servers.map((server: Server) => (
+          {filteredServers.map((server: Server) => (
             <MenuItem
               key={server.name}
               onClick={() =>

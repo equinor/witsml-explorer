@@ -17,6 +17,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import MudLog from "models/mudLog";
 import { ObjectType } from "models/objectType";
@@ -28,6 +29,7 @@ const MudLogContextMenu = (
 ): React.ReactElement => {
   const { checkedObjects } = props;
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const geologyIntervalReferences = useClipboardComponentReferencesOfType(
     ComponentType.GeologyInterval
   );
@@ -87,6 +89,7 @@ const MudLogContextMenu = (
           ObjectType.MudLog,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

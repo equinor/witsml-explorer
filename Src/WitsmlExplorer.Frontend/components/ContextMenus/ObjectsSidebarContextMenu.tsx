@@ -22,6 +22,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -42,6 +43,7 @@ const ObjectsSidebarContextMenu = (
   const { wellbore, objectType } = props;
   const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const objectReferences = useClipboardReferencesOfType(objectType);
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
@@ -110,7 +112,7 @@ const ObjectsSidebarContextMenu = (
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
+          {filteredServers.map((server: Server) => (
             <MenuItem
               key={server.name}
               onClick={() =>
