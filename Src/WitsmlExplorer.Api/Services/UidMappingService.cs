@@ -18,9 +18,10 @@ namespace WitsmlExplorer.Api.Services
         Task<UidMapping> UpdateUidMapping(UidMapping uidMapping, HttpContext httpContext);
         Task<ICollection<UidMapping>> QueryUidMapping(UidMappingDbQuery query);
         Task<bool> DeleteUidMapping(UidMappingDbQuery query);
+        Task<bool> DeleteUidMappings(string wellUid = null, string wellboreUid = null);
     }
 
-    public class UidMappingService : IUidMappingService
+    public class UidMappingService : WitsmlService, IUidMappingService
     {
         private readonly IDocumentRepository<UidMappingCollection, string> _mappingRepository;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
@@ -29,7 +30,8 @@ namespace WitsmlExplorer.Api.Services
         public UidMappingService(
             IDocumentRepository<UidMappingCollection, string> mappingRepository,
             IDocumentRepository<Server, Guid> witsmlServerRepository,
-            ICredentialsService credentialsService)
+            ICredentialsService credentialsService,
+            IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider)
         {
             _mappingRepository = mappingRepository;
             _witsmlServerRepository = witsmlServerRepository;
@@ -93,9 +95,18 @@ namespace WitsmlExplorer.Api.Services
 
             if (mappings != null && !mappings.MappingCollection.IsNullOrEmpty())
             {
-                var mappingCollection = !query.SourceWellId.IsNullOrEmpty() && !query.SourceWellboreId.IsNullOrEmpty()
-                    ? mappings.MappingCollection.Where(m => m.SourceWellId == query.SourceWellId && m.SourceWellboreId == query.SourceWellboreId)
-                    : mappings.MappingCollection;
+                var mappingCollection = mappings.MappingCollection;
+
+                if (!query.SourceWellId.IsNullOrEmpty() || !query.SourceWellboreId.IsNullOrEmpty()
+                    || !query.TargetWellId.IsNullOrEmpty() || !query.TargetWellboreId.IsNullOrEmpty())
+                {
+                    mappingCollection = mappings.MappingCollection
+                            .Where(m => (query.SourceWellId.IsNullOrEmpty() || m.SourceWellId == query.SourceWellId)
+                                    && (query.SourceWellboreId.IsNullOrEmpty() || m.SourceWellboreId == query.SourceWellboreId)
+                                    && (query.TargetWellId.IsNullOrEmpty() || m.TargetWellId == query.TargetWellId)
+                                    && (query.TargetWellboreId.IsNullOrEmpty() || m.TargetWellboreId == query.TargetWellboreId))
+                            .ToList();
+                }
 
                 if (!mappingCollection.IsNullOrEmpty())
                 {
@@ -118,15 +129,20 @@ namespace WitsmlExplorer.Api.Services
 
                     return false;
                 }
-                else if (query.SourceWellId.IsNullOrEmpty() && query.SourceWellboreId.IsNullOrEmpty())
+                else if (query.SourceWellId.IsNullOrEmpty() && query.SourceWellboreId.IsNullOrEmpty()
+                            && query.TargetWellId.IsNullOrEmpty() && query.TargetWellboreId.IsNullOrEmpty())
                 {
                     await _mappingRepository.DeleteDocumentAsync(new UidMappingKey(query.SourceServerId, query.TargetServerId).ToString());
 
                     return true;
                 }
-                else if (!query.SourceWellId.IsNullOrEmpty() && !query.SourceWellboreId.IsNullOrEmpty())
+                else
                 {
-                    var removed = mappings.MappingCollection.RemoveAll(m => m.SourceWellId == query.SourceWellId && m.SourceWellboreId == query.SourceWellboreId);
+                    var removed = mappings.MappingCollection
+                        .RemoveAll(m => (query.SourceWellId.IsNullOrEmpty() || m.SourceWellId == query.SourceWellId)
+                                    && (query.SourceWellboreId.IsNullOrEmpty() || m.SourceWellboreId == query.SourceWellboreId)
+                                    && (query.TargetWellId.IsNullOrEmpty() || m.TargetWellId == query.TargetWellId)
+                                    && (query.TargetWellboreId.IsNullOrEmpty() || m.TargetWellboreId == query.TargetWellboreId));
 
                     if (removed == 0)
                     {
@@ -146,15 +162,52 @@ namespace WitsmlExplorer.Api.Services
                         return true;
                     }
                 }
-                else
-                {
-                    return false;
-                }
             }
             else
             {
                 return false;
             }
+        }
+
+        public async Task<bool> DeleteUidMappings(string wellUid = null, string wellboreUid = null)
+        {
+            var servers = await _witsmlServerRepository.GetDocumentsAsync();
+            var serverUri = _witsmlClient.GetServerHostname();
+            var server = servers?.FirstOrDefault(s => s.Url.Equals(serverUri));
+
+            if (server != null)
+            {
+                var deleted = false;
+                var serverUid = server.Id;
+
+                foreach (var otherServer in servers)
+                {
+                    if (otherServer.Id != server.Id)
+                    {
+                        deleted |= await DeleteUidMapping(
+                            new UidMappingDbQuery
+                            {
+                                SourceServerId = server.Id,
+                                TargetServerId = otherServer.Id,
+                                SourceWellId = wellUid,
+                                SourceWellboreId = wellboreUid
+                            });
+
+                        deleted |= await DeleteUidMapping(
+                            new UidMappingDbQuery
+                            {
+                                SourceServerId = otherServer.Id,
+                                TargetServerId = server.Id,
+                                TargetWellId = wellUid,
+                                TargetWellboreId = wellboreUid
+                            });
+                    }
+                }
+
+                return deleted;
+            }
+
+            return false;
         }
 
         private async Task<string> GetUsername(Guid serverId, HttpContext httpContext)

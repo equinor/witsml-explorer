@@ -50,6 +50,12 @@ namespace WitsmlExplorer.Api.Models
         [JsonPropertyName("targetServerId")]
         public Guid TargetServerId { get; set; }
 
+        [JsonPropertyName("targetWellId")]
+        public string TargetWellId { get; set; }
+
+        [JsonPropertyName("targetWellboreId")]
+        public string TargetWellboreId { get; set; }
+
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);

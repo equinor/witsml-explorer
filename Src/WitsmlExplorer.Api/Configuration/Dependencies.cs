@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
             services.AddSingleton<IJobProgressService, JobProgressService>();
-            services.AddSingleton<IUidMappingService, UidMappingService>();
+            services.AddScoped<IUidMappingService, UidMappingService>();
         }
 
         private static void AddRepository<TDocument, T>(IServiceCollection services, IConfiguration configuration) where TDocument : DbDocument<T>

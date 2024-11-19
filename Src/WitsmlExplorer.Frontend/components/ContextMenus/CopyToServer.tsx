@@ -49,37 +49,52 @@ export const onClickCopyToServer = async (
 
   const mappings = await UidMappingService.queryUidMapping(dbQuery);
 
-  if (mappings.length > 0) {
-    targetWellboreRef = {
-      wellUid: mappings[0].targetWellId,
-      wellboreUid: mappings[0].targetWellboreId,
-      wellName: sourceWellName,
-      wellboreName: sourceWellboreName
-    };
-  } else {
-    targetWellboreRef = {
-      wellUid: sourceWellUid,
-      wellboreUid: sourceWellboreUid,
-      wellName: sourceWellName,
-      wellboreName: sourceWellboreName
-    };
-  }
-
   let wellbore: Wellbore;
   try {
-    wellbore = await WellboreService.getWellbore(
-      targetWellboreRef.wellUid,
-      targetWellboreRef.wellboreUid,
-      null,
-      targetServer
-    );
+    if (mappings.length > 0) {
+      wellbore = await WellboreService.getWellbore(
+        mappings[0].targetWellId,
+        mappings[0].targetWellboreId,
+        null,
+        targetServer
+      );
+
+      if (!wellbore) {
+        await UidMappingService.removeUidMappings({
+          wellUid: mappings[0].targetWellId,
+          wellboreUid: mappings[0].targetWellboreId
+        });
+      }
+    }
+
+    if (!wellbore) {
+      wellbore = await WellboreService.getWellbore(
+        sourceWellUid,
+        sourceWellboreUid,
+        null,
+        targetServer
+      );
+    }
   } catch {
     return; // Cancel the operation if unable to authorize to the target server.
   }
 
-  if (!!wellbore && mappings.length > 0) {
-    targetWellboreRef.wellName = wellbore.wellName;
-    targetWellboreRef.wellboreName = wellbore.name;
+  if (mappings.length > 0) {
+    if (wellbore) {
+      targetWellboreRef = {
+        wellUid: mappings[0].targetWellId,
+        wellboreUid: mappings[0].targetWellboreId,
+        wellName: sourceWellName,
+        wellboreName: sourceWellboreName
+      };
+    } else {
+      targetWellboreRef = {
+        wellUid: sourceWellUid,
+        wellboreUid: sourceWellboreUid,
+        wellName: sourceWellName,
+        wellboreName: sourceWellboreName
+      };
+    }
   }
 
   if (!wellbore) {
@@ -100,13 +115,17 @@ export const onClickCopyToServer = async (
         sourceServer
       );
     };
-    displayCopyWellboreModal(sourceWellboreUid, dispatchOperation, onConfirm);
+    displayCopyWellboreModal(
+      targetWellboreRef.wellboreUid,
+      dispatchOperation,
+      onConfirm
+    );
     return;
   }
 
   confirmedCopyToServer(
-    sourceWellUid,
-    sourceWellboreUid,
+    targetWellboreRef.wellUid,
+    targetWellboreRef.wellboreUid,
     targetWellboreRef,
     targetServer,
     sourceServer,

@@ -73,10 +73,30 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public static async Task<IResult> DeleteUidMapping([FromBody] UidMappingDbQuery query, [FromServices] IUidMappingService uidMappingService)
         {
+            if (!ValidateQuery(query))
+            {
+                return TypedResults.BadRequest();
+            }
+
             if (await uidMappingService.DeleteUidMapping(query))
+            {
+                return TypedResults.NoContent();
+            }
+            else
+            {
+                return TypedResults.NotFound();
+            }
+        }
+
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> DeleteUidMappings(string wellUid, string wellboreUid, [FromServices] IUidMappingService uidMappingService)
+        {
+            if (await uidMappingService.DeleteUidMappings(wellUid, wellboreUid))
             {
                 return TypedResults.NoContent();
             }
@@ -95,9 +115,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
         private static bool ValidateQuery(UidMappingDbQuery query)
         {
-            return query != null && query.SourceServerId != Guid.Empty && query.TargetServerId != Guid.Empty
-                && ((query.SourceWellId.IsNullOrEmpty() && query.SourceWellboreId.IsNullOrEmpty())
-                    || (!query.SourceWellId.IsNullOrEmpty() && !query.SourceWellboreId.IsNullOrEmpty()));
+            return query != null && query.SourceServerId != Guid.Empty && query.TargetServerId != Guid.Empty;
         }
     }
 }

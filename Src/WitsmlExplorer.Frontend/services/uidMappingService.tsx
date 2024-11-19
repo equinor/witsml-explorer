@@ -58,11 +58,29 @@ export default class UidMappingService {
     abortSignal?: AbortSignal
   ): Promise<boolean> {
     const response = await ApiClient.post(
-      `/api/uidmapping/deletequery`,
+      `/api/uidmapping/deletemapping`,
       JSON.stringify(query),
       abortSignal,
       undefined
     );
+    if (response.ok) {
+      return true;
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      throwError(response.status, message);
+    }
+  }
+
+  public static async removeUidMappings(
+    { wellUid, wellboreUid }: { wellUid: string; wellboreUid?: string },
+    abortSignal?: AbortSignal
+  ): Promise<boolean> {
+    const path =
+      `/api/uidmapping/deletemappings/well/${wellUid}` + !!wellboreUid
+        ? `/wellbore/${wellboreUid}`
+        : ``;
+
+    const response = await ApiClient.delete(path, abortSignal);
     if (response.ok) {
       return true;
     } else {
