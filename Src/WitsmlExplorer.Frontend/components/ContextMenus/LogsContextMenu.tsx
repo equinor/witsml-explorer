@@ -132,6 +132,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
                   onClickShowGroupOnServer(
                     dispatchOperation,
                     server,
+                    connectedServer,
                     wellbore,
                     ObjectType.Log,
                     indexType

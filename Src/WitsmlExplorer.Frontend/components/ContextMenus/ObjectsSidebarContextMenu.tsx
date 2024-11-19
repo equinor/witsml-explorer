@@ -121,6 +121,7 @@ const ObjectsSidebarContextMenu = (
                   onClickShowGroupOnServer(
                     dispatchOperation,
                     server,
+                    connectedServer,
                     wellbore,
                     objectType
                   )

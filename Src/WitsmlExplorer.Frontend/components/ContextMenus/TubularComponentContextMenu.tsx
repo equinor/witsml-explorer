@@ -195,6 +195,7 @@ const TubularComponentContextMenu = (
                   onClickShowObjectOnServer(
                     dispatchOperation,
                     server,
+                    connectedServer,
                     tubular,
                     ObjectType.Tubular
                   )

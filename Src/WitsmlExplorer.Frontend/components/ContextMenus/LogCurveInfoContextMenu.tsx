@@ -389,6 +389,7 @@ const LogCurveInfoContextMenu = (
                   onClickShowObjectOnServer(
                     dispatchOperation,
                     server,
+                    connectedServer,
                     selectedLog,
                     ObjectType.Log,
                     selectedLog.indexType === WITSML_INDEX_TYPE_MD

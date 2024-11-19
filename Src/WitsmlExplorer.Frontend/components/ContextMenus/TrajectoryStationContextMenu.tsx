@@ -172,6 +172,7 @@ const TrajectoryStationContextMenu = (
                   onClickShowObjectOnServer(
                     dispatchOperation,
                     server,
+                    connectedServer,
                     trajectory,
                     ObjectType.Trajectory
                   )

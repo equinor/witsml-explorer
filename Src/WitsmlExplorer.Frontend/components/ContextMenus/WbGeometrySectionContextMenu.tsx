@@ -170,6 +170,7 @@ const WbGeometrySectionContextMenu = (
                   onClickShowObjectOnServer(
                     dispatchOperation,
                     server,
+                    connectedServer,
                     wbGeometry,
                     ObjectType.WbGeometry
                   )

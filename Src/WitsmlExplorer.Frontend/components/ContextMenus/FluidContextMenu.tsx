@@ -122,6 +122,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
                   onClickShowObjectOnServer(
                     dispatchOperation,
                     server,
+                    connectedServer,
                     fluidsReport,
                     ObjectType.FluidsReport
                   )

@@ -187,6 +187,7 @@ export const ObjectMenuItems = (
               onClickShowObjectOnServer(
                 dispatchOperation,
                 server,
+                connectedServer,
                 checkedObjects[0],
                 objectType,
                 (checkedObjects[0] as LogObject)?.indexType ===
