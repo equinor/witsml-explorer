@@ -9,6 +9,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import LogCurveInfo from "models/logCurveInfo";
 import ObjectOnWellbore from "models/objectOnWellbore";
@@ -37,6 +38,7 @@ export const CopyComponentsToServerMenuItem = (
   } = props;
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { dispatchOperation } = useOperationState();
   const menuComponents = menuItemText("copy", componentType, componentsToCopy);
   const menuText =
@@ -87,7 +89,7 @@ export const CopyComponentsToServerMenuItem = (
       label={menuText}
       disabled={componentsToCopy.length < 1 || disableMenuItem}
     >
-      {servers?.map(
+      {filteredServers?.map(
         (server: Server) =>
           server.id !== connectedServer?.id && (
             <MenuItem

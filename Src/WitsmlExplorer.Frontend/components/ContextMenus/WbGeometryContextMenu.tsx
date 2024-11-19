@@ -17,6 +17,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import { ObjectType } from "models/objectType";
 import WbGeometryObject from "models/wbGeometry";
@@ -28,6 +29,7 @@ const WbGeometryObjectContextMenu = (
 ): React.ReactElement => {
   const { checkedObjects } = props;
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { dispatchOperation } = useOperationState();
   const wbGeometrySectionReferences = useClipboardComponentReferencesOfType(
     ComponentType.WbGeometrySection
@@ -87,6 +89,7 @@ const WbGeometryObjectContextMenu = (
           ObjectType.WbGeometry,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

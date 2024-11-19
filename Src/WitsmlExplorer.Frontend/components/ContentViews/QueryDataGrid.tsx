@@ -362,9 +362,11 @@ const getExpandedRowsFromQuery = (
 const StyledTextField = styled(TextField)`
   display: flex;
   align-items: center;
+
   div {
     background-color: transparent;
   }
+
   width: 100%;
   height: 100%;
 `;

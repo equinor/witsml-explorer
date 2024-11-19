@@ -30,8 +30,8 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
-import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
 import OperationType from "../../contexts/operationType";
+import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
 import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 
 export interface ObjectContextMenuProps {
@@ -43,6 +43,7 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   selectedServer: Server,
   servers: Server[],
+  filteredServers: Server[],
   dispatchOperation: DispatchOperation,
   queryClient: QueryClient,
   openInQueryView: OpenInQueryView,
@@ -118,7 +119,7 @@ export const ObjectMenuItems = (
       label={`${menuItemText("copy", objectType, checkedObjects)} to server`}
       disabled={checkedObjects.length === 0}
     >
-      {servers.map(
+      {filteredServers.map(
         (server: Server) =>
           server.id !== selectedServer.id && (
             <MenuItem
@@ -177,7 +178,7 @@ export const ObjectMenuItems = (
       label={"Show on server"}
       disabled={checkedObjects.length !== 1}
     >
-      {servers
+      {filteredServers
         .filter((server: Server) => server.id != connectedServer.id)
         .map((server: Server) => (
           <MenuItem
@@ -186,7 +187,6 @@ export const ObjectMenuItems = (
               onClickShowObjectOnServer(
                 dispatchOperation,
                 server,
-                connectedServer,
                 checkedObjects[0],
                 objectType,
                 (checkedObjects[0] as LogObject)?.indexType ===

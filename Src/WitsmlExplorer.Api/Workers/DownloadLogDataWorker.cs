@@ -63,25 +63,31 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
     private (WorkerResult, RefreshAction) DownloadLogDataResult(DownloadLogDataJob job, ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
     {
         Logger.LogInformation("Download of all data is done. {jobDescription}", job.Description());
-        var reportHeader = GetReportHeader(curveSpecifications);
-        var reportBody = GetReportBody(reportItems, curveSpecifications);
-        job.JobInfo.Report = DownloadLogDataReport(reportItems, job.LogReference, reportHeader, reportBody);
+        string content = GetCsvFileContent(reportItems, curveSpecifications);
+        job.JobInfo.Report = DownloadLogDataReport(job.LogReference, content, "csv");
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Download of all data is ready, jobId: ", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 
-    private DownloadLogDataReport DownloadLogDataReport(ICollection<Dictionary<string, LogDataValue>> reportItems, LogObject logReference, string reportHeader, string reportBody)
+    private DownloadLogDataReport DownloadLogDataReport(LogObject logReference, string fileContent, string fileExtension)
     {
         return new DownloadLogDataReport
         {
             Title = $"{logReference.WellboreName} - {logReference.Name}",
-            Summary = "You can download the report as csv file",
+            Summary = "The download will start automatically. You can also access the download link in the Jobs view.",
             LogReference = logReference,
-            ReportItems = reportItems,
-            DownloadImmediately = true,
-            ReportHeader = reportHeader,
-            ReportBody = reportBody
+            HasFile = true,
+            FileData = new ReportFileData
+            {
+                FileName = $"{logReference.WellboreName}-{logReference.Name}.{fileExtension}",
+                FileContent = fileContent
+            }
         };
+    }
+
+    private string GetCsvFileContent(ICollection<Dictionary<string, LogDataValue>> reportItems, ICollection<CurveSpecification> curveSpecifications)
+    {
+        return $"{GetReportHeader(curveSpecifications)}\n{GetReportBody(reportItems, curveSpecifications)}";
     }
 
     private string GetReportHeader(ICollection<CurveSpecification> curveSpecifications)

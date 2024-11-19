@@ -155,7 +155,7 @@ export function Breadcrumbs() {
         color="inherit"
         aria-label="breadcrumb"
         wrap={false}
-        isCompact={theme === UserTheme.Compact}
+        $isCompact={theme === UserTheme.Compact}
       >
         {breadcrumbContent.map((breadCrumb, index: number) => (
           <EdsBreadcrumbs.Breadcrumb
@@ -400,13 +400,20 @@ const StyledNavLink = styled(NavLink)`
   text-decoration: none;
 `;
 
-const StyledBreadcrumbs = styled(EdsBreadcrumbs)<{ isCompact: boolean }>`
-  padding-top: 0.2em;
-  height: 1.5rem;
+const StyledBreadcrumbs = styled(EdsBreadcrumbs)<{ $isCompact: boolean }>`
   overflow: clip;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: fit-content;
 
-  ${({ isCompact }) =>
-    !isCompact
+  li > span {
+    display: inline-flex;
+    line-height: 16px;
+  }
+
+  ${({ $isCompact }) =>
+    !$isCompact
       ? ""
       : css`
           li > span {

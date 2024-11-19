@@ -41,6 +41,7 @@ import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import CheckLogHeaderJob from "models/jobs/checkLogHeaderJob";
 import CompareLogDataJob from "models/jobs/compareLogData";
@@ -74,6 +75,7 @@ const LogObjectContextMenu = (
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -479,6 +481,7 @@ const LogObjectContextMenu = (
           ObjectType.Log,
           connectedServer,
           servers,
+          filteredServers,
           dispatchOperation,
           queryClient,
           openInQueryView,

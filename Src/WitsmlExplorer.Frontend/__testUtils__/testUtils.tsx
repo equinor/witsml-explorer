@@ -157,6 +157,7 @@ export function getServer(overrides?: Partial<Server>): Server {
     roles: [],
     credentialIds: [],
     depthLogDecimals: 0,
+    isPriority: false,
     ...overrides
   };
 }
@@ -209,8 +210,7 @@ export function getReport(overrides?: Partial<BaseReport>): BaseReport {
     summary: "testSummary",
     reportItems: [],
     warningMessage: "",
-    downloadImmediately: false,
-    reportHeader: "",
+    hasFile: false,
     ...overrides
   };
 }

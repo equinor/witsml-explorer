@@ -36,6 +36,7 @@ import {
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import { IndexCurve } from "models/indexCurve";
 import { createComponentReferences } from "models/jobs/componentReferences";
@@ -82,6 +83,8 @@ const LogCurveInfoContextMenu = (
     setPrioritizedUniversalCurves,
     isMultiLog = false
   } = props;
+
+  const filteredServers = useServerFilter(servers);
 
   const { connectedServer } = useConnectedServer();
 
@@ -377,7 +380,7 @@ const LogCurveInfoContextMenu = (
           label={"Show on server"}
           disabled={isMultiLog}
         >
-          {servers
+          {filteredServers
             .filter((server: Server) => server.id != connectedServer.id)
             .map((server: Server) => (
               <MenuItem
@@ -386,7 +389,6 @@ const LogCurveInfoContextMenu = (
                   onClickShowObjectOnServer(
                     dispatchOperation,
                     server,
-                    connectedServer,
                     selectedLog,
                     ObjectType.Log,
                     selectedLog.indexType === WITSML_INDEX_TYPE_MD

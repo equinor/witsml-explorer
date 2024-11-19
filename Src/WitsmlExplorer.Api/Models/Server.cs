@@ -25,6 +25,8 @@ namespace WitsmlExplorer.Api.Models
         public IList<string> CredentialIds { get; init; }
         [JsonPropertyName("depthLogDecimals")]
         public int DepthLogDecimals { get; init; }
+        [JsonPropertyName("isPriority")]
+        public bool IsPriority { get; init; }
 
         public override string ToString()
         {

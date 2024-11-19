@@ -83,7 +83,7 @@ namespace WitsmlExplorer.Api.Jobs
                 {
                     return ReportType.None;
                 }
-                if (Report?.DownloadImmediately == true)
+                if (Report?.HasFile == true)
                 {
                     return ReportType.File;
                 }

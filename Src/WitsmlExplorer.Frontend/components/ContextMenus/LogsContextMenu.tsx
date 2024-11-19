@@ -29,6 +29,7 @@ import {
   HideModalAction
 } from "contexts/operationStateReducer";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useServerFilter } from "hooks/useServerFilter";
 import { IndexCurve } from "models/indexCurve";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
@@ -54,6 +55,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
+  const filteredServers = useServerFilter(servers);
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -121,7 +123,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers
+          {filteredServers
             .filter((server: Server) => server.id != connectedServer.id)
             .map((server: Server) => (
               <MenuItem
@@ -130,7 +132,6 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
                   onClickShowGroupOnServer(
                     dispatchOperation,
                     server,
-                    connectedServer,
                     wellbore,
                     ObjectType.Log,
                     indexType

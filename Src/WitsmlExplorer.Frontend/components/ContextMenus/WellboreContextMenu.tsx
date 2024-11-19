@@ -37,6 +37,7 @@ import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { IndexCurve } from "models/indexCurve";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
 import { toWellboreReference } from "models/jobs/wellboreReference";
@@ -73,6 +74,7 @@ const WellboreContextMenu = (
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
   });
+  const filteredServers = useServerFilter(servers);
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -279,7 +281,7 @@ const WellboreContextMenu = (
           <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers
+          {filteredServers
             .filter((server: Server) => server.id != connectedServer.id)
             .map((server: Server) => (
               <MenuItem

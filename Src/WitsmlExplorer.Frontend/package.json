@@ -78,12 +78,12 @@
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-react": "^7.37.1",
     "globals": "^15.11.0",
-    "jsdom": "^24.0.0",
-    "lint-staged": "^13.0.3",
+    "jsdom": "^24.1.1",
+    "lint-staged": "^15.2.4",
     "typescript": "^5.4.3",
     "typescript-eslint": "^8.8.1",
     "vite": "^5.2.8",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^1.6.0"
+    "vitest": "^2.1.0"
   }
 }

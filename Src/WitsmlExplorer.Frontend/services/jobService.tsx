@@ -126,6 +126,29 @@ export default class JobService {
       return null;
     }
   }
+
+  public static async downloadFile(jobId: string): Promise<void> {
+    const response = await ApiClient.get(`/api/jobs/download/${jobId}`);
+
+    if (response.ok) {
+      const blob = await response.blob();
+
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filename =
+        contentDisposition?.match(/filename="?([^";]+)"?/)?.[1] || "report";
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } else {
+      throwError(response.status, response.statusText);
+    }
+  }
 }
 
 export enum JobType {
