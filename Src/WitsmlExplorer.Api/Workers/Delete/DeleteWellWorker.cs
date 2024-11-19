@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
     {
         public JobType JobType => JobType.DeleteWell;
 
-        private IUidMappingService _uidMappingService;
+        private readonly IUidMappingService _uidMappingService;
 
         public DeleteWellWorker(ILogger<DeleteWellJob> logger, IWitsmlClientProvider witsmlClientProvider, IUidMappingService uidMappingService)
             : base(witsmlClientProvider, logger)

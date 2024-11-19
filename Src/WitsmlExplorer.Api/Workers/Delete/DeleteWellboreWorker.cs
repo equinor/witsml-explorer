@@ -19,7 +19,7 @@ namespace WitsmlExplorer.Api.Workers.Delete
     {
         public JobType JobType => JobType.DeleteWellbore;
 
-        private IUidMappingService _uidMappingService;
+        private readonly IUidMappingService _uidMappingService;
 
         public DeleteWellboreWorker(ILogger<DeleteWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider, IUidMappingService uidMappingService)
             : base(witsmlClientProvider, logger)
