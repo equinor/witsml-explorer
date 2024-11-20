@@ -98,7 +98,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         WriteWellInformationSection(writer, well, logObject, maxHeaderLength, maxWellDataLength, limitValues);
         WriteLogDefinitionSection(writer, curveSpecifications, maxHeaderLength, maxWellDataLength);
         WriteColumnHeaderSection(writer, curveSpecifications, columnLengths);
-        WriteDataSection(writer, reportItems, curveSpecifications, columnLengths, limitValues.IsDepthBasedSeries);
+        WriteDataSection(writer, reportItems, curveSpecifications, columnLengths);
         string content = writer.ToString();
         job.JobInfo.Report = DownloadLogDataReport(job.LogReference, content, "las");
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Download of all data is ready, jobId: ", jobId: job.JobInfo.Id);
@@ -211,7 +211,6 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             curveSpecifications.FirstOrDefault(x => string.Equals(x.Mnemonic, logObject.IndexCurve, StringComparison.CurrentCultureIgnoreCase));
         var isDepthBasedSeries = logObject.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
         var result = new LimitValues();
-        result.IsDepthBasedSeries = isDepthBasedSeries;
         if (curveSpecification == null)
             return result;
         var indexCurveColumn = isDepthBasedSeries
@@ -448,7 +447,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
 
 
     private void WriteDataSection(StringWriter writer,
-        ICollection<Dictionary<string, LogDataValue>> data, ICollection<CurveSpecification> curveSpecifications, Dictionary<string, int> columnsLength, bool isDepthBasedSeries)
+        ICollection<Dictionary<string, LogDataValue>> data, ICollection<CurveSpecification> curveSpecifications, Dictionary<string, int> columnsLength)
     {
         foreach (var row in data)
         {
@@ -458,7 +457,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
             {
                 var cell = row.TryGetValue(curveSpecification.Mnemonic, out LogDataValue value)
                         ? value.Value.ToString()
-                        : isDepthBasedSeries ? CommonConstants.DepthIndex.NullValue.ToString(CultureInfo.InvariantCulture) : CommonConstants.DateTimeIndex.NullValue;
+                        : CommonConstants.DepthIndex.NullValue.ToString(CultureInfo.InvariantCulture);
 
                 int length = columnsLength[curveSpecification.Mnemonic] - cell!.Length;
                 if (i == 0 && length != 0)
@@ -481,6 +480,5 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         public string Step { get; set; }
         public string Unit { get; set; }
         public string LogType { get; set; }
-        public bool IsDepthBasedSeries { get; set; }
     }
 }
