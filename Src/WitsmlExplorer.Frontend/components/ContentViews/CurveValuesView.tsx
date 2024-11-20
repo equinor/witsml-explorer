@@ -86,6 +86,11 @@ enum DownloadOptions {
   SelectedIndexValues = "SelectedIndexValues"
 }
 
+enum DownloadFormat {
+  Csv = "Csv",
+  Las = "Las"
+}
+
 export const CurveValuesView = (): React.ReactElement => {
   const {
     operationState: { timeZone, dateTimeFormat, colors, theme },
@@ -127,6 +132,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const { exportData, exportOptions } = useExport();
   const justFinishedStreaming = useRef(false);
   let downloadOptions: DownloadOptions = DownloadOptions.SelectedRange;
+  let downloadFormat: DownloadFormat = DownloadFormat.Csv;
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -150,6 +156,14 @@ export const CurveValuesView = (): React.ReactElement => {
     const selectedValue = event.target.value;
     const enumToString = selectedValue as DownloadOptions;
     downloadOptions = enumToString;
+  };
+
+  const onChangeDownloadFormat = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedValue = event.target.value;
+    const enumToString = selectedValue as DownloadFormat;
+    downloadFormat = enumToString;
   };
 
   const onRowSelectionChange = useCallback(
@@ -409,10 +423,12 @@ export const CurveValuesView = (): React.ReactElement => {
   const exportSelectedRange = async () => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
+    const exportToLas = downloadFormat === DownloadFormat.Las;
     const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
       startIndexIsInclusive,
+      exportToLas,
       startIndex,
       endIndex
     };
@@ -422,10 +438,12 @@ export const CurveValuesView = (): React.ReactElement => {
   const exportAll = async () => {
     const logReference: LogObject = log;
     const startIndexIsInclusive = !autoRefresh;
+    const exportToLas = downloadFormat === DownloadFormat.Las;
     const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics,
-      startIndexIsInclusive
+      startIndexIsInclusive,
+      exportToLas
     };
     callExportJob(downloadLogDataJob);
   };
@@ -483,6 +501,30 @@ export const CurveValuesView = (): React.ReactElement => {
                 onChange={onChangeDownloadOption}
               />
               <Typography>Download all data</Typography>
+            </label>
+
+            <br />
+            <span>
+              <Typography>Choose file type</Typography>
+            </span>
+            <label style={alignLayout}>
+              <Radio
+                name="group1"
+                value={DownloadFormat.Csv}
+                id={DownloadFormat.Csv}
+                onChange={onChangeDownloadFormat}
+                defaultChecked
+              />
+              <Typography>Csv file</Typography>
+            </label>
+            <label style={alignLayout}>
+              <Radio
+                name="group1"
+                value={DownloadFormat.Las}
+                onChange={onChangeDownloadFormat}
+                id={DownloadFormat.Las}
+              />
+              <Typography>Las file</Typography>
             </label>
           </>
         }
