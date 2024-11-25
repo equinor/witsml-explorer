@@ -1,15 +1,9 @@
-import {
-  QueryClient,
-  QueryObserverResult,
-  useQuery,
-  useQueryClient
-} from "@tanstack/react-query";
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
 import { QUERY_KEY_WELLBORES } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { getWellboreQueryKey } from "./useGetWellbore";
 
 export const getWellboresQueryKey = (serverUrl: string, wellUid: string) => {
   return [
@@ -19,21 +13,7 @@ export const getWellboresQueryKey = (serverUrl: string, wellUid: string) => {
   ];
 };
 
-const updateIndividualWellbores = (
-  queryClient: QueryClient,
-  server: Server,
-  wellbores: Wellbore[]
-) => {
-  wellbores.forEach((wellbore) =>
-    queryClient.setQueryData<Wellbore>(
-      getWellboreQueryKey(server?.url, wellbore.wellUid, wellbore.uid),
-      wellbore
-    )
-  );
-};
-
 export const wellboresQuery = (
-  queryClient: QueryClient,
   server: Server,
   wellUid: string,
   options?: QueryOptions
@@ -41,7 +21,6 @@ export const wellboresQuery = (
   queryKey: getWellboresQueryKey(server?.url, wellUid),
   queryFn: async () => {
     const wellbores = await WellboreService.getWellbores(wellUid, null, server);
-    updateIndividualWellbores(queryClient, server, wellbores);
     return wellbores;
   },
   ...options,
@@ -60,9 +39,8 @@ export const useGetWellbores = (
   wellUid: string,
   options?: QueryOptions
 ): WellboresQueryResult => {
-  const queryClient = useQueryClient();
   const { data, ...state } = useQuery<Wellbore[]>(
-    wellboresQuery(queryClient, server, wellUid, options)
+    wellboresQuery(server, wellUid, options)
   );
   return { wellbores: data, ...state };
 };
