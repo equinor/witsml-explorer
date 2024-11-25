@@ -1,16 +1,9 @@
-import {
-  QueryClient,
-  QueryObserverResult,
-  useQuery,
-  useQueryClient
-} from "@tanstack/react-query";
-import ObjectOnWellbore from "../../models/objectOnWellbore";
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { ObjectType, ObjectTypeToModel } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { getObjectQueryKey } from "./useGetObject";
 
 export const getObjectsQueryKey = (
   serverUrl: string,
@@ -27,28 +20,7 @@ export const getObjectsQueryKey = (
   ];
 };
 
-const updateIndividualObjects = (
-  queryClient: QueryClient,
-  server: Server,
-  objectType: ObjectType,
-  objects: ObjectOnWellbore[]
-) => {
-  objects.forEach((object) =>
-    queryClient.setQueryData<ObjectOnWellbore>(
-      getObjectQueryKey(
-        server?.url,
-        object.wellUid,
-        object.wellboreUid,
-        objectType,
-        object.uid
-      ),
-      object
-    )
-  );
-};
-
 export const objectsQuery = <T extends ObjectType>(
-  queryClient: QueryClient,
   server: Server,
   wellUid: string,
   wellboreUid: string,
@@ -64,7 +36,6 @@ export const objectsQuery = <T extends ObjectType>(
       null,
       server
     );
-    updateIndividualObjects(queryClient, server, objectType, objects);
     return objects;
   },
   ...options,
@@ -90,16 +61,8 @@ export const useGetObjects = <T extends ObjectType>(
   objectType: T,
   options?: QueryOptions
 ): ObjectsQueryResult<T> => {
-  const queryClient = useQueryClient();
   const { data, ...state } = useQuery<ObjectTypeToModel[T][]>(
-    objectsQuery<T>(
-      queryClient,
-      server,
-      wellUid,
-      wellboreUid,
-      objectType,
-      options
-    )
+    objectsQuery<T>(server, wellUid, wellboreUid, objectType, options)
   );
   return { objects: data, ...state };
 };
