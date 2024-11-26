@@ -1,22 +1,22 @@
-import OperationType from "contexts/operationType";
-import { useOperationState } from "hooks/useOperationState";
-import React, { CSSProperties, useCallback, useState } from "react";
-import ConfirmModal from "./ConfirmModal";
 import { Radio, Typography } from "@equinor/eds-core-react";
 import { CurveValueRow } from "components/ContentViews/CurveValuesView";
-import DownloadLogDataJob from "models/jobs/downloadLogDataJob";
-import JobService, { JobType } from "services/jobService";
-import LogObject, { indexToNumber } from "models/logObject";
-import { ReportModal } from "./ReportModal";
-import orderBy from "lodash/orderBy";
 import {
   ContentTableColumn,
   ContentType,
   ExportableContentTableColumn,
   Order
 } from "components/ContentViews/table";
-import { CurveSpecification } from "models/logData";
+import OperationType from "contexts/operationType";
 import useExport from "hooks/useExport";
+import { useOperationState } from "hooks/useOperationState";
+import orderBy from "lodash/orderBy";
+import DownloadLogDataJob from "models/jobs/downloadLogDataJob";
+import { CurveSpecification } from "models/logData";
+import LogObject, { indexToNumber } from "models/logObject";
+import React, { CSSProperties, useCallback, useState } from "react";
+import JobService, { JobType } from "services/jobService";
+import ConfirmModal from "./ConfirmModal";
+import { ReportModal } from "./ReportModal";
 
 export interface DownloadOptionsSelectionModalProps {
   mnemonics: string[];
@@ -52,8 +52,6 @@ const DownloadOptionsSelectionModal = (
   );
 
   const { exportData, exportOptions } = useExport();
-  const [disabledFileTypeSelection, setDisabledFileTypeSelection] =
-    useState<boolean>(true);
 
   const exportSelectedRange = async () => {
     const logReference: LogObject = props.log;
@@ -162,7 +160,6 @@ const DownloadOptionsSelectionModal = (
               name="group"
               checked={selectedDownloadOption === DownloadOptions.SelectedRange}
               onChange={() => {
-                setDisabledFileTypeSelection(false);
                 setSelectedDownloadOption(DownloadOptions.SelectedRange);
               }}
             />
@@ -175,7 +172,6 @@ const DownloadOptionsSelectionModal = (
                 selectedDownloadOption === DownloadOptions.SelectedIndexValues
               }
               onChange={() => {
-                setDisabledFileTypeSelection(true);
                 setSelectedDownloadOption(DownloadOptions.SelectedIndexValues);
               }}
               disabled={!props.selectedRows.length}
@@ -187,10 +183,8 @@ const DownloadOptionsSelectionModal = (
               name="group"
               checked={selectedDownloadOption === DownloadOptions.All}
               onChange={() => {
-                setDisabledFileTypeSelection(true);
                 setSelectedDownloadOption(DownloadOptions.All);
               }}
-              disabled={!props.selectedRows.length}
             />
             <Typography>Download all data</Typography>
           </label>
@@ -211,7 +205,9 @@ const DownloadOptionsSelectionModal = (
               name="group1"
               checked={selectedDownloadFormat === DownloadFormat.Las}
               onChange={() => setSelectedDownloadFormat(DownloadFormat.Las)}
-              disabled={disabledFileTypeSelection}
+              disabled={
+                selectedDownloadOption === DownloadOptions.SelectedIndexValues
+              }
             />
             <Typography>Las file</Typography>
           </label>
