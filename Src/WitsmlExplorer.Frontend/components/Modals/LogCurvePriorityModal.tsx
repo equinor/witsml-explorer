@@ -152,7 +152,7 @@ export const LogCurvePriorityModal = (
                 component="label"
                 startIcon={<Icon name="cloudUpload" />}
               >
-                <Typography noWrap>Upload File</Typography>
+                <Typography noWrap>Upload CSV File</Typography>
                 <input
                   type="file"
                   accept=".csv,text/csv"
