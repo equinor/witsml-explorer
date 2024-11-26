@@ -172,6 +172,7 @@ const DownloadOptionsSelectionModal = (
                 selectedDownloadOption === DownloadOptions.SelectedIndexValues
               }
               onChange={() => {
+                setSelectedDownloadFormat(DownloadFormat.Csv);
                 setSelectedDownloadOption(DownloadOptions.SelectedIndexValues);
               }}
               disabled={!props.selectedRows.length}
