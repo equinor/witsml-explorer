@@ -43,39 +43,22 @@ const DownloadOptionsSelectionModal = (
   props: DownloadOptionsSelectionModalProps
 ): React.ReactElement => {
   const { dispatchOperation } = useOperationState();
+  const [selectedDownloadOption, setSelectedDownloadOption] = useState<string>(
+    DownloadOptions.SelectedRange
+  );
 
-  let downloadOptions: DownloadOptions = DownloadOptions.SelectedRange;
-  let downloadFormat: DownloadFormat = DownloadFormat.Csv;
+  const [selectedDownloadFormat, setSelectedDownloadFormat] = useState<string>(
+    DownloadFormat.Csv
+  );
 
   const { exportData, exportOptions } = useExport();
-  const [visibleFileTypeSelection, setVisibleFileTypeSelection] =
+  const [disabledFileTypeSelection, setDisabledFileTypeSelection] =
     useState<boolean>(true);
-
-  const onChangeDownloadOption = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedValue = event.target.value;
-    const enumToString = selectedValue as DownloadOptions;
-    downloadOptions = enumToString;
-    if (downloadOptions === DownloadOptions.SelectedIndexValues) {
-      setVisibleFileTypeSelection(false);
-    } else {
-      setVisibleFileTypeSelection(true);
-    }
-  };
-
-  const onChangeDownloadFormat = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedValue = event.target.value;
-    const enumToString = selectedValue as DownloadFormat;
-    downloadFormat = enumToString;
-  };
 
   const exportSelectedRange = async () => {
     const logReference: LogObject = props.log;
     const startIndexIsInclusive = !props.autoRefresh;
-    const exportToLas = downloadFormat === DownloadFormat.Las;
+    const exportToLas = selectedDownloadFormat === DownloadFormat.Las;
     const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics: props.mnemonics,
@@ -90,7 +73,7 @@ const DownloadOptionsSelectionModal = (
   const exportAll = async () => {
     const logReference: LogObject = props.log;
     const startIndexIsInclusive = !props.autoRefresh;
-    const exportToLas = downloadFormat === DownloadFormat.Las;
+    const exportToLas = selectedDownloadFormat === DownloadFormat.Las;
     const downloadLogDataJob: DownloadLogDataJob = {
       logReference,
       mnemonics: props.mnemonics,
@@ -153,7 +136,7 @@ const DownloadOptionsSelectionModal = (
   }, [props.columns, props.selectedRows]);
 
   const executeExport = () => {
-    switch (downloadOptions) {
+    switch (selectedDownloadOption) {
       case DownloadOptions.All:
         exportAll();
         break;
@@ -163,7 +146,6 @@ const DownloadOptionsSelectionModal = (
       case DownloadOptions.SelectedIndexValues:
         exportSelectedDataPoints();
     }
-    downloadOptions = DownloadOptions.SelectedRange;
   };
 
   return (
@@ -178,19 +160,24 @@ const DownloadOptionsSelectionModal = (
           <label style={alignLayout}>
             <Radio
               name="group"
-              value={DownloadOptions.SelectedRange}
-              id={DownloadOptions.SelectedRange}
-              onChange={onChangeDownloadOption}
-              defaultChecked
+              checked={selectedDownloadOption === DownloadOptions.SelectedRange}
+              onChange={() => {
+                setDisabledFileTypeSelection(true);
+                setSelectedDownloadOption(DownloadOptions.SelectedRange);
+              }}
             />
             <Typography>Download selected range</Typography>
           </label>
           <label style={alignLayout}>
             <Radio
               name="group"
-              id={DownloadOptions.SelectedIndexValues}
-              value={DownloadOptions.SelectedIndexValues}
-              onChange={onChangeDownloadOption}
+              checked={
+                selectedDownloadOption === DownloadOptions.SelectedIndexValues
+              }
+              onChange={() => {
+                setDisabledFileTypeSelection(false);
+                setSelectedDownloadOption(DownloadOptions.SelectedIndexValues);
+              }}
               disabled={!props.selectedRows.length}
             />
             <Typography>Download selected rows</Typography>
@@ -198,39 +185,36 @@ const DownloadOptionsSelectionModal = (
           <label style={alignLayout}>
             <Radio
               name="group"
-              id={DownloadOptions.All}
-              value={DownloadOptions.All}
-              onChange={onChangeDownloadOption}
+              checked={selectedDownloadOption === DownloadOptions.All}
+              onChange={() => {
+                setDisabledFileTypeSelection(true);
+                setSelectedDownloadOption(DownloadOptions.All);
+              }}
+              disabled={!props.selectedRows.length}
             />
             <Typography>Download all data</Typography>
           </label>
-          {visibleFileTypeSelection && (
-            <>
-              <br />
-              <span>
-                <Typography>Choose file type</Typography>
-              </span>
-              <label style={alignLayout}>
-                <Radio
-                  name="group1"
-                  value={DownloadFormat.Csv}
-                  id={DownloadFormat.Csv}
-                  onChange={onChangeDownloadFormat}
-                  defaultChecked
-                />
-                <Typography>Csv file</Typography>
-              </label>
-              <label style={alignLayout}>
-                <Radio
-                  name="group1"
-                  value={DownloadFormat.Las}
-                  onChange={onChangeDownloadFormat}
-                  id={DownloadFormat.Las}
-                />
-                <Typography>Las file</Typography>
-              </label>
-            </>
-          )}
+          <br />
+          <span>
+            <Typography>Choose file type</Typography>
+          </span>
+          <label style={alignLayout}>
+            <Radio
+              name="group1"
+              checked={selectedDownloadFormat === DownloadFormat.Csv}
+              onChange={() => setSelectedDownloadFormat(DownloadFormat.Csv)}
+            />
+            <Typography>Csv file</Typography>
+          </label>
+          <label style={alignLayout}>
+            <Radio
+              name="group1"
+              checked={selectedDownloadFormat === DownloadFormat.Las}
+              onChange={() => setSelectedDownloadFormat(DownloadFormat.Las)}
+              disabled={disabledFileTypeSelection}
+            />
+            <Typography>Las file</Typography>
+          </label>
         </>
       }
       onConfirm={() => {
