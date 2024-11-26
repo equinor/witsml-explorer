@@ -98,6 +98,7 @@ export const objectQuery = <T extends ObjectType>(
     return object;
   },
   ...options,
+  gcTime: 0,
   enabled:
     !!server &&
     !!wellUid &&
