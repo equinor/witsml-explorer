@@ -162,7 +162,7 @@ const DownloadOptionsSelectionModal = (
               name="group"
               checked={selectedDownloadOption === DownloadOptions.SelectedRange}
               onChange={() => {
-                setDisabledFileTypeSelection(true);
+                setDisabledFileTypeSelection(false);
                 setSelectedDownloadOption(DownloadOptions.SelectedRange);
               }}
             />
@@ -175,7 +175,7 @@ const DownloadOptionsSelectionModal = (
                 selectedDownloadOption === DownloadOptions.SelectedIndexValues
               }
               onChange={() => {
-                setDisabledFileTypeSelection(false);
+                setDisabledFileTypeSelection(true);
                 setSelectedDownloadOption(DownloadOptions.SelectedIndexValues);
               }}
               disabled={!props.selectedRows.length}
