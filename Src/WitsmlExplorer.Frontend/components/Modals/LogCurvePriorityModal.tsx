@@ -11,10 +11,9 @@ import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "../ContextMenus/ContextMenu";
-import { Button as MuiButton, Stack } from "@mui/material";
+import { Stack, Button } from "@mui/material";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
-import { Button } from "../StyledComponents/Button.tsx";
 
 export interface LogCurvePriorityModalProps {
   wellUid?: string;
@@ -147,19 +146,20 @@ export const LogCurvePriorityModal = (
               </Button>
             </Stack>
             <FileContainer>
-              <MuiButton
+              <Button
                 variant="contained"
-                color="primary"
+                color={"primary"}
+                component="label"
                 startIcon={<Icon name="cloudUpload" />}
               >
-                Upload CSV File
+                <Typography noWrap>Upload File</Typography>
                 <input
                   type="file"
                   accept=".csv,text/csv"
                   hidden
                   onChange={handleFileChange}
                 />
-              </MuiButton>
+              </Button>
               <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
                 <Typography noWrap>
                   {uploadedFile?.name ?? "No file chosen"}
