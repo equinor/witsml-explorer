@@ -1,4 +1,4 @@
-import { Icon, TextField } from "@equinor/eds-core-react";
+import { Icon, TextField, Tooltip } from "@equinor/eds-core-react";
 
 import { useOperationState } from "hooks/useOperationState";
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
@@ -11,7 +11,7 @@ import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "../ContextMenus/ContextMenu";
-import { Stack, Button, Tooltip, Typography } from "@mui/material";
+import { Stack, Button, Typography } from "@mui/material";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
 
@@ -161,7 +161,7 @@ export const LogCurvePriorityModal = (
                 />
               </Button>
               <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
-                <Typography noWrap>
+                <Typography noWrap style={{ maxWidth: "350px" }}>
                   {uploadedFile?.name ?? "No file chosen"}
                 </Typography>
               </Tooltip>
