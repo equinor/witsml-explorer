@@ -43,13 +43,11 @@ const DownloadOptionsSelectionModal = (
   props: DownloadOptionsSelectionModalProps
 ): React.ReactElement => {
   const { dispatchOperation } = useOperationState();
-  const [selectedDownloadOption, setSelectedDownloadOption] = useState<string>(
-    DownloadOptions.SelectedRange
-  );
+  const [selectedDownloadOption, setSelectedDownloadOption] =
+    useState<DownloadOptions>(DownloadOptions.SelectedRange);
 
-  const [selectedDownloadFormat, setSelectedDownloadFormat] = useState<string>(
-    DownloadFormat.Csv
-  );
+  const [selectedDownloadFormat, setSelectedDownloadFormat] =
+    useState<DownloadFormat>(DownloadFormat.Csv);
 
   const { exportData, exportOptions } = useExport();
 
