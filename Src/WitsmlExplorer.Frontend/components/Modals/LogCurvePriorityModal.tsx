@@ -1,5 +1,4 @@
 import { Icon, TextField, Tooltip } from "@equinor/eds-core-react";
-
 import { useOperationState } from "hooks/useOperationState";
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import styled from "styled-components";
@@ -11,7 +10,8 @@ import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "../ContextMenus/ContextMenu";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button as MuiButton, Stack, Typography } from "@mui/material";
+import { Button } from "../StyledComponents/Button.tsx";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
 
@@ -146,9 +146,9 @@ export const LogCurvePriorityModal = (
               </Button>
             </Stack>
             <FileContainer>
-              <Button
+              <MuiButton
                 variant="contained"
-                color={"primary"}
+                color="primary"
                 component="label"
                 startIcon={<Icon name="cloudUpload" />}
               >
@@ -159,7 +159,7 @@ export const LogCurvePriorityModal = (
                   hidden
                   onChange={handleFileChange}
                 />
-              </Button>
+              </MuiButton>
               <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
                 <Typography noWrap style={{ maxWidth: "350px" }}>
                   {uploadedFile?.name ?? "No file chosen"}
