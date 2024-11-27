@@ -1,4 +1,4 @@
-import { Icon, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
+import { Icon, TextField } from "@equinor/eds-core-react";
 
 import { useOperationState } from "hooks/useOperationState";
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
@@ -11,7 +11,7 @@ import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "../ContextMenus/ContextMenu";
-import { Stack, Button } from "@mui/material";
+import { Stack, Button, Tooltip, Typography } from "@mui/material";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
 
