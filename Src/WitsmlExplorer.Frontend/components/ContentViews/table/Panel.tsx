@@ -6,7 +6,7 @@ import { Button } from "components/StyledComponents/Button";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
-  refreshWellQuery,
+  refreshWellboresQuery,
   refreshWellsQuery
 } from "hooks/query/queryRefreshHelpers";
 import useExport, { encloseCell } from "hooks/useExport";
@@ -81,7 +81,7 @@ const Panel = (props: PanelProps) => {
     if (!wellUid) {
       refreshWellsQuery(queryClient, serverUrl);
     } else if (!wellboreUid) {
-      refreshWellQuery(queryClient, serverUrl, wellUid);
+      refreshWellboresQuery(queryClient, serverUrl, wellUid);
     } else if (!objectUid) {
       refreshObjectsQuery(
         queryClient,

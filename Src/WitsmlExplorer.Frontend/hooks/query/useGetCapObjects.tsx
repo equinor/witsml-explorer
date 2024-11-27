@@ -1,8 +1,4 @@
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
-import {
-  MILLIS_IN_SECOND,
-  SECONDS_IN_MINUTE
-} from "../../components/Constants";
 import { ObjectType } from "../../models/objectType";
 import { Server } from "../../models/server";
 import CapService from "../../services/capService";
@@ -19,8 +15,7 @@ export const capObjectsQuery = (server: Server, options?: QueryOptions) => ({
     return getCapObjects(server);
   },
   ...options,
-  enabled: !!server && !(options?.enabled === false),
-  gcTime: 12 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // capObjects won't change, so we can cache it for a long time.
+  enabled: !!server && !(options?.enabled === false)
 });
 
 type CapObjectsQueryResult = Omit<

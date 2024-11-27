@@ -33,10 +33,7 @@ import {
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import {
-  refreshWellQuery,
-  refreshWellsQuery
-} from "hooks/query/queryRefreshHelpers";
+import { refreshWellsQuery } from "hooks/query/queryRefreshHelpers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useServerFilter } from "hooks/useServerFilter";
 import { DeleteWellJob } from "models/jobs/deleteJobs";
@@ -79,11 +76,6 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   };
 
   const onClickRefresh = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellQuery(queryClient, connectedServer?.url, well.uid);
-  };
-
-  const onClickRefreshAll = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     refreshWellsQuery(queryClient, connectedServer?.url);
   };
@@ -191,18 +183,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
             name="refresh"
             color={colors.interactive.primaryResting}
           />
-          <Typography color={"primary"}>Refresh well</Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"refreshallwells"}
-          onClick={onClickRefreshAll}
-          disabled={!connectedServer?.url}
-        >
-          <StyledIcon
-            name="refresh"
-            color={colors.interactive.primaryResting}
-          />
-          <Typography color={"primary"}>Refresh all wells</Typography>
+          <Typography color={"primary"}>Refresh wells</Typography>
         </MenuItem>,
         <MenuItem key={"newWell"} onClick={onClickNewWell}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />

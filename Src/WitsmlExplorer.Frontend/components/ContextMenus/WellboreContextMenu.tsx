@@ -33,7 +33,7 @@ import {
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
+import { refreshWellboresQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -151,12 +151,7 @@ const WellboreContextMenu = (
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellboreQuery(
-      queryClient,
-      connectedServer?.url,
-      wellbore.wellUid,
-      wellbore.uid
-    );
+    refreshWellboresQuery(queryClient, connectedServer?.url, wellbore.wellUid);
   };
 
   const onClickMissingDataAgent = () => {
@@ -196,12 +191,12 @@ const WellboreContextMenu = (
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshwellbore"} onClick={onClickRefresh}>
+        <MenuItem key={"refreshwellbores"} onClick={onClickRefresh}>
           <StyledIcon
             name="refresh"
             color={colors.interactive.primaryResting}
           />
-          <Typography color={"primary"}>Refresh wellbore</Typography>
+          <Typography color={"primary"}>Refresh wellbores</Typography>
         </MenuItem>,
         <MenuItem key={"newwellbore"} onClick={onClickNewWellbore}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
