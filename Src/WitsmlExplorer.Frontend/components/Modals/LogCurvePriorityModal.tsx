@@ -11,7 +11,7 @@ import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "../ContextMenus/ContextMenu";
-import { Stack, Button, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
 
