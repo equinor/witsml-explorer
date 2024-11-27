@@ -24,7 +24,7 @@
   - [Copy Within Server](#copy-within-server)
 
 ## Overview
-https://github.com/user-attachments/assets/dc0d1668-03c8-47c8-8601-98daab5bb915
+https://github.com/user-attachments/assets/2db0b038-f735-4302-adcd-75c1bb1f04ae
 
 ## Manage Servers
 https://github.com/user-attachments/assets/4e8bfb7c-b2c1-4989-a3dd-ef70357abd7f
