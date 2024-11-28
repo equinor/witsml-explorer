@@ -1,11 +1,9 @@
-import React, { SyntheticEvent, useRef, useState } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import styled from "styled-components";
 import { useOperationState } from "../hooks/useOperationState.tsx";
 import { TreeView } from "@mui/x-tree-view/TreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
-import { isInAnyCompactMode } from "../tools/themeHelpers.ts";
-import { Icon } from "@equinor/eds-core-react";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { Icon, Typography } from "@equinor/eds-core-react";
 import Wellbore from "../models/wellbore.tsx";
 import Well from "../models/well.tsx";
 
@@ -32,20 +30,11 @@ const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
   const { treeData, expandedWells, onSelectedWellbore } = props;
 
   const {
-    operationState: { colors, theme }
+    operationState: { colors }
   } = useOperationState();
-  const isCompactMode = isInAnyCompactMode(theme);
 
   const [expandedWellTreeItems, setExpandedWellTreeItems] =
     useState<string[]>(expandedWells);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const virtualizer = useVirtualizer({
-    count: treeData.length,
-    getScrollElement: () => containerRef.current,
-    estimateSize: () => (isCompactMode ? 33 : 49),
-    overscan: 5
-  });
 
   const handleWellNodeTogle = (
     _: SyntheticEvent<Element, Event>,
@@ -55,10 +44,7 @@ const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
   };
 
   const renderWellWellboreTree = () => {
-    return virtualizer.getVirtualItems().map((virtualItem) => {
-      // return treeData.map((wti) => {
-      const wti = treeData[virtualItem.index];
-
+    return treeData.map((wti) => {
       return (
         <TreeItem
           key={wti.id}
@@ -81,7 +67,7 @@ const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
 
   return (
     <>
-      <ContentLayout ref={containerRef}>
+      <ContentLayout>
         <TreeView
           aria-label="rich object"
           defaultCollapseIcon={
@@ -99,7 +85,14 @@ const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
           expanded={expandedWellTreeItems}
           onNodeToggle={handleWellNodeTogle}
         >
-          {renderWellWellboreTree()}
+          {(treeData?.length == 0 && <Typography>No result</Typography>) ||
+            (treeData?.length > 35 ? (
+              <Typography>
+                Too many results found. Please, refine your search.
+              </Typography>
+            ) : (
+              renderWellWellboreTree()
+            ))}
         </TreeView>
       </ContentLayout>
     </>
