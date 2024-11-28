@@ -14,7 +14,10 @@ import { ObjectType, pluralizeObjectType } from "models/objectType";
 import { useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
-import { LOG_TYPES_PATH, OBJECTS_PATH } from "routes/routerConstants";
+import {
+  getLogTypesViewPath,
+  getObjectsViewPath
+} from "routes/utils/pathBuilder";
 
 interface ObjectTypeRow extends ContentTableRow {
   uid: string;
@@ -61,9 +64,19 @@ export default function WellboreObjectTypesListView() {
 
   const onSelect = async (row: ObjectTypeRow) => {
     navigate(
-      `${row.objectType}/${
-        row.objectType === ObjectType.Log ? LOG_TYPES_PATH : OBJECTS_PATH
-      }`
+      row.objectType == ObjectType.Log
+        ? getLogTypesViewPath(
+            connectedServer?.url,
+            wellbore.wellUid,
+            wellbore.uid,
+            ObjectType.Log
+          )
+        : getObjectsViewPath(
+            connectedServer?.url,
+            wellbore.wellUid,
+            wellbore.uid,
+            row.objectType
+          )
     );
   };
 

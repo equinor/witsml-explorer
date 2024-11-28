@@ -30,6 +30,8 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import OperationType from "../../contexts/operationType";
+import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -40,12 +42,27 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   selectedServer: Server,
   servers: Server[],
+  filteredServers: Server[],
   dispatchOperation: DispatchOperation,
   queryClient: QueryClient,
   openInQueryView: OpenInQueryView,
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
+
+  const onClickDuplicateObjectOnWellbore = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: (
+        <DuplicateObjectModal
+          servers={servers}
+          objectsOnWellbore={checkedObjects}
+          objectType={objectType}
+        />
+      )
+    });
+  };
 
   return [
     <MenuItem
@@ -69,6 +86,16 @@ export const ObjectMenuItems = (
     </MenuItem>,
     <Divider key={"objectMenuItemsDivider"} />,
     <MenuItem
+      key={"duplicate"}
+      onClick={onClickDuplicateObjectOnWellbore}
+      disabled={checkedObjects.length === 0 || checkedObjects.length > 1}
+    >
+      <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+      <Typography color={"primary"}>
+        {menuItemText("duplicate", objectType, null)}
+      </Typography>
+    </MenuItem>,
+    <MenuItem
       key={"copy"}
       onClick={() =>
         copyObjectOnWellbore(
@@ -90,7 +117,7 @@ export const ObjectMenuItems = (
       label={`${menuItemText("copy", objectType, checkedObjects)} to server`}
       disabled={checkedObjects.length === 0}
     >
-      {servers.map(
+      {filteredServers.map(
         (server: Server) =>
           server.id !== selectedServer.id && (
             <MenuItem
@@ -149,7 +176,7 @@ export const ObjectMenuItems = (
       label={"Show on server"}
       disabled={checkedObjects.length !== 1}
     >
-      {servers.map((server: Server) => (
+      {filteredServers.map((server: Server) => (
         <MenuItem
           key={server.name}
           onClick={() =>

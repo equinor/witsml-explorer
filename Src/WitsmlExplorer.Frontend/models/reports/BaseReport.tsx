@@ -3,10 +3,8 @@ export default interface BaseReport {
   summary: string;
   reportItems: any[];
   warningMessage?: string;
-  downloadImmediately?: boolean;
-  reportHeader?: string;
+  hasFile?: boolean;
   jobDetails?: string;
-  reportBody?: string;
 }
 
 export const createReport = (
@@ -14,19 +12,15 @@ export const createReport = (
   summary = "",
   reportItems: any[] = [],
   warningMessage: string = null,
-  downloadImmediately: boolean = null,
-  reportHeader: string = null,
-  jobDetails: string = null,
-  reportBody: string = null
+  hasFile: boolean = null,
+  jobDetails: string = null
 ): BaseReport => {
   return {
     title,
     summary,
     reportItems,
     warningMessage,
-    downloadImmediately,
-    reportHeader,
-    jobDetails,
-    reportBody
+    hasFile,
+    jobDetails
   };
 };

@@ -9,7 +9,9 @@ import { WellRow } from "components/ContentViews/WellsListView";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import { StyledIcon } from "components/ContextMenus/ContextMenuUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -31,11 +33,9 @@ import {
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import {
-  refreshWellQuery,
-  refreshWellsQuery
-} from "hooks/query/queryRefreshHelpers";
+import { refreshWellsQuery } from "hooks/query/queryRefreshHelpers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useServerFilter } from "hooks/useServerFilter";
 import { DeleteWellJob } from "models/jobs/deleteJobs";
 import { Server } from "models/server";
 import Well from "models/well";
@@ -61,6 +61,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { connectedServer } = useConnectedServer();
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
+  const filteredServers = useServerFilter(servers);
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -76,11 +77,6 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellQuery(queryClient, connectedServer?.url, well.uid);
-  };
-
-  const onClickRefreshAll = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
     refreshWellsQuery(queryClient, connectedServer?.url);
   };
 
@@ -90,11 +86,6 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       name: "",
       wellUid: well.uid,
       wellName: well.name,
-      wellboreStatus: "",
-      wellboreType: "",
-      isActive: false,
-      wellboreParentUid: "",
-      wellboreParentName: "",
       wellborePurpose: "unknown"
     };
     openWellboreProperties(
@@ -104,37 +95,31 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     );
   };
 
-  const deleteWell = async () => {
+  const deleteWell = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellJob = {
       toDelete: {
         wellUid: well.uid,
         wellName: well.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWell, job);
   };
 
   const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete well?"}
-        content={
-          <span>
-            This will permanently delete <strong>{well.name}</strong> with uid:{" "}
-            <strong>{well.uid}</strong>
-          </span>
-        }
-        onConfirm={deleteWell}
-        confirmColor={"danger"}
-        confirmText={"Delete well"}
-        switchButtonPlaces={true}
-      />
-    );
+    const userCredentialsModalProps: ConfirmDeletionModalProps = {
+      componentType: "well",
+      objectName: well.name,
+      objectUid: well.uid,
+      onSubmit(cascadedDelete) {
+        deleteWell(cascadedDelete);
+      }
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: confirmation
+      payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
 
@@ -198,18 +183,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
             name="refresh"
             color={colors.interactive.primaryResting}
           />
-          <Typography color={"primary"}>Refresh well</Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"refreshallwells"}
-          onClick={onClickRefreshAll}
-          disabled={!connectedServer?.url}
-        >
-          <StyledIcon
-            name="refresh"
-            color={colors.interactive.primaryResting}
-          />
-          <Typography color={"primary"}>Refresh all wells</Typography>
+          <Typography color={"primary"}>Refresh wells</Typography>
         </MenuItem>,
         <MenuItem key={"newWell"} onClick={onClickNewWell}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
@@ -219,7 +193,11 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New Wellbore</Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWell"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWell"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellRows && checkedWellRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
@@ -237,7 +215,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
+          {filteredServers.map((server: Server) => (
             <MenuItem
               key={server.name}
               onClick={() => onClickShowOnServer(server)}

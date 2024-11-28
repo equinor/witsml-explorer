@@ -5,6 +5,7 @@ import { Colors, light } from "styles/Colors";
 
 export enum UserTheme {
   Compact = "compact",
+  SemiCompact = "semiCompact",
   Comfortable = "comfortable"
 }
 
@@ -126,7 +127,7 @@ export const initOperationStateReducer = (): [
     contextMenu: EMPTY_CONTEXT_MENU,
     progressIndicatorValue: 0,
     modals: [],
-    theme: UserTheme.Compact,
+    theme: UserTheme.SemiCompact,
     timeZone: TimeZone.Raw,
     colors: Light,
     dateTimeFormat: DateTimeFormat.Raw,

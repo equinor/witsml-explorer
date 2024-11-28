@@ -1,9 +1,4 @@
-import {
-  EdsProvider,
-  Radio,
-  Switch,
-  Typography
-} from "@equinor/eds-core-react";
+import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
 import {
   MILLIS_IN_SECOND,
   SECONDS_IN_MINUTE,
@@ -25,12 +20,11 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
 import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
-import { ReportModal } from "components/Modals/ReportModal";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { DispatchOperation, UserTheme } from "contexts/operationStateReducer";
+import { DisplayModalAction, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -41,12 +35,10 @@ import { useOperationState } from "hooks/useOperationState";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
-import DownloadAllLogDataJob from "models/jobs/downloadAllLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, {
-  CSSProperties,
   useCallback,
   useEffect,
   useMemo,
@@ -60,15 +52,18 @@ import {
 } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
-import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { formatIndexValue } from "tools/IndexHelpers";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import DownloadOptionsSelectionModal, {
+  DownloadOptionsSelectionModalProps
+} from "components/Modals/DownloadOptionsSelectionModal.tsx";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -77,13 +72,7 @@ const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
 const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
 
-interface CurveValueRow extends LogDataRow, ContentTableRow {}
-
-enum DownloadOptions {
-  All = "All",
-  IntervalOfData = "IntervalOfData",
-  SelectedIndexValues = "SelectedIndexValues"
-}
+export interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const CurveValuesView = (): React.ReactElement => {
   const {
@@ -125,7 +114,6 @@ export const CurveValuesView = (): React.ReactElement => {
   );
   const { exportData, exportOptions } = useExport();
   const justFinishedStreaming = useRef(false);
-  let downloadOptions: DownloadOptions = DownloadOptions.IntervalOfData;
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -142,14 +130,6 @@ export const CurveValuesView = (): React.ReactElement => {
     mnemonicsSearchParams,
     true
   );
-
-  const onChangeDownloadOption = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedValue = event.target.value;
-    const enumToString = selectedValue as DownloadOptions;
-    downloadOptions = enumToString;
-  };
 
   const onRowSelectionChange = useCallback(
     (rows: CurveValueRow[]) => setSelectedRows(rows),
@@ -212,37 +192,6 @@ export const CurveValuesView = (): React.ReactElement => {
       payload: confirmation
     });
   };
-
-  const executeExport = () => {
-    switch (downloadOptions) {
-      case DownloadOptions.All:
-        exportAll();
-        break;
-      case DownloadOptions.IntervalOfData:
-        exportSelectedIndexRange();
-        break;
-      case DownloadOptions.SelectedIndexValues:
-        exportSelectedDataPoints();
-    }
-    downloadOptions = DownloadOptions.IntervalOfData;
-  };
-
-  const exportSelectedIndexRange = useCallback(() => {
-    const exportColumns = columns
-      .map((column) => `${column.columnOf.mnemonic}[${column.columnOf.unit}]`)
-      .join(exportOptions.separator);
-    const data = orderBy(tableData, getComparatorByColumn(columns[0]), [
-      Order.Ascending,
-      Order.Ascending
-    ]) //Sorted because order is important when importing data
-      .map((row) =>
-        columns
-          .map((col) => row[col.columnOf.mnemonic] as string)
-          .join(exportOptions.separator)
-      )
-      .join(exportOptions.newLineCharacter);
-    exportData(log.name, exportColumns, data);
-  }, [columns, tableData]);
 
   const exportSelectedDataPoints = useCallback(() => {
     const exportColumns = columns
@@ -422,81 +371,26 @@ export const CurveValuesView = (): React.ReactElement => {
     }
   };
 
-  const exportAll = async () => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const logReference: LogObject = log;
-    const startIndexIsInclusive = !autoRefresh;
-    const downloadAllLogDataJob: DownloadAllLogDataJob = {
-      logReference,
-      mnemonics,
-      startIndexIsInclusive
-    };
-    const jobId = await JobService.orderJob(
-      JobType.DownloadAllLogData,
-      downloadAllLogDataJob
-    );
-    if (jobId) {
-      const reportModalProps = { jobId };
-      dispatchOperation({
-        type: OperationType.DisplayModal,
-        payload: <ReportModal {...reportModalProps} />
-      });
-    }
-  };
-
-  const displayConfirmation = (dispatchOperation: DispatchOperation) => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Download"}
-        content={
-          <>
-            <span>
-              <Typography>Choose download option?</Typography>
-            </span>
-
-            <label style={alignLayout}>
-              <Radio
-                name="group"
-                value={DownloadOptions.IntervalOfData}
-                id={DownloadOptions.IntervalOfData}
-                onChange={onChangeDownloadOption}
-                defaultChecked
-              />
-              <Typography>Download shown interval</Typography>
-            </label>
-            <label style={alignLayout}>
-              <Radio
-                name="group"
-                id={DownloadOptions.SelectedIndexValues}
-                value={DownloadOptions.SelectedIndexValues}
-                onChange={onChangeDownloadOption}
-                disabled={!selectedRows.length}
-              />
-              <Typography>Download selected</Typography>
-            </label>
-            <label style={alignLayout}>
-              <Radio
-                name="group"
-                id={DownloadOptions.All}
-                value={DownloadOptions.All}
-                onChange={onChangeDownloadOption}
-              />
-              <Typography>Download all data</Typography>
-            </label>
-          </>
-        }
-        onConfirm={() => {
-          dispatchOperation({ type: OperationType.HideModal });
-          executeExport();
-        }}
-        confirmText={"OK"}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({
+  const displayDownloadOptions = async () => {
+    const downloadOptionsSelectionModalProps: DownloadOptionsSelectionModalProps =
+      {
+        mnemonics: mnemonics,
+        selectedRows: selectedRows,
+        log: log,
+        startIndex: startIndex,
+        endIndex: endIndex,
+        columns: columns,
+        autoRefresh: autoRefresh
+      };
+    const action: DisplayModalAction = {
       type: OperationType.DisplayModal,
-      payload: confirmation
-    });
+      payload: (
+        <DownloadOptionsSelectionModal
+          {...downloadOptionsSelectionModalProps}
+        />
+      )
+    };
+    dispatchOperation(action);
   };
 
   const getLogData = async (startIndex: string, endIndex: string) => {
@@ -538,7 +432,7 @@ export const CurveValuesView = (): React.ReactElement => {
         key="downloadall"
         variant="ghost_icon"
         disabled={isLoading}
-        onClick={() => displayConfirmation(dispatchOperation)}
+        onClick={() => displayDownloadOptions()}
       >
         <Icon name="download" />
       </Button>,
@@ -555,14 +449,7 @@ export const CurveValuesView = (): React.ReactElement => {
         Show on server
       </Button>
     ],
-    [
-      isLoading,
-      exportSelectedDataPoints,
-      exportSelectedIndexRange,
-      selectedRows,
-      colors.mode,
-      theme
-    ]
+    [isLoading, exportSelectedDataPoints, selectedRows, colors.mode, theme]
   );
 
   if (isFetchedLog && !log) {
@@ -583,7 +470,7 @@ export const CurveValuesView = (): React.ReactElement => {
             overrideEndIndex={autoRefresh ? getCurrentMaxIndex() : null}
             onClickRefresh={() => refreshData()}
           />
-          <EdsProvider density={theme}>
+          <EdsProvider density={normaliseThemeForEds(theme)}>
             <Switch
               checked={showPlot}
               onChange={() => setShowPlot(!showPlot)}
@@ -739,9 +626,4 @@ const getColumnType = (
     default:
       return ContentType.Number;
   }
-};
-
-const alignLayout: CSSProperties = {
-  display: "flex",
-  alignItems: "center"
 };

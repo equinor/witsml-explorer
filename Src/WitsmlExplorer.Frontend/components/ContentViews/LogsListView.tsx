@@ -33,6 +33,8 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
+import { getLogObjectViewPath } from "routes/utils/pathBuilder";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -148,7 +150,18 @@ export default function LogsListView() {
   ];
 
   const onSelect = (log: LogObjectRow) => {
-    navigate(encodeURIComponent(log.uid));
+    navigate(
+      getLogObjectViewPath(
+        connectedServer.url,
+        log.wellUid,
+        log.wellboreUid,
+        ObjectType.Log,
+        (log as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
+          ? RouterLogType.DEPTH
+          : RouterLogType.TIME,
+        log.uid
+      )
+    );
   };
 
   if (isFetchedWellbore && !wellbore) {
@@ -159,7 +172,7 @@ export default function LogsListView() {
     <>
       {isFetching && <ProgressSpinnerOverlay message="Fetching Logs" />}
       <ContentContainer>
-        <EdsProvider density={theme}>
+        <EdsProvider density={normaliseThemeForEds(theme)}>
           <CommonPanelContainer>
             <Switch
               checked={showGraph}

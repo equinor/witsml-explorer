@@ -10,10 +10,9 @@ import {
   DispatchQuery,
   QueryActionType
 } from "../../../../../../contexts/queryContext.tsx";
+import StyledMenu from "../../../../../StyledComponents/StyledMenu";
+import { MenuItem } from "@mui/material";
 import { useOperationState } from "../../../../../../hooks/useOperationState.tsx";
-import styled from "styled-components";
-import { Menu } from "@equinor/eds-core-react";
-import { Colors } from "../../../../../../styles/Colors.tsx";
 
 type TemplatePickerProps = {
   dispatchQuery: DispatchQuery;
@@ -24,9 +23,7 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
   dispatchQuery,
   returnElements
 }) => {
-  const {
-    operationState: { colors }
-  } = useOperationState();
+  const { interactive, text } = useOperationState().operationState.colors;
 
   const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
@@ -49,6 +46,7 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
         aria-controls="menu-default"
         color="secondary"
         onClick={() => setIsTemplateMenuOpen(!isTemplateMenuOpen)}
+        style={{ whiteSpace: "nowrap" }}
       >
         <Icon name="style" />
         Pick template
@@ -59,38 +57,32 @@ const TemplatePicker: FC<TemplatePickerProps> = ({
         aria-labelledby="anchor-default"
         onClose={() => setIsTemplateMenuOpen(false)}
         anchorEl={menuAnchor}
-        colors={colors}
+        slotProps={{
+          paper: {
+            sx: {
+              maxHeight: "80vh",
+              overflowY: "scroll"
+            }
+          }
+        }}
       >
-        {Object.values(TemplateObjects).map((value) => {
-          return (
-            <StyledMenuItem
-              colors={colors}
-              key={value}
-              onClick={() => onTemplateSelect(value)}
-            >
-              {value}
-            </StyledMenuItem>
-          );
-        })}
+        {Object.values(TemplateObjects).map((value) => (
+          <MenuItem
+            key={value}
+            onClick={() => onTemplateSelect(value)}
+            sx={{
+              "&:hover": {
+                backgroundColor: interactive.contextMenuItemHover
+              },
+              "color": text.staticIconsDefault
+            }}
+          >
+            {value}
+          </MenuItem>
+        ))}
       </StyledMenu>
     </>
   );
 };
 
 export default TemplatePicker;
-
-const StyledMenu = styled(Menu)<{ colors: Colors }>`
-  background: ${(props) => props.colors.ui.backgroundLight};
-  max-height: 80vh;
-  overflow-y: scroll;
-`;
-
-const StyledMenuItem = styled(Menu.Item)<{ colors: Colors }>`
-  &&:hover {
-    background-color: ${(props) =>
-      props.colors.interactive.contextMenuItemHover};
-  }
-
-  color: ${(props) => props.colors.text.staticIconsDefault};
-  padding: 4px;
-`;

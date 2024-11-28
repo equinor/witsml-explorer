@@ -26,7 +26,6 @@ import WellboreContextMenu, {
 import ObjectGroupItem from "components/Sidebar/ObjectGroupItem";
 import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
@@ -45,6 +44,13 @@ interface WellboreItemProps {
   nodeId: string;
 }
 
+type ContextEventType = MouseEvent<HTMLLIElement>;
+
+type ContextMenuActionHandler = (
+  e: ContextEventType,
+  wellbore: Wellbore
+) => void;
+
 export default function WellboreItem({
   wellUid,
   wellboreUid,
@@ -56,7 +62,7 @@ export default function WellboreItem({
     dispatchOperation,
     operationState: { theme }
   } = useOperationState();
-  const isCompactMode = theme === UserTheme.Compact;
+
   const {
     operationState: { colors }
   } = useOperationState();
@@ -67,10 +73,7 @@ export default function WellboreItem({
     wellboreUid
   );
 
-  const onContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: WellboreContextMenuProps = {
       servers,
@@ -86,10 +89,7 @@ export default function WellboreItem({
     });
   };
 
-  const onLogsContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onLogsContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: LogsContextMenuProps = {
       dispatchOperation,
@@ -106,10 +106,7 @@ export default function WellboreItem({
     });
   };
 
-  const onRigsContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onRigsContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: RigsContextMenuProps = {
       wellbore,
@@ -125,10 +122,7 @@ export default function WellboreItem({
     });
   };
 
-  const onTubularsContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
-  ) => {
+  const onTubularsContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: TubularsContextMenuProps = {
       wellbore,
@@ -144,9 +138,9 @@ export default function WellboreItem({
     });
   };
 
-  const onTrajectoryContextMenu = (
-    event: MouseEvent<HTMLLIElement>,
-    wellbore: Wellbore
+  const onTrajectoryContextMenu: ContextMenuActionHandler = (
+    event,
+    wellbore
   ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: TrajectoriesContextMenuProps = {
@@ -170,7 +164,7 @@ export default function WellboreItem({
   return (
     <WellboreLayout>
       <TreeItem
-        onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
+        onContextMenu={(event: ContextEventType) =>
           onContextMenu(event, wellbore)
         }
         key={nodeId}
@@ -255,7 +249,7 @@ export default function WellboreItem({
         />
       </TreeItem>
       <WellIndicator
-        compactMode={isCompactMode}
+        themeMode={theme}
         active={wellbore?.isActive}
         colors={colors}
       />

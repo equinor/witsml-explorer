@@ -1,6 +1,20 @@
-import React, { ChangeEvent, FC, useContext, useState } from "react";
+import { TextField } from "@equinor/eds-core-react";
 import { Box, Stack } from "@mui/material";
+import React, { ChangeEvent, FC, useContext, useState } from "react";
+import styled, { css } from "styled-components";
+import { DispatchOperation } from "../../../../../contexts/operationStateReducer.tsx";
+import OperationType from "../../../../../contexts/operationType.ts";
+import {
+  QueryActionType,
+  QueryContext
+} from "../../../../../contexts/queryContext.tsx";
+import { useOperationState } from "../../../../../hooks/useOperationState.tsx";
+import QueryService from "../../../../../services/queryService.ts";
+import { Colors } from "../../../../../styles/Colors.tsx";
+import Icon from "../../../../../styles/Icons.tsx";
+import ConfirmModal from "../../../../Modals/ConfirmModal.tsx";
 import { StyledNativeSelect } from "../../../../Select.tsx";
+import { Button } from "../../../../StyledComponents/Button.tsx";
 import {
   formatXml,
   getParserError,
@@ -8,26 +22,24 @@ import {
   StoreFunction
 } from "../../../QueryViewUtils.tsx";
 import TemplatePicker from "./TemplatePicker";
-import {
-  QueryActionType,
-  QueryContext
-} from "../../../../../contexts/queryContext.tsx";
-import styled, { css } from "styled-components";
-import { TextField } from "@equinor/eds-core-react";
-import { Colors } from "../../../../../styles/Colors.tsx";
-import { useOperationState } from "../../../../../hooks/useOperationState.tsx";
-import { Button } from "../../../../StyledComponents/Button.tsx";
-import Icon from "../../../../../styles/Icons.tsx";
-import { DispatchOperation } from "../../../../../contexts/operationStateReducer.tsx";
-import OperationType from "../../../../../contexts/operationType.ts";
-import QueryService from "../../../../../services/queryService.ts";
-import ConfirmModal from "../../../../Modals/ConfirmModal.tsx";
+import DataGridSwitch from "./DataGridSwitch";
+
+export enum QueryEditorTypes {
+  AceEditor = "AceEditor",
+  DataGrid = "DataGrid"
+}
 
 type QueryOptionsProps = {
   onQueryChange: (newValue: string) => void;
+  onChangeEditorType: (type: QueryEditorTypes) => void;
+  editorType: QueryEditorTypes;
 };
 
-const QueryOptions: FC<QueryOptionsProps> = ({ onQueryChange }) => {
+const QueryOptions: FC<QueryOptionsProps> = ({
+  onQueryChange,
+  editorType,
+  onChangeEditorType
+}) => {
   const {
     dispatchQuery,
     queryState: { queries, tabIndex }
@@ -147,8 +159,8 @@ const QueryOptions: FC<QueryOptionsProps> = ({ onQueryChange }) => {
           </Button>
         </Stack>
       </Stack>
-
-      {storeFunction === StoreFunction.GetFromStore && (
+      {(storeFunction === StoreFunction.GetFromStore ||
+        storeFunction === StoreFunction.DeleteFromStore) && (
         <Box height="fit-content" pt="1rem">
           <Box component="details" open>
             <StyledSummary
@@ -159,21 +171,23 @@ const QueryOptions: FC<QueryOptionsProps> = ({ onQueryChange }) => {
               More options
             </StyledSummary>
             <Stack direction="row" alignItems="flex-end" gap="1rem" pt="1rem">
-              <StyledNativeSelect
-                label="Return elements"
-                id="return-elements"
-                onChange={onReturnElementsChange}
-                value={returnElements}
-                colors={colors}
-              >
-                {Object.values(ReturnElements).map((value) => {
-                  return (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  );
-                })}
-              </StyledNativeSelect>
+              {storeFunction === StoreFunction.GetFromStore && (
+                <StyledNativeSelect
+                  label="Return elements"
+                  id="return-elements"
+                  onChange={onReturnElementsChange}
+                  value={returnElements}
+                  colors={colors}
+                >
+                  {Object.values(ReturnElements).map((value) => {
+                    return (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    );
+                  })}
+                </StyledNativeSelect>
+              )}
               <StyledTextField
                 id="optionsIn"
                 label="Options In"
@@ -185,6 +199,18 @@ const QueryOptions: FC<QueryOptionsProps> = ({ onQueryChange }) => {
           </Box>
         </Box>
       )}
+      <Stack direction="row" justifyContent="flex-end" mt="0.5rem">
+        <DataGridSwitch
+          dataGridActive={editorType === QueryEditorTypes.DataGrid}
+          onClick={(event) =>
+            onChangeEditorType(
+              event.target.checked
+                ? QueryEditorTypes.DataGrid
+                : QueryEditorTypes.AceEditor
+            )
+          }
+        />
+      </Stack>
     </Box>
   );
 };

@@ -14,6 +14,7 @@ namespace WitsmlExplorer.Api.Models
             CredentialIds = server.CredentialIds;
             Id = server.Id;
             DepthLogDecimals = server.DepthLogDecimals;
+            IsPriority = server.IsPriority;
         }
 
         [JsonPropertyName("usernames")]

@@ -43,7 +43,7 @@ import Trajectory from "models/trajectory";
 import Tubular from "models/tubular";
 import WbGeometryObject from "models/wbGeometry";
 import Well, { emptyWell } from "models/well";
-import Wellbore, { emptyWellbore } from "models/wellbore";
+import Wellbore from "models/wellbore";
 import { SnackbarProvider } from "notistack";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -157,6 +157,7 @@ export function getServer(overrides?: Partial<Server>): Server {
     roles: [],
     credentialIds: [],
     depthLogDecimals: 0,
+    isPriority: false,
     ...overrides
   };
 }
@@ -170,7 +171,10 @@ export function getWell(overrides?: Partial<Well>): Well {
 
 export function getWellbore(overrides?: Partial<Wellbore>): Wellbore {
   return {
-    ...emptyWellbore(),
+    name: "wellboreName",
+    uid: "wellboreUid",
+    wellName: "wellName",
+    wellUid: "wellUid",
     ...overrides
   };
 }
@@ -206,8 +210,7 @@ export function getReport(overrides?: Partial<BaseReport>): BaseReport {
     summary: "testSummary",
     reportItems: [],
     warningMessage: "",
-    downloadImmediately: false,
-    reportHeader: "",
+    hasFile: false,
     ...overrides
   };
 }

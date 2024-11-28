@@ -16,6 +16,7 @@ import { ObjectType } from "models/objectType";
 import Tubular from "models/tubular";
 import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 export default function TubularsListView() {
   const {
@@ -70,7 +71,15 @@ export default function TubularsListView() {
   ];
 
   const onSelect = (tubular: any) => {
-    navigate(encodeURIComponent(tubular.uid));
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.Tubular,
+        tubular.uid
+      )
+    );
   };
 
   const tubularRows = tubulars?.map((tubular) => {

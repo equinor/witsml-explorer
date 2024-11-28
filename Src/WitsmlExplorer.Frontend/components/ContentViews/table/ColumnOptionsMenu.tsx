@@ -46,6 +46,7 @@ export const ColumnOptionsMenu = (props: {
   stickyLeftColumns: number;
   selectedColumnsStatus: string;
   firstToggleableIndex: number;
+  disableFilters: boolean;
 }): React.ReactElement => {
   const {
     table,
@@ -55,7 +56,8 @@ export const ColumnOptionsMenu = (props: {
     columns,
     stickyLeftColumns,
     selectedColumnsStatus,
-    firstToggleableIndex
+    firstToggleableIndex,
+    disableFilters
   } = props;
   const {
     operationState: { colors, theme }
@@ -72,6 +74,7 @@ export const ColumnOptionsMenu = (props: {
   const isCompactMode = theme === UserTheme.Compact;
 
   useEffect(() => {
+    if (disableFilters) return;
     const filterString = searchParams.get("filter");
     const initialFilter = JSON.parse(filterString);
     const bothEmpty =
@@ -267,7 +270,7 @@ export const ColumnOptionsMenu = (props: {
               column.id != selectId &&
               column.id != expanderId &&
               index >= stickyLeftColumns && (
-                <OrderingRow key={column.id}>
+                <OrderingRow key={column.id} disableFilters={disableFilters}>
                   <Checkbox
                     checked={column.getIsVisible()}
                     onChange={column.getToggleVisibilityHandler()}
@@ -300,21 +303,23 @@ export const ColumnOptionsMenu = (props: {
                       {column.columnDef.header.toString()}
                     </OrderingLabel>
                   </Draggable>
-                  <EdsProvider density="compact">
-                    <TextField
-                      id={`field-${column.id}`}
-                      value={filterValues[column.id] || ""}
-                      disabled={
-                        column.id === activeId ||
-                        (column.columnDef.meta as { type: ContentType })
-                          ?.type === ContentType.Component
-                      }
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        onChangeColumnFilter(e, column)
-                      }
-                      style={{ minWidth: "100px", maxHeight: "25px" }}
-                    />
-                  </EdsProvider>
+                  {!disableFilters && (
+                    <EdsProvider density="compact">
+                      <TextField
+                        id={`field-${column.id}`}
+                        value={filterValues[column.id] || ""}
+                        disabled={
+                          column.id === activeId ||
+                          (column.columnDef.meta as { type: ContentType })
+                            ?.type === ContentType.Component
+                        }
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          onChangeColumnFilter(e, column)
+                        }
+                        style={{ minWidth: "100px", maxHeight: "25px" }}
+                      />
+                    </EdsProvider>
+                  )}
                 </OrderingRow>
               )
             );
@@ -335,7 +340,7 @@ export const ColumnOptionsMenu = (props: {
               table.setColumnOrder([
                 ...(checkableRows ? [selectId] : []),
                 ...(expandableRows ? [expanderId] : []),
-                ...columns.map((column) => column.label)
+                ...columns.map((column) => column.property)
               ]);
               if (viewId)
                 removeLocalStorageItem(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
@@ -344,16 +349,19 @@ export const ColumnOptionsMenu = (props: {
             Reset ordering
           </ResetButton>
           <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
-          <ResetButton onClick={resetFilter}>Reset filter</ResetButton>
+          {!disableFilters && (
+            <ResetButton onClick={resetFilter}>Reset filter</ResetButton>
+          )}
         </ResetContainer>
       </StyledMenu>
     </>
   );
 };
 
-const OrderingRow = styled.div`
+const OrderingRow = styled.div<{ disableFilters: boolean }>`
   display: grid;
-  grid-template-columns: 20px 25px 25px 1fr 1.5fr;
+  grid-template-columns: ${(props) =>
+    props.disableFilters ? "20px 25px 25px 1fr" : "20px 25px 25px 1fr 1.5fr"};
   align-items: center;
 `;
 

@@ -18,6 +18,7 @@ import MudLog from "models/mudLog";
 import { ObjectType } from "models/objectType";
 import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 export interface MudLogRow extends ContentTableRow {
   mudLog: MudLog;
@@ -49,7 +50,15 @@ export default function MudLogsListView() {
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onSelect = (mudLogRow: MudLogRow) => {
-    navigate(encodeURIComponent(mudLogRow.mudLog.uid));
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.MudLog,
+        mudLogRow.mudLog.uid
+      )
+    );
   };
 
   const getTableData = (): MudLogRow[] => {

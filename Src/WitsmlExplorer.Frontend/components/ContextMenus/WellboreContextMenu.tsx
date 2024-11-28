@@ -16,7 +16,9 @@ import {
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferences } from "components/ContextMenus/UseClipboardReferences";
-import ConfirmModal from "components/Modals/ConfirmModal";
+import ConfirmDeletionModal, {
+  ConfirmDeletionModalProps
+} from "components/Modals/ConfirmDeletionModal";
 import DeleteEmptyMnemonicsModal, {
   DeleteEmptyMnemonicsModalProps
 } from "components/Modals/DeleteEmptyMnemonicsModal";
@@ -31,10 +33,11 @@ import {
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { DisplayModalAction } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import { refreshWellboreQuery } from "hooks/query/queryRefreshHelpers";
+import { refreshWellboresQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { IndexCurve } from "models/indexCurve";
 import { DeleteWellboreJob } from "models/jobs/deleteJobs";
 import { toWellboreReference } from "models/jobs/wellboreReference";
@@ -67,6 +70,7 @@ const WellboreContextMenu = (
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
   });
+  const filteredServers = useServerFilter(servers);
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -74,9 +78,6 @@ const WellboreContextMenu = (
       name: "",
       wellUid: wellbore.wellUid,
       wellName: wellbore.wellName,
-      wellboreStatus: "",
-      wellboreType: "",
-      isActive: false,
       wellboreParentUid: wellbore.uid,
       wellboreParentName: wellbore.name,
       wellborePurpose: "unknown"
@@ -107,7 +108,7 @@ const WellboreContextMenu = (
     );
   };
 
-  const deleteWellbore = async () => {
+  const deleteWellbore = async (cascadedDelete: boolean) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
     const job: DeleteWellboreJob = {
@@ -116,30 +117,24 @@ const WellboreContextMenu = (
         wellboreUid: wellbore.uid,
         wellName: wellbore.wellName,
         wellboreName: wellbore.name
-      }
+      },
+      cascadedDelete
     };
     await JobService.orderJob(JobType.DeleteWellbore, job);
   };
 
   const onClickDelete = async () => {
-    const confirmation = (
-      <ConfirmModal
-        heading={"Delete wellbore?"}
-        content={
-          <span>
-            This will permanently delete <strong>{wellbore.name}</strong> with
-            uid: <strong>{wellbore.uid}</strong>
-          </span>
-        }
-        onConfirm={deleteWellbore}
-        confirmColor={"danger"}
-        confirmText={"Delete wellbore"}
-        switchButtonPlaces={true}
-      />
-    );
+    const userCredentialsModalProps: ConfirmDeletionModalProps = {
+      componentType: "wellbore",
+      objectName: wellbore.name,
+      objectUid: wellbore.uid,
+      onSubmit(cascadedDelete) {
+        deleteWellbore(cascadedDelete);
+      }
+    };
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: confirmation
+      payload: <ConfirmDeletionModal {...userCredentialsModalProps} />
     });
   };
 
@@ -156,12 +151,7 @@ const WellboreContextMenu = (
 
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
-    refreshWellboreQuery(
-      queryClient,
-      connectedServer?.url,
-      wellbore.wellUid,
-      wellbore.uid
-    );
+    refreshWellboresQuery(queryClient, connectedServer?.url, wellbore.wellUid);
   };
 
   const onClickMissingDataAgent = () => {
@@ -201,12 +191,12 @@ const WellboreContextMenu = (
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem key={"refreshwellbore"} onClick={onClickRefresh}>
+        <MenuItem key={"refreshwellbores"} onClick={onClickRefresh}>
           <StyledIcon
             name="refresh"
             color={colors.interactive.primaryResting}
           />
-          <Typography color={"primary"}>Refresh wellbore</Typography>
+          <Typography color={"primary"}>Refresh wellbores</Typography>
         </MenuItem>,
         <MenuItem key={"newwellbore"} onClick={onClickNewWellbore}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
@@ -237,7 +227,11 @@ const WellboreContextMenu = (
             )}
           </Typography>
         </MenuItem>,
-        <MenuItem key={"deleteWellbore"} onClick={onClickDelete}>
+        <MenuItem
+          key={"deleteWellbore"}
+          onClick={onClickDelete}
+          disabled={!!checkedWellboreRows && checkedWellboreRows.length !== 1}
+        >
           <StyledIcon
             name="deleteToTrash"
             color={colors.interactive.primaryResting}
@@ -255,7 +249,7 @@ const WellboreContextMenu = (
           <Typography color={"primary"}>Delete empty mnemonics</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
+          {filteredServers.map((server: Server) => (
             <MenuItem
               key={server.name}
               onClick={() => onClickShowOnServer(server)}

@@ -26,6 +26,7 @@ import styled from "styled-components";
 import { indexToNumber } from "tools/IndexHelpers";
 import OperationType from "../../contexts/operationType";
 import ModalDialog from "./ModalDialog";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 
 export interface OffsetLogCurveModalProps {
   selectedLog: LogObject;
@@ -95,7 +96,7 @@ export const OffsetLogCurveModal = (
       heading={`Offset Log Curves`}
       content={
         <Layout>
-          <Accordion>
+          <StyledAccordion>
             <Accordion.Item>
               <StyledAccordionHeader colors={colors}>
                 How are the curves offset?
@@ -106,7 +107,7 @@ export const OffsetLogCurveModal = (
                 {isDepthLog ? <ExampleDepthOffset /> : <ExampleTimeOffset />}
               </Accordion.Panel>
             </Accordion.Item>
-          </Accordion>
+          </StyledAccordion>
           {isDepthLog ? (
             <>
               <AdjustNumberRangeModal

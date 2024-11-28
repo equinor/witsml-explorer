@@ -5,6 +5,7 @@ export const STORAGE_HOTKEYS_ENABLED_KEY = "hotKeysEnabled";
 export const STORAGE_FILTER_HIDDENOBJECTS_KEY = "hiddenObjects";
 export const STORAGE_FILTER_ISACTIVE_KEY = "filterIsActive";
 export const STORAGE_FILTER_OBJECTGROWING_KEY = "filterObjectGrowing";
+export const STORAGE_FILTER_PRIORITYSERVERS_KEY = "filterPriorityServers";
 export const STORAGE_FILTER_INACTIVE_TIME_CURVES_KEY =
   "filterHideInactiveCurves";
 export const STORAGE_FILTER_INACTIVE_TIME_CURVES_VALUE_KEY =

@@ -31,6 +31,7 @@ import React, {
 import { useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
@@ -219,7 +220,7 @@ export const CurveValuesPlot = React.memo(
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <CommonPanelContainer>
-          <EdsProvider density={theme}>
+          <EdsProvider density={normaliseThemeForEds(theme)}>
             <Switch
               checked={enableScatter}
               onChange={() => setEnableScatter(!enableScatter)}

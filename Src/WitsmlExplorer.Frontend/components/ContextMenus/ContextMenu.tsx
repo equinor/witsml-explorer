@@ -1,10 +1,8 @@
-import { Menu } from "@mui/material";
 import { MousePosition } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
 import React, { ReactElement } from "react";
-import styled from "styled-components";
-import { Colors } from "styles/Colors";
+import StyledMenu from "../StyledComponents/StyledMenu";
 
 interface ContextMenuProps {
   menuItems: ReactElement[];
@@ -26,7 +24,7 @@ export const getContextMenuPosition = (
 
 const ContextMenu = (props: ContextMenuProps): React.ReactElement => {
   const { operationState, dispatchOperation } = useOperationState();
-  const { contextMenu, colors } = operationState;
+  const { contextMenu } = operationState;
 
   const handleClose = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -48,28 +46,10 @@ const ContextMenu = (props: ContextMenuProps): React.ReactElement => {
           : undefined
       }
       onContextMenu={preventContextMenuPropagation}
-      colors={colors}
     >
       {props.menuItems}
     </StyledMenu>
   );
 };
-
-export const StyledMenu = styled(Menu)<{ colors: Colors }>`
-  .MuiPaper-root {
-    background: ${(props) => props.colors.ui.backgroundLight};
-    p {
-      color: ${(props) => props.colors.infographic.primaryMossGreen};
-    }
-    svg {
-      fill: ${(props) => props.colors.infographic.primaryMossGreen};
-    }
-    .MuiMenuItem-root:hover {
-      text-decoration: none;
-      background-color: ${(props) =>
-        props.colors.interactive.contextMenuItemHover};
-    }
-  }
-`;
 
 export default ContextMenu;

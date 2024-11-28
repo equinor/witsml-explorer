@@ -17,7 +17,6 @@ import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetJobInfo } from "hooks/query/useGetJobInfo";
 import { useGetServers } from "hooks/query/useGetServers";
-import useExport from "hooks/useExport";
 import { useOperationState } from "hooks/useOperationState";
 import JobStatus from "models/jobStatus";
 import JobInfo from "models/jobs/jobInfo";
@@ -48,8 +47,6 @@ export const JobsView = (): React.ReactElement => {
   const lastFetched = dataUpdatedAt
     ? new Date(dataUpdatedAt).toLocaleTimeString()
     : "";
-
-  const { exportData } = useExport();
 
   const [cancellingJobs, setCancellingJobs] = useState<string[]>([]);
 
@@ -94,8 +91,8 @@ export const JobsView = (): React.ReactElement => {
   };
   const onClickReport = async (jobId: string) => {
     const report = await JobService.getReport(jobId);
-    if (report.downloadImmediately === true) {
-      exportData(report.title, report.reportHeader, report.reportBody);
+    if (report.hasFile === true) {
+      await JobService.downloadFile(jobId);
     } else {
       const reportModalProps = { report };
       dispatchOperation({
