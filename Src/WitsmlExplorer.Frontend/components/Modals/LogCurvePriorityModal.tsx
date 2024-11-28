@@ -1,5 +1,4 @@
-import { Icon, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
-
+import { Icon, TextField, Tooltip } from "@equinor/eds-core-react";
 import { useOperationState } from "hooks/useOperationState";
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import styled from "styled-components";
@@ -11,10 +10,10 @@ import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "../ContextMenus/ContextMenu";
-import { Button as MuiButton, Stack } from "@mui/material";
+import { Button as MuiButton, Stack, Typography } from "@mui/material";
+import { Button } from "../StyledComponents/Button.tsx";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
-import { Button } from "../StyledComponents/Button.tsx";
 
 export interface LogCurvePriorityModalProps {
   wellUid?: string;
@@ -150,9 +149,10 @@ export const LogCurvePriorityModal = (
               <MuiButton
                 variant="contained"
                 color="primary"
+                component="label"
                 startIcon={<Icon name="cloudUpload" />}
               >
-                Upload CSV File
+                <Typography noWrap>Upload CSV File</Typography>
                 <input
                   type="file"
                   accept=".csv,text/csv"
@@ -161,7 +161,7 @@ export const LogCurvePriorityModal = (
                 />
               </MuiButton>
               <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
-                <Typography noWrap>
+                <Typography noWrap style={{ maxWidth: "350px" }}>
                   {uploadedFile?.name ?? "No file chosen"}
                 </Typography>
               </Tooltip>

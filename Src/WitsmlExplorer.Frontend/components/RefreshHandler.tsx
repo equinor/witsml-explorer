@@ -3,9 +3,7 @@ import {
   refreshObjectQuery,
   refreshObjectsQuery,
   refreshSearchQuery,
-  refreshWellboreQuery,
   refreshWellboresQuery,
-  refreshWellQuery,
   refreshWellsQuery
 } from "hooks/query/queryRefreshHelpers";
 import EntityType from "models/entityType";
@@ -68,40 +66,18 @@ const RefreshHandler = (): React.ReactElement => {
   }, []);
 
   function refreshWell(refreshAction: RefreshAction) {
-    if (
-      !refreshAction.wellUids &&
-      refreshAction.refreshType === RefreshType.Update
-    ) {
-      refreshWellQuery(
-        queryClient,
-        refreshAction.serverUrl.toString().toLowerCase(),
-        refreshAction.wellUid
-      );
-    } else {
-      // A well has been removed or added, so we need to refresh the entire well list to ensure that it is added or removed from the list.
-      refreshWellsQuery(
-        queryClient,
-        refreshAction.serverUrl.toString().toLowerCase()
-      );
-    }
+    refreshWellsQuery(
+      queryClient,
+      refreshAction.serverUrl.toString().toLowerCase()
+    );
   }
 
   function refreshWellbore(refreshAction: RefreshAction) {
-    if (refreshAction.refreshType === RefreshType.Update) {
-      refreshWellboreQuery(
-        queryClient,
-        refreshAction.serverUrl.toString().toLowerCase(),
-        refreshAction.wellUid,
-        refreshAction.wellboreUid
-      );
-    } else {
-      // A wellbore has been removed or added, so we need to refresh the entire wellbore list to ensure that it is added or removed from the list.
-      refreshWellboresQuery(
-        queryClient,
-        refreshAction.serverUrl.toString().toLowerCase(),
-        refreshAction.wellUid
-      );
-    }
+    refreshWellboresQuery(
+      queryClient,
+      refreshAction.serverUrl.toString().toLowerCase(),
+      refreshAction.wellUid
+    );
   }
 
   function refreshWellboreObject(refreshAction: RefreshAction) {

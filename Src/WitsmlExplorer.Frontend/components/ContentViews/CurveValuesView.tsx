@@ -1,9 +1,4 @@
-import {
-  EdsProvider,
-  Radio,
-  Switch,
-  Typography
-} from "@equinor/eds-core-react";
+import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
 import {
   MILLIS_IN_SECOND,
   SECONDS_IN_MINUTE,
@@ -25,12 +20,11 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
 import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
-import { ReportModal } from "components/Modals/ReportModal";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { DispatchOperation, UserTheme } from "contexts/operationStateReducer";
+import { DisplayModalAction, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -41,12 +35,10 @@ import { useOperationState } from "hooks/useOperationState";
 import orderBy from "lodash/orderBy";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
-import DownloadLogDataJob from "models/jobs/downloadLogDataJob";
 import { CurveSpecification, LogData, LogDataRow } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
 import { ObjectType } from "models/objectType";
 import React, {
-  CSSProperties,
   useCallback,
   useEffect,
   useMemo,
@@ -60,7 +52,6 @@ import {
 } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { truncateAbortHandler } from "services/apiClient";
-import JobService, { JobType } from "services/jobService";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
@@ -70,6 +61,9 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
+import DownloadOptionsSelectionModal, {
+  DownloadOptionsSelectionModalProps
+} from "components/Modals/DownloadOptionsSelectionModal.tsx";
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -78,13 +72,7 @@ const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
 const AUTO_REFRESH_TIMEOUT = 5.0; // minutes
 
-interface CurveValueRow extends LogDataRow, ContentTableRow {}
-
-enum DownloadOptions {
-  All = "All",
-  SelectedRange = "SelectedRange",
-  SelectedIndexValues = "SelectedIndexValues"
-}
+export interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const CurveValuesView = (): React.ReactElement => {
   const {
@@ -126,7 +114,6 @@ export const CurveValuesView = (): React.ReactElement => {
   );
   const { exportData, exportOptions } = useExport();
   const justFinishedStreaming = useRef(false);
-  let downloadOptions: DownloadOptions = DownloadOptions.SelectedRange;
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -143,14 +130,6 @@ export const CurveValuesView = (): React.ReactElement => {
     mnemonicsSearchParams,
     true
   );
-
-  const onChangeDownloadOption = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const selectedValue = event.target.value;
-    const enumToString = selectedValue as DownloadOptions;
-    downloadOptions = enumToString;
-  };
 
   const onRowSelectionChange = useCallback(
     (rows: CurveValueRow[]) => setSelectedRows(rows),
@@ -212,20 +191,6 @@ export const CurveValuesView = (): React.ReactElement => {
       type: OperationType.DisplayModal,
       payload: confirmation
     });
-  };
-
-  const executeExport = () => {
-    switch (downloadOptions) {
-      case DownloadOptions.All:
-        exportAll();
-        break;
-      case DownloadOptions.SelectedRange:
-        exportSelectedRange();
-        break;
-      case DownloadOptions.SelectedIndexValues:
-        exportSelectedDataPoints();
-    }
-    downloadOptions = DownloadOptions.SelectedRange;
   };
 
   const exportSelectedDataPoints = useCallback(() => {
@@ -406,98 +371,26 @@ export const CurveValuesView = (): React.ReactElement => {
     }
   };
 
-  const exportSelectedRange = async () => {
-    const logReference: LogObject = log;
-    const startIndexIsInclusive = !autoRefresh;
-    const downloadLogDataJob: DownloadLogDataJob = {
-      logReference,
-      mnemonics,
-      startIndexIsInclusive,
-      startIndex,
-      endIndex
-    };
-    callExportJob(downloadLogDataJob);
-  };
-
-  const exportAll = async () => {
-    const logReference: LogObject = log;
-    const startIndexIsInclusive = !autoRefresh;
-    const downloadLogDataJob: DownloadLogDataJob = {
-      logReference,
-      mnemonics,
-      startIndexIsInclusive
-    };
-    callExportJob(downloadLogDataJob);
-  };
-
-  const callExportJob = async (downloadLogDataJob: DownloadLogDataJob) => {
-    dispatchOperation({ type: OperationType.HideContextMenu });
-    const jobId = await JobService.orderJob(
-      JobType.DownloadLogData,
-      downloadLogDataJob
-    );
-    if (jobId) {
-      const reportModalProps = { jobId };
-      dispatchOperation({
-        type: OperationType.DisplayModal,
-        payload: <ReportModal {...reportModalProps} />
-      });
-    }
-  };
-
-  const displayConfirmation = (dispatchOperation: DispatchOperation) => {
-    const confirmation = (
-      <ConfirmModal
-        heading={`Download log data for ${mnemonics.length} mnemonics`}
-        content={
-          <>
-            <span>
-              <Typography>Choose download option?</Typography>
-            </span>
-
-            <label style={alignLayout}>
-              <Radio
-                name="group"
-                value={DownloadOptions.SelectedRange}
-                id={DownloadOptions.SelectedRange}
-                onChange={onChangeDownloadOption}
-                defaultChecked
-              />
-              <Typography>Download selected range</Typography>
-            </label>
-            <label style={alignLayout}>
-              <Radio
-                name="group"
-                id={DownloadOptions.SelectedIndexValues}
-                value={DownloadOptions.SelectedIndexValues}
-                onChange={onChangeDownloadOption}
-                disabled={!selectedRows.length}
-              />
-              <Typography>Download selected rows</Typography>
-            </label>
-            <label style={alignLayout}>
-              <Radio
-                name="group"
-                id={DownloadOptions.All}
-                value={DownloadOptions.All}
-                onChange={onChangeDownloadOption}
-              />
-              <Typography>Download all data</Typography>
-            </label>
-          </>
-        }
-        onConfirm={() => {
-          dispatchOperation({ type: OperationType.HideModal });
-          executeExport();
-        }}
-        confirmText={"OK"}
-        switchButtonPlaces={true}
-      />
-    );
-    dispatchOperation({
+  const displayDownloadOptions = async () => {
+    const downloadOptionsSelectionModalProps: DownloadOptionsSelectionModalProps =
+      {
+        mnemonics: mnemonics,
+        selectedRows: selectedRows,
+        log: log,
+        startIndex: startIndex,
+        endIndex: endIndex,
+        columns: columns,
+        autoRefresh: autoRefresh
+      };
+    const action: DisplayModalAction = {
       type: OperationType.DisplayModal,
-      payload: confirmation
-    });
+      payload: (
+        <DownloadOptionsSelectionModal
+          {...downloadOptionsSelectionModalProps}
+        />
+      )
+    };
+    dispatchOperation(action);
   };
 
   const getLogData = async (startIndex: string, endIndex: string) => {
@@ -539,7 +432,7 @@ export const CurveValuesView = (): React.ReactElement => {
         key="downloadall"
         variant="ghost_icon"
         disabled={isLoading}
-        onClick={() => displayConfirmation(dispatchOperation)}
+        onClick={() => displayDownloadOptions()}
       >
         <Icon name="download" />
       </Button>,
@@ -733,9 +626,4 @@ const getColumnType = (
     default:
       return ContentType.Number;
   }
-};
-
-const alignLayout: CSSProperties = {
-  display: "flex",
-  alignItems: "center"
 };

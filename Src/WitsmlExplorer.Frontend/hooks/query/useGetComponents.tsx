@@ -53,6 +53,7 @@ export const componentsQuery = <T extends ComponentType>(
     return components;
   },
   ...options,
+  gcTime: 0,
   enabled:
     !!server &&
     !!wellUid &&

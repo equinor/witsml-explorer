@@ -48,8 +48,7 @@ import Root from "./Root";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: Infinity,
-      refetchOnWindowFocus: false,
+      staleTime: 15 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND,
       retry: 0,
       gcTime: 30 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // The duration unused items are kept in the cache before garbage collection.
     }
