@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import { TextField } from "@mui/material";
 import ModalDialog from "./ModalDialog.tsx";
 import Wellbore, {
@@ -12,28 +18,16 @@ import { useOperationState } from "../../hooks/useOperationState.tsx";
 import OperationType from "../../contexts/operationType.ts";
 import { useGetWells } from "../../hooks/query/useGetWells.tsx";
 import { useGetWellbores } from "../../hooks/query/useGetWellbores.tsx";
-import Well from "../../models/well.tsx";
 import { Colors } from "../../styles/Colors.tsx";
-import { Button } from "../StyledComponents/Button.tsx";
-import { TreeView } from "@mui/x-tree-view/TreeView";
-import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import UidMappingService from "../../services/uidMappingService.tsx";
 import { UidMapping, UidMappingDbQuery } from "../../models/uidMapping.tsx";
 import ProgressSpinner from "../ProgressSpinner.tsx";
 import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
-
-interface WellboreTreeItem {
-  id: string;
-  name: string;
-  wellbore: Wellbore;
-}
-
-interface WellTreeItem {
-  id: string;
-  name: string;
-  well: Well;
-  children: WellboreTreeItem[];
-}
+import { debounce } from "lodash";
+import WellWellboreTree, {
+  WellboreTreeItem,
+  WellTreeItem
+} from "../WellWellboreTree.tsx";
 
 export interface WellboreUidMappingModalProps {
   wellbore: Wellbore;
@@ -54,14 +48,15 @@ const WellboreUidMappingModal = (
   const { wells, isFetching: isFetchingWells } = useGetWells(targetServer, {
     placeholderData: []
   });
+
   const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
     targetServer,
     "",
     { placeholderData: [] }
   );
+
   const [isFetchingUidMapping, setIsFetchingUidMapping] =
     useState<boolean>(true);
-
   const [wellboreFilterValue, setWellboreFilterValue] = useState<string>("");
   const [expandedWellTreeItems, setExpandedWellTreeItems] = useState<string[]>(
     []
@@ -95,85 +90,98 @@ const WellboreUidMappingModal = (
       .finally(() => setIsFetchingUidMapping(false));
   }, []);
 
-  const getFilteredTreeData = (wells: Well[], wellbores: Wellbore[]) => {
+  const loadedWells = useMemo(() => {
+    if (!isFetchingWells && !!wells && wells.length > 0) {
+      return wells.toSorted((a, b) => a.name.localeCompare(b.name));
+    } else {
+      return [];
+    }
+  }, [wells]);
+
+  const loadedWellbores = useMemo(() => {
+    if (!isFetchingWellbores && !!wellbores && wellbores.length > 0) {
+      return wellbores?.toSorted((a, b) => a.name.localeCompare(b.name));
+    } else {
+      return [];
+    }
+  }, [wellbores]);
+
+  const treeData = useMemo(() => {
     const data: WellTreeItem[] = [];
 
-    if (!!wells && wells.length > 0 && !!wellbores && wellbores.length > 0) {
-      wells = wells.toSorted((a, b) => a.name.localeCompare(b.name));
-      wellbores = wellbores.toSorted((a, b) => a.name.localeCompare(b.name));
+    for (const well of loadedWells) {
+      const wellboreTreeItems = loadedWellbores
+        .filter((wb) => wb.wellUid == well.uid)
+        .map(
+          (wb) =>
+            ({
+              id: calculateWellboreNodeId(wb),
+              name: wb.name + " {" + wb.uid + "}",
+              wellbore: wb
+            } as WellboreTreeItem)
+        );
 
-      for (const well of wells) {
-        const filteredWellboreTreeItems = wellbores
-          .filter(
-            (wb) =>
-              wb.wellUid == well.uid &&
-              (wb.name
-                .toLocaleLowerCase()
-                .includes(wellboreFilterValue.toLocaleLowerCase()) ||
-                wb.uid
-                  .toLocaleLowerCase()
-                  .includes(wellboreFilterValue.toLocaleLowerCase()))
-          )
-          .map(
-            (wb) =>
-              ({
-                id: calculateWellboreNodeId(wb),
-                name: wb.name + " {" + wb.uid + "}",
-                wellbore: wb
-              } as WellboreTreeItem)
-          );
+      if (!!wellboreTreeItems && wellboreTreeItems.length > 0) {
+        const wellTreeItem: WellTreeItem = {
+          id: calculateWellNodeId(well.uid),
+          name: well.name,
+          well: well,
+          children: wellboreTreeItems
+        };
+        data.push(wellTreeItem);
+      }
+    }
+
+    return data;
+  }, [loadedWells, loadedWellbores, isFetchingUidMapping]);
+
+  const filteredTreeData = useMemo(() => {
+    const filteredData: WellTreeItem[] = [];
+
+    if (
+      !isFetchingUidMapping &&
+      !!loadedWells &&
+      loadedWells.length > 0 &&
+      !!loadedWellbores &&
+      loadedWellbores.length > 0
+    ) {
+      for (const wellItem of treeData) {
+        const filteredWellboreTreeItems = wellItem.children.filter(
+          (wb) =>
+            wb.name
+              .toLocaleLowerCase()
+              .includes(wellboreFilterValue.toLocaleLowerCase()) ||
+            wb.id
+              .toLocaleLowerCase()
+              .includes(wellboreFilterValue.toLocaleLowerCase())
+        );
 
         if (
           !!filteredWellboreTreeItems &&
           filteredWellboreTreeItems.length > 0
         ) {
-          const wellTreeItem: WellTreeItem = {
-            id: calculateWellNodeId(well.uid),
-            name: well.name,
-            well: well,
+          const filteredWellTreeItem: WellTreeItem = {
+            id: wellItem.id,
+            name: wellItem.name,
+            well: wellItem.well,
             children: filteredWellboreTreeItems
           };
-          data.push(wellTreeItem);
+          filteredData.push(filteredWellTreeItem);
         }
       }
-      setExpandedWellTreeItems(data.map((wti) => wti.id));
+      setExpandedWellTreeItems(
+        wellboreFilterValue?.length > 0 ? filteredData.map((wti) => wti.id) : []
+      );
     }
-    return data;
-  };
+    return filteredData;
+  }, [loadedWells, loadedWellbores, isFetchingUidMapping, wellboreFilterValue]);
 
-  const filteredTreeData = useMemo(
-    () => getFilteredTreeData(wells, wellbores),
-    [wellboreFilterValue, wells, wellbores, isFetchingUidMapping]
+  const debouncedSetWellboreFilterValue = useCallback(
+    debounce((e: ChangeEvent<HTMLInputElement>) => {
+      setWellboreFilterValue(e.target.value);
+    }, 500),
+    []
   );
-
-  const renderWellWellboreTree = (treeData: WellTreeItem[]) => {
-    return treeData.map((wti) => (
-      <TreeItem
-        key={wti.id}
-        nodeId={wti.id}
-        label={wti.name}
-        onClick={() => {
-          if (expandedWellTreeItems.includes(wti.id)) {
-            setExpandedWellTreeItems(
-              expandedWellTreeItems.filter((i) => i !== wti.id)
-            );
-          } else {
-            setExpandedWellTreeItems(expandedWellTreeItems.concat(wti.id));
-          }
-          setSelectedWellbore(undefined);
-        }}
-      >
-        {wti.children.map((wbti) => (
-          <TreeItem
-            key={wbti.id}
-            nodeId={wbti.id}
-            label={wbti.name}
-            onClick={() => setSelectedWellbore(wbti.wellbore)}
-          ></TreeItem>
-        ))}
-      </TreeItem>
-    ));
-  };
 
   const onSubmit = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -204,78 +212,45 @@ const WellboreUidMappingModal = (
         }
         confirmText={`Save`}
         content={
-          <ContentLayout>
-            <Typography>
-              Mapping wellbore <b>{wellbore.name}</b> with UID{" "}
-              <b>&#123;{wellbore.uid}&#125;</b> to a wellbore on server{" "}
-              <b>{targetServer.name}</b>:
-            </Typography>
-            <FilterField
-              id="wellboreFilter"
-              type="text"
-              disabled={
-                isFetchingWells || isFetchingWellbores || isFetchingUidMapping
-              }
-              value={wellboreFilterValue}
-              colors={colors}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setWellboreFilterValue(e.target.value)
-              }
-              InputProps={{
-                endAdornment: (
-                  <SearchIconLayout>
-                    {wellboreFilterValue && (
-                      <Button
-                        variant="ghost_icon"
-                        onClick={() => setWellboreFilterValue("")}
-                        aria-label="Clear"
-                      >
-                        <Icon
-                          name={"clear"}
-                          color={colors.interactive.primaryResting}
-                          size={18}
-                        />
-                      </Button>
-                    )}
-                    <Icon
-                      name="search"
-                      color={colors.interactive.primaryResting}
-                    />
-                  </SearchIconLayout>
-                ),
-                classes: {
-                  adornedStart: "small-padding-left",
-                  adornedEnd: "small-padding-right"
+          isFetchingWells || isFetchingWellbores || isFetchingUidMapping ? (
+            <ProgressSpinner message="Fetching data." />
+          ) : (
+            <ContentLayout>
+              <Typography>
+                Mapping wellbore <b>{wellbore.name}</b> with UID{" "}
+                <b>&#123;{wellbore.uid}&#125;</b> to a wellbore on server{" "}
+                <b>{targetServer.name}</b>:
+              </Typography>
+              <FilterField
+                id="wellboreFilter"
+                type="text"
+                defaultValue={wellboreFilterValue}
+                colors={colors}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  debouncedSetWellboreFilterValue(e)
                 }
-              }}
-            />
-            <WellWellboreTreeLayout>
-              {isFetchingWells ||
-              isFetchingWellbores ||
-              isFetchingUidMapping ? (
-                <ProgressSpinner message="Fetching data." />
-              ) : (
-                <TreeView
-                  aria-label="rich object"
-                  defaultCollapseIcon={
-                    <Icon
-                      name="chevronDown"
-                      color={colors.interactive.primaryResting}
-                    />
+                InputProps={{
+                  endAdornment: (
+                    <SearchIconLayout>
+                      <Icon
+                        name="search"
+                        color={colors.interactive.primaryResting}
+                      />
+                    </SearchIconLayout>
+                  ),
+                  classes: {
+                    adornedStart: "small-padding-left",
+                    adornedEnd: "small-padding-right"
                   }
-                  expanded={expandedWellTreeItems}
-                  defaultExpandIcon={
-                    <Icon
-                      name="chevronRight"
-                      color={colors.interactive.primaryResting}
-                    />
-                  }
-                >
-                  {renderWellWellboreTree(filteredTreeData)}
-                </TreeView>
-              )}
-            </WellWellboreTreeLayout>
-          </ContentLayout>
+                }}
+              />
+              <WellWellboreTree
+                treeData={filteredTreeData}
+                expandedWells={expandedWellTreeItems}
+                onSelectedWellbore={(wellbore) => setSelectedWellbore(wellbore)}
+              ></WellWellboreTree>
+            </ContentLayout>
+          )
         }
         onSubmit={() => onSubmit()}
         isLoading={
@@ -296,15 +271,6 @@ const FilterField = styled(TextField)<{ colors: Colors }>`
 const SearchIconLayout = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const WellWellboreTreeLayout = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-height: 50vh;
-  max-height: 50vh;
-  overflow-x: scroll;
 `;
 
 const ContentLayout = styled.div`
