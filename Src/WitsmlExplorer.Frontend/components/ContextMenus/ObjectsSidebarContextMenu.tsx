@@ -112,21 +112,24 @@ const ObjectsSidebarContextMenu = (
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {filteredServers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowGroupOnServer(
-                  dispatchOperation,
-                  server,
-                  wellbore,
-                  objectType
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {filteredServers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowGroupOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    wellbore,
+                    objectType
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[

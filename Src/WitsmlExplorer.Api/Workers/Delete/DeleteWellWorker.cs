@@ -19,7 +19,13 @@ namespace WitsmlExplorer.Api.Workers.Delete
     {
         public JobType JobType => JobType.DeleteWell;
 
-        public DeleteWellWorker(ILogger<DeleteWellJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
+        private readonly IUidMappingService _uidMappingService;
+
+        public DeleteWellWorker(ILogger<DeleteWellJob> logger, IWitsmlClientProvider witsmlClientProvider, IUidMappingService uidMappingService)
+            : base(witsmlClientProvider, logger)
+        {
+            _uidMappingService = uidMappingService;
+        }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellJob job, CancellationToken? cancellationToken = null)
         {
@@ -30,6 +36,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
             QueryResult result = cascadedDelete ? await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWell, new OptionsIn(CascadedDelete: true)) : await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWell);
             if (result.IsSuccessful)
             {
+                await _uidMappingService.DeleteUidMappings(wellUid);
+
                 Logger.LogInformation("Deleted well. WellUid: {WellUid}", wellUid);
                 RefreshWell refreshAction = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), wellUid, RefreshType.Remove);
                 WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Deleted well with uid ${wellUid}");

@@ -186,21 +186,24 @@ const TubularComponentContextMenu = (
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {filteredServers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowObjectOnServer(
-                  dispatchOperation,
-                  server,
-                  tubular,
-                  ObjectType.Tubular
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {filteredServers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowObjectOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    tubular,
+                    ObjectType.Tubular
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

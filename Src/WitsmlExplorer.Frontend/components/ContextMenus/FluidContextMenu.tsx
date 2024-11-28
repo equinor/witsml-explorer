@@ -113,21 +113,24 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {filteredServers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowObjectOnServer(
-                  dispatchOperation,
-                  server,
-                  fluidsReport,
-                  ObjectType.FluidsReport
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {filteredServers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowObjectOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    fluidsReport,
+                    ObjectType.FluidsReport
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>
       ]}
     />

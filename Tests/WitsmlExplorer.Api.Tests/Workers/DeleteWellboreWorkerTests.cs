@@ -25,6 +25,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     {
         private readonly DeleteWellboreWorker _worker;
         private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly Mock<IUidMappingService> _uidMappingService;
         private const string WellboreUid = "wellboreUid";
         private const string WellUid = "wellUid";
 
@@ -36,7 +37,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<DeleteWellboreJob> logger = loggerFactory.CreateLogger<DeleteWellboreJob>();
-            _worker = new DeleteWellboreWorker(logger, witsmlClientProvider.Object);
+            _uidMappingService = new();
+            _uidMappingService.Setup(service => service.DeleteUidMappings(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+            _worker = new DeleteWellboreWorker(logger, witsmlClientProvider.Object, _uidMappingService.Object);
         }
 
         private static DeleteWellboreJob CreateJob(bool cascadedDelete)
