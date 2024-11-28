@@ -248,6 +248,7 @@ const WellboreUidMappingModal = (
                 treeData={filteredTreeData}
                 expandedWells={expandedWellTreeItems}
                 onSelectedWellbore={(wellbore) => setSelectedWellbore(wellbore)}
+                onNodeToggle={(_, nodeIs) => setExpandedWellTreeItems(nodeIs)}
               ></WellWellboreTree>
             </ContentLayout>
           )

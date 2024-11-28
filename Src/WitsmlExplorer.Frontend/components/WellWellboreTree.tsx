@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent } from "react";
 import styled from "styled-components";
 import { useOperationState } from "../hooks/useOperationState.tsx";
 import { TreeView } from "@mui/x-tree-view/TreeView";
@@ -24,24 +24,15 @@ interface WellWellboreTreeProps {
   treeData: WellTreeItem[];
   expandedWells: string[];
   onSelectedWellbore: (wellbore: Wellbore) => void;
+  onNodeToggle: (_: SyntheticEvent<Element, Event>, nodeIds: string[]) => void;
 }
 
 const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
-  const { treeData, expandedWells, onSelectedWellbore } = props;
+  const { treeData, expandedWells, onSelectedWellbore, onNodeToggle } = props;
 
   const {
     operationState: { colors }
   } = useOperationState();
-
-  const [expandedWellTreeItems, setExpandedWellTreeItems] =
-    useState<string[]>(expandedWells);
-
-  const handleWellNodeTogle = (
-    _: SyntheticEvent<Element, Event>,
-    nodeIds: string[]
-  ) => {
-    setExpandedWellTreeItems(nodeIds);
-  };
 
   const renderWellWellboreTree = () => {
     return treeData.map((wti) => {
@@ -82,8 +73,8 @@ const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
               color={colors.interactive.primaryResting}
             />
           }
-          expanded={expandedWellTreeItems}
-          onNodeToggle={handleWellNodeTogle}
+          expanded={expandedWells}
+          onNodeToggle={onNodeToggle}
         >
           {(treeData?.length == 0 && <Typography>No result</Typography>) ||
             (treeData?.length > 35 ? (
