@@ -38,8 +38,6 @@ export const onClickCopyToServer = async (
   const sourceWellName = toCopy[0].wellName;
   const sourceWellboreName = toCopy[0].wellboreName;
 
-  let targetWellboreRef: WellboreReference;
-
   const dbQuery: UidMappingDbQuery = {
     sourceServerId: sourceServer.id,
     sourceWellId: sourceWellUid,
@@ -79,22 +77,22 @@ export const onClickCopyToServer = async (
     return; // Cancel the operation if unable to authorize to the target server.
   }
 
-  if (mappings.length > 0) {
-    if (wellbore) {
-      targetWellboreRef = {
-        wellUid: mappings[0].targetWellId,
-        wellboreUid: mappings[0].targetWellboreId,
-        wellName: sourceWellName,
-        wellboreName: sourceWellboreName
-      };
-    } else {
-      targetWellboreRef = {
-        wellUid: sourceWellUid,
-        wellboreUid: sourceWellboreUid,
-        wellName: sourceWellName,
-        wellboreName: sourceWellboreName
-      };
-    }
+  let targetWellboreRef: WellboreReference;
+
+  if (mappings.length > 0 && !!wellbore) {
+    targetWellboreRef = {
+      wellUid: mappings[0].targetWellId,
+      wellboreUid: mappings[0].targetWellboreId,
+      wellName: sourceWellName,
+      wellboreName: sourceWellboreName
+    };
+  } else {
+    targetWellboreRef = {
+      wellUid: sourceWellUid,
+      wellboreUid: sourceWellboreUid,
+      wellName: sourceWellName,
+      wellboreName: sourceWellboreName
+    };
   }
 
   if (!wellbore) {
