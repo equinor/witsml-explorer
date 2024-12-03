@@ -19,7 +19,13 @@ namespace WitsmlExplorer.Api.Workers.Delete
     {
         public JobType JobType => JobType.DeleteWellbore;
 
-        public DeleteWellboreWorker(ILogger<DeleteWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
+        private readonly IUidMappingService _uidMappingService;
+
+        public DeleteWellboreWorker(ILogger<DeleteWellboreJob> logger, IWitsmlClientProvider witsmlClientProvider, IUidMappingService uidMappingService)
+            : base(witsmlClientProvider, logger)
+        {
+            _uidMappingService = uidMappingService;
+        }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(DeleteWellboreJob job, CancellationToken? cancellationToken = null)
         {
@@ -31,6 +37,8 @@ namespace WitsmlExplorer.Api.Workers.Delete
             QueryResult result = cascadedDelete ? await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore, new OptionsIn(CascadedDelete: true)) : await GetTargetWitsmlClientOrThrow().DeleteFromStoreAsync(witsmlWellbore);
             if (result.IsSuccessful)
             {
+                await _uidMappingService.DeleteUidMappings(wellUid, wellboreUid);
+
                 Logger.LogInformation("Deleted wellbore. WellUid: {WellUid}, WellboreUid: {WellboreUid}",
                 wellUid,
                 wellboreUid);

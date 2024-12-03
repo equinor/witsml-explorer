@@ -25,6 +25,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     {
         private readonly DeleteWellWorker _worker;
         private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly Mock<IUidMappingService> _uidMappingService;
         private const string WellUid = "wellUid";
 
         public DeleteWellWorkerTests()
@@ -35,7 +36,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<DeleteWellJob> logger = loggerFactory.CreateLogger<DeleteWellJob>();
-            _worker = new DeleteWellWorker(logger, witsmlClientProvider.Object);
+            _uidMappingService = new();
+            _uidMappingService.Setup(service => service.DeleteUidMappings(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+            _worker = new DeleteWellWorker(logger, witsmlClientProvider.Object, _uidMappingService.Object);
         }
 
         private static DeleteWellJob CreateJob(bool cascadedDelete)

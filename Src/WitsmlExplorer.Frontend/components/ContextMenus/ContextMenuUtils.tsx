@@ -29,6 +29,7 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
+import { getTargetWellboreID } from "./UidMappingUtils.tsx";
 
 export const StyledIcon = styled(Icon)`
   && {
@@ -65,39 +66,49 @@ export const menuItemText = (
 
 export const onClickShowObjectOnServer = async (
   dispatchOperation: DispatchOperation,
-  server: Server,
+  targetServer: Server,
+  connectedServer: Server,
   objectOnWellbore: ObjectOnWellbore,
   objectType: ObjectType,
   indexCurve: IndexCurve = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
+
   let url = "";
+
+  const { targetWellId, targetWellboreId } = await getTargetWellboreID({
+    sourceServerId: connectedServer.id,
+    sourceWellId: objectOnWellbore.wellUid,
+    sourceWellboreId: objectOnWellbore.wellboreUid,
+    targetServerId: targetServer.id
+  });
+
   if (objectType === ObjectType.Log) {
     const logTypePath =
       indexCurve === IndexCurve.Depth
         ? RouterLogType.DEPTH
         : RouterLogType.TIME;
     url = getLogObjectViewPath(
-      server.url,
-      objectOnWellbore.wellUid,
-      objectOnWellbore.wellboreUid,
+      targetServer.url,
+      targetWellId,
+      targetWellboreId,
       objectType,
       logTypePath,
       objectOnWellbore.uid
     );
   } else if (isExpandableGroupObject(objectType)) {
     url = getObjectViewPath(
-      server.url,
-      objectOnWellbore.wellUid,
-      objectOnWellbore.wellboreUid,
+      targetServer.url,
+      targetWellId,
+      targetWellboreId,
       objectType,
       objectOnWellbore.uid
     );
   } else {
     url = getObjectsViewPath(
-      server.url,
-      objectOnWellbore.wellUid,
-      objectOnWellbore.wellboreUid,
+      targetServer.url,
+      targetWellId,
+      targetWellboreId,
       objectType
     );
   }
@@ -106,37 +117,47 @@ export const onClickShowObjectOnServer = async (
 
 export const onClickShowGroupOnServer = async (
   dispatchOperation: DispatchOperation,
-  server: Server,
+  targetServer: Server,
+  connectedServer: Server,
   wellbore: Wellbore,
   objectType: ObjectType,
   indexType: WITSML_INDEX_TYPE = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
+
   let url = "";
+
+  const { targetWellId, targetWellboreId } = await getTargetWellboreID({
+    sourceServerId: connectedServer.id,
+    sourceWellId: wellbore.wellUid,
+    sourceWellboreId: wellbore.uid,
+    targetServerId: targetServer.id
+  });
+
   if (objectType === ObjectType.Log && indexType) {
     const logTypePath =
       indexType === WITSML_INDEX_TYPE_MD
         ? RouterLogType.DEPTH
         : RouterLogType.TIME;
     url = getLogObjectsViewPath(
-      server.url,
-      wellbore.wellUid,
-      wellbore.uid,
+      targetServer.url,
+      targetWellId,
+      targetWellboreId,
       objectType,
       logTypePath
     );
   } else if (objectType === ObjectType.Log) {
     url = getLogTypesViewPath(
-      server.url,
-      wellbore.wellUid,
-      wellbore.uid,
+      targetServer.url,
+      targetWellId,
+      targetWellboreId,
       objectType
     );
   } else {
     url = getObjectsViewPath(
-      server.url,
-      wellbore.wellUid,
-      wellbore.uid,
+      targetServer.url,
+      targetWellId,
+      targetWellboreId,
       objectType
     );
   }

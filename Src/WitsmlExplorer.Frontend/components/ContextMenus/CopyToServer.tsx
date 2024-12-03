@@ -22,6 +22,8 @@ import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import ObjectService from "services/objectService";
 import WellboreService from "services/wellboreService";
+import UidMappingService from "../../services/uidMappingService.tsx";
+import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
 
 export const onClickCopyToServer = async (
   targetServer: Server,
@@ -31,28 +33,66 @@ export const onClickCopyToServer = async (
   dispatchOperation: DispatchOperation
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const wellUid = toCopy[0].wellUid;
-  const wellboreUid = toCopy[0].wellboreUid;
-  const wellName = toCopy[0].wellName;
-  const wellboreName = toCopy[0].wellboreName;
+  const sourceWellUid = toCopy[0].wellUid;
+  const sourceWellboreUid = toCopy[0].wellboreUid;
+  const sourceWellName = toCopy[0].wellName;
+  const sourceWellboreName = toCopy[0].wellboreName;
 
-  const wellboreRef = {
-    wellUid: wellUid,
-    wellboreUid: wellboreUid,
-    wellName: wellName,
-    wellboreName: wellboreName
+  const dbQuery: UidMappingDbQuery = {
+    sourceServerId: sourceServer.id,
+    sourceWellId: sourceWellUid,
+    sourceWellboreId: sourceWellboreUid,
+    targetServerId: targetServer.id
   };
+
+  const mappings = await UidMappingService.queryUidMapping(dbQuery);
 
   let wellbore: Wellbore;
   try {
-    wellbore = await WellboreService.getWellbore(
-      wellUid,
-      wellboreUid,
-      null,
-      targetServer
-    );
+    if (mappings.length > 0) {
+      wellbore = await WellboreService.getWellbore(
+        mappings[0].targetWellId,
+        mappings[0].targetWellboreId,
+        null,
+        targetServer
+      );
+
+      if (!wellbore) {
+        await UidMappingService.removeUidMappings({
+          wellUid: mappings[0].targetWellId,
+          wellboreUid: mappings[0].targetWellboreId
+        });
+      }
+    }
+
+    if (!wellbore) {
+      wellbore = await WellboreService.getWellbore(
+        sourceWellUid,
+        sourceWellboreUid,
+        null,
+        targetServer
+      );
+    }
   } catch {
     return; // Cancel the operation if unable to authorize to the target server.
+  }
+
+  let targetWellboreRef: WellboreReference;
+
+  if (mappings.length > 0 && !!wellbore) {
+    targetWellboreRef = {
+      wellUid: mappings[0].targetWellId,
+      wellboreUid: mappings[0].targetWellboreId,
+      wellName: sourceWellName,
+      wellboreName: sourceWellboreName
+    };
+  } else {
+    targetWellboreRef = {
+      wellUid: sourceWellUid,
+      wellboreUid: sourceWellboreUid,
+      wellName: sourceWellName,
+      wellboreName: sourceWellboreName
+    };
   }
 
   if (!wellbore) {
@@ -62,7 +102,7 @@ export const onClickCopyToServer = async (
       const copyWithParentJob = createCopyWithParentJob(
         sourceServer,
         toCopy,
-        wellboreRef,
+        targetWellboreRef,
         objectType
       );
       AuthorizationService.setSourceServer(sourceServer);
@@ -73,14 +113,18 @@ export const onClickCopyToServer = async (
         sourceServer
       );
     };
-    displayCopyWellboreModal(wellboreUid, dispatchOperation, onConfirm);
+    displayCopyWellboreModal(
+      targetWellboreRef.wellboreUid,
+      dispatchOperation,
+      onConfirm
+    );
     return;
   }
 
   confirmedCopyToServer(
-    wellUid,
-    wellboreUid,
-    wellboreRef,
+    targetWellboreRef.wellUid,
+    targetWellboreRef.wellboreUid,
+    targetWellboreRef,
     targetServer,
     sourceServer,
     toCopy,
@@ -92,7 +136,7 @@ export const onClickCopyToServer = async (
 const confirmedCopyToServer = async (
   wellUid: string,
   wellboreUid: string,
-  wellbore: WellboreReference,
+  targetWellbore: WellboreReference,
   targetServer: Server,
   sourceServer: Server,
   toCopy: ObjectOnWellbore[],
@@ -125,7 +169,7 @@ const confirmedCopyToServer = async (
         sourceServer,
         toCopy,
         existingObjects,
-        wellbore,
+        targetWellbore,
         objectType,
         dispatchOperation
       );
@@ -140,7 +184,12 @@ const confirmedCopyToServer = async (
         printObject(objectOnWellbore, objectType)
     );
   } else {
-    const copyJob = createCopyJob(sourceServer, toCopy, wellbore, objectType);
+    const copyJob = createCopyJob(
+      sourceServer,
+      toCopy,
+      targetWellbore,
+      objectType
+    );
     AuthorizationService.setSourceServer(sourceServer);
     JobService.orderJobAtServer(
       JobType.CopyObjects,
