@@ -12,7 +12,7 @@ namespace Witsml.Data
         public string Version = "1.4.1.1";
 
         [XmlElement("attachment")]
-        public List<WitsmlAttachment> Attachments { get; set; } = new ();
+        public List<WitsmlAttachment> Attachments { get; set; } = new();
 
         public string TypeName => "attachment";
 
