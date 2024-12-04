@@ -57,6 +57,9 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.BhaRun], BhaRunHandler.GetBhaRuns, useOAuth2);
             app.MapGet(routes[EntityType.BhaRun] + "/{bhaRunUid}", BhaRunHandler.GetBhaRun, useOAuth2);
 
+            app.MapGet(routes[EntityType.Attachment], AttachmentHandler.GetAttachments, useOAuth2);
+            app.MapGet(routes[EntityType.Attachment] + "/{attachmentUid}", AttachmentHandler.GetAttachment, useOAuth2);
+
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/changelogs", ChangeLogHandler.GetChangeLogs, useOAuth2);
 
             app.MapGet(routes[EntityType.FluidsReport], FluidsReportHandler.GetFluidsReports, useOAuth2);

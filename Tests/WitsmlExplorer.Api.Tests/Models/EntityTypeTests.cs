@@ -40,6 +40,7 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.IsType<WitsmlTrajectory>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Trajectory));
             Assert.IsType<WitsmlTubular>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Tubular));
             Assert.IsType<WitsmlWbGeometry>(EntityTypeHelper.ToObjectOnWellbore(EntityType.WbGeometry));
+            Assert.IsType<WitsmlAttachment>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Attachment));
         }
 
         [Fact]
