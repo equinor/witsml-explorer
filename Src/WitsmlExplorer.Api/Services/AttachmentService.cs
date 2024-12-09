@@ -6,7 +6,6 @@ using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services

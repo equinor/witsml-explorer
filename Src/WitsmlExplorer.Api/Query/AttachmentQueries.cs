@@ -1,8 +1,5 @@
 using Witsml.Data;
-using Witsml.Data.Measures;
 using Witsml.Extensions;
-
-using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Query
 {
