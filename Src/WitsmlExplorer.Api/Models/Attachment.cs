@@ -1,9 +1,4 @@
 using Witsml.Data;
-using Witsml.Data.Measures;
-using Witsml.Data.Rig;
-
-using WitsmlExplorer.Api.Models.Measure;
-using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Models
 {
