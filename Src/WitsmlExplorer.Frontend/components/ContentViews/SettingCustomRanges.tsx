@@ -31,33 +31,17 @@ import {
   STORAGE_CONTENTTABLE_ORDER_KEY,
   removeLocalStorageItem
 } from "tools/localStorageHelpers";
-import { Draggable, DummyDrop } from "../../StyledComponents/DragDropTable";
 
 const lastId = "dummyLastId";
 
 type FilterValues = Record<string, string>;
 
-export const ColumnOptionsMenu = (props: {
+export const SettingCustomRanges
+ = (props: {
   table: Table<any>;
-  checkableRows: boolean;
-  expandableRows: boolean;
-  viewId: string;
-  columns: ContentTableColumn[];
-  stickyLeftColumns: number;
-  selectedColumnsStatus: string;
-  firstToggleableIndex: number;
-  disableFilters: boolean;
 }): React.ReactElement => {
   const {
     table,
-    checkableRows,
-    expandableRows,
-    viewId,
-    columns,
-    stickyLeftColumns,
-    selectedColumnsStatus,
-    firstToggleableIndex,
-    disableFilters
   } = props;
   const {
     operationState: { colors, theme }
@@ -67,14 +51,14 @@ export const ColumnOptionsMenu = (props: {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
   const [, saveOrderToStorage] = useLocalStorageState<string[]>(
-    viewId + STORAGE_CONTENTTABLE_ORDER_KEY
+   STORAGE_CONTENTTABLE_ORDER_KEY
   );
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterValues, setFilterValues] = useState<FilterValues>({});
   const isCompactMode = theme === UserTheme.Compact;
 
   useEffect(() => {
-    if (disableFilters) return;
+    console.log(" in use effect")
     const filterString = searchParams.get("filter");
     const initialFilter = JSON.parse(filterString);
     const bothEmpty =
@@ -103,7 +87,7 @@ export const ColumnOptionsMenu = (props: {
         order.push(draggedId);
       }
       table.setColumnOrder(order);
-      if (viewId) saveOrderToStorage(order);
+      saveOrderToStorage(order);
     }
     setDraggedId(null);
     setDraggedOverId(null);
@@ -112,11 +96,11 @@ export const ColumnOptionsMenu = (props: {
   const onMoveUp = (columnId: string) => {
     const order = table.getAllLeafColumns().map((d) => d.id);
     const index = order.findIndex((value) => value == columnId);
-    if (index > firstToggleableIndex) {
+    {
       order[index] = order[index - 1];
       order[index - 1] = columnId;
       table.setColumnOrder(order);
-      if (viewId) saveOrderToStorage(order);
+    ;
     }
   };
 
@@ -127,7 +111,7 @@ export const ColumnOptionsMenu = (props: {
       order[index] = order[index + 1];
       order[index + 1] = columnId;
       table.setColumnOrder(order);
-      if (viewId) saveOrderToStorage(order);
+    
     }
   };
 
@@ -217,6 +201,13 @@ export const ColumnOptionsMenu = (props: {
 
   return (
     <>
+    <Button
+                  variant={ "ghost"}
+                  
+                >
+                    <Icon name="person" />
+              
+                </Button>
       <Button
         variant="ghost_icon"
         ref={setMenuAnchor}
@@ -238,7 +229,7 @@ export const ColumnOptionsMenu = (props: {
         colors={colors}
       >
         <Typography style={{ paddingBottom: "16px" }}>
-          {selectedColumnsStatus}
+         
         </Typography>
         <div style={{ display: "flex" }}>
           <Checkbox
@@ -265,95 +256,9 @@ export const ColumnOptionsMenu = (props: {
           }}
           style={{ padding: "0.125rem 0 0.25rem 0" }}
         >
-          {table.getAllLeafColumns().map((column, index) => {
-            return (
-              column.id != selectId &&
-              column.id != expanderId &&
-              index >= stickyLeftColumns && (
-                <OrderingRow key={column.id} disableFilters={disableFilters}>
-                  <Checkbox
-                    checked={column.getIsVisible()}
-                    onChange={column.getToggleVisibilityHandler()}
-                  />
-                  <OrderingButton
-                    variant={"ghost_icon"}
-                    onClick={() => onMoveUp(column.id)}
-                    disabled={index == firstToggleableIndex}
-                  >
-                    <Icon name="chevronUp" />
-                  </OrderingButton>
-                  <OrderingButton
-                    variant={"ghost_icon"}
-                    onClick={() => onMoveDown(column.id)}
-                    disabled={index == table.getAllLeafColumns().length - 1}
-                  >
-                    <Icon name="chevronDown" />
-                  </OrderingButton>
-                  <Draggable
-                    onDragStart={() => setDraggedId(column.id)}
-                    onDragEnter={() => setDraggedOverId(column.id)}
-                    onDragEnd={drop}
-                    draggable
-                    isDragged={column.id == draggedId ? 1 : 0}
-                    isDraggedOver={column.id == draggedOverId ? 1 : 0}
-                    draggingStarted={draggedId != null ? 1 : 0}
-                    colors={colors}
-                  >
-                    <OrderingLabel>
-                      {column.columnDef.header.toString()}
-                    </OrderingLabel>
-                  </Draggable>
-                  {!disableFilters && (
-                    <EdsProvider density="compact">
-                      <TextField
-                        id={`field-${column.id}`}
-                        value={filterValues[column.id] || ""}
-                        disabled={
-                          column.id === activeId ||
-                          (column.columnDef.meta as { type: ContentType })
-                            ?.type === ContentType.Component
-                        }
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                          onChangeColumnFilter(e, column)
-                        }
-                        style={{ minWidth: "100px", maxHeight: "25px" }}
-                      />
-                    </EdsProvider>
-                  )}
-                </OrderingRow>
-              )
-            );
-          })}
-          <DummyDrop
-            onDragEnter={() => setDraggedOverId(lastId)}
-            onDragEnd={drop}
-            isDraggedOver={lastId == draggedOverId ? 1 : 0}
-            colors={colors}
-            style={{ marginLeft: "70px" }}
-          >
-            <div style={{ visibility: "hidden", height: "15px" }}></div>
-          </DummyDrop>
+                    
         </div>
-        <ResetContainer>
-          <ResetButton
-            onClick={() => {
-              table.setColumnOrder([
-                ...(checkableRows ? [selectId] : []),
-                ...(expandableRows ? [expanderId] : []),
-                ...columns.map((column) => column.property)
-              ]);
-              if (viewId)
-                removeLocalStorageItem(viewId + STORAGE_CONTENTTABLE_ORDER_KEY);
-            }}
-          >
-            Reset ordering
-          </ResetButton>
-          <ResetButton onClick={resizeColumns}>Reset sizing</ResetButton>
-          {!disableFilters && (
-            <ResetButton onClick={resetFilter}>Reset filter</ResetButton>
-          )}
-        </ResetContainer>
-      </StyledMenu>
+                        </StyledMenu>
     </>
   );
 };

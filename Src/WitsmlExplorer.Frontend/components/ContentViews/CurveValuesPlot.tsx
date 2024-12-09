@@ -1,4 +1,4 @@
-import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
+import { Button, EdsProvider, Icon, Switch, Typography } from "@equinor/eds-core-react";
 import {
   ThresholdLevel,
   transformCurveData
@@ -32,6 +32,7 @@ import { useParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
 import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
+import { SettingCustomRanges } from "./SettingCustomRanges.tsx";
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
@@ -69,6 +70,7 @@ export const CurveValuesPlot = React.memo(
     } = useOperationState();
     const [enableScatter, setEnableScatter] = useState<boolean>(false);
     const [removeOutliers, setRemoveOutliers] = useState<boolean>(false);
+    const [customRanges, setCustomRanges] = useState<boolean>(false);
     const [outliersThresholdLevel, setOutliersThresholdLevel] =
       useState<ThresholdLevel>(ThresholdLevel.Medium);
     const chart = useRef<ECharts>(null);
@@ -190,6 +192,14 @@ export const CurveValuesPlot = React.memo(
       };
     };
 
+    const openCredentialsModal = () => {
+      console.log("on click");
+      <>
+      <SettingCustomRanges table={undefined}          
+        />
+        </>
+    };
+
     const onLegendScroll = (params: { scrollDataIndex: number }) => {
       scrollIndex.current = params.scrollDataIndex;
     };
@@ -268,6 +278,22 @@ export const CurveValuesPlot = React.memo(
                     </StyledNativeSelect>
                   </>
                 )}
+                <Switch
+                  checked={customRanges}
+                  onChange={() => setCustomRanges(!customRanges)}
+                  size={theme === UserTheme.Compact ? "small" : "default"}
+                />
+                <Typography style={{ minWidth: "max-content" }}>
+                  Custom ranges
+                </Typography>
+                <Button
+                  variant={ "ghost"}
+                  onClick={openCredentialsModal}
+                >
+                    <Icon name="person" />
+              
+                </Button>
+
               </>
             )}
           </EdsProvider>
