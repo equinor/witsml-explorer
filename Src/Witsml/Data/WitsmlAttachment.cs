@@ -19,6 +19,18 @@ namespace Witsml.Data
         [XmlElement("objectReference")]
         public WitsmlObjectReference ObjectReference { get; set; }
 
+        [XmlElement("subObjectReference")]
+        public WitsmlObjectReference SubObjectReference { get; set; }
+
+        [XmlElement("md")]
+        public WitsmlMeasuredDepthCoord Md { get; set; }
+
+        [XmlElement("mdBit")]
+        public WitsmlMeasuredDepthCoord MdBit { get; set; }
+
+        [XmlElement("param")]
+        public List<WitsmlIndexedObject> Param { get; set; }
+
         [XmlElement("fileName")]
         public string FileName { get; set; }
 

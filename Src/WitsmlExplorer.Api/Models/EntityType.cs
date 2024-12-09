@@ -94,6 +94,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => new WitsmlWbGeometrys(),
                 EntityType.Well => null,
                 EntityType.Wellbore => null,
+                EntityType.Attachment => new WitsmlAttachments(),
                 _ => null,
             };
         }
@@ -115,6 +116,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => typeof(WbGeometry),
                 EntityType.Well => typeof(Well),
                 EntityType.Wellbore => typeof(Wellbore),
+                EntityType.Attachment => typeof(Attachment),
                 _ => null,
             };
         }
