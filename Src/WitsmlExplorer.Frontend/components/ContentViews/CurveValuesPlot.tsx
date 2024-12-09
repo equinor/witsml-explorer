@@ -33,6 +33,9 @@ import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
 import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import { SettingCustomRanges } from "./SettingCustomRanges.tsx";
+import { Box } from "@mui/material";
+import FilterPanel from "components/Sidebar/FilterPanel.tsx";
+
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
@@ -82,6 +85,8 @@ export const CurveValuesPlot = React.memo(
     const { width: contentViewWidth } = useContext(
       ContentViewDimensionsContext
     );
+
+    const [expanded, setExpanded] = useState<boolean>(false);
     const { logType } = useParams();
     const isTimeLog = logType === RouterLogType.TIME;
     const extraWidth = getExtraWidth(data, columns, dateTimeFormat, isTimeLog);
@@ -192,13 +197,14 @@ export const CurveValuesPlot = React.memo(
       };
     };
 
-    const openCredentialsModal = () => {
-      console.log("on click");
-      <>
-      <SettingCustomRanges table={undefined}          
-        />
-        </>
-    };
+    const iconColor = colors.interactive.primaryResting;
+
+    const openCredentialsModal = () => (
+      
+    
+      setExpanded(true)
+            
+    );
 
     const onLegendScroll = (params: { scrollDataIndex: number }) => {
       scrollIndex.current = params.scrollDataIndex;
@@ -218,6 +224,8 @@ export const CurveValuesPlot = React.memo(
         verticalZoom.current = [params.batch[0].start, params.batch[0].end];
       }
     };
+
+    const handleExpandFiltersClick = () => setExpanded(!expanded);
 
     const handleEvents = {
       legendselectchanged: onLegendChange,
@@ -293,7 +301,19 @@ export const CurveValuesPlot = React.memo(
                     <Icon name="person" />
               
                 </Button>
-
+           
+{expanded ? <Box
+    sx={{
+      zIndex: 10,
+      position: "absolute",
+      width: "inherit",
+      top: "6.3rem",
+      minWidth: "174px",
+      pr: "0.1em"
+    }}
+  >
+    <SettingCustomRanges table={undefined}  />
+  </Box> : null}
               </>
             )}
           </EdsProvider>
