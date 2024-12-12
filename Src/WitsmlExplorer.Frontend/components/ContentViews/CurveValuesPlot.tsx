@@ -1,4 +1,10 @@
-import { Button, EdsProvider, Icon, Switch, Typography } from "@equinor/eds-core-react";
+import {
+  Button,
+  EdsProvider,
+  Icon,
+  Switch,
+  Typography
+} from "@equinor/eds-core-react";
 import {
   ThresholdLevel,
   transformCurveData
@@ -34,8 +40,6 @@ import { Colors } from "styles/Colors";
 import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import { SettingCustomRanges } from "./SettingCustomRanges.tsx";
 import { Box } from "@mui/material";
-import FilterPanel from "components/Sidebar/FilterPanel.tsx";
-
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
@@ -48,6 +52,11 @@ interface ControlledTooltipProps {
   content: string;
 }
 
+export interface CustomCurveRange {
+  curve: string;
+  minValue: number
+  maxValue: number;
+}
 interface CurveValuesPlotProps {
   data: any[];
   columns: ExportableContentTableColumn<CurveSpecification>[];
@@ -80,8 +89,10 @@ export const CurveValuesPlot = React.memo(
     const selectedLabels = useRef<Record<string, boolean>>(null);
     const scrollIndex = useRef<number>(0);
     const horizontalZoom = useRef<[number, number]>([0, 100]);
+   
     const verticalZoom = useRef<[number, number]>([0, 100]);
     const [maxColumns, setMaxColumns] = useState<number>(15);
+    
     const { width: contentViewWidth } = useContext(
       ContentViewDimensionsContext
     );
@@ -96,6 +107,10 @@ export const CurveValuesPlot = React.memo(
       useState<ControlledTooltipProps>({
         visible: false
       } as ControlledTooltipProps);
+
+     
+  
+      
     const transformedData = useMemo(
       () =>
         transformCurveData(
@@ -118,6 +133,9 @@ export const CurveValuesPlot = React.memo(
       }
     }, [contentViewWidth]);
 
+   
+    
+
     const chartOption = getChartOption(
       transformedData,
       columns,
@@ -132,7 +150,9 @@ export const CurveValuesPlot = React.memo(
       horizontalZoom.current,
       verticalZoom.current,
       isTimeLog,
-      enableScatter
+      enableScatter,
+      null,
+      customRanges
     );
 
     const onMouseOver = (e: any) => {
@@ -199,13 +219,10 @@ export const CurveValuesPlot = React.memo(
 
     const iconColor = colors.interactive.primaryResting;
 
-    const openCredentialsModal = () => (
-      
-    
-      setExpanded(true)
-            
-    );
-
+    const openCredentialsModal = () =>
+      { setExpanded(true);
+        console.log(columns)
+      }
     const onLegendScroll = (params: { scrollDataIndex: number }) => {
       scrollIndex.current = params.scrollDataIndex;
     };
@@ -225,8 +242,7 @@ export const CurveValuesPlot = React.memo(
       }
     };
 
-    const handleExpandFiltersClick = () => setExpanded(!expanded);
-
+    
     const handleEvents = {
       legendselectchanged: onLegendChange,
       legendscroll: onLegendScroll,
@@ -234,6 +250,8 @@ export const CurveValuesPlot = React.memo(
       mouseover: onMouseOver,
       mouseout: onMouseOut
     };
+
+    
 
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -294,26 +312,24 @@ export const CurveValuesPlot = React.memo(
                 <Typography style={{ minWidth: "max-content" }}>
                   Custom ranges
                 </Typography>
-                <Button
-                  variant={ "ghost"}
-                  onClick={openCredentialsModal}
-                >
-                    <Icon name="person" />
-              
+                <Button variant={"ghost"} onClick={openCredentialsModal}>
+                  <Icon name="person" />
                 </Button>
-           
-{expanded ? <Box
-    sx={{
-      zIndex: 10,
-      position: "absolute",
-      width: "inherit",
-      top: "6.3rem",
-      minWidth: "174px",
-      pr: "0.1em"
-    }}
-  >
-    <SettingCustomRanges table={undefined}  />
-  </Box> : null}
+
+                {expanded ? (
+                  <Box
+                    sx={{
+                      zIndex: 10,
+                      position: "absolute",
+                      width: "inherit",
+                      top: "6.3rem",
+                      minWidth: "174px",
+                      pr: "0.1em"
+                    }}
+                  >
+                    <SettingCustomRanges columns = {columns} data={data} />
+                  </Box>
+                ) : null}
               </>
             )}
           </EdsProvider>
@@ -378,7 +394,9 @@ const getChartOption = (
   horizontalZoom: [number, number],
   verticalZoom: [number, number],
   isTimeLog: boolean,
-  enableScatter: boolean
+  enableScatter: boolean,
+  minMaxVal: CustomCurveRange [],
+  customRange: boolean,
 ) => {
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
@@ -388,22 +406,22 @@ const getChartOption = (
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
   const dataColumns = columns.filter((col) => col.property != indexCurve);
-  const minMaxValues = columns
-    .map((col) => col.columnOf.mnemonic)
-    .map((curve) => {
-      const curveData = data.map((obj) => obj[curve]).filter(Number.isFinite);
-      return {
-        curve: curve,
-        minValue:
-          curveData.length == 0
-            ? null
-            : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
-        maxValue:
-          curveData.length == 0
-            ? null
-            : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
-      };
-    });
+  const minMaxValues = customRange ?  minMaxVal : columns
+  .map((col) => col.columnOf.mnemonic)
+  .map((curve) => {
+    const curveData = data.map((obj) => obj[curve]).filter(Number.isFinite);
+    return {
+      curve: curve,
+      minValue:
+        curveData.length == 0
+          ? null
+          : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
+      maxValue:
+        curveData.length == 0
+          ? null
+          : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
+    };
+  });
 
   return {
     title: {

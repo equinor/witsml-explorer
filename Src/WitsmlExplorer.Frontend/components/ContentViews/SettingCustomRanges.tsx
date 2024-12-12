@@ -1,130 +1,142 @@
-import {
-  EdsProvider,
-  Icon,
-  Menu,
-  TextField,
-  Typography
-} from "@equinor/eds-core-react";
-import { Checkbox } from "@mui/material";
-import { Column, Table } from "@tanstack/react-table";
-import {
-  activeId,
-  calculateColumnWidth,
-  expanderId,
-  selectId
-} from "components/ContentViews/table/contentTableUtils";
-import {
-  ContentTableColumn,
-  ContentType
-} from "components/ContentViews/table/tableParts";
-import { Button } from "components/StyledComponents/Button";
-import { UserTheme } from "contexts/operationStateReducer";
-import { useLocalStorageState } from "hooks/useLocalStorageState";
+import { EdsProvider, Table, TextField } from "@equinor/eds-core-react";
+
+import { ExportableContentTableColumn } from "components/ContentViews/table/tableParts";
+
 import { useOperationState } from "hooks/useOperationState";
-import { debounce } from "lodash";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
+
+import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
-
-
-type FilterValues = Record<string, string>;
+import { colors, Colors } from "styles/Colors";
+import { CustomCurveRange } from "./CurveValuesPlot";
+import { CurveSpecification } from "models/logData";
 
 export const SettingCustomRanges = (props: {
-  table: Table<any>;
+  columns: ExportableContentTableColumn<CurveSpecification>[];
+  data: any[];
 }): React.ReactElement => {
- 
   const {
-    operationState: { colors, theme }
+    operationState: { colors }
   } = useOperationState();
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null);
 
+  const minMaxValuesCalculation = props.columns
+    .map((col) => col.columnOf.mnemonic)
+    .map((curve) => {
+      const curveData = props.data
+        .map((obj) => obj[curve])
+        .filter(Number.isFinite);
+      return {
+        curve: curve,
+        minValue:
+          curveData.length == 0
+            ? null
+            : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
+        maxValue:
+          curveData.length == 0
+            ? null
+            : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
+      };
+    });
+  const [ranges, setRanges] = useState<CustomCurveRange[]>(
+    minMaxValuesCalculation
+  );
+
+  const onTextFieldChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: string
+  ) => {
+    var server = ranges.find((x) => x.curve === index);
+    server.minValue = Number(e.target.value);
+    setRanges(ranges);
+  };
+
+  const onTextFieldChange2 = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: string
+  ) => {
+    var server = ranges.find((x) => x.curve === index);
+    server.maxValue = Number(e.target.value);
+    setRanges(ranges);
+  };
 
   return (
-    <>
-      <Button variant={"ghost"}>
-        <Icon name="person" />
-      </Button>
-     
-      <StyledMenu
-        open={isMenuOpen}
-        id="menu-default"
-        aria-labelledby="anchor-default"
-        onClose={() => setIsMenuOpen(false)}
-        anchorEl={menuAnchor}
-        placement="left-end"
-        colors={colors}
-      >
-        <Typography style={{ paddingBottom: "16px" }}></Typography>
-        <div style={{ display: "flex" }}>
-          <Checkbox
-            
-            
-          />
-          <Typography
-            style={{
-              fontFamily: "EquinorMedium",
-              fontSize: "0.875rem",
-              padding: "0.25rem 0 0 0.25rem"
-            }}
-          >
-            Toggle all over
-          </Typography>
-        </div>
-        {/* set onDragOver and onDrop on an outer div so that the mouse cursor properly detect a drop area, has an annoying flicker tho */}
-        <div
-          onDragOver={(e) => {
-            e.preventDefault();
-          }}
-          onDrop={(e) => {
-            e.preventDefault();
-          }}
-          style={{ padding: "0.125rem 0 0.25rem 0" }}
-        ></div>
-      </StyledMenu>
-    </>
+    <EdsProvider density="compact">
+      <Container colors={colors}>
+        <InnerContainer>
+          <Table style={{ width: "100%" }} className="serversList">
+            <Table.Head>
+              <Table.Row>
+                <Table.Cell style={CellHeaderStyle}>Curve</Table.Cell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              {(ranges ?? [])
+                .sort((a, b) => a.curve.localeCompare(b.curve))
+                .map((server: CustomCurveRange) => (
+                  <Table.Row id={server.curve} key={server.curve}>
+                    <Table.Cell style={CellStyle}>{server.curve}</Table.Cell>
+                    <Table.Cell style={CellStyle}>
+                      <StartEndIndex>
+                        <StyledTextField
+                          id="startIndex"
+                          defaultValue={server.minValue}
+                          step="0.001"
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            onTextFieldChange(e, server.curve);
+                          }}
+                        />
+
+                        <StyledTextField
+                          id="endIndex"
+                          defaultValue={server.maxValue}
+                          step="0.001"
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                            onTextFieldChange2(e, server.curve);
+                          }}
+                        />
+                      </StartEndIndex>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+            </Table.Body>
+          </Table>
+        </InnerContainer>
+      </Container>
+    </EdsProvider>
   );
 };
 
-const StyledMenu = styled(Menu)<{ colors: Colors }>`
-  background: ${(props) => props.colors.ui.backgroundLight};
-  p {
-    color: ${(props) => props.colors.text.staticIconsDefault};
-  }
-  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
-  max-height: 90vh;
-  overflow-y: scroll;
-
-  div[class*="InputWrapper__Container"] {
-    label.dHhldd {
-      color: ${(props) => props.colors.text.staticTextLabel};
-    }
-  }
-
-  div[class*="Input__Container"][disabled] {
-    background: ${(props) => props.colors.text.staticTextFieldDefault};
-    border-bottom: 1px solid #9ca6ac;
-  }
-
-  div[class*="Input__Container"] {
-    background-color: ${(props) => props.colors.text.staticTextFieldDefault};
-  }
-
-  input[class*="Input__StyledInput"] {
-    padding: 4px;
-  }
+const StartEndIndex = styled.div`
+  display: flex;
 `;
 
-export const createColumnFilterSearchParams = (
-  currentSearchParams: URLSearchParams,
-  filterValues: FilterValues
-): URLSearchParams => {
-  if (Object.entries(filterValues).length === 0) {
-    currentSearchParams.delete("filter");
-  } else {
-    currentSearchParams.set("filter", JSON.stringify(filterValues));
-  }
-  return currentSearchParams;
+const CellStyle = {
+  color: colors.interactive.primaryResting,
+  padding: "0.3rem",
+  borderBottom: `2px solid ${colors.interactive.disabledBorder}`
 };
+const CellHeaderStyle = {
+  ...CellStyle,
+  background: colors.ui.backgroundLight
+};
+
+const Container = styled.div<{ colors: Colors }>`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0.5em;
+  user-select: none;
+  box-shadow: 1px 4px 5px 0px rgba(0, 0, 0, 0.3);
+  background: ${(props) => props.colors.ui.backgroundLight};
+`;
+
+const InnerContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledTextField = styled(TextField)`
+  div {
+    background-color: transparent;
+  }
+  min-width: 220px;
+`;
