@@ -280,7 +280,6 @@ export const CurveValuesPlot = React.memo(
 
     const onChange = (curveRanges: CustomCurveRange[]) => {
       setRanges(curveRanges);
-      console.log(ranges);
       setRefreshGraph(!refreshGraph);
     };
 
