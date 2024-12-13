@@ -439,6 +439,7 @@ const getChartOption = (
   customRange: boolean,
   _refreshGraph: boolean
 ) => {
+  _refreshGraph = false;
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
   const LABEL_MAXIMUM_LENGHT = 13;
