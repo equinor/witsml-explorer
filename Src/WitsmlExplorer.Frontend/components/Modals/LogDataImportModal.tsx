@@ -218,7 +218,10 @@ const LogDataImportModal = (
         // csv files
         const headerLine = text.split("\n", 1)[0];
         header = parseCSVHeader(headerLine);
-        data = text.split("\n").slice(1);
+        data = text
+          .split("\n")
+          .slice(1)
+          .filter((row) => row !== "");
         setUploadedFileData(data);
         setAllUploadedFileData(data);
       }
