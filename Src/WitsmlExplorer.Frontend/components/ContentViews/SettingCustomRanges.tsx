@@ -1,102 +1,96 @@
-import { EdsProvider, Table, TextField } from "@equinor/eds-core-react";
-
-import { ExportableContentTableColumn } from "components/ContentViews/table/tableParts";
-
+import {
+  Button,
+  CellProps,
+  Divider,
+  EdsProvider,
+  Table,
+  TextField
+} from "@equinor/eds-core-react";
 import { useOperationState } from "hooks/useOperationState";
-
 import { ChangeEvent, useState } from "react";
 import styled from "styled-components";
-import { colors, Colors } from "styles/Colors";
+import { Colors } from "styles/Colors";
 import { CustomCurveRange } from "./CurveValuesPlot";
-import { CurveSpecification } from "models/logData";
 
 export const SettingCustomRanges = (props: {
-  columns: ExportableContentTableColumn<CurveSpecification>[];
-  data: any[];
+  minMaxValuesCalculation: CustomCurveRange[];
+  onChange: (curveRanges: CustomCurveRange[]) => void;
+  onClose: () => void;
 }): React.ReactElement => {
   const {
     operationState: { colors }
   } = useOperationState();
 
-  const minMaxValuesCalculation = props.columns
-    .map((col) => col.columnOf.mnemonic)
-    .map((curve) => {
-      const curveData = props.data
-        .map((obj) => obj[curve])
-        .filter(Number.isFinite);
-      return {
-        curve: curve,
-        minValue:
-          curveData.length == 0
-            ? null
-            : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
-        maxValue:
-          curveData.length == 0
-            ? null
-            : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
-      };
-    });
   const [ranges, setRanges] = useState<CustomCurveRange[]>(
-    minMaxValuesCalculation
+    props.minMaxValuesCalculation
   );
 
-  const onTextFieldChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    index: string
-  ) => {
-    var server = ranges.find((x) => x.curve === index);
-    server.minValue = Number(e.target.value);
-    setRanges(ranges);
-  };
-
-  const onTextFieldChange2 = (
-    e: ChangeEvent<HTMLInputElement>,
-    index: string
-  ) => {
-    var server = ranges.find((x) => x.curve === index);
-    server.maxValue = Number(e.target.value);
-    setRanges(ranges);
+  const close = () => {
+    props.onClose();
   };
 
   return (
     <EdsProvider density="compact">
       <Container colors={colors}>
         <InnerContainer>
-          <Table style={{ width: "100%" }} className="serversList">
+          <CloseButton onClick={close}>
+            Close custom ranges definition
+          </CloseButton>
+        </InnerContainer>
+        <Divider />
+        <InnerContainer>
+          <Table style={{ width: "100%" }}>
             <Table.Head>
               <Table.Row>
-                <Table.Cell style={CellHeaderStyle}>Curve</Table.Cell>
+                <StyledTableHeadCell colors={colors}>Curve</StyledTableHeadCell>
+                <StyledTableHeadCell colors={colors}>
+                  Min. value
+                </StyledTableHeadCell>
+                <StyledTableHeadCell colors={colors}>
+                  Max. value
+                </StyledTableHeadCell>
               </Table.Row>
             </Table.Head>
             <Table.Body>
-              {(ranges ?? [])
-                .sort((a, b) => a.curve.localeCompare(b.curve))
-                .map((server: CustomCurveRange) => (
-                  <Table.Row id={server.curve} key={server.curve}>
-                    <Table.Cell style={CellStyle}>{server.curve}</Table.Cell>
-                    <Table.Cell style={CellStyle}>
-                      <StartEndIndex>
-                        <StyledTextField
-                          id="startIndex"
-                          defaultValue={server.minValue}
-                          step="0.001"
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            onTextFieldChange(e, server.curve);
-                          }}
-                        />
-
-                        <StyledTextField
-                          id="endIndex"
-                          defaultValue={server.maxValue}
-                          step="0.001"
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                            onTextFieldChange2(e, server.curve);
-                          }}
-                        />
-                      </StartEndIndex>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
+              {(ranges ?? []).map((customRange: CustomCurveRange) => (
+                <Table.Row id={customRange.curve} key={customRange.curve}>
+                  <StyledTableCell colors={colors}>
+                    {customRange.curve}
+                  </StyledTableCell>
+                  <StyledTableCell colors={colors}>
+                    <StyledTextField
+                      id="startIndex"
+                      defaultValue={customRange.minValue}
+                      type="number"
+                      colors={colors}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        var server = ranges.find(
+                          (x) => x.curve === customRange.curve
+                        );
+                        server.minValue = Number(e.target.value);
+                        setRanges(ranges);
+                        props.onChange(ranges);
+                      }}
+                    />
+                  </StyledTableCell>
+                  <StyledTableCell colors={colors}>
+                    <StyledTextField
+                      id="endIndex"
+                      defaultValue={customRange.maxValue}
+                      type="number"
+                      colors={colors}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        var server = ranges.find(
+                          (x) => x.curve === customRange.curve
+                        );
+                        server.maxValue = Number(e.target.value);
+                        setRanges(ranges);
+                        props.onChange(ranges);
+                      }}
+                    />
+                  </StyledTableCell>
+                </Table.Row>
+              ))}
             </Table.Body>
           </Table>
         </InnerContainer>
@@ -105,19 +99,11 @@ export const SettingCustomRanges = (props: {
   );
 };
 
-const StartEndIndex = styled.div`
-  display: flex;
+export const StyledTableCell = styled(Table.Cell)<{ colors: Colors }>`
+  background-color: ${(props) =>
+    props.colors.interactive.tableHeaderFillResting};
+  color: ${(props) => props.colors.text.staticIconsDefault};
 `;
-
-const CellStyle = {
-  color: colors.interactive.primaryResting,
-  padding: "0.3rem",
-  borderBottom: `2px solid ${colors.interactive.disabledBorder}`
-};
-const CellHeaderStyle = {
-  ...CellStyle,
-  background: colors.ui.backgroundLight
-};
 
 const Container = styled.div<{ colors: Colors }>`
   display: flex;
@@ -134,9 +120,24 @@ const InnerContainer = styled.div`
   flex-direction: column;
 `;
 
-const StyledTextField = styled(TextField)`
-  div {
-    background-color: transparent;
+const StyledTextField = styled(TextField)<{ colors: Colors }>`
+  label {
+    color: red;
   }
-  min-width: 220px;
+
+  div {
+    background-color: ${(props) => props.colors.ui.backgroundLight};
+  }
+`;
+
+const CloseButton = styled(Button)`
+  width: 300px;
+`;
+
+const StyledTableHeadCell = styled(Table.Cell)<{ colors: Colors } & CellProps>`
+   {
+    background-color: ${(props) =>
+      props.colors.interactive.tableHeaderFillResting};
+    color: ${(props) => props.colors.text.staticIconsDefault};
+  }
 `;
