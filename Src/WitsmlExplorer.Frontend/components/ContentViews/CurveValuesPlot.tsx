@@ -110,9 +110,9 @@ export const CurveValuesPlot = React.memo(
       } as ControlledTooltipProps);
 
     const minMaxValuesCalculation = (
-      columns: ExportableContentTableColumn<CurveSpecification>[]
+      myColumns: ExportableContentTableColumn<CurveSpecification>[]
     ) =>
-      columns
+      myColumns
         .map((col) => col.columnOf.mnemonic)
         .map((curve) => {
           const curveData = props.data
@@ -133,7 +133,7 @@ export const CurveValuesPlot = React.memo(
         .slice(1);
 
     const [ranges, setRanges] = useState<CustomCurveRange[]>(
-      minMaxValuesCalculation(props.columns)
+      minMaxValuesCalculation(columns)
     );
 
     const transformedData = useMemo(
@@ -280,6 +280,7 @@ export const CurveValuesPlot = React.memo(
 
     const onChange = (curveRanges: CustomCurveRange[]) => {
       setRanges(curveRanges);
+      console.log(ranges);
       setRefreshGraph(!refreshGraph);
     };
 
@@ -362,9 +363,7 @@ export const CurveValuesPlot = React.memo(
                     }}
                   >
                     <SettingCustomRanges
-                      minMaxValuesCalculation={minMaxValuesCalculation(
-                        props.columns
-                      )}
+                      minMaxValuesCalculation={ranges}
                       onChange={onChange}
                       onClose={onClose}
                     />
