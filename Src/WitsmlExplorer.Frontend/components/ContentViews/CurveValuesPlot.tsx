@@ -439,12 +439,12 @@ const getChartOption = (
   customRange: boolean,
   _refreshGraph: boolean
 ) => {
-  _refreshGraph = false;
+  _refreshGraph = true;
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
   const LABEL_MAXIMUM_LENGHT = 13;
   const LABEL_NUMBER_MAX_LENGTH = 9;
-  if (autoRefresh) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
+  if (autoRefresh && _refreshGraph) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
   const dataColumns = columns.filter((col) => col.property != indexCurve);

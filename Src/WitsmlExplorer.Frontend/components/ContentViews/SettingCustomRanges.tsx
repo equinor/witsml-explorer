@@ -64,10 +64,10 @@ export const SettingCustomRanges = (props: {
                       type="number"
                       colors={colors}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        const server = ranges.find(
+                        const range = ranges.find(
                           (x) => x.curve === customRange.curve
                         );
-                        server.minValue = Number(e.target.value);
+                        range.minValue = Number(e.target.value);
                         setRanges(ranges);
                         props.onChange(ranges);
                       }}
@@ -80,10 +80,10 @@ export const SettingCustomRanges = (props: {
                       type="number"
                       colors={colors}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        const server = ranges.find(
+                        const range = ranges.find(
                           (x) => x.curve === customRange.curve
                         );
-                        server.maxValue = Number(e.target.value);
+                        range.maxValue = Number(e.target.value);
                         setRanges(ranges);
                         props.onChange(ranges);
                       }}
