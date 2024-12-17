@@ -183,8 +183,6 @@ export const CurveValuesPlot = React.memo(
       verticalZoom.current,
       isTimeLog,
       enableScatter,
-      ranges,
-      useCustomRanges,
       refreshGraph
     );
 
