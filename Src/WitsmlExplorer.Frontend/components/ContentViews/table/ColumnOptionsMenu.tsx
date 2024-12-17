@@ -252,7 +252,7 @@ export const ColumnOptionsMenu = (props: {
               padding: "0.25rem 0 0 0.25rem"
             }}
           >
-            Toggle all over
+            Toggle all
           </Typography>
         </div>
         {/* set onDragOver and onDrop on an outer div so that the mouse cursor properly detect a drop area, has an annoying flicker tho */}
