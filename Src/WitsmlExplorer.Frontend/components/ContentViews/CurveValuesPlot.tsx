@@ -439,8 +439,6 @@ const getChartOption = (
   verticalZoom: [number, number],
   isTimeLog: boolean,
   enableScatter: boolean,
-  minMaxVal: CustomCurveRange[],
-  customRange: boolean,
   _refreshGraph: boolean
 ) => {
   _refreshGraph = true;
