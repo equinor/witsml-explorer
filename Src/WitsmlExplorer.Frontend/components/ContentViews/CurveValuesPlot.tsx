@@ -81,7 +81,7 @@ export const CurveValuesPlot = React.memo(
     } = useOperationState();
     const [enableScatter, setEnableScatter] = useState<boolean>(false);
     const [removeOutliers, setRemoveOutliers] = useState<boolean>(false);
-    const [customRanges, setCustomRanges] = useState<boolean>(false);
+    const [useCustomRanges, setUseCustomRanges] = useState<boolean>(false);
     const [refreshGraph, setRefreshGraph] = useState<boolean>(false);
     const [outliersThresholdLevel, setOutliersThresholdLevel] =
       useState<ThresholdLevel>(ThresholdLevel.Medium);
@@ -142,7 +142,9 @@ export const CurveValuesPlot = React.memo(
           data,
           columns,
           outliersThresholdLevel,
-          !autoRefresh && removeOutliers
+          !autoRefresh && removeOutliers,
+          ranges,
+          useCustomRanges
         ),
       [
         data,
@@ -150,7 +152,8 @@ export const CurveValuesPlot = React.memo(
         outliersThresholdLevel,
         removeOutliers,
         autoRefresh,
-        ranges
+        ranges,
+        useCustomRanges
       ]
     );
 
@@ -181,7 +184,7 @@ export const CurveValuesPlot = React.memo(
       isTimeLog,
       enableScatter,
       ranges,
-      customRanges,
+      useCustomRanges,
       refreshGraph
     );
 
@@ -339,8 +342,8 @@ export const CurveValuesPlot = React.memo(
                   </>
                 )}
                 <Switch
-                  checked={customRanges}
-                  onChange={() => setCustomRanges(!customRanges)}
+                  checked={useCustomRanges}
+                  onChange={() => setUseCustomRanges(!useCustomRanges)}
                   size={theme === UserTheme.Compact ? "small" : "default"}
                 />
                 <Typography
@@ -348,8 +351,11 @@ export const CurveValuesPlot = React.memo(
                 >
                   Show Custom ranges
                 </Typography>
-                <Button onClick={openCustomRanges}>Define custom ranges</Button>
-
+                {useCustomRanges && (
+                  <Button onClick={openCustomRanges}>
+                    Define custom ranges
+                  </Button>
+                )}
                 {defineCustomRanges ? (
                   <Box
                     sx={{
@@ -446,26 +452,22 @@ const getChartOption = (
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
   const dataColumns = columns.filter((col) => col.property != indexCurve);
-  const minMaxValues = customRange
-    ? minMaxVal
-    : columns
-        .map((col) => col.columnOf.mnemonic)
-        .map((curve) => {
-          const curveData = data
-            .map((obj) => obj[curve])
-            .filter(Number.isFinite);
-          return {
-            curve: curve,
-            minValue:
-              curveData.length == 0
-                ? null
-                : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
-            maxValue:
-              curveData.length == 0
-                ? null
-                : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
-          };
-        });
+  const minMaxValues = columns
+    .map((col) => col.columnOf.mnemonic)
+    .map((curve) => {
+      const curveData = data.map((obj) => obj[curve]).filter(Number.isFinite);
+      return {
+        curve: curve,
+        minValue:
+          curveData.length == 0
+            ? null
+            : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
+        maxValue:
+          curveData.length == 0
+            ? null
+            : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
+      };
+    });
 
   return {
     title: {
