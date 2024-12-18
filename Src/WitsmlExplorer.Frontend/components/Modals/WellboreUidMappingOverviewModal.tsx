@@ -202,14 +202,14 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
         wellbore: sourceWellbores.find(
           (wb) => wb.uid === selectedRows[0].sourceWellboreId
         ),
-        targetServer: targetServerValue
+        targetServer: targetServerValue,
+        onModalClose: () => loadMappings()
       };
       const action: DisplayModalAction = {
         type: OperationType.DisplayModal,
         payload: <WellboreUidMappingModal {...wellboreUidMappingModalProps} />
       };
       dispatchOperation(action);
-      loadMappings();
     }
   };
 
