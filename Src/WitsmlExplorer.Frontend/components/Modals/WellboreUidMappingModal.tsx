@@ -32,12 +32,13 @@ import WellWellboreTree, {
 export interface WellboreUidMappingModalProps {
   wellbore: Wellbore;
   targetServer: Server;
+  onModalClose?: () => void;
 }
 
 const WellboreUidMappingModal = (
   props: WellboreUidMappingModalProps
 ): React.ReactElement => {
-  const { wellbore, targetServer } = props;
+  const { wellbore, targetServer, onModalClose } = props;
 
   const {
     dispatchOperation,
@@ -200,6 +201,10 @@ const WellboreUidMappingModal = (
         await UidMappingService.updateUidMapping(uidMapping);
       } else {
         await UidMappingService.addUidMapping(uidMapping);
+      }
+
+      if (onModalClose) {
+        onModalClose();
       }
     }
   };
