@@ -86,9 +86,9 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   );
 
   const cancelJob = async (jobId: string) => {
+    await JobService.cancelJob(jobId);
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
-    await JobService.cancelJob(jobId);
   };
 
   const onClickCancel = async () => {
@@ -99,6 +99,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
           <Typography>Do you really want to cancel this job?</Typography>
         }
         onConfirm={() => {
+          dispatchOperation({ type: OperationType.HideModal });
           cancelJob(jobId);
         }}
         confirmColor={"danger"}
