@@ -347,11 +347,11 @@ export const CurveValuesPlot = React.memo(
                 <Typography
                   style={{ minWidth: "max-content", marginRight: "12px" }}
                 >
-                  Show Custom ranges
+                  Show Custom Ranges
                 </Typography>
                 {useCustomRanges && (
                   <Button onClick={openCustomRanges}>
-                    Define custom ranges
+                    Define Custom Ranges
                   </Button>
                 )}
                 {defineCustomRanges ? (
