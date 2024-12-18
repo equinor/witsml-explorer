@@ -325,7 +325,7 @@ const LogObjectContextMenu = (
               name="formatLine"
               color={colors.interactive.primaryResting}
             />
-            <Typography color={"primary"}>Adjust range</Typography>
+            <Typography color={"primary"}>Trim range</Typography>
           </MenuItem>,
           <MenuItem
             key={"splice"}
