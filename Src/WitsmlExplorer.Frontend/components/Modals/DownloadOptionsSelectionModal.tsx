@@ -256,7 +256,7 @@ const DownloadOptionsSelectionModal = (
         60 /
         60 /
         24;
-      const maxAvaivableSize = (1300 * step) / props.mnemonics.length;
+      const maxAvaivableSize = (1290 * step) / props.mnemonics.length;
       setMaxSpan(maxAvaivableSize);
       if (actualSize < maxAvaivableSize) {
         return false;
@@ -268,7 +268,7 @@ const DownloadOptionsSelectionModal = (
   return (
     <ConfirmModal
       heading={`Download log data for ${props.mnemonics.length} mnemonics`}
-      confirmDisabled={(isTimeLog && !isValidInterval) || tooBigInterval}
+      confirmDisabled={isTimeLog && (!isValidInterval || tooBigInterval)}
       content={
         <>
           <span>
