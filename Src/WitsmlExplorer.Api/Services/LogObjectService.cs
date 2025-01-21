@@ -367,7 +367,14 @@ namespace WitsmlExplorer.Api.Services
         {
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch(cancellationToken);
-
+            if (!startIndex.GetValueAsString().Equals(log.StartDateTimeIndex))
+            {
+                log.StartDateTimeIndex = startIndex.GetValueAsString();
+            }
+            if (!endIndex.GetValueAsString().Equals(log.EndDateTimeIndex))
+            {
+                log.EndDateTimeIndex = endIndex.GetValueAsString();
+            }
             var allLogData = logData;
             while (logData != null)
             {
