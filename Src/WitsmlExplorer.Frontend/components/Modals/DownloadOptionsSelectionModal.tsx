@@ -248,15 +248,15 @@ const DownloadOptionsSelectionModal = (
 
   const tooBigInterval = useMemo(() => {
     if (curveValueRows !== null && curveValueRows.length > 1) {
-      var step =
+      const step =
         new Date(curveValueRows[1].id.toString()).getTime() -
         new Date(curveValueRows[0].id.toString()).getTime();
-      var actualSize =
+      const actualSize =
         (new Date(endIndex).getTime() - new Date(startIndex).getTime()) /
         60 /
         60 /
         24;
-      var maxAvaivableSize = (1300 * step) / props.mnemonics.length;
+      const maxAvaivableSize = (1300 * step) / props.mnemonics.length;
       setMaxSpan(maxAvaivableSize);
       if (actualSize < maxAvaivableSize) {
         return false;
