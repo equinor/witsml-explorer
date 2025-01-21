@@ -268,7 +268,7 @@ const DownloadOptionsSelectionModal = (
   return (
     <ConfirmModal
       heading={`Download log data for ${props.mnemonics.length} mnemonics`}
-      confirmDisabled={!isValidInterval || tooBigInterval}
+      confirmDisabled={(isTimeLog && !isValidInterval) || tooBigInterval}
       content={
         <>
           <span>
