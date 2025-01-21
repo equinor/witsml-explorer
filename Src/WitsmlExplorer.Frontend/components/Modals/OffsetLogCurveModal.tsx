@@ -189,7 +189,7 @@ export const OffsetLogCurveModal = (
       onSubmit={onSubmit}
       isLoading={false}
       confirmText={"Save"}
-      confirmDisabled={!isValidOffset ||  !isValidInterval}
+      confirmDisabled={!isValidOffset || !isValidInterval}
     />
   );
 };
