@@ -12,4 +12,3 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=<insert username>
       - MONGO_INITDB_ROOT_PASSWORD=<insert password>
-
