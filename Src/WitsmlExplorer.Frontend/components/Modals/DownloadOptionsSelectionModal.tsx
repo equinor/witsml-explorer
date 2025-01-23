@@ -13,19 +13,17 @@ import orderBy from "lodash/orderBy";
 import DownloadLogDataJob from "models/jobs/downloadLogDataJob";
 import { CurveSpecification } from "models/logData";
 import LogObject, { indexToNumber } from "models/logObject";
-import React, { CSSProperties, useCallback, useMemo, useState } from "react";
+import React, { CSSProperties, useCallback, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import ConfirmModal from "./ConfirmModal";
 import { ReportModal } from "./ReportModal";
 import { RouterLogType } from "routes/routerConstants";
 import { useParams } from "react-router-dom";
-import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListViewUtils";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
 } from "components/Constants";
 import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
-import { useGetActiveRoute } from "hooks/useGetActiveRoute";
 import WarningBar from "components/WarningBar";
 
 export interface DownloadOptionsSelectionModalProps {
@@ -35,7 +33,6 @@ export interface DownloadOptionsSelectionModalProps {
   startIndex: string;
   endIndex: string;
   columns: ExportableContentTableColumn<CurveSpecification>[];
-  logCurveInfoRows: LogCurveInfoRow[];
   curveValueRows: CurveValueRow[];
   autoRefresh: boolean;
 }
@@ -64,79 +61,34 @@ const DownloadOptionsSelectionModal = (
 
   const { logType } = useParams();
 
-  const { logCurveInfoRows, log, curveValueRows } = props;
+  const { log, curveValueRows } = props;
 
-  const getStartIndex = (
-    log: LogObject,
-    logCurveInfoRows: LogCurveInfoRow[],
-    isMultiLog: boolean
-  ): string | number => {
+  const getStartIndex = (log: LogObject): string | number => {
     const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-
-    if (isMultiLog) {
-      if (isTimeIndexed) {
-        return (
-          logCurveInfoRows
-            .reduce((minRow, currentRow) => {
-              if (minRow.minIndex === null) return currentRow;
-              if (currentRow.minIndex === null) return minRow;
-              return new Date(currentRow.minIndex) < new Date(minRow.minIndex)
-                ? currentRow
-                : minRow;
-            })
-            .minIndex?.toString() ?? ""
-        );
-      } else {
-        const min = Math.min(
-          ...logCurveInfoRows.map((lci) =>
-            lci.minIndex === null ? Infinity : (lci.minIndex as number)
-          )
-        );
-        return min === Infinity ? 0 : min;
-      }
-    } else {
+    if (selectedDownloadOption === DownloadOptions.All) {
       return isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex);
+    }
+    if (selectedDownloadOption === DownloadOptions.SelectedRange) {
+      return isTimeIndexed ? props.startIndex : indexToNumber(props.startIndex);
     }
   };
 
-  const getEndIndex = (
-    log: LogObject,
-    logCurveInfoRows: LogCurveInfoRow[],
-    isMultiLog: boolean
-  ): string | number => {
+  const getEndIndex = (log: LogObject): string | number => {
     const isTimeIndexed = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-
-    if (isMultiLog) {
-      if (isTimeIndexed) {
-        return (
-          logCurveInfoRows
-            .reduce((maxRow, currentRow) =>
-              new Date(currentRow.maxIndex) > new Date(maxRow.maxIndex)
-                ? currentRow
-                : maxRow
-            )
-            .maxIndex?.toString() ?? ""
-        );
-      } else {
-        return Math.max(
-          ...logCurveInfoRows.map((lci) => lci.maxIndex as number)
-        );
-      }
-    } else {
+    if (selectedDownloadOption === DownloadOptions.All) {
       return isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex);
+    }
+    if (selectedDownloadOption === DownloadOptions.SelectedRange) {
+      return isTimeIndexed ? props.endIndex : indexToNumber(props.endIndex);
     }
   };
 
   const isTimeLog = logType === RouterLogType.TIME;
 
-  const { isMultiLogsCurveInfoListView: isMultiLog } = useGetActiveRoute();
   const [startIndex, setStartIndex] = useState<string | number>(
-    getStartIndex(log, logCurveInfoRows, isMultiLog)
+    getStartIndex(log)
   );
-  const [endIndex, setEndIndex] = useState<string | number>(
-    getEndIndex(log, logCurveInfoRows, isMultiLog)
-  );
-  const [maxSpan, setMaxSpan] = useState<number>();
+  const [endIndex, setEndIndex] = useState<string | number>(getEndIndex(log));
 
   const [isValidInterval, setIsValidInterval] = useState<boolean>(true);
 
@@ -149,8 +101,8 @@ const DownloadOptionsSelectionModal = (
       mnemonics: props.mnemonics,
       startIndexIsInclusive,
       exportToLas,
-      startIndex: props.startIndex,
-      endIndex: props.endIndex
+      startIndex: startIndex.toString(),
+      endIndex: endIndex.toString()
     };
     callExportJob(downloadLogDataJob);
   };
@@ -246,29 +198,32 @@ const DownloadOptionsSelectionModal = (
     }
   };
 
-  const tooBigInterval = useMemo(() => {
-    if (curveValueRows !== null && curveValueRows.length > 1) {
-      const step =
-        new Date(curveValueRows[1].id.toString()).getTime() -
-        new Date(curveValueRows[0].id.toString()).getTime();
-      const actualSize =
-        (new Date(endIndex).getTime() - new Date(startIndex).getTime()) /
-        60 /
-        60 /
-        24;
-      const maxAvaivableSize = (1290 * step) / props.mnemonics.length;
-      setMaxSpan(maxAvaivableSize);
-      if (actualSize < maxAvaivableSize) {
-        return false;
-      }
-      return true;
-    }
-  }, [endIndex, startIndex]);
+  const step =
+    curveValueRows?.length > 1
+      ? new Date(curveValueRows[1].id.toString()).getTime() -
+        new Date(curveValueRows[0].id.toString()).getTime()
+      : null;
+  const actualSize =
+    (new Date(endIndex).getTime() - new Date(startIndex).getTime()) /
+    60 /
+    60 /
+    24;
+  const maxSpan = (1290 * step) / props.mnemonics.length;
+  const tooBigInterval = actualSize > maxSpan;
 
+  const outOfRange =
+    new Date(startIndex).getTime() - new Date(log.startIndex).getTime() < 0 ||
+    new Date(endIndex).getTime() - new Date(log.endIndex).getTime() > 0
+      ? true
+      : false;
   return (
     <ConfirmModal
       heading={`Download log data for ${props.mnemonics.length} mnemonics`}
-      confirmDisabled={isTimeLog && (!isValidInterval || tooBigInterval)}
+      confirmDisabled={
+        isTimeLog &&
+        (!isValidInterval || tooBigInterval || outOfRange) &&
+        selectedDownloadOption !== DownloadOptions.SelectedIndexValues
+      }
       content={
         <>
           <span>
@@ -334,19 +289,26 @@ const DownloadOptionsSelectionModal = (
           </label>
           {isTimeLog &&
             tooBigInterval &&
-            selectedDownloadOption === DownloadOptions.All && (
+            (selectedDownloadOption === DownloadOptions.All ||
+              selectedDownloadOption === DownloadOptions.SelectedRange) && (
               <WarningBar
-                message={`The end date should be lower than ${new Date(
+                message={`Selected range is too large. Reduce the end date to a maximum of ${new Date(
                   new Date(startIndex).getTime() + maxSpan * 60 * 60 * 24
                 )} `}
               />
             )}
+          {isTimeLog &&
+            outOfRange &&
+            (selectedDownloadOption === DownloadOptions.All ||
+              selectedDownloadOption === DownloadOptions.SelectedRange) && (
+              <WarningBar
+                message={`Selected start and end dates are out of log range. Available range is between ${startIndex} and ${startIndex}`}
+              />
+            )}
           {isTimeLog && selectedDownloadOption === DownloadOptions.All && (
             <AdjustDateTimeModal
-              minDate={
-                getStartIndex(log, logCurveInfoRows, isMultiLog) as string
-              }
-              maxDate={getEndIndex(log, logCurveInfoRows, isMultiLog) as string}
+              minDate={log.startIndex as string}
+              maxDate={log.endIndex as string}
               isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
               hideSetButtons={true}
               onStartDateChanged={setStartIndex}
@@ -354,6 +316,20 @@ const DownloadOptionsSelectionModal = (
               onValidChange={(isValid: boolean) => setIsValidInterval(isValid)}
             />
           )}
+          {isTimeLog &&
+            selectedDownloadOption === DownloadOptions.SelectedRange && (
+              <AdjustDateTimeModal
+                minDate={props.startIndex as string}
+                maxDate={props.endIndex as string}
+                isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
+                hideSetButtons={true}
+                onStartDateChanged={setStartIndex}
+                onEndDateChanged={setEndIndex}
+                onValidChange={(isValid: boolean) =>
+                  setIsValidInterval(isValid)
+                }
+              />
+            )}
         </>
       }
       onConfirm={() => {

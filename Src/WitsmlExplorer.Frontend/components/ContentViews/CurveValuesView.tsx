@@ -380,7 +380,6 @@ export const CurveValuesView = (): React.ReactElement => {
         startIndex: startIndex,
         endIndex: endIndex,
         columns: columns,
-        logCurveInfoRows: null,
         curveValueRows: tableData,
         autoRefresh: autoRefresh
       };
