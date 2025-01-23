@@ -20,6 +20,7 @@ export interface LogCurveInfoRow extends ContentTableRow {
   classWitsml: string;
   unit: string;
   mnemAlias: string;
+  curveDescription: string;
   logUid: string;
   wellUid: string;
   wellboreUid: string;
@@ -101,6 +102,11 @@ export const getColumns = (
       label: "sensorOffset",
       type: ContentType.Measure
     },
+    {
+      property: "curveDescription",
+      label: "curveDescription",
+      type: ContentType.String
+    },
     { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
     { property: "traceState", label: "traceState", type: ContentType.String },
     { property: "nullValue", label: "nullValue", type: ContentType.String },
@@ -179,6 +185,7 @@ export const getTableData = (
         wellboreName: logObject.wellboreName,
         traceState: logCurveInfo.traceState,
         nullValue: logCurveInfo.nullValue,
+        curveDescription: logCurveInfo.curveDescription,
         isActive: isActive,
         isVisibleFunction: isVisibleFunction(isActive),
         logCurveInfo
