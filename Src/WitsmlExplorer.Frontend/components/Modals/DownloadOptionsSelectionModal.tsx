@@ -221,7 +221,7 @@ const DownloadOptionsSelectionModal = (
       heading={`Download log data for ${props.mnemonics.length} mnemonics`}
       confirmDisabled={
         isTimeLog &&
-        (!isValidInterval || tooBigInterval || outOfRange) &&
+        (!isValidInterval || tooBigInterval) &&
         selectedDownloadOption !== DownloadOptions.SelectedIndexValues
       }
       content={
