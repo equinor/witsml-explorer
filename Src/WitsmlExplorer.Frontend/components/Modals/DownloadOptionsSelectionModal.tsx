@@ -213,9 +213,8 @@ const DownloadOptionsSelectionModal = (
 
   const outOfRange =
     new Date(startIndex).getTime() - new Date(log.startIndex).getTime() < 0 ||
-    new Date(endIndex).getTime() - new Date(log.endIndex).getTime() > 0
-      ? true
-      : false;
+    new Date(endIndex).getTime() - new Date(log.endIndex).getTime() > 0;
+
   return (
     <ConfirmModal
       heading={`Download log data for ${props.mnemonics.length} mnemonics`}
@@ -302,7 +301,7 @@ const DownloadOptionsSelectionModal = (
             (selectedDownloadOption === DownloadOptions.All ||
               selectedDownloadOption === DownloadOptions.SelectedRange) && (
               <WarningBar
-                message={`Selected start and end dates are out of log range. Available range is between ${startIndex} and ${startIndex}`}
+                message={`Selected start and end dates are out of log range. Available range is between ${log.startIndex} and ${log.endIndex}`}
               />
             )}
           {isTimeLog && selectedDownloadOption === DownloadOptions.All && (
