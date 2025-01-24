@@ -367,13 +367,12 @@ namespace WitsmlExplorer.Api.Services
         {
             await using LogDataReader logDataReader = new(_witsmlClient, log, new List<string>(mnemonics), null, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch(cancellationToken);
-
             var allLogData = logData;
             while (logData != null)
             {
                 if (progressReporter != null)
                 {
-                    double progress = LogWorkerTools.CalculateProgressBasedOnIndex(log, logData);
+                    double progress = LogWorkerTools.CalculateProgressBasedOnIndex(log, logData, startIndex, endIndex);
                     progressReporter.Report(progress);
                 }
                 logData = await logDataReader.GetNextBatch(cancellationToken);

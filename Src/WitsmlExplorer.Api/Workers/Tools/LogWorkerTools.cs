@@ -63,7 +63,7 @@ namespace WitsmlExplorer.Api.Workers
             };
         }
 
-        public static double CalculateProgressBasedOnIndex(WitsmlLog log, WitsmlLogData currentData)
+        public static double CalculateProgressBasedOnIndex(WitsmlLog log, WitsmlLogData currentData, CurveIndex start = null, CurveIndex end = null)
         {
             string index = currentData.Data.LastOrDefault()?.Data.Split(CommonConstants.DataSeparator).FirstOrDefault();
             if (index == null) return 0;
@@ -77,6 +77,15 @@ namespace WitsmlExplorer.Api.Workers
             {
                 string startIndex = log.StartDateTimeIndex;
                 string endIndex = log.EndDateTimeIndex;
+                if (start != null && !start.GetValueAsString().Equals(log.StartDateTimeIndex))
+                {
+                    startIndex = start.GetValueAsString();
+                }
+                if (end != null && !end.GetValueAsString().Equals(log.EndDateTimeIndex))
+                {
+                    endIndex = end.GetValueAsString();
+                }
+
                 return (DateTime.Parse(index) - DateTime.Parse(startIndex)).TotalMilliseconds / (DateTime.Parse(endIndex) - DateTime.Parse(startIndex)).TotalMilliseconds;
             }
         }
