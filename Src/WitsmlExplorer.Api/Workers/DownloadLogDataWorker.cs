@@ -70,7 +70,7 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         {
             var message = "DownloadLogDataJob failed. No data found in the given range.";
             Logger.LogError(message);
-            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message, message, jobId:job.JobInfo.Id), null);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message, message, jobId: job.JobInfo.Id), null);
         }
 
         return (job.ExportToLas)
