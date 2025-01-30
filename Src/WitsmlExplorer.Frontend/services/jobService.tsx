@@ -190,5 +190,6 @@ export enum JobType {
   CompareLogData = "CompareLogData",
   CountLogDataRows = "CountLogDataRows",
   DownloadLogData = "DownloadLogData",
-  OffsetLogCurves = "OffsetLogCurves"
+  OffsetLogCurves = "OffsetLogCurves",
+  MinimumDataQc = "MinimumDataQc"
 }

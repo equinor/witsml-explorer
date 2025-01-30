@@ -50,7 +50,7 @@ import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import React from "react";
+import React, { useMemo } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
@@ -64,6 +64,11 @@ import ObjectReference from "../../models/jobs/objectReference";
 import CopyMnemonicsModal, {
   CopyMnemonicsModalProps
 } from "../Modals/CopyMnemonicsModal";
+import MinimumDataQcModal, {
+  MinimumDataQcModalProps
+} from "../Modals/MinimumDataQcModal.tsx";
+import { useLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
+import { useUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -75,9 +80,22 @@ const LogObjectContextMenu = (
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
+  const { localPrioritizedCurves } = useLocalPrioritizedCurves(
+    checkedObjects[0].wellUid,
+    checkedObjects[0].wellboreUid
+  );
+  const { universalPrioritizedCurves } = useUniversalPrioritizedCurves();
   const filteredServers = useServerFilter(servers);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const allPrioritizedCurves = useMemo(
+    () =>
+      [...localPrioritizedCurves, ...universalPrioritizedCurves].filter(
+        (value, index, self) => self.indexOf(value) === index
+      ),
+    [localPrioritizedCurves, universalPrioritizedCurves]
+  );
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -107,6 +125,24 @@ const LogObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
+  };
+
+  const onClickMinimumDataQc = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    if (!!allPrioritizedCurves && allPrioritizedCurves.length > 0) {
+      const logObject = checkedObjects[0];
+
+      const minimumDataQcModalProps: MinimumDataQcModalProps = {
+        logObject: logObject,
+        mnemonics: allPrioritizedCurves
+      };
+
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <MinimumDataQcModal {...minimumDataQcModalProps} />
+      });
+    }
   };
 
   const orderCopyJob = () => {
@@ -430,6 +466,14 @@ const LogObjectContextMenu = (
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Delete empty mnemonics</Typography>
+          </MenuItem>,
+          <MenuItem
+            key={"minimumDataQc"}
+            onClick={onClickMinimumDataQc}
+            disabled={allPrioritizedCurves.length === 0}
+          >
+            <StyledIcon name="beat" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Minimum Data QC</Typography>
           </MenuItem>
         ]}
       </NestedMenuItem>,
