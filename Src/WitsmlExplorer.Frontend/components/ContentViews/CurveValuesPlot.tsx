@@ -168,6 +168,18 @@ export const CurveValuesPlot = React.memo(
       }
     }, [contentViewWidth]);
 
+    useMemo(() => {
+      if (useCustomRanges) {
+        var found = rawColumns.filter((column) =>
+          ranges.find((range) => range.curve === column.property)
+        );
+        var filter = rawColumns.filter((column) => !found.includes(column));
+        const missingRanges = minMaxValuesCalculation(filter);
+        const newRanges = [...ranges, ...missingRanges];
+        setRanges(newRanges);
+      }
+    }, [rawColumns]);
+
     const chartOption = getChartOption(
       transformedData,
       columns,
@@ -183,7 +195,9 @@ export const CurveValuesPlot = React.memo(
       verticalZoom.current,
       isTimeLog,
       enableScatter,
-      refreshGraph
+      refreshGraph,
+      useCustomRanges,
+      ranges
     );
 
     const onMouseOver = (e: any) => {
@@ -339,41 +353,39 @@ export const CurveValuesPlot = React.memo(
                     </StyledNativeSelect>
                   </>
                 )}
-                <Switch
-                  checked={useCustomRanges}
-                  onChange={() => setUseCustomRanges(!useCustomRanges)}
-                  size={theme === UserTheme.Compact ? "small" : "default"}
-                />
-                <Typography
-                  style={{ minWidth: "max-content", marginRight: "12px" }}
-                >
-                  Show Custom Ranges
-                </Typography>
-                {useCustomRanges && (
-                  <Button onClick={openCustomRanges}>
-                    Define Custom Ranges
-                  </Button>
-                )}
-                {defineCustomRanges ? (
-                  <Box
-                    sx={{
-                      zIndex: 10,
-                      position: "absolute",
-                      width: "inherit",
-                      top: "6.3rem",
-                      minWidth: "174px",
-                      pr: "0.1em"
-                    }}
-                  >
-                    <SettingCustomRanges
-                      minMaxValuesCalculation={ranges}
-                      onChange={onChange}
-                      onClose={onClose}
-                    />
-                  </Box>
-                ) : null}
               </>
             )}
+            <Switch
+              checked={useCustomRanges}
+              onChange={() => setUseCustomRanges(!useCustomRanges)}
+              size={theme === UserTheme.Compact ? "small" : "default"}
+            />
+            <Typography
+              style={{ minWidth: "max-content", marginRight: "12px" }}
+            >
+              Show Custom Ranges
+            </Typography>
+            {useCustomRanges && (
+              <Button onClick={openCustomRanges}>Define Custom Ranges</Button>
+            )}
+            {defineCustomRanges ? (
+              <Box
+                sx={{
+                  zIndex: 10,
+                  position: "absolute",
+                  width: "inherit",
+                  top: "6.3rem",
+                  minWidth: "174px",
+                  pr: "0.1em"
+                }}
+              >
+                <SettingCustomRanges
+                  minMaxValuesCalculation={ranges}
+                  onChange={onChange}
+                  onClose={onClose}
+                />
+              </Box>
+            ) : null}
           </EdsProvider>
         </CommonPanelContainer>
         <div
@@ -437,7 +449,9 @@ const getChartOption = (
   verticalZoom: [number, number],
   isTimeLog: boolean,
   enableScatter: boolean,
-  _refreshGraph: boolean
+  _refreshGraph: boolean,
+  showCustomRanges: boolean,
+  customRanges: CustomCurveRange[]
 ) => {
   _refreshGraph = true;
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
@@ -452,15 +466,20 @@ const getChartOption = (
     .map((col) => col.columnOf.mnemonic)
     .map((curve) => {
       const curveData = data.map((obj) => obj[curve]).filter(Number.isFinite);
+      const customRange = customRanges.find((x) => x.curve === curve);
       return {
         curve: curve,
         minValue:
           curveData.length == 0
             ? null
+            : showCustomRanges && customRange !== undefined
+            ? customRange.minValue
             : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
         maxValue:
           curveData.length == 0
             ? null
+            : showCustomRanges && customRange != undefined
+            ? customRange.maxValue
             : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
       };
     });
@@ -509,12 +528,8 @@ const getChartOption = (
     xAxis: {
       type: "value",
       position: "top",
-      min: (value: { min: number; max: number }) =>
-        value.max - value.min < 1 ? value.min - VALUE_OFFSET_FROM_COLUMN : 0,
-      max: (value: { min: number; max: number }) =>
-        value.max - value.min < 1
-          ? value.min + 1 - VALUE_OFFSET_FROM_COLUMN
-          : dataColumns.length,
+      min: (value: { min: number; max: number }) => Math.floor(value.min),
+      max: (value: { min: number; max: number }) => Math.ceil(value.max),
       minInterval: 1,
       maxInterval: 1,
       splitLine: {
@@ -542,6 +557,13 @@ const getChartOption = (
               : curve;
           let minValue = minMaxValue.minValue?.toFixed(3) ?? "NaN";
           let maxValue = minMaxValue.maxValue?.toFixed(3) ?? "NaN";
+          if (showCustomRanges) {
+            const customRange = customRanges.find((x) => x.curve === curve);
+            if (customRange != undefined) {
+              minValue = customRange.minValue.toFixed(3);
+              maxValue = customRange.maxValue.toFixed(3);
+            }
+          }
           if (minValue.length > LABEL_NUMBER_MAX_LENGTH) {
             minValue =
               minValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
