@@ -170,10 +170,10 @@ export const CurveValuesPlot = React.memo(
 
     useMemo(() => {
       if (useCustomRanges) {
-        var found = rawColumns.filter((column) =>
+        const found = rawColumns.filter((column) =>
           ranges.find((range) => range.curve === column.property)
         );
-        var filter = rawColumns.filter((column) => !found.includes(column));
+        const filter = rawColumns.filter((column) => !found.includes(column));
         const missingRanges = minMaxValuesCalculation(filter);
         const newRanges = [...ranges, ...missingRanges];
         setRanges(newRanges);
