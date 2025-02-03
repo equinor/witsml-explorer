@@ -528,8 +528,8 @@ const getChartOption = (
     xAxis: {
       type: "value",
       position: "top",
-      min: (value: { min: number; max: number }) => Math.floor(value.min),
-      max: (value: { min: number; max: number }) => Math.ceil(value.max),
+      min: (value: { min: number }) => Math.floor(value.min),
+      max: (value: { max: number }) => Math.ceil(value.max),
       minInterval: 1,
       maxInterval: 1,
       splitLine: {
