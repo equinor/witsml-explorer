@@ -51,7 +51,7 @@ interface ControlledTooltipProps {
   content: string;
 }
 
-export interface CurveRange {
+export interface CustomCurveRange {
   curve: string;
   minValue: number;
   maxValue: number;
@@ -109,37 +109,9 @@ export const CurveValuesPlot = React.memo(
         visible: false
       } as ControlledTooltipProps);
 
-    const minMaxValuesCalculation = (
-      myColumns: ExportableContentTableColumn<CurveSpecification>[],
-      showCustomRanges: boolean,
-      customRanges?: CurveRange[]
-    ) =>
-      myColumns
-        .map((col) => col.columnOf.mnemonic)
-        .map((curve) => {
-          const customRange = customRanges?.find((x) => x.curve === curve);
-          const curveData = props.data
-            .map((obj) => obj[curve])
-            .filter(Number.isFinite);
-          return {
-            curve: curve,
-            minValue:
-              curveData.length == 0
-                ? null
-                : showCustomRanges && customRange !== undefined
-                ? customRange.minValue
-                : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
-            maxValue:
-              curveData.length == 0
-                ? null
-                : showCustomRanges && customRange != undefined
-                ? customRange.maxValue
-                : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
-          };
-        });
 
-    const [ranges, setRanges] = useState<CurveRange[]>(
-      minMaxValuesCalculation(columns, false).slice(1)
+    const [ranges, setRanges] = useState<CustomCurveRange[]>(
+      minMaxValuesCalculation(columns, false, props).slice(1)
     );
 
     const transformedData = useMemo(
@@ -180,7 +152,7 @@ export const CurveValuesPlot = React.memo(
           ranges.find((range) => range.curve === column.property)
         );
         const filter = rawColumns.filter((column) => !found.includes(column));
-        const missingRanges = minMaxValuesCalculation(filter, false).slice(1);
+        const missingRanges = minMaxValuesCalculation(filter, false, props).slice(1);
         const newRanges = [...ranges, ...missingRanges];
         setRanges(newRanges);
       }
@@ -203,7 +175,7 @@ export const CurveValuesPlot = React.memo(
       enableScatter,
       refreshGraph,
       useCustomRanges,
-      minMaxValuesCalculation,
+      props,
       ranges
     );
 
@@ -300,7 +272,7 @@ export const CurveValuesPlot = React.memo(
       mouseout: onMouseOut
     };
 
-    const onChange = (curveRanges: CurveRange[]) => {
+    const onChange = (curveRanges: CustomCurveRange[]) => {
       setRanges(curveRanges);
       setRefreshGraph(!refreshGraph);
     };
@@ -458,12 +430,8 @@ const getChartOption = (
   enableScatter: boolean,
   _refreshGraph: boolean,
   showCustomRanges: boolean,
-  minMaxValuesCalculation: (
-    myColumns: ExportableContentTableColumn<CurveSpecification>[],
-    showCustomRanges: boolean,
-    customRanges?: CurveRange[]
-  ) => CurveRange[],
-  customRanges: CurveRange[]
+  props: CurveValuesPlotProps,
+  customRanges: CustomCurveRange[]
 ) => {
   _refreshGraph = true;
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
@@ -477,6 +445,7 @@ const getChartOption = (
   const minMaxValues = minMaxValuesCalculation(
     dataColumns,
     showCustomRanges,
+    props,
     customRanges
   );
   return {
@@ -708,6 +677,36 @@ const getChartOption = (
     })
   };
 };
+
+const minMaxValuesCalculation = (
+  myColumns: ExportableContentTableColumn<CurveSpecification>[],
+  showCustomRanges: boolean,
+  props: CurveValuesPlotProps,
+  customRanges?: CustomCurveRange[]
+) =>
+  myColumns
+    .map((col) => col.columnOf.mnemonic)
+    .map((curve) => {
+      const customRange = customRanges?.find((x) => x.curve === curve);
+      const curveData = props.data
+        .map((obj) => obj[curve])
+        .filter(Number.isFinite);
+      return {
+        curve: curve,
+        minValue:
+          curveData.length == 0
+            ? null
+            : showCustomRanges && customRange !== undefined
+            ? customRange.minValue
+            : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
+        maxValue:
+          curveData.length == 0
+            ? null
+            : showCustomRanges && customRange != undefined
+            ? customRange.maxValue
+            : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
+      };
+    });
 
 const hasDataWithinRange = (
   data: any[],
