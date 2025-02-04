@@ -109,7 +109,6 @@ export const CurveValuesPlot = React.memo(
         visible: false
       } as ControlledTooltipProps);
 
-
     const [ranges, setRanges] = useState<CustomCurveRange[]>(
       minMaxValuesCalculation(columns, false, props).slice(1)
     );
@@ -152,7 +151,11 @@ export const CurveValuesPlot = React.memo(
           ranges.find((range) => range.curve === column.property)
         );
         const filter = rawColumns.filter((column) => !found.includes(column));
-        const missingRanges = minMaxValuesCalculation(filter, false, props).slice(1);
+        const missingRanges = minMaxValuesCalculation(
+          filter,
+          false,
+          props
+        ).slice(1);
         const newRanges = [...ranges, ...missingRanges];
         setRanges(newRanges);
       }
