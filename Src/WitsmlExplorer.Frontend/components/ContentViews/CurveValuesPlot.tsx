@@ -4,6 +4,7 @@ import {
   Switch,
   Typography
 } from "@equinor/eds-core-react";
+import { Box } from "@mui/material";
 import {
   ThresholdLevel,
   transformCurveData
@@ -38,7 +39,6 @@ import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
 import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import { SettingCustomRanges } from "./SettingCustomRanges.tsx";
-import { Box } from "@mui/material";
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
@@ -110,7 +110,7 @@ export const CurveValuesPlot = React.memo(
       } as ControlledTooltipProps);
 
     const [ranges, setRanges] = useState<CustomCurveRange[]>(
-      minMaxValuesCalculation(columns, false, props).slice(1)
+      minMaxValuesCalculation(columns, false, data).slice(1)
     );
 
     const transformedData = useMemo(
@@ -154,7 +154,7 @@ export const CurveValuesPlot = React.memo(
         const missingRanges = minMaxValuesCalculation(
           filter,
           false,
-          props
+          data
         ).slice(1);
         const newRanges = [...ranges, ...missingRanges];
         setRanges(newRanges);
@@ -178,7 +178,6 @@ export const CurveValuesPlot = React.memo(
       enableScatter,
       refreshGraph,
       useCustomRanges,
-      props,
       ranges
     );
 
@@ -433,7 +432,6 @@ const getChartOption = (
   enableScatter: boolean,
   _refreshGraph: boolean,
   showCustomRanges: boolean,
-  props: CurveValuesPlotProps,
   customRanges: CustomCurveRange[]
 ) => {
   _refreshGraph = true;
@@ -448,7 +446,7 @@ const getChartOption = (
   const minMaxValues = minMaxValuesCalculation(
     dataColumns,
     showCustomRanges,
-    props,
+    data,
     customRanges
   );
   return {
@@ -684,16 +682,14 @@ const getChartOption = (
 const minMaxValuesCalculation = (
   myColumns: ExportableContentTableColumn<CurveSpecification>[],
   showCustomRanges: boolean,
-  props: CurveValuesPlotProps,
+  data: any[],
   customRanges?: CustomCurveRange[]
 ) =>
   myColumns
     .map((col) => col.columnOf.mnemonic)
     .map((curve) => {
       const customRange = customRanges?.find((x) => x.curve === curve);
-      const curveData = props.data
-        .map((obj) => obj[curve])
-        .filter(Number.isFinite);
+      const curveData = data.map((obj) => obj[curve]).filter(Number.isFinite);
       return {
         curve: curve,
         minValue:
