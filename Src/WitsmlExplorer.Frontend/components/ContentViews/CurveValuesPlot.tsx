@@ -4,6 +4,7 @@ import {
   Switch,
   Typography
 } from "@equinor/eds-core-react";
+import { Box } from "@mui/material";
 import {
   ThresholdLevel,
   transformCurveData
@@ -38,7 +39,6 @@ import { RouterLogType } from "routes/routerConstants";
 import { Colors } from "styles/Colors";
 import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import { SettingCustomRanges } from "./SettingCustomRanges.tsx";
-import { Box } from "@mui/material";
 
 const COLUMN_WIDTH = 135;
 const MNEMONIC_LABEL_WIDTH = COLUMN_WIDTH - 10;
@@ -51,11 +51,12 @@ interface ControlledTooltipProps {
   content: string;
 }
 
-export interface CustomCurveRange {
-  curve: string;
+interface CurveRange {
   minValue: number;
   maxValue: number;
 }
+export type CurveRanges = Record<string, CurveRange>;
+
 interface CurveValuesPlotProps {
   data: any[];
   columns: ExportableContentTableColumn<CurveSpecification>[];
@@ -73,8 +74,12 @@ export const CurveValuesPlot = React.memo(
       autoRefresh,
       isDescending = false
     } = props;
-    const columns = rawColumns.filter(
-      (col, index) => col.type === ContentType.Number || index === 0
+    const columns = useMemo(
+      () =>
+        rawColumns.filter(
+          (col, index) => col.type === ContentType.Number || index === 0
+        ),
+      [rawColumns]
     );
     const {
       operationState: { colors, dateTimeFormat, theme }
@@ -82,7 +87,6 @@ export const CurveValuesPlot = React.memo(
     const [enableScatter, setEnableScatter] = useState<boolean>(false);
     const [removeOutliers, setRemoveOutliers] = useState<boolean>(false);
     const [useCustomRanges, setUseCustomRanges] = useState<boolean>(false);
-    const [refreshGraph, setRefreshGraph] = useState<boolean>(false);
     const [outliersThresholdLevel, setOutliersThresholdLevel] =
       useState<ThresholdLevel>(ThresholdLevel.Medium);
     const chart = useRef<ECharts>(null);
@@ -109,32 +113,14 @@ export const CurveValuesPlot = React.memo(
         visible: false
       } as ControlledTooltipProps);
 
-    const minMaxValuesCalculation = (
-      myColumns: ExportableContentTableColumn<CurveSpecification>[]
-    ) =>
-      myColumns
-        .map((col) => col.columnOf.mnemonic)
-        .map((curve) => {
-          const curveData = props.data
-            .map((obj) => obj[curve])
-            .filter(Number.isFinite);
-          return {
-            curve: curve,
-            minValue:
-              curveData.length == 0
-                ? null
-                : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
-            maxValue:
-              curveData.length == 0
-                ? null
-                : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
-          };
-        })
-        .slice(1);
-
-    const [ranges, setRanges] = useState<CustomCurveRange[]>(
-      minMaxValuesCalculation(columns)
+    const [customRanges, setCustomRanges] = useState<CurveRanges>({});
+    const rawDataRanges = useMemo(
+      () => getDataRanges(columns, data),
+      [columns, data]
     );
+    const dataRanges = useCustomRanges
+      ? { ...rawDataRanges, ...customRanges }
+      : rawDataRanges;
 
     const transformedData = useMemo(
       () =>
@@ -143,7 +129,7 @@ export const CurveValuesPlot = React.memo(
           columns,
           outliersThresholdLevel,
           !autoRefresh && removeOutliers,
-          ranges,
+          customRanges,
           useCustomRanges
         ),
       [
@@ -152,7 +138,7 @@ export const CurveValuesPlot = React.memo(
         outliersThresholdLevel,
         removeOutliers,
         autoRefresh,
-        ranges,
+        customRanges,
         useCustomRanges
       ]
     );
@@ -167,18 +153,6 @@ export const CurveValuesPlot = React.memo(
         }
       }
     }, [contentViewWidth]);
-
-    useMemo(() => {
-      if (useCustomRanges) {
-        const found = rawColumns.filter((column) =>
-          ranges.find((range) => range.curve === column.property)
-        );
-        const filter = rawColumns.filter((column) => !found.includes(column));
-        const missingRanges = minMaxValuesCalculation(filter);
-        const newRanges = [...ranges, ...missingRanges];
-        setRanges(newRanges);
-      }
-    }, [rawColumns]);
 
     const chartOption = getChartOption(
       transformedData,
@@ -195,9 +169,7 @@ export const CurveValuesPlot = React.memo(
       verticalZoom.current,
       isTimeLog,
       enableScatter,
-      refreshGraph,
-      useCustomRanges,
-      ranges
+      dataRanges
     );
 
     const onMouseOver = (e: any) => {
@@ -293,9 +265,8 @@ export const CurveValuesPlot = React.memo(
       mouseout: onMouseOut
     };
 
-    const onChange = (curveRanges: CustomCurveRange[]) => {
-      setRanges(curveRanges);
-      setRefreshGraph(!refreshGraph);
+    const onChange = (curveRanges: CurveRanges) => {
+      setCustomRanges(curveRanges);
     };
 
     const onClose = () => {
@@ -380,7 +351,8 @@ export const CurveValuesPlot = React.memo(
                 }}
               >
                 <SettingCustomRanges
-                  minMaxValuesCalculation={ranges}
+                  rawDataRanges={rawDataRanges}
+                  customRanges={customRanges}
                   onChange={onChange}
                   onClose={onClose}
                 />
@@ -449,40 +421,16 @@ const getChartOption = (
   verticalZoom: [number, number],
   isTimeLog: boolean,
   enableScatter: boolean,
-  _refreshGraph: boolean,
-  showCustomRanges: boolean,
-  customRanges: CustomCurveRange[]
+  dataRanges: CurveRanges
 ) => {
-  _refreshGraph = true;
   const VALUE_OFFSET_FROM_COLUMN = 0.01;
   const AUTO_REFRESH_SIZE = 300;
   const LABEL_MAXIMUM_LENGHT = 13;
   const LABEL_NUMBER_MAX_LENGTH = 9;
-  if (autoRefresh && _refreshGraph) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
+  if (autoRefresh) data = data.slice(-AUTO_REFRESH_SIZE); // Slice to avoid lag while streaming
   const indexCurve = columns[0].columnOf.mnemonic;
   const indexUnit = columns[0].columnOf.unit;
   const dataColumns = columns.filter((col) => col.property != indexCurve);
-  const minMaxValues = columns
-    .map((col) => col.columnOf.mnemonic)
-    .map((curve) => {
-      const curveData = data.map((obj) => obj[curve]).filter(Number.isFinite);
-      const customRange = customRanges.find((x) => x.curve === curve);
-      return {
-        curve: curve,
-        minValue:
-          curveData.length == 0
-            ? null
-            : showCustomRanges && customRange !== undefined
-            ? customRange.minValue
-            : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
-        maxValue:
-          curveData.length == 0
-            ? null
-            : showCustomRanges && customRange != undefined
-            ? customRange.maxValue
-            : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
-      };
-    });
 
   return {
     title: {
@@ -550,20 +498,13 @@ const getChartOption = (
           const index = Math.floor(param);
           if (index >= dataColumns.length) return "";
           const curve = dataColumns[index].columnOf.mnemonic;
-          const minMaxValue = minMaxValues.find((v) => v.curve == curve);
+          const range = dataRanges[curve];
           const title =
             curve.length > LABEL_MAXIMUM_LENGHT
               ? curve.substring(0, LABEL_MAXIMUM_LENGHT) + "..."
               : curve;
-          let minValue = minMaxValue.minValue?.toFixed(3) ?? "NaN";
-          let maxValue = minMaxValue.maxValue?.toFixed(3) ?? "NaN";
-          if (showCustomRanges) {
-            const customRange = customRanges.find((x) => x.curve === curve);
-            if (customRange != undefined) {
-              minValue = customRange.minValue.toFixed(3);
-              maxValue = customRange.maxValue.toFixed(3);
-            }
-          }
+          let minValue = range.minValue?.toFixed(3) ?? "NaN";
+          let maxValue = range.maxValue?.toFixed(3) ?? "NaN";
           if (minValue.length > LABEL_NUMBER_MAX_LENGTH) {
             minValue =
               minValue.substring(0, LABEL_NUMBER_MAX_LENGTH - 2) + "...";
@@ -653,9 +594,7 @@ const getChartOption = (
     animation: false,
     backgroundColor: colors.ui.backgroundDefault,
     series: dataColumns.map((col, i) => {
-      const minMaxValue = minMaxValues.find(
-        (v) => v.curve == col.columnOf.mnemonic
-      );
+      const range = dataRanges[col.columnOf.mnemonic];
 
       const offsetData = data
         .map((row, rowIndex) => {
@@ -674,8 +613,7 @@ const getChartOption = (
             return null; // Return null and filter it away later to draw lines over small gaps.
           }
           const normalizedValue =
-            (value - minMaxValue.minValue) /
-            (minMaxValue.maxValue - minMaxValue.minValue || 1);
+            (value - range.minValue) / (range.maxValue - range.minValue || 1);
           const offsetNormalizedValue =
             normalizedValue * (1 - 2 * VALUE_OFFSET_FROM_COLUMN) +
             VALUE_OFFSET_FROM_COLUMN +
@@ -713,6 +651,28 @@ const getChartOption = (
     })
   };
 };
+
+const getDataRanges = (
+  myColumns: ExportableContentTableColumn<CurveSpecification>[],
+  data: any[]
+): CurveRanges =>
+  myColumns.slice(1).reduce<CurveRanges>((acc, col) => {
+    const curve = col.columnOf.mnemonic;
+    const curveData = data.map((obj) => obj[curve]).filter(Number.isFinite);
+
+    acc[curve] = {
+      minValue:
+        curveData.length === 0
+          ? null
+          : curveData.reduce((min, v) => (min <= v ? min : v), Infinity),
+      maxValue:
+        curveData.length === 0
+          ? null
+          : curveData.reduce((max, v) => (max >= v ? max : v), -Infinity)
+    };
+
+    return acc;
+  }, {});
 
 const hasDataWithinRange = (
   data: any[],
