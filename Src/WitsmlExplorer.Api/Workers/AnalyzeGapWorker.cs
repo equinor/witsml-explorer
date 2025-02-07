@@ -84,7 +84,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
                     ? new DepthIndex(job.GapSize)
                     : new TimeSpanIndex(job.TimeGapSize);
                 CreateNoDataReportItem(emptyGapReportItems, startIndexForGap,
-                    endIndexForGap, gapSize , jobMnemonic, isLogIncreasing);
+                    endIndexForGap, gapSize, jobMnemonic, isLogIncreasing);
             }
             return GetGapReportResult(job, jobMnemonics, emptyGapReportItems, isDepthLog, logUid, startIndex, endIndex);
         }
