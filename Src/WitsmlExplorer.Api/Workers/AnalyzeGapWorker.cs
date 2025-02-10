@@ -66,6 +66,8 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>(jobMnemonics), Logger, startIndex, endIndex);
 
         WitsmlLogData logData = await logDataReader.GetNextBatch();
+        var jobMnemonicsMinusLogMnemonics =
+            jobMnemonics.Except(logData.MnemonicList.Split(",").ToList()).ToList();
         var logMnemonics = logData?.MnemonicList.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
         while (logData != null)
         {
@@ -89,6 +91,18 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             return GetGapReportResult(job, jobMnemonics, emptyGapReportItems, isDepthLog, logUid, startIndex, endIndex);
         }
 
+        if (jobMnemonicsMinusLogMnemonics.Any())
+        {
+            foreach (string jobMnemonic in jobMnemonicsMinusLogMnemonics)
+            {
+                Index gapSize = isDepthLog
+                    ? new DepthIndex(job.GapSize)
+                    : new TimeSpanIndex(job.TimeGapSize);
+                CreateNoDataReportItem(gapReportItems, startIndexForGap,
+                    endIndexForGap, gapSize, jobMnemonic, isLogIncreasing);
+            }
+        }
+
         if (logDataRows.Any(x => x.Length < logMnemonics.Count))
         {
             throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in data row.", (int)HttpStatusCode.InternalServerError);
@@ -102,6 +116,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
         foreach (var logMnemonic in logMnemonics.Where(x => x.index != mnemonicCurveIndex))
         {
+            var mne = logMnemonics.Where(x => x.index != mnemonicCurveIndex);
             var logCurveMinMaxIndex = logCurveMinMaxIndexDictionary.GetValueOrDefault(logMnemonic.value, null);
             if (logCurveMinMaxIndex == null)
             {
@@ -118,11 +133,12 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
                 ? new DepthIndex(job.GapSize, depthMinIndex.Uom)
                 : new TimeSpanIndex(job.TimeGapSize);
 
+
             if (startIndexForGap < logCurveMinMaxIndex.MinIndex && isLogIncreasing)
             {
                 CreateNoDataReportItem(gapReportItems, startIndexForGap, logCurveMinMaxIndex.MinIndex, gapSize, logMnemonic.value, isLogIncreasing);
             }
-            if (endIndexForGap > logCurveMinMaxIndex.MaxIndex && !isLogIncreasing)
+            if (endIndexForGap >= logCurveMinMaxIndex.MaxIndex && !isLogIncreasing)
             {
                 CreateNoDataReportItem(gapReportItems, logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize, logMnemonic.value, isLogIncreasing);
             }
