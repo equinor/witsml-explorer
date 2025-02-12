@@ -237,7 +237,7 @@ const LogDataImportModal = (
   const parseCSVHeader = (headerr: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
     const fileColumns = headerr.split(separator).map((col, index) => {
-      const columnName = col.substring(0, col.indexOf("["));
+      const columnName = col.substring(0, col.indexOf("[")).replaceAll(" ", "_");
       return {
         index: index,
         name: columnName ? columnName : col,
