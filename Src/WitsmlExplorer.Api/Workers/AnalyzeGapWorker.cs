@@ -66,8 +66,8 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
         await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>(jobMnemonics), Logger, startIndex, endIndex);
 
         WitsmlLogData logData = await logDataReader.GetNextBatch();
-        var jobMnemonicsMinusLogMnemonics =
-            jobMnemonics.Except(logData.MnemonicList.Split(",").ToList()).ToList();
+        var jobMnemonicsMinusLogMnemonics = logData != null ?
+            jobMnemonics.Except(logData.MnemonicList.Split(",").ToList()).ToList(): null;
         var logMnemonics = logData?.MnemonicList.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
         while (logData != null)
         {
@@ -91,7 +91,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             return GetGapReportResult(job, jobMnemonics, emptyGapReportItems, isDepthLog, logUid, startIndex, endIndex);
         }
 
-        if (jobMnemonicsMinusLogMnemonics.Any())
+        if (jobMnemonicsMinusLogMnemonics != null && jobMnemonicsMinusLogMnemonics.Any())
         {
             foreach (string jobMnemonic in jobMnemonicsMinusLogMnemonics)
             {
@@ -116,7 +116,6 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
         foreach (var logMnemonic in logMnemonics.Where(x => x.index != mnemonicCurveIndex))
         {
-            var mne = logMnemonics.Where(x => x.index != mnemonicCurveIndex);
             var logCurveMinMaxIndex = logCurveMinMaxIndexDictionary.GetValueOrDefault(logMnemonic.value, null);
             if (logCurveMinMaxIndex == null)
             {
@@ -136,39 +135,45 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
             if (startIndexForGap < logCurveMinMaxIndex.MinIndex && isLogIncreasing)
             {
-                CreateNoDataReportItem(gapReportItems, startIndexForGap, logCurveMinMaxIndex.MinIndex, gapSize, logMnemonic.value, isLogIncreasing);
+                CreateNoDataReportItem(gapReportItems, startIndexForGap, logCurveMinMaxIndex.MinIndex, gapSize, logMnemonic.value, isLogIncreasing, false);
             }
-            if (endIndexForGap >= logCurveMinMaxIndex.MaxIndex && !isLogIncreasing)
+            if (endIndexForGap > logCurveMinMaxIndex.MaxIndex && !isLogIncreasing)
             {
-                CreateNoDataReportItem(gapReportItems, logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize, logMnemonic.value, isLogIncreasing);
+                CreateNoDataReportItem(gapReportItems, logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize, logMnemonic.value, isLogIncreasing, false);
             }
             gapReportItems.AddRange(GetAnalyzeGapReportItem(logMnemonic.value, inputAnalyzeDataList, gapSize, isLogIncreasing));
             if (endIndexForGap > logCurveMinMaxIndex.MaxIndex && isLogIncreasing)
             {
-                CreateNoDataReportItem(gapReportItems, logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize, logMnemonic.value, isLogIncreasing);
+                CreateNoDataReportItem(gapReportItems, logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize, logMnemonic.value, isLogIncreasing, false);
             }
             if (startIndexForGap < logCurveMinMaxIndex.MinIndex && !isLogIncreasing)
             {
-                CreateNoDataReportItem(gapReportItems, startIndexForGap, logCurveMinMaxIndex.MinIndex, gapSize, logMnemonic.value, isLogIncreasing);
+                CreateNoDataReportItem(gapReportItems, startIndexForGap, logCurveMinMaxIndex.MinIndex, gapSize, logMnemonic.value, isLogIncreasing, false);
             }
         }
         return GetGapReportResult(job, jobMnemonics, gapReportItems, isDepthLog, logUid, startIndex, endIndex);
     }
 
-    private static void CreateNoDataReportItem(List<AnalyzeGapReportItem> reportItems, Index startIndex, Index endIndex, Index gapSize,
-        string logMnemonic, bool isIncreasing)
+    private static void CreateNoDataReportItem(List<AnalyzeGapReportItem> reportItems, Index startIndex, Index endIndex, Index requestedGapSize,
+        string logMnemonic, bool isIncreasing, bool noData = true)
     {
-        string noDataMessage = "No data found in given range";
-        var dif = endIndex - startIndex;
-
-        if (dif > gapSize)
+        var gapSize = isIncreasing ? (endIndex - startIndex) : (startIndex - endIndex) ;
+        string message = noData
+            ? "No data found in given range"
+            :
+            (gapSize is DepthIndex depthIndex)
+                ?
+                depthIndex.ToString(
+                    CommonConstants.DefaultNumberOfRoundedPlaces)
+                : gapSize is TimeSpanIndex index ? index.Value.ToString() : gapSize.ToString();
+        if (gapSize > requestedGapSize)
         {
             var reportItem = new AnalyzeGapReportItem
             {
                 Mnemonic = logMnemonic,
                 Start = isIncreasing ? startIndex.ToString() : endIndex.ToString(),
                 End = isIncreasing ? endIndex.ToString() : startIndex.ToString(),
-                GapSize = noDataMessage,
+                GapSize = message,
             };
             reportItems.Add(reportItem);
         }
