@@ -67,7 +67,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
         WitsmlLogData logData = await logDataReader.GetNextBatch();
         var jobMnemonicsMinusLogMnemonics = logData != null ?
-            jobMnemonics.Except(logData.MnemonicList.Split(",").ToList()).ToList(): null;
+            jobMnemonics.Except(logData.MnemonicList.Split(",").ToList()).ToList() : null;
         var logMnemonics = logData?.MnemonicList.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
         while (logData != null)
         {
@@ -157,7 +157,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
     private static void CreateNoDataReportItem(List<AnalyzeGapReportItem> reportItems, Index startIndex, Index endIndex, Index requestedGapSize,
         string logMnemonic, bool isIncreasing, bool noData = true)
     {
-        var gapSize = isIncreasing ? (endIndex - startIndex) : (startIndex - endIndex) ;
+        var gapSize = isIncreasing ? (endIndex - startIndex) : (startIndex - endIndex);
         string message = noData
             ? "No data found in given range"
             :
