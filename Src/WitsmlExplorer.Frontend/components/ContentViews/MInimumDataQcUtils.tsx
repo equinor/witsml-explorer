@@ -20,7 +20,10 @@ export const IsQcReportJobRunning = async (logName: string) => {
   return false;
 };
 
-export const LoadExistingMinQcReport = async (logName: string, timeout?: number ) => {
+export const LoadExistingMinQcReport = async (
+  logName: string,
+  timeout?: number
+) => {
   const jobInfos = await JobService.getUserJobInfos();
 
   if (!!jobInfos && jobInfos.length > 0) {
@@ -31,7 +34,7 @@ export const LoadExistingMinQcReport = async (logName: string, timeout?: number 
           ji.status == JobStatus.Finished &&
           ji.objectName === logName &&
           !!ji.endTime &&
-          Date.now() - toDate(ji.endTime).getTime() < ((timeout ?? 8)*3600000)
+          Date.now() - toDate(ji.endTime).getTime() < (timeout ?? 8) * 3600000
       ) //todo: 8 hours? constant
       .sort(
         (a, b) => toDate(b.endTime).getTime() - toDate(a.endTime).getTime()
