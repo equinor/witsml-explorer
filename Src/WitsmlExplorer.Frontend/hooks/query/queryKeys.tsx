@@ -13,5 +13,5 @@ export const QUERY_KEY_CAP_OBJECTS = "capObjects";
 export const QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES =
   "universalPrioritizedCurves";
 export const QUERY_KEY_LOCAL_PRIORITIZED_CURVES = "universalLocalCurves";
-
 export const QUERY_KEY_JOB_INFO = "jobInfo";
+export const QUERY_KEY_AGENT_SETTINGS = "agentSettings";

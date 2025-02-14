@@ -9,6 +9,7 @@ import { useOperationState } from "../../hooks/useOperationState.tsx";
 import { Colors } from "../../styles/Colors.tsx";
 import { WITSML_INDEX_TYPE_MD } from "../Constants.tsx";
 import OperationType from "../../contexts/operationType.ts";
+import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
 
 export interface MinimumDataQcModalProps {
   logObject: LogObject;
@@ -24,14 +25,41 @@ const MinimumDataQcModal = (
     operationState: { colors }
   } = useOperationState();
 
+  const { agentSettings, isFetching } = useGetAgentSettings();
+
   const isDepthLog = logObject.indexType === WITSML_INDEX_TYPE_MD;
   const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
-  const initialTime = "00:00:00";
 
-  const [depthGapValue, setDepthGapValue] = useState<number>(0);
-  const [densityValue, setDensityValue] = useState<number>(0);
+  const convertMillisecondsToTimeString = (ms: number): string => {
+    const date = new Date(ms);
+    return (
+      ("" + date.getUTCHours()).padStart(2, "0") +
+      ":" +
+      ("" + date.getUTCMinutes()).padStart(2, "0") +
+      ":" +
+      ("" + date.getUTCSeconds()).padStart(2, "0")
+    );
+  };
+
+  const convertToMilliseconds = (time: string): number => {
+    const [hours, minutes, seconds] = time.split(":").map(Number);
+    return (hours * 3600 + minutes * 60 + seconds) * 1000;
+  };
+
+  const [depthGapValue, setDepthGapValue] = useState<number>(
+    agentSettings?.minimumDataQcDepthGapDefault ?? 0
+  );
+  const [densityValue, setDensityValue] = useState<number>(
+    (isDepthLog
+      ? agentSettings?.minimumDataQcDepthDensityDefault
+      : agentSettings?.minimumDataQcTimeDensityDefault) ?? 0
+  );
   const [gapSizeIsValid, setGapSizeIsValid] = useState<boolean>(false);
-  const [timeGapValue, setTimeGapValue] = useState<string>(initialTime);
+  const [timeGapValue, setTimeGapValue] = useState<string>(
+    convertMillisecondsToTimeString(
+      agentSettings?.minimumDataQcTimeGapDefault ?? 0
+    )
+  );
 
   const handleTimeGapSizeChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -42,11 +70,6 @@ const MinimumDataQcModal = (
       const millisecondsTime = convertToMilliseconds(event.target.value);
       setGapSizeIsValid(millisecondsTime > 0);
     }
-  };
-
-  const convertToMilliseconds = (time: string): number => {
-    const [hours, minutes, seconds] = time.split(":").map(Number);
-    return (hours * 3600 + minutes * 60 + seconds) * 1000;
   };
 
   const onSubmit = async () => {
@@ -121,7 +144,7 @@ const MinimumDataQcModal = (
           </ContentLayout>
         }
         onSubmit={onSubmit}
-        isLoading={false}
+        isLoading={isFetching}
       />
     </>
   );

@@ -42,9 +42,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public static async Task<IResult> DeleteWitsmlServer(Guid witsmlServerId, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
+        public static async Task<IResult> DeleteWitsmlServer(Guid witsmlServerId, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository, [FromServices] IDocumentRepository<AgentSettingsDocument, Guid> agentSettingsRepository)
         {
             await witsmlServerRepository.DeleteDocumentAsync(witsmlServerId);
+            await agentSettingsRepository.DeleteDocumentAsync(witsmlServerId);
             return TypedResults.NoContent();
         }
     }

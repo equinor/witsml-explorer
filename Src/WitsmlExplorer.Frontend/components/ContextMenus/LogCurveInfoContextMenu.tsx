@@ -52,6 +52,8 @@ import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
 import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
 import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
+import { refreshPrioritizedCurves } from "../../hooks/query/queryRefreshHelpers.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -87,6 +89,8 @@ const LogCurveInfoContextMenu = (
   const filteredServers = useServerFilter(servers);
 
   const { connectedServer } = useConnectedServer();
+
+  const queryClient = useQueryClient();
 
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
     (row, index) =>
@@ -253,6 +257,7 @@ const LogCurveInfoContextMenu = (
     isUniversal
       ? setPrioritizedUniversalCurves(newPrioritizedCurves)
       : setPrioritizedLocalCurves(newPrioritizedCurves);
+    refreshPrioritizedCurves(queryClient);
   };
 
   const onClickRemovePriority = async (isUniversal: boolean) => {
@@ -276,6 +281,7 @@ const LogCurveInfoContextMenu = (
     isUniversal
       ? setPrioritizedUniversalCurves(newPrioritizedCurves)
       : setPrioritizedLocalCurves(newPrioritizedCurves);
+    refreshPrioritizedCurves(queryClient);
   };
 
   const toDelete = createComponentReferences(

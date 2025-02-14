@@ -50,7 +50,7 @@ import LogObject from "models/logObject";
 import ObjectOnWellbore, { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
-import React, { useMemo } from "react";
+import React from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
@@ -69,6 +69,7 @@ import MinimumDataQcModal, {
 } from "../Modals/MinimumDataQcModal.tsx";
 import { useLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
 import { useUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
+import AgentSettingsModal from "../Modals/AgentSettingsModal.tsx";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -82,20 +83,15 @@ const LogObjectContextMenu = (
   const { servers } = useGetServers();
   const { localPrioritizedCurves } = useLocalPrioritizedCurves(
     checkedObjects[0].wellUid,
-    checkedObjects[0].wellboreUid
+    checkedObjects[0].wellboreUid,
+    { placeholderData: [] }
   );
-  const { universalPrioritizedCurves } = useUniversalPrioritizedCurves();
+  const { universalPrioritizedCurves } = useUniversalPrioritizedCurves({
+    placeholderData: []
+  });
   const filteredServers = useServerFilter(servers);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-  const allPrioritizedCurves = useMemo(
-    () =>
-      [...localPrioritizedCurves, ...universalPrioritizedCurves].filter(
-        (value, index, self) => self.indexOf(value) === index
-      ),
-    [localPrioritizedCurves, universalPrioritizedCurves]
-  );
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -130,17 +126,37 @@ const LogObjectContextMenu = (
   const onClickMinimumDataQc = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
 
-    if (!!allPrioritizedCurves && allPrioritizedCurves.length > 0) {
+    if (
+      (!!localPrioritizedCurves && localPrioritizedCurves.length > 0) ||
+      (!!universalPrioritizedCurves && universalPrioritizedCurves.length > 0)
+    ) {
       const logObject = checkedObjects[0];
 
       const minimumDataQcModalProps: MinimumDataQcModalProps = {
         logObject: logObject,
-        mnemonics: allPrioritizedCurves
+        mnemonics: [
+          ...localPrioritizedCurves,
+          ...universalPrioritizedCurves
+        ].filter((value, index, self) => self.indexOf(value) === index)
       };
 
       dispatchOperation({
         type: OperationType.DisplayModal,
         payload: <MinimumDataQcModal {...minimumDataQcModalProps} />
+      });
+    }
+  };
+
+  const onClickAgentSettings = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    if (
+      (!!localPrioritizedCurves && localPrioritizedCurves.length > 0) ||
+      (!!universalPrioritizedCurves && universalPrioritizedCurves.length > 0)
+    ) {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <AgentSettingsModal />
       });
     }
   };
@@ -470,10 +486,21 @@ const LogObjectContextMenu = (
           <MenuItem
             key={"minimumDataQc"}
             onClick={onClickMinimumDataQc}
-            disabled={allPrioritizedCurves.length === 0}
+            disabled={
+              localPrioritizedCurves.length == 0 &&
+              universalPrioritizedCurves.length == 0
+            }
           >
             <StyledIcon name="beat" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>Minimum Data QC</Typography>
+          </MenuItem>,
+          <Divider key={uuid()} />,
+          <MenuItem key={"agentSettings"} onClick={onClickAgentSettings}>
+            <StyledIcon
+              name="settings"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Agent Settings</Typography>
           </MenuItem>
         ]}
       </NestedMenuItem>,

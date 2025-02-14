@@ -69,7 +69,7 @@ namespace WitsmlExplorer.Api.Workers
 
             DataCheck(job, witsmlLog, isDepthLog, startIndex, endIndex, isLogIncreasing);
 
-            var indexCurve = job.LogReference.IndexCurve;
+            var indexCurve = witsmlLog.IndexCurve.Value;
 
             var reportItems = new List<MinimumDataQcReportItem>();
             var logCurvesToCheck = new List<WitsmlLogCurveInfo>();

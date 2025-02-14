@@ -10,7 +10,10 @@ import {
   QUERY_KEY_OBJECT_SEARCH,
   QUERY_KEY_SERVERS,
   QUERY_KEY_WELLBORES,
-  QUERY_KEY_WELLS
+  QUERY_KEY_WELLS,
+  QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES,
+  QUERY_KEY_LOCAL_PRIORITIZED_CURVES,
+  QUERY_KEY_AGENT_SETTINGS
 } from "./queryKeys";
 
 export const refreshServersQuery = (queryClient: QueryClient) => {
@@ -169,5 +172,20 @@ export const refreshSearchQuery = (
       serverUrl.toLowerCase(),
       filterType.toString()
     ]
+  });
+};
+
+export const refreshPrioritizedCurves = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_LOCAL_PRIORITIZED_CURVES]
+  });
+};
+
+export const refreshAgentSettings = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_AGENT_SETTINGS]
   });
 };

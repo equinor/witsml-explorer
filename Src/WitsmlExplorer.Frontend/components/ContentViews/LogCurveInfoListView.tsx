@@ -37,7 +37,8 @@ import NotificationService from "../../services/notificationService.ts";
 import {
   IsQcReportJobRunning,
   LoadExistingMinQcReport
-} from "./MInimumDataQcUtils.tsx";
+} from "./MinimumDataQcUtils.tsx";
+import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
@@ -59,6 +60,9 @@ export default function LogCurveInfoListView() {
     ObjectType.Log,
     objectUid
   );
+
+  const { agentSettings } = useGetAgentSettings();
+
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -140,7 +144,10 @@ export default function LogCurveInfoListView() {
         return;
       }
 
-      const report = await LoadExistingMinQcReport(logObject.name);
+      const report = await LoadExistingMinQcReport(
+        logObject.name,
+        agentSettings?.minimumDataQcTimeoutDefault
+      );
 
       if (report) {
         setShowMinimumDataQc(true);
