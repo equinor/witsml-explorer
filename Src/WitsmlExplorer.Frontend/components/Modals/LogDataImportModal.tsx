@@ -101,27 +101,38 @@ const LogDataImportModal = (
   const separator = ",";
 
   const validate = (fileColumns: ImportColumn[], parseError?: string) => {
-    if (parseError) setError(parseError);
+    if (parseError) {
+      setError(parseError);
+    }
+
     if (fileColumns.length) {
-      if (fileColumns.map((col) => col.name).some((value) => value === ""))
+      if (fileColumns.map((col) => col.name).some((value) => value === "")) {
         setError(IMPORT_FORMAT_INVALID);
+      }
       if (
         !fileColumns
           .map((col) => col.name.toUpperCase())
           .includes(targetLog.indexCurve.toUpperCase())
-      )
+      ) {
         setError(MISSING_INDEX_CURVE);
+      }
     }
   };
 
-  const getParsedData = () => {
+  const getParsedData = (limited: boolean) => {
     if (
       uploadedFileData &&
       uploadedFileColumns &&
       targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME
     ) {
       try {
-        return parseDateTimeColumn(uploadedFileData, 0, dateTimeFormat);
+        setError("");
+        return parseDateTimeColumn(
+          uploadedFileData,
+          0,
+          dateTimeFormat,
+          limited
+        );
       } catch (error) {
         validate(
           uploadedFileColumns,
@@ -134,7 +145,12 @@ const LogDataImportModal = (
   };
 
   const parsedData = useMemo(
-    () => getParsedData(),
+    () => getParsedData(false),
+    [uploadedFileData, uploadedFileColumns, targetLog, selectedMnemonics]
+  );
+
+  const parsedLimitedData = useMemo(
+    () => getParsedData(true),
     [
       uploadedFileData,
       uploadedFileColumns,
@@ -377,6 +393,8 @@ const LogDataImportModal = (
                     label="Index Curve Format"
                     value={dateTimeFormat ?? ""}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      //             setError("");
+                      //             setIsError(false);
                       setDateTimeFormat(e.target.value);
                     }}
                   />
@@ -454,8 +472,8 @@ const LogDataImportModal = (
                             columns={contentTableColumns}
                             showPanel={false}
                             data={getTableData(
-                              parsedData !== null
-                                ? parsedData
+                              parsedLimitedData !== null
+                                ? parsedLimitedData
                                 : uploadedFileData,
                               uploadedFileColumns,
                               targetLog.indexCurve
@@ -573,7 +591,6 @@ const getDataRanges = (
   const indexCurveColumn = columns.find(
     (col) => col.name === targetLog.indexCurve
   )?.index;
-
   for (let index = 0; index < columns.length; index++) {
     const firstRowWithData = data.find((dataRow) => {
       const data = dataRow.split(",")[index];
@@ -700,9 +717,11 @@ const findDateTimeFormat = (
 const parseDateTimeColumn = (
   data: string[],
   selectedColumn: number,
-  inputFormat: string
+  inputFormat: string,
+  limited: boolean
 ) => {
-  const dataWithISOTimeColumn = data.map((dataRow) => {
+  const dataForParsing = limited ? data.splice(0, 30) : data;
+  const dataWithISOTimeColumn = dataForParsing.map((dataRow) => {
     const rowValues = dataRow.split(",");
     rowValues[selectedColumn] = parseDateFromFormat(
       rowValues[selectedColumn],
@@ -715,8 +734,9 @@ const parseDateTimeColumn = (
 
 const parseDateFromFormat = (dateString: string, format: string) => {
   const parsed = parse(dateString, format, new Date());
-  if (parsed.toString() === "Invalid Date")
+  if (parsed.toString() === "Invalid Date") {
     throw new Error(`Unable to parse date ${dateString} with format ${format}`);
+  }
   return zonedTimeToUtc(parsed, "UTC").toISOString();
 };
 
