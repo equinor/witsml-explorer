@@ -1,5 +1,5 @@
 import { Server } from "../../models/server.ts";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { CSSProperties, useEffect, useMemo, useState } from "react";
 import { useGetServers } from "../../hooks/query/useGetServers.tsx";
 import { useGetWellbores } from "../../hooks/query/useGetWellbores.tsx";
 import { UidMapping, UidMappingDbQuery } from "../../models/uidMapping.tsx";
@@ -15,7 +15,7 @@ import styled from "styled-components";
 import { Autocomplete, Dialog } from "@equinor/eds-core-react";
 import { useOperationState } from "../../hooks/useOperationState.tsx";
 import OperationType from "../../contexts/operationType.ts";
-import { ProgressSpinnerOverlay } from "../ProgressSpinner.tsx";
+import ProgressSpinner from "../ProgressSpinner.tsx";
 import { Button } from "../StyledComponents/Button.tsx";
 import WellboreUidMappingModal, {
   WellboreUidMappingModalProps
@@ -243,6 +243,11 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
                     setMappings([]);
                     setSourceServerValue(changes.selectedItems[0] as Server);
                   }}
+                  style={
+                    {
+                      "--eds-input-background": colors.ui.backgroundDefault
+                    } as CSSProperties
+                  }
                   colors={colors}
                 />
               </ServerItemLayout>
@@ -256,6 +261,11 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
                     setMappings([]);
                     setTargetServerValue(changes.selectedItems[0] as Server);
                   }}
+                  style={
+                    {
+                      "--eds-input-background": colors.ui.backgroundDefault
+                    } as CSSProperties
+                  }
                   colors={colors}
                 />
               </ServerItemLayout>
@@ -264,7 +274,7 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
               {isFetchingUidMapping ||
               isFetchingSourceWellbores ||
               isFetchingTargetWellbores ? (
-                <StyledProgressSpinner message="Fetching data" />
+                <ProgressSpinner message="Fetching data" />
               ) : (
                 <ContentTable
                   viewId={"uidMappingView"}
@@ -282,7 +292,7 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
         <Dialog.Actions>
           <FooterLayout>
             <Button onClick={onDelete} disabled={selectedRows.length == 0}>
-              Delete
+              Remove Mapping
             </Button>
             <Button onClick={onEdit} disabled={selectedRows.length != 1}>
               Edit
@@ -299,6 +309,7 @@ const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
   button {
     color: ${(props) => props.colors.infographic.primaryMossGreen};
   }
+  min-width: 60vh;
 `;
 
 const ContentLayout = styled.div`
@@ -312,7 +323,7 @@ const ContentLayout = styled.div`
 const HeaderLayout = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-evenly;
   gap: 0.75rem;
 `;
 
@@ -334,13 +345,6 @@ const FooterLayout = styled.div`
   flex-direction: row;
   justify-content: space-between;
   gap: 0.75rem;
-`;
-
-const StyledProgressSpinner = styled(ProgressSpinnerOverlay)`
-  Overlay {
-    width: 96%;
-    height: 65%;
-  }
 `;
 
 export default WellboreUidMappingOverviewModal;
