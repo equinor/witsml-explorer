@@ -718,7 +718,10 @@ const parseDateTimeColumn = (
   inputFormat: string,
   limited: boolean
 ) => {
-  const dataForParsing = limited ? { ...data }.splice(0, 30) : data;
+  var dataForParsing = data;
+  if (limited) {
+    dataForParsing = JSON.parse(JSON.stringify(data)).splice(0, 30);
+  }
   const dataWithISOTimeColumn = dataForParsing.map((dataRow) => {
     const rowValues = dataRow.split(",");
     rowValues[selectedColumn] = parseDateFromFormat(
