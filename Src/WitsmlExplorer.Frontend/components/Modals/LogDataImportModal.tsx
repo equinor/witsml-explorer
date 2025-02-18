@@ -718,7 +718,7 @@ const parseDateTimeColumn = (
   inputFormat: string,
   limited: boolean
 ) => {
-  const dataForParsing = limited ? data.splice(0, 30) : data;
+  const dataForParsing = limited ? { ...data }.splice(0, 30) : data;
   const dataWithISOTimeColumn = dataForParsing.map((dataRow) => {
     const rowValues = dataRow.split(",");
     rowValues[selectedColumn] = parseDateFromFormat(
