@@ -718,7 +718,7 @@ const parseDateTimeColumn = (
   inputFormat: string,
   limited: boolean
 ) => {
-  var dataForParsing = data;
+  let dataForParsing = data;
   if (limited) {
     dataForParsing = JSON.parse(JSON.stringify(data)).splice(0, 30);
   }
