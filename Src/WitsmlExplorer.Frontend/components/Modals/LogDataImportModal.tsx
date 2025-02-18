@@ -393,8 +393,6 @@ const LogDataImportModal = (
                     label="Index Curve Format"
                     value={dateTimeFormat ?? ""}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      //             setError("");
-                      //             setIsError(false);
                       setDateTimeFormat(e.target.value);
                     }}
                   />
