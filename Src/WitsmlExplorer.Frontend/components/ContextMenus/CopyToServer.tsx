@@ -19,7 +19,12 @@ import ObjectService from "services/objectService";
 import WellboreService from "services/wellboreService";
 import UidMappingService from "../../services/uidMappingService.tsx";
 import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
-import { createCopyJob, printObject, replaceObjects } from "./CopyUtils.tsx";
+import {
+  createCopyJob,
+  displayModalForReplace,
+  printObject,
+  replaceObjects
+} from "./CopyUtils.tsx";
 
 export const onClickCopyToServer = async (
   targetServer: Server,
@@ -159,25 +164,14 @@ const confirmedCopyToServer = async (
     }
   }
   if (existingObjects.length > 0) {
-    const onConfirm = () =>
-      replaceObjects(
-        targetServer,
-        sourceServer,
-        toCopy,
-        existingObjects,
-        targetWellbore,
-        objectType,
-        dispatchOperation
-      );
-    displayReplaceModal(
-      existingObjects,
+    displayModalForReplace(
+      targetServer,
+      sourceServer,
       toCopy,
+      existingObjects,
+      targetWellbore,
       objectType,
-      "wellbore",
-      dispatchOperation,
-      onConfirm,
-      (objectOnWellbore: ObjectOnWellbore) =>
-        printObject(objectOnWellbore, objectType)
+      dispatchOperation
     );
   } else {
     const copyJob = createCopyJob(
@@ -232,3 +226,34 @@ const createCopyWithParentJob = (
     ...copyObjectsJob
   };
 };
+
+function newFunction(
+  targetServer: Server,
+  sourceServer: Server,
+  toCopy: ObjectOnWellbore[],
+  existingObjects: ObjectOnWellbore[],
+  targetWellbore: WellboreReference,
+  objectType: ObjectType,
+  dispatchOperation: DispatchOperation
+) {
+  const onConfirm = () =>
+    replaceObjects(
+      targetServer,
+      sourceServer,
+      toCopy,
+      existingObjects,
+      targetWellbore,
+      objectType,
+      dispatchOperation
+    );
+  displayReplaceModal(
+    existingObjects,
+    toCopy,
+    objectType,
+    "wellbore",
+    dispatchOperation,
+    onConfirm,
+    (objectOnWellbore: ObjectOnWellbore) =>
+      printObject(objectOnWellbore, objectType)
+  );
+}

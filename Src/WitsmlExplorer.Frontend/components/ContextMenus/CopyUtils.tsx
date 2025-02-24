@@ -42,6 +42,7 @@ export const pasteObjectOnWellbore = async (
   dispatchOperation: DispatchOperation,
   wellboreReference: WellboreReference
 ) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
   const sourceQueries = objectReferences.objectUids.map((objectReference) =>
     ObjectService.getObject(
       objectReferences.wellUid,
@@ -84,25 +85,14 @@ export const pasteObjectOnWellbore = async (
   }
 
   if (existingObjects.length > 0) {
-    const onConfirm = () =>
-      replaceObjects(
-        servers[0],
-        servers[0],
-        toCopy,
-        existingObjects,
-        wellboreReference,
-        objectReferences.objectType,
-        dispatchOperation
-      );
-    displayReplaceModal(
-      existingObjects,
+    displayModalForReplace(
+      servers[0],
+      servers[0],
       toCopy,
+      existingObjects,
+      wellboreReference,
       objectReferences.objectType,
-      "wellbore",
-      dispatchOperation,
-      onConfirm,
-      (objectOnWellbore: ObjectOnWellbore) =>
-        printObject(objectOnWellbore, objectReferences.objectType)
+      dispatchOperation
     );
   } else {
     const orderCopyJob = () => {
@@ -114,8 +104,6 @@ export const pasteObjectOnWellbore = async (
     };
     onClickPaste(servers, objectReferences?.serverUrl, orderCopyJob);
   }
-
-  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 export const pasteComponents = async (
@@ -197,6 +185,37 @@ export const replaceObjects = async (
     sourceServer
   );
 };
+
+export function displayModalForReplace(
+  sourceServer: Server,
+  targetServer: Server,
+  toCopy: ObjectOnWellbore[],
+  existingObjects: ObjectOnWellbore[],
+  wellboreReference: WellboreReference,
+  objectType: ObjectType,
+  dispatchOperation: DispatchOperation
+) {
+  const onConfirm = () =>
+    replaceObjects(
+      sourceServer,
+      targetServer,
+      toCopy,
+      existingObjects,
+      wellboreReference,
+      objectType,
+      dispatchOperation
+    );
+  displayReplaceModal(
+    existingObjects,
+    toCopy,
+    objectType,
+    "wellbore",
+    dispatchOperation,
+    onConfirm,
+    (objectOnWellbore: ObjectOnWellbore) =>
+      printObject(objectOnWellbore, objectType)
+  );
+}
 
 export function printObject(
   objectOnWellbore: ObjectOnWellbore,
