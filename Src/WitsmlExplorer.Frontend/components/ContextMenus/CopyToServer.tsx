@@ -3,18 +3,13 @@ import { displayReplaceModal } from "components/Modals/ReplaceModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import {
-  CopyObjectsJob,
   CopyWellboreJob,
   CopyWellJob,
   CopyWithParentJob
 } from "models/jobs/copyJobs";
-import { DeleteObjectsJob } from "models/jobs/deleteJobs";
-import ObjectReferences from "models/jobs/objectReferences";
-import { ReplaceObjectsJob } from "models/jobs/replaceObjectsJob";
 import WellboreReference from "models/jobs/wellboreReference";
 import WellReference from "models/jobs/wellReference";
-import LogObject from "models/logObject";
-import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
+import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
@@ -24,6 +19,7 @@ import ObjectService from "services/objectService";
 import WellboreService from "services/wellboreService";
 import UidMappingService from "../../services/uidMappingService.tsx";
 import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
+import { createCopyJob, printObject, replaceObjects } from "./CopyUtils.tsx";
 
 export const onClickCopyToServer = async (
   targetServer: Server,
@@ -200,26 +196,6 @@ const confirmedCopyToServer = async (
   }
 };
 
-const createCopyJob = (
-  sourceServer: Server,
-  objects: ObjectOnWellbore[],
-  targetWellbore: WellboreReference,
-  objectType: ObjectType
-): CopyObjectsJob => {
-  const objectReferences: ObjectReferences = toObjectReferences(
-    objects,
-    objectType,
-    sourceServer.url
-  );
-  const targetWellboreReference: WellboreReference = {
-    wellUid: targetWellbore.wellUid,
-    wellboreUid: targetWellbore.wellboreUid,
-    wellName: targetWellbore.wellName,
-    wellboreName: targetWellbore.wellboreName
-  };
-  return { source: objectReferences, target: targetWellboreReference };
-};
-
 const createCopyWithParentJob = (
   sourceServer: Server,
   objects: ObjectOnWellbore[],
@@ -256,54 +232,3 @@ const createCopyWithParentJob = (
     ...copyObjectsJob
   };
 };
-
-const replaceObjects = async (
-  targetServer: Server,
-  sourceServer: Server,
-  toCopy: ObjectOnWellbore[],
-  toDelete: ObjectOnWellbore[],
-  targetWellbore: WellboreReference,
-  objectType: ObjectType,
-  dispatchOperation: DispatchOperation
-) => {
-  dispatchOperation({ type: OperationType.HideContextMenu });
-  dispatchOperation({ type: OperationType.HideModal });
-  const deleteJob: DeleteObjectsJob = {
-    toDelete: toObjectReferences(toDelete, objectType)
-  };
-  const copyJob = createCopyJob(
-    sourceServer,
-    toCopy,
-    targetWellbore,
-    objectType
-  );
-  const replaceJob: ReplaceObjectsJob = { deleteJob, copyJob };
-  await JobService.orderJobAtServer(
-    JobType.ReplaceObjects,
-    replaceJob,
-    targetServer,
-    sourceServer
-  );
-};
-
-function printObject(
-  objectOnWellbore: ObjectOnWellbore,
-  objectType: ObjectType
-): JSX.Element {
-  return (
-    <>
-      <br />
-      Name: {objectOnWellbore.name}
-      <br />
-      Uid: {objectOnWellbore.uid}
-      {objectType === ObjectType.Log && (
-        <>
-          <br />
-          Start index: {(objectOnWellbore as LogObject).startIndex}
-          <br />
-          End index: {(objectOnWellbore as LogObject).endIndex}
-        </>
-      )}
-    </>
-  );
-}

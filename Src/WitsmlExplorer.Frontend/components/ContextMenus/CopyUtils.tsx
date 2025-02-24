@@ -1,3 +1,4 @@
+import { displayReplaceModal } from "components/Modals/ReplaceModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { ComponentType } from "models/componentType";
@@ -16,6 +17,10 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
+import ObjectService from "services/objectService";
+import { DeleteObjectsJob } from "models/jobs/deleteJobs";
+import { ReplaceObjectsJob } from "models/jobs/replaceObjectsJob";
+import LogObject from "models/logObject";
 
 export const onClickPaste = (
   servers: Server[],
@@ -37,16 +42,80 @@ export const pasteObjectOnWellbore = async (
   dispatchOperation: DispatchOperation,
   wellboreReference: WellboreReference
 ) => {
-  dispatchOperation({ type: OperationType.HideContextMenu });
-  const orderCopyJob = () => {
-    const copyJob: CopyObjectsJob = {
-      source: objectReferences,
-      target: wellboreReference
-    };
-    JobService.orderJob(JobType.CopyObjects, copyJob);
-  };
+  var sourceQueries = objectReferences.objectUids.map((objectReference) =>
+    ObjectService.getObject(
+      objectReferences.wellUid,
+      objectReferences.wellboreUid,
+      objectReference,
+      objectReferences.objectType,
+      null,
+      servers[0]
+    )
+  );
 
-  onClickPaste(servers, objectReferences?.serverUrl, orderCopyJob);
+  const toCopy: ObjectOnWellbore[] = [];
+  for (const query of sourceQueries) {
+    const receivedObject = await query;
+    toCopy.push(receivedObject);
+  }
+
+  var queries = objectReferences.objectUids.map((objectReference) =>
+    ObjectService.getObject(
+      wellboreReference.wellUid,
+      wellboreReference.wellboreUid,
+      objectReference,
+      objectReferences.objectType,
+      null,
+      servers[0]
+    )
+  );
+  const existingObjects: ObjectOnWellbore[] = [];
+
+  for (const query of queries) {
+    const receivedObject = await query;
+
+    if (
+      objectReferences.objectUids.find(
+        (objectToCopy) => receivedObject?.uid === objectToCopy
+      )
+    ) {
+      existingObjects.push(receivedObject);
+    }
+  }
+
+  if (existingObjects.length > 0) {
+    const onConfirm = () =>
+      replaceObjects(
+        servers[0],
+        servers[0],
+        toCopy,
+        existingObjects,
+        wellboreReference,
+        objectReferences.objectType,
+        dispatchOperation
+      );
+    displayReplaceModal(
+      existingObjects,
+      toCopy,
+      objectReferences.objectType,
+      "wellbore",
+      dispatchOperation,
+      onConfirm,
+      (objectOnWellbore: ObjectOnWellbore) =>
+        printObject(objectOnWellbore, objectReferences.objectType)
+    );
+  } else {
+    const orderCopyJob = () => {
+      const copyJob: CopyObjectsJob = {
+        source: objectReferences,
+        target: wellboreReference
+      };
+      JobService.orderJob(JobType.CopyObjects, copyJob);
+    };
+    onClickPaste(servers, objectReferences?.serverUrl, orderCopyJob);
+  }
+
+  dispatchOperation({ type: OperationType.HideContextMenu });
 };
 
 export const pasteComponents = async (
@@ -55,6 +124,8 @@ export const pasteComponents = async (
   dispatchOperation: DispatchOperation,
   target: ObjectOnWellbore
 ) => {
+  console.log("on click paster");
+
   dispatchOperation({ type: OperationType.HideContextMenu });
   const orderCopyJob = () => {
     const targetReference: ObjectReference = toObjectReference(target);
@@ -98,4 +169,75 @@ export const copyComponents = async (
     selectedServer.url
   );
   await navigator.clipboard.writeText(JSON.stringify(componentReferences));
+};
+
+export const replaceObjects = async (
+  targetServer: Server,
+  sourceServer: Server,
+  toCopy: ObjectOnWellbore[],
+  toDelete: ObjectOnWellbore[],
+  targetWellbore: WellboreReference,
+  objectType: ObjectType,
+  dispatchOperation: DispatchOperation
+) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  dispatchOperation({ type: OperationType.HideModal });
+  const deleteJob: DeleteObjectsJob = {
+    toDelete: toObjectReferences(toDelete, objectType)
+  };
+  const copyJob = createCopyJob(
+    sourceServer,
+    toCopy,
+    targetWellbore,
+    objectType
+  );
+  const replaceJob: ReplaceObjectsJob = { deleteJob, copyJob };
+  await JobService.orderJobAtServer(
+    JobType.ReplaceObjects,
+    replaceJob,
+    targetServer,
+    sourceServer
+  );
+};
+
+export function printObject(
+  objectOnWellbore: ObjectOnWellbore,
+  objectType: ObjectType
+): JSX.Element {
+  return (
+    <>
+      <br />
+      Name: {objectOnWellbore.name}
+      <br />
+      Uid: {objectOnWellbore.uid}
+      {objectType === ObjectType.Log && (
+        <>
+          <br />
+          Start index: {(objectOnWellbore as LogObject).startIndex}
+          <br />
+          End index: {(objectOnWellbore as LogObject).endIndex}
+        </>
+      )}
+    </>
+  );
+}
+
+export const createCopyJob = (
+  sourceServer: Server,
+  objects: ObjectOnWellbore[],
+  targetWellbore: WellboreReference,
+  objectType: ObjectType
+): CopyObjectsJob => {
+  const objectReferences: ObjectReferences = toObjectReferences(
+    objects,
+    objectType,
+    sourceServer.url
+  );
+  const targetWellboreReference: WellboreReference = {
+    wellUid: targetWellbore.wellUid,
+    wellboreUid: targetWellbore.wellboreUid,
+    wellName: targetWellbore.wellName,
+    wellboreName: targetWellbore.wellboreName
+  };
+  return { source: objectReferences, target: targetWellboreReference };
 };
