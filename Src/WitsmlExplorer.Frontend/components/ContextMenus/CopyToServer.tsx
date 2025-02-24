@@ -18,10 +18,7 @@ import ObjectService from "services/objectService";
 import WellboreService from "services/wellboreService";
 import UidMappingService from "../../services/uidMappingService.tsx";
 import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
-import {
-  createCopyJob,
-  displayModalForReplace,
-} from "./CopyUtils.tsx";
+import { createCopyJob, displayModalForReplace } from "./CopyUtils.tsx";
 
 export const onClickCopyToServer = async (
   targetServer: Server,
