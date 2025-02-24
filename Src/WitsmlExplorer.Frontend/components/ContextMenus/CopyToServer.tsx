@@ -1,5 +1,4 @@
 import { displayCopyWellboreModal } from "components/Modals/CopyWellboreModal";
-import { displayReplaceModal } from "components/Modals/ReplaceModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import {
@@ -22,8 +21,6 @@ import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
 import {
   createCopyJob,
   displayModalForReplace,
-  printObject,
-  replaceObjects
 } from "./CopyUtils.tsx";
 
 export const onClickCopyToServer = async (
