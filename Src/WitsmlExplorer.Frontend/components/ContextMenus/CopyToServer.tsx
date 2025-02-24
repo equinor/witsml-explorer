@@ -226,34 +226,3 @@ const createCopyWithParentJob = (
     ...copyObjectsJob
   };
 };
-
-function newFunction(
-  targetServer: Server,
-  sourceServer: Server,
-  toCopy: ObjectOnWellbore[],
-  existingObjects: ObjectOnWellbore[],
-  targetWellbore: WellboreReference,
-  objectType: ObjectType,
-  dispatchOperation: DispatchOperation
-) {
-  const onConfirm = () =>
-    replaceObjects(
-      targetServer,
-      sourceServer,
-      toCopy,
-      existingObjects,
-      targetWellbore,
-      objectType,
-      dispatchOperation
-    );
-  displayReplaceModal(
-    existingObjects,
-    toCopy,
-    objectType,
-    "wellbore",
-    dispatchOperation,
-    onConfirm,
-    (objectOnWellbore: ObjectOnWellbore) =>
-      printObject(objectOnWellbore, objectType)
-  );
-}
