@@ -42,7 +42,7 @@ export const pasteObjectOnWellbore = async (
   dispatchOperation: DispatchOperation,
   wellboreReference: WellboreReference
 ) => {
-  var sourceQueries = objectReferences.objectUids.map((objectReference) =>
+  const sourceQueries = objectReferences.objectUids.map((objectReference) =>
     ObjectService.getObject(
       objectReferences.wellUid,
       objectReferences.wellboreUid,
@@ -59,7 +59,7 @@ export const pasteObjectOnWellbore = async (
     toCopy.push(receivedObject);
   }
 
-  var queries = objectReferences.objectUids.map((objectReference) =>
+  const queries = objectReferences.objectUids.map((objectReference) =>
     ObjectService.getObject(
       wellboreReference.wellUid,
       wellboreReference.wellboreUid,
@@ -124,8 +124,6 @@ export const pasteComponents = async (
   dispatchOperation: DispatchOperation,
   target: ObjectOnWellbore
 ) => {
-  console.log("on click paster");
-
   dispatchOperation({ type: OperationType.HideContextMenu });
   const orderCopyJob = () => {
     const targetReference: ObjectReference = toObjectReference(target);
