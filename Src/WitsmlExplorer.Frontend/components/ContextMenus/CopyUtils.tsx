@@ -42,6 +42,7 @@ export const pasteObjectOnWellbore = async (
   dispatchOperation: DispatchOperation,
   wellboreReference: WellboreReference
 ) => {
+  const server = servers.find((x) => x.url === objectReferences.serverUrl);
   dispatchOperation({ type: OperationType.HideContextMenu });
   const sourceQueries = objectReferences.objectUids.map((objectReference) =>
     ObjectService.getObject(
@@ -50,7 +51,7 @@ export const pasteObjectOnWellbore = async (
       objectReference,
       objectReferences.objectType,
       null,
-      servers[0]
+      server
     )
   );
 
@@ -67,7 +68,7 @@ export const pasteObjectOnWellbore = async (
       objectReference,
       objectReferences.objectType,
       null,
-      servers[0]
+      server
     )
   );
   const existingObjects: ObjectOnWellbore[] = [];
@@ -86,8 +87,8 @@ export const pasteObjectOnWellbore = async (
 
   if (existingObjects.length > 0) {
     displayModalForReplace(
-      servers[0],
-      servers[0],
+      server,
+      server,
       toCopy,
       existingObjects,
       wellboreReference,
