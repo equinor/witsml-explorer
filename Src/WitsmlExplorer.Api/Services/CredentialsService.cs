@@ -38,6 +38,7 @@ namespace WitsmlExplorer.Api.Services
         private static readonly string SUBJECT = "sub";
         private readonly bool _useOAuth2;
         private readonly bool _isDesktopApp;
+        private readonly bool _enableHttp;
 
         public CredentialsService(
             IDataProtectionProvider dataProtectionProvider,
@@ -56,6 +57,7 @@ namespace WitsmlExplorer.Api.Services
             _credentialsCache = credentialsCache ?? throw new ArgumentException("CredentialsService missing");
             _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             _isDesktopApp = StringHelpers.ToBoolean(configuration[ConfigConstants.IsDesktopApp]);
+            _enableHttp = StringHelpers.ToBoolean(configuration[ConfigConstants.enableHttp]);
         }
 
         public async Task VerifyCredentials(ServerCredentials creds)
@@ -65,6 +67,7 @@ namespace WitsmlExplorer.Api.Services
                 options.Hostname = creds.Host.ToString();
                 options.Credentials = new WitsmlCredentials(creds.UserId, creds.Password);
                 options.ClientCapabilities = _clientCapabilities;
+                options.EnableHttp = _enableHttp;
             });
             await witsmlClient.TestConnectionAsync();
         }
