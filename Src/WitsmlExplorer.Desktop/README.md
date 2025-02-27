@@ -13,7 +13,7 @@ The installer can be downloaded from our [GitHub releases page](https://github.c
 
 ## Configuration
 
-A configuration file is created in `%AppData%\Roaming\WEx-Desktop\config.json`. It can be edited to change the API port and the path of logging and database files.
+A configuration file is created in `%AppData%\Roaming\WEx-Desktop\config.json`. It can be edited to change the API port and the path of logging and database files. You can also enable/disable non-secure connection (enableHttp) to Witsml server.
 
 ## For developers
 
