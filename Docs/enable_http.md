@@ -6,7 +6,7 @@ To use non secure link to Witsml server, your link needs to start with http and 
 
 ## How to enable using non secure links in normal setup (web application)
 
-In appsettings.json file, change to "enableHttp" setting to true.
+In your configuration file (`appsettings.json`, `appsettings.<env>.json` or `mysettings.json`), set the "enableHttp" setting to true.
 
 ## How to enable using non secure links in desktop edition
 
