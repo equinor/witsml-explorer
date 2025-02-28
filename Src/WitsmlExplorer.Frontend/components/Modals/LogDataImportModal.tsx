@@ -178,7 +178,7 @@ const LogDataImportModal = (
       dataRows:
         parsedData !== null
           ? parsedData.map((line) => line.split(separator))
-          : uploadedFileData.map((line) => line.split(separator))
+          : getParsedData(false).map((line) => line.split(separator))
     };
 
     await JobService.orderJob(JobType.ImportLogData, job);
