@@ -37,6 +37,11 @@ public class WitsmlClientOptions
     /// Enable logging all queries to a file (queries.log) in the current directory
     /// </summary>
     public bool LogQueries { get; set; }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public bool EnableHttp { get; set; }
 }
 
 public record WitsmlCredentials(string Username, string Password);

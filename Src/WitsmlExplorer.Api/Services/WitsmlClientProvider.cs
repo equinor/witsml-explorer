@@ -31,6 +31,7 @@ namespace WitsmlExplorer.Api.Services
         private readonly ICredentialsService _credentialsService;
         private readonly ILogger<WitsmlClientProvider> _logger;
         private readonly bool _logQueries;
+        private readonly bool _enableHttp;
 
         public WitsmlClientProvider(ILogger<WitsmlClientProvider> logger, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
@@ -43,6 +44,7 @@ namespace WitsmlExplorer.Api.Services
             _credentialsService = credentialsService ?? throw new ArgumentException("CredentialsService missing");
             _logger = logger ?? throw new ArgumentException("Logger missing");
             _logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
+            _enableHttp = StringHelpers.ToBoolean(configuration[ConfigConstants.EnableHttp]);
             _logger.LogDebug("WitsmlClientProvider initialised");
         }
 
@@ -55,6 +57,7 @@ namespace WitsmlExplorer.Api.Services
                     options.Hostname = serverUrl;
                     options.Credentials = new WitsmlCredentials(username, password);
                     options.LogQueries = true;
+                    options.EnableHttp = _enableHttp;
                 });
         }
 
@@ -79,6 +82,7 @@ namespace WitsmlExplorer.Api.Services
                         options.Credentials = new WitsmlCredentials(_targetCreds.UserId, _targetCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
+                        options.EnableHttp = _enableHttp;
                         options.RequestTimeOut = TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                     })
                     : null;
@@ -98,6 +102,7 @@ namespace WitsmlExplorer.Api.Services
                         options.Credentials = new WitsmlCredentials(_sourceCreds.UserId, _sourceCreds.Password);
                         options.ClientCapabilities = _clientCapabilities;
                         options.LogQueries = _logQueries;
+                        options.EnableHttp = _enableHttp;
                         options.RequestTimeOut = TimeSpan.FromSeconds(CommonConstants.DefaultClientRequestTimeOutSeconds);
                     })
                     : null;
