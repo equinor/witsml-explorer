@@ -36,7 +36,6 @@ interface AppConfig {
 function readOrCreateAppConfig() {
   const userDataPath = app.getPath("userData");
   const configPath = path.join(userDataPath, "config.json");
-  console.log(configPath);
   const defaultConfig: AppConfig = {
     apiPort: "35427",
     dbPath: path.join(userDataPath, "witsml-explorer-db.db"),

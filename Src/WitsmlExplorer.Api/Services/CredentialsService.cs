@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Services
             _credentialsCache = credentialsCache ?? throw new ArgumentException("CredentialsService missing");
             _useOAuth2 = StringHelpers.ToBoolean(configuration[ConfigConstants.OAuth2Enabled]);
             _isDesktopApp = StringHelpers.ToBoolean(configuration[ConfigConstants.IsDesktopApp]);
-            _enableHttp = StringHelpers.ToBoolean(configuration[ConfigConstants.enableHttp]);
+            _enableHttp = StringHelpers.ToBoolean(configuration[ConfigConstants.EnableHttp]);
         }
 
         public async Task VerifyCredentials(ServerCredentials creds)
