@@ -21,7 +21,8 @@ A configuration file is created in `%AppData%\Roaming\WEx-Desktop\config.json`. 
     "dbPath": "C:\\Users\\USER\\AppData\\Roaming\\WEx-Desktop\\witsml-explorer-db.db",
     "logsPath": "C:\\Users\\USER\\AppData\\Roaming\\WEx-Desktop\\logs",
     "enableHttp": "false"
-}```
+}
+```
 
 ## For developers
 
