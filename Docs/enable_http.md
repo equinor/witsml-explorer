@@ -10,4 +10,4 @@ In your configuration file (`appsettings.json`, `appsettings.<env>.json` or `mys
 
 ## Enabling Non-Secure Links in the Desktop Edition
 
-In the configuration file config.json, which is created in %AppData%\Roaming\WEx-Desktop during installation of desktop edition, set "enableHttp" setting to "true". 
+In the desktop edition configuration file, set "enableHttp" to true. See [desktop edition configuration](../Src/WitsmlExplorer.Desktop/README.md#configuration) for further details.
