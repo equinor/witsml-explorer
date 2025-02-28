@@ -4,7 +4,7 @@
 
 To connect to a WITSML server using an unsecured link, the URL must begin with "http". Additionally, the "enableHttp" setting must be configured appropriately based on your setup.
 
-## How to enable using non secure links in normal setup (web application)
+## Enabling Non-Secure Links in the Web Application
 
 In your configuration file (`appsettings.json`, `appsettings.<env>.json` or `mysettings.json`), set the "enableHttp" setting to true.
 
