@@ -2,7 +2,7 @@
 
 > :warning: **Using HTTP to connect to WITSML servers is not secure.** HTTP does not encrypt data, making it vulnerable to interception, tampering, and man-in-the-middle attacks. It is strongly recommended to use HTTPS, which encrypts communications, to protect against these risks.
 
-To use non secure link to Witsml server, your link needs to start with http and you need to change "enableHttp" setting based on the type of setup - see below.
+To connect to a WITSML server using an unsecured link, the URL must begin with "http". Additionally, the "enableHttp" setting must be configured appropriately based on your setup.
 
 ## How to enable using non secure links in normal setup (web application)
 
