@@ -8,6 +8,6 @@ To connect to a WITSML server using an unsecured link, the URL must begin with "
 
 In your configuration file (`appsettings.json`, `appsettings.<env>.json` or `mysettings.json`), set the "enableHttp" setting to true.
 
-## How to enable using non secure links in desktop edition
+## Enabling Non-Secure Links in the Desktop Edition
 
 In the configuration file config.json, which is created in %AppData%\Roaming\WEx-Desktop during installation of desktop edition, set "enableHttp" setting to "true". 
