@@ -7,23 +7,22 @@ import {
   TextField
 } from "@equinor/eds-core-react";
 import { useOperationState } from "hooks/useOperationState";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
-import { CustomCurveRange } from "./CurveValuesPlot";
+import { CurveRanges } from "./CurveValuesPlot";
 
 export const SettingCustomRanges = (props: {
-  minMaxValuesCalculation: CustomCurveRange[];
-  onChange: (curveRanges: CustomCurveRange[]) => void;
+  rawDataRanges: CurveRanges;
+  customRanges: CurveRanges;
+  onChange: (curveRanges: CurveRanges) => void;
   onClose: () => void;
 }): React.ReactElement => {
   const {
     operationState: { colors }
   } = useOperationState();
 
-  const [ranges, setRanges] = useState<CustomCurveRange[]>(
-    props.minMaxValuesCalculation
-  );
+  const allRanges = { ...props.rawDataRanges, ...props.customRanges };
 
   const close = () => {
     props.onClose();
@@ -52,40 +51,44 @@ export const SettingCustomRanges = (props: {
               </Table.Row>
             </Table.Head>
             <Table.Body>
-              {(ranges ?? []).map((customRange: CustomCurveRange) => (
-                <Table.Row id={customRange.curve} key={customRange.curve}>
-                  <StyledTableCell colors={colors}>
-                    {customRange.curve}
-                  </StyledTableCell>
+              {Object.entries(allRanges).map(([curve, dataRange]) => (
+                <Table.Row id={curve} key={curve}>
+                  <StyledTableCell colors={colors}>{curve}</StyledTableCell>
                   <StyledTableCell colors={colors}>
                     <StyledTextField
                       id="startIndex"
-                      defaultValue={customRange.minValue}
+                      defaultValue={dataRange.minValue}
                       type="number"
                       colors={colors}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        const range = ranges.find(
-                          (x) => x.curve === customRange.curve
-                        );
-                        range.minValue = Number(e.target.value);
-                        setRanges(ranges);
-                        props.onChange(ranges);
+                        const newCustomRange = {
+                          ...dataRange,
+                          minValue: Number(e.target.value)
+                        };
+                        const newCustomRanges: CurveRanges = {
+                          ...props.customRanges,
+                          [curve]: newCustomRange
+                        };
+                        props.onChange(newCustomRanges);
                       }}
                     />
                   </StyledTableCell>
                   <StyledTableCell colors={colors}>
                     <StyledTextField
                       id="endIndex"
-                      defaultValue={customRange.maxValue}
+                      defaultValue={dataRange.maxValue}
                       type="number"
                       colors={colors}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        const range = ranges.find(
-                          (x) => x.curve === customRange.curve
-                        );
-                        range.maxValue = Number(e.target.value);
-                        setRanges(ranges);
-                        props.onChange(ranges);
+                        const newCustomRange = {
+                          ...dataRange,
+                          maxValue: Number(e.target.value)
+                        };
+                        const newCustomRanges: CurveRanges = {
+                          ...props.customRanges,
+                          [curve]: newCustomRange
+                        };
+                        props.onChange(newCustomRanges);
                       }}
                     />
                   </StyledTableCell>
@@ -135,9 +138,7 @@ const CloseButton = styled(Button)`
 `;
 
 const StyledTableHeadCell = styled(Table.Cell)<{ colors: Colors } & CellProps>`
-   {
-    background-color: ${(props) =>
-      props.colors.interactive.tableHeaderFillResting};
-    color: ${(props) => props.colors.text.staticIconsDefault};
-  }
+  background-color: ${(props) =>
+    props.colors.interactive.tableHeaderFillResting};
+  color: ${(props) => props.colors.text.staticIconsDefault};
 `;
