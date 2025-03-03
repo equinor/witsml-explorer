@@ -37,7 +37,7 @@ namespace WitsmlExplorer.Api.Configuration
             AddRepository<Server, Guid>(services, configuration);
             AddRepository<LogCurvePriority, string>(services, configuration);
             AddRepository<UidMappingCollection, string>(services, configuration);
-            AddRepository<AgentSettingsDocument, Guid>(services, configuration);
+            AddRepository<AgentSettingsDocument, string>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<IJobCache, JobCache>();
             services.AddSingleton<IJobQueue, JobQueue>();

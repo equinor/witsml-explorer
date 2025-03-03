@@ -4,7 +4,7 @@ import styled from "styled-components";
 import OperationType from "../../contexts/operationType.ts";
 import ModalDialog from "./ModalDialog.tsx";
 import { Colors } from "../../styles/Colors.tsx";
-import { Accordion, Label, TextField } from "@equinor/eds-core-react";
+import { Accordion, Label, TextField, Tooltip } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { refreshAgentSettings } from "../../hooks/query/queryRefreshHelpers.tsx";
 import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
@@ -102,7 +102,9 @@ const AgentSettingsModal = (): React.ReactElement => {
                 <Accordion.Panel>
                   <AccordionPanelContent>
                     <AccordionPanelItem>
-                      <Label label="QC Data TTL (hours)" />
+                      <Tooltip title="Time before minumum data QC job will run again when swich is flipped on in log view.">
+                        <Label label="QC Data TTL (hours)" />
+                      </Tooltip>
                       <StyledTextField
                         id="dataTtl"
                         type="number"

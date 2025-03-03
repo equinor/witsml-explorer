@@ -35,9 +35,11 @@ namespace WitsmlExplorer.Api.Models
         }
     }
 
-    public class AgentSettingsDocument : DbDocument<Guid>
+    public class AgentSettingsDocument : DbDocument<string>
     {
-        public AgentSettingsDocument(Guid ServerId) : base(ServerId)
+        public static string GLOBAL_ID = "global";
+
+        public AgentSettingsDocument(string id) : base(id)
         {
         }
 

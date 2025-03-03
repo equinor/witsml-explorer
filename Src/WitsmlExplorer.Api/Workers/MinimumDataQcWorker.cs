@@ -151,7 +151,7 @@ namespace WitsmlExplorer.Api.Workers
             job.JobInfo.Report = new MinimumDataQcReport
             {
                 Title = "Minimum data QC report",
-                Summary = $"Analyzed {job.Mnemonics.Count} of which {reportItems.Count(i => i.QcIssues.Count > 0)} have QC issues.",
+                Summary = $"Analyzed {logCurvesToCheck?.Count ?? 0} mnemonics, found {reportItems.Count(i => i.QcIssues.Count > 0)} QC issues.",
                 LogReference = job.LogReference,
                 ReportItems = reportItems
             };
@@ -178,11 +178,6 @@ namespace WitsmlExplorer.Api.Workers
 
             foreach (var logCurve in logCurvesToCheck)
             {
-                var reportItem = new MinimumDataQcReportItem
-                {
-                    Mnemonic = logCurve.Mnemonic
-                };
-
                 var logCurveIndex = logColumns.First(lm => lm.Mnemonic == logCurve.Mnemonic).Index;
 
                 var dataPoints = 0;
@@ -204,10 +199,9 @@ namespace WitsmlExplorer.Api.Workers
 
                             var gap = isLogIncreasing ? thisIndex - lastIndexWithData : lastIndexWithData - thisIndex;
 
-                            if (gap >= maxGap)
+                            if (gap.Value > maxGap.Value)
                             {
                                 largeGapFound = true;
-                                reportItem.QcIssues.Add(QcIssue.LARGE_GAP);
                             }
                             else
                             {
@@ -217,14 +211,7 @@ namespace WitsmlExplorer.Api.Workers
                     }
                 }
 
-                var density = dataPoints / indexSpan;
-
-                if (density < job.Density.Value)
-                {
-                    reportItem.QcIssues.Add(QcIssue.LOW_DENSITY);
-                }
-
-                reportItem.Timestamp = DateTime.Now;
+                var reportItem = CreateReportItem(logCurve.Mnemonic, dataPoints, largeGapFound, indexSpan, job.Density.Value);
 
                 reportItems.Add(reportItem);
             }
@@ -246,15 +233,10 @@ namespace WitsmlExplorer.Api.Workers
 
             var firstIndex = (isLogIncreasing ? startIndex : endIndex) as DateTimeIndex;
             var indexSpan = ((isLogIncreasing ? endIndex - startIndex : startIndex - endIndex) as TimeSpanIndex).Value.TotalHours;
-            var maxGap = job.TimeGap.Value * 100;
+            var maxGap = job.TimeGap.Value * 1000;
 
             foreach (var logCurve in logCurvesToCheck)
             {
-                var reportItem = new MinimumDataQcReportItem
-                {
-                    Mnemonic = logCurve.Mnemonic
-                };
-
                 var logCurveIndex = logColumns.First(lm => lm.Mnemonic == logCurve.Mnemonic).Index;
 
                 var dataPoints = 0;
@@ -275,10 +257,9 @@ namespace WitsmlExplorer.Api.Workers
 
                             var gap = isLogIncreasing ? thisIndex - lastIndexWithData : lastIndexWithData - thisIndex;
 
-                            if (gap.TotalMilliseconds >= maxGap)
+                            if (gap.TotalMilliseconds > maxGap)
                             {
                                 largeGapFound = true;
-                                reportItem.QcIssues.Add(QcIssue.LARGE_GAP);
                             }
                             else
                             {
@@ -288,19 +269,42 @@ namespace WitsmlExplorer.Api.Workers
                     }
                 }
 
-                var density = dataPoints / indexSpan;
-
-                if (density < job.Density.Value)
-                {
-                    reportItem.QcIssues.Add(QcIssue.LOW_DENSITY);
-                }
-
-                reportItem.Timestamp = DateTime.Now;
+                var reportItem = CreateReportItem(logCurve.Mnemonic, dataPoints, largeGapFound, indexSpan, job.Density.Value);
 
                 reportItems.Add(reportItem);
             }
 
             return reportItems;
+        }
+        private MinimumDataQcReportItem CreateReportItem(string mnemonic, int dataPoints, bool largeGapFound, double indexSpan, double minDensity)
+        {
+            var reportItem = new MinimumDataQcReportItem
+            {
+                Mnemonic = mnemonic
+            };
+
+            if (dataPoints == 0)
+            {
+                reportItem.QcIssues.Add(QcIssue.NO_DATA);
+            }
+            else
+            {
+                if (largeGapFound)
+                {
+                    reportItem.QcIssues.Add(QcIssue.LARGE_GAP);
+                }
+
+                var density = dataPoints / indexSpan;
+
+                if (density <= minDensity)
+                {
+                    reportItem.QcIssues.Add(QcIssue.LOW_DENSITY);
+                }
+            }
+
+            reportItem.Timestamp = DateTime.Now;
+
+            return reportItem;
         }
 
         private string JobValidation(MinimumDataQcJob job)
