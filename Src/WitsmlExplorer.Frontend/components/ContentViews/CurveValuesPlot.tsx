@@ -473,6 +473,25 @@ const getChartOption = (
         saveAsImage: {}
       }
     },
+    tooltip: {
+      show: true,
+      trigger: "axis",
+      axisPointer: {
+        type: "line",
+        axis: "y"
+      },
+      formatter: (params: any[]) => {
+        const indexLabel = isTimeLog
+          ? timeFormatter(params[0].axisValue, dateTimeFormat)
+          : depthFormatter(params[0].axisValue, indexUnit);
+        return (
+          `${indexLabel}<br/>` +
+          params
+            .map((p) => `${p.marker} ${p.seriesName}: ${p.value[2]}`)
+            .join("<br/>")
+        );
+      }
+    },
     xAxis: {
       type: "value",
       position: "top",
@@ -618,7 +637,7 @@ const getChartOption = (
             normalizedValue * (1 - 2 * VALUE_OFFSET_FROM_COLUMN) +
             VALUE_OFFSET_FROM_COLUMN +
             i;
-          return [offsetNormalizedValue, index];
+          return [offsetNormalizedValue, index, value]; // The 3rd value is the original value. It's not shown in the graph, used in the tooltip.
         })
         .filter((r) => r !== null);
 
