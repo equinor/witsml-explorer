@@ -40,6 +40,7 @@ namespace WitsmlExplorer.Api.Models
         CountLogDataRows,
         BatchModifyLogCurveInfo,
         DownloadLogData,
-        OffsetLogCurves
+        OffsetLogCurves,
+        MinimumDataQc
     }
 }

@@ -51,6 +51,11 @@ namespace WitsmlExplorer.Api
             app.MapDelete("/uidmapping/deletemappings/well/{wellUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);
             app.MapDelete("/uidmapping/deletemappings/well/{wellUid}/wellbore/{wellboreUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);
 
+            app.MapGet("/agent-settings", AgentSettingsHandler.GetAgentSettings, useOAuth2);
+            app.MapPost("/agent-settings", AgentSettingsHandler.CreateAgentSettings, useOAuth2);
+            app.MapPatch("/agent-settings", AgentSettingsHandler.UpdateAgentSettings, useOAuth2);
+            app.MapDelete("/agent-settings", AgentSettingsHandler.DeleteAgentSettings, useOAuth2);
+
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);
 
