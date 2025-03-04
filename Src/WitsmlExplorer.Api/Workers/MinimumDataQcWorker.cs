@@ -156,7 +156,7 @@ namespace WitsmlExplorer.Api.Workers
                 ReportItems = reportItems
             };
 
-            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Minimum datat QC for log: {job.LogReference.Uid}", jobId: job.JobInfo.Id);
+            WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Minimum data QC for log: {job.LogReference.Uid}", jobId: job.JobInfo.Id);
             return new(workerResult, null);
         }
 
