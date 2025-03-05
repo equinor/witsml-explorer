@@ -52,14 +52,13 @@ internal sealed class WitsmlMetrics
             { "objectType", witsmlType },
         };
 
-        var ct = cancellationToken ?? CancellationToken.None;
         Stopwatch timer = null;
         TResponseType response;
         try
         {
             _activeRequests.Add(1, tagList);
             timer = Stopwatch.StartNew();
-            response = await wmlsTask.WaitAsync(ct);
+            response = await wmlsTask.WaitAsync(cancellationToken ?? CancellationToken.None);
         }
         finally
         {
