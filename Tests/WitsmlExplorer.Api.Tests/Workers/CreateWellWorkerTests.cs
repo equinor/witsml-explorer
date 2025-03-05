@@ -91,7 +91,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 client.AddToStoreAsync(It.IsAny<WitsmlWells>()))
                 .Callback<WitsmlWells>(createdWells.Add)
                 .ReturnsAsync(new QueryResult(true));
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>(), null))
                 .ReturnsAsync(new WitsmlWells() { Wells = new List<WitsmlWell>() { new WitsmlWell() } });
 
             await _worker.Execute(job);

@@ -220,7 +220,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME } }.AsCollection()));
 
             _logObjectService
-                .Setup(los => los.GetLog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(los => los.GetLog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null))
                 .Returns(Task.Run(() => new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME }));
 
             var lcis = new List<LogCurveInfo>();
@@ -258,7 +258,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Returns(Task.Run(() => new List<LogObject> { new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD } }.AsCollection()));
 
             _logObjectService
-                .Setup(los => los.GetLog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(los => los.GetLog(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null))
                 .Returns(Task.Run(() => new LogObject() { Uid = "123", IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD }));
 
             var lcis = new List<LogCurveInfo>

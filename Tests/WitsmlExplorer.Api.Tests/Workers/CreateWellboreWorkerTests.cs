@@ -100,7 +100,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     client.AddToStoreAsync(It.IsAny<WitsmlWellbores>()))
                 .Callback<WitsmlWellbores>(wellbores => createdWellbores.Add(wellbores))
                 .ReturnsAsync(new QueryResult(true));
-            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>()))
+            _witsmlClient.Setup(client => client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>(), null))
                 .ReturnsAsync(new WitsmlWellbores { Wellbores = new List<WitsmlWellbore> { new WitsmlWellbore() } });
 
             await _worker.Execute(job);

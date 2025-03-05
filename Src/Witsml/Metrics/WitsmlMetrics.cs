@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Serilog;
@@ -41,7 +42,7 @@ internal sealed class WitsmlMetrics
             "witsml.requests.active",
             description: "Number of active requests");
 
-    internal async Task<TResponseType> MeasureQuery<TResponseType>(Uri serverUri, WitsmlMethod method, string witsmlType, Task<TResponseType> wmlsTask)
+    internal async Task<TResponseType> MeasureQuery<TResponseType>(Uri serverUri, WitsmlMethod method, string witsmlType, Task<TResponseType> wmlsTask, CancellationToken? cancellationToken = null)
         where TResponseType : IWitsmlResponse
     {
         var tagList = new TagList
@@ -57,7 +58,7 @@ internal sealed class WitsmlMetrics
         {
             _activeRequests.Add(1, tagList);
             timer = Stopwatch.StartNew();
-            response = await wmlsTask;
+            response = await wmlsTask.WaitAsync(cancellationToken ?? CancellationToken.None);
         }
         finally
         {

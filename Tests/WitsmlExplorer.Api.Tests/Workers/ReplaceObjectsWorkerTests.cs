@@ -118,7 +118,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetUpStoreForCopy(bool emptyResult = false)
         {
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.All)))
+                    client.GetFromStoreNullableAsync(It.Is<IWitsmlObjectList>(witsmlObjects => witsmlObjects.Objects.First().Uid == ObjectUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.All), null))
                 .ReturnsAsync(emptyResult ? GetEmptySourceObjects() : GetSourceObjects());
             SetupGetWellbore();
             CopyTestsUtils.SetupAddInStoreAsync<IWitsmlObjectList>(_witsmlClient);
@@ -127,7 +127,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupGetWellbore()
         {
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.Requested)))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.Requested), null))
                 .ReturnsAsync(new WitsmlWellbores
                 {
                     Wellbores = new List<WitsmlWellbore>

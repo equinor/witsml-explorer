@@ -108,7 +108,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_CheckWellProperties_AddsMissingProperties()
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreNullableAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>(), null))
                 .Returns(Task.FromResult(GetTestWells()));
             var properties = new List<string>
             {
@@ -144,7 +144,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_CheckWellboreProperties_AddsMissingProperties()
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreNullableAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>(), null))
                 .Returns(Task.FromResult(GetTestWellboresForWell1()));
             var properties = new List<string>
             {
@@ -180,7 +180,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_CheckRigProperties_AddsMissingProperties()
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(), It.IsAny<OptionsIn>(), null))
                 .Returns(Task.FromResult(GetAllTestRigs()));
             var properties = new List<string>
             {
@@ -215,7 +215,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_CheckMissingWellbore_AddsWellboresWithNoRigs()
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreNullableAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>(), null))
                 .Returns(Task.FromResult(GetAllTestWellbores()));
             var checks = new List<MissingDataCheck> {
                 new MissingDataCheck
@@ -237,7 +237,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_CheckMissingRig_AddsWellboresWithNoRigs()
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(), It.IsAny<OptionsIn>(), null))
                 .Returns(Task.FromResult(GetTestRigsForWell1()));
             var checks = new List<MissingDataCheck> {
                 new MissingDataCheck

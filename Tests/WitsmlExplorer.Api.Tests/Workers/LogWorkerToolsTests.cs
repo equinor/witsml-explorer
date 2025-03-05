@@ -46,7 +46,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlLog expectedLog = CreateLog();
             CreateObjectOnWellboreJob job = CreateJobTemplate(WitsmlLog.WITSML_INDEX_TYPE_MD);
             _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(expectedLog.AsItemInWitsmlList());
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly), null)).ReturnsAsync(expectedLog.AsItemInWitsmlList());
 
             var log = await LogWorkerTools.GetLog(_witsmlClient.Object, job.Object, ReturnElements.HeaderOnly);
             Assert.Equal(expectedLog.Uid, log.Uid);
@@ -60,7 +60,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             WitsmlLog expectedLog = CreateLog();
             _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(expectedLog.AsItemInWitsmlList);
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly), null)).ReturnsAsync(expectedLog.AsItemInWitsmlList);
             WitsmlLog log = LogUtils.GetSourceLogs(WitsmlLog.WITSML_INDEX_TYPE_MD, 123.11, 123.12, "Depth").Logs.First();
             LogUtils.SetupGetDepthIndexed(_witsmlClient, (logs) => logs.Logs.First().StartIndex?.Value == "123.11",
                 new() { new() { Data = "123.11,1," }, new() { Data = "123.12,,2" } });

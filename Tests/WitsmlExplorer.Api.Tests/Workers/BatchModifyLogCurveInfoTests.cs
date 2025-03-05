@@ -63,7 +63,7 @@ public class BatchModifyLogCurveInfoTests
         job.JobInfo = jobInfo;
 
         _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
             .Returns(Task.FromResult(GetTestWitsmlLogs()));
 
         List<WitsmlLogs> updatedLogs = new();

@@ -26,8 +26,8 @@ namespace WitsmlExplorer.Api.Services
     public interface ILogObjectService
     {
         Task<ICollection<LogObject>> GetLogs(string wellUid, string wellboreUid);
-        Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid);
-        Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions);
+        Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, CancellationToken? cancellationToken = null);
+        Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions, CancellationToken? cancellationToken = null);
         Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid);
         Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, IEnumerable<string> logUids);
         Task<LogData> GetMultiLogData(string wellUid, string wellboreUid, string startIndex, string endIndex, bool startIndexIsInclusive, Dictionary<string, List<string>> logMnemonics);
@@ -69,15 +69,15 @@ namespace WitsmlExplorer.Api.Services
                 }).OrderBy(log => log.Name).ToList();
         }
 
-        public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid)
+        public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, CancellationToken? cancellationToken = null)
         {
-            return await GetLog(wellUid, wellboreUid, logUid, new OptionsIn(ReturnElements.HeaderOnly));
+            return await GetLog(wellUid, wellboreUid, logUid, new OptionsIn(ReturnElements.HeaderOnly), cancellationToken);
         }
 
-        public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions)
+        public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, OptionsIn queryOptions, CancellationToken? cancellationToken = null)
         {
             WitsmlLogs query = LogQueries.GetWitsmlLogById(wellUid, wellboreUid, logUid);
-            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, queryOptions);
+            WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(query, queryOptions, cancellationToken);
             WitsmlLog witsmlLog = result.Logs.FirstOrDefault();
             if (witsmlLog == null)
             {

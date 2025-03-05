@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -351,21 +352,21 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var logDataWithoutGaps = GetTestLogDataWithoutGaps(isDepthLog);
             witsmlClient.InSequence(mockSequence)
                 .Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithIssues
+                    client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+                .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) => isLogDataWithIssues
                     ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps, isDepthLog, isIncreasing))
                     : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
 
             witsmlClient.InSequence(mockSequence)
                 .Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithIssues
+                    client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+                .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) => isLogDataWithIssues
                     ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps, isDepthLog, isIncreasing))
                     : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
 
             witsmlClient.InSequence(mockSequence)
                 .Setup(client =>
-                    client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+                    client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
                 .Returns(Task.FromResult(new WitsmlLogs() { Logs = new List<WitsmlLog>() }));
         }
 
