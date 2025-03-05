@@ -11,6 +11,7 @@ import LogObject from "models/logObject";
 import { measureToString } from "models/measure";
 import MultiLogCurveInfo from "models/multilogCurveInfo";
 import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
+import BaseReport from "../../models/reports/BaseReport.tsx";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -54,6 +55,7 @@ export const calculateIsCurveActive = (
 export const getColumns = (
   isDepthIndex: boolean,
   showOnlyPrioritizedCurves: boolean,
+  showMinimumDataQc: boolean,
   prioritizedCurves: string[],
   logObjects: Map<string, LogObject>,
   hideEmptyMnemonics: boolean,
@@ -110,7 +112,17 @@ export const getColumns = (
     { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
     { property: "traceState", label: "traceState", type: ContentType.String },
     { property: "nullValue", label: "nullValue", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String }
+    { property: "uid", label: "uid", type: ContentType.String },
+    ...(showMinimumDataQc
+      ? [
+          { property: "qcInfo", label: "qcInfo", type: ContentType.String },
+          {
+            property: "qcTimestamp",
+            label: "qcTimestamp",
+            type: ContentType.String
+          }
+        ]
+      : [])
   ];
 };
 
@@ -118,6 +130,7 @@ export const getTableData = (
   allLogs: LogObject[],
   logCurveInfoList: MultiLogCurveInfo[],
   logObjects: Map<string, LogObject>,
+  minimumQcReport: BaseReport,
   timeZone: TimeZone,
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
@@ -141,6 +154,23 @@ export const getTableData = (
     .map((logCurveInfo) => {
       if (logUid !== null) {
         logCurveInfo.logUid = logUid;
+      }
+
+      let qcInfo = "";
+      let qcTimestamp = "";
+      if (minimumQcReport?.reportItems?.length > 0) {
+        const reportItem = minimumQcReport.reportItems.find(
+          (ri) => ri.mnemonic === logCurveInfo.mnemonic
+        );
+
+        if (reportItem) {
+          qcInfo = (reportItem.qcIssues as string[]).join(", ");
+          qcTimestamp = formatDateString(
+            reportItem.timestamp,
+            timeZone,
+            dateTimeFormat
+          );
+        }
       }
 
       const logObject = logObjects.get(logCurveInfo.logUid);
@@ -188,6 +218,8 @@ export const getTableData = (
         curveDescription: logCurveInfo.curveDescription,
         isActive: isActive,
         isVisibleFunction: isVisibleFunction(isActive),
+        qcInfo,
+        qcTimestamp,
         logCurveInfo
       };
     })
