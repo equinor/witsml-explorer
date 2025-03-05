@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -309,27 +310,29 @@ namespace WitsmlExplorer.Api.Workers
 
         private string JobValidation(MinimumDataQcJob job)
         {
+            var sb = new StringBuilder("");
+
             if (job.Density == null || job.Density.Value == 0.0)
             {
-                return "Density not set.";
+                sb.Append("Density not set. ");
             }
 
             if (job.Mnemonics.IsNullOrEmpty())
             {
-                return "Job contains no mnemonics.";
+                sb.Append("Job contains no mnemonics. ");
             }
 
             if (job.Mnemonics.Count > MAX_MNEMONICS)
             {
-                return $"Job contains too many mnemonics. Mnemonic count: {job.Mnemonics.Count}";
+                sb.Append($"Job contains too many mnemonics ({job.Mnemonics.Count}). ");
             }
 
             if ((job.DepthGap == null || job.DepthGap.Value == 0.0) && (job.TimeGap == null || job.TimeGap.Value == 0))
             {
-                return "At least one of DepthGap or TimeGap must be set or greater then 0.";
+                sb.Append("At least one of DepthGap or TimeGap must be set or greater then 0.");
             }
 
-            return "";
+            return sb.ToString().TrimEnd();
         }
 
         private void DataCheck(MinimumDataQcJob job, WitsmlLog witsmlLog, bool isDepthLog, Index startIndex, Index endIndex, bool isLogIncreasing)
