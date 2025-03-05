@@ -20,14 +20,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
             var result = await agentSettingsService.GetAgentSettings();
 
-            if (result != null)
-            {
-                return TypedResults.Ok(result);
-            }
-            else
+            if (result == null)
             {
                 return TypedResults.NotFound();
             }
+
+            return TypedResults.Ok(result);
+
         }
 
         [Produces(typeof(AgentSettings))]
@@ -42,14 +41,12 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
             var result = await agentSettingsService.CreateAgentSettings(agentSettings, httpContext);
 
-            if (result != null)
-            {
-                return TypedResults.Ok(agentSettings);
-            }
-            else
+            if (result == null)
             {
                 return TypedResults.Conflict();
             }
+
+            return TypedResults.Ok(agentSettings);
         }
 
         [Produces(typeof(AgentSettings))]
@@ -64,14 +61,12 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
             var result = await agentSettingsService.UpdateAgentSettings(agentSettings, httpContext);
 
-            if (result != null)
-            {
-                return TypedResults.Ok(agentSettings);
-            }
-            else
+            if (result == null)
             {
                 return TypedResults.NotFound();
             }
+
+            return TypedResults.Ok(agentSettings);
         }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]

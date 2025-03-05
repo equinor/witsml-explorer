@@ -64,14 +64,7 @@ namespace WitsmlExplorer.Api.Services
             var server = await GetCurrentServer();
             var document = await _agentSettingsRepository.GetDocumentAsync(AgentSettingsDocument.GLOBAL_ID);
 
-            if (document != null)
-            {
-                return document.AgentSettings;
-            }
-            else
-            {
-                return null;
-            }
+            return document?.AgentSettings;
         }
 
         public async Task<AgentSettings> UpdateAgentSettings(AgentSettings agentSettings, HttpContext httpContext)
