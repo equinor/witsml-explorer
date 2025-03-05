@@ -67,7 +67,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                         queryIn.Objects.First().Uid == string.Empty &&
                         queryIn.TypeName == new WitsmlLogs().TypeName
                     ),
-                    It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly)))
+                    It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly), null))
                 .ReturnsAsync(logs);
 
             IEnumerable<ObjectOnWellbore> result = await _service.GetObjectsIdOnly(uidWell, uidWellbore, EntityType.Log);
@@ -115,7 +115,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                         queryIn.Objects.First().Uid == string.Empty &&
                         queryIn.TypeName == new WitsmlMessages().TypeName
                     ),
-                    It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly)))
+                    It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.IdOnly), null))
                 .ReturnsAsync(messages);
 
             IEnumerable<ObjectOnWellbore> result = await _service.GetObjectsIdOnly(uidWell, uidWellbore, EntityType.Message);
@@ -150,7 +150,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             _witsmlClient.Setup(client =>
                 client.GetFromStoreNullableAsync(
                     It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == objectList.TypeName),
-                    It.IsAny<OptionsIn>()))
+                    It.IsAny<OptionsIn>(),
+                    null))
                 .ReturnsAsync(objectList);
         }
 
@@ -160,7 +161,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             _witsmlClient.Setup(client =>
                 client.GetFromStoreNullableAsync(
                     It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlFluidsReports().TypeName),
-                    It.IsAny<OptionsIn>()))
+                    It.IsAny<OptionsIn>(),
+                    null))
                 .ReturnsAsync(() => null);
 
             Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
@@ -173,7 +175,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             _witsmlClient.Setup(client =>
                 client.GetFromStoreNullableAsync(
                     It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlFluidsReports().TypeName),
-                    It.IsAny<OptionsIn>()))
+                    It.IsAny<OptionsIn>(),
+                    null))
                 .Throws(new SystemException());
 
             Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
@@ -192,8 +195,9 @@ namespace WitsmlExplorer.Api.Tests.Services
 
             _witsmlClient.Setup(client =>
                 client.GetFromStoreNullableAsync(
-                    It.Is<IWitsmlObjectList>((queryIn) => queryIn.Objects.Count() == 1 && queryIn.Objects.All((o) => o is WitsmlRig)),
-                    It.Is<OptionsIn>((optionsIn) => optionsIn.ReturnElements == ReturnElements.Requested)))
+                    It.Is<IWitsmlObjectList>(queryIn => queryIn.Objects.Count() == 1 && queryIn.Objects.All(witsmlObjectOnWellbore => witsmlObjectOnWellbore is WitsmlRig)),
+                    It.Is<OptionsIn>((optionsIn) => optionsIn.ReturnElements == ReturnElements.Requested),
+                    null))
                 .ReturnsAsync(() => objectList);
 
             IEnumerable<ObjectSearchResult> result = await _service.GetObjectsByType(EntityType.Rig);
@@ -206,7 +210,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             _witsmlClient.Setup(client =>
                 client.GetFromStoreNullableAsync(
                     It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlRigs().TypeName),
-                    It.IsAny<OptionsIn>()))
+                    It.IsAny<OptionsIn>(),
+                    null))
                 .ReturnsAsync(() => null);
 
             IEnumerable<ObjectSearchResult> result = await _service.GetObjectsByType(EntityType.Rig);
@@ -229,7 +234,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(
                     It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlLogs().TypeName),
-                    It.IsAny<OptionsIn>()))
+                    It.IsAny<OptionsIn>(),
+                    null))
                 .ReturnsAsync(() => objectList)
                 .ReturnsAsync(() => objectList);
 
@@ -253,7 +259,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(
                     It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlLogs().TypeName),
-                    It.IsAny<OptionsIn>()))
+                    It.IsAny<OptionsIn>(),
+                    null))
                 .ReturnsAsync(() => objectList)
                 .ReturnsAsync(() => null);
 
@@ -274,7 +281,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             _witsmlClient.SetupSequence(client =>
                 client.GetFromStoreNullableAsync(
                     It.Is<IWitsmlObjectList>((queryIn) => queryIn.TypeName == new WitsmlLogs().TypeName),
-                    It.IsAny<OptionsIn>()))
+                    It.IsAny<OptionsIn>(),
+                    null))
                 .ReturnsAsync(() => objectList)
                 .ReturnsAsync(() => objectList);
 
