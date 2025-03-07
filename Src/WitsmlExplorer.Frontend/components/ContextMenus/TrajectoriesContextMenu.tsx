@@ -103,7 +103,8 @@ const TrajectoriesContextMenu = (
               servers,
               trajectoryReferences,
               dispatchOperation,
-              toWellboreReference(wellbore)
+              toWellboreReference(wellbore),
+              connectedServer
             )
           }
           disabled={trajectoryReferences === null}

@@ -112,7 +112,8 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               servers,
               logReferences,
               dispatchOperation,
-              toWellboreReference(wellbore)
+              toWellboreReference(wellbore),
+              connectedServer
             )
           }
           disabled={logReferences === null}
