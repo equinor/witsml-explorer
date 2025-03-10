@@ -1,4 +1,4 @@
-import { Typography } from "@equinor/eds-core-react";
+import { Button, Typography } from "@equinor/eds-core-react";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetWell } from "hooks/query/useGetWell";
@@ -8,6 +8,7 @@ import { getObjectOnWellboreProperties } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { getWellProperties } from "models/well";
 import { getWellboreProperties } from "models/wellbore";
+import Icon from "styles/Icons";
 import React from "react";
 import { useParams } from "react-router-dom";
 
@@ -42,8 +43,39 @@ const PropertiesPanel = (): React.ReactElement => {
 
   const keys = Array.from(properties.keys());
 
+  const copyToClipboard = async (key: string) => {
+    await navigator.clipboard.writeText(key);
+  };
+
+  const copyAllPropertiesToClipboard = async () => {
+    let tmpString = "";
+    properties.forEach(function (value, key) {
+      if (key.indexOf("UID") === 0) {
+        tmpString += key.replace("UID", "") + " Uid: " + value + ", ";
+      } else {
+        tmpString += key + " Name: " + value + ", ";
+      }
+    });
+    const resultString =
+      tmpString.length > 1
+        ? tmpString.slice(0, tmpString.length - 2)
+        : tmpString;
+    await navigator.clipboard.writeText(resultString);
+  };
+
   return (
     <>
+      {" "}
+      {keys.length && (
+        <Button
+          title="Copy all properties to clipboard"
+          onClick={() => copyAllPropertiesToClipboard()}
+          variant="ghost"
+        >
+          <Icon name="copy" />
+          All
+        </Button>
+      )}
       {keys.length ? (
         keys.map((key: string) => (
           <React.Fragment key={key}>
@@ -55,6 +87,7 @@ const PropertiesPanel = (): React.ReactElement => {
               }}
               style={{
                 paddingRight: "0.5rem",
+                paddingLeft: "0.5rem",
                 maxWidth: 100,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -72,7 +105,6 @@ const PropertiesPanel = (): React.ReactElement => {
                 fontWeight: 400
               }}
               style={{
-                paddingRight: "1.5rem",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap"
@@ -80,6 +112,15 @@ const PropertiesPanel = (): React.ReactElement => {
             >
               {properties.get(key)}
             </Typography>
+            <Button
+              variant="ghost_icon"
+              key={"copy_button_" + key}
+              aria-label="Copy value to clipboard"
+              title="Copy value to clipboard"
+              onClick={() => copyToClipboard(properties.get(key))}
+            >
+              <Icon name="copy" />
+            </Button>
           </React.Fragment>
         ))
       ) : (
