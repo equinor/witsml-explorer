@@ -234,7 +234,7 @@ namespace WitsmlExplorer.Api.Workers
 
             var firstIndex = (isLogIncreasing ? startIndex : endIndex) as DateTimeIndex;
             var indexSpan = ((isLogIncreasing ? endIndex - startIndex : startIndex - endIndex) as TimeSpanIndex).Value.TotalHours;
-            var maxGap = job.TimeGap.Value * 1000;
+            var maxGap = job.TimeGap.Value;
 
             foreach (var logCurve in logCurvesToCheck)
             {

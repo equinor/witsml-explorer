@@ -134,7 +134,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task MinDataQc_Time_WithGaps_WithLowDensity(bool isIncreasing)
         {
             var testStart = DateTime.Now;
-            var job = GetMinimumDataQcJob(new LogObject(), ["BPOS", "SPM1", "SPM2"], 3000.0, null, 2);
+            var job = GetMinimumDataQcJob(new LogObject(), ["BPOS", "SPM1", "SPM2"], 3000.0, null, 2000);
             var jobInfo = new JobInfo();
             job.JobInfo = jobInfo;
 
@@ -235,7 +235,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task MinDataQc_Time_NoGaps_OkDensity(bool isIncreasing)
         {
             var testStart = DateTime.Now;
-            var job = GetMinimumDataQcJob(new LogObject(), ["BPOS", "SPM1", "SPM2"], 3000.0, null, 2);
+            var job = GetMinimumDataQcJob(new LogObject(), ["BPOS", "SPM1", "SPM2"], 3000.0, null, 2000);
             var jobInfo = new JobInfo();
             job.JobInfo = jobInfo;
 
