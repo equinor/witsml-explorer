@@ -15,9 +15,7 @@ public abstract class WitsmlClientBase
     {
         EndpointAddress endpointAddress = new(options.Hostname);
 
-        Binding serviceBinding = options.ClientCertificate == null
-            ? CreateBasicBinding(options.RequestTimeOut)
-            : CreateCertificateAndBasicBinding();
+        Binding serviceBinding = CreateBinding(options);
 
         var client = new StoreSoapPortClient(serviceBinding, endpointAddress);
         client.ClientCredentials.UserName.UserName = options.Credentials.Username;
@@ -43,6 +41,42 @@ public abstract class WitsmlClientBase
             Security =
             {
                 Mode = BasicHttpsSecurityMode.Transport,
+                Transport =
+                {
+                    ClientCredentialType = HttpClientCredentialType.Basic
+                }
+            },
+            MaxReceivedMessageSize = int.MaxValue,
+            SendTimeout = requestTimeout
+        };
+    }
+
+    private static Binding CreateBinding(WitsmlClientOptions options)
+    {
+        Uri uri = new(options.Hostname);
+        var enableHttp = options.EnableHttp;
+        if (uri.Scheme == "http" && enableHttp)
+        {
+            return CreateBasicHttpBinding(options.RequestTimeOut);
+        }
+        if (uri.Scheme == "https" && options.ClientCertificate == null)
+        {
+            return CreateBasicBinding(options.RequestTimeOut);
+        }
+        if (uri.Scheme == "https" && options.ClientCertificate != null)
+        {
+            return CreateCertificateAndBasicBinding();
+        }
+        throw new NotSupportedException($"No binding supported for the client options '{options}'.");
+    }
+
+    private static BasicHttpBinding CreateBasicHttpBinding(TimeSpan requestTimeout)
+    {
+        return new BasicHttpBinding
+        {
+            Security =
+            {
+                Mode = BasicHttpSecurityMode.TransportCredentialOnly,
                 Transport =
                 {
                     ClientCredentialType = HttpClientCredentialType.Basic

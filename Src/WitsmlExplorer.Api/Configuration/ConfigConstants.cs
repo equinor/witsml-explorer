@@ -8,5 +8,6 @@ namespace WitsmlExplorer.Api.Configuration
         public static readonly string LogQueries = "LogQueries";
         public static readonly string NotificationsKey = "NotificationsKey";
         public static readonly string IsDesktopApp = "IsDesktopApp";
+        public static readonly string EnableHttp = "EnableHttp";
     }
 }

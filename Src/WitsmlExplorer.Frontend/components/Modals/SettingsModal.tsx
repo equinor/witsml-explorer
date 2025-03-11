@@ -216,6 +216,7 @@ const SettingsModal = (): React.ReactElement => {
             <div style={alignLayout}>
               <RowIcon name="edit" />
               <div style={alignLayout}>
+                <label style={alignLayout}>Decimal precision:</label>
                 <label style={alignLayout}>
                   <Radio
                     name="group"
@@ -234,7 +235,7 @@ const SettingsModal = (): React.ReactElement => {
                     }
                     onChange={onChangeDecimalPreference}
                   />
-                  Decimals
+                  Custom
                 </label>
                 {checkedDecimalPreference === DecimalPreference.Decimal && (
                   <TextField
