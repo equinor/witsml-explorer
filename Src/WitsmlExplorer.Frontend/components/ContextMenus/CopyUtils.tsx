@@ -160,8 +160,8 @@ export const copyComponents = async (
 };
 
 export const replaceObjects = async (
-  targetServer: Server,
   sourceServer: Server,
+  targetServer: Server,
   toCopy: ObjectOnWellbore[],
   toDelete: ObjectOnWellbore[],
   targetWellbore: WellboreReference,
@@ -171,7 +171,7 @@ export const replaceObjects = async (
   dispatchOperation({ type: OperationType.HideContextMenu });
   dispatchOperation({ type: OperationType.HideModal });
   const deleteJob: DeleteObjectsJob = {
-    toDelete: toObjectReferences(toDelete, objectType)
+    toDelete: toObjectReferences(toDelete, objectType, targetServer.url)
   };
   const copyJob = createCopyJob(
     sourceServer,
