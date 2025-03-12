@@ -9,7 +9,7 @@ import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
 import { useOperationState } from "hooks/useOperationState";
 import { useWellFilter } from "hooks/useWellFilter";
-import { FC, SyntheticEvent, useEffect, useRef } from "react";
+import { FC, SyntheticEvent, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
@@ -18,6 +18,8 @@ import { Stack } from "@mui/material";
 import SidebarVirtualItem from "./SidebarVirtualItem";
 import { calculateWellNodeId } from "../../models/wellbore.tsx";
 import { isInAnyCompactMode } from "../../tools/themeHelpers.ts";
+import UidMappingService from "../../services/uidMappingService.tsx";
+import { UidMappingBasicInfo } from "../../models/uidMapping.tsx";
 
 const Sidebar: FC = () => {
   const { connectedServer } = useConnectedServer();
@@ -31,6 +33,11 @@ const Sidebar: FC = () => {
   const isCompactMode = isInAnyCompactMode(theme);
   const filteredWells = useWellFilter(wells) || [];
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isFetchingUidMappingBasicInfos, setIsFetchingUidMappingBasicInfos] =
+    useState<boolean>(true);
+  const [uidMappingBasicInfos, setUidMappingBasicInfos] = useState<
+    UidMappingBasicInfo[]
+  >([]);
   const virtualizer = useVirtualizer({
     getScrollElement: () => containerRef.current,
     count: filteredWells?.length,
@@ -52,6 +59,16 @@ const Sidebar: FC = () => {
     }
   }, [filteredWells]);
 
+  useEffect(() => {
+    if (connectedServer) {
+      UidMappingService.GetUidMappingBasicInfos()
+        .then((infos) => {
+          setUidMappingBasicInfos(infos);
+        })
+        .finally(() => setIsFetchingUidMappingBasicInfos(false));
+    }
+  }, [connectedServer]);
+
   const onNodeToggle = (_: SyntheticEvent, nodeIds: string[]) => {
     if (nodeIds !== expandedTreeNodes) {
       dispatchSidebar({
@@ -61,7 +78,7 @@ const Sidebar: FC = () => {
     }
   };
 
-  if (isFetching)
+  if (isFetching || isFetchingUidMappingBasicInfos)
     return (
       <>
         <SearchFilter />
@@ -109,6 +126,9 @@ const Sidebar: FC = () => {
                     key={`item_${virtualItem.key}`}
                     virtualItem={virtualItem}
                     well={well}
+                    uidMappingBasicInfos={uidMappingBasicInfos?.filter(
+                      (i) => i.sourceWellId === well.uid
+                    )}
                     virtualizer={virtualizer}
                     isExpanded={expandedTreeNodes.includes(
                       calculateWellNodeId(well.uid)

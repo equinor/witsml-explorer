@@ -1,7 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using LiteDB;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +20,7 @@ namespace WitsmlExplorer.Api.Services
         Task<UidMapping> CreateUidMapping(UidMapping uidMapping, HttpContext httpContext);
         Task<UidMapping> UpdateUidMapping(UidMapping uidMapping, HttpContext httpContext);
         Task<ICollection<UidMapping>> QueryUidMapping(UidMappingDbQuery query);
+        Task<ICollection<UidMappingBasicInfo>> GetUidMappingBasicInfos();
         Task<bool> DeleteUidMapping(UidMappingDbQuery query);
         Task<bool> DeleteUidMappings(string wellUid = null, string wellboreUid = null);
     }
@@ -208,6 +212,38 @@ namespace WitsmlExplorer.Api.Services
             }
 
             return false;
+        }
+
+        public async Task<ICollection<UidMappingBasicInfo>> GetUidMappingBasicInfos()
+        {
+            var servers = await _witsmlServerRepository.GetDocumentsAsync();
+            var serverUri = _witsmlClient.GetServerHostname();
+            var server = servers?.FirstOrDefault(s => s.Url.Equals(serverUri));
+
+            var uidMappingInfos = new List<UidMappingBasicInfo>();
+
+            if (server != null)
+            {
+                foreach (var otherServer in servers)
+                {
+                    if (otherServer.Id != server.Id)
+                    {
+                        var mappings = await _mappingRepository.GetDocumentAsync(new UidMappingKey(server.Id, otherServer.Id).ToString());
+
+                        if (mappings?.MappingCollection != null)
+                        {
+                            uidMappingInfos.AddRange(mappings.MappingCollection.Select(m => new UidMappingBasicInfo
+                            {
+                                SourceWellId = m.SourceWellId,
+                                SourceWellboreId = m.SourceWellboreId,
+                                TargetServerId = otherServer.Id,
+                                TargetServerName = otherServer.Name
+                            }));
+                        }
+                    }
+                }
+            }
+            return uidMappingInfos;
         }
 
         private async Task<string> GetUsername(Guid serverId, HttpContext httpContext)
