@@ -307,7 +307,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private void SetupLog(string indexType, Index startIndex, Index endIndex)
         {
             _witsmlClient.Setup(client =>
-                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly)))
+                    client.GetFromStoreAsync(It.Is<WitsmlLogs>(witsmlLogs => witsmlLogs.Logs.First().Uid == LogUid), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly), null))
                 .ReturnsAsync(GetLogs(indexType, startIndex, endIndex));
         }
 
