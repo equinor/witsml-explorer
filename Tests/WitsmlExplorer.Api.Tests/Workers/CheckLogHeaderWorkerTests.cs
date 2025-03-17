@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -227,8 +228,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private static void SetupClient(Mock<IWitsmlClient> witsmlClient, string indexType, bool shouldBeConsistent)
         {
             witsmlClient.Setup(client =>
-                client.GetFromStoreNullableAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Returns((WitsmlLogs logs, OptionsIn options) =>
+                client.GetFromStoreNullableAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+                .Returns((WitsmlLogs logs, OptionsIn options, CancellationToken? _) =>
             {
                 if (options.MaxReturnNodes == 1)
                 {

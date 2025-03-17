@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Moq;
@@ -68,8 +69,8 @@ namespace WitsmlExplorer.Api.Tests.Services
                 }.AsItemInList()
             };
             _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlMessages>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.Requested)))
-                .Callback<WitsmlMessages, OptionsIn>((_, _) => { })
+                client.GetFromStoreAsync(It.IsAny<WitsmlMessages>(), It.Is<OptionsIn>(ops => ops.ReturnElements == ReturnElements.Requested), null))
+                .Callback<WitsmlMessages, OptionsIn, CancellationToken?>((_, _, _) => { })
                 .ReturnsAsync(messages);
 
             IEnumerable<MessageObject> result = await _service.GetMessageObjects("", "");

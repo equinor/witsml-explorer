@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,6 +108,11 @@ namespace WitsmlExplorer.Api.Workers
                 var logColumns = logData?.MnemonicList.Split(CommonConstants.DataSeparator).Select((value, index) => new WitsmlLogColumns { Index = index, Mnemonic = value }).ToList();
                 while (logData != null)
                 {
+                    if (cancellationToken is { IsCancellationRequested: true })
+                    {
+                        return GetCancellationWorkerResult();
+                    }
+
                     logDataRows.AddRange(logData.Data?.Select(x => x.Data.Split(CommonConstants.DataSeparator)) ?? Array.Empty<string[]>());
                     logData = await logDataReader.GetNextBatch();
                 }
@@ -137,12 +143,17 @@ namespace WitsmlExplorer.Api.Workers
                     if (isDepthLog)
                     {
                         reportItems.AddRange(
-                            DepthQc(job, logCurvesToCheck, logColumns, isLogIncreasing, startIndex, endIndex, logDataRows, mnemonicCurveIndex));
+                            DepthQc(job, logCurvesToCheck, logColumns, isLogIncreasing, startIndex, endIndex, logDataRows, mnemonicCurveIndex, cancellationToken));
                     }
                     else
                     {
                         reportItems.AddRange(
-                            DateTimeQc(job, logCurvesToCheck, logColumns, isLogIncreasing, startIndex, endIndex, logDataRows, mnemonicCurveIndex));
+                            DateTimeQc(job, logCurvesToCheck, logColumns, isLogIncreasing, startIndex, endIndex, logDataRows, mnemonicCurveIndex, cancellationToken));
+                    }
+
+                    if (cancellationToken is { IsCancellationRequested: true })
+                    {
+                        return GetCancellationWorkerResult();
                     }
                 }
             }
@@ -169,7 +180,8 @@ namespace WitsmlExplorer.Api.Workers
             Index startIndex,
             Index endIndex,
             List<string[]> logDataRows,
-            int mnemonicCurveIndex)
+            int mnemonicCurveIndex,
+            CancellationToken? cancellationToken = null)
         {
             var reportItems = new List<MinimumDataQcReportItem>();
 
@@ -187,6 +199,11 @@ namespace WitsmlExplorer.Api.Workers
 
                 foreach (var logDataRow in logDataRows)
                 {
+                    if (cancellationToken is { IsCancellationRequested: true })
+                    {
+                        return new List<MinimumDataQcReportItem>();
+                    }
+
                     var dataPoint = logDataRow[logCurveIndex];
 
                     if (!dataPoint.IsNullOrEmpty())
@@ -228,13 +245,14 @@ namespace WitsmlExplorer.Api.Workers
             Index startIndex,
             Index endIndex,
             List<string[]> logDataRows,
-            int mnemonicCurveIndex)
+            int mnemonicCurveIndex,
+            CancellationToken? cancellationToken = null)
         {
             var reportItems = new List<MinimumDataQcReportItem>();
 
             var firstIndex = (isLogIncreasing ? startIndex : endIndex) as DateTimeIndex;
             var indexSpan = ((isLogIncreasing ? endIndex - startIndex : startIndex - endIndex) as TimeSpanIndex).Value.TotalHours;
-            var maxGap = job.TimeGap.Value * 1000;
+            var maxGap = job.TimeGap.Value;
 
             foreach (var logCurve in logCurvesToCheck)
             {
@@ -246,6 +264,11 @@ namespace WitsmlExplorer.Api.Workers
 
                 foreach (var logDataRow in logDataRows)
                 {
+                    if (cancellationToken is { IsCancellationRequested: true })
+                    {
+                        return new List<MinimumDataQcReportItem>();
+                    }
+
                     var dataPoint = logDataRow[logCurveIndex];
 
                     if (!dataPoint.IsNullOrEmpty())
@@ -277,6 +300,7 @@ namespace WitsmlExplorer.Api.Workers
 
             return reportItems;
         }
+
         private MinimumDataQcReportItem CreateReportItem(string mnemonic, int dataPoints, bool largeGapFound, double indexSpan, double minDensity)
         {
             var reportItem = new MinimumDataQcReportItem
@@ -362,6 +386,12 @@ namespace WitsmlExplorer.Api.Workers
         {
             Logger.LogInformation(message);
             return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message), null);
+        }
+
+        private (WorkerResult WorkerResult, RefreshAction RefreshAction) GetCancellationWorkerResult()
+        {
+            Logger.LogInformation(CancellationMessage());
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, CancellationMessage(), CancellationReason()), null);
         }
 
         private struct WitsmlLogColumns
