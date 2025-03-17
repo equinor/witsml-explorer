@@ -259,6 +259,9 @@ const Content = styled(Dialog.CustomContent)<{
   h2[class*="AccordionHeader__StyledAccordionHeader"] {
     background-color: transparent;
     border: 1px solid #575d63;
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
   }
 
   div[class*="AccordionPanel__StyledAccordionPanel"] {
@@ -267,6 +270,9 @@ const Content = styled(Dialog.CustomContent)<{
     border-bottom: 1px solid #575d63;
     border-left: 1px solid #575d63;
     border-right: 1px solid #575d63;
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
   }
 
   ${({ colors }) =>
