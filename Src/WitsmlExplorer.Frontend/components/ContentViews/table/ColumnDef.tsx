@@ -154,7 +154,7 @@ const addDecimalPreference = (
         cell: (props) => {
           const value = props.getValue();
           const match = value
-            ? value.toString().match(/([\d.]+)\s*([^\d.]*)/)
+            ? value.toString().match(/(^-?[\d.]+)\s*([^\d.]*)/)
             : null;
           if (!match) return value;
           const numericValue = parseFloat(match[1]);
