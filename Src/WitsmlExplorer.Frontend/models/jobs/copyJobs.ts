@@ -32,3 +32,8 @@ export interface CopyWithParentJob extends CopyObjectsJob {
   copyWellJob?: CopyWellJob;
   copyWellboreJob?: CopyWellboreJob;
 }
+
+export interface CopyWellboreWitObjectsJob {
+  source: WellboreReference;
+  target: WellboreReference;
+}
