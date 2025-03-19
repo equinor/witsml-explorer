@@ -9,7 +9,7 @@ import { SidebarActionType } from "contexts/sidebarReducer";
 import { useGetWells } from "hooks/query/useGetWells";
 import { useOperationState } from "hooks/useOperationState";
 import { useWellFilter } from "hooks/useWellFilter";
-import { FC, SyntheticEvent, useEffect, useRef, useState } from "react";
+import { FC, SyntheticEvent, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "styles/Icons";
@@ -18,8 +18,9 @@ import { Stack } from "@mui/material";
 import SidebarVirtualItem from "./SidebarVirtualItem";
 import { calculateWellNodeId } from "../../models/wellbore.tsx";
 import { isInAnyCompactMode } from "../../tools/themeHelpers.ts";
-import UidMappingService from "../../services/uidMappingService.tsx";
-import { UidMappingBasicInfo } from "../../models/uidMapping.tsx";
+import { useGetUidMappingBasicInfos } from "../../hooks/query/useGetUidMappingBasicInfos.tsx";
+import { refreshUidMappingBasicInfos } from "../../hooks/query/queryRefreshHelpers.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Sidebar: FC = () => {
   const { connectedServer } = useConnectedServer();
@@ -30,14 +31,12 @@ const Sidebar: FC = () => {
   const {
     operationState: { colors, theme }
   } = useOperationState();
+  const queryClient = useQueryClient();
+  const { uidMappingBasicInfos, isFetching: isFetchingUidMappingBasicInfos } =
+    useGetUidMappingBasicInfos();
   const isCompactMode = isInAnyCompactMode(theme);
   const filteredWells = useWellFilter(wells) || [];
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isFetchingUidMappingBasicInfos, setIsFetchingUidMappingBasicInfos] =
-    useState<boolean>(true);
-  const [uidMappingBasicInfos, setUidMappingBasicInfos] = useState<
-    UidMappingBasicInfo[]
-  >([]);
   const virtualizer = useVirtualizer({
     getScrollElement: () => containerRef.current,
     count: filteredWells?.length,
@@ -61,11 +60,7 @@ const Sidebar: FC = () => {
 
   useEffect(() => {
     if (connectedServer) {
-      UidMappingService.GetUidMappingBasicInfos()
-        .then((infos) => {
-          setUidMappingBasicInfos(infos);
-        })
-        .finally(() => setIsFetchingUidMappingBasicInfos(false));
+      refreshUidMappingBasicInfos(queryClient);
     }
   }, [connectedServer]);
 

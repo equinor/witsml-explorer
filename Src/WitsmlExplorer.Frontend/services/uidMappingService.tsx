@@ -40,7 +40,7 @@ export default class UidMappingService {
     }
   }
 
-  public static async GetUidMappingBasicInfos(
+  public static async getUidMappingBasicInfos(
     abortSignal?: AbortSignal
   ): Promise<UidMappingBasicInfo[]> {
     const response = await ApiClient.get(

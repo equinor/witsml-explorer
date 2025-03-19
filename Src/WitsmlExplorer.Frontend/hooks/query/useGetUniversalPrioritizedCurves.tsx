@@ -22,7 +22,7 @@ type UniversalPrioritizedCurvesQueryResult = Omit<
   universalPrioritizedCurves: string[];
 };
 
-export const useUniversalPrioritizedCurves = (
+export const useGetUniversalPrioritizedCurves = (
   options?: QueryOptions
 ): UniversalPrioritizedCurvesQueryResult => {
   const { data, ...state } = useQuery<string[]>(

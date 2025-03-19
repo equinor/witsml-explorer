@@ -37,7 +37,7 @@ type LocalPrioritizedCurvesQueryResult = Omit<
   localPrioritizedCurves: string[];
 };
 
-export const useLocalPrioritizedCurves = (
+export const useGetLocalPrioritizedCurves = (
   wellUid: string,
   wellboreUid: string,
   options?: QueryOptions

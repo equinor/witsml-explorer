@@ -38,7 +38,6 @@ import styled from "styled-components";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
 import { UidMappingBasicInfo } from "../../models/uidMapping.tsx";
 import { Icon, Tooltip } from "@equinor/eds-core-react";
-import { Colors } from "../../styles/Colors.tsx";
 
 interface WellboreItemProps {
   wellUid: string;
@@ -253,18 +252,16 @@ export default function WellboreItem({
           ObjectContextMenu={WbGeometryObjectContextMenu}
         />
       </TreeItem>
-      <StatusIconsLayout colors={colors}>
+      <StatusIconsLayout>
         {!!uidMappingBasicInfos && uidMappingBasicInfos.length > 0 && (
-          <div>
-            <Tooltip
-              title={
-                "UID mapped on servers: " +
-                uidMappingBasicInfos.map((i) => i.targetServerName).join(", ")
-              }
-            >
-              <Icon name="link" color={colors.text.staticIconsTertiary} />
-            </Tooltip>
-          </div>
+          <Tooltip
+            title={
+              "UID mapped on servers: " +
+              uidMappingBasicInfos.map((i) => i.targetServerName).join(", ")
+            }
+          >
+            <Icon name="link" color={colors.text.staticIconsTertiary} />
+          </Tooltip>
         )}
         <WellIndicator
           themeMode={theme}
@@ -283,10 +280,9 @@ const WellboreLayout = styled.div`
   align-content: stretch;
 `;
 
-const StatusIconsLayout = styled.div<{
-  colors: Colors;
-}>`
-  display: flex;
-  gap: 0.25rem;
+const StatusIconsLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2rem;
   justify-content: center;
 `;

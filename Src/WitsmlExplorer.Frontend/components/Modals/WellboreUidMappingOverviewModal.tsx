@@ -22,6 +22,8 @@ import WellboreUidMappingModal, {
 } from "./WellboreUidMappingModal.tsx";
 import { DisplayModalAction } from "../../contexts/operationStateReducer.tsx";
 import { calculateWellboreNodeId } from "../../models/wellbore.tsx";
+import { refreshUidMappingBasicInfos } from "../../hooks/query/queryRefreshHelpers.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UidMappingRow extends ContentTableRow {
   sourceWellId: string;
@@ -42,6 +44,7 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
     dispatchOperation,
     operationState: { colors }
   } = useOperationState();
+  const queryClient = useQueryClient();
 
   const [sourceServerValue, setSourceServerValue] = useState<Server>(undefined);
   const [targetServerValue, setTargetServerValue] = useState<Server>(undefined);
@@ -192,6 +195,7 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
 
         await UidMappingService.removeUidMapping(deleteQuery);
       }
+      refreshUidMappingBasicInfos(queryClient);
       loadMappings();
     }
   };
