@@ -8,7 +8,7 @@ import ComponentReferences, {
 import { CopyComponentsJob, CopyObjectsJob } from "models/jobs/copyJobs";
 import ObjectReference from "models/jobs/objectReference";
 import ObjectReferences from "models/jobs/objectReferences";
-import WellboreReference from "models/jobs/wellboreReference";
+import WellboreReference, { toWellboreReference } from "models/jobs/wellboreReference";
 import ObjectOnWellbore, {
   toObjectReference,
   toObjectReferences
@@ -21,6 +21,9 @@ import ObjectService from "services/objectService";
 import { DeleteObjectsJob } from "models/jobs/deleteJobs";
 import { ReplaceObjectsJob } from "models/jobs/replaceObjectsJob";
 import LogObject from "models/logObject";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
+import WellReference from "models/jobs/wellReference";
 
 export const onClickPaste = (
   servers: Server[],
@@ -127,6 +130,24 @@ export const pasteComponents = async (
   onClickPaste(servers, sourceReferences?.serverUrl, orderCopyJob);
 };
 
+export const pasteWellbore = async (
+  servers: Server[],
+  sourceReferences: ComponentReferences,
+  dispatchOperation: DispatchOperation,
+  target: Well
+) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  const orderCopyJob = () => {
+    const copyJob: CopyWelboreJob = {
+      source: sourceReferences,
+      target: targetReference
+    };
+    JobService.orderJob(JobType.CopyWellbore, copyJob);
+  };
+
+  onClickPaste(servers, sourceReferences?.serverUrl, orderCopyJob);
+};
+
 export const copyObjectOnWellbore = async (
   selectedServer: Server,
   objectsOnWellbore: ObjectOnWellbore[],
@@ -140,6 +161,19 @@ export const copyObjectOnWellbore = async (
     selectedServer.url
   );
   await navigator.clipboard.writeText(JSON.stringify(objectReferences));
+};
+
+
+export const copyWellbore = async (
+  wellbore: Wellbore,
+  connectedServer: Server,
+  dispatchOperation: DispatchOperation
+) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  const wellboreReference: WellboreReference = toWellboreReference(
+    wellbore
+  );
+  await navigator.clipboard.writeText(JSON.stringify(wellboreReference));
 };
 
 export const copyComponents = async (
@@ -158,6 +192,8 @@ export const copyComponents = async (
   );
   await navigator.clipboard.writeText(JSON.stringify(componentReferences));
 };
+
+
 
 export const replaceObjects = async (
   sourceServer: Server,
