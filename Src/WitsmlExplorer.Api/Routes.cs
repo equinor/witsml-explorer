@@ -47,6 +47,7 @@ namespace WitsmlExplorer.Api
             app.MapPost("/uidmapping/", UidMappingHandler.CreateUidMapping, useOAuth2);
             app.MapPatch("/uidmapping/", UidMappingHandler.UpdateUidMapping, useOAuth2);
             app.MapPost("/uidmapping/query/", UidMappingHandler.QueryUidMapping, useOAuth2);
+            app.MapGet("/uidmapping/basicinfos/", UidMappingHandler.GetUidMappingBasicInfos, useOAuth2);
             app.MapPost("/uidmapping/deletemapping/", UidMappingHandler.DeleteUidMapping, useOAuth2);
             app.MapDelete("/uidmapping/deletemappings/well/{wellUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);
             app.MapDelete("/uidmapping/deletemappings/well/{wellUid}/wellbore/{wellboreUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);

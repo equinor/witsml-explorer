@@ -67,8 +67,8 @@ import CopyMnemonicsModal, {
 import MinimumDataQcModal, {
   MinimumDataQcModalProps
 } from "../Modals/MinimumDataQcModal.tsx";
-import { useLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
-import { useUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
+import { useGetLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
+import { useGetUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
 import AgentSettingsModal from "../Modals/AgentSettingsModal.tsx";
 
 const LogObjectContextMenu = (
@@ -81,12 +81,12 @@ const LogObjectContextMenu = (
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
-  const { localPrioritizedCurves } = useLocalPrioritizedCurves(
+  const { localPrioritizedCurves } = useGetLocalPrioritizedCurves(
     checkedObjects[0].wellUid,
     checkedObjects[0].wellboreUid,
     { placeholderData: [] }
   );
-  const { universalPrioritizedCurves } = useUniversalPrioritizedCurves({
+  const { universalPrioritizedCurves } = useGetUniversalPrioritizedCurves({
     placeholderData: []
   });
   const filteredServers = useServerFilter(servers);

@@ -36,12 +36,15 @@ import { MouseEvent } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
+import { UidMappingBasicInfo } from "../../models/uidMapping.tsx";
+import { Icon, Tooltip } from "@equinor/eds-core-react";
 
 interface WellboreItemProps {
   wellUid: string;
   wellboreUid: string;
   selected: boolean;
   nodeId: string;
+  uidMappingBasicInfos: UidMappingBasicInfo[];
 }
 
 type ContextEventType = MouseEvent<HTMLLIElement>;
@@ -55,7 +58,8 @@ export default function WellboreItem({
   wellUid,
   wellboreUid,
   selected,
-  nodeId
+  nodeId,
+  uidMappingBasicInfos
 }: WellboreItemProps) {
   const { servers } = useGetServers();
   const {
@@ -248,18 +252,37 @@ export default function WellboreItem({
           ObjectContextMenu={WbGeometryObjectContextMenu}
         />
       </TreeItem>
-      <WellIndicator
-        themeMode={theme}
-        active={wellbore?.isActive}
-        colors={colors}
-      />
+      <StatusIconsLayout>
+        {!!uidMappingBasicInfos && uidMappingBasicInfos.length > 0 && (
+          <Tooltip
+            title={
+              "UID mapped on servers: " +
+              uidMappingBasicInfos.map((i) => i.targetServerName).join(", ")
+            }
+          >
+            <Icon name="link" color={colors.text.staticIconsTertiary} />
+          </Tooltip>
+        )}
+        <WellIndicator
+          themeMode={theme}
+          active={wellbore?.isActive}
+          colors={colors}
+        />
+      </StatusIconsLayout>
     </WellboreLayout>
   );
 }
 
 const WellboreLayout = styled.div`
   display: grid;
-  grid-template-columns: 1fr 0px;
+  grid-template-columns: 1fr 10px;
   justify-content: center;
   align-content: stretch;
+`;
+
+const StatusIconsLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.2rem;
+  justify-content: center;
 `;

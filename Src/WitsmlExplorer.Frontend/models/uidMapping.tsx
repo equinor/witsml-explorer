@@ -18,3 +18,10 @@ export type UidMappingDbQuery = Required<
       "sourceWellId" | "sourceWellboreId" | "targetWellId" | "targetWellboreId"
     >
   >;
+
+export interface UidMappingBasicInfo {
+  sourceWellId: string;
+  sourceWellboreId: string;
+  targetServerId: string;
+  targetServerName: string;
+}

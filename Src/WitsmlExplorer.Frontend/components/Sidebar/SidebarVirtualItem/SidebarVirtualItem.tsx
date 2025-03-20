@@ -6,13 +6,15 @@ import { WellIndicator } from "../../StyledComponents/WellIndicator.tsx";
 import { Divider } from "@equinor/eds-core-react";
 import styled from "styled-components";
 import WellItem from "../WellItem";
+import { UidMappingBasicInfo } from "../../../models/uidMapping.tsx";
 
 const SidebarVirtualItem: FC<{
   virtualItem: VirtualItem<HTMLDivElement>;
   well: Well;
+  uidMappingBasicInfos: UidMappingBasicInfo[];
   virtualizer: Virtualizer<HTMLDivElement, Element>;
   isExpanded: boolean;
-}> = ({ virtualItem, well, virtualizer, isExpanded }) => {
+}> = ({ virtualItem, well, uidMappingBasicInfos, virtualizer, isExpanded }) => {
   const {
     operationState: { colors, theme }
   } = useOperationState();
@@ -30,7 +32,10 @@ const SidebarVirtualItem: FC<{
       virtualItem={virtualItem}
     >
       <WellListing>
-        <WellItem wellUid={well.uid} />
+        <WellItem
+          wellUid={well.uid}
+          uidMappingBasicInfos={uidMappingBasicInfos}
+        />
         <WellIndicator
           themeMode={theme}
           active={well.isActive}

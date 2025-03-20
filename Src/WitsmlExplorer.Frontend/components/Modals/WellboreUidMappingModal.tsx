@@ -28,6 +28,8 @@ import WellWellboreTree, {
   WellboreTreeItem,
   WellTreeItem
 } from "../WellWellboreTree.tsx";
+import { refreshUidMappingBasicInfos } from "../../hooks/query/queryRefreshHelpers.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface WellboreUidMappingModalProps {
   wellbore: Wellbore;
@@ -45,6 +47,7 @@ const WellboreUidMappingModal = (
     operationState: { colors }
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
+  const queryClient = useQueryClient();
 
   const { wells, isFetching: isFetchingWells } = useGetWells(targetServer, {
     placeholderData: []
@@ -202,6 +205,8 @@ const WellboreUidMappingModal = (
       } else {
         await UidMappingService.addUidMapping(uidMapping);
       }
+
+      refreshUidMappingBasicInfos(queryClient);
 
       if (onModalClose) {
         onModalClose();

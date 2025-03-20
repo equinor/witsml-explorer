@@ -15,3 +15,4 @@ export const QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES =
 export const QUERY_KEY_LOCAL_PRIORITIZED_CURVES = "universalLocalCurves";
 export const QUERY_KEY_JOB_INFO = "jobInfo";
 export const QUERY_KEY_AGENT_SETTINGS = "agentSettings";
+export const QUERY_KEY_UID_MAPPING_BASIC_INFOS = "uidMappingBasicInfos";
