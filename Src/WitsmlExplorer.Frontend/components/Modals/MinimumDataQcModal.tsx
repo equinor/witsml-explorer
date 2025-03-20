@@ -91,7 +91,7 @@ const MinimumDataQcModal = (
         heading={`Minimum Data QC Params`}
         confirmText={`Submit`}
         content={
-          <ContentLayout>
+          <ContentLayout colors={colors}>
             {isDepthLog ? (
               <ContentItem>
                 <Label label="Gap" />
@@ -150,11 +150,16 @@ const MinimumDataQcModal = (
   );
 };
 
-const ContentLayout = styled.div`
+const ContentLayout = styled.div<{
+  colors: Colors;
+}>`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 1rem;
   min-height: 22vh;
+  label {
+    color: ${(props) => props.colors.text.staticTextLabel};
+  }
 `;
 
 const ContentItem = styled.div`

@@ -328,7 +328,8 @@ const HorizontalLayout = styled.div`
 
 const alignLayout: CSSProperties = {
   display: "flex",
-  alignItems: "center"
+  alignItems: "center",
+  whiteSpace: "nowrap"
 };
 
 export { SettingsModal };
