@@ -95,7 +95,8 @@ const TubularsContextMenu = (
               servers,
               tubularReferences,
               dispatchOperation,
-              toWellboreReference(wellbore)
+              toWellboreReference(wellbore),
+              connectedServer
             )
           }
           disabled={tubularReferences === null}

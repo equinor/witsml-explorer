@@ -79,13 +79,15 @@ export class ApiClient {
   public static async patch(
     pathName: string,
     body: string,
-    abortSignal: AbortSignal | null = null
+    abortSignal: AbortSignal | null = null,
+    targetServer = AuthorizationService.selectedServer,
+    sourceServer = AuthorizationService.sourceServer
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
       method: "PATCH",
       body: body,
-      headers: await ApiClient.getCommonHeaders(),
+      headers: await ApiClient.getCommonHeaders(targetServer, sourceServer),
       credentials: "include"
     };
 
@@ -249,6 +251,7 @@ export async function getBaseUrl(): Promise<URL> {
       baseUrl = new URL(`${protocol}://${host}${port}`);
     }
   } catch (e) {
+    console.error(e);
     baseUrl = new URL("http://localhost");
   }
   return baseUrl;

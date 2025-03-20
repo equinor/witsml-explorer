@@ -29,6 +29,7 @@ import {
   HideModalAction
 } from "contexts/operationStateReducer";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
+import { useServerFilter } from "hooks/useServerFilter";
 import { IndexCurve } from "models/indexCurve";
 import { toWellboreReference } from "models/jobs/wellboreReference";
 import LogObject from "models/logObject";
@@ -54,6 +55,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
+  const filteredServers = useServerFilter(servers);
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -110,7 +112,8 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               servers,
               logReferences,
               dispatchOperation,
-              toWellboreReference(wellbore)
+              toWellboreReference(wellbore),
+              connectedServer
             )
           }
           disabled={logReferences === null}
@@ -121,22 +124,25 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowGroupOnServer(
-                  dispatchOperation,
-                  server,
-                  wellbore,
-                  ObjectType.Log,
-                  indexType
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {filteredServers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowGroupOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    wellbore,
+                    ObjectType.Log,
+                    indexType
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[

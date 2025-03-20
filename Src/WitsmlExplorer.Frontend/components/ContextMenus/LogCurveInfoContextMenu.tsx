@@ -36,6 +36,7 @@ import {
   HideModalAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import { IndexCurve } from "models/indexCurve";
 import { createComponentReferences } from "models/jobs/componentReferences";
@@ -50,6 +51,9 @@ import JobService, { JobType } from "services/jobService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
 import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
+import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
+import { refreshPrioritizedCurves } from "../../hooks/query/queryRefreshHelpers.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -81,6 +85,12 @@ const LogCurveInfoContextMenu = (
     setPrioritizedUniversalCurves,
     isMultiLog = false
   } = props;
+
+  const filteredServers = useServerFilter(servers);
+
+  const { connectedServer } = useConnectedServer();
+
+  const queryClient = useQueryClient();
 
   const onlyPrioritizedCurvesAreChecked = checkedLogCurveInfoRows.every(
     (row, index) =>
@@ -247,6 +257,7 @@ const LogCurveInfoContextMenu = (
     isUniversal
       ? setPrioritizedUniversalCurves(newPrioritizedCurves)
       : setPrioritizedLocalCurves(newPrioritizedCurves);
+    refreshPrioritizedCurves(queryClient);
   };
 
   const onClickRemovePriority = async (isUniversal: boolean) => {
@@ -270,6 +281,7 @@ const LogCurveInfoContextMenu = (
     isUniversal
       ? setPrioritizedUniversalCurves(newPrioritizedCurves)
       : setPrioritizedLocalCurves(newPrioritizedCurves);
+    refreshPrioritizedCurves(queryClient);
   };
 
   const toDelete = createComponentReferences(
@@ -374,25 +386,28 @@ const LogCurveInfoContextMenu = (
           label={"Show on server"}
           disabled={isMultiLog}
         >
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowObjectOnServer(
-                  dispatchOperation,
-                  server,
-                  selectedLog,
-                  ObjectType.Log,
-                  selectedLog.indexType === WITSML_INDEX_TYPE_MD
-                    ? IndexCurve.Depth
-                    : IndexCurve.Time
-                )
-              }
-              disabled={isMultiLog}
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {filteredServers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowObjectOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    selectedLog,
+                    ObjectType.Log,
+                    selectedLog.indexType === WITSML_INDEX_TYPE_MD
+                      ? IndexCurve.Depth
+                      : IndexCurve.Time
+                  )
+                }
+                disabled={isMultiLog}
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <MenuItem
           key={"analyzeGaps"}

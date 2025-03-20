@@ -21,6 +21,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import ObjectReference from "models/jobs/objectReference";
@@ -47,6 +48,7 @@ const WbGeometrySectionContextMenu = (
   );
   const { dispatchOperation } = useOperationState();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { connectedServer } = useConnectedServer();
 
   const onClickProperties = async () => {
@@ -159,21 +161,24 @@ const WbGeometrySectionContextMenu = (
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowObjectOnServer(
-                  dispatchOperation,
-                  server,
-                  wbGeometry,
-                  ObjectType.WbGeometry
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {filteredServers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowObjectOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    wbGeometry,
+                    ObjectType.WbGeometry
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

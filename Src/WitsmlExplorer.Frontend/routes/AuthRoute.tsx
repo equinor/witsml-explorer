@@ -59,9 +59,15 @@ export default function AuthRoute() {
   }, []);
 
   useEffect(() => {
-    if (servers && (!connectedServer || connectedServer.url != serverUrl)) {
+    if (
+      servers &&
+      (!connectedServer ||
+        connectedServer.url.toLowerCase() != serverUrl.toLowerCase())
+    ) {
       setConnectedServer(null);
-      const server = servers.find((server) => server.url === serverUrl);
+      const server = servers.find(
+        (server) => server.url.toLowerCase() === serverUrl.toLowerCase()
+      );
       if (server) showCredentialsModal(server, true);
     }
   }, [servers, serverUrl]);
@@ -91,7 +97,12 @@ export default function AuthRoute() {
     });
   };
 
-  if (servers && !servers.find((server) => server.url === serverUrl)) {
+  if (
+    servers &&
+    !servers.find(
+      (server) => server.url.toLowerCase() === serverUrl.toLowerCase()
+    )
+  ) {
     return <ItemNotFound itemType="Server" />;
   }
 

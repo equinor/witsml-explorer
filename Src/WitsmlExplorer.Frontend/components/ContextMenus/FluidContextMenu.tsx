@@ -17,6 +17,7 @@ import { useClipboardComponentReferencesOfType } from "components/ContextMenus/U
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
 import Fluid from "models/fluid";
 import FluidsReport from "models/fluidsReport";
@@ -40,6 +41,7 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
   );
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
 
   const toDelete = createComponentReferences(
     checkedFluids.map((fluid) => fluid.uid),
@@ -111,21 +113,24 @@ const FluidContextMenu = (props: FluidContextMenuProps): React.ReactElement => {
           </Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
-          {servers.map((server: Server) => (
-            <MenuItem
-              key={server.name}
-              onClick={() =>
-                onClickShowObjectOnServer(
-                  dispatchOperation,
-                  server,
-                  fluidsReport,
-                  ObjectType.FluidsReport
-                )
-              }
-            >
-              <Typography color={"primary"}>{server.name}</Typography>
-            </MenuItem>
-          ))}
+          {filteredServers
+            .filter((server: Server) => server.id != connectedServer.id)
+            .map((server: Server) => (
+              <MenuItem
+                key={server.name}
+                onClick={() =>
+                  onClickShowObjectOnServer(
+                    dispatchOperation,
+                    server,
+                    connectedServer,
+                    fluidsReport,
+                    ObjectType.FluidsReport
+                  )
+                }
+              >
+                <Typography color={"primary"}>{server.name}</Typography>
+              </MenuItem>
+            ))}
         </NestedMenuItem>
       ]}
     />

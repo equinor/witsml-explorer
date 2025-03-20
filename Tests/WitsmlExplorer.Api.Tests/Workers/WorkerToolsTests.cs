@@ -33,7 +33,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task GetWellTest_OK()
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(CreateWells());
+                client.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly), null)).ReturnsAsync(CreateWells());
             var wellReference = new WellReference() { WellName = WellName };
             var well = await WorkerTools.GetWell(_witsmlClient.Object, wellReference, ReturnElements.HeaderOnly);
             Assert.Equal(WellName, well.Name);
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task GetWellBoreTest_OK()
         {
             _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly))).ReturnsAsync(CreateWellbores());
+                client.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.Is<OptionsIn>((ops) => ops.ReturnElements == ReturnElements.HeaderOnly), null)).ReturnsAsync(CreateWellbores());
             var wellboreReference = new WellboreReference() { WellName = WellName, WellboreName = WellboreName };
             var wellbore = await WorkerTools.GetWellbore(_witsmlClient.Object, wellboreReference, ReturnElements.HeaderOnly);
             Assert.Equal(WellboreName, wellbore.Name);

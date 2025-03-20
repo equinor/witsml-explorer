@@ -7,6 +7,7 @@ import {
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
   STORAGE_FILTER_ISACTIVE_KEY,
   STORAGE_FILTER_OBJECTGROWING_KEY,
+  STORAGE_FILTER_PRIORITYSERVERS_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
 
@@ -18,6 +19,7 @@ export interface Filter {
   searchResults?: ObjectSearchResult[];
   wellboreSearchResults?: Wellbore[];
   objectVisibilityStatus: Record<ObjectType, VisibilityStatus>;
+  filterPriorityServers: boolean;
 }
 
 export enum VisibilityStatus {
@@ -113,7 +115,7 @@ export type FilterType =
   | WellboreFilterType
   | WellPropertyFilterType
   | ObjectFilterType;
-export const FilterType = {
+export const FilterTypes = {
   ...WellFilterType,
   ...WellboreFilterType,
   ...WellPropertyFilterType,
@@ -149,7 +151,8 @@ export const EMPTY_FILTER: Filter = {
   filterType: WellFilterType.Well,
   searchResults: [],
   wellboreSearchResults: [],
-  objectVisibilityStatus: allVisibleObjects
+  objectVisibilityStatus: allVisibleObjects,
+  filterPriorityServers: false
 };
 
 interface FilterContextProps {
@@ -258,6 +261,13 @@ const getLocalStorageFilter = (): Partial<Filter> => {
   );
   if (objectGrowing !== null) {
     localStorageFilter["objectGrowing"] = objectGrowing;
+  }
+
+  const filterPriorityServers = getLocalStorageItem<boolean>(
+    STORAGE_FILTER_PRIORITYSERVERS_KEY
+  );
+  if (filterPriorityServers !== null) {
+    localStorageFilter["filterPriorityServers"] = filterPriorityServers;
   }
 
   return localStorageFilter;

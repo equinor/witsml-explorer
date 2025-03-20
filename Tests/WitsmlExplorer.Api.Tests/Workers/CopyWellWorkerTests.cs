@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging.Abstractions;
@@ -52,8 +53,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlWells query = WellQueries.GetWitsmlWellByUid(wellUid);
             string queryText = XmlHelper.Serialize(WellQueries.GetWitsmlWellByUid(wellUid));
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>()))
-                               .ReturnsAsync((WitsmlWells q, OptionsIn op) => existingWells);
+            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
+                               .ReturnsAsync((WitsmlWells q, OptionsIn op, CancellationToken? _) => existingWells);
 
             CopyWellJob job = CreateJobTemplate(wellUid);
 
@@ -75,10 +76,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWells query = WellQueries.GetWitsmlWellByUid(wellUid);
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
+            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync(new WitsmlWells { Wells = new List<WitsmlWell>() });
 
-            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>()))
+            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync(sourceWells);
 
             QueryResult successQueryResult = new(true);
@@ -104,10 +105,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             WitsmlWells query = WellQueries.GetWitsmlWellByUid(wellUid);
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>()))
+            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(It.IsAny<WitsmlWells>(), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync(new WitsmlWells { Wells = new List<WitsmlWell>() });
 
-            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>()))
+            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync(sourceWells);
 
             QueryResult failureQueryResult = new(false, "test");

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -104,8 +105,8 @@ public class CountLogDataRowWorkerTest
         bool isSuccess = false;
 
         _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) => Task.FromResult(new WitsmlLogs()));
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+            .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) => Task.FromResult(new WitsmlLogs()));
 
         (WorkerResult Result, RefreshAction) countLogDataRowTask = await _worker.Execute(job);
         Assert.Equal(isSuccess, countLogDataRowTask.Result.IsSuccess);
@@ -120,8 +121,8 @@ public class CountLogDataRowWorkerTest
         job.JobInfo = jobInfo;
 
         _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) => Task.FromResult(GetTestWitsmlLogs(null, true, emptyLogCurveInfo: true)));
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+            .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) => Task.FromResult(GetTestWitsmlLogs(null, true, emptyLogCurveInfo: true)));
 
         (WorkerResult Result, RefreshAction) countLogDataRowTask = await _worker.Execute(job);
         CountLogDataReport report = (CountLogDataReport)jobInfo.Report;
@@ -138,19 +139,19 @@ public class CountLogDataRowWorkerTest
 
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) =>
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+            .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) =>
                 Task.FromResult(GetTestWitsmlLogs(GetTestLogData(isDepthLog, numberOfData), isDepthLog)));
 
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) =>
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+            .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) =>
                 Task.FromResult(GetTestWitsmlLogs(GetTestLogData(isDepthLog, numberOfData), isDepthLog)));
 
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
             .Returns(Task.FromResult(new WitsmlLogs() { Logs = new List<WitsmlLog>() }));
     }
 

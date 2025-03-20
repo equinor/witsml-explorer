@@ -17,6 +17,7 @@ import { ObjectType } from "models/objectType";
 import Trajectory from "models/trajectory";
 import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 export default function TrajectoriesListView() {
   const {
@@ -102,7 +103,15 @@ export default function TrajectoriesListView() {
   ];
 
   const onSelect = (trajectory: any) => {
-    navigate(encodeURIComponent(trajectory.uid));
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.Trajectory,
+        trajectory.uid
+      )
+    );
   };
 
   const trajectoryRows = trajectories?.map((trajectory) => {

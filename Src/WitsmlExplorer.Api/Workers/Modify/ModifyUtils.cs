@@ -214,6 +214,17 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     nameof(WbGeometry.CommonData)
                 }
             },
+            {
+                EntityType.Attachment, new HashSet<string>
+                {
+                    nameof(Attachment.Name),
+                    nameof(Attachment.FileName),
+                    nameof(Attachment.Description),
+                    nameof(Attachment.FileType),
+                    nameof(Attachment.Content),
+                    nameof(Attachment.CommonData)
+                }
+            },
         };
 
         public static void VerifyModificationProperties(ObjectOnWellbore obj, EntityType objectType, ILogger logger)

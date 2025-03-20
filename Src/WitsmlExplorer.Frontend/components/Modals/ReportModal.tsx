@@ -16,7 +16,6 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
-import useExport from "hooks/useExport";
 import { useLiveJobProgress } from "hooks/useLiveJobProgress";
 import { useOperationState } from "hooks/useOperationState";
 import BaseReport, { createReport } from "models/reports/BaseReport";
@@ -25,6 +24,7 @@ import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
+import StyledAccordion from "../StyledComponents/StyledAccordion";
 import ConfirmModal from "./ConfirmModal";
 
 export interface ReportModal {
@@ -75,7 +75,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
-      report && report.reportItems.length > 0
+      report && report.reportItems?.length > 0
         ? Object.keys(report.reportItems[0]).map((key) => ({
             property: key,
             label: key,
@@ -86,9 +86,9 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   );
 
   const cancelJob = async (jobId: string) => {
+    await JobService.cancelJob(jobId);
     dispatchOperation({ type: OperationType.HideContextMenu });
     dispatchOperation({ type: OperationType.HideModal });
-    await JobService.cancelJob(jobId);
   };
 
   const onClickCancel = async () => {
@@ -99,6 +99,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
           <Typography>Do you really want to cancel this job?</Typography>
         }
         onConfirm={() => {
+          dispatchOperation({ type: OperationType.HideModal });
           cancelJob(jobId);
         }}
         confirmColor={"danger"}
@@ -150,7 +151,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                 </Banner>
               )}
               {report.summary?.includes("\n") ? (
-                <Accordion>
+                <StyledAccordion>
                   <Accordion.Item>
                     <StyledAccordionHeader colors={colors}>
                       {report.summary.split("\n")[0]}
@@ -163,11 +164,11 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                       </Typography>
                     </Accordion.Panel>
                   </Accordion.Item>
-                </Accordion>
+                </StyledAccordion>
               ) : (
                 <Typography>{report.summary}</Typography>
               )}
-              {columns.length > 0 && report.downloadImmediately !== true && (
+              {columns.length > 0 && report.hasFile !== true && (
                 <ContentTable
                   columns={columns}
                   data={report.reportItems}
@@ -206,7 +207,6 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
   const { connectedServer } = useConnectedServer();
   const [report, setReport] = useState<BaseReport>(null);
-  const { exportData } = useExport();
 
   if (!jobId) return null;
 
@@ -224,12 +224,8 @@ export const useGetReportOnJobFinished = (jobId: string): BaseReport => {
               );
             } else {
               setReport(report);
-              if (report.downloadImmediately === true) {
-                exportData(
-                  report.title,
-                  report.reportHeader,
-                  report.reportBody
-                );
+              if (report.hasFile === true) {
+                await JobService.downloadFile(jobId);
               }
             }
           }

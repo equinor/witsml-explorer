@@ -9,10 +9,11 @@ import {
   QUERY_KEY_OBJECTS,
   QUERY_KEY_OBJECT_SEARCH,
   QUERY_KEY_SERVERS,
-  QUERY_KEY_WELL,
-  QUERY_KEY_WELLBORE,
   QUERY_KEY_WELLBORES,
-  QUERY_KEY_WELLS
+  QUERY_KEY_WELLS,
+  QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES,
+  QUERY_KEY_LOCAL_PRIORITIZED_CURVES,
+  QUERY_KEY_AGENT_SETTINGS
 } from "./queryKeys";
 
 export const refreshServersQuery = (queryClient: QueryClient) => {
@@ -36,37 +37,6 @@ export const refreshWellsQuery = (
   });
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_COMPONENTS, serverUrl.toLowerCase()]
-  });
-};
-
-export const refreshWellQuery = (
-  queryClient: QueryClient,
-  serverUrl: string,
-  wellUid: string
-) => {
-  queryClient.invalidateQueries({
-    queryKey: [QUERY_KEY_WELL, serverUrl.toLowerCase(), wellUid.toLowerCase()]
-  });
-  queryClient.invalidateQueries({
-    queryKey: [
-      QUERY_KEY_WELLBORES,
-      serverUrl.toLowerCase(),
-      wellUid.toLowerCase()
-    ]
-  });
-  queryClient.invalidateQueries({
-    queryKey: [
-      QUERY_KEY_OBJECTS,
-      serverUrl.toLowerCase(),
-      wellUid.toLowerCase()
-    ]
-  });
-  queryClient.invalidateQueries({
-    queryKey: [
-      QUERY_KEY_COMPONENTS,
-      serverUrl.toLowerCase(),
-      wellUid.toLowerCase()
-    ]
   });
 };
 
@@ -94,38 +64,6 @@ export const refreshWellboresQuery = (
       QUERY_KEY_COMPONENTS,
       serverUrl.toLowerCase(),
       wellUid.toLowerCase()
-    ]
-  });
-};
-
-export const refreshWellboreQuery = (
-  queryClient: QueryClient,
-  serverUrl: string,
-  wellUid: string,
-  wellboreUid: string
-) => {
-  queryClient.invalidateQueries({
-    queryKey: [
-      QUERY_KEY_WELLBORE,
-      serverUrl.toLowerCase(),
-      wellUid.toLowerCase(),
-      wellboreUid.toLowerCase()
-    ]
-  });
-  queryClient.invalidateQueries({
-    queryKey: [
-      QUERY_KEY_OBJECTS,
-      serverUrl.toLowerCase(),
-      wellUid.toLowerCase(),
-      wellboreUid.toLowerCase()
-    ]
-  });
-  queryClient.invalidateQueries({
-    queryKey: [
-      QUERY_KEY_COMPONENTS,
-      serverUrl.toLowerCase(),
-      wellUid.toLowerCase(),
-      wellboreUid.toLowerCase()
     ]
   });
 };
@@ -234,5 +172,20 @@ export const refreshSearchQuery = (
       serverUrl.toLowerCase(),
       filterType.toString()
     ]
+  });
+};
+
+export const refreshPrioritizedCurves = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_LOCAL_PRIORITIZED_CURVES]
+  });
+};
+
+export const refreshAgentSettings = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_AGENT_SETTINGS]
   });
 };

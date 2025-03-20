@@ -13,20 +13,26 @@ import {
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
 import { getAccountInfo, msalEnabled, signOut } from "msal/MsalAuthProvider";
-import React, { CSSProperties, ChangeEvent, useState } from "react";
+import React, { ChangeEvent, CSSProperties, FC, useState } from "react";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import { dark, light } from "styles/Colors";
 import Icon from "styles/Icons";
 import {
+  setLocalStorageItem,
   STORAGE_DATETIMEFORMAT_KEY,
   STORAGE_DECIMAL_KEY,
   STORAGE_HOTKEYS_ENABLED_KEY,
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
-  STORAGE_TIMEZONE_KEY,
-  setLocalStorageItem
+  STORAGE_TIMEZONE_KEY
 } from "tools/localStorageHelpers";
+
+const iconSizes: { [key in UserTheme]: 24 | 32 | 16 | 18 | 40 } = {
+  [UserTheme.Compact]: 24,
+  [UserTheme.SemiCompact]: 32,
+  [UserTheme.Comfortable]: 32
+};
 
 const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
@@ -147,11 +153,7 @@ const SettingsModal = (): React.ReactElement => {
       content={
         <div style={{ display: "flex", gap: "1rem", flexDirection: "column" }}>
           <HorizontalLayout>
-            <Icon
-              name="accessible"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="accessible" />
             <StyledNativeSelect
               label="Theme"
               id="native-select-theme"
@@ -160,15 +162,12 @@ const SettingsModal = (): React.ReactElement => {
               colors={colors}
             >
               <option value={UserTheme.Comfortable}>Comfortable</option>
+              <option value={UserTheme.SemiCompact}>Semi-compact</option>
               <option value={UserTheme.Compact}>Compact</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon
-              name="inProgress"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="inProgress" />
             <StyledNativeSelect
               id={"native-select-mode"}
               label={"Mode"}
@@ -181,11 +180,7 @@ const SettingsModal = (): React.ReactElement => {
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon
-              name="world"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="world" />
             <StyledNativeSelect
               label="Time Zone"
               id="native-select-timezone"
@@ -203,11 +198,7 @@ const SettingsModal = (): React.ReactElement => {
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon
-              name="calendar"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon name="calendar" />
             <StyledNativeSelect
               label="Datetime Format"
               id="native-select-datetimeformat"
@@ -223,12 +214,9 @@ const SettingsModal = (): React.ReactElement => {
           </HorizontalLayout>
           <HorizontalLayout>
             <div style={alignLayout}>
-              <Icon
-                name="edit"
-                size={32}
-                color={colors.infographic.primaryMossGreen}
-              />
+              <RowIcon name="edit" />
               <div style={alignLayout}>
+                <label style={alignLayout}>Decimal precision:</label>
                 <label style={alignLayout}>
                   <Radio
                     name="group"
@@ -247,7 +235,7 @@ const SettingsModal = (): React.ReactElement => {
                     }
                     onChange={onChangeDecimalPreference}
                   />
-                  Decimals
+                  Custom
                 </label>
                 {checkedDecimalPreference === DecimalPreference.Decimal && (
                   <TextField
@@ -268,12 +256,7 @@ const SettingsModal = (): React.ReactElement => {
             </div>
           </HorizontalLayout>
           <HorizontalLayout>
-            <Icon
-              style={{ alignSelf: "center" }}
-              name="keyboard"
-              size={32}
-              color={colors.infographic.primaryMossGreen}
-            />
+            <RowIcon style={{ alignSelf: "center" }} name="keyboard" />
             <Checkbox
               color={"primary"}
               checked={hotKeysEnabled}
@@ -318,6 +301,23 @@ const SettingsModal = (): React.ReactElement => {
   );
 };
 
+type RowIconType = { name: string; style?: CSSProperties };
+
+const RowIcon: FC<RowIconType> = ({ style, name }) => {
+  const {
+    operationState: { theme, colors }
+  } = useOperationState();
+
+  return (
+    <Icon
+      name={name}
+      style={{ marginRight: "0.4rem", ...style }}
+      size={iconSizes[theme]}
+      color={colors.infographic.primaryMossGreen}
+    />
+  );
+};
+
 const HorizontalLayout = styled.div`
   && {
     display: flex;
@@ -328,7 +328,8 @@ const HorizontalLayout = styled.div`
 
 const alignLayout: CSSProperties = {
   display: "flex",
-  alignItems: "center"
+  alignItems: "center",
+  whiteSpace: "nowrap"
 };
 
 export { SettingsModal };

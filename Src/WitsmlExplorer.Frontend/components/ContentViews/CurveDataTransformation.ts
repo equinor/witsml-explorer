@@ -1,5 +1,6 @@
 import { ExportableContentTableColumn } from "components/ContentViews/table";
 import { CurveSpecification } from "models/logData";
+import { CurveRanges } from "./CurveValuesPlot";
 
 const calculateMean = (arr: number[]): number =>
   arr.reduce((a, b) => a + b, 0) / arr.length;
@@ -113,14 +114,36 @@ export const transformCurveData = (
   data: any[],
   columns: ExportableContentTableColumn<CurveSpecification>[],
   thresholdLevel: ThresholdLevel,
-  removeOutliers: boolean
+  removeOutliers: boolean,
+  customRanges: CurveRanges,
+  applyCustomRanges: boolean
 ) => {
   let transformedData = data;
 
   if (removeOutliers) {
     transformedData = removeCurveDataOutliers(data, columns, thresholdLevel);
   }
+
+  if (applyCustomRanges) {
+    transformedData = removeDataOutOfRange(transformedData, customRanges);
+  }
+
   // Other potential transformations should be added here.
 
   return transformedData;
+};
+
+const removeDataOutOfRange = (data: any[], customRanges: CurveRanges) => {
+  const dataWithRange = data.map((dataRow) => ({ ...dataRow }));
+  Object.entries(customRanges).forEach(([curve, range]) => {
+    for (let i = 0; i < dataWithRange.length; i++) {
+      if (
+        dataWithRange[i][curve] < range.minValue ||
+        dataWithRange[i][curve] > range.maxValue
+      ) {
+        delete dataWithRange[i][curve];
+      }
+    }
+  });
+  return dataWithRange;
 };

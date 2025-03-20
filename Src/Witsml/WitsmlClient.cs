@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.ServiceModel;
 using System.ServiceModel.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -17,15 +19,16 @@ namespace Witsml
 {
     public interface IWitsmlClient
     {
-        Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType, new();
-        Task<T> GetFromStoreNullableAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType;
-        Task<(T, short resultCode)> GetGrowingDataObjectFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlGrowingDataQueryType, new();
-        Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn);
+        Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn, CancellationToken? cancellationToken = null) where T : IWitsmlQueryType, new();
+        Task<T> GetFromStoreNullableAsync<T>(T query, OptionsIn optionsIn, CancellationToken? cancellationToken = null) where T : IWitsmlQueryType;
+        Task<(T, short resultCode)> GetGrowingDataObjectFromStoreAsync<T>(T query, OptionsIn optionsIn, CancellationToken? cancellationToken = null) where T : IWitsmlGrowingDataQueryType, new();
+        Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn, CancellationToken? cancellationToken = null);
         Task<QueryResult> AddToStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<string> AddToStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> UpdateInStoreAsync<T>(T query) where T : IWitsmlQueryType;
         Task<string> UpdateInStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType;
+        Task<QueryResult> DeleteFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType;
         Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> TestConnectionAsync();
         Task<WitsmlCapServers> GetCap();
@@ -89,14 +92,15 @@ namespace Witsml
         /// </summary>
         /// <param name="query">The query that specifies what data-object(s) to be returned</param>
         /// <param name="optionsIn">For information about the OptionsIn, see WITSML specification</param>
+        /// <param name="cancellationToken">Optional cancellation token. Cancels that task itself, but the server request is not aborted</param>
         /// <typeparam name="T">The Witsml type to be returned</typeparam>
         /// <returns>The deserialized results of type T</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType, new()
+        public async Task<T> GetFromStoreAsync<T>(T query, OptionsIn optionsIn, CancellationToken? cancellationToken = null) where T : IWitsmlQueryType, new()
         {
             try
             {
-                return await GetFromStoreInnerAsync(query, optionsIn);
+                return await GetFromStoreInnerAsync(query, optionsIn, cancellationToken);
             }
             catch (XmlException e)
             {
@@ -110,13 +114,14 @@ namespace Witsml
         /// </summary>
         /// <param name="query">The query that specifies what data-object(s) to be returned</param>
         /// <param name="optionsIn">For information about the OptionsIn, see WITSML specification</param>
+        /// <param name="cancellationToken">Optional cancellation token. Cancels that task itself, but the server request is not aborted</param>
         /// <typeparam name="T">The Witsml type to be returned</typeparam>
         /// <returns>The deserialized results of type T or null on exception</returns>
-        public async Task<T> GetFromStoreNullableAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType
+        public async Task<T> GetFromStoreNullableAsync<T>(T query, OptionsIn optionsIn, CancellationToken? cancellationToken = null) where T : IWitsmlQueryType
         {
             try
             {
-                return await GetFromStoreInnerAsync(query, optionsIn);
+                return await GetFromStoreInnerAsync(query, optionsIn, cancellationToken);
             }
             catch (XmlException e)
             {
@@ -125,7 +130,7 @@ namespace Witsml
             }
         }
 
-        private async Task<T> GetFromStoreInnerAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType
+        private async Task<T> GetFromStoreInnerAsync<T>(T query, OptionsIn optionsIn, CancellationToken? cancellationToken = null) where T : IWitsmlQueryType
         {
             WMLS_GetFromStoreRequest request = new()
             {
@@ -135,20 +140,34 @@ namespace Witsml
                 CapabilitiesIn = _clientCapabilities
             };
 
-            WMLS_GetFromStoreResponse response = await _witsmlMetrics.MeasureQuery(
-                _serverUrl,
-                WitsmlMethod.GetFromStore,
-                query.TypeName,
-                _client.WMLS_GetFromStoreAsync(request));
+            try
+            {
+                WMLS_GetFromStoreResponse response =
+                    await _witsmlMetrics.MeasureQuery(
+                        _serverUrl,
+                        WitsmlMethod.GetFromStore,
+                        query.TypeName,
+                        _client.WMLS_GetFromStoreAsync(request),
+                        cancellationToken);
 
-            LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn, request.QueryIn,
-                response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
+                LogQueriesSentAndReceived(
+                    nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl,
+                    query, optionsIn, request.QueryIn,
+                    response.IsSuccessful(), response.XMLout, response.Result,
+                    response.SuppMsgOut);
 
-            if (response.IsSuccessful())
-                return XmlHelper.Deserialize(response.XMLout, query);
+                if (response.IsSuccessful())
+                    return XmlHelper.Deserialize(response.XMLout, query);
 
-            WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
-            throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+                WMLS_GetBaseMsgResponse errorResponse =
+                    await _client.WMLS_GetBaseMsgAsync(response.Result);
+                throw new Exception(
+                    $"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+            }
+            catch (CommunicationObjectAbortedException)
+            {
+                return default;
+            }
         }
 
         /// <summary>
@@ -156,10 +175,11 @@ namespace Witsml
         /// </summary>
         /// <param name="query">The query that specifies what data-object(s) to be returned</param>
         /// <param name="optionsIn">For information about the OptionsIn, see WITSML specification</param>
+        /// <param name="cancellationToken">Optional cancellation token. Cancels that task itself, but the server request is not aborted</param>
         /// <typeparam name="T">The Witsml type to be returned</typeparam>
         /// <returns>A tuple with the deserialized results and a resultCode where 1 indicates that the function completed successfully, 2 indicates partial success where some growing data-object data-nodes were not returned. Negative values are error codes</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<(T, short resultCode)> GetGrowingDataObjectFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlGrowingDataQueryType, new()
+        public async Task<(T, short resultCode)> GetGrowingDataObjectFromStoreAsync<T>(T query, OptionsIn optionsIn, CancellationToken? cancellationToken = null) where T : IWitsmlGrowingDataQueryType, new()
         {
             try
             {
@@ -175,7 +195,8 @@ namespace Witsml
                     _serverUrl,
                     WitsmlMethod.GetFromStore,
                     query.TypeName,
-                    _client.WMLS_GetFromStoreAsync(request));
+                    _client.WMLS_GetFromStoreAsync(request),
+                    cancellationToken);
 
                 LogQueriesSentAndReceived(nameof(_client.WMLS_GetFromStoreAsync), this._serverUrl, query, optionsIn,
                     request.QueryIn, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
@@ -213,7 +234,7 @@ namespace Witsml
             return reader.Name;
         }
 
-        public async Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn)
+        public async Task<string> GetFromStoreAsync(string query, OptionsIn optionsIn, CancellationToken? cancellationToken = null)
         {
             string type = GetQueryType(query);
             WMLS_GetFromStoreRequest request = new()
@@ -228,7 +249,8 @@ namespace Witsml
                 _serverUrl,
                 WitsmlMethod.GetFromStore,
                 type,
-                _client.WMLS_GetFromStoreAsync(request));
+                _client.WMLS_GetFromStoreAsync(request),
+                cancellationToken);
 
             LogQueriesSentAndReceived<IWitsmlQueryType>(nameof(_client.WMLS_GetFromStoreAsync), _serverUrl, null, optionsIn,
                     query, response.IsSuccessful(), response.XMLout, response.Result, response.SuppMsgOut);
@@ -367,7 +389,17 @@ namespace Witsml
             throw new Exception($"Error while adding to store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
-        public async Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType
+        public Task<QueryResult> DeleteFromStoreAsync<T>(T query) where T : IWitsmlQueryType
+        {
+            return DeleteFromStoreAsyncImplementation(query);
+        }
+
+        public Task<QueryResult> DeleteFromStoreAsync<T>(T query, OptionsIn optionsIn) where T : IWitsmlQueryType
+        {
+            return DeleteFromStoreAsyncImplementation(query, optionsIn);
+        }
+
+        private async Task<QueryResult> DeleteFromStoreAsyncImplementation<T>(T query, OptionsIn optionsIn = null) where T : IWitsmlQueryType
         {
             try
             {
@@ -375,7 +407,7 @@ namespace Witsml
                 {
                     WMLtypeIn = query.TypeName,
                     QueryIn = XmlHelper.Serialize(query),
-                    OptionsIn = string.Empty,
+                    OptionsIn = optionsIn == null ? string.Empty : optionsIn.GetKeywords(),
                     CapabilitiesIn = _clientCapabilities
                 };
 

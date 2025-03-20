@@ -1,9 +1,12 @@
 import { DataItem } from "components/ContentViews/Charts/LogsGraph";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import type { ECharts, EChartsOption, SetOptionOpts } from "echarts";
 import { getInstanceByDom, init } from "echarts";
+import { ObjectType } from "models/objectType";
 import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getLogObjectViewPath } from "routes/utils/pathBuilder";
 
 export interface ReactEChartsProps {
   option: EChartsOption;
@@ -25,7 +28,10 @@ export function ReactLogChart({
   height
 }: ReactEChartsProps): JSX.Element {
   const chartRef = useRef<HTMLDivElement>(null);
+  const { wellUid, wellboreUid, logType } = useParams();
+
   const navigate = useNavigate();
+  const { connectedServer } = useConnectedServer();
 
   useEffect(() => {
     // Initialize chart
@@ -36,7 +42,16 @@ export function ReactLogChart({
 
     chart?.on("click", (params) => {
       const uid = (params.data as DataItem).uid;
-      navigate(encodeURIComponent(uid));
+      navigate(
+        getLogObjectViewPath(
+          connectedServer?.url,
+          wellUid,
+          wellboreUid,
+          ObjectType.Log,
+          logType,
+          uid
+        )
+      );
     });
 
     // Add chart resize listener

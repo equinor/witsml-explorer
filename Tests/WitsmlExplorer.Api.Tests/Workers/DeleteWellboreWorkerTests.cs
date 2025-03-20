@@ -9,6 +9,7 @@ using Serilog;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
@@ -24,6 +25,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
     {
         private readonly DeleteWellboreWorker _worker;
         private readonly Mock<IWitsmlClient> _witsmlClient;
+        private readonly Mock<IUidMappingService> _uidMappingService;
         private const string WellboreUid = "wellboreUid";
         private const string WellUid = "wellUid";
 
@@ -35,10 +37,12 @@ namespace WitsmlExplorer.Api.Tests.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             ILogger<DeleteWellboreJob> logger = loggerFactory.CreateLogger<DeleteWellboreJob>();
-            _worker = new DeleteWellboreWorker(logger, witsmlClientProvider.Object);
+            _uidMappingService = new();
+            _uidMappingService.Setup(service => service.DeleteUidMappings(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+            _worker = new DeleteWellboreWorker(logger, witsmlClientProvider.Object, _uidMappingService.Object);
         }
 
-        private static DeleteWellboreJob CreateJob()
+        private static DeleteWellboreJob CreateJob(bool cascadedDelete)
         {
             return new()
             {
@@ -46,7 +50,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     WellboreUid = WellboreUid,
                     WellUid = WellUid
-                }
+                },
+                CascadedDelete = cascadedDelete
             };
         }
 
@@ -56,7 +61,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>()))
                 .ReturnsAsync(new QueryResult(true));
 
-            (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob());
+            (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(false));
+            Assert.True(result.IsSuccess);
+            Assert.True(((RefreshWellbore)refreshAction).WellboreUid == WellboreUid);
+            Assert.True(((RefreshWellbore)refreshAction).WellUid == WellUid);
+        }
+
+        [Fact]
+        public async Task Execute_CascadedDeleteWellbore_RefreshAction()
+        {
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>()))
+                .ReturnsAsync(new QueryResult(true));
+
+            (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(true));
             Assert.True(result.IsSuccess);
             Assert.True(((RefreshWellbore)refreshAction).WellboreUid == WellboreUid);
             Assert.True(((RefreshWellbore)refreshAction).WellUid == WellUid);
@@ -70,10 +87,26 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Callback<WitsmlWellbores>((wellBores) => query = wellBores)
                 .ReturnsAsync(new QueryResult(true));
 
-            (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob());
+            (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(false));
             Assert.True(result.IsSuccess);
             Assert.Single(query.Wellbores);
             Assert.Equal(WellboreUid, query.Wellbores.First().Uid);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(), It.Is<OptionsIn>(options => options.CascadedDelete == true)), Times.Never);
+        }
+
+        [Fact]
+        public async Task Execute_CascadedDeleteWellbore_ReturnResult()
+        {
+            WitsmlWellbores query = null;
+            _witsmlClient.Setup(client => client.DeleteFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>()))
+                .Callback<WitsmlWellbores, OptionsIn>((wellBores, _) => query = wellBores)
+                .ReturnsAsync(new QueryResult(true));
+
+            (WorkerResult result, RefreshAction refreshAction) = await _worker.Execute(CreateJob(true));
+            Assert.True(result.IsSuccess);
+            Assert.Single(query.Wellbores);
+            Assert.Equal(WellboreUid, query.Wellbores.First().Uid);
+            _witsmlClient.Verify(client => client.DeleteFromStoreAsync(It.IsAny<IWitsmlQueryType>(), It.Is<OptionsIn>(options => options.CascadedDelete == true)), Times.Once);
         }
     }
 }

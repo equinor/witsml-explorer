@@ -1,6 +1,7 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import {
   ButtonProps,
+  Switch,
   Table,
   TextField,
   Typography
@@ -14,23 +15,31 @@ import UserCredentialsModal, {
 } from "components/Modals/UserCredentialsModal";
 import ProgressSpinner from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
+import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { getSearchRegex } from "contexts/filter";
+import { FilterContext } from "contexts/filter";
 import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
 import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
+import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
-import { useGetServers } from "hooks/query/useGetServers";
+import { getServersQueryKey, useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
-import { Server, emptyServer } from "models/server";
+import { useServerFilter } from "hooks/useServerFilter";
+import { emptyServer, Server } from "models/server";
 import { adminRole, getUserAppRoles, msalEnabled } from "msal/MsalAuthProvider";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getWellsViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import NotificationService from "services/notificationService";
+import ServerService from "services/serverService";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import {
+  setLocalStorageItem,
+  STORAGE_FILTER_PRIORITYSERVERS_KEY
+} from "tools/localStorageHelpers";
 
 const NEW_SERVER_ID = "1";
 
@@ -42,18 +51,16 @@ const ServerManager = (): React.ReactElement => {
     placeholderData: []
   });
   const {
-    operationState: { colors },
+    operationState: { colors, theme },
     dispatchOperation
   } = useOperationState();
   const editDisabled = msalEnabled && !getUserAppRoles().includes(adminRole);
   const navigate = useNavigate();
   const { connectedServer, setConnectedServer } = useConnectedServer();
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
-  const [filter, setFilter] = useState<string>("");
-  const searchRegex = getSearchRegex(filter);
-  const filteredServers = servers.filter(
-    (s) => !filter || searchRegex.test(s.name) || searchRegex.test(s.url)
-  );
+  const [filterByName, setFilterByName] = useState<string>("");
+  const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
+  const filteredServers = useServerFilter(servers, filterByName);
 
   useEffect(() => {
     if (isError) {
@@ -100,6 +107,36 @@ const ServerManager = (): React.ReactElement => {
     });
   };
 
+  const togglePriority = async (server: Server) => {
+    try {
+      // Optimistically update the query cache to avoid full rerenders and to keep the scroll position.
+      queryClient.setQueryData(getServersQueryKey(), (oldServers: Server[]) =>
+        oldServers?.map((s) =>
+          s.id === server.id ? { ...s, isPriority: !s.isPriority } : s
+        )
+      );
+
+      const freshServer = await ServerService.updateServer({
+        ...server,
+        isPriority: !server.isPriority
+      });
+      if (freshServer) {
+        AuthorizationService.onServerStateChange(freshServer);
+      }
+    } catch (error) {
+      // Roll back on failure
+      queryClient.setQueryData(getServersQueryKey(), (oldServers: Server[]) =>
+        oldServers?.map((s) => (s.id === server.id ? server : s))
+      );
+
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: null,
+        message: `Unable to update priority: ${error.message}`,
+        isSuccess: false
+      });
+    }
+  };
+
   const CellStyle = {
     color: colors.interactive.primaryResting,
     padding: "0.3rem",
@@ -144,11 +181,34 @@ const ServerManager = (): React.ReactElement => {
           </Typography>
           <StyledTextField
             id="serverSearch"
-            value={filter}
+            value={filterByName}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setFilter(e.target.value)
+              setFilterByName(e.target.value)
             }
           />
+          <CommonPanelContainer>
+            <Switch
+              checked={selectedFilter.filterPriorityServers}
+              onChange={() => {
+                setLocalStorageItem<boolean>(
+                  STORAGE_FILTER_PRIORITYSERVERS_KEY,
+                  !selectedFilter.filterPriorityServers
+                );
+                updateSelectedFilter({
+                  filterPriorityServers: !selectedFilter.filterPriorityServers
+                });
+              }}
+              size={theme === UserTheme.Compact ? "small" : "default"}
+            />
+            <Typography
+              style={{
+                color: colors.infographic.primaryMossGreen,
+                whiteSpace: "nowrap"
+              }}
+            >
+              Only show priority servers
+            </Typography>
+          </CommonPanelContainer>
         </div>
         <Button
           variant="outlined"
@@ -169,6 +229,7 @@ const ServerManager = (): React.ReactElement => {
             <Table.Cell style={CellHeaderStyle}>Username</Table.Cell>
             <Table.Cell style={CellHeaderStyle} />
             <Table.Cell style={CellHeaderStyle}>Status</Table.Cell>
+            <Table.Cell style={CellHeaderStyle}>Priority</Table.Cell>
             <Table.Cell style={CellHeaderStyle}></Table.Cell>
             <Table.Cell style={CellHeaderStyle}></Table.Cell>
           </Table.Row>
@@ -215,6 +276,23 @@ const ServerManager = (): React.ReactElement => {
                   />
                 </Table.Cell>
                 <Table.Cell style={CellStyle}>
+                  <Button
+                    variant="ghost"
+                    disabled={editDisabled || isError}
+                    onClick={() => togglePriority(server)}
+                  >
+                    <Icon
+                      name={
+                        server.isPriority
+                          ? "favoriteFilled"
+                          : "favoriteOutlined"
+                      }
+                      size={24}
+                      color={colors.text.staticIconsTertiary}
+                    />
+                  </Button>
+                </Table.Cell>
+                <Table.Cell style={CellStyle}>
                   <Button variant="ghost" onClick={() => onEditItem(server)}>
                     <Icon
                       name="edit"
@@ -226,7 +304,7 @@ const ServerManager = (): React.ReactElement => {
                 <Table.Cell style={CellStyle}>
                   <Button
                     data-testid="deleteServerButton"
-                    disabled={editDisabled}
+                    disabled={editDisabled || isError}
                     variant="ghost"
                     onClick={() =>
                       showDeleteServerModal(

@@ -3,11 +3,12 @@ import { Button } from "components/StyledComponents/Button";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
 import React, { ReactElement, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Colors, dark, light } from "styles/Colors";
 import Icons from "styles/Icons";
 import { ErrorMessage } from "../StyledComponents/ErrorMessage";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
+import { UserTheme } from "../../contexts/operationStateReducer.tsx";
 
 interface ModalDialogProps {
   heading: string;
@@ -55,6 +56,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
     useState<boolean>(false);
   const { operationState } = context;
   const colors: Colors = operationState?.colors || light;
+  const isCompact = context.operationState.theme === UserTheme.Compact;
   const confirmButtonIsDisabled = isLoading || confirmDisabled;
 
   const onCancel =
@@ -75,7 +77,7 @@ const ModalDialog = (props: ModalDialogProps): React.ReactElement => {
   const buttons = [
     showConfirmButton ? (
       isLoading ? (
-        <StyledButton style={{ cursor: "not-allowed" }}>
+        <StyledButton style={{ cursor: "not-allowed" }} isCompact={isCompact}>
           <Progress.Dots />
         </StyledButton>
       ) : (
@@ -231,6 +233,7 @@ const Content = styled(Dialog.CustomContent)<{
     svg {
       fill: ${(props) => props.colors.text.staticIconsDefault};
     }
+
     label {
       color: ${(props) => props.colors.text.staticIconsDefault};
     }
@@ -251,6 +254,25 @@ const Content = styled(Dialog.CustomContent)<{
 
   input[type="datetime-local"] {
     color-scheme: ${({ colors }) => (colors === dark ? "dark" : "")};
+  }
+
+  h2[class*="AccordionHeader__StyledAccordionHeader"] {
+    background-color: transparent;
+    border: 1px solid #575d63;
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+
+  div[class*="AccordionPanel__StyledAccordionPanel"] {
+    background-color: transparent;
+    border-top: 0px;
+    border-bottom: 1px solid #575d63;
+    border-left: 1px solid #575d63;
+    border-right: 1px solid #575d63;
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
   }
 
   ${({ colors }) =>
@@ -275,11 +297,20 @@ const DialogHeader = styled(Dialog.Header)<{ colors: Colors }>`
   }
 `;
 
-const StyledButton = styled(Button)<{ align?: string }>`
+const StyledButton = styled(Button)<{ align?: string; isCompact?: boolean }>`
   &&& {
     ${({ align }) =>
       align === "right" ? `margin-left: auto;` : "margin: 0.5em;"};
   }
+
+  ${({ isCompact }) =>
+    !isCompact
+      ? ""
+      : css`
+          & > span > svg {
+            height: 10px !important;
+          }
+        `}
 `;
 
 export default ModalDialog;

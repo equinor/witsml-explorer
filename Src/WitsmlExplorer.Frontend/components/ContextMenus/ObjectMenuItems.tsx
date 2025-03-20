@@ -30,6 +30,9 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import OperationType from "../../contexts/operationType";
+import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
+import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -40,12 +43,28 @@ export const ObjectMenuItems = (
   objectType: ObjectType,
   selectedServer: Server,
   servers: Server[],
+  filteredServers: Server[],
   dispatchOperation: DispatchOperation,
   queryClient: QueryClient,
   openInQueryView: OpenInQueryView,
   extraMenuItems: React.ReactElement[]
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
+  const { connectedServer } = useConnectedServer();
+
+  const onClickDuplicateObjectOnWellbore = () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: (
+        <DuplicateObjectModal
+          servers={servers}
+          objectsOnWellbore={checkedObjects}
+          objectType={objectType}
+        />
+      )
+    });
+  };
 
   return [
     <MenuItem
@@ -69,6 +88,16 @@ export const ObjectMenuItems = (
     </MenuItem>,
     <Divider key={"objectMenuItemsDivider"} />,
     <MenuItem
+      key={"duplicate"}
+      onClick={onClickDuplicateObjectOnWellbore}
+      disabled={checkedObjects.length === 0 || checkedObjects.length > 1}
+    >
+      <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+      <Typography color={"primary"}>
+        {menuItemText("duplicate", objectType, null)}
+      </Typography>
+    </MenuItem>,
+    <MenuItem
       key={"copy"}
       onClick={() =>
         copyObjectOnWellbore(
@@ -90,7 +119,7 @@ export const ObjectMenuItems = (
       label={`${menuItemText("copy", objectType, checkedObjects)} to server`}
       disabled={checkedObjects.length === 0}
     >
-      {servers.map(
+      {filteredServers.map(
         (server: Server) =>
           server.id !== selectedServer.id && (
             <MenuItem
@@ -114,12 +143,18 @@ export const ObjectMenuItems = (
     <MenuItem
       key={"pasteObject"}
       onClick={() =>
-        pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, {
-          wellUid: checkedObjects[0].wellUid,
-          wellboreUid: checkedObjects[0].wellboreUid,
-          wellName: checkedObjects[0].wellName,
-          wellboreName: checkedObjects[0].wellboreName
-        })
+        pasteObjectOnWellbore(
+          servers,
+          objectReferences,
+          dispatchOperation,
+          {
+            wellUid: checkedObjects[0].wellUid,
+            wellboreUid: checkedObjects[0].wellboreUid,
+            wellName: checkedObjects[0].wellName,
+            wellboreName: checkedObjects[0].wellboreName
+          },
+          connectedServer
+        )
       }
       disabled={objectReferences === null}
     >
@@ -149,26 +184,29 @@ export const ObjectMenuItems = (
       label={"Show on server"}
       disabled={checkedObjects.length !== 1}
     >
-      {servers.map((server: Server) => (
-        <MenuItem
-          key={server.name}
-          onClick={() =>
-            onClickShowObjectOnServer(
-              dispatchOperation,
-              server,
-              checkedObjects[0],
-              objectType,
-              (checkedObjects[0] as LogObject)?.indexType ===
-                WITSML_INDEX_TYPE_MD
-                ? IndexCurve.Depth
-                : IndexCurve.Time
-            )
-          }
-          disabled={checkedObjects.length !== 1}
-        >
-          <Typography color={"primary"}>{server.name}</Typography>
-        </MenuItem>
-      ))}
+      {filteredServers
+        .filter((server: Server) => server.id != connectedServer.id)
+        .map((server: Server) => (
+          <MenuItem
+            key={server.name}
+            onClick={() =>
+              onClickShowObjectOnServer(
+                dispatchOperation,
+                server,
+                connectedServer,
+                checkedObjects[0],
+                objectType,
+                (checkedObjects[0] as LogObject)?.indexType ===
+                  WITSML_INDEX_TYPE_MD
+                  ? IndexCurve.Depth
+                  : IndexCurve.Time
+              )
+            }
+            disabled={checkedObjects.length !== 1}
+          >
+            <Typography color={"primary"}>{server.name}</Typography>
+          </MenuItem>
+        ))}
     </NestedMenuItem>,
     <NestedMenuItem
       key={"queryItems"}

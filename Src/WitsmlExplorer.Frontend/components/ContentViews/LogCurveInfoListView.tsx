@@ -8,7 +8,7 @@ import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import { UserTheme } from "contexts/operationStateReducer";
+import { DisplayModalAction, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -29,6 +29,16 @@ import {
   getColumns,
   getTableData
 } from "./LogCurveInfoListViewUtils";
+import MinimumDataQcModal, {
+  MinimumDataQcModalProps
+} from "../Modals/MinimumDataQcModal.tsx";
+import BaseReport from "../../models/reports/BaseReport.tsx";
+import NotificationService from "../../services/notificationService.ts";
+import {
+  IsQcReportJobRunning,
+  LoadExistingMinQcReport
+} from "./MinimumDataQcUtils.tsx";
+import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
@@ -50,6 +60,9 @@ export default function LogCurveInfoListView() {
     ObjectType.Log,
     objectUid
   );
+
+  const { agentSettings } = useGetAgentSettings();
+
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -61,6 +74,9 @@ export default function LogCurveInfoListView() {
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
+  const [showMinimumDataQc, setShowMinimumDataQc] = useState<boolean>(false);
+  const [minimumDataQcReport, setMinimumDataQcReport] =
+    useState<BaseReport>(undefined);
   const [prioritizedLocalCurves, setPrioritizedLocalCurves] = useState<
     string[]
   >([]);
@@ -106,6 +122,53 @@ export default function LogCurveInfoListView() {
       setShowOnlyPrioritizedCurves(false);
     }
   }, [logObject]);
+
+  const handleMinimumDataQcSwitchChange = async () => {
+    if (!allPrioritizedCurves && allPrioritizedCurves.length == 0) {
+      NotificationService.Instance.alertDispatcher.dispatch({
+        serverUrl: new URL(connectedServer.url),
+        message: "No prioritized curves set!",
+        isSuccess: false,
+        severity: "info"
+      });
+    }
+
+    if (!showMinimumDataQc) {
+      if (await IsQcReportJobRunning(logObject.name)) {
+        NotificationService.Instance.alertDispatcher.dispatch({
+          serverUrl: new URL(connectedServer.url),
+          message: "Minimum data QC job already running!",
+          isSuccess: false,
+          severity: "info"
+        });
+        return;
+      }
+
+      const report = await LoadExistingMinQcReport(
+        logObject.name,
+        agentSettings?.minimumDataQcTimeoutDefault
+      );
+
+      if (report) {
+        setShowMinimumDataQc(true);
+        setMinimumDataQcReport(report);
+      } else {
+        const minimumDataQcModalProps: MinimumDataQcModalProps = {
+          logObject: logObject,
+          mnemonics: allPrioritizedCurves
+        };
+
+        const action: DisplayModalAction = {
+          type: OperationType.DisplayModal,
+          payload: <MinimumDataQcModal {...minimumDataQcModalProps} />
+        };
+
+        dispatchOperation(action);
+      }
+    } else {
+      setShowMinimumDataQc(false);
+    }
+  };
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -158,6 +221,17 @@ export default function LogCurveInfoListView() {
         size={theme === UserTheme.Compact ? "small" : "default"}
       />
       <Typography>Show Only Prioritized Curves</Typography>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="showMinimumDataQc">
+      <Switch
+        checked={showMinimumDataQc}
+        disabled={
+          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+        }
+        onChange={handleMinimumDataQcSwitchChange}
+        size={theme === UserTheme.Compact ? "small" : "default"}
+      />
+      <Typography>Show Minimum Data QC</Typography>
     </CommonPanelContainer>
   ];
 
@@ -175,6 +249,7 @@ export default function LogCurveInfoListView() {
           columns={getColumns(
             isDepthIndex,
             showOnlyPrioritizedCurves,
+            showMinimumDataQc,
             allPrioritizedCurves,
             logObjects,
             hideEmptyMnemonics,
@@ -184,6 +259,7 @@ export default function LogCurveInfoListView() {
             [logObject],
             logCurveInfoList,
             logObjects,
+            minimumDataQcReport,
             timeZone,
             dateTimeFormat,
             curveThreshold,

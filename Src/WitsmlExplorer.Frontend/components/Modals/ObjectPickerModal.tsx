@@ -10,6 +10,7 @@ import { Checkbox } from "components/StyledComponents/Checkbox";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter";
 import MaxLength from "models/maxLength";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
@@ -40,6 +41,7 @@ const ObjectPickerModal = ({
   includeCompareAllLogIndexesOption
 }: ObjectPickerProps): React.ReactElement => {
   const { servers } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const {
     operationState: { colors },
     dispatchOperation
@@ -109,6 +111,7 @@ const ObjectPickerModal = ({
         setFetchError(`The target ${objectType} was not found`);
       }
     } catch (e) {
+      console.error(e);
       setFetchError("Failed to fetch");
     } finally {
       setIsLoading(false);
@@ -136,7 +139,7 @@ const ObjectPickerModal = ({
           <Autocomplete
             id="server"
             label={`Compare to server ${targetServer?.name ?? ""}`}
-            options={servers}
+            options={filteredServers}
             optionLabel={(server: Server) => server.name}
             onOptionsChange={({ selectedItems }) => {
               setTargetServer(selectedItems[0]);

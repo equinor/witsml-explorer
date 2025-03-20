@@ -14,6 +14,7 @@ import { getJobsViewPath, getQueryViewPath } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
+import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -27,6 +28,13 @@ export default function TopRightCornerMenu() {
     dispatchOperation({
       type: OperationType.DisplayModal,
       payload: <SettingsModal />
+    });
+  };
+
+  const openUidModal = () => {
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellboreUidMappingOverviewModal />
     });
   };
 
@@ -95,6 +103,13 @@ export default function TopRightCornerMenu() {
       >
         <Icon name="code" />
         {showLabels && "Query"}
+      </Button>
+      <Button
+        variant={showLabels ? "ghost" : "ghost_icon"}
+        onClick={openUidModal}
+      >
+        <Icon name="link" />
+        {showLabels && "UID Mapping"}
       </Button>
       <Button
         variant={showLabels ? "ghost" : "ghost_icon"}

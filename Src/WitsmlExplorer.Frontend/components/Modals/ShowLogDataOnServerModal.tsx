@@ -10,8 +10,9 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
+import { useServerFilter } from "hooks/useServerFilter.ts";
 import { Server } from "models/server";
-import { CSSProperties, ChangeEvent, useState } from "react";
+import { ChangeEvent, CSSProperties, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import { createLogCurveValuesSearchParams } from "routes/utils/createLogCurveValuesSearchParams";
@@ -20,6 +21,7 @@ import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 import { openRouteInNewWindow } from "tools/windowHelpers";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 
 enum IndexRangeOptions {
   Full = "Full",
@@ -50,6 +52,7 @@ export function ShowLogDataOnServerModal() {
   );
   const [selectedServer, setSelectedServer] = useState<Server>(null);
   const { servers, isFetching } = useGetServers();
+  const filteredServers = useServerFilter(servers);
   const { connectedServer } = useConnectedServer();
 
   const onChangeServer = async (event: any) => {
@@ -134,12 +137,12 @@ export function ShowLogDataOnServerModal() {
     <ModalDialog
       heading={"Show Log Data on Server"}
       content={
-        <EdsProvider density={theme}>
+        <EdsProvider density={normaliseThemeForEds(theme)}>
           <Autocomplete
             id={"selectServerToShow"}
             label="Select a server"
             initialSelectedOptions={[]}
-            options={servers
+            options={filteredServers
               .filter((server) => server.id !== connectedServer.id)
               .map((server) => server.name)}
             onOptionsChange={onChangeServer}

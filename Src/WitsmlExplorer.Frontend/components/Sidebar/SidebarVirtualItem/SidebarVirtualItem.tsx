@@ -2,11 +2,10 @@ import { FC, useLayoutEffect, useRef } from "react";
 import { VirtualItem, Virtualizer } from "@tanstack/react-virtual";
 import Well from "../../../models/well.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
-import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
-import WellItem from "../WellItem.tsx";
 import { WellIndicator } from "../../StyledComponents/WellIndicator.tsx";
 import { Divider } from "@equinor/eds-core-react";
 import styled from "styled-components";
+import WellItem from "../WellItem";
 
 const SidebarVirtualItem: FC<{
   virtualItem: VirtualItem<HTMLDivElement>;
@@ -18,7 +17,6 @@ const SidebarVirtualItem: FC<{
     operationState: { colors, theme }
   } = useOperationState();
   const rowRef = useRef<HTMLDivElement>();
-  const isCompactMode = theme === UserTheme.Compact;
 
   useLayoutEffect(() => {
     if (rowRef.current) virtualizer.measureElement(rowRef.current);
@@ -34,7 +32,7 @@ const SidebarVirtualItem: FC<{
       <WellListing>
         <WellItem wellUid={well.uid} />
         <WellIndicator
-          compactMode={isCompactMode}
+          themeMode={theme}
           active={well.isActive}
           colors={colors}
         />

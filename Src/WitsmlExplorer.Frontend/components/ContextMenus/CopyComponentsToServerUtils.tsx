@@ -27,6 +27,7 @@ import CopyMnemonicsModal, {
 import { displayMissingObjectModal } from "../Modals/MissingObjectModals";
 import { displayReplaceModal } from "../Modals/ReplaceModal";
 import { pluralize } from "./ContextMenuUtils";
+import { getTargetWellboreID } from "./UidMappingUtils.tsx";
 
 export interface OnClickCopyComponentToServerProps {
   targetServer: Server;
@@ -56,8 +57,16 @@ export const copyComponentsToServer = async (
   } = props;
 
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const wellUid = sourceParent.wellUid;
-  const wellboreUid = sourceParent.wellboreUid;
+
+  const { targetWellId, targetWellboreId } = await getTargetWellboreID({
+    sourceServerId: sourceServer.id,
+    sourceWellId: sourceParent.wellUid,
+    sourceWellboreId: sourceParent.wellboreUid,
+    targetServerId: targetServer.id
+  });
+
+  const wellUid = targetWellId;
+  const wellboreUid = targetWellboreId;
   const parentUid = sourceParent.uid;
   const parentType = getParentType(componentType);
   const getId =

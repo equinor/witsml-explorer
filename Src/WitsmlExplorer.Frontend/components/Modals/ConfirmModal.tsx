@@ -10,6 +10,7 @@ interface ConfirmProps {
   switchButtonPlaces?: boolean;
   showCancelButton?: boolean;
   cancelText?: string;
+  confirmDisabled?: boolean;
 }
 
 const ConfirmModal = (props: ConfirmProps): React.ReactElement => {
@@ -24,6 +25,7 @@ const ConfirmModal = (props: ConfirmProps): React.ReactElement => {
       confirmColor={props.confirmColor}
       switchButtonPlaces={props.switchButtonPlaces}
       showCancelButton={props.showCancelButton}
+      confirmDisabled={props.confirmDisabled}
     />
   );
 };

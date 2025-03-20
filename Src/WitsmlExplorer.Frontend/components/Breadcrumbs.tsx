@@ -16,32 +16,33 @@ import Well from "models/well";
 import Wellbore from "models/wellbore";
 import { useEffect, useState } from "react";
 import {
-  NavLink,
-  NavigateFunction,
   createSearchParams,
+  NavigateFunction,
+  NavLink,
   useNavigate,
   useParams,
   useSearchParams
 } from "react-router-dom";
 import {
-  getLogObjectViewPath,
   getLogObjectsViewPath,
+  getLogObjectViewPath,
   getLogTypesViewPath,
   getMultiLogCurveInfoListViewPath,
   getObjectGroupsViewPath,
-  getObjectViewPath,
   getObjectsViewPath,
+  getObjectViewPath,
   getWellboresViewPath,
   getWellsViewPath
 } from "routes/utils/pathBuilder";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { colors } from "styles/Colors";
 import Icon from "styles/Icons";
 import { v4 as uuid } from "uuid";
+import { UserTheme } from "../contexts/operationStateReducer.tsx";
 
 export function Breadcrumbs() {
   const {
-    operationState: { colors }
+    operationState: { colors, theme }
   } = useOperationState();
   const navigate = useNavigate();
   const {
@@ -150,7 +151,12 @@ export function Breadcrumbs() {
           style={{ minWidth: "18" }}
         />
       )}
-      <StyledBreadcrumbs color="inherit" aria-label="breadcrumb" wrap={false}>
+      <StyledBreadcrumbs
+        color="inherit"
+        aria-label="breadcrumb"
+        wrap={false}
+        $isCompact={theme === UserTheme.Compact}
+      >
         {breadcrumbContent.map((breadCrumb, index: number) => (
           <EdsBreadcrumbs.Breadcrumb
             key={uuid()}
@@ -394,10 +400,31 @@ const StyledNavLink = styled(NavLink)`
   text-decoration: none;
 `;
 
-const StyledBreadcrumbs = styled(EdsBreadcrumbs)`
-  padding-top: 0.2em;
-  height: 1.5rem;
+const StyledBreadcrumbs = styled(EdsBreadcrumbs)<{ $isCompact: boolean }>`
   overflow: clip;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: fit-content;
+
+  li > span {
+    display: inline-flex;
+    line-height: 16px;
+  }
+
+  ${({ $isCompact }) =>
+    !$isCompact
+      ? ""
+      : css`
+          li > span {
+            font-size: 0.8rem;
+          }
+
+          li > p {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+          }
+        `}
 `;
 
 const Title = styled.p`

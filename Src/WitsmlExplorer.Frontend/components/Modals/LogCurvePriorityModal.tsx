@@ -1,5 +1,4 @@
-import { Icon, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
-
+import { Icon, TextField, Tooltip } from "@equinor/eds-core-react";
 import { useOperationState } from "hooks/useOperationState";
 import React, { ChangeEvent, KeyboardEvent, useState } from "react";
 import styled from "styled-components";
@@ -11,9 +10,10 @@ import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "../ContextMenus/ContextMenu";
+import { Button as MuiButton, Stack, Typography } from "@mui/material";
+import { Button } from "../StyledComponents/Button.tsx";
 import { LogCurvePriorityContextMenu } from "../ContextMenus/LogCurvePriorityContextMenu";
 import ModalDialog from "./ModalDialog";
-import { Button } from "@mui/material";
 
 export interface LogCurvePriorityModalProps {
   wellUid?: string;
@@ -120,7 +120,7 @@ export const LogCurvePriorityModal = (
       content={
         <>
           <Layout>
-            <AddItemLayout>
+            <Stack direction="row" gap="10px" alignItems="end">
               <TextField
                 id={"addPrioritizedCurve"}
                 label="Add prioritized curve"
@@ -134,6 +134,7 @@ export const LogCurvePriorityModal = (
                   setNewCurve(e.target.value);
                 }}
                 value={newCurve}
+                width="100%"
               />
               <Button
                 onClick={addCurve}
@@ -143,11 +144,11 @@ export const LogCurvePriorityModal = (
               >
                 <Icon name="add" />
               </Button>
-            </AddItemLayout>
+            </Stack>
             <FileContainer>
-              <Button
+              <MuiButton
                 variant="contained"
-                color={"primary"}
+                color="primary"
                 component="label"
                 startIcon={<Icon name="cloudUpload" />}
               >
@@ -158,9 +159,9 @@ export const LogCurvePriorityModal = (
                   hidden
                   onChange={handleFileChange}
                 />
-              </Button>
+              </MuiButton>
               <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
-                <Typography noWrap>
+                <Typography noWrap style={{ maxWidth: "350px" }}>
                   {uploadedFile?.name ?? "No file chosen"}
                 </Typography>
               </Tooltip>
@@ -199,18 +200,12 @@ const Layout = styled.div`
   gap: 40px;
 `;
 
-const AddItemLayout = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 0.2fr;
-  gap: 10px;
-  align-items: end;
-`;
-
 const FileContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 1rem;
   align-items: center;
+
   .MuiButton-root {
     min-width: 160px;
   }

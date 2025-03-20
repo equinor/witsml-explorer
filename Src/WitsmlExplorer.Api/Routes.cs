@@ -44,11 +44,26 @@ namespace WitsmlExplorer.Api
             app.MapPost("/universal/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedUniversalCurves, useOAuth2);
             app.MapPost("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.SetPrioritizedLocalCurves, useOAuth2);
 
+            app.MapPost("/uidmapping/", UidMappingHandler.CreateUidMapping, useOAuth2);
+            app.MapPatch("/uidmapping/", UidMappingHandler.UpdateUidMapping, useOAuth2);
+            app.MapPost("/uidmapping/query/", UidMappingHandler.QueryUidMapping, useOAuth2);
+            app.MapPost("/uidmapping/deletemapping/", UidMappingHandler.DeleteUidMapping, useOAuth2);
+            app.MapDelete("/uidmapping/deletemappings/well/{wellUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);
+            app.MapDelete("/uidmapping/deletemappings/well/{wellUid}/wellbore/{wellboreUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);
+
+            app.MapGet("/agent-settings", AgentSettingsHandler.GetAgentSettings, useOAuth2);
+            app.MapPost("/agent-settings", AgentSettingsHandler.CreateAgentSettings, useOAuth2);
+            app.MapPatch("/agent-settings", AgentSettingsHandler.UpdateAgentSettings, useOAuth2);
+            app.MapDelete("/agent-settings", AgentSettingsHandler.DeleteAgentSettings, useOAuth2);
+
             Dictionary<EntityType, string> types = EntityTypeHelper.ToPluralLowercase();
             Dictionary<EntityType, string> routes = types.ToDictionary(entry => entry.Key, entry => "/wells/{wellUid}/wellbores/{wellboreUid}/" + entry.Value);
 
             app.MapGet(routes[EntityType.BhaRun], BhaRunHandler.GetBhaRuns, useOAuth2);
             app.MapGet(routes[EntityType.BhaRun] + "/{bhaRunUid}", BhaRunHandler.GetBhaRun, useOAuth2);
+
+            app.MapGet(routes[EntityType.Attachment], AttachmentHandler.GetAttachments, useOAuth2);
+            app.MapGet(routes[EntityType.Attachment] + "/{attachmentUid}", AttachmentHandler.GetAttachment, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/changelogs", ChangeLogHandler.GetChangeLogs, useOAuth2);
 
@@ -101,6 +116,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/jobs/alljobinfos", JobHandler.GetAllJobInfos, useOAuth2, AuthorizationPolicyRoles.ADMINORDEVELOPER);
             app.MapPost("/jobs/cancel/{jobId}", JobHandler.CancelJob, useOAuth2);
             app.MapGet("/jobs/report/{jobId}", JobHandler.GetReport, useOAuth2);
+            app.MapGet("/jobs/download/{jobId}", JobHandler.DownloadFile, useOAuth2);
 
             app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
             app.MapGet("/credentials/deauthorize", AuthorizeHandler.Deauthorize, useOAuth2);
