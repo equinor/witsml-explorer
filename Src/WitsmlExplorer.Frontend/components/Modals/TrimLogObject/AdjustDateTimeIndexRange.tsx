@@ -4,7 +4,7 @@ import { toDate } from "date-fns-tz";
 import React, { useEffect, useState } from "react";
 import { Button } from "../../StyledComponents/Button.tsx";
 
-export interface AdjustDateTimeModelProps {
+export interface AdjustDateTimeIndexRangeProps {
   minDate: string;
   maxDate: string;
   isDescending?: boolean;
@@ -19,8 +19,8 @@ interface SetRangeButton {
   displayText: string;
 }
 
-const AdjustDateTimeModal = (
-  props: AdjustDateTimeModelProps
+const AdjustDateTimeIndexRange = (
+  props: AdjustDateTimeIndexRangeProps
 ): React.ReactElement => {
   const {
     minDate,
@@ -148,4 +148,4 @@ const AdjustDateTimeModal = (
   );
 };
 
-export default AdjustDateTimeModal;
+export default AdjustDateTimeIndexRange;

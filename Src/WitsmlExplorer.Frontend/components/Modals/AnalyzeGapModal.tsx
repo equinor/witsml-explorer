@@ -6,8 +6,8 @@ import {
 } from "components/Constants";
 import ModalDialog from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
-import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import AdjustDateTimeIndexRange from "./TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "./TrimLogObject/AdjustDepthIndexRange.tsx";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
@@ -101,7 +101,7 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
             <>
               {log.indexType === WITSML_INDEX_TYPE_DATE_TIME && (
                 <>
-                  <AdjustDateTimeModal
+                  <AdjustDateTimeIndexRange
                     minDate={log.startIndex}
                     maxDate={log.endIndex}
                     isDescending={
@@ -128,7 +128,7 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
               )}
               {log.indexType === WITSML_INDEX_TYPE_MD && (
                 <>
-                  <AdjustNumberRangeModal
+                  <AdjustDepthIndexRange
                     minValue={indexToNumber(log.startIndex)}
                     maxValue={indexToNumber(log.endIndex)}
                     isDescending={
