@@ -17,6 +17,7 @@ using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Services;
@@ -105,8 +106,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Assert.InRange(qri.Timestamp, testStart, DateTime.Now);
                     Assert.NotEmpty(qri.QcIssues);
                     Assert.Equal(2, qri.QcIssues.Count());
-                    Assert.Contains("large gap", qri.QcIssues);
-                    Assert.Contains("low density", qri.QcIssues);
+                    Assert.Contains(QcIssue.LARGE_GAP, qri.QcIssues);
+                    Assert.Contains(QcIssue.LOW_DENSITY, qri.QcIssues);
                 },
                 ri =>
                 {
@@ -116,7 +117,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Assert.InRange(qri.Timestamp, testStart, DateTime.Now);
                     Assert.NotEmpty(qri.QcIssues);
                     Assert.Single(qri.QcIssues);
-                    Assert.Contains("no data", qri.QcIssues);
+                    Assert.Contains(QcIssue.NO_DATA, qri.QcIssues);
                 },
                 ri =>
                 {
@@ -158,7 +159,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Assert.InRange(qri.Timestamp, testStart, DateTime.Now);
                     Assert.NotEmpty(qri.QcIssues);
                     Assert.Single(qri.QcIssues);
-                    Assert.Contains("no data", qri.QcIssues);
+                    Assert.Contains(QcIssue.NO_DATA, qri.QcIssues);
                 },
                 ri =>
                 {
@@ -168,8 +169,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Assert.InRange(qri.Timestamp, testStart, DateTime.Now);
                     Assert.NotEmpty(qri.QcIssues);
                     Assert.Equal(2, qri.QcIssues.Count());
-                    Assert.Contains("large gap", qri.QcIssues);
-                    Assert.Contains("low density", qri.QcIssues);
+                    Assert.Contains(QcIssue.LARGE_GAP, qri.QcIssues);
+                    Assert.Contains(QcIssue.LOW_DENSITY, qri.QcIssues);
                 },
                 ri =>
                 {
@@ -326,6 +327,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Null(jobInfo.Report);
             Assert.Equal("Depth gap is 0 or not set.", result.WorkerResult.Message);
             Assert.False(result.WorkerResult.IsSuccess);
+
+
+            job = GetMinimumDataQcJob(new LogObject(), ["BPOS", "SPM1", "SPM2"], 0.7, 2.9, null, "53", "51");
+            jobInfo = new JobInfo();
+            job.JobInfo = jobInfo;
+
+            var ex = await Record.ExceptionAsync(() => _worker.Execute(job));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DataException>(ex);
+            Assert.Equal($"Wrong index order - log direction: {WitsmlLog.WITSML_DIRECTION_INCREASING}, start index: 53 m, end index: 51 m", ex.Message);
         }
 
         [Fact]
@@ -341,6 +353,18 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Null(jobInfo.Report);
             Assert.Equal("Time gap is 0 or not set.", result.WorkerResult.Message);
             Assert.False(result.WorkerResult.IsSuccess);
+
+
+            job = GetMinimumDataQcJob(new LogObject(), ["BPOS", "SPM1", "SPM2"], 0.7, null, 2, "2023-04-19T00:00:03Z", "2023-04-19T00:00:01Z");
+            jobInfo = new JobInfo();
+            job.JobInfo = jobInfo;
+
+
+            var ex = await Record.ExceptionAsync(() => _worker.Execute(job));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DataException>(ex);
+            Assert.Equal($"Wrong index order - log direction: {WitsmlLog.WITSML_DIRECTION_INCREASING}, start index: 2023-04-19T00:00:03.000Z, end index: 2023-04-19T00:00:01.000Z", ex.Message);
         }
 
         private static void SetupClient(Mock<IWitsmlClient> witsmlClient, string indexType, bool isLogDataWithIssues, bool isIncreasing)
@@ -469,11 +493,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
             };
         }
 
-        private static MinimumDataQcJob GetMinimumDataQcJob(LogObject logObject, ICollection<string> mnemonics, double Density, double? DepthGap, long? TimeGap)
+        private static MinimumDataQcJob GetMinimumDataQcJob(LogObject logObject, ICollection<string> mnemonics, double Density, double? DepthGap, long? TimeGap, string startIndex = "", string endIndex = "")
         {
             return new MinimumDataQcJob
             {
                 LogReference = logObject,
+                StartIndex = startIndex,
+                EndIndex = endIndex,
                 Mnemonics = mnemonics,
                 Density = Density,
                 DepthGap = DepthGap,
