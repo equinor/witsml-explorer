@@ -11,7 +11,7 @@ import {
   ContentType
 } from "../ContentViews/table";
 import { Colors } from "../../styles/Colors.tsx";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Autocomplete, Dialog } from "@equinor/eds-core-react";
 import { useOperationState } from "../../hooks/useOperationState.tsx";
 import OperationType from "../../contexts/operationType.ts";
@@ -218,8 +218,7 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
   };
 
   const dialogStyle = {
-    width: "960px",
-    height: "75vh",
+    width: "60vw",
     background: colors.ui.backgroundDefault,
     color: colors.text.staticIconsDefault
   };
@@ -227,9 +226,11 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
   return (
     <>
       <Dialog open={true} style={dialogStyle}>
-        <Dialog.Header>
-          <Dialog.Title>Wellbore UID Mapping Overview</Dialog.Title>
-        </Dialog.Header>
+        <DialogHeader colors={colors}>
+          <Dialog.Title style={{ color: colors.text.staticIconsDefault }}>
+            Wellbore UID Mapping Overview
+          </Dialog.Title>
+        </DialogHeader>
         <Dialog.CustomContent>
           <ContentLayout>
             <HeaderLayout>
@@ -291,13 +292,16 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
         </Dialog.CustomContent>
         <Dialog.Actions>
           <FooterLayout>
-            <Button onClick={onDelete} disabled={selectedRows.length == 0}>
+            <StyledButton
+              onClick={onDelete}
+              disabled={selectedRows.length == 0}
+            >
               Remove Mapping
-            </Button>
-            <Button onClick={onEdit} disabled={selectedRows.length != 1}>
+            </StyledButton>
+            <StyledButton onClick={onEdit} disabled={selectedRows.length != 1}>
               Edit
-            </Button>
-            <Button onClick={onClose}>Close</Button>
+            </StyledButton>
+            <StyledButton onClick={onClose}>Close</StyledButton>
           </FooterLayout>
         </Dialog.Actions>
       </Dialog>
@@ -305,25 +309,33 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
   );
 };
 
+const DialogHeader = styled(Dialog.Header)<{ colors: Colors }>`
+  hr {
+    background-color: ${(props) => props.colors.interactive.disabledBorder};
+  }
+`;
+
 const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
   button {
     color: ${(props) => props.colors.infographic.primaryMossGreen};
   }
-  min-width: 60vh;
+  label {
+    color: ${(props) => props.colors.text.staticTextLabel};
+  }
+  min-width: 25vw;
 `;
 
 const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 82%;
   gap: 0.75rem;
 `;
 
 const HeaderLayout = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   gap: 0.75rem;
 `;
 
@@ -337,7 +349,7 @@ const BodyLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  min-height: 49vh;
+  height: 50vh;
 `;
 
 const FooterLayout = styled.div`
@@ -345,6 +357,22 @@ const FooterLayout = styled.div`
   flex-direction: row;
   justify-content: space-between;
   gap: 0.75rem;
+`;
+
+const StyledButton = styled(Button)<{ align?: string; isCompact?: boolean }>`
+  &&& {
+    ${({ align }) =>
+      align === "right" ? `margin-left: auto;` : "margin: 0.5em;"};
+  }
+
+  ${({ isCompact }) =>
+    !isCompact
+      ? ""
+      : css`
+          & > span > svg {
+            height: 10px !important;
+          }
+        `}
 `;
 
 export default WellboreUidMappingOverviewModal;
