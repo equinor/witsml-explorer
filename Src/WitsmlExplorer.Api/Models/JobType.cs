@@ -8,6 +8,7 @@ namespace WitsmlExplorer.Api.Models
         CopyObjects,
         CopyWell,
         CopyWellbore,
+        CopyWellboreWithObjects,
         CopyWithParent,
         TrimLogObject,
         DeleteComponents,
