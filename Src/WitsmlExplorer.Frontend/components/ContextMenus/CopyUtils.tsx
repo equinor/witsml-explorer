@@ -5,7 +5,7 @@ import { ComponentType } from "models/componentType";
 import ComponentReferences, {
   createComponentReferences
 } from "models/jobs/componentReferences";
-import { CopyComponentsJob, CopyObjectsJob } from "models/jobs/copyJobs";
+import { CopyComponentsJob, CopyObjectsJob, CopyWellboreWithObjectsJob } from "models/jobs/copyJobs";
 import ObjectReference from "models/jobs/objectReference";
 import ObjectReferences from "models/jobs/objectReferences";
 import WellboreReference, { toWellboreReference } from "models/jobs/wellboreReference";
@@ -132,20 +132,24 @@ export const pasteComponents = async (
 
 export const pasteWellbore = async (
   servers: Server[],
-  sourceReferences: ComponentReferences,
+  wellBore: WellboreReference,
   dispatchOperation: DispatchOperation,
-  target: Well
+  well: Well
 ) => {
+   const target: WellReference = {
+      wellUid: well.uid,
+      wellName: well.name
+    };
+  wellBore.server = wellBore.server;
   dispatchOperation({ type: OperationType.HideContextMenu });
   const orderCopyJob = () => {
-    const copyJob: CopyWelboreJob = {
-      source: sourceReferences,
-      target: targetReference
-    };
-    JobService.orderJob(JobType.CopyWellbore, copyJob);
+    const copyJob = createCopyWellboreWithObjectsJob(
+      wellBore, target
+    );
+    JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
   };
 
-  onClickPaste(servers, sourceReferences?.serverUrl, orderCopyJob);
+  onClickPaste(servers, wellBore.server?.url, orderCopyJob);
 };
 
 export const copyObjectOnWellbore = async (
@@ -169,10 +173,12 @@ export const copyWellbore = async (
   connectedServer: Server,
   dispatchOperation: DispatchOperation
 ) => {
+  console.log(connectedServer)
   dispatchOperation({ type: OperationType.HideContextMenu });
   const wellboreReference: WellboreReference = toWellboreReference(
     wellbore
   );
+  wellboreReference.server = connectedServer;
   await navigator.clipboard.writeText(JSON.stringify(wellboreReference));
 };
 
@@ -295,4 +301,11 @@ export const createCopyJob = (
     wellboreName: targetWellbore.wellboreName
   };
   return { source: objectReferences, target: targetWellboreReference };
+};
+
+export const createCopyWellboreWithObjectsJob = (
+  sourceWellbore: WellboreReference,
+  targetWell: WellReference,
+): CopyWellboreWithObjectsJob => {
+  return { source: sourceWellbore, target: targetWell };
 };

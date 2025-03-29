@@ -47,6 +47,7 @@ import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
 import { useWellBoreReference } from "./UseClipboardReferences";
+import { pasteWellbore } from "./CopyUtils";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -219,8 +220,9 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem
           key={"paste"}
           onClick={() => {
-            console.log("pasted weelbore")
-            console.log(wellboreReference)
+            console.log("pasted weelbore");
+            console.log(wellboreReference);
+            pasteWellbore(servers, wellboreReference, dispatchOperation,  well);
           }
           }
           disabled={wellboreReference === null}

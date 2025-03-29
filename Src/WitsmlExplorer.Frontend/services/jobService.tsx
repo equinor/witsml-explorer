@@ -159,6 +159,7 @@ export enum JobType {
   CopyObjects = "CopyObjects",
   CopyWell = "CopyWell",
   CopyWellbore = "CopyWellbore",
+  CopyWellboreWithObjects = "CopyWellboreWithObjects",
   CopyWithParent = "CopyWithParent",
   CopyObjectsWithParent = "CopyObjectsWithParent",
   CreateWellbore = "CreateWellbore",

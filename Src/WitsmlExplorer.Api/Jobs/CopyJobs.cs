@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Jobs
     }
 
     public record
-        CopyWellboreWithObjectsJob : ICopyJob<WellboreReference, WellboreReference>
+        CopyWellboreWithObjectsJob : ICopyJob<WellboreReference, WellReference>
     {
         /// <summary>
         /// Indicates, if the job can be cancelled

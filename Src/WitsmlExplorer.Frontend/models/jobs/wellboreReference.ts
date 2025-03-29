@@ -1,3 +1,4 @@
+import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 
 export default interface WellboreReference {
@@ -5,6 +6,7 @@ export default interface WellboreReference {
   wellboreUid: string;
   wellName: string;
   wellboreName: string;
+  server?: Server;
 }
 
 export const toWellboreReference = (wellbore: Wellbore): WellboreReference => {
