@@ -188,7 +188,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             (WorkerResult result, RefreshAction refresh) copyLogResult = await _copyLogWorker.Execute(copyLogJob, cancellationToken);
             var reportItem = new CommonCopyReportItem()
             {
-                Phase = "Copy Log " +  timeLog.Name,
+                Phase = "Copy Log " + timeLog.Name,
                 Message = copyLogResult.result.Message,
                 Status = GetJobStatus(copyLogResult.result.IsSuccess, cancellationToken)
             };
@@ -206,32 +206,32 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
 
                     var copyJob = new CopyObjectsJob()
-                {
-                    Source = new ObjectReferences()
                     {
-                        WellUid = job.Source.WellUid,
-                        WellName = job.Source.WellName,
-                        WellboreUid = job.Source.WellboreUid,
-                        WellboreName = job.Source.WellboreUid,
-                        ObjectType = entityType,
-                        ObjectUids = result.Objects.Select(x => x.Uid).ToArray()
-                    },
-                    Target = new WellboreReference()
+                        Source = new ObjectReferences()
+                        {
+                            WellUid = job.Source.WellUid,
+                            WellName = job.Source.WellName,
+                            WellboreUid = job.Source.WellboreUid,
+                            WellboreName = job.Source.WellboreUid,
+                            ObjectType = entityType,
+                            ObjectUids = result.Objects.Select(x => x.Uid).ToArray()
+                        },
+                        Target = new WellboreReference()
+                        {
+                            WellboreName = job.Source.WellboreName,
+                            WellboreUid = job.Source.WellboreUid,
+                            WellName = job.Target.WellName,
+                            WellUid = job.Target.WellUid,
+                        }
+                    };
+                    (WorkerResult result, RefreshAction refresh) copyResult = await _copyObjectsWorker.Execute(copyJob, cancellationToken);
+                    var reportItem = new CommonCopyReportItem()
                     {
-                        WellboreName = job.Source.WellboreName,
-                        WellboreUid = job.Source.WellboreUid,
-                        WellName = job.Target.WellName,
-                        WellUid = job.Target.WellUid,
-                    }
-                };
-                (WorkerResult result, RefreshAction refresh) copyResult = await _copyObjectsWorker.Execute(copyJob, cancellationToken);
-                var reportItem = new CommonCopyReportItem()
-                {
-                    Phase = "Copy " + entityType ,
-                    Message = copyResult.result.Message,
-                    Status = GetJobStatus(copyResult.result.IsSuccess, cancellationToken)
-                };
-                reportItems.Add(reportItem);
+                        Phase = "Copy " + entityType ,
+                        Message = copyResult.result.Message,
+                        Status = GetJobStatus(copyResult.result.IsSuccess, cancellationToken)
+                    };
+                    reportItems.Add(reportItem);
                 }
             }
             catch (Exception ex)
