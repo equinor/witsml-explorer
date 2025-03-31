@@ -220,17 +220,12 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem
           key={"paste"}
           onClick={() => {
-            console.log("pasted weelbore");
-            console.log(wellboreReference);
-            pasteWellbore(servers, wellboreReference, dispatchOperation,  well);
-          }
-          }
+            pasteWellbore(servers, wellboreReference, dispatchOperation, well);
+          }}
           disabled={wellboreReference === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            Paste wellbore
-          </Typography>
+          <Typography color={"primary"}>Paste wellbore</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {filteredServers

@@ -38,7 +38,8 @@ export const useClipboardReferences = (
 export const useWellBoreReference = (
   pollInterval = 0
 ): WellboreReference | null => {
-  const [wellboreReference, setWellboreReference] = useState<WellboreReference>(null);
+  const [wellboreReference, setWellboreReference] =
+    useState<WellboreReference>(null);
 
   const tryToParseClipboardContent = async () => {
     try {
@@ -46,6 +47,7 @@ export const useWellBoreReference = (
       const wellboreReference = parseWellboreStringToReference(clipboardText);
       setWellboreReference(wellboreReference);
     } catch (e) {
+      throw new Error("Invalid input given.", e);
       //Not a valid object on the clipboard? That is fine, we won't use it.
     }
   };
@@ -85,7 +87,9 @@ export function parseStringToReferences(input: string): ObjectReferences {
   return jsonObject;
 }
 
-export function parseWellboreStringToReference(input: string): WellboreReference {
+export function parseWellboreStringToReference(
+  input: string
+): WellboreReference {
   let jsonObject: WellboreReference;
   try {
     jsonObject = JSON.parse(input);
