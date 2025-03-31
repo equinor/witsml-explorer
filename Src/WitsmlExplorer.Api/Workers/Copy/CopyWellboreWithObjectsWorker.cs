@@ -227,7 +227,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     (WorkerResult result, RefreshAction refresh) copyResult = await _copyObjectsWorker.Execute(copyJob, cancellationToken);
                     var reportItem = new CommonCopyReportItem()
                     {
-                        Phase = "Copy " + entityType ,
+                        Phase = "Copy " + entityType,
                         Message = copyResult.result.Message,
                         Status = GetJobStatus(copyResult.result.IsSuccess, cancellationToken)
                     };
@@ -238,7 +238,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 var reportItem = new CommonCopyReportItem()
                 {
-                    Phase = "Copy " + entityType ,
+                    Phase = "Copy " + entityType,
                     Message = ex.Message,
                     Status = GetJobStatus(false, cancellationToken)
                 };
