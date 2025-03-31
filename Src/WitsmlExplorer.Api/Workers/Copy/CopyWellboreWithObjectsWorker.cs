@@ -29,7 +29,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private readonly ICopyWellboreWorker _copyWellboreWorker;
         private readonly ICopyLogWorker _copyLogWorker;
         private readonly ICopyObjectsWorker _copyObjectsWorker;
-        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger,ICopyWellboreWorker copyWellboreWorker, ICopyLogWorker copyLogWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker) : base(witsmlClientProvider, logger)
+        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, ICopyLogWorker copyLogWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker) : base(witsmlClientProvider, logger)
         {
             _copyWellboreWorker = copyWellboreWorker;
             _copyLogWorker = copyLogWorker;
@@ -88,7 +88,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 EntityType.WbGeometry, sourceClient, reportItems,
                 cancellationToken);
 
-            await CopyLogs(job, reportItems ,sourceClient, cancellationToken);
+            await CopyLogs(job, reportItems, sourceClient, cancellationToken);
 
             BaseReport report = CreateCopyWithParentReport(reportItems);
             job.JobInfo.Report = report;
@@ -104,9 +104,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 Title = $"Copy wellbore with objects report",
                 Summary = "Copy wellbore  parent report",
-                WarningMessage = "Warning messages",
                 ReportItems = reportItems,
-                JobDetails =" report details"
+                JobDetails = "report details"
             };
         }
 
@@ -127,35 +126,34 @@ namespace WitsmlExplorer.Api.Workers.Copy
             if (depthLogs.Any())
             {
                 var copyLogJob = new CopyObjectsJob()
-            {
-                Source = new ObjectReferences()
                 {
-                    Names = depthLogs.Select(x => x.Name).ToArray(),
-                    ObjectUids = depthLogs.Select(x => x.Uid).ToArray(),
-                    ObjectType = EntityType.Log,
-                    WellName = job.Source.WellName,
-                    WellUid = job.Source.WellUid,
-                    WellboreUid = job.Source.WellboreUid,
-                    WellboreName = job.Source.WellboreName
-                },
-                Target = new WellboreReference()
+                    Source = new ObjectReferences()
+                    {
+                        Names = depthLogs.Select(x => x.Name).ToArray(),
+                        ObjectUids = depthLogs.Select(x => x.Uid).ToArray(),
+                        ObjectType = EntityType.Log,
+                        WellName = job.Source.WellName,
+                        WellUid = job.Source.WellUid,
+                        WellboreUid = job.Source.WellboreUid,
+                        WellboreName = job.Source.WellboreName
+                    },
+                    Target = new WellboreReference()
+                    {
+                        WellboreName = job.Source.WellboreName,
+                        WellboreUid = job.Source.WellboreUid,
+                        WellName = job.Target.WellName,
+                        WellUid = job.Target.WellUid,
+                    }
+                };
+
+                (WorkerResult result, RefreshAction refresh) copyLogResult = await _copyLogWorker.Execute(copyLogJob, cancellationToken);
+                var reportItem = new CommonCopyReportItem()
                 {
-                    WellboreName = job.Source.WellboreName,
-                    WellboreUid = job.Source.WellboreUid,
-                    WellName = job.Target.WellName,
-                    WellUid = job.Target.WellUid,
-                }
-            };
-
-            (WorkerResult result, RefreshAction refresh) copyLogResult = await _copyLogWorker.Execute(copyLogJob, cancellationToken);
-            var reportItem = new CommonCopyReportItem()
-            {
-                Phase = "Copy Depths Logs",
-                Message = copyLogResult.result.Message,
-                Status = GetJobStatus(copyLogResult.result.IsSuccess, cancellationToken)
-            };
-
-            reportItems.Add(reportItem);
+                    Phase = "Copy Depths Logs",
+                    Message = copyLogResult.result.Message,
+                    Status = GetJobStatus(copyLogResult.result.IsSuccess, cancellationToken)
+                };
+                reportItems.Add(reportItem);
             }
         }
 
