@@ -65,6 +65,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 await _copyWellboreWorker.Execute(copyWellboreJob,
                     cancellationToken);
             await CopyWellboreObjectsByType(job,
+                EntityType.Attachment, sourceClient, reportItems,
+                cancellationToken);
+            await CopyWellboreObjectsByType(job,
                 EntityType.BhaRun, sourceClient, reportItems,
                 cancellationToken);
             await CopyWellboreObjectsByType(job,
