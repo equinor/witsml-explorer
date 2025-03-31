@@ -79,17 +79,6 @@ namespace WitsmlExplorer.Api.Services
             {
                 return false;
             }
-
-            var cv = eh.GetCookieValue();
-            var bt = eh.GetBearerToken();
-            _logger.LogError(bt);
-            _logger.LogError(cv);
-            _logger.LogError(eh.SourceServer);
-            _logger.LogError(eh.SourceUsername);
-            _logger.LogError(eh.WitsmlAuth);
-            _logger.LogError(eh.Authorization);
-            _logger.LogError(eh.TargetServer);
-            _logger.LogError(eh.TargetUsername);
             string cacheId = GetCacheId(eh);
             if (!_useOAuth2 && (string.IsNullOrEmpty(cacheId) || _credentialsCache.GetItem(cacheId) == null))
             {
