@@ -155,7 +155,6 @@ export const pasteWellbore = async (
     (x) => x.uid === wellBore.wellboreUid || x.name === wellBore.wellboreName
   );
   if (existingWellbore.length > 0) {
-    console.log("weellbore already exist");
     NotificationService.Instance.alertDispatcher.dispatch({
       serverUrl: new URL(connectedServer.url),
       message: `Wellbore ${wellBore.wellboreName} already exists on the target well.`,
