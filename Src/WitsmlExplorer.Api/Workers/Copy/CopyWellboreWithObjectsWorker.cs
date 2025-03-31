@@ -163,8 +163,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 Source = new ObjectReferences()
                 {
-                    Names = new[] {timeLog.Name},
-                    ObjectUids = new[] {timeLog.Uid},
+                    Names = new[]
+                    {
+                        timeLog.Name
+                    },
+                    ObjectUids = new[]
+                    {
+                        timeLog.Uid
+                    },
                     ObjectType = EntityType.Log,
                     WellName = job.Source.WellName,
                     WellUid = job.Source.WellUid,
