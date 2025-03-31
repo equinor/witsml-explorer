@@ -30,6 +30,8 @@ import LogObject from "models/logObject";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import WellReference from "models/jobs/wellReference";
+import WellboreService from "services/wellboreService";
+import NotificationService from "services/notificationService";
 
 export const onClickPaste = (
   servers: Server[],
@@ -140,19 +142,38 @@ export const pasteWellbore = async (
   servers: Server[],
   wellBore: WellboreReference,
   dispatchOperation: DispatchOperation,
-  well: Well
+  well: Well,
+  connectedServer: Server
 ) => {
-  const target: WellReference = {
-    wellUid: well.uid,
-    wellName: well.name
-  };
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const orderCopyJob = () => {
-    const copyJob = createCopyWellboreWithObjectsJob(wellBore, target);
-    JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
-  };
+  const existingWellbores = await WellboreService.getWellbores(
+    well.uid,
+    null,
+    connectedServer
+  );
+  const existingWellbore = existingWellbores.filter(
+    (x) => x.uid === wellBore.wellboreUid || x.name === wellBore.wellboreName
+  );
+  if (existingWellbore.length > 0) {
+    console.log("weellbore already exist");
+    NotificationService.Instance.alertDispatcher.dispatch({
+      serverUrl: new URL(connectedServer.url),
+      message: `Wellbore ${wellBore.wellboreName} already exists on the target well.`,
+      isSuccess: false,
+      severity: "warning"
+    });
+  } else {
+    const target: WellReference = {
+      wellUid: well.uid,
+      wellName: well.name
+    };
+    const orderCopyJob = () => {
+      const copyJob = createCopyWellboreWithObjectsJob(wellBore, target);
+      JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
+    };
 
-  onClickPaste(servers, wellBore.server?.url, orderCopyJob);
+    onClickPaste(servers, wellBore.server?.url, orderCopyJob);
+  }
 };
 
 export const copyObjectOnWellbore = async (

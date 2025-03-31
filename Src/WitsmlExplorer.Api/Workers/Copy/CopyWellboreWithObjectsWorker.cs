@@ -149,7 +149,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 (WorkerResult result, RefreshAction refresh) copyLogResult = await _copyLogWorker.Execute(copyLogJob, cancellationToken);
                 var reportItem = new CommonCopyReportItem()
                 {
-                    Phase = "Copy Depths Logs",
+                    Phase = "Copy depth based logs",
                     Message = copyLogResult.result.Message,
                     Status = GetJobStatus(copyLogResult.result.IsSuccess, cancellationToken)
                 };
@@ -188,7 +188,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             (WorkerResult result, RefreshAction refresh) copyLogResult = await _copyLogWorker.Execute(copyLogJob, cancellationToken);
             var reportItem = new CommonCopyReportItem()
             {
-                Phase = "Copy Log " + timeLog.Name,
+                Phase = "Copy time based log " + timeLog.Name,
                 Message = copyLogResult.result.Message,
                 Status = GetJobStatus(copyLogResult.result.IsSuccess, cancellationToken)
             };
@@ -198,6 +198,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
         private async Task CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IWitsmlClient sourceClient, List<CommonCopyReportItem> reportItems, CancellationToken? cancellationToken)
         {
+            var types = EntityTypeHelper.ToPluralLowercase();
             try
             {
                 IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(job.Source.WellUid, job.Source.WellboreUid, "", entityType);
@@ -227,7 +228,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     (WorkerResult result, RefreshAction refresh) copyResult = await _copyObjectsWorker.Execute(copyJob, cancellationToken);
                     var reportItem = new CommonCopyReportItem()
                     {
-                        Phase = "Copy " + entityType,
+                        Phase = "Copy " + types[entityType],
                         Message = copyResult.result.Message,
                         Status = GetJobStatus(copyResult.result.IsSuccess, cancellationToken)
                     };
@@ -238,7 +239,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 var reportItem = new CommonCopyReportItem()
                 {
-                    Phase = "Copy " + entityType,
+                    Phase = "Copy " + types[entityType],
                     Message = ex.Message,
                     Status = GetJobStatus(false, cancellationToken)
                 };
