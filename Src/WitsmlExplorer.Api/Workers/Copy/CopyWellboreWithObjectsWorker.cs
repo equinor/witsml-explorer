@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
@@ -64,6 +65,19 @@ namespace WitsmlExplorer.Api.Workers.Copy
             (WorkerResult result, RefreshAction refresh) wellboreResult =
                 await _copyWellboreWorker.Execute(copyWellboreJob,
                     cancellationToken);
+            string wellboreAlredyExists = "Target wellbore already exists";
+            if (wellboreResult.result.Message == wellboreAlredyExists)
+            {
+                string errorMessage = "Failed to copy wellbore with objects. " + wellboreAlredyExists;
+                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, errorMessage, job.Description());
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
+            if (!wellboreResult.result.IsSuccess)
+            {
+                string errorMessage = "Failed to copy wellbore with objects - creation of wellbore failed";
+                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, wellboreResult.result.Reason, job.Description());
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, wellboreResult.result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
             await CopyWellboreObjectsByType(job,
                 EntityType.Attachment, sourceClient, reportItems,
                 cancellationToken);
@@ -93,15 +107,25 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             await CopyLogs(job, reportItems, sourceClient, cancellationToken);
 
-            BaseReport report = CreateCopyWithParentReport(reportItems);
+            BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems);
             job.JobInfo.Report = report;
 
-            RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
-            wellboreResult.refresh = refreshAction;
-            return wellboreResult;
+            var fails = reportItems.Count(x => x.Status == "Fail");
+            if (fails > 0)
+            {
+                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, $"Successfully copied wellbore with supported child objects, copying of some objects failed: {job.Source.WellboreUid} -> {job.Source.WellboreUid}", sourceServerUrl: sourceClient.GetServerHostname());
+                RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
+                return (workerResult, refreshAction);
+            }
+            else
+            {
+                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, $"Successfully copied wellbore with all supported child objects: {job.Source.WellboreUid} -> {job.Source.WellboreUid}", sourceServerUrl: sourceClient.GetServerHostname());
+                RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
+                return (workerResult, refreshAction);
+            }
         }
 
-        private CommonCopyReport CreateCopyWithParentReport(List<CommonCopyReportItem> reportItems)
+        private CommonCopyReport CreateCopyWellboreWithObjectsReport(List<CommonCopyReportItem> reportItems)
         {
             return new CommonCopyReport
             {
@@ -204,8 +228,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
             var types = EntityTypeHelper.ToPluralLowercase();
             try
             {
-                IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(job.Source.WellUid, job.Source.WellboreUid, "", entityType);
-                IWitsmlObjectList result = await sourceClient.GetFromStoreNullableAsync(query, new OptionsIn(ReturnElements.IdOnly));
+                IWitsmlObjectList query =
+                    ObjectQueries.GetWitsmlObjectById(job.Source.WellUid,
+                        job.Source.WellboreUid, "", entityType);
+                IWitsmlObjectList result =
+                    await sourceClient.GetFromStoreNullableAsync(query,
+                        new OptionsIn(ReturnElements.IdOnly));
                 if (result.Objects.Any())
                 {
 
@@ -218,7 +246,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
                             WellboreUid = job.Source.WellboreUid,
                             WellboreName = job.Source.WellboreUid,
                             ObjectType = entityType,
-                            ObjectUids = result.Objects.Select(x => x.Uid).ToArray()
+                            ObjectUids =
+                                result.Objects.Select(x => x.Uid).ToArray()
                         },
                         Target = new WellboreReference()
                         {
@@ -228,12 +257,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
                             WellUid = job.Target.WellUid,
                         }
                     };
-                    (WorkerResult result, RefreshAction refresh) copyResult = await _copyObjectsWorker.Execute(copyJob, cancellationToken);
+                    (WorkerResult result, RefreshAction refresh) copyResult =
+                        await _copyObjectsWorker.Execute(copyJob,
+                            cancellationToken);
                     var reportItem = new CommonCopyReportItem()
                     {
                         Phase = "Copy " + types[entityType],
                         Message = copyResult.result.Message,
-                        Status = GetJobStatus(copyResult.result.IsSuccess, cancellationToken)
+                        Status = GetJobStatus(copyResult.result.IsSuccess,
+                            cancellationToken)
                     };
                     reportItems.Add(reportItem);
                 }
