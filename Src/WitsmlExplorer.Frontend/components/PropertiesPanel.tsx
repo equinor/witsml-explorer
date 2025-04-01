@@ -51,7 +51,7 @@ const PropertiesPanel = (): React.ReactElement => {
     let tmpString = "";
     properties.forEach(function (value, key) {
       if (key.indexOf("UID") === 0) {
-        tmpString += key.replace("UID", "") + " Uid: " + value + ", ";
+        tmpString += key.replace("UID", "") + " UID: " + value + ", ";
       } else {
         tmpString += key + " Name: " + value + ", ";
       }
