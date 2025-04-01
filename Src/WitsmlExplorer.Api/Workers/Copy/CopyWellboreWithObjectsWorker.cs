@@ -113,8 +113,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 EntityType.Log, sourceClient, reportItems,
                 cancellationToken, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
 
-         //   await CopyLogs(job, reportItems, sourceClient, cancellationToken);
-
             BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems);
             job.JobInfo.Report = report;
 
