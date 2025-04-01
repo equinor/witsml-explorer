@@ -66,7 +66,7 @@ const PropertiesPanel = (): React.ReactElement => {
   return (
     <>
       {" "}
-      {keys.length && (
+      {keys.length > 0 && (
         <Button
           title="Copy all properties to clipboard"
           onClick={() => copyAllPropertiesToClipboard()}
