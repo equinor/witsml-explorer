@@ -105,7 +105,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 EntityType.WbGeometry, sourceClient, reportItems,
                 cancellationToken);
 
-            await CopyLogs(job, reportItems, sourceClient, cancellationToken);
+            await CopyWellboreObjectsByType(job,
+                EntityType.Log, sourceClient, reportItems,
+                cancellationToken, WitsmlLog.WITSML_INDEX_TYPE_MD);
+
+            await CopyWellboreObjectsByType(job,
+                EntityType.Log, sourceClient, reportItems,
+                cancellationToken, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
+
+         //   await CopyLogs(job, reportItems, sourceClient, cancellationToken);
 
             BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems);
             job.JobInfo.Report = report;
@@ -136,28 +144,22 @@ namespace WitsmlExplorer.Api.Workers.Copy
             };
         }
 
-        private async Task CopyLogs(CopyWellboreWithObjectsJob job, List<CommonCopyReportItem> reportItems,
-            IWitsmlClient sourceClient, CancellationToken? cancellationToken)
+        private async Task CopyTimeLog(WitsmlObjectOnWellbore timeLog, CopyWellboreWithObjectsJob job, List<CommonCopyReportItem> reportItems, CancellationToken? cancellationToken)
         {
-            WitsmlLogs witsmlLog = LogQueries.GetWitsmlLogsByWellbore(job.Source.WellUid, job.Source.WellboreUid);
-            WitsmlLogs result = await sourceClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.Requested));
-            var timeLogs = result.Logs.Where(x =>
-                x.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
-            var depthLogs = result.Logs.Where(x =>
-                x.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD).ToArray();
-            foreach (var timeLog in timeLogs)
-            {
-                await CopyTimeLog(timeLog, job, reportItems, cancellationToken);
-            }
-
-            if (depthLogs.Any())
+            try
             {
                 var copyLogJob = new CopyObjectsJob()
                 {
                     Source = new ObjectReferences()
                     {
-                        Names = depthLogs.Select(x => x.Name).ToArray(),
-                        ObjectUids = depthLogs.Select(x => x.Uid).ToArray(),
+                        Names = new[]
+                        {
+                            timeLog.Name
+                        },
+                        ObjectUids = new[]
+                        {
+                            timeLog.Uid
+                        },
                         ObjectType = EntityType.Log,
                         WellName = job.Source.WellName,
                         WellUid = job.Source.WellUid,
@@ -172,58 +174,28 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         WellUid = job.Target.WellUid,
                     }
                 };
-
                 (WorkerResult result, RefreshAction refresh) copyLogResult = await _copyLogWorker.Execute(copyLogJob, cancellationToken);
                 var reportItem = new CommonCopyReportItem()
                 {
-                    Phase = "Copy depth based logs",
+                    Phase = "Copy time based log " + timeLog.Name,
                     Message = copyLogResult.result.Message,
                     Status = GetJobStatus(copyLogResult.result.IsSuccess, cancellationToken)
                 };
                 reportItems.Add(reportItem);
             }
+            catch (Exception ex)
+            {
+                var reportItem = new CommonCopyReportItem()
+                {
+                    Phase = "Copy time based log " + timeLog.Name,
+                    Message = ex.Message,
+                    Status = GetJobStatus(false, cancellationToken)
+                };
+                reportItems.Add(reportItem);
+            }
         }
 
-        private async Task CopyTimeLog(WitsmlLog timeLog, CopyWellboreWithObjectsJob job, List<CommonCopyReportItem> reportItems, CancellationToken? cancellationToken)
-        {
-            var copyLogJob = new CopyObjectsJob()
-            {
-                Source = new ObjectReferences()
-                {
-                    Names = new[]
-                    {
-                        timeLog.Name
-                    },
-                    ObjectUids = new[]
-                    {
-                        timeLog.Uid
-                    },
-                    ObjectType = EntityType.Log,
-                    WellName = job.Source.WellName,
-                    WellUid = job.Source.WellUid,
-                    WellboreUid = job.Source.WellboreUid,
-                    WellboreName = job.Source.WellboreName
-                },
-                Target = new WellboreReference()
-                {
-                    WellboreName = job.Source.WellboreName,
-                    WellboreUid = job.Source.WellboreUid,
-                    WellName = job.Target.WellName,
-                    WellUid = job.Target.WellUid,
-                }
-            };
-            (WorkerResult result, RefreshAction refresh) copyLogResult = await _copyLogWorker.Execute(copyLogJob, cancellationToken);
-            var reportItem = new CommonCopyReportItem()
-            {
-                Phase = "Copy time based log " + timeLog.Name,
-                Message = copyLogResult.result.Message,
-                Status = GetJobStatus(copyLogResult.result.IsSuccess, cancellationToken)
-            };
-
-            reportItems.Add(reportItem);
-        }
-
-        private async Task CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IWitsmlClient sourceClient, List<CommonCopyReportItem> reportItems, CancellationToken? cancellationToken)
+        private async Task CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IWitsmlClient sourceClient, List<CommonCopyReportItem> reportItems, CancellationToken? cancellationToken, string logIndexType = null)
         {
             var types = EntityTypeHelper.ToPluralLowercase();
             try
@@ -231,43 +203,59 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 IWitsmlObjectList query =
                     ObjectQueries.GetWitsmlObjectById(job.Source.WellUid,
                         job.Source.WellboreUid, "", entityType);
+                if (entityType == EntityType.Log)
+                {
+                    ((WitsmlLog)query.Objects.FirstOrDefault()).IndexType = logIndexType;
+                }
                 IWitsmlObjectList result =
                     await sourceClient.GetFromStoreNullableAsync(query,
                         new OptionsIn(ReturnElements.IdOnly));
                 if (result.Objects.Any())
                 {
-
-                    var copyJob = new CopyObjectsJob()
+                    if (entityType == EntityType.Log && logIndexType ==
+                        WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
                     {
-                        Source = new ObjectReferences()
+                        foreach (var timeLog in result.Objects)
                         {
-                            WellUid = job.Source.WellUid,
-                            WellName = job.Source.WellName,
-                            WellboreUid = job.Source.WellboreUid,
-                            WellboreName = job.Source.WellboreUid,
-                            ObjectType = entityType,
-                            ObjectUids =
-                                result.Objects.Select(x => x.Uid).ToArray()
-                        },
-                        Target = new WellboreReference()
-                        {
-                            WellboreName = job.Source.WellboreName,
-                            WellboreUid = job.Source.WellboreUid,
-                            WellName = job.Target.WellName,
-                            WellUid = job.Target.WellUid,
+                            await CopyTimeLog(timeLog, job, reportItems,
+                                cancellationToken);
                         }
-                    };
-                    (WorkerResult result, RefreshAction refresh) copyResult =
-                        await _copyObjectsWorker.Execute(copyJob,
-                            cancellationToken);
-                    var reportItem = new CommonCopyReportItem()
+                    }
+                    else
                     {
-                        Phase = "Copy " + types[entityType],
-                        Message = copyResult.result.Message,
-                        Status = GetJobStatus(copyResult.result.IsSuccess,
-                            cancellationToken)
-                    };
-                    reportItems.Add(reportItem);
+                        var copyJob = new CopyObjectsJob()
+                        {
+                            Source = new ObjectReferences()
+                            {
+                                WellUid = job.Source.WellUid,
+                                WellName = job.Source.WellName,
+                                WellboreUid = job.Source.WellboreUid,
+                                WellboreName = job.Source.WellboreUid,
+                                ObjectType = entityType,
+                                ObjectUids =
+                                    result.Objects.Select(x => x.Uid).ToArray()
+                            },
+                            Target = new WellboreReference()
+                            {
+                                WellboreName = job.Source.WellboreName,
+                                WellboreUid = job.Source.WellboreUid,
+                                WellName = job.Target.WellName,
+                                WellUid = job.Target.WellUid,
+                            }
+                        };
+                        (WorkerResult result, RefreshAction refresh)
+                            copyResult =
+                                await _copyObjectsWorker.Execute(copyJob,
+                                    cancellationToken);
+                        var reportItem = new CommonCopyReportItem()
+                        {
+                            Phase = "Copy " + types[entityType],
+                            Message = copyResult.result.Message,
+                            Status = GetJobStatus(copyResult.result.IsSuccess,
+                                cancellationToken)
+                        };
+                        reportItems.Add(reportItem);
+                    }
                 }
             }
             catch (Exception ex)
