@@ -93,8 +93,27 @@ export function parseWellboreStringToReference(
   let jsonObject: WellboreReference;
   try {
     jsonObject = JSON.parse(input);
-  } catch {}
+  } catch (e) {
+    throw new Error("Invalid input given.", e);
+  }
+  verifyRequiredWellboreProperties(jsonObject);
   return jsonObject;
+}
+
+function verifyRequiredWellboreProperties(jsonObject: WellboreReference) {
+  const requiredProps = [
+    "wellUid",
+    "wellboreUid",
+    "wellName",
+    "wellboreName",
+    "serverUrl"
+  ];
+  const hasRequiredProperties = requiredProps.every((prop) =>
+    Object.prototype.hasOwnProperty.call(jsonObject, prop)
+  );
+  if (!hasRequiredProperties) {
+    throw new Error("Missing required wellbore fields.");
+  }
 }
 
 function verifyRequiredProperties(jsonObject: ObjectReferences) {
