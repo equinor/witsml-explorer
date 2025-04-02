@@ -73,7 +73,15 @@ const PropertiesPanel = (): React.ReactElement => {
           variant="ghost"
         >
           <Icon name="copy" />
-          All
+          <Typography
+            token={{
+              color: colors.text.staticPropertyKey,
+              fontSize: "0.75rem",
+              fontFamily: "Equinor"
+            }}
+          >
+            All
+          </Typography>
         </Button>
       )}
       {keys.length ? (
