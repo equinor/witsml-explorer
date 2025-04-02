@@ -149,7 +149,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             try
             {
-                var copyLogJob = new CopyObjectsJob()
+                var copyObjectJob = new CopyObjectsJob()
                 {
                     Source = new ObjectReferences()
                     {
@@ -161,7 +161,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         {
                             objectOnWellbore.Uid
                         },
-                        ObjectType = EntityType.Log,
+                        ObjectType = entityType,
                         WellName = job.Source.WellName,
                         WellUid = job.Source.WellUid,
                         WellboreUid = job.Source.WellboreUid,
@@ -175,7 +175,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         WellUid = job.Target.WellUid,
                     }
                 };
-                (WorkerResult result, RefreshAction refresh) copyObjectResult = await _copyObjectsWorker.Execute(copyLogJob, cancellationToken);
+                (WorkerResult result, RefreshAction refresh) copyObjectResult = await _copyObjectsWorker.Execute(copyObjectJob, cancellationToken);
                 var reportItem = new CopyWellboreWithObjectsReportItem()
                 {
                     Phase = "Copy " + entityType,
