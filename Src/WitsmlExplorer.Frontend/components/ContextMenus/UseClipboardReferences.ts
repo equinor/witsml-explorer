@@ -47,7 +47,7 @@ export const useWellboreReference = (
       const wellboreReference = parseWellboreStringToReference(clipboardText);
       setWellboreReference(wellboreReference);
     } catch (e) {
-      throw new Error("Invalid input given.", e);
+      console.error(e);
       //Not a valid object on the clipboard? That is fine, we won't use it.
     }
   };
