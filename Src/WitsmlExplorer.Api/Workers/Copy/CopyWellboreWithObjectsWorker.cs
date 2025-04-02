@@ -62,9 +62,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     WellboreName = job.Source.WellboreName
                 }
             };
-            (WorkerResult result, RefreshAction refresh) wellboreResult =
-                await _copyWellboreWorker.Execute(copyWellboreJob,
-                    cancellationToken);
             var existingWellbore = await WorkerTools.GetWellbore(targetClient, copyWellboreJob.Target, Witsml.ServiceReference.ReturnElements.Requested);
 
             if (existingWellbore != null)
@@ -73,6 +70,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, errorMessage, job.Description());
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
+            (WorkerResult result, RefreshAction refresh) wellboreResult =
+                await _copyWellboreWorker.Execute(copyWellboreJob,
+                    cancellationToken);
             if (!wellboreResult.result.IsSuccess)
             {
                 string errorMessage = "Failed to copy wellbore with objects - creation of wellbore failed";
