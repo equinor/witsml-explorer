@@ -220,12 +220,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem
           key={"paste"}
           onClick={() => {
-            pasteWellbore(
-              servers,
-              wellboreReference,
-              dispatchOperation,
-              well
-            );
+            pasteWellbore(servers, wellboreReference, dispatchOperation, well);
           }}
           disabled={wellboreReference === null}
         >
