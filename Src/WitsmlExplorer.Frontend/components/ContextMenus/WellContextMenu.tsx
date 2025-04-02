@@ -46,7 +46,7 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
-import { useWellBoreReference } from "./UseClipboardReferences";
+import { useWellboreReference } from "./UseClipboardReferences";
 import { pasteWellbore } from "./CopyUtils";
 
 export interface WellContextMenuProps {
@@ -64,7 +64,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
-  const wellboreReference = useWellBoreReference();
+  const wellboreReference = useWellboreReference();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -224,8 +224,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
               servers,
               wellboreReference,
               dispatchOperation,
-              well,
-              connectedServer
+              well
             );
           }}
           disabled={wellboreReference === null}

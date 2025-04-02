@@ -140,39 +140,22 @@ export const pasteComponents = async (
 
 export const pasteWellbore = async (
   servers: Server[],
-  wellBore: WellboreReference,
+  sourceWellBore: WellboreReference,
   dispatchOperation: DispatchOperation,
-  well: Well,
-  connectedServer: Server
+  targetWell: Well
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const existingWellbores = await WellboreService.getWellbores(
-    well.uid,
-    null,
-    connectedServer
-  );
-  const existingWellbore = existingWellbores.filter(
-    (x) => x.uid === wellBore.wellboreUid || x.name === wellBore.wellboreName
-  );
-  if (existingWellbore.length > 0) {
-    NotificationService.Instance.alertDispatcher.dispatch({
-      serverUrl: new URL(connectedServer.url),
-      message: `Wellbore ${wellBore.wellboreName} already exists on the target well.`,
-      isSuccess: false,
-      severity: "warning"
-    });
-  } else {
-    const target: WellReference = {
-      wellUid: well.uid,
-      wellName: well.name
-    };
-    const orderCopyJob = () => {
-      const copyJob = createCopyWellboreWithObjectsJob(wellBore, target);
-      JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
-    };
 
-    onClickPaste(servers, wellBore.server?.url, orderCopyJob);
-  }
+  const target: WellReference = {
+    wellUid: targetWell.uid,
+    wellName: targetWell.name
+  };
+  const orderCopyJob = () => {
+    const copyJob = createCopyWellboreWithObjectsJob(sourceWellBore, target);
+    JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
+  };
+
+  onClickPaste(servers, sourceWellBore.serverUrl, orderCopyJob);
 };
 
 export const copyObjectOnWellbore = async (
@@ -197,7 +180,7 @@ export const copyWellbore = async (
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
   const wellboreReference: WellboreReference = toWellboreReference(wellbore);
-  wellboreReference.server = connectedServer;
+  wellboreReference.serverUrl = connectedServer.url;
   await navigator.clipboard.writeText(JSON.stringify(wellboreReference));
 };
 

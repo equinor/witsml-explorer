@@ -35,7 +35,7 @@ export const useClipboardReferences = (
   return objectReferences;
 };
 
-export const useWellBoreReference = (
+export const useWellboreReference = (
   pollInterval = 0
 ): WellboreReference | null => {
   const [wellboreReference, setWellboreReference] =
@@ -93,9 +93,7 @@ export function parseWellboreStringToReference(
   let jsonObject: WellboreReference;
   try {
     jsonObject = JSON.parse(input);
-  } catch (e) {
-    throw new Error("Invalid input given.", e);
-  }
+  } catch (e) {}
   return jsonObject;
 }
 
