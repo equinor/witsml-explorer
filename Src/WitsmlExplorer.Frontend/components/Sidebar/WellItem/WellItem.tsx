@@ -25,12 +25,17 @@ import React, { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
 import { getStyles } from "./styles.ts";
+import { UidMappingBasicInfo } from "../../../models/uidMapping.tsx";
 
 interface WellItemProps {
   wellUid: string;
+  uidMappingBasicInfos: UidMappingBasicInfo[];
 }
 
-export default function WellItem({ wellUid }: WellItemProps) {
+export default function WellItem({
+  wellUid,
+  uidMappingBasicInfos
+}: WellItemProps) {
   const {
     dispatchOperation,
     operationState: { theme }
@@ -109,6 +114,9 @@ export default function WellItem({ wellUid }: WellItemProps) {
             }
             key={calculateWellboreNodeId(wellbore)}
             nodeId={calculateWellboreNodeId(wellbore)}
+            uidMappingBasicInfos={uidMappingBasicInfos?.filter(
+              (i) => i.sourceWellboreId === wellbore.uid
+            )}
           />
         ))
       ) : (

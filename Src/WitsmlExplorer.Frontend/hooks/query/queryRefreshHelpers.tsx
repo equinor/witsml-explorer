@@ -13,7 +13,8 @@ import {
   QUERY_KEY_WELLS,
   QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES,
   QUERY_KEY_LOCAL_PRIORITIZED_CURVES,
-  QUERY_KEY_AGENT_SETTINGS
+  QUERY_KEY_AGENT_SETTINGS,
+  QUERY_KEY_UID_MAPPING_BASIC_INFOS
 } from "./queryKeys";
 
 export const refreshServersQuery = (queryClient: QueryClient) => {
@@ -187,5 +188,11 @@ export const refreshPrioritizedCurves = (queryClient: QueryClient) => {
 export const refreshAgentSettings = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_AGENT_SETTINGS]
+  });
+};
+
+export const refreshUidMappingBasicInfos = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_UID_MAPPING_BASIC_INFOS]
   });
 };
