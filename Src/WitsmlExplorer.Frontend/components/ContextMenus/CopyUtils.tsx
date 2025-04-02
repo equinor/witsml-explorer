@@ -138,7 +138,7 @@ export const pasteComponents = async (
 
 export const pasteWellbore = async (
   servers: Server[],
-  sourceWellBore: WellboreReference,
+  sourceWellbore: WellboreReference,
   dispatchOperation: DispatchOperation,
   targetWell: Well
 ) => {
@@ -149,11 +149,11 @@ export const pasteWellbore = async (
     wellName: targetWell.name
   };
   const orderCopyJob = () => {
-    const copyJob = createCopyWellboreWithObjectsJob(sourceWellBore, target);
+    const copyJob = createCopyWellboreWithObjectsJob(sourceWellbore, target);
     JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
   };
 
-  onClickPaste(servers, sourceWellBore.serverUrl, orderCopyJob);
+  onClickPaste(servers, sourceWellbore.serverUrl, orderCopyJob);
 };
 
 export const copyObjectOnWellbore = async (
