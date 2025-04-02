@@ -46,8 +46,7 @@ export const useWellboreReference = (
       const clipboardText = await navigator.clipboard.readText();
       const wellboreReference = parseWellboreStringToReference(clipboardText);
       setWellboreReference(wellboreReference);
-    } catch (e) {
-      console.error(e);
+    } catch {
       //Not a valid object on the clipboard? That is fine, we won't use it.
     }
   };
