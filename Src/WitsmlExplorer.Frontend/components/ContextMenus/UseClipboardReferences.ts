@@ -115,7 +115,7 @@ function verifyRequiredWellboreProperties(jsonObject: WellboreReference) {
     throw new Error("Missing required wellbore fields.");
   }
   Object.keys(jsonObject).forEach((key) => {
-    if (Object.prototype.hasOwnProperty.call(jsonObject, key)) {
+    if (requiredProps.indexOf(key) < 0) {
       throw new Error("Other than required properties found.");
     }
   });
