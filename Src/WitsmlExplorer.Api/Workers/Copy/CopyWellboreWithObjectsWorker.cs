@@ -79,40 +79,45 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, wellboreResult.result.Reason, job.Description());
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, wellboreResult.result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
-            await CopyWellboreObjectsByType(job,
-                EntityType.Attachment, sourceClient, reportItems,
-                cancellationToken);
-            await CopyWellboreObjectsByType(job,
-                EntityType.BhaRun, sourceClient, reportItems,
-                cancellationToken);
-            await CopyWellboreObjectsByType(job,
-                EntityType.FluidsReport, sourceClient, reportItems,
-                cancellationToken);
-            await CopyWellboreObjectsByType(job, EntityType.FormationMarker,
-                sourceClient, reportItems, cancellationToken);
-            await CopyWellboreObjectsByType(job, EntityType.Message,
-                sourceClient, reportItems, cancellationToken);
-            await CopyWellboreObjectsByType(job, EntityType.MudLog,
-                sourceClient, reportItems, cancellationToken);
-            await CopyWellboreObjectsByType(job, EntityType.Rig, sourceClient,
-                reportItems, cancellationToken);
-            await CopyWellboreObjectsByType(job, EntityType.Risk, sourceClient,
-                reportItems, cancellationToken);
-            await CopyWellboreObjectsByType(job, EntityType.Trajectory,
-                sourceClient, reportItems, cancellationToken);
-            await CopyWellboreObjectsByType(job, EntityType.Tubular,
-                sourceClient, reportItems, cancellationToken);
-            await CopyWellboreObjectsByType(job,
-                EntityType.WbGeometry, sourceClient, reportItems,
-                cancellationToken);
 
-            await CopyWellboreObjectsByType(job,
-                EntityType.Log, sourceClient, reportItems,
-                cancellationToken, WitsmlLog.WITSML_INDEX_TYPE_MD);
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Attachment, sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.BhaRun, sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.FluidsReport, sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.FormationMarker,
+                sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Message,
+                sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.MudLog,
+                sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Rig, sourceClient,
+                cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Risk, sourceClient,
+                cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Trajectory,
+                sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Tubular,
+                sourceClient, cancellationToken));
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.WbGeometry, sourceClient,
+                cancellationToken));
 
-            await CopyWellboreObjectsByType(job,
-                EntityType.Log, sourceClient, reportItems,
-                cancellationToken, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Log, sourceClient, cancellationToken,
+                WitsmlLog.WITSML_INDEX_TYPE_MD));
+
+            reportItems.AddRange(await CopyWellboreObjectsByType(job,
+                EntityType.Log, sourceClient, cancellationToken,
+                WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
 
             BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems);
             job.JobInfo.Report = report;
@@ -143,7 +148,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             };
         }
 
-        private async Task CopyOneObject(WitsmlObjectOnWellbore objectOnWellbore, CopyWellboreWithObjectsJob job, List<CommonCopyReportItem> reportItems, CancellationToken? cancellationToken)
+        private async Task<CommonCopyReportItem> CopyOneObject(WitsmlObjectOnWellbore objectOnWellbore, CopyWellboreWithObjectsJob job, CancellationToken? cancellationToken)
         {
             try
             {
@@ -180,7 +185,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Message = copyObjectResult.result.Message,
                     Status = GetJobStatus(copyObjectResult.result.IsSuccess, cancellationToken)
                 };
-                reportItems.Add(reportItem);
+                return reportItem;
             }
             catch (Exception ex)
             {
@@ -190,12 +195,13 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Message = ex.Message,
                     Status = GetJobStatus(false, cancellationToken)
                 };
-                reportItems.Add(reportItem);
+                return reportItem;
             }
         }
 
-        private async Task CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IWitsmlClient sourceClient, List<CommonCopyReportItem> reportItems, CancellationToken? cancellationToken, string logIndexType = null)
+        private async Task<List<CommonCopyReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IWitsmlClient sourceClient, CancellationToken? cancellationToken, string logIndexType = null)
         {
+            var reportItems = new List<CommonCopyReportItem>();
             IWitsmlObjectList query =
                 ObjectQueries.GetWitsmlObjectById(job.Source.WellUid,
                     job.Source.WellboreUid, "", entityType);
@@ -210,10 +216,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 foreach (var objectOnWellbore in result.Objects)
                 {
-                    await CopyOneObject(objectOnWellbore, job, reportItems,
+                    var reportItem = await CopyOneObject(objectOnWellbore, job,
                         cancellationToken);
+                    reportItems.Add(reportItem);
                 }
             }
+            return reportItems;
         }
     }
 }
