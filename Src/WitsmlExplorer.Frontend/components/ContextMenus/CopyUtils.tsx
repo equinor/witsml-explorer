@@ -30,8 +30,6 @@ import LogObject from "models/logObject";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import WellReference from "models/jobs/wellReference";
-import WellboreService from "services/wellboreService";
-import NotificationService from "services/notificationService";
 
 export const onClickPaste = (
   servers: Server[],
