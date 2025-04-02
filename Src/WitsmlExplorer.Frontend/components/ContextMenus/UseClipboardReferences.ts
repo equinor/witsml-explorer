@@ -93,7 +93,7 @@ export function parseWellboreStringToReference(
   let jsonObject: WellboreReference;
   try {
     jsonObject = JSON.parse(input);
-  } catch (e) {}
+  } catch {}
   return jsonObject;
 }
 
