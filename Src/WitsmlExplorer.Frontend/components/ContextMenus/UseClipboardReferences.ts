@@ -13,8 +13,7 @@ export const useClipboardReferences = (
       const clipboardText = await navigator.clipboard.readText();
       const objectReferences = parseStringToReferences(clipboardText);
       setReferences(objectReferences);
-    } catch (e) {
-      console.error(e);
+    } catch {
       //Not a valid object on the clipboard? That is fine, we won't use it.
     }
   };
