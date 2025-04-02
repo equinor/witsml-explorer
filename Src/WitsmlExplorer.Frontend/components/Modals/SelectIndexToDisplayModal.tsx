@@ -4,8 +4,8 @@ import {
 } from "components/Constants";
 import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListViewUtils";
 import ModalDialog from "components/Modals/ModalDialog";
-import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import AdjustDateTimeIndexRange from "./TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "./TrimLogObject/AdjustDepthIndexRange.tsx";
 import { Banner } from "components/StyledComponents/Banner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -128,7 +128,7 @@ const SelectIndexToDisplayModal = (
           <>
             {isTimeIndexed ? (
               <>
-                <AdjustDateTimeModal
+                <AdjustDateTimeIndexRange
                   minDate={
                     getStartIndex(log, logCurveInfoRows, isMultiLog) as string
                   }
@@ -144,7 +144,7 @@ const SelectIndexToDisplayModal = (
                 />
               </>
             ) : (
-              <AdjustNumberRangeModal
+              <AdjustDepthIndexRange
                 minValue={
                   getStartIndex(log, logCurveInfoRows, isMultiLog) as number
                 }

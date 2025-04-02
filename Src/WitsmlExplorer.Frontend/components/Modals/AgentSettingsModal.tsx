@@ -10,6 +10,11 @@ import { refreshAgentSettings } from "../../hooks/query/queryRefreshHelpers.tsx"
 import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
 import { AgentSettings } from "../../models/AgentSettings.tsx";
 import AgentSettingsService from "../../services/agentSettingsService.tsx";
+import {
+  convertMillisecondsToTimeString,
+  convertTimeStringToMilliseconds,
+  timePattern
+} from "components/TimeConversionUtils.tsx";
 
 const AgentSettingsModal = (): React.ReactElement => {
   const queryClient = useQueryClient();
@@ -19,24 +24,6 @@ const AgentSettingsModal = (): React.ReactElement => {
   } = useOperationState();
 
   const { agentSettings, isFetching } = useGetAgentSettings();
-
-  const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
-
-  const convertToMilliseconds = (time: string): number => {
-    const [hours, minutes, seconds] = time.split(":").map(Number);
-    return (hours * 3600 + minutes * 60 + seconds) * 1000;
-  };
-
-  const convertMillisecondsToTimeString = (ms: number): string => {
-    const date = new Date(ms);
-    return (
-      ("" + date.getUTCHours()).padStart(2, "0") +
-      ":" +
-      ("" + date.getUTCMinutes()).padStart(2, "0") +
-      ":" +
-      ("" + date.getUTCSeconds()).padStart(2, "0")
-    );
-  };
 
   const [minQcDataTtlValue, setMinQcDataTtlValue] = useState<number>(
     agentSettings?.minimumDataQcTimeoutDefault ?? 8
@@ -64,7 +51,9 @@ const AgentSettingsModal = (): React.ReactElement => {
     setMinQcGapSizeIsValid(new RegExp(timePattern).test(event.target.value));
     if (event.target.value) {
       setMinQcTimeGapValue(event.target.value);
-      const millisecondsTime = convertToMilliseconds(event.target.value);
+      const millisecondsTime = convertTimeStringToMilliseconds(
+        event.target.value
+      );
       setMinQcGapSizeIsValid(millisecondsTime > 0);
     }
   };
@@ -77,7 +66,8 @@ const AgentSettingsModal = (): React.ReactElement => {
       minimumDataQcDepthDensityDefault: minQcDepthDensityValue,
       minimumDataQcDepthGapDefault: minQcDepthGapValue,
       minimumDataQcTimeDensityDefault: minQcTimeDensityValue,
-      minimumDataQcTimeGapDefault: convertToMilliseconds(minQcTimeGapValue)
+      minimumDataQcTimeGapDefault:
+        convertTimeStringToMilliseconds(minQcTimeGapValue)
     } as AgentSettings;
 
     if (agentSettings) {

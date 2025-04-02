@@ -4,8 +4,8 @@ import {
   WITSML_LOG_ORDERTYPE_DECREASING
 } from "components/Constants";
 import ModalDialog from "components/Modals/ModalDialog";
-import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import AdjustDateTimeIndexRange from "./TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "./TrimLogObject/AdjustDepthIndexRange.tsx";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
@@ -59,7 +59,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
       content={
         <>
           {selectedLog.indexType === WITSML_INDEX_TYPE_DATE_TIME && (
-            <AdjustDateTimeModal
+            <AdjustDateTimeIndexRange
               minDate={selectedLog.startIndex}
               maxDate={selectedLog.endIndex}
               isDescending={
@@ -71,7 +71,7 @@ const CopyRangeModal = (props: CopyRangeModalProps): React.ReactElement => {
             />
           )}
           {selectedLog.indexType === WITSML_INDEX_TYPE_MD && (
-            <AdjustNumberRangeModal
+            <AdjustDepthIndexRange
               minValue={indexToNumber(selectedLog.startIndex)}
               maxValue={indexToNumber(selectedLog.endIndex)}
               isDescending={

@@ -23,7 +23,7 @@ import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_LOG_ORDERTYPE_DECREASING
 } from "components/Constants";
-import AdjustDateTimeModal from "./TrimLogObject/AdjustDateTimeModal";
+import AdjustDateTimeIndexRange from "./TrimLogObject/AdjustDateTimeIndexRange.tsx";
 import WarningBar from "components/WarningBar";
 
 export interface DownloadOptionsSelectionModalProps {
@@ -305,7 +305,7 @@ const DownloadOptionsSelectionModal = (
               />
             )}
           {isTimeLog && selectedDownloadOption === DownloadOptions.All && (
-            <AdjustDateTimeModal
+            <AdjustDateTimeIndexRange
               minDate={log.startIndex as string}
               maxDate={log.endIndex as string}
               isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}
@@ -317,7 +317,7 @@ const DownloadOptionsSelectionModal = (
           )}
           {isTimeLog &&
             selectedDownloadOption === DownloadOptions.SelectedRange && (
-              <AdjustDateTimeModal
+              <AdjustDateTimeIndexRange
                 minDate={props.startIndex as string}
                 maxDate={props.endIndex as string}
                 isDescending={log.direction == WITSML_LOG_ORDERTYPE_DECREASING}

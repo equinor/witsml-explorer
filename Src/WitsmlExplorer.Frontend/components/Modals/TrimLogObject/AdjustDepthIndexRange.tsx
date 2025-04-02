@@ -2,7 +2,7 @@ import { TextField } from "@equinor/eds-core-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "../../StyledComponents/Button.tsx";
 
-export interface AdjustNumberRangeModalProps {
+export interface AdjustDepthIndexRangeProps {
   minValue: number;
   maxValue: number;
   isDescending?: boolean;
@@ -11,8 +11,8 @@ export interface AdjustNumberRangeModalProps {
   onValidChange: (isValid: boolean) => void;
 }
 
-const AdjustNumberRangeModal = (
-  props: AdjustNumberRangeModalProps
+const AdjustDepthIndexRange = (
+  props: AdjustDepthIndexRangeProps
 ): React.ReactElement => {
   const {
     minValue,
@@ -130,4 +130,4 @@ const AdjustNumberRangeModal = (
   );
 };
 
-export default AdjustNumberRangeModal;
+export default AdjustDepthIndexRange;
