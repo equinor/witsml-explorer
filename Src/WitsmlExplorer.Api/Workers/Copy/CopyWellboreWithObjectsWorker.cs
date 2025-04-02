@@ -28,12 +28,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
     public class CopyWellboreWithObjectsWorker : BaseWorker<CopyWellboreWithObjectsJob>, IWorker, ICopyWellboreWithObjectsWorker
     {
         private readonly ICopyWellboreWorker _copyWellboreWorker;
-        private readonly ICopyLogWorker _copyLogWorker;
         private readonly ICopyObjectsWorker _copyObjectsWorker;
-        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, ICopyLogWorker copyLogWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker) : base(witsmlClientProvider, logger)
+        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker) : base(witsmlClientProvider, logger)
         {
             _copyWellboreWorker = copyWellboreWorker;
-            _copyLogWorker = copyLogWorker;
             _copyObjectsWorker = copyObjectsWorker;
         }
 
