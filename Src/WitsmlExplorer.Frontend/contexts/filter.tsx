@@ -7,6 +7,7 @@ import {
   STORAGE_FILTER_HIDDENOBJECTS_KEY,
   STORAGE_FILTER_ISACTIVE_KEY,
   STORAGE_FILTER_OBJECTGROWING_KEY,
+  STORAGE_FILTER_UIDMAPPING_KEY,
   STORAGE_FILTER_PRIORITYSERVERS_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
@@ -15,6 +16,7 @@ export interface Filter {
   name: string;
   isActive: boolean;
   objectGrowing: boolean;
+  uidMapping: boolean;
   filterType: FilterType;
   searchResults?: ObjectSearchResult[];
   wellboreSearchResults?: Wellbore[];
@@ -148,6 +150,7 @@ export const EMPTY_FILTER: Filter = {
   name: "",
   isActive: false,
   objectGrowing: false,
+  uidMapping: false,
   filterType: WellFilterType.Well,
   searchResults: [],
   wellboreSearchResults: [],
@@ -261,6 +264,13 @@ const getLocalStorageFilter = (): Partial<Filter> => {
   );
   if (objectGrowing !== null) {
     localStorageFilter["objectGrowing"] = objectGrowing;
+  }
+
+  const uidMapping = getLocalStorageItem<boolean>(
+    STORAGE_FILTER_UIDMAPPING_KEY
+  );
+  if (uidMapping !== null) {
+    localStorageFilter["uidMapping"] = uidMapping;
   }
 
   const filterPriorityServers = getLocalStorageItem<boolean>(
