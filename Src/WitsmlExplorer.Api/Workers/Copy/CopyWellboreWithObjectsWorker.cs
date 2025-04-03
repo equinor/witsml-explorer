@@ -149,7 +149,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             try
             {
-                cancellationToken?.IsCancellationRequested();
+                cancellationToken?.ThrowIfCancellationRequested();
                 var copyObjectJob = new CopyObjectsJob()
                 {
                     Source = new ObjectReferences()
