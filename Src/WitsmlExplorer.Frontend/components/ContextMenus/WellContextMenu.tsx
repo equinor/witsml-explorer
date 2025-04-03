@@ -46,6 +46,8 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
+import { useWellboreReference } from "./UseClipboardReferences";
+import { pasteWellbore } from "./CopyUtils";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -62,6 +64,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
+  const wellboreReference = useWellboreReference();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -213,6 +216,16 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
             color={colors.interactive.primaryResting}
           />
           <Typography color={"primary"}>Delete empty mnemonics</Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"paste"}
+          onClick={() => {
+            pasteWellbore(servers, wellboreReference, dispatchOperation, well);
+          }}
+          disabled={wellboreReference === null}
+        >
+          <StyledIcon name="paste" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Paste wellbore</Typography>
         </MenuItem>,
         <NestedMenuItem key={"showOnServer"} label={"Show on server"}>
           {filteredServers

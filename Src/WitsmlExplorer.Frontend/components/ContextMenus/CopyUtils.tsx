@@ -5,10 +5,16 @@ import { ComponentType } from "models/componentType";
 import ComponentReferences, {
   createComponentReferences
 } from "models/jobs/componentReferences";
-import { CopyComponentsJob, CopyObjectsJob } from "models/jobs/copyJobs";
+import {
+  CopyComponentsJob,
+  CopyObjectsJob,
+  CopyWellboreWithObjectsJob
+} from "models/jobs/copyJobs";
 import ObjectReference from "models/jobs/objectReference";
 import ObjectReferences from "models/jobs/objectReferences";
-import WellboreReference from "models/jobs/wellboreReference";
+import WellboreReference, {
+  toWellboreReference
+} from "models/jobs/wellboreReference";
 import ObjectOnWellbore, {
   toObjectReference,
   toObjectReferences
@@ -21,6 +27,9 @@ import ObjectService from "services/objectService";
 import { DeleteObjectsJob } from "models/jobs/deleteJobs";
 import { ReplaceObjectsJob } from "models/jobs/replaceObjectsJob";
 import LogObject from "models/logObject";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
+import WellReference from "models/jobs/wellReference";
 
 export const onClickPaste = (
   servers: Server[],
@@ -127,6 +136,26 @@ export const pasteComponents = async (
   onClickPaste(servers, sourceReferences?.serverUrl, orderCopyJob);
 };
 
+export const pasteWellbore = async (
+  servers: Server[],
+  sourceWellbore: WellboreReference,
+  dispatchOperation: DispatchOperation,
+  targetWell: Well
+) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
+
+  const target: WellReference = {
+    wellUid: targetWell.uid,
+    wellName: targetWell.name
+  };
+  const orderCopyJob = () => {
+    const copyJob = createCopyWellboreWithObjectsJob(sourceWellbore, target);
+    JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
+  };
+
+  onClickPaste(servers, sourceWellbore.serverUrl, orderCopyJob);
+};
+
 export const copyObjectOnWellbore = async (
   selectedServer: Server,
   objectsOnWellbore: ObjectOnWellbore[],
@@ -140,6 +169,17 @@ export const copyObjectOnWellbore = async (
     selectedServer.url
   );
   await navigator.clipboard.writeText(JSON.stringify(objectReferences));
+};
+
+export const copyWellbore = async (
+  wellbore: Wellbore,
+  connectedServer: Server,
+  dispatchOperation: DispatchOperation
+) => {
+  dispatchOperation({ type: OperationType.HideContextMenu });
+  const wellboreReference: WellboreReference = toWellboreReference(wellbore);
+  wellboreReference.serverUrl = connectedServer.url;
+  await navigator.clipboard.writeText(JSON.stringify(wellboreReference));
 };
 
 export const copyComponents = async (
@@ -259,4 +299,11 @@ export const createCopyJob = (
     wellboreName: targetWellbore.wellboreName
   };
   return { source: objectReferences, target: targetWellboreReference };
+};
+
+export const createCopyWellboreWithObjectsJob = (
+  sourceWellbore: WellboreReference,
+  targetWell: WellReference
+): CopyWellboreWithObjectsJob => {
+  return { source: sourceWellbore, target: targetWell };
 };
