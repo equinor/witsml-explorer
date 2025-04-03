@@ -142,8 +142,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 Title = $"Copy wellbore with objects report",
                 Summary = summary,
-                ReportItems = reportItems,
-                JobDetails = "report details"
+                ReportItems = reportItems
             };
         }
 
