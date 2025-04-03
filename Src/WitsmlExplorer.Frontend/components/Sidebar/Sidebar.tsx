@@ -35,7 +35,7 @@ const Sidebar: FC = () => {
   const { uidMappingBasicInfos, isFetching: isFetchingUidMappingBasicInfos } =
     useGetUidMappingBasicInfos();
   const isCompactMode = isInAnyCompactMode(theme);
-  const filteredWells = useWellFilter(wells) || [];
+  const filteredWells = useWellFilter(wells, uidMappingBasicInfos) || [];
   const containerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
     getScrollElement: () => containerRef.current,
