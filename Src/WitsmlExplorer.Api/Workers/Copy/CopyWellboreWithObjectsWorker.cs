@@ -116,30 +116,32 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 EntityType.Log, sourceClient, cancellationToken,
                 WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
 
-            BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems);
-            job.JobInfo.Report = report;
-
             var fails = reportItems.Count(x => x.Status == "Fail");
+            string summary = fails > 0
+                ? $"Partially copied wellbore with some child objects. Failed to copy {fails} out of {reportItems.Count()} objects."
+                : "Successfully copied wellbore with all supported child objects.";
+            BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems, summary);
+            job.JobInfo.Report = report;
             if (fails > 0)
             {
-                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, $"Partially copied wellbore with some child objects. Failed to copy {fails} out of {reportItems.Count()} objects.", sourceServerUrl: sourceClient.GetServerHostname());
+                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, summary, sourceServerUrl: sourceClient.GetServerHostname());
                 RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
                 return (workerResult, refreshAction);
             }
             else
             {
-                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, $"Successfully copied wellbore with all supported child objects.", sourceServerUrl: sourceClient.GetServerHostname());
+                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, summary, sourceServerUrl: sourceClient.GetServerHostname());
                 RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
                 return (workerResult, refreshAction);
             }
         }
 
-        private CommonCopyReport CreateCopyWellboreWithObjectsReport(List<CopyWellboreWithObjectsReportItem> reportItems)
+        private CommonCopyReport CreateCopyWellboreWithObjectsReport(List<CopyWellboreWithObjectsReportItem> reportItems, string summary)
         {
             return new CommonCopyReport
             {
                 Title = $"Copy wellbore with objects report",
-                Summary = "Copy wellbore  parent report",
+                Summary = summary,
                 ReportItems = reportItems,
                 JobDetails = "report details"
             };
