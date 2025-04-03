@@ -22,14 +22,16 @@ function filterWellboresOnUidMapping(
   filterOnUidMapping: boolean,
   uidMappingBasicInfos: UidMappingBasicInfo[]
 ) {
-  if (!filterOnUidMapping) return wellbores;
-  return wellbores.filter(
-    (wb) =>
-      !!uidMappingBasicInfos &&
-      uidMappingBasicInfos.length > 0 &&
-      uidMappingBasicInfos.some(
-        (m) => m.sourceWellId === wb.wellUid && m.sourceWellboreId === wb.uid
-      )
+  if (
+    !filterOnUidMapping ||
+    !uidMappingBasicInfos ||
+    uidMappingBasicInfos.length == 0
+  )
+    return wellbores;
+  return wellbores.filter((wb) =>
+    uidMappingBasicInfos.some(
+      (m) => m.sourceWellId === wb.wellUid && m.sourceWellboreId === wb.uid
+    )
   );
 }
 

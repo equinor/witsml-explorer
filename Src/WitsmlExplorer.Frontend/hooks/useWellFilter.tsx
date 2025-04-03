@@ -24,12 +24,14 @@ function filterWellsOnUidMapping(
   filterOnUidMapping: boolean,
   uidMappingBasicInfos: UidMappingBasicInfo[]
 ) {
-  if (!filterOnUidMapping) return wells;
-  return wells.filter(
-    (w) =>
-      !!uidMappingBasicInfos &&
-      uidMappingBasicInfos.length > 0 &&
-      uidMappingBasicInfos.some((m) => m.sourceWellId === w.uid)
+  if (
+    !filterOnUidMapping ||
+    !uidMappingBasicInfos ||
+    uidMappingBasicInfos.length == 0
+  )
+    return wells;
+  return wells.filter((w) =>
+    uidMappingBasicInfos.some((m) => m.sourceWellId === w.uid)
   );
 }
 
