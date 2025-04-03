@@ -124,9 +124,9 @@ namespace WitsmlExplorer.Api.Services
                         Operator = well.Operator,
                         NumLicense = well.NumLicense,
                         TimeZone = well.TimeZone,
-                        DateTimeCreation = well.CommonData.DTimCreation,
-                        DateTimeLastChange = well.CommonData.DTimLastChange,
-                        ItemState = well.CommonData.ItemState,
+                        DateTimeCreation = well.CommonData?.DTimCreation,
+                        DateTimeLastChange = well.CommonData?.DTimLastChange,
+                        ItemState = well.CommonData?.ItemState,
                         StatusWell = well.StatusWell,
                         PurposeWell = well.PurposeWell,
                         Country = well.Country
