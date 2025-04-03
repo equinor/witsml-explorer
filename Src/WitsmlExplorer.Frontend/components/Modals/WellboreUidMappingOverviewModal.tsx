@@ -109,7 +109,8 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
         const row: UidMappingRow = {
           id:
             calculateWellboreNodeId(sourceWellbore) +
-            calculateWellboreNodeId(targetWellbore),
+            calculateWellboreNodeId(targetWellbore) +
+            mapping.timestamp,
           sourceWellId: sourceWellbore.wellUid,
           sourceWellName: sourceWellbore.wellName,
           sourceWellboreId: sourceWellbore.uid,
