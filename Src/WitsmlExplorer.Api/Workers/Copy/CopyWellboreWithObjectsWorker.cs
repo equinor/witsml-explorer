@@ -136,7 +136,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 existingObjectsOnWellbore, totalEstimatedLength, durationMap, cancellationToken));
             reportItems.AddRange(await CopyWellboreObjectsByType(job,
                 EntityType.Tubular,
-                existingObjectsOnWellbore,totalEstimatedLength, durationMap, cancellationToken));
+                existingObjectsOnWellbore, totalEstimatedLength, durationMap, cancellationToken));
             reportItems.AddRange(await CopyWellboreObjectsByType(job,
                 EntityType.WbGeometry, existingObjectsOnWellbore, totalEstimatedLength, durationMap,
                 cancellationToken));
@@ -170,7 +170,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
         }
 
-        private  Dictionary<EntityType, int> CreateDurationMap()
+        private Dictionary<EntityType, int> CreateDurationMap()
         {
             var durations = new Dictionary<EntityType, int>
             {
@@ -217,18 +217,18 @@ namespace WitsmlExplorer.Api.Workers.Copy
             {
                 if (logIndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
                 {
-                    var step =  (double) _timeLogCopyDuration /totalEstimatedLength * count /objectsToCopyCount;
+                    var step = (double)_timeLogCopyDuration / totalEstimatedLength * count / objectsToCopyCount;
                     progress += step;
                 }
                 else
                 {
-                    var step =  (double) _depthLogCopyDuration /totalEstimatedLength * count /objectsToCopyCount;
+                    var step =  (double)_depthLogCopyDuration / totalEstimatedLength * count / objectsToCopyCount;
                     progress += step;
                 }
             }
             else
             {
-                var step = (double) durationMap[entityType] /totalEstimatedLength * count /objectsToCopyCount;
+                var step = (double)durationMap[entityType] / totalEstimatedLength * count / objectsToCopyCount;
                 progress += step;
             }
 
@@ -305,7 +305,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
         }
 
-        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, Dictionary<EntityType, IWitsmlObjectList> existingObjects, long totalEstimatedLength,  Dictionary<EntityType, int> durationMap,  CancellationToken? cancellationToken, string logIndexType = null)
+        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, Dictionary<EntityType, IWitsmlObjectList> existingObjects, long totalEstimatedLength, Dictionary<EntityType, int> durationMap, CancellationToken? cancellationToken, string logIndexType = null)
         {
             var reportItems = new List<CopyWellboreWithObjectsReportItem>();
             var objectsToCopy = existingObjects[entityType].Objects;
@@ -317,14 +317,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     var reportItem = await CopyOneObject(objectOnWellbore, job, entityType,
                         cancellationToken);
                     count++;
-                    UpdateJobProgress(job, entityType, logIndexType, totalEstimatedLength, durationMap, objectsToCopy.Count(), count );
+                    UpdateJobProgress(job, entityType, logIndexType, totalEstimatedLength, durationMap, objectsToCopy.Count(), count);
                     reportItems.Add(reportItem);
                 }
             }
             return reportItems;
         }
 
-        private static async Task <IWitsmlObjectList> FetchWellboreLogs(CopyWellboreWithObjectsJob job,
+        private static async Task<IWitsmlObjectList> FetchWellboreLogs(CopyWellboreWithObjectsJob job,
             IWitsmlClient sourceClient, string logIndexType)
         {
             IWitsmlObjectList query =
