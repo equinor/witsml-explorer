@@ -222,7 +222,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 }
                 else
                 {
-                    var step =  (double)_depthLogCopyDuration / totalEstimatedLength * count / objectsToCopyCount;
+                    var step = (double)_depthLogCopyDuration / totalEstimatedLength * count / objectsToCopyCount;
                     progress += step;
                 }
             }
