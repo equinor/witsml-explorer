@@ -19,7 +19,7 @@ describe("Filter Wells", () => {
   let wells: Well[];
 
   beforeEach(() => {
-    filter = EMPTY_FILTER;
+    filter = { ...EMPTY_FILTER };
     wells = [WELL_1, WELL_2, WELL_3, WELL_4, WELL_5, WELL_6];
   });
 

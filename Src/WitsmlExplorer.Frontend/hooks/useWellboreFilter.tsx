@@ -22,12 +22,11 @@ function filterWellboresOnUidMapping(
   filterOnUidMapping: boolean,
   uidMappingBasicInfos: UidMappingBasicInfo[]
 ) {
-  if (
-    !filterOnUidMapping ||
-    !uidMappingBasicInfos ||
-    uidMappingBasicInfos.length == 0
-  )
+  if (!filterOnUidMapping) {
     return wellbores;
+  } else if (!uidMappingBasicInfos || uidMappingBasicInfos.length == 0) {
+    return [];
+  }
   return wellbores.filter((wb) =>
     uidMappingBasicInfos.some(
       (m) => m.sourceWellId === wb.wellUid && m.sourceWellboreId === wb.uid
