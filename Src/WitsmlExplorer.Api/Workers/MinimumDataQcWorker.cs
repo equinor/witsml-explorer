@@ -65,8 +65,8 @@ namespace WitsmlExplorer.Api.Workers
                 return GetFailedWorkerResult("Time gap is 0 or not set.");
             }
 
-            var startIndex = Index.Start(witsmlLog);
-            var endIndex = Index.End(witsmlLog);
+            var startIndex = Index.Start(witsmlLog, job.StartIndex);
+            var endIndex = Index.End(witsmlLog, job.EndIndex);
             var isLogIncreasing = witsmlLog.IsIncreasing();
 
             DataCheck(job, witsmlLog, isDepthLog, startIndex, endIndex, isLogIncreasing);

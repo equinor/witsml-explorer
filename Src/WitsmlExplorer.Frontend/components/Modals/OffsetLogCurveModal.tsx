@@ -10,8 +10,8 @@ import {
   WITSML_LOG_ORDERTYPE_DECREASING
 } from "components/Constants";
 import { StyledAccordionHeader } from "components/Modals/LogComparisonModal";
-import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import AdjustDateTimeIndexRange from "./TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "./TrimLogObject/AdjustDepthIndexRange.tsx";
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import WarningBar from "components/WarningBar";
 import { useConnectedServer } from "contexts/connectedServerContext";
@@ -110,7 +110,7 @@ export const OffsetLogCurveModal = (
           </StyledAccordion>
           {isDepthLog ? (
             <>
-              <AdjustNumberRangeModal
+              <AdjustDepthIndexRange
                 minValue={indexToNumber(initialStartIndex)}
                 maxValue={indexToNumber(initialEndIndex)}
                 isDescending={
@@ -137,7 +137,7 @@ export const OffsetLogCurveModal = (
             </>
           ) : (
             <>
-              <AdjustDateTimeModal
+              <AdjustDateTimeIndexRange
                 minDate={initialStartIndex}
                 maxDate={initialEndIndex}
                 isDescending={

@@ -10,10 +10,12 @@ namespace WitsmlExplorer.Api.Jobs
     public record MinimumDataQcJob : Job
     {
         public LogObject LogReference { get; init; }
+        public string StartIndex { get; init; }
+        public string EndIndex { get; init; }
         public ICollection<string> Mnemonics { get; init; }
-        public double? Density { get; set; }
-        public double? DepthGap { get; set; }
-        public long? TimeGap { get; set; }
+        public double? Density { get; init; }
+        public double? DepthGap { get; init; }
+        public long? TimeGap { get; init; }
         public override bool IsCancelable => true;
 
         public override string Description()
