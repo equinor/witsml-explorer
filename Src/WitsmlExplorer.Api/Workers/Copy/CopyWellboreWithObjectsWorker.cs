@@ -28,8 +28,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
     {
         private readonly ICopyWellboreWorker _copyWellboreWorker;
         private readonly ICopyObjectsWorker _copyObjectsWorker;
-        private const int _timeLogCopyDuration = 600;
-        private const int _depthLogCopyDuration = 200;
         public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker) : base(witsmlClientProvider, logger)
         {
             _copyWellboreWorker = copyWellboreWorker;
@@ -70,7 +68,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
-
             (WorkerResult result, RefreshAction refresh) wellboreResult =
                 await _copyWellboreWorker.Execute(copyWellboreJob,
                     cancellationToken);
@@ -80,79 +77,34 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, wellboreResult.result.Reason, job.Description());
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, wellboreResult.result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
-            var durationMap = CreateDurationMap();
-            var existingTimeLogs =
-                new Dictionary<EntityType, IWitsmlObjectList>
-                {
-                    {
-                        EntityType.Log, await FetchWellboreLogs(job,
-                            sourceClient,
-                            WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
-                    }
-                };
-            var existingDepthLogs =
-                new Dictionary<EntityType, IWitsmlObjectList>
-                {
-                    {
-                        EntityType.Log, await FetchWellboreLogs(job,
-                            sourceClient,
-                            WitsmlLog.WITSML_INDEX_TYPE_MD)
-                    }
-                };
+
             var existingObjectsOnWellbore =
-               await FetchWellboreObjects(job, sourceClient);
+               await GetWellboreObjects(job, sourceClient);
 
-            var totalEstimatedLength = CalculateTotalEstimatedTime(
-                existingTimeLogs, existingDepthLogs, existingObjectsOnWellbore,
-                durationMap);
+            var totalEstimatedDuration = CalculateTotalEstimatedDuration(existingObjectsOnWellbore);
+            long elapsedDuration = 0;
 
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Attachment, existingObjectsOnWellbore, totalEstimatedLength, durationMap,
-                cancellationToken));
+            foreach (var ((entityType, logIndexType), objectList) in existingObjectsOnWellbore)
+            {
+                long estimatedObjectDuration = objectList.Objects.Count() * GetEstimatedDuration(entityType, logIndexType);
+                long currentElapsedDuration = elapsedDuration; // Capture the value to avoid closure issues when we increment the duration later as the progress reporter is async.
+                IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
+                {
+                    var progress = ((double)currentElapsedDuration / totalEstimatedDuration) + (estimatedObjectDuration * (double)subJobProgress / totalEstimatedDuration);
+                    if (job.JobInfo != null) job.JobInfo.Progress = progress;
+                    job.ProgressReporter?.Report(progress);
+                });
 
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.BhaRun, existingObjectsOnWellbore, totalEstimatedLength, durationMap,
-                cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.FluidsReport, existingObjectsOnWellbore, totalEstimatedLength, durationMap,
-                cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.FormationMarker,
-                existingObjectsOnWellbore, totalEstimatedLength, durationMap, cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Message,
-                existingObjectsOnWellbore, totalEstimatedLength, durationMap, cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.MudLog,
-                existingObjectsOnWellbore, totalEstimatedLength, durationMap, cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Rig, existingObjectsOnWellbore, totalEstimatedLength, durationMap,
-                cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Risk, existingObjectsOnWellbore, totalEstimatedLength, durationMap,
-                cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Trajectory,
-                existingObjectsOnWellbore, totalEstimatedLength, durationMap, cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Tubular,
-                existingObjectsOnWellbore, totalEstimatedLength, durationMap, cancellationToken));
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.WbGeometry, existingObjectsOnWellbore, totalEstimatedLength, durationMap,
-                cancellationToken));
-
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Log, existingTimeLogs, totalEstimatedLength, durationMap, cancellationToken,
-                WitsmlLog.WITSML_INDEX_TYPE_MD));
-
-
-            reportItems.AddRange(await CopyWellboreObjectsByType(job,
-                EntityType.Log, existingDepthLogs, totalEstimatedLength, durationMap, cancellationToken,
-                WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
+                List<CopyWellboreWithObjectsReportItem> objectTypeReportItems = await CopyWellboreObjectsByType(
+                    job, entityType, objectList.Objects, subJobProgressReporter, cancellationToken
+                );
+                reportItems.AddRange(objectTypeReportItems);
+                elapsedDuration += estimatedObjectDuration;
+            }
 
             var fails = reportItems.Count(x => x.Status == "Fail");
             string summary = fails > 0
-                ? $"Partially copied wellbore with some child objects. Failed to copy {fails} out of {reportItems.Count()} objects."
+                ? $"Partially copied wellbore with some child objects. Failed to copy {fails} out of {reportItems.Count} objects."
                 : "Successfully copied wellbore with all supported child objects.";
             BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems, summary);
             job.JobInfo.Report = report;
@@ -170,75 +122,26 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
         }
 
-        private Dictionary<EntityType, int> CreateDurationMap()
+        private static long GetEstimatedDuration(EntityType objectType, string logIndexType = null)
         {
-            var durations = new Dictionary<EntityType, int>
+            // Roughly estimate the duration without knowing the size of any object.
+            if (objectType == EntityType.Log)
             {
-                { EntityType.Attachment, 10 },
-                { EntityType.Trajectory, 10 },
-                { EntityType.Rig, 10 },
-                { EntityType.Tubular, 10 },
-                { EntityType.FluidsReport, 10 },
-                { EntityType.Message, 10 },
-                { EntityType.Risk, 10 },
-                { EntityType.BhaRun, 10 },
-                { EntityType.FormationMarker, 10 },
-                { EntityType.MudLog, 10 },
-                { EntityType.WbGeometry, 10 }
-            };
-            return durations;
+                return logIndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME ? 600 : 200;
+            }
+            return 10;
         }
 
-        private long CalculateTotalEstimatedTime(
-            Dictionary<EntityType, IWitsmlObjectList> existingTimeLogs,
-            Dictionary<EntityType, IWitsmlObjectList> existingDepthLogs,
-            Dictionary<EntityType, IWitsmlObjectList> objectsOnWellbore,
-            Dictionary<EntityType, int> durationMap)
+        private static long CalculateTotalEstimatedDuration(Dictionary<(EntityType, string), IWitsmlObjectList> objectsOnWellbore)
         {
-            var result = existingDepthLogs[EntityType.Log].Objects.Count() * _depthLogCopyDuration + existingTimeLogs[EntityType.Log].Objects.Count() * _timeLogCopyDuration;
-            foreach (EntityType entityType in
-                     Enum.GetValues(typeof(EntityType)))
+            long estimatedDuration = 0;
+            foreach (var ((entityType, logIndexType), objectList) in objectsOnWellbore)
             {
-                if (entityType != EntityType.Log &&
-                    entityType != EntityType.Well &&
-                    entityType != EntityType.Wellbore)
-                {
-                    result += objectsOnWellbore[entityType].Objects.Count() *
-                              durationMap[entityType];
-                }
+                estimatedDuration += objectList.Objects.Count() * GetEstimatedDuration(entityType, logIndexType);
             }
-            return result;
+            return estimatedDuration;
         }
 
-        private void UpdateJobProgress(CopyWellboreWithObjectsJob job, EntityType entityType, string logIndexType, long totalEstimatedLength, Dictionary<EntityType, int> durationMap, int objectsToCopyCount, int count)
-        {
-            var progress = job.JobInfo.Progress;
-            if (entityType == EntityType.Log)
-            {
-                if (logIndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME)
-                {
-                    var step = (double)_timeLogCopyDuration / totalEstimatedLength * count / objectsToCopyCount;
-                    progress += step;
-                }
-                else
-                {
-                    var step = (double)_depthLogCopyDuration / totalEstimatedLength * count / objectsToCopyCount;
-                    progress += step;
-                }
-            }
-            else
-            {
-                var step = (double)durationMap[entityType] / totalEstimatedLength * count / objectsToCopyCount;
-                progress += step;
-            }
-
-            if (progress > 1)
-            {
-                progress = 1;
-            }
-            job.ProgressReporter?.Report(progress);
-            if (job.JobInfo != null) job.JobInfo.Progress = progress;
-        }
         private CommonCopyReport CreateCopyWellboreWithObjectsReport(List<CopyWellboreWithObjectsReportItem> reportItems, string summary)
         {
             return new CommonCopyReport
@@ -249,7 +152,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             };
         }
 
-        private async Task<CopyWellboreWithObjectsReportItem> CopyOneObject(WitsmlObjectOnWellbore objectOnWellbore, CopyWellboreWithObjectsJob job, EntityType entityType, CancellationToken? cancellationToken)
+        private async Task<CopyWellboreWithObjectsReportItem> CopyOneObject(WitsmlObjectOnWellbore objectOnWellbore, CopyWellboreWithObjectsJob job, EntityType entityType, IProgress<double> progressReporter, CancellationToken? cancellationToken)
         {
             try
             {
@@ -278,7 +181,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         WellboreUid = job.Source.WellboreUid,
                         WellName = job.Target.WellName,
                         WellUid = job.Target.WellUid,
-                    }
+                    },
+                    ProgressReporter = progressReporter
                 };
                 (WorkerResult result, RefreshAction refresh) copyObjectResult = await _copyObjectsWorker.Execute(copyObjectJob, cancellationToken);
                 var reportItem = new CopyWellboreWithObjectsReportItem()
@@ -289,6 +193,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Message = copyObjectResult.result.Message,
                     Status = GetJobStatus(copyObjectResult.result.IsSuccess, cancellationToken)
                 };
+                progressReporter.Report(1.0); //Report the progress for this object in case the sub-job does not report any progress.
                 return reportItem;
             }
             catch (Exception ex)
@@ -301,61 +206,67 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Message = ex.Message,
                     Status = GetJobStatus(false, cancellationToken)
                 };
+                progressReporter.Report(1.0); //Report the progress for this object in case the sub-job does not report any progress.
                 return reportItem;
             }
         }
 
-        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, Dictionary<EntityType, IWitsmlObjectList> existingObjects, long totalEstimatedLength, Dictionary<EntityType, int> durationMap, CancellationToken? cancellationToken, string logIndexType = null)
+        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToCopy, IProgress<double> progressReporter, CancellationToken? cancellationToken)
         {
             var reportItems = new List<CopyWellboreWithObjectsReportItem>();
-            var objectsToCopy = existingObjects[entityType].Objects;
-            if (objectsToCopy.Any())
+            var totalObjects = objectsToCopy?.Count() ?? 0;
+            if (totalObjects > 0)
             {
-                int count = 0;
-                foreach (var objectOnWellbore in objectsToCopy)
+                for (int i = 0; i < totalObjects; i++)
                 {
-                    var reportItem = await CopyOneObject(objectOnWellbore, job, entityType,
-                        cancellationToken);
-                    count++;
-                    UpdateJobProgress(job, entityType, logIndexType, totalEstimatedLength, durationMap, objectsToCopy.Count(), count);
+                    var currentIndex = i; // Capture the value to avoid closure issues when i is increased as the progress reporter is async.
+                    var objectOnWellbore = objectsToCopy.ElementAt(i);
+                    IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
+                    {
+                        var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress / totalObjects);
+                        progressReporter.Report(progress);
+                    });
+                    var reportItem = await CopyOneObject(objectOnWellbore, job, entityType, subJobProgressReporter, cancellationToken);
                     reportItems.Add(reportItem);
                 }
             }
             return reportItems;
         }
 
-        private static async Task<IWitsmlObjectList> FetchWellboreLogs(CopyWellboreWithObjectsJob job,
-            IWitsmlClient sourceClient, string logIndexType)
+        private static async Task<Dictionary<(EntityType, string), IWitsmlObjectList>> GetWellboreObjects(CopyWellboreWithObjectsJob job, IWitsmlClient sourceClient)
         {
-            IWitsmlObjectList query =
-                ObjectQueries.GetWitsmlObjectById(job.Source.WellUid,
-                    job.Source.WellboreUid, "", EntityType.Log);
-            ((WitsmlLog)query.Objects.FirstOrDefault()).IndexType = logIndexType;
-            IWitsmlObjectList witsmlObjectList =
-                await sourceClient.GetFromStoreNullableAsync(query,
-                    new OptionsIn(ReturnElements.IdOnly));
+            var result = new Dictionary<(EntityType, string), IWitsmlObjectList>();
+            foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
+            {
+                if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
+                result.Add((entityType, null), await GetWellboreObjectsByType(job, sourceClient, entityType));
+            }
+            result.Add((EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_MD), await GetWellboreObjectsByType(job, sourceClient, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_MD));
+            result.Add((EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME), await GetWellboreObjectsByType(job, sourceClient, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
+            return result;
+        }
+
+        private static async Task<IWitsmlObjectList> GetWellboreObjectsByType(CopyWellboreWithObjectsJob job, IWitsmlClient sourceClient, EntityType entityType, string logIndexType = null)
+        {
+            IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(
+                job.Source.WellUid,
+                job.Source.WellboreUid,
+                "",
+                entityType
+            );
+
+            if (entityType == EntityType.Log)
+            {
+                ((WitsmlLog)query.Objects.FirstOrDefault()).IndexType = logIndexType;
+            }
+
+            IWitsmlObjectList witsmlObjectList = await sourceClient.GetFromStoreNullableAsync(
+                query,
+                new OptionsIn(ReturnElements.IdOnly)
+            );
+
             return witsmlObjectList;
         }
 
-        private static async Task<Dictionary<EntityType, IWitsmlObjectList>> FetchWellboreObjects(CopyWellboreWithObjectsJob job,
-            IWitsmlClient sourceClient)
-        {
-            var result = new Dictionary<EntityType, IWitsmlObjectList>();
-            foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
-            {
-                if (entityType != EntityType.Log && entityType != EntityType.Well && entityType != EntityType.Wellbore)
-                {
-                    IWitsmlObjectList query =
-                        ObjectQueries.GetWitsmlObjectById(job.Source.WellUid,
-                            job.Source.WellboreUid, "", entityType);
-
-                    IWitsmlObjectList witsmlObjectList =
-                        await sourceClient.GetFromStoreNullableAsync(query,
-                            new OptionsIn(ReturnElements.IdOnly));
-                    result.Add(entityType, witsmlObjectList);
-                }
-            }
-            return result;
-        }
     }
 }
