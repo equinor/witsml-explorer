@@ -46,9 +46,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Target = new WellboreReference()
                 {
                     WellUid = job.Target.WellUid,
-                    WellboreUid = job.Source.WellboreUid,
+                    WellboreUid = job.Target.WellboreUid,
                     WellName = job.Target.WellName,
-                    WellboreName = job.Source.WellboreName
+                    WellboreName = job.Target.WellboreName
                 }
                 ,
                 Source = new WellboreReference()
