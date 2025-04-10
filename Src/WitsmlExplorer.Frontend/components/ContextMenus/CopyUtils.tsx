@@ -144,7 +144,7 @@ export const pasteWellbore = async (
   targetWell: Well
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  
+
   const target: WellReference = {
     wellUid: targetWell.uid,
     wellName: targetWell.name

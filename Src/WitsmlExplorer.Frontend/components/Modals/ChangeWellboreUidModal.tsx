@@ -58,9 +58,11 @@ const ChangeWellboreUidModal = (
   return (
     <ModalDialog
       heading={`Change wellbore uid and name?`}
-      confirmText={`Change names and continue`}
+      confirmText={`Continue with pasting the wellbore`}
       cancelText={`Cancel`}
-      confirmDisabled={!validText(wellboreName, 1, 64)}
+      confirmDisabled={
+        !validText(wellboreName, 1, 64) || !validText(wellboreUid, 1, 64)
+      }
       onSubmit={onConfirm}
       switchButtonPlaces={true}
       isLoading={false}
