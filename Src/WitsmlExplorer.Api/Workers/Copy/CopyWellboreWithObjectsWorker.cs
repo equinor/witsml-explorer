@@ -171,8 +171,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     },
                     Target = new WellboreReference()
                     {
-                        WellboreName = job.Source.WellboreName,
-                        WellboreUid = job.Source.WellboreUid,
+                        WellboreName = job.Target.WellboreName,
+                        WellboreUid = job.Target.WellboreUid,
                         WellName = job.Target.WellName,
                         WellUid = job.Target.WellUid,
                     }
