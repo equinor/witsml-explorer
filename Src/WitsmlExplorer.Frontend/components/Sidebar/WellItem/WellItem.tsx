@@ -57,7 +57,7 @@ export default function WellItem({
 
   const generatedSx = getStyles(theme);
 
-  const filteredWellbores = useWellboreFilter(wellbores);
+  const filteredWellbores = useWellboreFilter(wellbores, uidMappingBasicInfos);
   const isFetching = isFetchingWell || isFetchingWellbores;
 
   const onContextMenu = (
