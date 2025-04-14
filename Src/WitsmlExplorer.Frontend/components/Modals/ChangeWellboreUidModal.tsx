@@ -55,7 +55,7 @@ const ChangeWellboreUidModal = (
 
   return (
     <ModalDialog
-      heading={`Confirm Paste Details?`}
+      heading={`Confirm Paste Details`}
       confirmText={`Paste`}
       cancelText={`Cancel`}
       confirmDisabled={
