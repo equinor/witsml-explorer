@@ -49,7 +49,7 @@ const MinimumDataQcModal = (
       ? agentSettings?.minimumDataQcDepthDensityDefault
       : agentSettings?.minimumDataQcTimeDensityDefault) ?? 0
   );
-  const [gapSizeIsValid, setGapSizeIsValid] = useState<boolean>(false);
+  const [isGapSizeValid, setIsGapSizeValid] = useState<boolean>(false);
   const [timeGapValue, setTimeGapValue] = useState<string>(
     convertMillisecondsToTimeString(
       agentSettings?.minimumDataQcTimeGapDefault ?? 0
@@ -61,22 +61,22 @@ const MinimumDataQcModal = (
   const [endIndex, setEndIndex] = useState<string | number>(
     isDepthLog ? indexToNumber(logObject.endIndex) : logObject.endIndex
   );
-  const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
+  const [isIndexRangeValid, setIsIndexRangeValid] = useState<boolean>();
 
-  const toggleConfirmDisabled = (isValid: boolean) => {
-    setConfirmDisabled(!isValid);
+  const toggleIsIndexRangeValid = (isValid: boolean) => {
+    setIsIndexRangeValid(!isValid);
   };
 
   const handleTimeGapSizeChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setGapSizeIsValid(new RegExp(timePattern).test(event.target.value));
+    setIsGapSizeValid(new RegExp(timePattern).test(event.target.value));
     if (event.target.value) {
       setTimeGapValue(event.target.value);
       const millisecondsTime = convertTimeStringToMilliseconds(
         event.target.value
       );
-      setGapSizeIsValid(millisecondsTime > 0);
+      setIsGapSizeValid(millisecondsTime > 0);
     }
   };
 
@@ -126,7 +126,7 @@ const MinimumDataQcModal = (
                   placeholder="hh:mm:ss"
                   maxLength={8}
                   helperText={
-                    !gapSizeIsValid
+                    !isGapSizeValid
                       ? "Gap size time must be in format hh:mm:ss, where hours: 00..23, minutes: 00..59, seconds: 00..59 and must be greater then 00:00:00"
                       : null
                   }
@@ -161,7 +161,7 @@ const MinimumDataQcModal = (
                   }
                   onStartValueChanged={setStartIndex}
                   onEndValueChanged={setEndIndex}
-                  onValidChange={toggleConfirmDisabled}
+                  onValidChange={toggleIsIndexRangeValid}
                 />
               </ContentItem>
             ) : (
@@ -174,7 +174,7 @@ const MinimumDataQcModal = (
                   }
                   onStartDateChanged={setStartIndex}
                   onEndDateChanged={setEndIndex}
-                  onValidChange={toggleConfirmDisabled}
+                  onValidChange={toggleIsIndexRangeValid}
                 />
               </ContentItem>
             )}
@@ -182,7 +182,7 @@ const MinimumDataQcModal = (
         }
         onSubmit={onSubmit}
         confirmColor={"primary"}
-        confirmDisabled={confirmDisabled || (!isDepthLog && !gapSizeIsValid)}
+        confirmDisabled={isIndexRangeValid || (!isDepthLog && !isGapSizeValid)}
         isLoading={isFetching}
       />
     </>
