@@ -30,6 +30,7 @@ import LogObject from "models/logObject";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import WellReference from "models/jobs/wellReference";
+import ChangeWellboreUidModal from "components/Modals/ChangeWellboreUidModal";
 
 export const onClickPaste = (
   servers: Server[],
@@ -148,12 +149,16 @@ export const pasteWellbore = async (
     wellUid: targetWell.uid,
     wellName: targetWell.name
   };
-  const orderCopyJob = () => {
-    const copyJob = createCopyWellboreWithObjectsJob(sourceWellbore, target);
-    JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
-  };
-
-  onClickPaste(servers, sourceWellbore.serverUrl, orderCopyJob);
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: (
+      <ChangeWellboreUidModal
+        servers={servers}
+        sourceWellbore={sourceWellbore}
+        targetWell={target}
+      />
+    )
+  });
 };
 
 export const copyObjectOnWellbore = async (

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
@@ -15,6 +16,7 @@ using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Query;
+using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers.Copy
@@ -28,10 +30,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
     {
         private readonly ICopyWellboreWorker _copyWellboreWorker;
         private readonly ICopyObjectsWorker _copyObjectsWorker;
-        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker) : base(witsmlClientProvider, logger)
+        private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
+        private string _sourceServerName;
+        private string _targetServerName;
+        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
             _copyWellboreWorker = copyWellboreWorker;
             _copyObjectsWorker = copyObjectsWorker;
+            _witsmlServerRepository = witsmlServerRepository;
         }
 
         public JobType JobType => JobType.CopyWellboreWithObjects;
@@ -40,24 +46,16 @@ namespace WitsmlExplorer.Api.Workers.Copy
         {
             IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
             IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
+            IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
+            Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
+            Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
+            _sourceServerName = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.Name;
+            _targetServerName = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.Name;
             var reportItems = new List<CopyWellboreWithObjectsReportItem>();
             var copyWellboreJob = new CopyWellboreJob()
             {
-                Target = new WellboreReference()
-                {
-                    WellUid = job.Target.WellUid,
-                    WellboreUid = job.Source.WellboreUid,
-                    WellName = job.Target.WellName,
-                    WellboreName = job.Source.WellboreName
-                }
-                ,
-                Source = new WellboreReference()
-                {
-                    WellUid = job.Source.WellUid,
-                    WellboreUid = job.Source.WellboreUid,
-                    WellName = job.Source.WellName,
-                    WellboreName = job.Source.WellboreName
-                }
+                Target = job.Target,
+                Source = job.Source
             };
             var existingWellbore = await WorkerTools.GetWellbore(targetClient, copyWellboreJob.Target);
 
@@ -106,7 +104,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             string summary = fails > 0
                 ? $"Partially copied wellbore with some child objects. Failed to copy {fails} out of {reportItems.Count} objects."
                 : "Successfully copied wellbore with all supported child objects.";
-            BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems, summary);
+            BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems, summary, job);
             job.JobInfo.Report = report;
             if (fails > 0)
             {
@@ -142,13 +140,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return estimatedDuration;
         }
 
-        private CommonCopyReport CreateCopyWellboreWithObjectsReport(List<CopyWellboreWithObjectsReportItem> reportItems, string summary)
+        private CommonCopyReport CreateCopyWellboreWithObjectsReport(List<CopyWellboreWithObjectsReportItem> reportItems, string summary, CopyWellboreWithObjectsJob job)
         {
             return new CommonCopyReport
             {
                 Title = $"Copy wellbore with objects report",
                 Summary = summary,
-                ReportItems = reportItems
+                ReportItems = reportItems,
+                JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceWell::{job.Source.WellName}|TargetWell::{job.Target.WellName}|SourceWellbore::{job.Source.WellboreName}|TargetWellbore::{job.Target.WellboreName}"
             };
         }
 
@@ -175,13 +174,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         WellboreUid = job.Source.WellboreUid,
                         WellboreName = job.Source.WellboreName
                     },
-                    Target = new WellboreReference()
-                    {
-                        WellboreName = job.Source.WellboreName,
-                        WellboreUid = job.Source.WellboreUid,
-                        WellName = job.Target.WellName,
-                        WellUid = job.Target.WellUid,
-                    },
+                    Target = job.Target,
                     ProgressReporter = progressReporter
                 };
                 (WorkerResult result, RefreshAction refresh) copyObjectResult = await _copyObjectsWorker.Execute(copyObjectJob, cancellationToken);
