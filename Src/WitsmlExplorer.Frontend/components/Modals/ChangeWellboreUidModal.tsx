@@ -40,16 +40,14 @@ const ChangeWellboreUidModal = (
     const target: WellboreReference = {
       wellUid: props.targetWell.wellUid,
       wellName: props.targetWell.wellName,
-      wellboreName: props.sourceWellbore.wellboreName,
-      wellboreUid: props.sourceWellbore.wellboreUid
+      wellboreName: wellboreName,
+      wellboreUid: wellboreUid
     };
     const orderCopyJob = () => {
       const copyJob = createCopyWellboreWithObjectsJob(
         props.sourceWellbore,
         target
       );
-      target.wellboreName = wellboreName;
-      target.wellboreUid = wellboreUid;
       JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
     };
     onClickPaste(props.servers, props.sourceWellbore.serverUrl, orderCopyJob);
@@ -57,8 +55,8 @@ const ChangeWellboreUidModal = (
 
   return (
     <ModalDialog
-      heading={`Change wellbore uid and name?`}
-      confirmText={`Continue with pasting the wellbore`}
+      heading={`Confirm Paste Details?`}
+      confirmText={`Paste`}
       cancelText={`Cancel`}
       confirmDisabled={
         !validText(wellboreName, 1, 64) || !validText(wellboreUid, 1, 64)
@@ -81,7 +79,7 @@ const ChangeWellboreUidModal = (
             label={"Wellbore UID"}
             required
             value={wellboreUid}
-            variant={validText(wellboreUid) ? undefined : "error"}
+            variant={validText(wellboreUid, 1, 64) ? undefined : "error"}
             helperText={
               !validText(wellboreUid, 1, 64)
                 ? "The UID must be 1-64 characters"
@@ -96,7 +94,7 @@ const ChangeWellboreUidModal = (
             label={"Wellbore Name"}
             required
             value={wellboreName}
-            variant={validText(wellboreName) ? undefined : "error"}
+            variant={validText(wellboreName, 1, 64) ? undefined : "error"}
             helperText={
               !validText(wellboreName, 1, 64)
                 ? "The name must be 1-64 characters"

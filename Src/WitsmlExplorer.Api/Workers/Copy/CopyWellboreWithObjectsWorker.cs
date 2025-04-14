@@ -43,21 +43,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
             var reportItems = new List<CopyWellboreWithObjectsReportItem>();
             var copyWellboreJob = new CopyWellboreJob()
             {
-                Target = new WellboreReference()
-                {
-                    WellUid = job.Target.WellUid,
-                    WellboreUid = job.Target.WellboreUid,
-                    WellName = job.Target.WellName,
-                    WellboreName = job.Target.WellboreName
-                }
-                ,
-                Source = new WellboreReference()
-                {
-                    WellUid = job.Source.WellUid,
-                    WellboreUid = job.Source.WellboreUid,
-                    WellName = job.Source.WellName,
-                    WellboreName = job.Source.WellboreName
-                }
+                Target = job.Target,
+                Source = job.Source
             };
             var existingWellbore = await WorkerTools.GetWellbore(targetClient, copyWellboreJob.Target);
 
@@ -175,13 +162,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                         WellboreUid = job.Source.WellboreUid,
                         WellboreName = job.Source.WellboreName
                     },
-                    Target = new WellboreReference()
-                    {
-                        WellboreName = job.Target.WellboreName,
-                        WellboreUid = job.Target.WellboreUid,
-                        WellName = job.Target.WellName,
-                        WellUid = job.Target.WellUid,
-                    },
+                    Target = job.Target,
                     ProgressReporter = progressReporter
                 };
                 (WorkerResult result, RefreshAction refresh) copyObjectResult = await _copyObjectsWorker.Execute(copyObjectJob, cancellationToken);
