@@ -4,8 +4,8 @@ import {
   WITSML_LOG_ORDERTYPE_DECREASING
 } from "components/Constants";
 import ModalDialog from "components/Modals/ModalDialog";
-import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import AdjustDateTimeIndexRange from "./AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "./AdjustDepthIndexRange.tsx";
 import WarningBar from "components/WarningBar";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
@@ -48,7 +48,7 @@ const TrimLogObjectModal = (
           content={
             <>
               {log.indexType === WITSML_INDEX_TYPE_DATE_TIME && (
-                <AdjustDateTimeModal
+                <AdjustDateTimeIndexRange
                   minDate={log.startIndex}
                   maxDate={log.endIndex}
                   isDescending={
@@ -60,7 +60,7 @@ const TrimLogObjectModal = (
                 />
               )}
               {log.indexType === WITSML_INDEX_TYPE_MD && (
-                <AdjustNumberRangeModal
+                <AdjustDepthIndexRange
                   minValue={indexToNumber(logObject.startIndex)}
                   maxValue={indexToNumber(logObject.endIndex)}
                   isDescending={
