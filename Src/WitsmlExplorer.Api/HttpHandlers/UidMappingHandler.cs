@@ -72,6 +72,12 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return TypedResults.Ok(await uidMappingService.QueryUidMapping(query));
         }
 
+        [Produces(typeof(ICollection<UidMappingBasicInfo>))]
+        public static async Task<IResult> GetUidMappingBasicInfos([FromServices] IUidMappingService uidMappingService)
+        {
+            return TypedResults.Ok(await uidMappingService.GetUidMappingBasicInfos());
+        }
+
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -16,8 +16,8 @@ import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import ObjectService from "services/objectService";
 import WellboreService from "services/wellboreService";
-import UidMappingService from "../../services/uidMappingService.tsx";
 import { UidMappingDbQuery } from "../../models/uidMapping.tsx";
+import UidMappingService from "../../services/uidMappingService.tsx";
 import { createCopyJob, displayModalForReplace } from "./CopyUtils.tsx";
 
 export const onClickCopyToServer = async (
@@ -159,8 +159,8 @@ const confirmedCopyToServer = async (
   }
   if (existingObjects.length > 0) {
     displayModalForReplace(
-      targetServer,
       sourceServer,
+      targetServer,
       toCopy,
       existingObjects,
       targetWellbore,

@@ -61,6 +61,25 @@ namespace WitsmlExplorer.Api.Models
             return JsonSerializer.Serialize(this);
         }
     }
+    public class UidMappingBasicInfo
+    {
+        [JsonPropertyName("sourceWellId")]
+        public string SourceWellId { get; set; }
+
+        [JsonPropertyName("sourceWellboreId")]
+        public string SourceWellboreId { get; set; }
+
+        [JsonPropertyName("targetServerId")]
+        public Guid TargetServerId { get; set; }
+
+        [JsonPropertyName("targetServerName")]
+        public string TargetServerName { get; set; }
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
+    }
 
     public class UidMappingKey
     {

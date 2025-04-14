@@ -51,7 +51,7 @@ const PropertiesPanel = (): React.ReactElement => {
     let tmpString = "";
     properties.forEach(function (value, key) {
       if (key.indexOf("UID") === 0) {
-        tmpString += key.replace("UID", "") + " Uid: " + value + ", ";
+        tmpString += key.replace("UID", "") + " UID: " + value + ", ";
       } else {
         tmpString += key + " Name: " + value + ", ";
       }
@@ -66,14 +66,22 @@ const PropertiesPanel = (): React.ReactElement => {
   return (
     <>
       {" "}
-      {keys.length && (
+      {keys.length > 0 && (
         <Button
           title="Copy all properties to clipboard"
           onClick={() => copyAllPropertiesToClipboard()}
           variant="ghost"
         >
           <Icon name="copy" />
-          All
+          <Typography
+            token={{
+              color: colors.text.staticPropertyKey,
+              fontSize: "0.75rem",
+              fontFamily: "Equinor"
+            }}
+          >
+            All
+          </Typography>
         </Button>
       )}
       {keys.length ? (

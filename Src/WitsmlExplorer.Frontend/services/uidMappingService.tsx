@@ -1,6 +1,10 @@
 import { ApiClient, throwError } from "./apiClient.tsx";
 import { ErrorDetails } from "../models/errorDetails.ts";
-import { UidMapping, UidMappingDbQuery } from "../models/uidMapping.tsx";
+import {
+  UidMapping,
+  UidMappingBasicInfo,
+  UidMappingDbQuery
+} from "../models/uidMapping.tsx";
 
 export default class UidMappingService {
   public static async addUidMapping(
@@ -33,6 +37,21 @@ export default class UidMappingService {
       return await response.json();
     } else {
       throwError(response.status, response.statusText);
+    }
+  }
+
+  public static async getUidMappingBasicInfos(
+    abortSignal?: AbortSignal
+  ): Promise<UidMappingBasicInfo[]> {
+    const response = await ApiClient.get(
+      `/api/uidmapping/basicinfos`,
+      abortSignal,
+      undefined
+    );
+    if (response.ok) {
+      return response.json();
+    } else {
+      return [];
     }
   }
 

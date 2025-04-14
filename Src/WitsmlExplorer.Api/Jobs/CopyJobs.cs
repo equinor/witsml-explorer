@@ -63,6 +63,23 @@ namespace WitsmlExplorer.Api.Jobs
         public override bool IsCancelable => true;
     }
 
+    public record
+        CopyWellboreWithObjectsJob : ICopyJob<WellboreReference, WellboreReference>
+    {
+        public override string GetWellName()
+        {
+            return $"Source={Source.WellName} Target={Target.WellName}";
+        }
+        public override string GetWellboreName()
+        {
+            return $"Source={Source.WellboreName} Target={Target.WellboreName}";
+        }
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public override bool IsCancelable => true;
+    }
+
     public record CopyWithParentJob : ICopyJob<ObjectReferences, WellboreReference>
     {
         public override string GetObjectName()
