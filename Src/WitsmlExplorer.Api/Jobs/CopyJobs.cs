@@ -66,13 +66,13 @@ namespace WitsmlExplorer.Api.Jobs
     public record
         CopyWellboreWithObjectsJob : ICopyJob<WellboreReference, WellboreReference>
     {
-        public override string GetWellboreName()
-        {
-            return Source.GetWellboreName();
-        }
         public override string GetWellName()
         {
-            return Source.GetWellName();
+            return $"Source={Source.WellName} Target={Target.WellName}";
+        }
+        public override string GetWellboreName()
+        {
+            return $"Source={Source.WellboreName} Target={Target.WellboreName}";
         }
         /// <summary>
         /// Indicates, if the job can be cancelled
