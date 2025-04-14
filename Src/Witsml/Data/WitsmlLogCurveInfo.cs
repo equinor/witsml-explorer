@@ -59,7 +59,7 @@ namespace Witsml.Data
         public string DataSource { get; set; }
 
         [XmlElement("densData")]
-        public string DensData { get; set; }
+        public WitsmlPerLengthMeasure DensData { get; set; }
 
         [XmlElement("traceState")]
         public string TraceState { get; set; }
