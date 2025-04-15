@@ -24,6 +24,6 @@
     "types": ["vitest/globals"]
   },
   "exclude": ["node_modules", "eslint.config.js"],
-  "include": ["vite-env.d.ts", "**/*.tsx", "."],
+  "include": ["vite-env.d.ts", "**/*.ts", "**/*.tsx", "."],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
