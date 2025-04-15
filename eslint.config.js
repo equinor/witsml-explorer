@@ -5,6 +5,12 @@ const tsEslintParser = require("@typescript-eslint/parser");
 const tsEslintPlugin = require("@typescript-eslint/eslint-plugin");
 const reactPlugin = require("eslint-plugin-react");
 
+const revisedBrowserGlobals = Object.assign({}, globals.browser, {
+  AudioWorkletGlobalScope: globals.browser["AudioWorkletGlobalScope "]
+})
+
+delete revisedBrowserGlobals["AudioWorkletGlobalScope "];
+
 module.exports = tsEslint.config(
   eslint.configs.recommended,
   ...tsEslint.configs.recommended,
@@ -20,7 +26,7 @@ module.exports = tsEslint.config(
       sourceType: "module",
       parser: tsEslintParser,
       globals: {
-        ...globals.browser,
+        ...revisedBrowserGlobals.browser,
         ...globals.node,
         ...globals.jest,
         React: "readonly",
