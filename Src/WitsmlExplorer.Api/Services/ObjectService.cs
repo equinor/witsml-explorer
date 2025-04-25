@@ -22,6 +22,8 @@ namespace WitsmlExplorer.Api.Services
         Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
         Task<ICollection<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
         Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid);
+        Task<ICollection<ObjectOnWellboreForSelection>> GetObjectsOnWellbore(string wellUid,
+            string wellboreUid);
     }
 
     public class ObjectService : WitsmlService, IObjectService
@@ -169,6 +171,59 @@ namespace WitsmlExplorer.Api.Services
             ).ToList();
             await Task.WhenAll(countTasks);
             return countTasks.ToDictionary((task) => task.Result.objectType, (task) => task.Result.count);
+        }
+
+        public async Task<ICollection<ObjectOnWellboreForSelection>> GetObjectsOnWellbore(string wellUid, string wellboreUid)
+        {
+            var result = new List<ObjectOnWellboreForSelection>();
+            foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
+            {
+                if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
+                var objects = await GetWellboreObjectsByType(wellUid, wellboreUid, entityType);
+                result.AddRange(ToObjectOnWellboreForSelection(objects, entityType));
+            }
+            var depthLogs = await GetWellboreObjectsByType(wellUid, wellboreUid, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_MD);
+            result.AddRange(ToObjectOnWellboreForSelection(depthLogs, EntityType.Log));
+            var timeLogs = await GetWellboreObjectsByType(wellUid, wellboreUid, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
+            result.AddRange(ToObjectOnWellboreForSelection(timeLogs, EntityType.Log));
+            return result;
+        }
+        private async Task<IWitsmlObjectList> GetWellboreObjectsByType(string wellUid, string wellboreUid, EntityType entityType, string logIndexType = null)
+        {
+            IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(
+                wellUid,
+                wellboreUid,
+                "",
+                entityType
+            );
+
+            if (entityType == EntityType.Log)
+            {
+                ((WitsmlLog)query.Objects.FirstOrDefault()).IndexType = logIndexType;
+            }
+
+            IWitsmlObjectList witsmlObjectList = await _witsmlClient.GetFromStoreNullableAsync(
+                query,
+                new OptionsIn(ReturnElements.IdOnly)
+            );
+
+            return witsmlObjectList;
+        }
+
+        private List<ObjectOnWellboreForSelection> ToObjectOnWellboreForSelection(IWitsmlObjectList objects, EntityType entityType)
+        {
+            var result = new List<ObjectOnWellboreForSelection>();
+            foreach (var objectOnWellbore in objects.Objects)
+            {
+                var resultItem = new ObjectOnWellboreForSelection
+                {
+                    ObjectType = entityType.ToString(),
+                    Uid = objectOnWellbore.Uid,
+                    Name = objectOnWellbore.Name
+                };
+                result.Add(resultItem);
+            }
+            return result;
         }
     }
 }

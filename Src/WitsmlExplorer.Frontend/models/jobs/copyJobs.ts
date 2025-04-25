@@ -3,6 +3,7 @@ import ObjectReference from "models/jobs/objectReference";
 import ObjectReferences from "models/jobs/objectReferences";
 import WellboreReference from "models/jobs/wellboreReference";
 import WellReference from "models/jobs/wellReference";
+import { ObjectsOnWellbore } from "models/objectOnWellboreForSelection";
 
 export interface CopyWellJob {
   source: WellReference;
@@ -34,6 +35,6 @@ export interface CopyWithParentJob extends CopyObjectsJob {
 }
 
 export interface CopyWellboreWithObjectsJob {
-  source: WellboreReference;
+  source: ObjectsOnWellbore;
   target: WellReference;
 }

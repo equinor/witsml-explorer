@@ -1,5 +1,6 @@
 import ObjectReferences from "models/jobs/objectReferences";
 import WellboreReference from "models/jobs/wellboreReference";
+import { ObjectsOnWellbore } from "models/objectOnWellboreForSelection";
 import { ObjectType } from "models/objectType";
 import { useEffect, useState } from "react";
 
@@ -36,9 +37,9 @@ export const useClipboardReferences = (
 
 export const useWellboreReference = (
   pollInterval = 0
-): WellboreReference | null => {
+): ObjectsOnWellbore | null => {
   const [wellboreReference, setWellboreReference] =
-    useState<WellboreReference>(null);
+    useState<ObjectsOnWellbore>(null);
 
   const tryToParseClipboardContent = async () => {
     try {
@@ -87,14 +88,14 @@ export function parseStringToReferences(input: string): ObjectReferences {
 
 export function parseWellboreStringToReference(
   input: string
-): WellboreReference {
-  let jsonObject: WellboreReference;
+): ObjectsOnWellbore {
+  let jsonObject: ObjectsOnWellbore;
   try {
     jsonObject = JSON.parse(input);
   } catch (e) {
     throw new Error("Invalid input given.", e);
   }
-  verifyRequiredWellboreProperties(jsonObject);
+  verifyRequiredWellboreProperties(jsonObject.wellboreReference);
   return jsonObject;
 }
 

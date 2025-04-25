@@ -31,6 +31,8 @@ import Well from "models/well";
 import Wellbore from "models/wellbore";
 import WellReference from "models/jobs/wellReference";
 import ChangeWellboreUidModal from "components/Modals/ChangeWellboreUidModal";
+import SubObjectsSelectionModal from "components/Modals/SubObjectsSelectionModal";
+import { ObjectsOnWellbore } from "models/objectOnWellboreForSelection";
 
 export const onClickPaste = (
   servers: Server[],
@@ -139,7 +141,7 @@ export const pasteComponents = async (
 
 export const pasteWellbore = async (
   servers: Server[],
-  sourceWellbore: WellboreReference,
+  objectsOnWellbore: ObjectsOnWellbore,
   dispatchOperation: DispatchOperation,
   targetWell: Well
 ) => {
@@ -154,7 +156,7 @@ export const pasteWellbore = async (
     payload: (
       <ChangeWellboreUidModal
         servers={servers}
-        sourceWellbore={sourceWellbore}
+        sourceWellboreWithObjects={objectsOnWellbore}
         targetWell={target}
       />
     )
@@ -185,6 +187,11 @@ export const copyWellbore = async (
   const wellboreReference: WellboreReference = toWellboreReference(wellbore);
   wellboreReference.serverUrl = connectedServer.url;
   await navigator.clipboard.writeText(JSON.stringify(wellboreReference));
+
+  dispatchOperation({
+    type: OperationType.DisplayModal,
+    payload: <SubObjectsSelectionModal sourceWellbore={wellboreReference} />
+  });
 };
 
 export const copyComponents = async (
@@ -307,8 +314,8 @@ export const createCopyJob = (
 };
 
 export const createCopyWellboreWithObjectsJob = (
-  sourceWellbore: WellboreReference,
+  sourceWellboreWithObjects: ObjectsOnWellbore,
   targetWell: WellReference
 ): CopyWellboreWithObjectsJob => {
-  return { source: sourceWellbore, target: targetWell };
+  return { source: sourceWellboreWithObjects, target: targetWell };
 };

@@ -55,7 +55,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             var copyWellboreJob = new CopyWellboreJob()
             {
                 Target = job.Target,
-                Source = job.Source
+                Source = job.Source.WellboreReference
             };
             var existingWellbore = await WorkerTools.GetWellbore(targetClient, copyWellboreJob.Target);
 
@@ -147,7 +147,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Title = $"Copy wellbore with objects report",
                 Summary = summary,
                 ReportItems = reportItems,
-                JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceWell::{job.Source.WellName}|TargetWell::{job.Target.WellName}|SourceWellbore::{job.Source.WellboreName}|TargetWellbore::{job.Target.WellboreName}"
+                JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceWell::{job.Source.WellboreReference.WellName}|TargetWell::{job.Target.WellName}|SourceWellbore::{job.Source.WellboreReference.WellboreName}|TargetWellbore::{job.Target.WellboreName}"
             };
         }
 
@@ -169,10 +169,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
                             objectOnWellbore.Uid
                         },
                         ObjectType = entityType,
-                        WellName = job.Source.WellName,
-                        WellUid = job.Source.WellUid,
-                        WellboreUid = job.Source.WellboreUid,
-                        WellboreName = job.Source.WellboreName
+                        WellName = job.Source.WellboreReference.WellName,
+                        WellUid = job.Source.WellboreReference.WellUid,
+                        WellboreUid = job.Source.WellboreReference.WellboreUid,
+                        WellboreName = job.Source.WellboreReference.WellboreName
                     },
                     Target = job.Target,
                     ProgressReporter = progressReporter
@@ -242,8 +242,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private static async Task<IWitsmlObjectList> GetWellboreObjectsByType(CopyWellboreWithObjectsJob job, IWitsmlClient sourceClient, EntityType entityType, string logIndexType = null)
         {
             IWitsmlObjectList query = ObjectQueries.GetWitsmlObjectById(
-                job.Source.WellUid,
-                job.Source.WellboreUid,
+                job.Source.WellboreReference.WellUid,
+                job.Source.WellboreReference.WellboreUid,
                 "",
                 entityType
             );
