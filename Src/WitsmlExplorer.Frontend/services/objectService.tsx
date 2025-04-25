@@ -1,5 +1,6 @@
 import { ErrorDetails } from "models/errorDetails";
 import ObjectOnWellbore from "models/objectOnWellbore";
+import ObjectOnWellboreForSelection from "models/objectOnWellboreForSelection";
 import ObjectSearchResult from "models/objectSearchResult";
 import {
   ObjectType,
@@ -67,6 +68,26 @@ export default class ObjectService {
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
       )}/idonly/${objectType}`,
+      abortSignal,
+      server
+    );
+    if (response.ok) {
+      return response.json();
+    } else {
+      return [];
+    }
+  }
+
+  public static async getObjectsOnWellbore(
+    wellUid: string,
+    wellboreUid: string,
+    abortSignal?: AbortSignal,
+    server?: Server
+  ): Promise<ObjectOnWellboreForSelection[]> {
+    const response = await ApiClient.get(
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/allobjectsonwellbore`,
       abortSignal,
       server
     );
