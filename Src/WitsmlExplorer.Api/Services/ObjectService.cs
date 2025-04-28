@@ -180,12 +180,12 @@ namespace WitsmlExplorer.Api.Services
             {
                 if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
                 var objects = await GetWellboreObjectsByType(wellUid, wellboreUid, entityType);
-                result.AddRange(ToObjectOnWellboreForSelection(objects, entityType));
+                result.AddRange(ToObjectOnWellboreForSelection(objects, entityType, string.Empty));
             }
             var depthLogs = await GetWellboreObjectsByType(wellUid, wellboreUid, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_MD);
-            result.AddRange(ToObjectOnWellboreForSelection(depthLogs, EntityType.Log));
+            result.AddRange(ToObjectOnWellboreForSelection(depthLogs, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_MD));
             var timeLogs = await GetWellboreObjectsByType(wellUid, wellboreUid, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME);
-            result.AddRange(ToObjectOnWellboreForSelection(timeLogs, EntityType.Log));
+            result.AddRange(ToObjectOnWellboreForSelection(timeLogs, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME));
             return result;
         }
         private async Task<IWitsmlObjectList> GetWellboreObjectsByType(string wellUid, string wellboreUid, EntityType entityType, string logIndexType = null)
@@ -210,7 +210,7 @@ namespace WitsmlExplorer.Api.Services
             return witsmlObjectList;
         }
 
-        private List<ObjectOnWellboreForSelection> ToObjectOnWellboreForSelection(IWitsmlObjectList objects, EntityType entityType)
+        private List<ObjectOnWellboreForSelection> ToObjectOnWellboreForSelection(IWitsmlObjectList objects, EntityType entityType, string logType)
         {
             var result = new List<ObjectOnWellboreForSelection>();
             foreach (var objectOnWellbore in objects.Objects)
@@ -218,6 +218,7 @@ namespace WitsmlExplorer.Api.Services
                 var resultItem = new ObjectOnWellboreForSelection
                 {
                     ObjectType = entityType.ToString(),
+                    LogType = logType,
                     Uid = objectOnWellbore.Uid,
                     Name = objectOnWellbore.Name
                 };

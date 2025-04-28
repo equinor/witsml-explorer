@@ -43,6 +43,7 @@ const SubObjectsSelectionModal = (
     useState<ObjectOnWellboreForSelection[]>();
   const columns: ContentTableColumn[] = [
     { property: "objectType", label: "Object type", type: ContentType.String },
+    { property: "logType", label: "Log type", type: ContentType.String },
     { property: "uid", label: "Uid", type: ContentType.String },
     { property: "name", label: "Name", type: ContentType.String }
   ];

@@ -232,6 +232,13 @@ namespace WitsmlExplorer.Api.Workers.Copy
             foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
             {
                 if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
+                var selectedObjects =
+                    job.Source.SelectedObjects.Where(x =>
+                        x.ObjectType == entityType.ToString());
+                if (!selectedObjects.Any())
+                {
+                    continue;
+                }
                 result.Add((entityType, null), await GetWellboreObjectsByType(job, sourceClient, entityType));
             }
             result.Add((EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_MD), await GetWellboreObjectsByType(job, sourceClient, EntityType.Log, WitsmlLog.WITSML_INDEX_TYPE_MD));
@@ -258,6 +265,14 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 new OptionsIn(ReturnElements.IdOnly)
             );
 
+            var selectedObjects =
+                job.Source.SelectedObjects.Where(x =>
+                    x.ObjectType == entityType.ToString());
+
+            var selectedWitsmlObjects =
+                witsmlObjectList.Objects.Where(x =>
+                    selectedObjects.Count(y => y.Uid == x.Uid) > 0);
+            witsmlObjectList.Objects = selectedWitsmlObjects;
             return witsmlObjectList;
         }
 

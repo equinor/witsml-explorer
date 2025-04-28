@@ -10,21 +10,21 @@ public class ObjectsOnWellbore : IReference
     public List<ObjectOnWellboreForSelection> SelectedObjects { get; set; }
     public string Description()
     {
-        throw new System.NotImplementedException();
+        return "Objects on wellbore";
     }
 
     public string GetWellName()
     {
-        throw new System.NotImplementedException();
+        return WellboreReference.WellName;
     }
 
     public string GetWellboreName()
     {
-        throw new System.NotImplementedException();
+        return WellboreReference.WellboreName;
     }
 
     public string GetObjectName()
     {
-        throw new System.NotImplementedException();
+        return string.Empty;
     }
 }
