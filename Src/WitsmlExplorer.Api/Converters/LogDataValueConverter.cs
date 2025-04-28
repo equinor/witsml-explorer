@@ -18,6 +18,10 @@ namespace WitsmlExplorer.Api.Converters
         {
             if (value.Value is double doubleValue)
             {
+                if (Double.IsPositiveInfinity(doubleValue))
+                {
+                    doubleValue = Double.MaxValue;
+                }
                 writer.WriteNumberValue(doubleValue);
             }
             else

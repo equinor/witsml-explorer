@@ -28,6 +28,7 @@ namespace WitsmlExplorer.Api.Models
         Tubular,
         Trajectory,
         WbGeometry,
+        Attachment
     }
 
     public static class EntityTypeHelper
@@ -62,6 +63,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => new WitsmlWbGeometry(),
                 EntityType.Well => null,
                 EntityType.Wellbore => null,
+                EntityType.Attachment => new WitsmlAttachment(),
                 _ => null,
             };
         }
@@ -92,6 +94,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => new WitsmlWbGeometrys(),
                 EntityType.Well => null,
                 EntityType.Wellbore => null,
+                EntityType.Attachment => new WitsmlAttachments(),
                 _ => null,
             };
         }
@@ -113,6 +116,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => typeof(WbGeometry),
                 EntityType.Well => typeof(Well),
                 EntityType.Wellbore => typeof(Wellbore),
+                EntityType.Attachment => typeof(Attachment),
                 _ => null,
             };
         }

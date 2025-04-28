@@ -22,7 +22,8 @@ import {
   STORAGE_FILTER_INACTIVE_TIME_CURVES_VALUE_KEY,
   STORAGE_FILTER_ISACTIVE_KEY,
   STORAGE_FILTER_OBJECTGROWING_KEY,
-  STORAGE_FILTER_PRIORITYSERVERS_KEY
+  STORAGE_FILTER_PRIORITYSERVERS_KEY,
+  STORAGE_FILTER_UIDMAPPING_KEY
 } from "tools/localStorageHelpers";
 
 const FilterPanel = (): React.ReactElement => {
@@ -71,6 +72,14 @@ const FilterPanel = (): React.ReactElement => {
       e.target.checked
     );
     updateSelectedFilter({ objectGrowing: e.target.checked });
+  };
+
+  const onChangeUidMapping = (e: ChangeEvent<HTMLInputElement>) => {
+    setLocalStorageItem<boolean>(
+      STORAGE_FILTER_UIDMAPPING_KEY,
+      e.target.checked
+    );
+    updateSelectedFilter({ uidMapping: e.target.checked });
   };
 
   const onChangeHideInactiveTimeCurves = (e: ChangeEvent<HTMLInputElement>) => {
@@ -126,6 +135,15 @@ const FilterPanel = (): React.ReactElement => {
             value={"Only show growing logs"}
             color={"primary"}
             label={"Only show growing logs"}
+            colors={colors}
+          />
+          <Checkbox
+            onChange={onChangeUidMapping}
+            checked={selectedFilter.uidMapping}
+            id="filter-uidMapping"
+            value={"Only show mapped wellbores"}
+            color={"primary"}
+            label={"Only show mapped wellbores"}
             colors={colors}
           />
         </InnerContainer>

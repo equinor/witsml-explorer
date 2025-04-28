@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -155,8 +156,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             int getDataCount = 0;
             // Mock fetching log
             witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-                .Returns((WitsmlLogs logs, OptionsIn options) =>
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+                .Returns((WitsmlLogs _, OptionsIn options, CancellationToken? _) =>
             {
                 // Mock fetching the header
                 if (options.ReturnElements == ReturnElements.HeaderOnly)

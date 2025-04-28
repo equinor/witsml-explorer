@@ -26,6 +26,7 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.Equal("trajectories", strings[EntityType.Trajectory]);
             Assert.Equal("tubulars", strings[EntityType.Tubular]);
             Assert.Equal("wbgeometries", strings[EntityType.WbGeometry]);
+            Assert.Equal("attachments", strings[EntityType.Attachment]);
         }
 
         [Fact]
@@ -40,6 +41,7 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.IsType<WitsmlTrajectory>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Trajectory));
             Assert.IsType<WitsmlTubular>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Tubular));
             Assert.IsType<WitsmlWbGeometry>(EntityTypeHelper.ToObjectOnWellbore(EntityType.WbGeometry));
+            Assert.IsType<WitsmlAttachment>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Attachment));
         }
 
         [Fact]
@@ -54,6 +56,7 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.IsType<WitsmlTrajectories>(EntityTypeHelper.ToObjectList(EntityType.Trajectory));
             Assert.IsType<WitsmlTubulars>(EntityTypeHelper.ToObjectList(EntityType.Tubular));
             Assert.IsType<WitsmlWbGeometrys>(EntityTypeHelper.ToObjectList(EntityType.WbGeometry));
+            Assert.IsType<WitsmlAttachments>(EntityTypeHelper.ToObjectList(EntityType.Attachment));
         }
     }
 }

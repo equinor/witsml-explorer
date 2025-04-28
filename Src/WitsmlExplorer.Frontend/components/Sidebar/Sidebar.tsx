@@ -18,6 +18,9 @@ import { Stack } from "@mui/material";
 import SidebarVirtualItem from "./SidebarVirtualItem";
 import { calculateWellNodeId } from "../../models/wellbore.tsx";
 import { isInAnyCompactMode } from "../../tools/themeHelpers.ts";
+import { useGetUidMappingBasicInfos } from "../../hooks/query/useGetUidMappingBasicInfos.tsx";
+import { refreshUidMappingBasicInfos } from "../../hooks/query/queryRefreshHelpers.tsx";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Sidebar: FC = () => {
   const { connectedServer } = useConnectedServer();
@@ -28,8 +31,11 @@ const Sidebar: FC = () => {
   const {
     operationState: { colors, theme }
   } = useOperationState();
+  const queryClient = useQueryClient();
+  const { uidMappingBasicInfos, isFetching: isFetchingUidMappingBasicInfos } =
+    useGetUidMappingBasicInfos();
   const isCompactMode = isInAnyCompactMode(theme);
-  const filteredWells = useWellFilter(wells) || [];
+  const filteredWells = useWellFilter(wells, uidMappingBasicInfos) || [];
   const containerRef = useRef<HTMLDivElement>(null);
   const virtualizer = useVirtualizer({
     getScrollElement: () => containerRef.current,
@@ -52,6 +58,12 @@ const Sidebar: FC = () => {
     }
   }, [filteredWells]);
 
+  useEffect(() => {
+    if (connectedServer) {
+      refreshUidMappingBasicInfos(queryClient);
+    }
+  }, [connectedServer]);
+
   const onNodeToggle = (_: SyntheticEvent, nodeIds: string[]) => {
     if (nodeIds !== expandedTreeNodes) {
       dispatchSidebar({
@@ -61,7 +73,7 @@ const Sidebar: FC = () => {
     }
   };
 
-  if (isFetching)
+  if (isFetching || isFetchingUidMappingBasicInfos)
     return (
       <>
         <SearchFilter />
@@ -109,6 +121,9 @@ const Sidebar: FC = () => {
                     key={`item_${virtualItem.key}`}
                     virtualItem={virtualItem}
                     well={well}
+                    uidMappingBasicInfos={uidMappingBasicInfos?.filter(
+                      (i) => i.sourceWellId === well.uid
+                    )}
                     virtualizer={virtualizer}
                     isExpanded={expandedTreeNodes.includes(
                       calculateWellNodeId(well.uid)

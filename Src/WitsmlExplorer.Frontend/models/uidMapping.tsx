@@ -9,7 +9,19 @@ export interface UidMapping {
   timestamp?: string;
 }
 
-export type UidMappingDbQuery = Omit<
-  UidMapping,
-  "targetWellId" | "targetWellboreId" | "username" | "timeStamp"
->;
+export type UidMappingDbQuery = Required<
+  Pick<UidMapping, "sourceServerId" | "targetServerId">
+> &
+  Partial<
+    Pick<
+      UidMapping,
+      "sourceWellId" | "sourceWellboreId" | "targetWellId" | "targetWellboreId"
+    >
+  >;
+
+export interface UidMappingBasicInfo {
+  sourceWellId: string;
+  sourceWellboreId: string;
+  targetServerId: string;
+  targetServerName: string;
+}

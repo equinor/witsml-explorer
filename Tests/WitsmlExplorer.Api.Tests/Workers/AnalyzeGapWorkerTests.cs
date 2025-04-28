@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -156,8 +157,8 @@ public class AnalyzeGapWorkerTests
         bool isSuccess = false;
 
         _witsmlClient.Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) => Task.FromResult(new WitsmlLogs()));
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+            .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) => Task.FromResult(new WitsmlLogs()));
 
         (WorkerResult Result, RefreshAction) analyzeGapTask = await _worker.Execute(job);
         Assert.Equal(isSuccess, analyzeGapTask.Result.IsSuccess);
@@ -172,21 +173,21 @@ public class AnalyzeGapWorkerTests
         var logDataWithoutGaps = GetTestLogDataWithoutGaps(isDepthLog);
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+            .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) => isLogDataWithGaps
                 ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps, isDepthLog, isIncreasing))
                 : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
 
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
-            .Returns((WitsmlLogs logs, OptionsIn options) => isLogDataWithGaps
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
+            .Returns((WitsmlLogs _, OptionsIn _, CancellationToken? _) => isLogDataWithGaps
                 ? Task.FromResult(GetTestWitsmlLogs(logDataWithGaps, isDepthLog, isIncreasing))
                 : Task.FromResult(GetTestWitsmlLogs(logDataWithoutGaps, isDepthLog, isIncreasing)));
 
         witsmlClient.InSequence(mockSequence)
             .Setup(client =>
-                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>()))
+                client.GetFromStoreAsync(It.IsAny<WitsmlLogs>(), It.IsAny<OptionsIn>(), null))
             .Returns(Task.FromResult(new WitsmlLogs() { Logs = new List<WitsmlLog>() }));
     }
 

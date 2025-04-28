@@ -13,7 +13,10 @@ import {
   StyledIcon,
   menuItemText
 } from "components/ContextMenus/ContextMenuUtils";
-import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
+import {
+  copyWellbore,
+  pasteObjectOnWellbore
+} from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferences } from "components/ContextMenus/UseClipboardReferences";
 import ConfirmDeletionModal, {
@@ -182,6 +185,10 @@ const WellboreContextMenu = (
     });
   };
 
+  const onClickCopyWellbore = () => {
+    copyWellbore(wellbore, connectedServer, dispatchOperation);
+  };
+
   const onClickShowOnServer = async (server: Server) => {
     dispatchOperation({ type: OperationType.HideContextMenu });
 
@@ -240,7 +247,8 @@ const WellboreContextMenu = (
               servers,
               objectReferences,
               dispatchOperation,
-              toWellboreReference(wellbore)
+              toWellboreReference(wellbore),
+              connectedServer
             )
           }
           disabled={objectReferences === null}
@@ -383,6 +391,10 @@ const WellboreContextMenu = (
         <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
           <StyledIcon name="search" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Missing Data Agent</Typography>
+        </MenuItem>,
+        <MenuItem key={"copyWellbore"} onClick={onClickCopyWellbore}>
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Copy wellbore</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

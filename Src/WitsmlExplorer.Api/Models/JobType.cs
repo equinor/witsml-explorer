@@ -8,6 +8,7 @@ namespace WitsmlExplorer.Api.Models
         CopyObjects,
         CopyWell,
         CopyWellbore,
+        CopyWellboreWithObjects,
         CopyWithParent,
         TrimLogObject,
         DeleteComponents,
@@ -40,6 +41,7 @@ namespace WitsmlExplorer.Api.Models
         CountLogDataRows,
         BatchModifyLogCurveInfo,
         DownloadLogData,
-        OffsetLogCurves
+        OffsetLogCurves,
+        MinimumDataQc
     }
 }

@@ -185,6 +185,7 @@ export default function MultiLogsCurveInfoListView() {
           columns={getColumns(
             isDepthIndex,
             showOnlyPrioritizedCurves,
+            false,
             allPrioritizedCurves,
             logObjects,
             hideEmptyMnemonics
@@ -193,6 +194,7 @@ export default function MultiLogsCurveInfoListView() {
             allLogs,
             logCurveInfoList,
             logObjects,
+            undefined,
             timeZone,
             dateTimeFormat,
             curveThreshold,

@@ -29,17 +29,18 @@ interface AppConfig {
   apiPort: string;
   dbPath: string;
   logsPath: string;
+  enableHttp: string;
 }
 
 // Function to read the configuration file. If it does not exist, create it with default values.
 function readOrCreateAppConfig() {
   const userDataPath = app.getPath("userData");
   const configPath = path.join(userDataPath, "config.json");
-
   const defaultConfig: AppConfig = {
     apiPort: "35427",
     dbPath: path.join(userDataPath, "witsml-explorer-db.db"),
-    logsPath: path.join(userDataPath, "logs")
+    logsPath: path.join(userDataPath, "logs"),
+    enableHttp: "false"
   };
 
   let config: AppConfig;
@@ -55,10 +56,7 @@ function readOrCreateAppConfig() {
     config = defaultConfig;
   }
 
-  if (
-    !!JSON.stringify(existingConfig) &&
-    JSON.stringify(existingConfig) !== JSON.stringify(config)
-  ) {
+  if (JSON.stringify(existingConfig) !== JSON.stringify(config)) {
     try {
       fs.writeFileSync(configPath, JSON.stringify(config, null, 4), "utf-8");
       console.log("Config created/updated:", configPath);
@@ -140,7 +138,8 @@ async function startApi(appConfig: AppConfig) {
         appConfig.logsPath,
         "witsml-explorer-api-.log"
       ),
-      "LiteDB:Name": appConfig.dbPath
+      "LiteDB:Name": appConfig.dbPath,
+      "enableHttp": appConfig.enableHttp
     };
     apiProcess = spawn(
       "dotnet",
@@ -161,7 +160,8 @@ async function startApi(appConfig: AppConfig) {
         appConfig.logsPath,
         "witsml-explorer-api-.log"
       ),
-      "LiteDB:Name": appConfig.dbPath
+      "LiteDB:Name": appConfig.dbPath,
+      "enableHttp": appConfig.enableHttp
     };
     const apiPath = getProductionPath("api/", true);
     apiProcess = spawn(path.join(apiPath, "WitsmlExplorer.Api"), [], {

@@ -143,12 +143,18 @@ export const ObjectMenuItems = (
     <MenuItem
       key={"pasteObject"}
       onClick={() =>
-        pasteObjectOnWellbore(servers, objectReferences, dispatchOperation, {
-          wellUid: checkedObjects[0].wellUid,
-          wellboreUid: checkedObjects[0].wellboreUid,
-          wellName: checkedObjects[0].wellName,
-          wellboreName: checkedObjects[0].wellboreName
-        })
+        pasteObjectOnWellbore(
+          servers,
+          objectReferences,
+          dispatchOperation,
+          {
+            wellUid: checkedObjects[0].wellUid,
+            wellboreUid: checkedObjects[0].wellboreUid,
+            wellName: checkedObjects[0].wellName,
+            wellboreName: checkedObjects[0].wellboreName
+          },
+          connectedServer
+        )
       }
       disabled={objectReferences === null}
     >

@@ -66,6 +66,13 @@ public class DownloadLogDataWorker : BaseWorker<DownloadLogDataJob>, IWorker
         }
 
         var logData = await _logObjectService.ReadLogData(job.LogReference.WellUid, job.LogReference.WellboreUid, job.LogReference.Uid, job.Mnemonics.ToList(), job.StartIndexIsInclusive, job.LogReference.StartIndex, job.LogReference.EndIndex, true, cancellationToken, progressReporter);
+        if (logData.CurveSpecifications == null)
+        {
+            var message = "DownloadLogDataJob failed. No data found in the given range.";
+            Logger.LogError(message);
+            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message, message, jobId: job.JobInfo.Id), null);
+        }
+
         return (job.ExportToLas)
             ? await DownloadLogDataResultLasFile(job, logData.Data,
                 logData.CurveSpecifications)

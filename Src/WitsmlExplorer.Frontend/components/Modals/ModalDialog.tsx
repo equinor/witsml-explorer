@@ -256,6 +256,25 @@ const Content = styled(Dialog.CustomContent)<{
     color-scheme: ${({ colors }) => (colors === dark ? "dark" : "")};
   }
 
+  h2[class*="AccordionHeader__StyledAccordionHeader"] {
+    background-color: transparent;
+    border: 1px solid #575d63;
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+
+  div[class*="AccordionPanel__StyledAccordionPanel"] {
+    background-color: transparent;
+    border-top: 0px;
+    border-bottom: 1px solid #575d63;
+    border-left: 1px solid #575d63;
+    border-right: 1px solid #575d63;
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+
   ${({ colors }) =>
     colors === dark
       ? `

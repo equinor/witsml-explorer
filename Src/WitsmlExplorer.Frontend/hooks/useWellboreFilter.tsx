@@ -7,6 +7,7 @@ import {
 } from "../contexts/filter";
 import ObjectSearchResult from "../models/objectSearchResult";
 import Wellbore from "../models/wellbore";
+import { UidMappingBasicInfo } from "../models/uidMapping.tsx";
 
 function filterWellboresOnIsActive(
   wellbores: Wellbore[],
@@ -14,6 +15,23 @@ function filterWellboresOnIsActive(
 ) {
   if (!filterOnIsActive) return wellbores;
   return wellbores.filter((wellbore: Wellbore) => wellbore.isActive);
+}
+
+function filterWellboresOnUidMapping(
+  wellbores: Wellbore[],
+  filterOnUidMapping: boolean,
+  uidMappingBasicInfos: UidMappingBasicInfo[]
+) {
+  if (!filterOnUidMapping) {
+    return wellbores;
+  } else if (!uidMappingBasicInfos || uidMappingBasicInfos.length == 0) {
+    return [];
+  }
+  return wellbores.filter((wb) =>
+    uidMappingBasicInfos.some(
+      (m) => m.sourceWellId === wb.wellUid && m.sourceWellboreId === wb.uid
+    )
+  );
 }
 
 const filterWellboresOnSearchResult = (
@@ -42,6 +60,7 @@ const filterWellboresOnWellboreSearchResult = (
 
 export const filterWellbores = (
   wellbores: Wellbore[],
+  uidMappingBasicInfos: UidMappingBasicInfo[],
   filter: Filter
 ): Wellbore[] => {
   let filteredWellbores: Wellbore[] = wellbores;
@@ -62,20 +81,29 @@ export const filterWellbores = (
       filteredWellbores,
       filter.isActive
     );
+    filteredWellbores = filterWellboresOnUidMapping(
+      filteredWellbores,
+      filter.uidMapping,
+      uidMappingBasicInfos
+    );
   }
 
   return filteredWellbores;
 };
 
-export const useWellboreFilter = (wellbores: Wellbore[]): Wellbore[] => {
+export const useWellboreFilter = (
+  wellbores: Wellbore[],
+  uidMappingBasicInfos: UidMappingBasicInfo[]
+): Wellbore[] => {
   const { selectedFilter } = useContext(FilterContext);
 
   const filteredWellbores = useMemo(() => {
-    return filterWellbores(wellbores, selectedFilter);
+    return filterWellbores(wellbores, uidMappingBasicInfos, selectedFilter);
   }, [
     wellbores,
     selectedFilter.filterType,
     selectedFilter.isActive,
+    selectedFilter.uidMapping,
     selectedFilter.name,
     selectedFilter.searchResults,
     selectedFilter.wellboreSearchResults

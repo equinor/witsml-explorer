@@ -4,10 +4,11 @@ import { toDate } from "date-fns-tz";
 import React, { useEffect, useState } from "react";
 import { Button } from "../../StyledComponents/Button.tsx";
 
-export interface AdjustDateTimeModelProps {
+export interface AdjustDateTimeIndexRangeProps {
   minDate: string;
   maxDate: string;
   isDescending?: boolean;
+  hideSetButtons?: boolean;
   onStartDateChanged: (value: string) => void;
   onEndDateChanged: (value: string) => void;
   onValidChange: (isValid: boolean) => void;
@@ -18,13 +19,14 @@ interface SetRangeButton {
   displayText: string;
 }
 
-const AdjustDateTimeModal = (
-  props: AdjustDateTimeModelProps
+const AdjustDateTimeIndexRange = (
+  props: AdjustDateTimeIndexRangeProps
 ): React.ReactElement => {
   const {
     minDate,
     maxDate,
     isDescending,
+    hideSetButtons,
     onStartDateChanged,
     onEndDateChanged,
     onValidChange
@@ -93,25 +95,26 @@ const AdjustDateTimeModal = (
         aria-label="set time range button group"
         style={{ margin: ".5rem" }}
       >
-        {setRangeButtons.map((buttonValue) => {
-          return (
-            totalTimeSpan > buttonValue.timeInMilliseconds && (
-              <Button
-                key={"last" + buttonValue.displayText}
-                onClick={() => {
-                  const newStartIndex = addMilliseconds(
-                    toDate(endIndex),
-                    -buttonValue.timeInMilliseconds
-                  );
-                  setStartIndex(newStartIndex.toISOString());
-                  setEndIndex(maxDate);
-                }}
-              >
-                {"Last " + buttonValue.displayText}
-              </Button>
-            )
-          );
-        })}
+        {!hideSetButtons &&
+          setRangeButtons.map((buttonValue) => {
+            return (
+              totalTimeSpan > buttonValue.timeInMilliseconds && (
+                <Button
+                  key={"last" + buttonValue.displayText}
+                  onClick={() => {
+                    const newStartIndex = addMilliseconds(
+                      toDate(endIndex),
+                      -buttonValue.timeInMilliseconds
+                    );
+                    setStartIndex(newStartIndex.toISOString());
+                    setEndIndex(maxDate);
+                  }}
+                >
+                  {"Last " + buttonValue.displayText}
+                </Button>
+              )
+            );
+          })}
         <Button
           key={"resetRangeValues"}
           onClick={() => {
@@ -145,4 +148,4 @@ const AdjustDateTimeModal = (
   );
 };
 
-export default AdjustDateTimeModal;
+export default AdjustDateTimeIndexRange;

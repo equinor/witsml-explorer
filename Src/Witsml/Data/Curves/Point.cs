@@ -16,7 +16,7 @@ namespace Witsml.Data.Curves
                 ? witsmlDateTime
                 : new DepthIndex(double.Parse(values.First(), CultureInfo.InvariantCulture));
 
-            Value = CurveValue.From(values[1]);
+            Value = CurveValue.From(values.Length > 1 ? values[1] : null);
         }
 
         public string GetValueAsString()

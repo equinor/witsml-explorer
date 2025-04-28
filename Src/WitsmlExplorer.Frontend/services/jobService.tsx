@@ -159,6 +159,7 @@ export enum JobType {
   CopyObjects = "CopyObjects",
   CopyWell = "CopyWell",
   CopyWellbore = "CopyWellbore",
+  CopyWellboreWithObjects = "CopyWellboreWithObjects",
   CopyWithParent = "CopyWithParent",
   CopyObjectsWithParent = "CopyObjectsWithParent",
   CreateWellbore = "CreateWellbore",
@@ -190,5 +191,6 @@ export enum JobType {
   CompareLogData = "CompareLogData",
   CountLogDataRows = "CountLogDataRows",
   DownloadLogData = "DownloadLogData",
-  OffsetLogCurves = "OffsetLogCurves"
+  OffsetLogCurves = "OffsetLogCurves",
+  MinimumDataQc = "MinimumDataQc"
 }

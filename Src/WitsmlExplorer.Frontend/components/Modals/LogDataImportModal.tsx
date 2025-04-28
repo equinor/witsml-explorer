@@ -218,7 +218,10 @@ const LogDataImportModal = (
         // csv files
         const headerLine = text.split("\n", 1)[0];
         header = parseCSVHeader(headerLine);
-        data = text.split("\n").slice(1);
+        data = text
+          .split("\n")
+          .slice(1)
+          .filter((row) => row !== "");
         setUploadedFileData(data);
         setAllUploadedFileData(data);
       }
@@ -234,7 +237,9 @@ const LogDataImportModal = (
   const parseCSVHeader = (headerr: string) => {
     const unitRegex = /(?<=\[)(.*)(?=\]){1}/;
     const fileColumns = headerr.split(separator).map((col, index) => {
-      const columnName = col.substring(0, col.indexOf("["));
+      const columnName = col
+        .substring(0, col.indexOf("["))
+        .replaceAll(" ", "_");
       return {
         index: index,
         name: columnName ? columnName : col,

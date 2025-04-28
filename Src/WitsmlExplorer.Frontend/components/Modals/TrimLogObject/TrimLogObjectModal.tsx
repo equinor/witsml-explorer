@@ -4,8 +4,8 @@ import {
   WITSML_LOG_ORDERTYPE_DECREASING
 } from "components/Constants";
 import ModalDialog from "components/Modals/ModalDialog";
-import AdjustDateTimeModal from "components/Modals/TrimLogObject/AdjustDateTimeModal";
-import AdjustNumberRangeModal from "components/Modals/TrimLogObject/AdjustNumberRangeModal";
+import AdjustDateTimeIndexRange from "./AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "./AdjustDepthIndexRange.tsx";
 import WarningBar from "components/WarningBar";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
@@ -44,11 +44,11 @@ const TrimLogObjectModal = (
     <>
       {log && (
         <ModalDialog
-          heading={`Adjust start/end index for ${log.name}`}
+          heading={`Trim start/end index for ${log.name}`}
           content={
             <>
               {log.indexType === WITSML_INDEX_TYPE_DATE_TIME && (
-                <AdjustDateTimeModal
+                <AdjustDateTimeIndexRange
                   minDate={log.startIndex}
                   maxDate={log.endIndex}
                   isDescending={
@@ -60,7 +60,7 @@ const TrimLogObjectModal = (
                 />
               )}
               {log.indexType === WITSML_INDEX_TYPE_MD && (
-                <AdjustNumberRangeModal
+                <AdjustDepthIndexRange
                   minValue={indexToNumber(logObject.startIndex)}
                   maxValue={indexToNumber(logObject.endIndex)}
                   isDescending={
@@ -71,13 +71,13 @@ const TrimLogObjectModal = (
                   onValidChange={toggleConfirmDisabled}
                 />
               )}
-              <WarningBar message="Adjusting start/end index will permanently remove data values outside selected range" />
+              <WarningBar message="Trimming start/end index will permanently remove data values outside selected range" />
             </>
           }
           onSubmit={onSubmit}
           isLoading={isLoading}
           confirmColor={"danger"}
-          confirmText={"Adjust"}
+          confirmText={"Trim"}
           confirmDisabled={confirmDisabled}
           switchButtonPlaces
         />

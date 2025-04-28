@@ -64,6 +64,12 @@ import ObjectReference from "../../models/jobs/objectReference";
 import CopyMnemonicsModal, {
   CopyMnemonicsModalProps
 } from "../Modals/CopyMnemonicsModal";
+import MinimumDataQcModal, {
+  MinimumDataQcModalProps
+} from "../Modals/MinimumDataQcModal.tsx";
+import { useGetLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
+import { useGetUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
+import AgentSettingsModal from "../Modals/AgentSettingsModal.tsx";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -75,6 +81,14 @@ const LogObjectContextMenu = (
     useClipboardComponentReferencesOfType(ComponentType.Mnemonic);
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
+  const { localPrioritizedCurves } = useGetLocalPrioritizedCurves(
+    checkedObjects[0].wellUid,
+    checkedObjects[0].wellboreUid,
+    { placeholderData: [] }
+  );
+  const { universalPrioritizedCurves } = useGetUniversalPrioritizedCurves({
+    placeholderData: []
+  });
   const filteredServers = useServerFilter(servers);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -107,6 +121,44 @@ const LogObjectContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
+  };
+
+  const onClickMinimumDataQc = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    if (
+      (!!localPrioritizedCurves && localPrioritizedCurves.length > 0) ||
+      (!!universalPrioritizedCurves && universalPrioritizedCurves.length > 0)
+    ) {
+      const logObject = checkedObjects[0];
+
+      const minimumDataQcModalProps: MinimumDataQcModalProps = {
+        logObject: logObject,
+        mnemonics: [
+          ...localPrioritizedCurves,
+          ...universalPrioritizedCurves
+        ].filter((value, index, self) => self.indexOf(value) === index)
+      };
+
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <MinimumDataQcModal {...minimumDataQcModalProps} />
+      });
+    }
+  };
+
+  const onClickAgentSettings = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    if (
+      (!!localPrioritizedCurves && localPrioritizedCurves.length > 0) ||
+      (!!universalPrioritizedCurves && universalPrioritizedCurves.length > 0)
+    ) {
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <AgentSettingsModal />
+      });
+    }
   };
 
   const orderCopyJob = () => {
@@ -325,7 +377,7 @@ const LogObjectContextMenu = (
               name="formatLine"
               color={colors.interactive.primaryResting}
             />
-            <Typography color={"primary"}>Adjust range</Typography>
+            <Typography color={"primary"}>Trim range</Typography>
           </MenuItem>,
           <MenuItem
             key={"splice"}
@@ -430,6 +482,25 @@ const LogObjectContextMenu = (
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Delete empty mnemonics</Typography>
+          </MenuItem>,
+          <MenuItem
+            key={"minimumDataQc"}
+            onClick={onClickMinimumDataQc}
+            disabled={
+              localPrioritizedCurves.length == 0 &&
+              universalPrioritizedCurves.length == 0
+            }
+          >
+            <StyledIcon name="beat" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Minimum Data QC</Typography>
+          </MenuItem>,
+          <Divider key={uuid()} />,
+          <MenuItem key={"agentSettings"} onClick={onClickAgentSettings}>
+            <StyledIcon
+              name="settings"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Agent Settings</Typography>
           </MenuItem>
         ]}
       </NestedMenuItem>,

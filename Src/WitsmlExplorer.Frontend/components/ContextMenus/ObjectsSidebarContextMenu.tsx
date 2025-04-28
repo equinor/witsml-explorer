@@ -101,7 +101,8 @@ const ObjectsSidebarContextMenu = (
               servers,
               objectReferences,
               dispatchOperation,
-              toWellboreReference(wellbore)
+              toWellboreReference(wellbore),
+              connectedServer
             )
           }
           disabled={objectReferences === null}

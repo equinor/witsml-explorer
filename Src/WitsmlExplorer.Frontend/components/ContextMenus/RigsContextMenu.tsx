@@ -108,7 +108,8 @@ const RigsContextMenu = (props: RigsContextMenuProps): React.ReactElement => {
               servers,
               rigReferences,
               dispatchOperation,
-              toWellboreReference(wellbore)
+              toWellboreReference(wellbore),
+              connectedServer
             )
           }
           disabled={rigReferences === null}

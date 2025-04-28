@@ -38,15 +38,18 @@ const timeZoneLabels: Record<TimeZone, string> = {
   [TimeZone.Local]: `${getOffsetFromTimeZone(TimeZone.Local)} Local Time`,
   [TimeZone.Raw]: "Original Time",
   [TimeZone.Utc]: `${getOffsetFromTimeZone(TimeZone.Utc)} UTC`,
+  [TimeZone.Houston]: `${getOffsetFromTimeZone(TimeZone.Houston)} US/Houston`,
   [TimeZone.Brasilia]: `${getOffsetFromTimeZone(
     TimeZone.Brasilia
   )} Brazil/Brasilia`,
-  [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
   [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,
+  [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
   [TimeZone.NewDelhi]: `${getOffsetFromTimeZone(
     TimeZone.NewDelhi
   )} India/New Delhi`,
-  [TimeZone.Houston]: `${getOffsetFromTimeZone(TimeZone.Houston)} US/Houston`
+  [TimeZone.Malaysia]: `${getOffsetFromTimeZone(
+    TimeZone.Malaysia
+  )} Malaysia/Kuala Lumpur`
 };
 
 const SettingsModal = (): React.ReactElement => {
@@ -216,6 +219,7 @@ const SettingsModal = (): React.ReactElement => {
             <div style={alignLayout}>
               <RowIcon name="edit" />
               <div style={alignLayout}>
+                <label style={alignLayout}>Decimal precision:</label>
                 <label style={alignLayout}>
                   <Radio
                     name="group"
@@ -234,7 +238,7 @@ const SettingsModal = (): React.ReactElement => {
                     }
                     onChange={onChangeDecimalPreference}
                   />
-                  Decimals
+                  Custom
                 </label>
                 {checkedDecimalPreference === DecimalPreference.Decimal && (
                   <TextField
@@ -327,7 +331,8 @@ const HorizontalLayout = styled.div`
 
 const alignLayout: CSSProperties = {
   display: "flex",
-  alignItems: "center"
+  alignItems: "center",
+  whiteSpace: "nowrap"
 };
 
 export { SettingsModal };
