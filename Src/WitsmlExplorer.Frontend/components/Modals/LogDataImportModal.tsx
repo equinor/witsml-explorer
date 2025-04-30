@@ -101,27 +101,38 @@ const LogDataImportModal = (
   const separator = ",";
 
   const validate = (fileColumns: ImportColumn[], parseError?: string) => {
-    if (parseError) setError(parseError);
+    if (parseError) {
+      setError(parseError);
+    }
+
     if (fileColumns.length) {
-      if (fileColumns.map((col) => col.name).some((value) => value === ""))
+      if (fileColumns.map((col) => col.name).some((value) => value === "")) {
         setError(IMPORT_FORMAT_INVALID);
+      }
       if (
         !fileColumns
           .map((col) => col.name.toUpperCase())
           .includes(targetLog.indexCurve.toUpperCase())
-      )
+      ) {
         setError(MISSING_INDEX_CURVE);
+      }
     }
   };
 
-  const getParsedData = () => {
+  const getParsedData = (limited: boolean) => {
     if (
       uploadedFileData &&
       uploadedFileColumns &&
       targetLog?.indexType === WITSML_INDEX_TYPE_DATE_TIME
     ) {
       try {
-        return parseDateTimeColumn(uploadedFileData, 0, dateTimeFormat);
+        setError("");
+        return parseDateTimeColumn(
+          uploadedFileData,
+          0,
+          dateTimeFormat,
+          limited
+        );
       } catch (error) {
         validate(
           uploadedFileColumns,
@@ -134,7 +145,12 @@ const LogDataImportModal = (
   };
 
   const parsedData = useMemo(
-    () => getParsedData(),
+    () => getParsedData(false),
+    [uploadedFileData, uploadedFileColumns, targetLog, selectedMnemonics]
+  );
+
+  const parsedLimitedData = useMemo(
+    () => getParsedData(true),
     [
       uploadedFileData,
       uploadedFileColumns,
@@ -159,10 +175,7 @@ const LogDataImportModal = (
       targetLog: logReference,
       mnemonics: uploadedFileColumns.map((col) => col.name),
       units: uploadedFileColumns.map((col) => col.unit),
-      dataRows:
-        parsedData !== null
-          ? parsedData.map((line) => line.split(separator))
-          : uploadedFileData.map((line) => line.split(separator))
+      dataRows: getParsedData(false).map((line) => line.split(separator))
     };
 
     await JobService.orderJob(JobType.ImportLogData, job);
@@ -454,8 +467,8 @@ const LogDataImportModal = (
                             columns={contentTableColumns}
                             showPanel={false}
                             data={getTableData(
-                              parsedData !== null
-                                ? parsedData
+                              parsedLimitedData !== null
+                                ? parsedLimitedData
                                 : uploadedFileData,
                               uploadedFileColumns,
                               targetLog.indexCurve
@@ -573,7 +586,6 @@ const getDataRanges = (
   const indexCurveColumn = columns.find(
     (col) => col.name === targetLog.indexCurve
   )?.index;
-
   for (let index = 0; index < columns.length; index++) {
     const firstRowWithData = data.find((dataRow) => {
       const data = dataRow.split(",")[index];
@@ -700,9 +712,14 @@ const findDateTimeFormat = (
 const parseDateTimeColumn = (
   data: string[],
   selectedColumn: number,
-  inputFormat: string
+  inputFormat: string,
+  limited: boolean
 ) => {
-  const dataWithISOTimeColumn = data.map((dataRow) => {
+  let dataForParsing = data;
+  if (limited) {
+    dataForParsing = JSON.parse(JSON.stringify(data)).splice(0, 30);
+  }
+  const dataWithISOTimeColumn = dataForParsing.map((dataRow) => {
     const rowValues = dataRow.split(",");
     rowValues[selectedColumn] = parseDateFromFormat(
       rowValues[selectedColumn],
@@ -715,8 +732,9 @@ const parseDateTimeColumn = (
 
 const parseDateFromFormat = (dateString: string, format: string) => {
   const parsed = parse(dateString, format, new Date());
-  if (parsed.toString() === "Invalid Date")
+  if (parsed.toString() === "Invalid Date") {
     throw new Error(`Unable to parse date ${dateString} with format ${format}`);
+  }
   return zonedTimeToUtc(parsed, "UTC").toISOString();
 };
 
