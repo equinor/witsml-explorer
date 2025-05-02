@@ -13,7 +13,7 @@ import { useGetAllObjectsOnWellbore } from "hooks/query/useGetAllObjectsOnWellbo
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useState } from "react";
-import ObjectOnWellboreForSelection, {
+import SelectableObjectOnWellbore, {
   MixedObjectsReferences
 } from "models/selectableObjectOnWellbore";
 import { useOperationState } from "hooks/useOperationState";
@@ -40,7 +40,7 @@ const SubObjectsSelectionModal = (
     );
 
   const [selectedRows, setSelectedRows] =
-    useState<ObjectOnWellboreForSelection[]>();
+    useState<SelectableObjectOnWellbore[]>();
   const columns: ContentTableColumn[] = [
     { property: "objectType", label: "Object type", type: ContentType.String },
     { property: "logType", label: "Log type", type: ContentType.String },
@@ -95,7 +95,7 @@ const SubObjectsSelectionModal = (
               data={objectsOnWellbore}
               initiallySelectedRows={selectedRows}
               onRowSelectionChange={(rows) =>
-                setSelectedRows(rows as ObjectOnWellboreForSelection[])
+                setSelectedRows(rows as SelectableObjectOnWellbore[])
               }
               panelElements={panelElements}
               checkableRows

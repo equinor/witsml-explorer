@@ -1,6 +1,6 @@
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { Server } from "../../models/server";
-import ObjectOnWellboreForSelection from "models/selectableObjectOnWellbore";
+import SelectableObjectOnWellbore from "models/selectableObjectOnWellbore";
 import { QUERY_KEY_ALL_OBJECTS_ON_WELLBORE } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
 import ObjectService from "services/objectService";
@@ -40,10 +40,10 @@ export const mixedObjectsReferenceQuery = (
 });
 
 type ObjectsOnWellboreQueryResult = Omit<
-  QueryObserverResult<ObjectOnWellboreForSelection[], unknown>,
+  QueryObserverResult<SelectableObjectOnWellbore[], unknown>,
   "data"
 > & {
-  objectsOnWellbore: ObjectOnWellboreForSelection[];
+  objectsOnWellbore: SelectableObjectOnWellbore[];
 };
 
 export const useGetAllObjectsOnWellbore = (
@@ -52,7 +52,7 @@ export const useGetAllObjectsOnWellbore = (
   wellboreUid: string,
   options?: QueryOptions
 ): ObjectsOnWellboreQueryResult => {
-  const { data, ...state } = useQuery<ObjectOnWellboreForSelection[]>(
+  const { data, ...state } = useQuery<SelectableObjectOnWellbore[]>(
     mixedObjectsReferenceQuery(server, wellUid, wellboreUid, options)
   );
   return { objectsOnWellbore: data, ...state };

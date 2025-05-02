@@ -1,7 +1,3 @@
-using Witsml.Data;
-
-using WitsmlExplorer.Api.Jobs.Common.Interfaces;
-
 namespace WitsmlExplorer.Api.Models
 {
     public class SelectableObjectOnWellbore
