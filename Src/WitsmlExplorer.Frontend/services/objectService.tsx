@@ -7,7 +7,7 @@ import {
   ObjectTypeToModel,
   pluralizeObjectType
 } from "models/objectType";
-import SelectableObjectOnWellbore from "models/SelectableObjectOnWellbore";
+import SelectableObjectOnWellbore from "models/selectableObjectOnWellbore";
 import { Server } from "models/server";
 import { ExpandableObjectsCount } from "models/wellbore";
 import { ApiClient, throwError } from "services/apiClient";
