@@ -8,7 +8,7 @@ export default interface SelectableObjectOnWellbore extends ContentTableRow {
   name: string;
 }
 
-export interface ObjectsOnWellbore {
+export interface MixedObjectsReferences {
   wellboreReference: WellboreReference;
   selectedObjects: SelectableObjectOnWellbore[];
 }

@@ -14,11 +14,11 @@ import WellboreReference from "models/jobs/wellboreReference";
 import WellReference from "models/jobs/wellReference";
 import ModalDialog from "./ModalDialog";
 import { ChangeEvent, useState } from "react";
-import { ObjectsOnWellbore } from "models/selectableObjectOnWellbore";
+import { MixedObjectsReferences } from "models/selectableObjectOnWellbore";
 
 export interface ChangeWellboreUidModalProps {
   servers: Server[];
-  sourceWellboreWithObjects: ObjectsOnWellbore;
+  sourceWellboreWithObjects: MixedObjectsReferences;
   targetWell: WellReference;
 }
 

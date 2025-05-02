@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Services
         Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
         Task<ICollection<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
         Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid);
-        Task<ICollection<SelectableObjectOnWellbore>> GetObjectsOnWellbore(string wellUid,
+        Task<ICollection<SelectableObjectOnWellbore>> GetAllObjectsOnWellbore(string wellUid,
             string wellboreUid);
     }
 
@@ -173,7 +173,7 @@ namespace WitsmlExplorer.Api.Services
             return countTasks.ToDictionary((task) => task.Result.objectType, (task) => task.Result.count);
         }
 
-        public async Task<ICollection<SelectableObjectOnWellbore>> GetObjectsOnWellbore(string wellUid, string wellboreUid)
+        public async Task<ICollection<SelectableObjectOnWellbore>> GetAllObjectsOnWellbore(string wellUid, string wellboreUid)
         {
             var result = new List<SelectableObjectOnWellbore>();
             foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))

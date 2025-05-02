@@ -14,7 +14,7 @@ import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useState } from "react";
 import ObjectOnWellboreForSelection, {
-  ObjectsOnWellbore
+  MixedObjectsReferences
 } from "models/selectableObjectOnWellbore";
 import { useOperationState } from "hooks/useOperationState";
 import { useQueryClient } from "@tanstack/react-query";
@@ -52,7 +52,7 @@ const SubObjectsSelectionModal = (
     const objectsToCopy = {
       wellboreReference: props.sourceWellbore,
       selectedObjects: selectedRows
-    } as ObjectsOnWellbore;
+    } as MixedObjectsReferences;
     await navigator.clipboard.writeText(JSON.stringify(objectsToCopy));
     dispatchOperation({ type: OperationType.HideModal });
   };
