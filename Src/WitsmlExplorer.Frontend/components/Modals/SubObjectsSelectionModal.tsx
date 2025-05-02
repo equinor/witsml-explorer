@@ -88,7 +88,7 @@ const SubObjectsSelectionModal = (
       content={
         <ModalContentLayout>
           {isFetching && <ProgressSpinner message="Fetching data" />}
-          {objectsOnWellbore !== undefined && (
+          {objectsOnWellbore !== undefined && !isFetching && (
             <ContentTable
               viewId="subObjectsListView"
               columns={columns}
