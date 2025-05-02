@@ -35,7 +35,7 @@ export const useClipboardReferences = (
   return objectReferences;
 };
 
-export const useWellboreReference = (
+export const useWellboreWithMixedObjectsReference = (
   pollInterval = 0
 ): ObjectsOnWellbore | null => {
   const [wellboreReference, setWellboreReference] =

@@ -18,7 +18,7 @@ export const getAllObjectsOnWellboreQueryKey = (
   ];
 };
 
-export const wellsQuery = (
+export const mixedObjectsReferenceQuery = (
   server: Server,
   wellUid: string,
   wellboreUid: string,
@@ -53,7 +53,7 @@ export const useGetAllObjectsOnWellbore = (
   options?: QueryOptions
 ): ObjectsOnWellboreQueryResult => {
   const { data, ...state } = useQuery<ObjectOnWellboreForSelection[]>(
-    wellsQuery(server, wellUid, wellboreUid, options)
+    mixedObjectsReferenceQuery(server, wellUid, wellboreUid, options)
   );
   return { objectsOnWellbore: data, ...state };
 };

@@ -10,7 +10,7 @@ import {
 } from "components/ContentViews/table";
 import { useGetAllObjectsOnWellbore } from "hooks/query/useGetAllObjectsOnWellbore";
 
-import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
+import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useState } from "react";
 import ObjectOnWellboreForSelection, {
@@ -77,7 +77,7 @@ const SubObjectsSelectionModal = (
   return (
     <ModalDialog
       heading={`Select subobjects to copy`}
-      confirmText={`Ok`}
+      confirmText={`Copy`}
       cancelText={`Cancel`}
       onSubmit={onConfirm}
       switchButtonPlaces={true}
@@ -87,7 +87,7 @@ const SubObjectsSelectionModal = (
       }
       content={
         <ModalContentLayout>
-          {isFetching && <ProgressSpinnerOverlay message="Fetching data" />}
+          {isFetching && <ProgressSpinner message="Fetching data" />}
           {objectsOnWellbore !== undefined && (
             <ContentTable
               viewId="subObjectsListView"

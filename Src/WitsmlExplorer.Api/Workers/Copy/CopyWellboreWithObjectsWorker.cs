@@ -232,12 +232,15 @@ namespace WitsmlExplorer.Api.Workers.Copy
             foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
             {
                 if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
-                var selectedObjects =
-                    job.Source.SelectedObjects.Where(x =>
-                        x.ObjectType == entityType.ToString());
-                if (!selectedObjects.Any())
+                if (!job.CopyAllChildObjects)
                 {
-                    continue;
+                    var selectedObjects =
+                        job.Source.SelectedObjects.Where(x =>
+                            x.ObjectType == entityType.ToString());
+                    if (!selectedObjects.Any())
+                    {
+                        continue;
+                    }
                 }
                 result.Add((entityType, null), await GetWellboreObjectsByType(job, sourceClient, entityType));
             }
@@ -265,14 +268,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 new OptionsIn(ReturnElements.IdOnly)
             );
 
-            var selectedObjects =
-                job.Source.SelectedObjects.Where(x =>
-                    x.ObjectType == entityType.ToString());
+            if (!job.CopyAllChildObjects)
+            {
+                var selectedObjects =
+                    job.Source.SelectedObjects.Where(x =>
+                        x.ObjectType == entityType.ToString());
 
-            var selectedWitsmlObjects =
-                witsmlObjectList.Objects.Where(x =>
-                    selectedObjects.Count(y => y.Uid == x.Uid) > 0);
-            witsmlObjectList.Objects = selectedWitsmlObjects;
+                var selectedWitsmlObjects =
+                    witsmlObjectList.Objects.Where(x =>
+                        selectedObjects.Count(y => y.Uid == x.Uid) > 0);
+                witsmlObjectList.Objects = selectedWitsmlObjects;
+            }
             return witsmlObjectList;
         }
 

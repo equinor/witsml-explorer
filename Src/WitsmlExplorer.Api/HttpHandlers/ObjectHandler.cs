@@ -44,10 +44,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
             return TypedResults.Ok(result);
         }
 
-        [Produces(typeof(ObjectOnWellboreForSelection))]
+        [Produces(typeof(SelectableObjectOnWellbore))]
         public static async Task<IResult> GetAllObjectsOnWellbore(string wellUid, string wellboreUid, IObjectService objectService)
         {
-            IEnumerable<ObjectOnWellboreForSelection> result = await objectService.GetObjectsOnWellbore(wellUid, wellboreUid);
+            IEnumerable<SelectableObjectOnWellbore> result = await objectService.GetAllObjectsOnWellbore(wellUid, wellboreUid);
             return TypedResults.Ok(result);
         }
     }

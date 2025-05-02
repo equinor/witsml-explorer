@@ -22,7 +22,7 @@ namespace WitsmlExplorer.Api.Services
         Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType);
         Task<ICollection<ObjectOnWellbore>> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType);
         Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid);
-        Task<ICollection<ObjectOnWellboreForSelection>> GetObjectsOnWellbore(string wellUid,
+        Task<ICollection<SelectableObjectOnWellbore>> GetAllObjectsOnWellbore(string wellUid,
             string wellboreUid);
     }
 
@@ -173,9 +173,9 @@ namespace WitsmlExplorer.Api.Services
             return countTasks.ToDictionary((task) => task.Result.objectType, (task) => task.Result.count);
         }
 
-        public async Task<ICollection<ObjectOnWellboreForSelection>> GetObjectsOnWellbore(string wellUid, string wellboreUid)
+        public async Task<ICollection<SelectableObjectOnWellbore>> GetAllObjectsOnWellbore(string wellUid, string wellboreUid)
         {
-            var result = new List<ObjectOnWellboreForSelection>();
+            var result = new List<SelectableObjectOnWellbore>();
             foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
             {
                 if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
@@ -210,12 +210,12 @@ namespace WitsmlExplorer.Api.Services
             return witsmlObjectList;
         }
 
-        private List<ObjectOnWellboreForSelection> ToObjectOnWellboreForSelection(IWitsmlObjectList objects, EntityType entityType, string logType)
+        private List<SelectableObjectOnWellbore> ToObjectOnWellboreForSelection(IWitsmlObjectList objects, EntityType entityType, string logType)
         {
-            var result = new List<ObjectOnWellboreForSelection>();
+            var result = new List<SelectableObjectOnWellbore>();
             foreach (var objectOnWellbore in objects.Objects)
             {
-                var resultItem = new ObjectOnWellboreForSelection
+                var resultItem = new SelectableObjectOnWellbore
                 {
                     ObjectType = entityType.ToString(),
                     LogType = logType,

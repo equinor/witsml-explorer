@@ -4,10 +4,10 @@ using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs.Common;
 
-public class ObjectsOnWellbore : IReference
+public class MixedObjectsReferences : IReference
 {
     public WellboreReference WellboreReference { get; set; }
-    public List<ObjectOnWellboreForSelection> SelectedObjects { get; set; }
+    public List<SelectableObjectOnWellbore> SelectedObjects { get; set; }
     public string Description()
     {
         return "Objects on wellbore";
