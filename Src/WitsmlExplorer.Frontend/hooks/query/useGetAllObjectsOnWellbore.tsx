@@ -1,6 +1,6 @@
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { Server } from "../../models/server";
-import ObjectOnWellboreForSelection from "models/objectOnWellboreForSelection";
+import ObjectOnWellboreForSelection from "models/selectableObjectOnWellbore";
 import { QUERY_KEY_ALL_OBJECTS_ON_WELLBORE } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
 import ObjectService from "services/objectService";
