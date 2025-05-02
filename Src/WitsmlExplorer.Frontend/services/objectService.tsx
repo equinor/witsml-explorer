@@ -1,12 +1,13 @@
 import { ErrorDetails } from "models/errorDetails";
 import ObjectOnWellbore from "models/objectOnWellbore";
-import ObjectOnWellboreForSelection from "models/objectOnWellboreForSelection";
+
 import ObjectSearchResult from "models/objectSearchResult";
 import {
   ObjectType,
   ObjectTypeToModel,
   pluralizeObjectType
 } from "models/objectType";
+import SelectableObjectOnWellbore from "models/SelectableObjectOnWellbore";
 import { Server } from "models/server";
 import { ExpandableObjectsCount } from "models/wellbore";
 import { ApiClient, throwError } from "services/apiClient";
@@ -83,7 +84,7 @@ export default class ObjectService {
     wellboreUid: string,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<ObjectOnWellboreForSelection[]> {
+  ): Promise<SelectableObjectOnWellbore[]> {
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid

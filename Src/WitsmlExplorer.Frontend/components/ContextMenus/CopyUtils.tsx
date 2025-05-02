@@ -32,7 +32,7 @@ import Wellbore from "models/wellbore";
 import WellReference from "models/jobs/wellReference";
 import ChangeWellboreUidModal from "components/Modals/ChangeWellboreUidModal";
 import SubObjectsSelectionModal from "components/Modals/SubObjectsSelectionModal";
-import { ObjectsOnWellbore } from "models/objectOnWellboreForSelection";
+import { ObjectsOnWellbore } from "models/selectableObjectOnWellbore";
 
 export const onClickPaste = (
   servers: Server[],

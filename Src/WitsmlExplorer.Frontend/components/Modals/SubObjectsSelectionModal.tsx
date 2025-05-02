@@ -15,7 +15,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useState } from "react";
 import ObjectOnWellboreForSelection, {
   ObjectsOnWellbore
-} from "models/objectOnWellboreForSelection";
+} from "models/selectableObjectOnWellbore";
 import { useOperationState } from "hooks/useOperationState";
 import { useQueryClient } from "@tanstack/react-query";
 import { refreshAllObjectsOnWellbore } from "hooks/query/queryRefreshHelpers";

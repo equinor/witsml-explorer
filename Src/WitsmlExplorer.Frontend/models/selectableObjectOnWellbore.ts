@@ -1,7 +1,7 @@
 import { ContentTableRow } from "components/ContentViews/table";
 import WellboreReference from "./jobs/wellboreReference";
 
-export default interface ObjectOnWellboreForSelection extends ContentTableRow {
+export default interface SelectableObjectOnWellbore extends ContentTableRow {
   objectType: string;
   logType: string;
   uid: string;
@@ -10,5 +10,5 @@ export default interface ObjectOnWellboreForSelection extends ContentTableRow {
 
 export interface ObjectsOnWellbore {
   wellboreReference: WellboreReference;
-  selectedObjects: ObjectOnWellboreForSelection[];
+  selectedObjects: SelectableObjectOnWellbore[];
 }

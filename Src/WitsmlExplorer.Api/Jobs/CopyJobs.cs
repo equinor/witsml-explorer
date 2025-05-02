@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Jobs
     }
 
     public record
-        CopyWellboreWithObjectsJob : ICopyJob<MixedObjectsReferences, WellboreReference>
+        CopyWellboreWithObjectsJob : ICopyJob<ObjectsOnWellbore, WellboreReference>
     {
         public override string GetWellName()
         {

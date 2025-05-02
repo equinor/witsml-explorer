@@ -3,7 +3,7 @@ import ObjectReference from "models/jobs/objectReference";
 import ObjectReferences from "models/jobs/objectReferences";
 import WellboreReference from "models/jobs/wellboreReference";
 import WellReference from "models/jobs/wellReference";
-import { ObjectsOnWellbore } from "models/objectOnWellboreForSelection";
+import { ObjectsOnWellbore } from "models/selectableObjectOnWellbore";
 
 export interface CopyWellJob {
   source: WellReference;

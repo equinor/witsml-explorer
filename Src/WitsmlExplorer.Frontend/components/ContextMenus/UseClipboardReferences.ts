@@ -1,7 +1,7 @@
 import ObjectReferences from "models/jobs/objectReferences";
 import WellboreReference from "models/jobs/wellboreReference";
-import { ObjectsOnWellbore } from "models/objectOnWellboreForSelection";
 import { ObjectType } from "models/objectType";
+import { ObjectsOnWellbore } from "models/selectableObjectOnWellbore";
 import { useEffect, useState } from "react";
 
 export const useClipboardReferences = (
