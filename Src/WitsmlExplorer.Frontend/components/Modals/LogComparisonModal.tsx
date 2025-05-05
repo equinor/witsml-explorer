@@ -297,6 +297,7 @@ const LogComparisonModal = (
                     columns={columns}
                     data={data}
                     downloadToCsvFileName={"LogHeaderComparison"}
+                    disableLocalStorageFilter={true}
                   />
                 </>
               )}
