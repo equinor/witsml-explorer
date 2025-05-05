@@ -14,10 +14,11 @@ import WellboreReference from "models/jobs/wellboreReference";
 import WellReference from "models/jobs/wellReference";
 import ModalDialog from "./ModalDialog";
 import { ChangeEvent, useState } from "react";
+import { MixedObjectsReferences } from "models/selectableObjectOnWellbore";
 
 export interface ChangeWellboreUidModalProps {
   servers: Server[];
-  sourceWellbore: WellboreReference;
+  sourceWellboreWithMixedObjectsReferences: MixedObjectsReferences;
   targetWell: WellReference;
 }
 
@@ -27,11 +28,12 @@ const ChangeWellboreUidModal = (
   const { dispatchOperation } = useOperationState();
 
   const [wellboreName, setWellboreName] = useState<string>(
-    props.sourceWellbore.wellboreName
+    props.sourceWellboreWithMixedObjectsReferences.wellboreReference
+      .wellboreName
   );
 
   const [wellboreUid, setWellboreUid] = useState<string>(
-    props.sourceWellbore.wellboreUid
+    props.sourceWellboreWithMixedObjectsReferences.wellboreReference.wellboreUid
   );
 
   const onConfirm = async () => {
@@ -45,12 +47,17 @@ const ChangeWellboreUidModal = (
     };
     const orderCopyJob = () => {
       const copyJob = createCopyWellboreWithObjectsJob(
-        props.sourceWellbore,
+        props.sourceWellboreWithMixedObjectsReferences,
         target
       );
       JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
     };
-    onClickPaste(props.servers, props.sourceWellbore.serverUrl, orderCopyJob);
+    onClickPaste(
+      props.servers,
+      props.sourceWellboreWithMixedObjectsReferences.wellboreReference
+        .serverUrl,
+      orderCopyJob
+    );
   };
 
   return (
