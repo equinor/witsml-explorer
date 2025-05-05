@@ -79,7 +79,7 @@ export default class ObjectService {
     }
   }
 
-  public static async getObjectsOnWellbore(
+  public static async getAllObjectsOnWellbore(
     wellUid: string,
     wellboreUid: string,
     abortSignal?: AbortSignal,

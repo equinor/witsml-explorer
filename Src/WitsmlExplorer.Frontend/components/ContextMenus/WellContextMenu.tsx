@@ -46,7 +46,7 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
-import { useWellboreWithMixedObjectsReference } from "./UseClipboardReferences";
+import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
 import { pasteWellbore } from "./CopyUtils";
 
 export interface WellContextMenuProps {
@@ -65,7 +65,7 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
   const wellboreWithMixedObjectsReference =
-    useWellboreWithMixedObjectsReference();
+    useClipboardMixedObjectsReferences();
 
   const onClickNewWell = () => {
     const newWell: Well = {

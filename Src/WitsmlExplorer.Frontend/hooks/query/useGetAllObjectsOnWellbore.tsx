@@ -26,7 +26,7 @@ export const mixedObjectsReferenceQuery = (
 ) => ({
   queryKey: getAllObjectsOnWellboreQueryKey(server?.url, wellUid, wellboreUid),
   queryFn: async () => {
-    const objectsOnWellbore = await ObjectService.getObjectsOnWellbore(
+    const objectsOnWellbore = await ObjectService.getAllObjectsOnWellbore(
       wellUid,
       wellboreUid,
       null,

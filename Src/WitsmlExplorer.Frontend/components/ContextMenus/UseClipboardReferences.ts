@@ -1,7 +1,9 @@
 import ObjectReferences from "models/jobs/objectReferences";
 import WellboreReference from "models/jobs/wellboreReference";
 import { ObjectType } from "models/objectType";
-import { MixedObjectsReferences } from "models/selectableObjectOnWellbore";
+import SelectableObjectOnWellbore, {
+  MixedObjectsReferences
+} from "models/selectableObjectOnWellbore";
 import { useEffect, useState } from "react";
 
 export const useClipboardReferences = (
@@ -35,7 +37,7 @@ export const useClipboardReferences = (
   return objectReferences;
 };
 
-export const useWellboreWithMixedObjectsReference = (
+export const useClipboardMixedObjectsReferences = (
   pollInterval = 0
 ): MixedObjectsReferences | null => {
   const [mixedObjectsReferences, setMixedObjectsReferences] =
@@ -96,7 +98,9 @@ export function parseMixedObjectsReferencesStringToReference(
   } catch (e) {
     throw new Error("Invalid input given.", e);
   }
+  verifyRequiredMixedObjectReferencesProperties(jsonObject);
   verifyRequiredWellboreProperties(jsonObject.wellboreReference);
+  verifyRequiredSelectedObjectsProperties(jsonObject.selectedObjects);
   return jsonObject;
 }
 
@@ -116,8 +120,51 @@ function verifyRequiredWellboreProperties(jsonObject: WellboreReference) {
   }
   Object.keys(jsonObject).forEach((key) => {
     if (requiredProps.indexOf(key) < 0) {
-      throw new Error("Other than required properties found.");
+      throw new Error(
+        "Other than required properties in wellbore reference found."
+      );
     }
+  });
+}
+
+function verifyRequiredMixedObjectReferencesProperties(
+  jsonObject: MixedObjectsReferences
+) {
+  const requiredProps = ["selectedObjects", "wellboreReference"];
+  const hasRequiredProperties = requiredProps.every((prop) =>
+    Object.prototype.hasOwnProperty.call(jsonObject, prop)
+  );
+  if (!hasRequiredProperties) {
+    throw new Error("Missing required mixed objects references fields.");
+  }
+  Object.keys(jsonObject).forEach((key) => {
+    if (requiredProps.indexOf(key) < 0) {
+      throw new Error(
+        "Other than required properties in mixed objects references found."
+      );
+    }
+  });
+}
+
+function verifyRequiredSelectedObjectsProperties(
+  jsonObject: SelectableObjectOnWellbore[]
+) {
+  const requiredProps = ["objectType", "LogTypeItem", "uid", "name"];
+
+  jsonObject.forEach((element) => {
+    const hasRequiredProperties = requiredProps.every((prop) =>
+      Object.prototype.hasOwnProperty.call(element, prop)
+    );
+    if (!hasRequiredProperties) {
+      throw new Error("Missing required selectable object on wellbore fields.");
+    }
+    Object.keys(element).forEach((key) => {
+      if (requiredProps.indexOf(key) < 0) {
+        throw new Error(
+          "Other than required properties found in selectable object on wellbore."
+        );
+      }
+    });
   });
 }
 
