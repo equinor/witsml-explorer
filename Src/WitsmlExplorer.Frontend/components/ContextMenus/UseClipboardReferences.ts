@@ -149,7 +149,7 @@ function verifyRequiredMixedObjectReferencesProperties(
 function verifyRequiredSelectedObjectsProperties(
   jsonObject: SelectableObjectOnWellbore[]
 ) {
-  const requiredProps = ["objectType", "LogTypeItem", "uid", "name"];
+  const requiredProps = ["objectType", "LogType", "uid", "name"];
 
   jsonObject.forEach((element) => {
     const hasRequiredProperties = requiredProps.every((prop) =>
