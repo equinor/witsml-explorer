@@ -141,7 +141,7 @@ export const pasteComponents = async (
 
 export const pasteWellbore = async (
   servers: Server[],
-  objectsOnWellbore: MixedObjectsReferences,
+  wellboreWithMixedObjectsReference: MixedObjectsReferences,
   dispatchOperation: DispatchOperation,
   targetWell: Well
 ) => {
@@ -156,7 +156,9 @@ export const pasteWellbore = async (
     payload: (
       <ChangeWellboreUidModal
         servers={servers}
-        sourceWellboreWithObjects={objectsOnWellbore}
+        sourceWellboreWithMixedObjectsReferences={
+          wellboreWithMixedObjectsReference
+        }
         targetWell={target}
       />
     )
@@ -313,8 +315,8 @@ export const createCopyJob = (
 };
 
 export const createCopyWellboreWithObjectsJob = (
-  sourceWellboreWithObjects: MixedObjectsReferences,
+  mixedObjectsReferences: MixedObjectsReferences,
   targetWell: WellReference
 ): CopyWellboreWithObjectsJob => {
-  return { source: sourceWellboreWithObjects, target: targetWell };
+  return { source: mixedObjectsReferences, target: targetWell };
 };

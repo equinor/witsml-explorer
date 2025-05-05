@@ -18,7 +18,7 @@ import { MixedObjectsReferences } from "models/selectableObjectOnWellbore";
 
 export interface ChangeWellboreUidModalProps {
   servers: Server[];
-  sourceWellboreWithObjects: MixedObjectsReferences;
+  sourceWellboreWithMixedObjectsReferences: MixedObjectsReferences;
   targetWell: WellReference;
 }
 
@@ -28,11 +28,12 @@ const ChangeWellboreUidModal = (
   const { dispatchOperation } = useOperationState();
 
   const [wellboreName, setWellboreName] = useState<string>(
-    props.sourceWellboreWithObjects.wellboreReference.wellboreName
+    props.sourceWellboreWithMixedObjectsReferences.wellboreReference
+      .wellboreName
   );
 
   const [wellboreUid, setWellboreUid] = useState<string>(
-    props.sourceWellboreWithObjects.wellboreReference.wellboreUid
+    props.sourceWellboreWithMixedObjectsReferences.wellboreReference.wellboreUid
   );
 
   const onConfirm = async () => {
@@ -46,14 +47,15 @@ const ChangeWellboreUidModal = (
     };
     const orderCopyJob = () => {
       const copyJob = createCopyWellboreWithObjectsJob(
-        props.sourceWellboreWithObjects,
+        props.sourceWellboreWithMixedObjectsReferences,
         target
       );
       JobService.orderJob(JobType.CopyWellboreWithObjects, copyJob);
     };
     onClickPaste(
       props.servers,
-      props.sourceWellboreWithObjects.wellboreReference.serverUrl,
+      props.sourceWellboreWithMixedObjectsReferences.wellboreReference
+        .serverUrl,
       orderCopyJob
     );
   };
