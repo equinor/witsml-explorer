@@ -2,7 +2,7 @@ import { Button, Icon } from "@equinor/eds-core-react";
 import OperationType from "contexts/operationType";
 import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
 import WellboreReference from "models/jobs/wellboreReference";
-import ModalDialog from "./ModalDialog";
+import ModalDialog, { ModalWidth } from "./ModalDialog";
 import {
   ContentTable,
   ContentTableColumn,
@@ -82,6 +82,7 @@ const SubObjectsSelectionModal = (
       onSubmit={onConfirm}
       switchButtonPlaces={true}
       isLoading={false}
+      width={ModalWidth.LARGE}
       confirmDisabled={
         !selectedRows || (selectedRows && selectedRows.length == 0)
       }
