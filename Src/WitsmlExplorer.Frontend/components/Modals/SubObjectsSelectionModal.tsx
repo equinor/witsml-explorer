@@ -1,6 +1,5 @@
 import { Button, Icon } from "@equinor/eds-core-react";
 import OperationType from "contexts/operationType";
-import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
 import WellboreReference from "models/jobs/wellboreReference";
 import ModalDialog, { ModalWidth } from "./ModalDialog";
 import {
@@ -19,6 +18,7 @@ import SelectableObjectOnWellbore, {
 import { useOperationState } from "hooks/useOperationState";
 import { useQueryClient } from "@tanstack/react-query";
 import { refreshAllObjectsOnWellbore } from "hooks/query/queryRefreshHelpers";
+import styled from "styled-components";
 
 export interface SubObjectsSelectionModalProps {
   sourceWellbore: WellboreReference;
@@ -87,7 +87,7 @@ const SubObjectsSelectionModal = (
         !selectedRows || (selectedRows && selectedRows.length == 0)
       }
       content={
-        <ModalContentLayout>
+        <SubObjectsSelectionModalContentLayout>
           {isFetching && <ProgressSpinner message="Fetching data" />}
           {objectsOnWellbore !== undefined && !isFetching && (
             <ContentTable
@@ -102,10 +102,17 @@ const SubObjectsSelectionModal = (
               checkableRows
             />
           )}
-        </ModalContentLayout>
+        </SubObjectsSelectionModalContentLayout>
       }
     />
   );
 };
+
+export const SubObjectsSelectionModalContentLayout = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-height: 100%;
+`;
 
 export default SubObjectsSelectionModal;
