@@ -61,9 +61,9 @@ export const useColumnDef = (
       const isPrimaryNestedColumn = nested && index === 0;
       const width =
         column.width ??
-        savedWidths?.[column.label] ??
+        savedWidths?.[column.property] ??
         calculateColumnWidth(
-          column.label,
+          column.property,
           isCompactMode,
           column.type,
           isPrimaryNestedColumn
@@ -89,8 +89,8 @@ export const useColumnDef = (
     );
 
     if (savedOrder) {
-      const sortedColumns = savedOrder.flatMap((label) => {
-        const foundColumn = columnDef.find((col) => col.id == label);
+      const sortedColumns = savedOrder.flatMap((property) => {
+        const foundColumn = columnDef.find((col) => col.id == property);
         return foundColumn == null ? [] : foundColumn;
       });
       const columnsWithoutOrder = columnDef.filter(
