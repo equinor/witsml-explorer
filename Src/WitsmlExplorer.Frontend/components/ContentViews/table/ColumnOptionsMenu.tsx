@@ -76,7 +76,7 @@ export const ColumnOptionsMenu = (props: {
   const isCompactMode = theme === UserTheme.Compact;
 
   useEffect(() => {
-    if (disableFilters) return;
+    if (disableFilters || disableSearchParamsFilter) return;
     const filterString = searchParams.get("filter");
     const initialFilter = JSON.parse(filterString);
     const bothEmpty =
