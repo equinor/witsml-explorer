@@ -12,7 +12,7 @@ import {
 } from "../ContentViews/table";
 import { Colors } from "../../styles/Colors.tsx";
 import styled, { css } from "styled-components";
-import { Autocomplete, Dialog } from "@equinor/eds-core-react";
+import { Autocomplete, Dialog, Typography } from "@equinor/eds-core-react";
 import { useOperationState } from "../../hooks/useOperationState.tsx";
 import OperationType from "../../contexts/operationType.ts";
 import ProgressSpinner from "../ProgressSpinner.tsx";
@@ -96,7 +96,14 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
   const tableData = useMemo((): UidMappingRow[] => {
     const mappingRows: UidMappingRow[] = [];
 
-    if (!!sourceServerValue && !!targetServerValue) {
+    if (
+      !!sourceServerValue &&
+      !!targetServerValue &&
+      !!sourceWellbores &&
+      sourceWellbores.length > 0 &&
+      !!targetWellbores &&
+      targetWellbores.length > 0
+    ) {
       for (const mapping of mappings) {
         const sourceWellbore = sourceWellbores.find(
           (wb) => wb.uid === mapping.sourceWellboreId
@@ -281,7 +288,12 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
               isFetchingSourceWellbores ||
               isFetchingTargetWellbores ? (
                 <ProgressSpinner message="Fetching data" />
-              ) : (
+              ) : !!sourceServerValue &&
+                !!targetServerValue &&
+                !!sourceWellbores &&
+                sourceWellbores.length > 0 &&
+                !!targetWellbores &&
+                targetWellbores.length > 0 ? (
                 <ContentTable
                   viewId={"uidMappingView"}
                   columns={columns}
@@ -292,6 +304,12 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
                     setSelectedRows(rows as UidMappingRow[])
                   }
                 />
+              ) : (
+                <Typography>
+                  No data have been loaded for the selected combination of
+                  servers, or you are not authorized on one or both of the
+                  selected servers.
+                </Typography>
               )}
             </BodyLayout>
           </ContentLayout>
