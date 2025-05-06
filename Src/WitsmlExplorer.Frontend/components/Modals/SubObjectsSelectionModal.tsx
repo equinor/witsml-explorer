@@ -99,6 +99,7 @@ const SubObjectsSelectionModal = (
                 setSelectedRows(rows as SelectableObjectOnWellbore[])
               }
               panelElements={panelElements}
+              disableSearchParamsFilter={true}
               checkableRows
             />
           )}
