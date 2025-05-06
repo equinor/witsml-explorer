@@ -47,7 +47,7 @@ export interface ContentTableProps {
   expanded?: ExpandedState; // Use this for a controlled expanded state
   autoRefresh?: boolean;
   disableFilters?: boolean; // Hides the input-fields that can be used as user-specified column filters. Does not disable other provided filters.
-  disableLocalStorageFilter?: boolean; // Prevents storing filter as search params
+  disableSearchParamsFilter?: boolean; // Prevents storing filter as search params
 }
 
 export enum Order {

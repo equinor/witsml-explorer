@@ -453,7 +453,7 @@ const LogDataImportModal = (
                             key={contentTableId}
                             columns={contentTableColumns}
                             showPanel={false}
-                            disableLocalStorageFilter={true}
+                            disableSearchParamsFilter={true}
                             data={getTableData(
                               parsedData !== null
                                 ? parsedData

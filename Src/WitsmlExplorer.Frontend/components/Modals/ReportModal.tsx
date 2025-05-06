@@ -173,7 +173,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
                   columns={columns}
                   data={report.reportItems}
                   downloadToCsvFileName={report.title.replace(/\s+/g, "")}
-                  disableLocalStorageFilter={true}
+                  disableSearchParamsFilter={true}
                 />
               )}
             </>

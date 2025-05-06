@@ -287,7 +287,7 @@ const WellboreUidMappingOverviewModal = (): React.ReactElement => {
                   columns={columns}
                   data={tableData}
                   checkableRows
-                  disableLocalStorageFilter={true}
+                  disableSearchParamsFilter={true}
                   onRowSelectionChange={(rows) =>
                     setSelectedRows(rows as UidMappingRow[])
                   }

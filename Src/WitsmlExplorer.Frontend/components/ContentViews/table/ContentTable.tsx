@@ -113,7 +113,7 @@ export const ContentTable = React.memo(
       expanded: controlledExpansionState = null,
       autoRefresh = false,
       disableFilters = false,
-      disableLocalStorageFilter = false
+      disableSearchParamsFilter = false
     } = contentTableProps;
     const {
       operationState: { colors, theme }
@@ -370,7 +370,7 @@ export const ContentTable = React.memo(
             downloadToCsvFileName={downloadToCsvFileName}
             stickyLeftColumns={stickyLeftColumns}
             disableFilters={disableFilters || nested}
-            disableLocalStorageFilter={disableLocalStorageFilter}
+            disableSearchParamsFilter={disableSearchParamsFilter}
           />
         ) : null}
         <div

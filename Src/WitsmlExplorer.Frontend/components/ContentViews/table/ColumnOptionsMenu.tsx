@@ -47,7 +47,7 @@ export const ColumnOptionsMenu = (props: {
   selectedColumnsStatus: string;
   firstToggleableIndex: number;
   disableFilters: boolean;
-  disableLocalStorageFilter: boolean;
+  disableSearchParamsFilter: boolean;
 }): React.ReactElement => {
   const {
     table,
@@ -59,7 +59,7 @@ export const ColumnOptionsMenu = (props: {
     selectedColumnsStatus,
     firstToggleableIndex,
     disableFilters,
-    disableLocalStorageFilter
+    disableSearchParamsFilter
   } = props;
   const {
     operationState: { colors, theme }
@@ -193,7 +193,7 @@ export const ColumnOptionsMenu = (props: {
     setFilterValues(newFilterValues);
     // Debounce updating the column filter and search params to reduce re-renders
     updateColumnFilter(newValue, column);
-    if (!disableLocalStorageFilter) {
+    if (!disableSearchParamsFilter) {
       updateFilterSearchParams(newFilterValues);
     }
   };
