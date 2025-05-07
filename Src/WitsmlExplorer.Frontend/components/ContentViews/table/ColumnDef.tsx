@@ -89,8 +89,8 @@ export const useColumnDef = (
     );
 
     if (savedOrder) {
-      const sortedColumns = savedOrder.flatMap((property) => {
-        const foundColumn = columnDef.find((col) => col.id == property);
+      const sortedColumns = savedOrder.flatMap((label) => {
+        const foundColumn = columnDef.find((col) => col.id == label);
         return foundColumn == null ? [] : foundColumn;
       });
       const columnsWithoutOrder = columnDef.filter(
