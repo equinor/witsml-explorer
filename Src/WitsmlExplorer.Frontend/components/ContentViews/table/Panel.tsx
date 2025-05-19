@@ -1,4 +1,4 @@
-import { EdsProvider, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Tooltip, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
@@ -18,6 +18,7 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
+import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -54,7 +55,7 @@ const Panel = (props: PanelProps) => {
     disableSearchParamsFilter = false
   } = props;
   const {
-    operationState: { theme }
+    operationState: { decimals, theme }
   } = useOperationState();
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -72,6 +73,11 @@ const Panel = (props: PanelProps) => {
   const selectedItemsText = checkableRows
     ? `Row: ${numberOfCheckedItems}/${numberOfItems}`
     : `Items: ${numberOfItems}`;
+
+  const decimalInfo =
+    decimals !== DecimalPreference.Raw
+      ? "Decimals: " + parseInt(decimals).toString()
+      : "";
 
   useEffect(() => {
     return () => {
@@ -130,6 +136,9 @@ const Panel = (props: PanelProps) => {
       <EdsProvider density={normaliseThemeForEds(theme)}>
         <Typography>{selectedItemsText}</Typography>
         <Typography>{selectedColumnsStatus}</Typography>
+        <Tooltip title="Number of decimals are set in settings.">
+          <Typography>{decimalInfo}</Typography>
+        </Tooltip>
         <ColumnOptionsMenu
           checkableRows={checkableRows}
           table={table}
