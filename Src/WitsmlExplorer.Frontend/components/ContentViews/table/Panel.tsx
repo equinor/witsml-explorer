@@ -136,7 +136,7 @@ const Panel = (props: PanelProps) => {
       <EdsProvider density={normaliseThemeForEds(theme)}>
         <Typography>{selectedItemsText}</Typography>
         <Typography>{selectedColumnsStatus}</Typography>
-        <Tooltip title="Number of decimals are set in settings.">
+        <Tooltip title="Displayed decimal places can be adjusted in your settings.">
           <Typography>{decimalInfo}</Typography>
         </Tooltip>
         <ColumnOptionsMenu
