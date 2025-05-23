@@ -38,6 +38,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}", ObjectHandler.GetObjectsIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}/{objectUid}", ObjectHandler.GetObjectIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/allobjectsonwellbore", ObjectHandler.GetAllObjectsOnWellbore, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedLocalCurves, useOAuth2);
             app.MapGet("/universal/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedUniversalCurves, useOAuth2);

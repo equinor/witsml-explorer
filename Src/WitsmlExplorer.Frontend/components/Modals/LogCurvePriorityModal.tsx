@@ -175,6 +175,7 @@ export const LogCurvePriorityModal = (
                   : `LogCurvePriority-${wellUid}-${wellboreUid}`
               }
               onContextMenu={onContextMenu}
+              disableSearchParamsFilter={true}
               checkableRows
             />
           </Layout>

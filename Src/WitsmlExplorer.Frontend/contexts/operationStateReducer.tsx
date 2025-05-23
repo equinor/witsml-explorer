@@ -20,7 +20,8 @@ export enum TimeZone {
   Berlin = "Europe/Berlin",
   London = "Europe/London",
   NewDelhi = "Asia/Kolkata",
-  Houston = "America/Chicago"
+  Houston = "America/Chicago",
+  Malaysia = "Asia/Kuala_Lumpur"
 }
 
 export enum DateTimeFormat {
