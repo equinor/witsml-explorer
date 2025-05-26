@@ -18,6 +18,7 @@ import {
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
 import { useColumnDef } from "components/ContentViews/table/ColumnDef";
 import Panel from "components/ContentViews/table/Panel";
+import { parse } from "date-fns";
 import {
   initializeColumnVisibility,
   useStoreVisibilityEffect,
@@ -33,6 +34,7 @@ import {
 } from "components/ContentViews/table/contentTableStyles";
 import {
   booleanSortingFn,
+  dateSortingFn,
   calculateHorizontalSpace,
   calculateRowHeight,
   componentSortingFn,
@@ -48,13 +50,14 @@ import {
   ContentTableColumn,
   ContentTableProps
 } from "components/ContentViews/table/tableParts";
-import { UserTheme } from "contexts/operationStateReducer";
+import { DateTimeFormat, UserTheme } from "contexts/operationStateReducer";
 import { useOperationState } from "hooks/useOperationState";
 import { indexToNumber } from "models/logObject";
 import * as React from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
+import { naturalDateTimeFormat } from "components/DateFormatter";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -116,7 +119,7 @@ export const ContentTable = React.memo(
       disableSearchParamsFilter = false
     } = contentTableProps;
     const {
-      operationState: { colors, theme }
+      operationState: { colors, theme, dateTimeFormat }
     } = useOperationState();
     const [previousIndex, setPreviousIndex] = useState<number>(null);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>(
@@ -178,6 +181,24 @@ export const ContentTable = React.memo(
           const a = rowA.getValue(columnId);
           const b = rowB.getValue(columnId);
           return a === b ? 0 : a ? 1 : -1;
+        },
+        [dateSortingFn]: (rowA: Row<any>, rowB: Row<any>, columnId: string) => {
+          if (dateTimeFormat === DateTimeFormat.Raw) {
+            const a = new Date(rowA.getValue(columnId));
+            const b = new Date(rowB.getValue(columnId));
+            return a > b ? -1 : a < b ? 1 : 0;
+          }
+          const a = parse(
+            rowA.getValue(columnId),
+            naturalDateTimeFormat,
+            new Date()
+          );
+          const b = parse(
+            rowB.getValue(columnId),
+            naturalDateTimeFormat,
+            new Date()
+          );
+          return a > b ? -1 : a < b ? 1 : 0;
         }
       },
       columnResizeMode: "onChange",
