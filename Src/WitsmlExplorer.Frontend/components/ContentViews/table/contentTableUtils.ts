@@ -9,6 +9,7 @@ export const activeId = "active"; //implemented specifically for LogCurveInfoLis
 export const measureSortingFn = "measure";
 export const componentSortingFn = "component";
 export const booleanSortingFn = "boolean";
+export const dateSortingFn = "date";
 
 export const constantTableOptions = {
   enableColumnResizing: true,

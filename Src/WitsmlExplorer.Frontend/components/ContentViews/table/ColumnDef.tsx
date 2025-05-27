@@ -12,6 +12,7 @@ import {
   booleanSortingFn,
   calculateColumnWidth,
   componentSortingFn,
+  dateSortingFn,
   expanderId,
   measureSortingFn,
   selectId,
@@ -37,6 +38,7 @@ declare module "@tanstack/react-table" {
     [measureSortingFn]: SortingFn<unknown>;
     [componentSortingFn]: SortingFn<unknown>;
     [booleanSortingFn]: SortingFn<unknown>;
+    [dateSortingFn]: SortingFn<unknown>;
   }
 }
 
@@ -314,6 +316,8 @@ const getCheckableRowsColumnDef = (
 const getSortingFn = (column: ContentTableColumn) => {
   if (column.type == ContentType.Measure) {
     return measureSortingFn;
+  } else if (column.type == ContentType.DateTime) {
+    return dateSortingFn;
   } else if (column.type == ContentType.Number) {
     return "alphanumeric";
   } else if (column.label === activeId) {
