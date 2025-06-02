@@ -76,7 +76,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
-      report && report.reportItems?.length > 0
+      report && report.reportItems != null && report.reportItems?.length > 0
         ? Object.keys(report.reportItems[0]).map((key) => ({
             property: key,
             label: key,
@@ -96,6 +96,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         Object.keys(item).forEach((entry) => {
           if (
             report &&
+            report.reportItems != null &&
             report.dateTimeColumns?.length > 0 &&
             report.dateTimeColumns.indexOf(entry) > -1
           ) {
