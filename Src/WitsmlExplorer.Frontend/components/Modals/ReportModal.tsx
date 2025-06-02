@@ -94,7 +94,11 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
       {
         const clonedItem = JSON.parse(JSON.stringify(item));
         Object.keys(item).forEach((entry) => {
-          if (report.dateTimeColumns.indexOf(entry) > -1) {
+          if (
+            report &&
+            report.dateTimeColumns?.length > 0 &&
+            report.dateTimeColumns.indexOf(entry) > -1
+          ) {
             clonedItem[entry] = formatDateString(
               item[entry],
               timeZone,
