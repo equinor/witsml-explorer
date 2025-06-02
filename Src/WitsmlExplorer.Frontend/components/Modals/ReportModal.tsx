@@ -76,11 +76,12 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
 
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
-      report && report.reportItems != null && report.reportItems?.length > 0
+      report && report.reportItems?.length > 0
         ? Object.keys(report.reportItems[0]).map((key) => ({
             property: key,
             label: key,
             type:
+              report.dateTimeColumns != null &&
               report.dateTimeColumns.indexOf(key) > -1
                 ? ContentType.DateTime
                 : ContentType.String
@@ -95,9 +96,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         const clonedItem = JSON.parse(JSON.stringify(item));
         Object.keys(item).forEach((entry) => {
           if (
-            report &&
-            report.reportItems != null &&
-            report.dateTimeColumns?.length > 0 &&
+            report.dateTimeColumns !== null &&
             report.dateTimeColumns.indexOf(entry) > -1
           ) {
             clonedItem[entry] = formatDateString(
