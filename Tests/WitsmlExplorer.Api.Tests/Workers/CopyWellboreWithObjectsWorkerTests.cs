@@ -58,24 +58,31 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task Execute_TargetWellboreExists_NoCopy()
+        public async Task Execute_EmptyTargetWellboreExists_Copy()
         {
             //Arrange
             string wellboreUid = "existing";
             WitsmlWellbore existing = CreateWellbore(wellboreUid);
+            var witsmlLog = new WitsmlLog();
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
             WitsmlWellbores existingWells = new() { Wellbores = existing.AsItemInList() };
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
 
             _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => existingWells);
 
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
             CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, null);
-
+            job.Source.SelectedObjects =
+                new List<SelectableObjectOnWellbore>();
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
             //Assert
-            Assert.False(result.Item1.IsSuccess);
+            Assert.True(result.Item1.IsSuccess);
             _targetWitsmlClient.Verify(c => c.AddToStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
@@ -86,7 +93,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             MockWorkers(isCopyWellboreSuccess: false);
             string wellboreUid = "newWellbore";
             WitsmlWellbore wellbore = CreateWellbore(wellboreUid);
+            var witsmlLog = new WitsmlLog();
             WitsmlWellbores sourceWells = new() { Wellbores = wellbore.AsItemInList() };
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
 
             _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>(), null))
@@ -95,12 +104,19 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync(sourceWells);
 
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
             QueryResult failureQueryResult = new(false, "test wellbore copy failed");
             _targetWitsmlClient.Setup(c => c.AddToStoreAsync(It.Is<WitsmlWellbores>(w => w.Wellbores[0].Uid == wellboreUid)))
                                .ReturnsAsync(failureQueryResult);
 
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, selectedObjectList: null);
 
+            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, selectedObjectList: null);
+            job.Source.SelectedObjects =
+                new List<SelectableObjectOnWellbore>();
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -244,11 +260,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Mock<ICopyObjectsWorker> copyObjectsWorker = new();
             copyObjectsWorker.Setup(worker => worker.Execute(It.IsAny<CopyObjectsJob>(), It.IsAny<CancellationToken?>()))
                                 .ReturnsAsync((copyObjectWorkerResult, null));
+            Mock<IObjectService> objectServiceMock = new();
+            objectServiceMock.Setup(os => os.GetAllObjectsOnWellbore(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<SelectableObjectOnWellbore>());
 
             _worker = new CopyWellboreWithObjectsWorker(NullLogger<CopyWellboreWithObjectsJob>.Instance,
                 copyWellboreWorker.Object,
                 _witsmlClientProvider.Object,
-                copyObjectsWorker.Object);
+                copyObjectsWorker.Object,
+                objectServiceMock.Object);
         }
 
         /// <summary>
@@ -463,7 +482,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WellboreReference sourceWellboreRef = new() { WellUid = WellUid, WellboreUid = wellboreUid };
 
             MixedObjectsReferences sourceMixedObjectsWellboreRef = new() { WellboreReference = sourceWellboreRef, SelectedObjects = selectedObjectList };
-
             return new CopyWellboreWithObjectsJob
             {
                 Source = sourceMixedObjectsWellboreRef,
