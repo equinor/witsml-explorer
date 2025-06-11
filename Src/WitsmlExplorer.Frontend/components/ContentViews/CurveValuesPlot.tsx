@@ -476,6 +476,9 @@ const getChartOption = (
     tooltip: {
       show: true,
       trigger: "axis",
+      position: function (point: number[]) {
+        return [point[0], point[1]];
+      },
       axisPointer: {
         type: "line",
         axis: "y"
