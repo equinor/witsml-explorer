@@ -34,6 +34,11 @@ export const getMessageProperties = (
     disabled: mode !== PropertiesModalMode.New
   },
   {
+    property: "md",
+    propertyType: PropertyType.Measure,
+    disabled: true
+  },
+  {
     property: "messageText",
     propertyType: PropertyType.String,
     validator: (value: string) => validText(value, 1, MaxLength.Comment),
