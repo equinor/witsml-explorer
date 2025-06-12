@@ -61,14 +61,20 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Target = job.Target,
                 Source = job.Source.WellboreReference
             };
-            var existingWellbore = await WorkerTools.GetWellbore(targetClient, copyWellboreJob.Target);
+            var existingTargetWellbore = await WorkerTools.GetWellbore(targetClient, copyWellboreJob.Target);
+            if (_sourceServerName == _targetServerName && job.Source.WellboreReference.WellboreUid == existingTargetWellbore.Uid && job.Source.WellboreReference.WellUid == existingTargetWellbore.UidWell)
+            {
+                string errorMessage = "Failed to copy wellbore with objects - tried to copy the same wellbore into the same well on the same server.";
+                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, errorMessage, job.Description());
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
 
-            var existingObjectsOnWellbore =
+            var existingObjectsOnSourceWellbore =
                 await GetWellboreObjects(job, sourceClient);
-            var existingObjectsOnTargetWellbore = existingWellbore != null ?
+            var existingObjectsOnTargetWellbore = existingTargetWellbore != null ?
                 await _objectService.GetAllObjectsOnWellbore(
-                    existingWellbore.UidWell, existingWellbore.Uid) : new List<SelectableObjectOnWellbore>();
-            var uidsOfNonExistingObjectsOnWellbore = existingObjectsOnTargetWellbore.Select(x => x.Uid).ToList();
+                    existingTargetWellbore.UidWell, existingTargetWellbore.Uid) : new List<SelectableObjectOnWellbore>();
+            var uidsOfObjectsOnTargetWellbore = existingObjectsOnTargetWellbore.Select(x => x.Uid).ToList();
 
             (WorkerResult result, RefreshAction refresh) wellboreResult =
                 await _copyWellboreWorker.Execute(copyWellboreJob,
@@ -80,12 +86,12 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, wellboreResult.result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
-            var totalEstimatedDuration = CalculateTotalEstimatedDuration(existingObjectsOnWellbore, uidsOfNonExistingObjectsOnWellbore);
+            var totalEstimatedDuration = CalculateTotalEstimatedDuration(existingObjectsOnSourceWellbore, uidsOfObjectsOnTargetWellbore);
             long elapsedDuration = 0;
 
-            foreach (var ((entityType, logIndexType), objectList) in existingObjectsOnWellbore)
+            foreach (var ((entityType, logIndexType), objectList) in existingObjectsOnSourceWellbore)
             {
-                var nonExistingObjectCount = objectList.Objects.Count(x => uidsOfNonExistingObjectsOnWellbore.IndexOf(x.Uid) > -1);
+                var nonExistingObjectCount = objectList.Objects.Count(x => uidsOfObjectsOnTargetWellbore.IndexOf(x.Uid) > -1);
                 long estimatedObjectDuration = nonExistingObjectCount * GetEstimatedDuration(entityType, logIndexType);
                 long currentElapsedDuration = elapsedDuration; // Capture the value to avoid closure issues when we increment the duration later as the progress reporter is async.
                 IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
@@ -96,7 +102,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 });
 
                 List<CopyWellboreWithObjectsReportItem> objectTypeReportItems = await CopyWellboreObjectsByType(
-                    job, entityType, objectList.Objects, subJobProgressReporter, uidsOfNonExistingObjectsOnWellbore, cancellationToken
+                    job, entityType, objectList.Objects, subJobProgressReporter, uidsOfObjectsOnTargetWellbore, cancellationToken
                 );
                 reportItems.AddRange(objectTypeReportItems);
                 elapsedDuration += estimatedObjectDuration;
@@ -220,7 +226,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
         }
 
-        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToCopy, IProgress<double> progressReporter, List<string> uidsOfNonExistingObjectsOnWellbore, CancellationToken? cancellationToken)
+        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToCopy, IProgress<double> progressReporter, List<string> uidsOfObjectsOnTargetWellbore, CancellationToken? cancellationToken)
         {
             var reportItems = new List<CopyWellboreWithObjectsReportItem>();
             var totalObjects = objectsToCopy?.Count() ?? 0;
@@ -230,7 +236,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     var currentIndex = i; // Capture the value to avoid closure issues when i is increased as the progress reporter is async.
                     var objectOnWellbore = objectsToCopy.ElementAt(i);
-                    if (uidsOfNonExistingObjectsOnWellbore.IndexOf(objectOnWellbore.Uid) == -1)
+                    if (uidsOfObjectsOnTargetWellbore.IndexOf(objectOnWellbore.Uid) == -1)
                     {
                         IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
                         {

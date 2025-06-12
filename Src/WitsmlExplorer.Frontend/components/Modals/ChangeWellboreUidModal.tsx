@@ -24,6 +24,7 @@ import {
 } from "components/ContentViews/table";
 import { SubObjectsSelectionModalContentLayout } from "./SubObjectsSelectionModal";
 import WarningBar from "components/WarningBar";
+import { useGetWellbore } from "hooks/query/useGetWellbore";
 
 export interface ChangeWellboreUidModalProps {
   servers: Server[];
@@ -56,11 +57,17 @@ const ChangeWellboreUidModal = (
       debouncedWellboreId
     );
 
+  const { wellbore } = useGetWellbore(
+    AuthorizationService.selectedServer,
+    props.targetWell.wellUid,
+    debouncedWellboreId
+  );
+
   const sameObjectsOnWellbore =
     objectsOnWellbore !== undefined
       ? objectsOnWellbore.filter((x) =>
           props.sourceWellboreWithMixedObjectsReferences.selectedObjects.find(
-            (y) => y.uid === x.uid
+            (y) => y.uid === x.uid && y.objectType === x.objectType
           )
         )
       : null;
@@ -75,7 +82,7 @@ const ChangeWellboreUidModal = (
   useEffect(() => {
     const delay = setTimeout(() => {
       setDebouncedWellboreId(wellboreUid);
-    }, 500);
+    }, 1000);
     return () => clearTimeout(delay);
   }, [wellboreUid]);
 
@@ -159,14 +166,19 @@ const ChangeWellboreUidModal = (
             }
           />
           {isFetching && <ProgressSpinner message="Fetching data" />}
-          {objectsOnWellbore !== undefined &&
+          {wellbore !== undefined &&
+            objectsOnWellbore === undefined &&
+            !isFetching && (
+              <SubObjectsSelectionModalContentLayout>
+                <WarningBar message="The wellbore exists on the target server, but no objects will be overwritten as all uids differs" />
+              </SubObjectsSelectionModalContentLayout>
+            )}
+          {wellbore !== undefined &&
+            objectsOnWellbore !== undefined &&
             objectsOnWellbore.length > 0 &&
             !isFetching && (
               <SubObjectsSelectionModalContentLayout>
-                <WarningBar
-                  message="  These objects already exist on target. Only on target not existing
-                objects will be copied."
-                />
+                <WarningBar message="Some objects already exist on the target server. Only objects that do not already exist will be copied." />
                 <ContentTable
                   viewId="subObjectsListView"
                   columns={columns}
