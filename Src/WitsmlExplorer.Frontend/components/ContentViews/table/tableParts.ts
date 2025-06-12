@@ -32,6 +32,7 @@ export interface ContentTableProps {
   ) => void;
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[]) => void;
+  onFilteredRowSelectionChange?: (rows: ContentTableRow[]) => void; // Callback with the selected rows that are not excluded by the filter
   onExpandedChange?: (expanded: ExpandedState) => void;
   insetColumns?: ContentTableColumn[];
   nested?: boolean;
