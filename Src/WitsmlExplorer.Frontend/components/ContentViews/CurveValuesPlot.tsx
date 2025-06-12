@@ -476,6 +476,7 @@ const getChartOption = (
     tooltip: {
       show: true,
       trigger: "axis",
+      confine: true,
       axisPointer: {
         type: "line",
         axis: "y"
