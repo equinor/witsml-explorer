@@ -17,8 +17,6 @@ import {
 } from "@tanstack/react-table";
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
 import { useColumnDef } from "components/ContentViews/table/ColumnDef";
-import Panel from "components/ContentViews/table/Panel";
-import { parse } from "date-fns";
 import {
   initializeColumnVisibility,
   useStoreVisibilityEffect,
@@ -34,11 +32,11 @@ import {
 } from "components/ContentViews/table/contentTableStyles";
 import {
   booleanSortingFn,
-  dateSortingFn,
   calculateHorizontalSpace,
   calculateRowHeight,
   componentSortingFn,
   constantTableOptions,
+  dateSortingFn,
   expanderId,
   isClickable,
   measureSortingFn,
@@ -46,18 +44,20 @@ import {
   toggleRow,
   useInitFilterFns
 } from "components/ContentViews/table/contentTableUtils";
+import Panel from "components/ContentViews/table/Panel";
 import {
   ContentTableColumn,
   ContentTableProps
 } from "components/ContentViews/table/tableParts";
+import { naturalDateTimeFormat } from "components/DateFormatter";
 import { DateTimeFormat, UserTheme } from "contexts/operationStateReducer";
+import { parse } from "date-fns";
 import { useOperationState } from "hooks/useOperationState";
 import { indexToNumber } from "models/logObject";
 import * as React from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
-import { naturalDateTimeFormat } from "components/DateFormatter";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -110,6 +110,7 @@ export const ContentTable = React.memo(
       viewId,
       downloadToCsvFileName = null,
       onRowSelectionChange,
+      onFilteredRowSelectionChange,
       onExpandedChange,
       initiallySelectedRows = [],
       rowSelection: controlledRowSelection = null,
@@ -251,10 +252,19 @@ export const ContentTable = React.memo(
             ? data.flatMap((dataRow) => flattenDataRecursively(dataRow))
             : data;
 
+        const filteredData = table
+          .getFilteredRowModel()
+          .flatRows.map((r) => r.original);
+
         onRowSelectionChange?.(
           flattenedData.filter(
             (dataRow, index) => newRowSelection[dataRow.id ?? index]
           )
+        );
+        onFilteredRowSelectionChange?.(
+          flattenedData
+            .filter((dataRow, index) => newRowSelection[dataRow.id ?? index])
+            .filter((r) => filteredData.includes(r))
         );
       },
       meta: {
@@ -312,6 +322,23 @@ export const ContentTable = React.memo(
     useEffect(() => {
       oldDataCountRef.current = autoRefresh ? data.length : null;
     }, [autoRefresh]);
+
+    useEffect(() => {
+      const filteredData = table
+        .getFilteredRowModel()
+        .flatRows.map((r) => r.original);
+
+      const selection = controlledRowSelection ?? rowSelection;
+
+      const allRows = table.getRowModel().flatRows;
+
+      const selectedFilteredRows = allRows
+        .filter((r, index) => selection[r.id ?? index])
+        .map((r) => r.original)
+        .filter((row) => filteredData.includes(row));
+
+      onFilteredRowSelectionChange?.(selectedFilteredRows);
+    }, [table.getFilteredRowModel()]);
 
     const columnItems = columnVirtualizer.getVirtualItems();
     const [spaceLeft, spaceRight] = calculateHorizontalSpace(
