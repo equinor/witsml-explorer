@@ -73,7 +73,7 @@ export default function MessagesListView() {
     { property: "messageText", label: "messageText", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "name", label: "name", type: ContentType.String },
-    { property: "md", label: "md", type: ContentType.Number },
+    { property: "md", label: "md", type: ContentType.Measure },
     { property: "typeMessage", label: "typeMessage", type: ContentType.String },
     {
       property: "sourceName",
