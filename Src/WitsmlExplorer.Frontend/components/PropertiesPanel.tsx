@@ -11,6 +11,8 @@ import { getWellboreProperties } from "models/wellbore";
 import Icon from "styles/Icons";
 import React from "react";
 import { useParams } from "react-router-dom";
+import AuthorizationService from "services/authorizationService";
+import NotificationService from "services/notificationService";
 
 const PropertiesPanel = (): React.ReactElement => {
   const {
@@ -43,11 +45,21 @@ const PropertiesPanel = (): React.ReactElement => {
 
   const keys = Array.from(properties.keys());
 
+  const server = AuthorizationService.selectedServer;
+
+  const notification = {
+    serverUrl: new URL(server?.url),
+    sourceServerUrl: new URL(server.url),
+    message: "Copied to clipboard",
+    isSuccess: true
+  };
+
   const copyToClipboard = async (key: string) => {
+    NotificationService.Instance.snackbarDispatcher.dispatch(notification);
     await navigator.clipboard.writeText(key);
   };
 
-  const copyAllPropertiesToClipboard1 = async () => {
+  const copyAllPropertiesToClipboard = async () => {
     let tmpString = "";
     properties.forEach(function (value, key) {
       if (key.indexOf("UID") === 0) {
@@ -60,6 +72,7 @@ const PropertiesPanel = (): React.ReactElement => {
       tmpString.length > 1
         ? tmpString.slice(0, tmpString.length - 2)
         : tmpString;
+    NotificationService.Instance.snackbarDispatcher.dispatch(notification);
     await navigator.clipboard.writeText(resultString);
   };
 
@@ -69,7 +82,7 @@ const PropertiesPanel = (): React.ReactElement => {
       {keys.length > 0 && (
         <Button
           title="Copy all properties to clipboard"
-          onClick={() => copyAllPropertiesToClipboard1()}
+          onClick={() => copyAllPropertiesToClipboard()}
           variant="ghost"
         >
           <Icon name="copy" />
