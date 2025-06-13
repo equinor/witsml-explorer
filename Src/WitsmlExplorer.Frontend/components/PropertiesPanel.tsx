@@ -45,17 +45,12 @@ const PropertiesPanel = (): React.ReactElement => {
 
   const keys = Array.from(properties.keys());
 
-  const server = AuthorizationService.selectedServer;
-
-  const notification = {
-    serverUrl: new URL(server?.url),
-    sourceServerUrl: new URL(server?.url),
-    message: "Copied to clipboard",
-    isSuccess: true
-  };
-
   const copyToClipboard = async (key: string) => {
-    NotificationService.Instance.snackbarDispatcher.dispatch(notification);
+    NotificationService.Instance.snackbarDispatcher.dispatch({
+      serverUrl: new URL(AuthorizationService.selectedServer.url),
+      message: "Copied to clipboard",
+      isSuccess: true
+    });
     await navigator.clipboard.writeText(key);
   };
 
@@ -72,7 +67,11 @@ const PropertiesPanel = (): React.ReactElement => {
       tmpString.length > 1
         ? tmpString.slice(0, tmpString.length - 2)
         : tmpString;
-    NotificationService.Instance.snackbarDispatcher.dispatch(notification);
+    NotificationService.Instance.snackbarDispatcher.dispatch({
+      serverUrl: new URL(AuthorizationService.selectedServer.url),
+      message: "Copied to clipboard",
+      isSuccess: true
+    });
     await navigator.clipboard.writeText(resultString);
   };
 
