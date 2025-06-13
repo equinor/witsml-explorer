@@ -49,7 +49,6 @@ const PropertiesPanel = (): React.ReactElement => {
 
   const notification = {
     serverUrl: new URL(server?.url),
-    sourceServerUrl: new URL(server?.url),
     message: "Copied to clipboard",
     isSuccess: true
   };
