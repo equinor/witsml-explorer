@@ -43,7 +43,10 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
     public class CopyWellboreWithObjectsWorkerTests
     {
-        private const string WellUid = "testWellUid";
+        private const string SourceWellUid = "sourceWellUid";
+        private const string TargetWellUid = "targetWellUid";
+        private const string SourceWellboreUid = "sourceWellboreUid";
+        private const string TargetWellboreUid = "targetWellboreUid";
 
         private CopyWellboreWithObjectsWorker _worker;
         private readonly Mock<IWitsmlClient> _sourceWitsmlClient = new();
@@ -61,12 +64,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_EmptyTargetWellboreExists_Copy()
         {
             //Arrange
-            string wellboreUid = "existing";
-            WitsmlWellbore existing = CreateWellbore(wellboreUid);
+            WitsmlWellbore existing = CreateWellbore(TargetWellboreUid);
             var witsmlLog = new WitsmlLog();
             WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
             WitsmlWellbores existingWells = new() { Wellbores = existing.AsItemInList() };
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
+            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(TargetWellUid, TargetWellboreUid);
 
             _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => existingWells);
@@ -75,7 +77,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
                         It.IsAny<OptionsIn>(), null))
                 .ReturnsAsync(sourceLogs);
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, null);
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+            SetupStoreAddUpdate();
+            CopyWellboreWithObjectsJob job = CreateJobTemplate(null);
             job.Source.SelectedObjects =
                 new List<SelectableObjectOnWellbore>();
             //Act
@@ -91,18 +97,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             //Arrange
             MockWorkers(isCopyWellboreSuccess: false);
-            string wellboreUid = "newWellbore";
-            WitsmlWellbore wellbore = CreateWellbore(wellboreUid);
+
             var witsmlLog = new WitsmlLog();
-            WitsmlWellbores sourceWells = new() { Wellbores = wellbore.AsItemInList() };
             WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(It.IsAny<WitsmlWellbores>(), It.IsAny<OptionsIn>(), null))
-                               .ReturnsAsync(new WitsmlWellbores { Wellbores = new List<WitsmlWellbore>() });
-
-            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
-                               .ReturnsAsync(sourceWells);
+            SetupGetTargetWellbore();
+            SetupGetSourceWellbore();
+            SetupStoreAddUpdate();
 
             _sourceWitsmlClient.Setup(c =>
                     c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
@@ -110,11 +111,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .ReturnsAsync(sourceLogs);
 
             QueryResult failureQueryResult = new(false, "test wellbore copy failed");
-            _targetWitsmlClient.Setup(c => c.AddToStoreAsync(It.Is<WitsmlWellbores>(w => w.Wellbores[0].Uid == wellboreUid)))
+            _targetWitsmlClient.Setup(c => c.AddToStoreAsync(It.Is<WitsmlWellbores>(w => w.Wellbores[0].Uid == SourceWellboreUid)))
                                .ReturnsAsync(failureQueryResult);
 
 
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, selectedObjectList: null);
+            CopyWellboreWithObjectsJob job = CreateJobTemplate(selectedObjectList: null);
             job.Source.SelectedObjects =
                 new List<SelectableObjectOnWellbore>();
             //Act
@@ -129,17 +130,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_AllObjectsCopy_Succeeded()
         {
             //Arrange
-            string wellboreUid = "newWellbore";
-            WitsmlWellbores existingWells = new();
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
+            SetupGetTargetWellbore();
+            SetupGetSourceWellbore();
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
-                               .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => existingWells);
+            SetupStoreAddUpdate();
 
-            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, wellboreUid);
+            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, SourceWellboreUid);
             var selectedObjectTypesToCopy = GetSelectedObjectTypesList(mockObjectList);
 
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, selectedObjectTypesToCopy);
+            CopyWellboreWithObjectsJob job = CreateJobTemplate(selectedObjectTypesToCopy);
 
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
@@ -154,20 +153,17 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_SelectedObjectsCopy_BhaRuns_Succeeded()
         {
             //Arrange
-            string wellboreUid = "newWellbore";
-            WitsmlWellbores existingWells = new();
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
+            SetupGetTargetWellbore();
+            SetupGetSourceWellbore();
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
-                               .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => existingWells);
-
-            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, wellboreUid);
+            SetupStoreAddUpdate();
+            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, TargetWellboreUid);
 
             //Arrange selected BhaRuns type only to be copied
             var selectedObjectTypesToCopy = GetSelectedObjectTypesList(mockObjectList);
             var selectedBhaRunsToCopyOnly = selectedObjectTypesToCopy.Where(x => x.ObjectType == EntityType.BhaRun.ToString()).ToList();
 
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, selectedBhaRunsToCopyOnly);
+            CopyWellboreWithObjectsJob job = CreateJobTemplate(selectedBhaRunsToCopyOnly);
 
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
@@ -186,36 +182,24 @@ namespace WitsmlExplorer.Api.Tests.Workers
             //Arrange
             MockWorkers(isCopyWellboreSuccess: true, isCopyObjectsSuccess: true, isCancellationRequested: true);
 
-            string wellboreUid = "newWellbore";
-            WitsmlWellbores existingWells = new();
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
+            SetupGetTargetWellbore();
+            SetupGetSourceWellbore();
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
-                               .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => existingWells);
+            SetupStoreAddUpdate();
 
             CancellationTokenSource cancellationTokenSource = new();
             await cancellationTokenSource.CancelAsync();
 
-            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, wellboreUid);
+            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, SourceWellboreUid);
             var selectedObjectTypesToCopy = GetSelectedObjectTypesList(mockObjectList);
 
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, selectedObjectTypesToCopy);
+            CopyWellboreWithObjectsJob job = CreateJobTemplate(selectedObjectTypesToCopy);
 
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job, cancellationTokenSource.Token);
 
             //Assert
-            Assert.True(result.Item1.IsSuccess);
-
-            List<string> tmpReportObjectStatuses = new();
-            foreach (var item in job.JobInfo.Report.ReportItems)
-            {
-                if (item is CopyWellboreWithObjectsReportItem witsmlObjectReference)
-                {
-                    tmpReportObjectStatuses.Add(witsmlObjectReference.Status);
-                }
-            }
-            Assert.True(tmpReportObjectStatuses.All(x => x == "Cancelled"));
+            Assert.False(result.Item1.IsSuccess);
         }
 
         [Fact]
@@ -223,19 +207,23 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             //Arrange
             MockWorkers(isCopyWellboreSuccess: true, isCopyObjectsSuccess: false, isCancellationRequested: false);
+            SetupGetTargetWellbore();
+            SetupGetSourceWellbore();
 
-            string wellboreUid = "newWellbore";
-            WitsmlWellbores existingWells = new();
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
+            SetupStoreAddUpdate();
 
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
-                               .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => existingWells);
-
-            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, wellboreUid);
+            var mockObjectList = MakeObjectListSetups(_sourceWitsmlClient, SourceWellboreUid);
 
             var selectedObjectTypesToCopy = GetSelectedObjectTypesList(mockObjectList);
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(wellboreUid, selectedObjectList: selectedObjectTypesToCopy);
+            CopyWellboreWithObjectsJob job = CreateJobTemplate(selectedObjectList: selectedObjectTypesToCopy);
 
+            List<WitsmlWellbores> updatedWellbores = new();
+            _targetWitsmlClient.Setup(client =>
+                    client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                .ReturnsAsync(new QueryResult(true));
+            _targetWitsmlClient.Setup(client =>
+                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                .ReturnsAsync(new QueryResult(true));
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
@@ -312,7 +300,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     Uid = o.Uid
                 }).ToList());
 
-                IWitsmlObjectList nonLogsObjectsQuery = ObjectQueries.GetWitsmlObjectById(WellUid, wellboreUid, "", entityType);
+                IWitsmlObjectList nonLogsObjectsQuery = ObjectQueries.GetWitsmlObjectById(SourceWellUid, SourceWellboreUid, "", entityType);
                 client.Setup(c => c.GetFromStoreNullableAsync(IsQuery(nonLogsObjectsQuery), It.IsAny<OptionsIn>(), cancellationToken))
                                    .ReturnsAsync((IWitsmlObjectList _, OptionsIn _, CancellationToken? _) => objectList);
             }
@@ -340,7 +328,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 var logMockObjects = GetMockLogObjects(wellboreUid, logIndexType);
 
-                IWitsmlObjectList logsObjectsQuery = ObjectQueries.GetWitsmlObjectById(WellUid, wellboreUid, "", EntityType.Log);
+                IWitsmlObjectList logsObjectsQuery = ObjectQueries.GetWitsmlObjectById(SourceWellUid, SourceWellboreUid, "", EntityType.Log);
                 ((WitsmlLog)logsObjectsQuery.Objects.FirstOrDefault()).IndexType = logIndexType;
                 client.Setup(c => c.GetFromStoreNullableAsync(IsQuery(logsObjectsQuery),
                                 It.IsAny<OptionsIn>(), null))
@@ -357,6 +345,52 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return resultMockObjectList;
         }
 
+        private void SetupGetSourceWellbore()
+        {
+            WitsmlWellbores sourceWellbores = new();
+            sourceWellbores.Wellbores = new List<WitsmlWellbore>()
+            {
+                new WitsmlWellbore()
+                {
+                    Name = "targetWellboreName", Uid = "targetWellboreUid"
+                }
+            };
+
+            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(SourceWellUid, SourceWellboreUid);
+
+            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => sourceWellbores);
+        }
+
+        private void SetupGetTargetWellbore()
+        {
+            WitsmlWellbores targetWellbores = new();
+            targetWellbores.Wellbores = new List<WitsmlWellbore>()
+            {
+                new WitsmlWellbore()
+                {
+                    Uid = "targetWellboreUid", UidWell = "targetWellUid"
+                }
+            };
+
+            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid("targetWellUid", "targetWellboreUid");
+
+            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => targetWellbores);
+        }
+
+        private void SetupStoreAddUpdate()
+        {
+            List<WitsmlWellbores> updatedWellbores = new();
+            _targetWitsmlClient.Setup(client =>
+                    client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                .ReturnsAsync(new QueryResult(true));
+            _targetWitsmlClient.Setup(client =>
+                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                .ReturnsAsync(new QueryResult(true));
+
+        }
+
         private static IWitsmlObjectList GetMockLogObjects(string wellboreUid, string logIndexType)
         {
             List<WitsmlLog> logList = null;
@@ -370,8 +404,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     {
                         Uid = $"Uid_{WitsmlLog.WITSML_INDEX_TYPE_MD}_{i}",
                         Name = $"LogIndexType{WitsmlLog.WITSML_INDEX_TYPE_MD}_{i}",
-                        UidWell = WellUid,
-                        NameWell = WellUid,
+                        UidWell = SourceWellUid,
+                        NameWell = SourceWellUid,
                         UidWellbore = wellboreUid,
                         NameWellbore = wellboreUid,
                         IndexType = logIndexType,
@@ -387,8 +421,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     {
                         Uid = $"Uid_{WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME}",
                         Name = $"LogIndexType{WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME}",
-                        UidWell = WellUid,
-                        NameWell = WellUid,
+                        UidWell = SourceWellUid,
+                        NameWell = SourceWellUid,
                         UidWellbore = wellboreUid,
                         NameWellbore = wellboreUid,
                         IndexType = logIndexType,
@@ -409,8 +443,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 Uid = "Uid_Rig1",
                 Name = "Rig1",
-                UidWell = WellUid,
-                NameWell = WellUid,
+                UidWell = SourceWellUid,
+                NameWell = SourceWellUid,
                 UidWellbore = wellboreUid,
                 NameWellbore = wellboreUid,
             });
@@ -426,8 +460,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 {
                     Uid = $"Uid_BhaRun_{i}",
                     Name = $"BhaRun_{i}",
-                    UidWell = WellUid,
-                    NameWell = WellUid,
+                    UidWell = SourceWellUid,
+                    NameWell = SourceWellUid,
                     UidWellbore = wellboreUid,
                     NameWellbore = wellboreUid
                 });
@@ -445,8 +479,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     {
                         Uid = "Uid_FluidsReport1",
                         Name = "FluidsReport1",
-                        UidWell = WellUid,
-                        NameWell = WellUid,
+                        UidWell = SourceWellUid,
+                        NameWell = SourceWellUid,
                         UidWellbore = wellboreUid,
                         NameWellbore = wellboreUid,
                     },
@@ -455,8 +489,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     {
                         Uid = "Uid_FluidsReport2",
                         Name = "FluidsReport2",
-                        UidWell = WellUid,
-                        NameWell = WellUid,
+                        UidWell = SourceWellUid,
+                        NameWell = SourceWellUid,
                         UidWellbore = wellboreUid,
                         NameWellbore = wellboreUid,
                     }
@@ -473,13 +507,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WitsmlWellbore CreateWellbore(string uid, string name = null)
         {
-            return new WitsmlWellbore { Uid = uid, Name = name ?? uid, UidWell = WellUid, NameWell = WellUid };
+            return new WitsmlWellbore { Uid = uid, Name = name ?? uid, UidWell = TargetWellUid, NameWell = "targetWellName" };
         }
 
-        private static CopyWellboreWithObjectsJob CreateJobTemplate(string wellboreUid, List<SelectableObjectOnWellbore> selectedObjectList)
+        private static CopyWellboreWithObjectsJob CreateJobTemplate(List<SelectableObjectOnWellbore> selectedObjectList)
         {
-            WellboreReference targetWellboreRef = new() { WellUid = WellUid, WellboreUid = wellboreUid };
-            WellboreReference sourceWellboreRef = new() { WellUid = WellUid, WellboreUid = wellboreUid };
+            WellboreReference targetWellboreRef = new() { WellUid = "targetWellUid", WellboreUid = "targetWellboreUid" };
+            WellboreReference sourceWellboreRef = new() { WellUid = "sourceWellUid", WellboreUid = "sourceWellboreUid" };
 
             MixedObjectsReferences sourceMixedObjectsWellboreRef = new() { WellboreReference = sourceWellboreRef, SelectedObjects = selectedObjectList };
             return new CopyWellboreWithObjectsJob
