@@ -31,13 +31,17 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private readonly ICopyWellboreWorker _copyWellboreWorker;
         private readonly ICopyObjectsWorker _copyObjectsWorker;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
+        private readonly IObjectService _objectService;
+        private const string Skipped = "Skipped";
+        private const string Fail = "Fail";
         private string _sourceServerName;
         private string _targetServerName;
-        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
+        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker, IObjectService objectService, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
             _copyWellboreWorker = copyWellboreWorker;
             _copyObjectsWorker = copyObjectsWorker;
             _witsmlServerRepository = witsmlServerRepository;
+            _objectService = objectService;
         }
 
         public JobType JobType => JobType.CopyWellboreWithObjects;
@@ -57,34 +61,71 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Target = job.Target,
                 Source = job.Source.WellboreReference
             };
-            var existingWellbore = await WorkerTools.GetWellbore(targetClient, copyWellboreJob.Target);
+            WitsmlWellbore existingTargetWellbore = await WorkerTools.GetWellbore(targetClient, job.Target, ReturnElements.All);
+            WitsmlWellbore sourceWellbore = await WorkerTools.GetWellbore(sourceClient, job.Source.WellboreReference, ReturnElements.All);
 
-            if (existingWellbore != null)
+            if (existingTargetWellbore != null && _sourceServerName != null && _targetServerName != null && _sourceServerName == _targetServerName && job.Source.WellboreReference.WellboreUid == existingTargetWellbore.Uid && job.Source.WellboreReference.WellUid == existingTargetWellbore.UidWell)
             {
-                string errorMessage = "Failed to copy wellbore with objects. Target wellbore already exists.";
-                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, errorMessage, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
+                string errorMessageSameWellbore = "Failed to copy wellbore with objects - tried to copy the same wellbore into the same well on the same server.";
+                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessageSameWellbore, errorMessageSameWellbore, job.Description());
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessageSameWellbore, errorMessageSameWellbore, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
+
+            string errorMessage = "Failed to copy wellbore.";
+
+            if (sourceWellbore == null)
+            {
+                Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
+
+            if (cancellationToken is { IsCancellationRequested: true })
+            {
+                return (new WorkerResult(targetClient.GetServerHostname(), false, CancellationMessage(), CancellationReason(), sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
+
+            sourceWellbore.Uid = job.Target.WellboreUid;
+            sourceWellbore.Name = job.Target.WellboreName;
+            sourceWellbore.UidWell = job.Target.WellUid;
+            sourceWellbore.NameWell = job.Target.WellName;
+
+            WitsmlWellbores wellbores = new() { Wellbores = { sourceWellbore } };
+
+            QueryResult result = existingTargetWellbore == null
+                ? await targetClient.AddToStoreAsync(wellbores)
+                : await targetClient.UpdateInStoreAsync(wellbores);
+
+            if (!result.IsSuccessful)
+            {
+                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, result.Reason, job.Description());
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
+            }
+            Logger.LogInformation("{JobType} - Job successful. {Description}", GetType().Name, job.Description());
+
+            var existingObjectsOnSourceWellbore =
+                await GetWellboreObjects(job, sourceClient);
+            var existingObjectsOnTargetWellbore = existingTargetWellbore != null ?
+                await _objectService.GetAllObjectsOnWellbore(
+                    existingTargetWellbore.UidWell, existingTargetWellbore.Uid) : new List<SelectableObjectOnWellbore>();
+            var uidsOfObjectsOnTargetWellbore = existingObjectsOnTargetWellbore.Select(x => x.Uid).ToList();
 
             (WorkerResult result, RefreshAction refresh) wellboreResult =
                 await _copyWellboreWorker.Execute(copyWellboreJob,
                     cancellationToken);
             if (!wellboreResult.result.IsSuccess)
             {
-                string errorMessage = "Failed to copy wellbore with objects - creation of wellbore failed";
-                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessage, wellboreResult.result.Reason, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, wellboreResult.result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
+                string errorMessageFromWellboreWorker = "Failed to copy wellbore with objects - creation of wellbore failed";
+                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessageFromWellboreWorker, wellboreResult.result.Reason, job.Description());
+                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessageFromWellboreWorker, wellboreResult.result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
-            var existingObjectsOnWellbore =
-               await GetWellboreObjects(job, sourceClient);
-
-            var totalEstimatedDuration = CalculateTotalEstimatedDuration(existingObjectsOnWellbore);
+            var totalEstimatedDuration = CalculateTotalEstimatedDuration(existingObjectsOnSourceWellbore, uidsOfObjectsOnTargetWellbore);
             long elapsedDuration = 0;
 
-            foreach (var ((entityType, logIndexType), objectList) in existingObjectsOnWellbore)
+            foreach (var ((entityType, logIndexType), objectList) in existingObjectsOnSourceWellbore)
             {
-                long estimatedObjectDuration = objectList.Objects.Count() * GetEstimatedDuration(entityType, logIndexType);
+                var nonExistingObjectCount = objectList.Objects.Count(x => uidsOfObjectsOnTargetWellbore.IndexOf(x.Uid) > -1);
+                long estimatedObjectDuration = nonExistingObjectCount * GetEstimatedDuration(entityType, logIndexType);
                 long currentElapsedDuration = elapsedDuration; // Capture the value to avoid closure issues when we increment the duration later as the progress reporter is async.
                 IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
                 {
@@ -94,30 +135,43 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 });
 
                 List<CopyWellboreWithObjectsReportItem> objectTypeReportItems = await CopyWellboreObjectsByType(
-                    job, entityType, objectList.Objects, subJobProgressReporter, cancellationToken
+                    job, entityType, objectList.Objects, subJobProgressReporter, uidsOfObjectsOnTargetWellbore, cancellationToken
                 );
                 reportItems.AddRange(objectTypeReportItems);
                 elapsedDuration += estimatedObjectDuration;
             }
 
-            var fails = reportItems.Count(x => x.Status == "Fail");
-            string summary = fails > 0
-                ? $"Partially copied wellbore with some child objects. Failed to copy {fails} out of {reportItems.Count} objects."
-                : "Successfully copied wellbore with all supported child objects.";
+            var fails = reportItems.Count(x => x.Status == Fail);
+            var skipped = reportItems.Count(x => x.Status == Skipped);
+            string summary =
+                CreateSummaryMessage(fails, skipped, reportItems.Count);
             BaseReport report = CreateCopyWellboreWithObjectsReport(reportItems, summary, job);
             job.JobInfo.Report = report;
-            if (fails > 0)
+
+            WorkerResult workerResult = new(targetClient.GetServerHostname(), true, summary, sourceServerUrl: sourceClient.GetServerHostname());
+            RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
+            return (workerResult, refreshAction);
+        }
+
+        private static string CreateSummaryMessage(int fails, int skipped,
+            int reportItemsCount)
+        {
+            if (fails == 0 && skipped == 0)
             {
-                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, summary, sourceServerUrl: sourceClient.GetServerHostname());
-                RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
-                return (workerResult, refreshAction);
+                return
+                    "Successfully copied wellbore with all supported child objects.";
             }
-            else
-            {
-                WorkerResult workerResult = new(targetClient.GetServerHostname(), true, summary, sourceServerUrl: sourceClient.GetServerHostname());
-                RefreshAction refreshAction = new RefreshWell(targetClient.GetServerHostname(), job.Target.WellUid, RefreshType.Update);
-                return (workerResult, refreshAction);
-            }
+
+            string summary =
+                "Partially copied wellbore with some child objects.";
+            summary += (fails > 0
+                ? $" Failed to copy {fails} out of {reportItemsCount} objects."
+                : string.Empty);
+
+            summary += (skipped > 0
+                ? $" Skipped to copy {skipped} out of {reportItemsCount} objects."
+                : string.Empty);
+            return summary;
         }
 
         private static long GetEstimatedDuration(EntityType objectType, string logIndexType = null)
@@ -130,12 +184,13 @@ namespace WitsmlExplorer.Api.Workers.Copy
             return 10;
         }
 
-        private static long CalculateTotalEstimatedDuration(Dictionary<(EntityType, string), IWitsmlObjectList> objectsOnWellbore)
+        private static long CalculateTotalEstimatedDuration(Dictionary<(EntityType, string), IWitsmlObjectList> objectsOnWellbore, List<string> uids)
         {
             long estimatedDuration = 0;
             foreach (var ((entityType, logIndexType), objectList) in objectsOnWellbore)
             {
-                estimatedDuration += objectList.Objects.Count() * GetEstimatedDuration(entityType, logIndexType);
+                var nonExistingObjectCount = objectList.Objects.Count(x => uids.IndexOf(x.Uid) > -1);
+                estimatedDuration += nonExistingObjectCount * GetEstimatedDuration(entityType, logIndexType);
             }
             return estimatedDuration;
         }
@@ -204,7 +259,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
         }
 
-        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToCopy, IProgress<double> progressReporter, CancellationToken? cancellationToken)
+        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToCopy, IProgress<double> progressReporter, List<string> uidsOfObjectsOnTargetWellbore, CancellationToken? cancellationToken)
         {
             var reportItems = new List<CopyWellboreWithObjectsReportItem>();
             var totalObjects = objectsToCopy?.Count() ?? 0;
@@ -214,13 +269,29 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     var currentIndex = i; // Capture the value to avoid closure issues when i is increased as the progress reporter is async.
                     var objectOnWellbore = objectsToCopy.ElementAt(i);
-                    IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
+                    if (uidsOfObjectsOnTargetWellbore.IndexOf(objectOnWellbore.Uid) == -1)
                     {
-                        var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress / totalObjects);
-                        progressReporter.Report(progress);
-                    });
-                    var reportItem = await CopyOneObject(objectOnWellbore, job, entityType, subJobProgressReporter, cancellationToken);
-                    reportItems.Add(reportItem);
+                        IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
+                        {
+                            var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress / totalObjects);
+                            progressReporter.Report(progress);
+                        });
+
+                        var reportItem = await CopyOneObject(objectOnWellbore, job, entityType, subJobProgressReporter, cancellationToken);
+                        reportItems.Add(reportItem);
+                    }
+                    else
+                    {
+                        var reportItem = new CopyWellboreWithObjectsReportItem()
+                        {
+                            Phase = "Copy " + entityType,
+                            Name = objectOnWellbore.Name,
+                            Uid = objectOnWellbore.Uid,
+                            Message = "Object allready exists",
+                            Status = Skipped
+                        };
+                        reportItems.Add(reportItem);
+                    }
                 }
             }
             return reportItems;
