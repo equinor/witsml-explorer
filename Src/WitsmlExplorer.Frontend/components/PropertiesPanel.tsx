@@ -59,7 +59,7 @@ const PropertiesPanel = (): React.ReactElement => {
     await navigator.clipboard.writeText(key);
   };
 
-  const copyAllPropertiesToClipboard = async () => {
+  const copyAllPropertiesToClipboard1 = async () => {
     let tmpString = "";
     properties.forEach(function (value, key) {
       if (key.indexOf("UID") === 0) {
@@ -82,7 +82,7 @@ const PropertiesPanel = (): React.ReactElement => {
       {keys.length > 0 && (
         <Button
           title="Copy all properties to clipboard"
-          onClick={() => copyAllPropertiesToClipboard()}
+          onClick={() => copyAllPropertiesToClipboard1()}
           variant="ghost"
         >
           <Icon name="copy" />
