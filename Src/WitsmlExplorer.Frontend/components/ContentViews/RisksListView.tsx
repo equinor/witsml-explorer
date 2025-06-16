@@ -71,7 +71,7 @@ export default function RisksListView() {
 
   const columns: ContentTableColumn[] = [
     { property: "type", label: "type", type: ContentType.String },
-    { property: "id", label: "UID", type: ContentType.String },
+    { property: "id", label: "uid", type: ContentType.String },
     {
       property: "sourceName",
       label: "commonData.sourceName",
