@@ -66,7 +66,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (existingTargetWellbore != null && _sourceServerName != null && _targetServerName != null && _sourceServerName == _targetServerName && job.Source.WellboreReference.WellboreUid == existingTargetWellbore.Uid && job.Source.WellboreReference.WellUid == existingTargetWellbore.UidWell)
             {
-                string errorMessageSameWellbore = "Failed to copy wellbore with objects - tried to copy the same wellbore into the same well on the same server.";
+                string errorMessageSameWellbore = "Failed to copy wellbore at the same server with objects - tried to copy the same wellbore into the same well on the same server.";
                 Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessageSameWellbore, errorMessageSameWellbore, job.Description());
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessageSameWellbore, errorMessageSameWellbore, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
@@ -124,7 +124,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             foreach (var ((entityType, logIndexType), objectList) in existingObjectsOnSourceWellbore)
             {
-                var nonExistingObjectCount = objectList.Objects.Count(x => uidsOfObjectsOnTargetWellbore.IndexOf(x.Uid) > -1);
+                var nonExistingObjectCount = objectList.Objects.Count(x => uidsOfObjectsOnTargetWellbore.Contains(x.Uid));
                 long estimatedObjectDuration = nonExistingObjectCount * GetEstimatedDuration(entityType, logIndexType);
                 long currentElapsedDuration = elapsedDuration; // Capture the value to avoid closure issues when we increment the duration later as the progress reporter is async.
                 IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
@@ -269,7 +269,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     var currentIndex = i; // Capture the value to avoid closure issues when i is increased as the progress reporter is async.
                     var objectOnWellbore = objectsToCopy.ElementAt(i);
-                    if (uidsOfObjectsOnTargetWellbore.IndexOf(objectOnWellbore.Uid) == -1)
+                    if (!uidsOfObjectsOnTargetWellbore.Contains(objectOnWellbore.Uid))
                     {
                         IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
                         {
