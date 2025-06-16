@@ -93,40 +93,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task Execute_CopyWellboreFailed()
-        {
-            //Arrange
-            MockWorkers(isCopyWellboreSuccess: false);
-
-            var witsmlLog = new WitsmlLog();
-            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
-
-            SetupGetTargetWellbore();
-            SetupGetSourceWellbore();
-            SetupStoreAddUpdate();
-
-            _sourceWitsmlClient.Setup(c =>
-                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
-                        It.IsAny<OptionsIn>(), null))
-                .ReturnsAsync(sourceLogs);
-
-            QueryResult failureQueryResult = new(false, "test wellbore copy failed");
-            _targetWitsmlClient.Setup(c => c.AddToStoreAsync(It.Is<WitsmlWellbores>(w => w.Wellbores[0].Uid == SourceWellboreUid)))
-                               .ReturnsAsync(failureQueryResult);
-
-
-            CopyWellboreWithObjectsJob job = CreateJobTemplate(selectedObjectList: null);
-            job.Source.SelectedObjects =
-                new List<SelectableObjectOnWellbore>();
-            //Act
-            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
-
-            //Assert
-            Assert.False(result.Item1.IsSuccess);
-            Assert.Equal(failureQueryResult.Reason, result.Item1.Reason);
-        }
-
-        [Fact]
         public async Task Execute_AllObjectsCopy_Succeeded()
         {
             //Arrange
@@ -235,15 +201,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private void MockWorkers(bool isCopyWellboreSuccess, bool isCopyObjectsSuccess = true, bool isCancellationRequested = false)
         {
-            Mock<ICopyWellboreWorker> copyWellboreWorker = new();
             var reason = isCopyWellboreSuccess ? null : "test wellbore copy failed";
-            var copyWellboreWorkerResult = new WorkerResult(new Uri("http://localhost"), isSuccess: isCopyWellboreSuccess, null, reason);
-
-            copyWellboreWorker.Setup(worker => worker.Execute(It.IsAny<CopyWellboreJob>(), It.IsAny<CancellationToken?>()))
-                              .ReturnsAsync((copyWellboreWorkerResult, null));
-
             var copyObjectWorkerResult = isCancellationRequested ? new WorkerResult(null, isSuccess: false, "The job was cancelled.")
-                            : new WorkerResult(null, isSuccess: isCopyObjectsSuccess, null);
+                   : new WorkerResult(null, isSuccess: isCopyObjectsSuccess, null);
 
             Mock<ICopyObjectsWorker> copyObjectsWorker = new();
             copyObjectsWorker.Setup(worker => worker.Execute(It.IsAny<CopyObjectsJob>(), It.IsAny<CancellationToken?>()))
@@ -252,7 +212,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             objectServiceMock.Setup(os => os.GetAllObjectsOnWellbore(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<SelectableObjectOnWellbore>());
 
             _worker = new CopyWellboreWithObjectsWorker(NullLogger<CopyWellboreWithObjectsJob>.Instance,
-                copyWellboreWorker.Object,
                 _witsmlClientProvider.Object,
                 copyObjectsWorker.Object,
                 objectServiceMock.Object);

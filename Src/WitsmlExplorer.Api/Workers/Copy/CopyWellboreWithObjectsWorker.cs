@@ -28,7 +28,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
     public class CopyWellboreWithObjectsWorker : BaseWorker<CopyWellboreWithObjectsJob>, IWorker, ICopyWellboreWithObjectsWorker
     {
-        private readonly ICopyWellboreWorker _copyWellboreWorker;
         private readonly ICopyObjectsWorker _copyObjectsWorker;
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         private readonly IObjectService _objectService;
@@ -36,9 +35,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
         private const string Fail = "Fail";
         private string _sourceServerName;
         private string _targetServerName;
-        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, ICopyWellboreWorker copyWellboreWorker, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker, IObjectService objectService, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
+        public CopyWellboreWithObjectsWorker(ILogger<CopyWellboreWithObjectsJob> logger, IWitsmlClientProvider witsmlClientProvider, ICopyObjectsWorker copyObjectsWorker, IObjectService objectService, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
-            _copyWellboreWorker = copyWellboreWorker;
             _copyObjectsWorker = copyObjectsWorker;
             _witsmlServerRepository = witsmlServerRepository;
             _objectService = objectService;
@@ -108,16 +106,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 await _objectService.GetAllObjectsOnWellbore(
                     existingTargetWellbore.UidWell, existingTargetWellbore.Uid) : new List<SelectableObjectOnWellbore>();
             var uidsOfObjectsOnTargetWellbore = existingObjectsOnTargetWellbore.Select(x => x.Uid).ToList();
-
-            (WorkerResult result, RefreshAction refresh) wellboreResult =
-                await _copyWellboreWorker.Execute(copyWellboreJob,
-                    cancellationToken);
-            if (!wellboreResult.result.IsSuccess)
-            {
-                string errorMessageFromWellboreWorker = "Failed to copy wellbore with objects - creation of wellbore failed";
-                Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessageFromWellboreWorker, wellboreResult.result.Reason, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessageFromWellboreWorker, wellboreResult.result.Reason, sourceServerUrl: sourceClient.GetServerHostname()), null);
-            }
 
             var totalEstimatedDuration = CalculateTotalEstimatedDuration(existingObjectsOnSourceWellbore, uidsOfObjectsOnTargetWellbore);
             long elapsedDuration = 0;
