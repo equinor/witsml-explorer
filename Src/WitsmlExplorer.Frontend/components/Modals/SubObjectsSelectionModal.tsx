@@ -1,23 +1,23 @@
 import { Button, Icon } from "@equinor/eds-core-react";
-import OperationType from "contexts/operationType";
-import WellboreReference from "models/jobs/wellboreReference";
-import ModalDialog, { ModalWidth } from "./ModalDialog";
 import {
   ContentTable,
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
+import OperationType from "contexts/operationType";
 import { useGetAllObjectsOnWellbore } from "hooks/query/useGetAllObjectsOnWellbore";
+import WellboreReference from "models/jobs/wellboreReference";
+import ModalDialog, { ModalWidth } from "./ModalDialog";
 
+import { useQueryClient } from "@tanstack/react-query";
 import ProgressSpinner from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { useState } from "react";
+import { refreshAllObjectsOnWellbore } from "hooks/query/queryRefreshHelpers";
+import { useOperationState } from "hooks/useOperationState";
 import SelectableObjectOnWellbore, {
   MixedObjectsReferences
 } from "models/selectableObjectOnWellbore";
-import { useOperationState } from "hooks/useOperationState";
-import { useQueryClient } from "@tanstack/react-query";
-import { refreshAllObjectsOnWellbore } from "hooks/query/queryRefreshHelpers";
+import { useState } from "react";
 import styled from "styled-components";
 
 export interface SubObjectsSelectionModalProps {
@@ -95,7 +95,7 @@ const SubObjectsSelectionModal = (
               columns={columns}
               data={objectsOnWellbore}
               initiallySelectedRows={selectedRows}
-              onRowSelectionChange={(rows) =>
+              onFilteredRowSelectionChange={(rows) =>
                 setSelectedRows(rows as SelectableObjectOnWellbore[])
               }
               panelElements={panelElements}

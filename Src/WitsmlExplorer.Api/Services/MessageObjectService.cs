@@ -7,6 +7,7 @@ using Witsml.Helpers;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
@@ -55,6 +56,7 @@ namespace WitsmlExplorer.Api.Services
                 WellName = message.NameWell,
                 Uid = message.Uid,
                 Name = message.Name,
+                Md = MeasureWithDatum.FromWitsml(message.Md),
                 MessageText = message.MessageText,
                 TypeMessage = message.TypeMessage,
                 DTim = message.DTim,
