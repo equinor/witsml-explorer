@@ -112,8 +112,8 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             foreach (var ((entityType, logIndexType), objectList) in existingObjectsOnSourceWellbore)
             {
-                var nonExistingObjectCount = objectList.Objects.Count(x => uidsOfObjectsOnTargetWellbore.Contains(x.Uid));
-                long estimatedObjectDuration = nonExistingObjectCount * GetEstimatedDuration(entityType, logIndexType);
+                var existingObjectCount = objectList.Objects.Count(x => uidsOfObjectsOnTargetWellbore.Contains(x.Uid));
+                long estimatedObjectDuration = existingObjectCount * GetEstimatedDuration(entityType, logIndexType);
                 long currentElapsedDuration = elapsedDuration; // Capture the value to avoid closure issues when we increment the duration later as the progress reporter is async.
                 IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
                 {
