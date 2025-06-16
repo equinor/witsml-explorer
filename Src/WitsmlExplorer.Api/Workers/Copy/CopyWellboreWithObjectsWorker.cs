@@ -64,7 +64,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             if (existingTargetWellbore != null && _sourceServerName != null && _targetServerName != null && _sourceServerName == _targetServerName && job.Source.WellboreReference.WellboreUid == existingTargetWellbore.Uid && job.Source.WellboreReference.WellUid == existingTargetWellbore.UidWell)
             {
-                string errorMessageSameWellbore = "Failed to copy wellbore at the same server with objects - tried to copy the same wellbore into the same well on the same server.";
+                string errorMessageSameWellbore = "Failed to copy wellbore with objects - tried to copy the same wellbore into the same well on the same server. If you intend to duplicate the wellbore you must change the wellbore uid.";
                 Logger.LogError("{ErrorMessage} {Reason} - {JobDescription}", errorMessageSameWellbore, errorMessageSameWellbore, job.Description());
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessageSameWellbore, errorMessageSameWellbore, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
