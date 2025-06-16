@@ -1,5 +1,8 @@
 using Witsml.Data;
+using Witsml.Data.Measures;
 using Witsml.Extensions;
+
+using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Query
 {
@@ -30,6 +33,7 @@ namespace WitsmlExplorer.Api.Query
                     NameWell = "",
                     Uid = "",
                     Name = "",
+                    Md = MeasureWithDatum.ToEmptyWitsml<WitsmlMeasuredDepthCoord>(),
                     MessageText = "",
                     TypeMessage = "",
                     DTim = "",
