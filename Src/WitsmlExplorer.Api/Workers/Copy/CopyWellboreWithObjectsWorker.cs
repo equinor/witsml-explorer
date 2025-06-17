@@ -122,11 +122,19 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     job.ProgressReporter?.Report(progress);
                 });
 
-                List<CopyWellboreWithObjectsReportItem> objectTypeReportItems = await CopyWellboreObjectsByType(
-                    job, entityType, objectList.Objects, subJobProgressReporter, uidsOfObjectsOnTargetWellbore, cancellationToken
+                var objectsToCopy = objectList.Objects.Where(x =>
+                    !uidsOfObjectsOnTargetWellbore.Contains(x.Uid));
+                var objectTypeReportItems = await CopyWellboreObjectsByType(
+                    job, entityType, objectsToCopy, subJobProgressReporter,
+                    cancellationToken
                 );
                 reportItems.AddRange(objectTypeReportItems);
                 elapsedDuration += estimatedObjectDuration;
+                var objectsToSkip = objectList.Objects.Where(x =>
+                    uidsOfObjectsOnTargetWellbore.Contains(x.Uid));
+                var skippedReportItems =
+                    GetSkippedReportItems(entityType, objectsToSkip);
+                reportItems.AddRange(skippedReportItems);
             }
 
             var fails = reportItems.Count(x => x.Status == Fail);
@@ -177,7 +185,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             long estimatedDuration = 0;
             foreach (var ((entityType, logIndexType), objectList) in objectsOnWellbore)
             {
-                var nonExistingObjectCount = objectList.Objects.Count(x => uids.IndexOf(x.Uid) > -1);
+                var nonExistingObjectCount = objectList.Objects.Count(x => !uids.Contains(x.Uid));
                 estimatedDuration += nonExistingObjectCount * GetEstimatedDuration(entityType, logIndexType);
             }
             return estimatedDuration;
@@ -247,7 +255,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             }
         }
 
-        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToCopy, IProgress<double> progressReporter, List<string> uidsOfObjectsOnTargetWellbore, CancellationToken? cancellationToken)
+        private async Task<List<CopyWellboreWithObjectsReportItem>> CopyWellboreObjectsByType(CopyWellboreWithObjectsJob job, EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToCopy, IProgress<double> progressReporter, CancellationToken? cancellationToken)
         {
             var reportItems = new List<CopyWellboreWithObjectsReportItem>();
             var totalObjects = objectsToCopy?.Count() ?? 0;
@@ -257,29 +265,39 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 {
                     var currentIndex = i; // Capture the value to avoid closure issues when i is increased as the progress reporter is async.
                     var objectOnWellbore = objectsToCopy.ElementAt(i);
-                    if (!uidsOfObjectsOnTargetWellbore.Contains(objectOnWellbore.Uid))
-                    {
-                        IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
-                        {
-                            var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress / totalObjects);
-                            progressReporter.Report(progress);
-                        });
 
-                        var reportItem = await CopyOneObject(objectOnWellbore, job, entityType, subJobProgressReporter, cancellationToken);
-                        reportItems.Add(reportItem);
-                    }
-                    else
+                    IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
                     {
-                        var reportItem = new CopyWellboreWithObjectsReportItem()
-                        {
-                            Phase = "Copy " + entityType,
-                            Name = objectOnWellbore.Name,
-                            Uid = objectOnWellbore.Uid,
-                            Message = "Object allready exists",
-                            Status = Skipped
-                        };
-                        reportItems.Add(reportItem);
-                    }
+                        var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress / totalObjects);
+                        progressReporter.Report(progress);
+                    });
+
+                    var reportItem = await CopyOneObject(objectOnWellbore, job, entityType, subJobProgressReporter, cancellationToken);
+                    reportItems.Add(reportItem);
+                }
+            }
+            return reportItems;
+        }
+
+        private List<CopyWellboreWithObjectsReportItem> GetSkippedReportItems(EntityType entityType, IEnumerable<WitsmlObjectOnWellbore> objectsToSkip)
+        {
+            var reportItems = new List<CopyWellboreWithObjectsReportItem>();
+            var totalObjects = objectsToSkip?.Count() ?? 0;
+            if (totalObjects > 0)
+            {
+                for (int i = 0; i < totalObjects; i++)
+                {
+                    var objectOnWellbore = objectsToSkip.ElementAt(i);
+
+                    var reportItem = new CopyWellboreWithObjectsReportItem()
+                    {
+                        Phase = "Copy " + entityType,
+                        Name = objectOnWellbore.Name,
+                        Uid = objectOnWellbore.Uid,
+                        Message = "Object allready exists",
+                        Status = Skipped
+                    };
+                    reportItems.Add(reportItem);
                 }
             }
             return reportItems;
