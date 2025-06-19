@@ -53,7 +53,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
             WitsmlWellbores existingWells = new() { Wellbores = existing.AsItemInList() };
 
             WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(WellUid, wellboreUid);
-            string queryText = XmlHelper.Serialize(WellQueries.GetWitsmlWellByUid(wellboreUid));
+
+            WitsmlWellbore wellbore = CreateWellbore(wellboreUid);
+
+            WitsmlWellbores sourceWells = new() { Wellbores = wellbore.AsItemInList() };
+            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceWells);
+
+            SetupStoreAddUpdate();
 
             _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync((WitsmlWellbores q, OptionsIn op, CancellationToken? _) => existingWells);
@@ -84,10 +91,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                                .ReturnsAsync(sourceWells);
 
-            QueryResult successQueryResult = new(true);
-
-            _targetWitsmlClient.Setup(c => c.AddToStoreAsync(It.Is<WitsmlWellbores>(w => w.Wellbores[0].Uid == wellboreUid)))
-                               .ReturnsAsync(successQueryResult);
+            SetupStoreAddUpdate();
 
             CopyWellboreJob job = CreateJobTemplate(wellboreUid);
 
@@ -126,10 +130,23 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(failureQueryResult.Reason, result.Item1.Reason);
         }
 
+
         private static T IsQuery<T>(T query)
             where T : IWitsmlQueryType
         {
             return It.Is<T>(q => XmlHelper.Serialize(q, false) == XmlHelper.Serialize(query, false));
+        }
+
+        private void SetupStoreAddUpdate()
+        {
+            List<WitsmlWellbores> updatedWellbores = new();
+            _targetWitsmlClient.Setup(client =>
+                    client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                .ReturnsAsync(new QueryResult(true));
+            _targetWitsmlClient.Setup(client =>
+                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                .ReturnsAsync(new QueryResult(true));
+
         }
 
         private static WitsmlWellbore CreateWellbore(string uid, string name = null)

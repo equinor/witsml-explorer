@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Witsml;
 using Witsml.Data;
 
 using WitsmlExplorer.Api.Jobs;
@@ -29,14 +30,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
             Witsml.IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
             Witsml.IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
 
-            WitsmlWellbore existingWellbore = await WorkerTools.GetWellbore(targetClient, job.Target, Witsml.ServiceReference.ReturnElements.Requested);
-
-            if (existingWellbore != null)
-            {
-                string message = "Target wellbore already exists";
-                Logger.LogWarning("{WarningMessage} - {JobDescription}", message, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), true, message, sourceServerUrl: sourceClient.GetServerHostname()), null);
-            }
+            WitsmlWellbore existingTargetWellbore = await WorkerTools.GetWellbore(targetClient, job.Target, Witsml.ServiceReference.ReturnElements.Requested);
 
             WitsmlWellbore sourceWellbore = await WorkerTools.GetWellbore(sourceClient, job.Source, Witsml.ServiceReference.ReturnElements.All);
 
@@ -61,7 +55,9 @@ namespace WitsmlExplorer.Api.Workers.Copy
 
             WitsmlWellbores wellbores = new() { Wellbores = { sourceWellbore } };
 
-            Witsml.QueryResult result = await targetClient.AddToStoreAsync(wellbores);
+            QueryResult result = existingTargetWellbore == null
+                ? await targetClient.AddToStoreAsync(wellbores)
+                : await targetClient.UpdateInStoreAsync(wellbores);
 
             if (!result.IsSuccessful)
             {
