@@ -201,7 +201,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private void MockWorkers(bool isCopyWellboreSuccess, bool isCopyObjectsSuccess = true, bool isCancellationRequested = false)
         {
+            Mock<ICopyWellboreWorker> copyWellboreWorker = new();
             var reason = isCopyWellboreSuccess ? null : "test wellbore copy failed";
+            var copyWellboreWorkerResult = new WorkerResult(new Uri("http://localhost"), isSuccess: isCopyWellboreSuccess, null, reason);
+
+            copyWellboreWorker.Setup(worker => worker.Execute(It.IsAny<CopyWellboreJob>(), It.IsAny<CancellationToken?>()))
+                .ReturnsAsync((copyWellboreWorkerResult, null));
+
             var copyObjectWorkerResult = isCancellationRequested ? new WorkerResult(null, isSuccess: false, "The job was cancelled.")
                    : new WorkerResult(null, isSuccess: isCopyObjectsSuccess, null);
 
@@ -214,6 +220,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             _worker = new CopyWellboreWithObjectsWorker(NullLogger<CopyWellboreWithObjectsJob>.Instance,
                 _witsmlClientProvider.Object,
                 copyObjectsWorker.Object,
+                copyWellboreWorker.Object,
                 objectServiceMock.Object);
         }
 
