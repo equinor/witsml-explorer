@@ -183,13 +183,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var selectedObjectTypesToCopy = GetSelectedObjectTypesList(mockObjectList);
             CopyWellboreWithObjectsJob job = CreateJobTemplate(selectedObjectList: selectedObjectTypesToCopy);
 
-            List<WitsmlWellbores> updatedWellbores = new();
-            _targetWitsmlClient.Setup(client =>
-                    client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
-                .ReturnsAsync(new QueryResult(true));
-            _targetWitsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
-                .ReturnsAsync(new QueryResult(true));
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 

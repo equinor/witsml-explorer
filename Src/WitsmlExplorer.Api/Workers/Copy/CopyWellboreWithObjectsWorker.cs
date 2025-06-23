@@ -62,7 +62,6 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 Source = job.Source.WellboreReference
             };
             WitsmlWellbore existingTargetWellbore = await WorkerTools.GetWellbore(targetClient, job.Target, ReturnElements.All);
-            WitsmlWellbore sourceWellbore = await WorkerTools.GetWellbore(sourceClient, job.Source.WellboreReference, ReturnElements.All);
 
             if (_sourceServerName == _targetServerName && job.Source.WellboreReference.WellboreUid == job.Target.WellboreUid && job.Source.WellboreReference.WellUid == job.Target.WellUid)
             {
@@ -71,23 +70,10 @@ namespace WitsmlExplorer.Api.Workers.Copy
                 return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessageSameWellbore, errorMessageSameWellbore, sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
 
-            string errorMessage = "Failed to copy wellbore.";
-
-            if (sourceWellbore == null)
-            {
-                Logger.LogError("{ErrorMessage} - {JobDescription}", errorMessage, job.Description());
-                return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessage, sourceServerUrl: sourceClient.GetServerHostname()), null);
-            }
-
             if (cancellationToken is { IsCancellationRequested: true })
             {
                 return (new WorkerResult(targetClient.GetServerHostname(), false, CancellationMessage(), CancellationReason(), sourceServerUrl: sourceClient.GetServerHostname()), null);
             }
-
-            sourceWellbore.Uid = job.Target.WellboreUid;
-            sourceWellbore.Name = job.Target.WellboreName;
-            sourceWellbore.UidWell = job.Target.WellUid;
-            sourceWellbore.NameWell = job.Target.WellName;
 
             (WorkerResult result, RefreshAction refresh) wellboreResult =
                 await _copyWellboreWorker.Execute(copyWellboreJob,

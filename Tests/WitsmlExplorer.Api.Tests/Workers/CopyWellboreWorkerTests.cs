@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async Task Execute_TargetWellboreExists_NoCopy()
+        public async Task Execute_TargetWellboreExists_ShouldUpdate()
         {
             string wellboreUid = "existing";
 
@@ -71,6 +71,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
             Assert.True(result.Item1.IsSuccess);
 
+            _targetWitsmlClient.Verify(c => c.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Once);
             _targetWitsmlClient.Verify(c => c.AddToStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
@@ -98,6 +99,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
 
             Assert.True(result.Item1.IsSuccess);
+
+            _targetWitsmlClient.Verify(c => c.AddToStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Once);
+            _targetWitsmlClient.Verify(c => c.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()), Times.Never);
         }
 
         [Fact]
@@ -139,12 +143,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private void SetupStoreAddUpdate()
         {
-            List<WitsmlWellbores> updatedWellbores = new();
             _targetWitsmlClient.Setup(client =>
-                    client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                    client.UpdateInStoreAsync(It.IsAny<WitsmlWellbores>()))
                 .ReturnsAsync(new QueryResult(true));
             _targetWitsmlClient.Setup(client =>
-                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>())).Callback<WitsmlWellbores>(wellbores => updatedWellbores.Add(wellbores))
+                    client.AddToStoreAsync(It.IsAny<WitsmlWellbores>()))
                 .ReturnsAsync(new QueryResult(true));
 
         }
