@@ -198,7 +198,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                     ObjectName = witsmlLog.Name,
                     Mnemonic = logCurveInfo.Mnemonic,
                     ExistsOnSource = isSourceFirst ? "TRUE" : "FALSE",
-                    ExistsOnTarget = !isSourceFirst ? "FALSE" : "TRUE"
+                    ExistsOnTarget = isSourceFirst ? "FALSE" : "TRUE"
                 };
                 resultList.Add(result);
             }
@@ -222,7 +222,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                     ObjectUid = witsmlObjectOnWellbore.Uid,
                     ObjectName = witsmlObjectOnWellbore.Name,
                     ExistsOnSource = isSourceFirst ? "TRUE" : "FALSE",
-                    ExistsOnTarget = !isSourceFirst ? "FALSE" : "TRUE"
+                    ExistsOnTarget = isSourceFirst ? "FALSE" : "TRUE"
                 };
                 if (kvp.Key.Item1 == EntityType.Log)
                 {
