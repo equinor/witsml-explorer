@@ -196,17 +196,15 @@ const WellboreContextMenu = (
   };
 
   const onClickCompareWellbore = () => {
-    compareWellbore(wellbore, connectedServer, dispatchOperation);
+    compareWellbore(wellbore, dispatchOperation);
   };
 
   const compareWellbore = async (
     wellbore: Wellbore,
-    connectedServer: Server,
     dispatchOperation: DispatchOperation
   ) => {
     const props: WellborePickerProps = {
-      selectedWellbore: wellbore,
-      serverURl: connectedServer.url
+      selectedWellbore: wellbore
     };
     dispatchOperation({ type: OperationType.HideContextMenu });
 

@@ -65,16 +65,16 @@ const WellborePickerModal = ({
     setIsLoading(true);
     setFetchError("");
     const targetWellbore = await WellboreService.getWellbore(
-      selectedWellbore.wellUid,
-      selectedWellbore.uid,
+      wellUid,
+      wellboreUid,
       null,
       targetServer
     );
 
     try {
       const sourceWellboreReference: WellboreReference = {
-        wellUid: wellUid,
-        wellboreUid: wellboreUid,
+        wellUid: selectedWellbore.wellUid,
+        wellboreUid: selectedWellbore.uid,
         wellboreName: selectedWellbore.name,
         wellName: selectedWellbore.wellName
       };
