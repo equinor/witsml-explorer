@@ -133,6 +133,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                             var result = new WellboreSubObjectsComparisonItem()
                             {
                                 ObjectType = "Log",
+                                LogType = witsmlLog.IndexType,
                                 ObjectUid = witsmlLog.Uid,
                                 ObjectName = witsmlLog.Name,
                                 Mnemonic = logCurveInfo.Mnemonic,
@@ -157,6 +158,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                             var result = new WellboreSubObjectsComparisonItem()
                             {
                                 ObjectType = "Log",
+                                LogType = witsmlLog.IndexType,
                                 ObjectUid = witsmlLog.Uid,
                                 ObjectName = witsmlLog.Name,
                                 Mnemonic = logCurveInfo.Mnemonic,
@@ -194,6 +196,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 var result = new WellboreSubObjectsComparisonItem()
                 {
                     ObjectType = "Log",
+                    LogType = witsmlLog.IndexType,
                     ObjectUid = witsmlLog.Uid,
                     ObjectName = witsmlLog.Name,
                     Mnemonic = logCurveInfo.Mnemonic,
