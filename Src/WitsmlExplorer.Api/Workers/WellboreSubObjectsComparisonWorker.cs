@@ -71,7 +71,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         reportItems.AddRange(FindMissingObjects(objectsOnSourceWellbore,
             objectsOnTargetWellbore, true));
         reportItems.AddRange(FindMissingObjects(objectsOnTargetWellbore,
-            objectsOnSourceWellbore, true));
+            objectsOnSourceWellbore, false));
 
         reportItems.AddRange(FindMissingMnemonics(sourceLogs, targetLogs, true));
         reportItems.AddRange(FindMissingMnemonics(targetLogs, sourceLogs, false));
@@ -167,7 +167,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                                 SourceEnd = firstMnemonic.MaxIndex?.Value,
                                 TargetStart =
                                     secondMnemonic.MinIndex?.Value,
-                                TargetEnd = secondMnemonic.MaxIndex.Value
+                                TargetEnd = secondMnemonic.MaxIndex?.Value
                             };
                             resultList.Add(result);
                         }
@@ -198,7 +198,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                     ObjectName = witsmlLog.Name,
                     Mnemonic = logCurveInfo.Mnemonic,
                     ExistsOnSource = isSourceFirst ? "TRUE" : "FALSE",
-                    ExistsOnTarget = isSourceFirst ? "FALSE" : "TRUE"
+                    ExistsOnTarget = !isSourceFirst ? "FALSE" : "TRUE"
                 };
                 resultList.Add(result);
             }
@@ -222,7 +222,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                     ObjectUid = witsmlObjectOnWellbore.Uid,
                     ObjectName = witsmlObjectOnWellbore.Name,
                     ExistsOnSource = isSourceFirst ? "TRUE" : "FALSE",
-                    ExistsOnTarget = isSourceFirst ? "FALSE" : "TRUE"
+                    ExistsOnTarget = !isSourceFirst ? "FALSE" : "TRUE"
                 };
                 if (kvp.Key.Item1 == EntityType.Log)
                 {
