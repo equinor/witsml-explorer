@@ -105,7 +105,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             targetLogs.Logs.Any(item2 => item1.Uid == item2.Uid)).ToList();
         foreach (var witsmlLog in sameLogs)
         {
-            var firstLogCurveInfo = sourceLogs.Logs.FirstOrDefault(x => x.Uid == witsmlLog.Uid)!.LogCurveInfo!; ;
+            var firstLogCurveInfo = witsmlLog.LogCurveInfo!;
             var secondLogCurveInfo = targetLogs.Logs.FirstOrDefault(x => x.Uid == witsmlLog.Uid)!.LogCurveInfo!;
 
             if (firstLogCurveInfo != null && secondLogCurveInfo != null)
@@ -116,63 +116,59 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
 
                 foreach (var logCurveInfo in sameLogCurves)
                 {
-                    var firstMnemonic = logCurveInfo;
                     var secondMnemonic =
                         secondLogCurveInfo
-                            .FirstOrDefault(x => x.Mnemonic == logCurveInfo.Mnemonic);
+                            .FirstOrDefault(x => x.Mnemonic == logCurveInfo.Mnemonic)!;
 
-                    if (secondMnemonic != null)
+                    if (witsmlLog.IndexType ==
+                        WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME &&
+                        (logCurveInfo.MaxDateTimeIndex !=
+                         secondMnemonic.MaxDateTimeIndex ||
+                         logCurveInfo.MinDateTimeIndex !=
+                         secondMnemonic.MinDateTimeIndex))
                     {
-                        if (witsmlLog.IndexType ==
-                            WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME &&
-                            (logCurveInfo.MaxDateTimeIndex !=
-                             secondMnemonic.MaxDateTimeIndex ||
-                             logCurveInfo.MinDateTimeIndex !=
-                             secondMnemonic.MinDateTimeIndex))
+                        var result = new WellboreSubObjectsComparisonItem()
                         {
-                            var result = new WellboreSubObjectsComparisonItem()
-                            {
-                                ObjectType = "Log",
-                                LogType = witsmlLog.IndexType,
-                                ObjectUid = witsmlLog.Uid,
-                                ObjectName = witsmlLog.Name,
-                                Mnemonic = logCurveInfo.Mnemonic,
-                                ExistsOnSource = "TRUE",
-                                ExistsOnTarget = "TRUE",
-                                SourceStart =
-                                    logCurveInfo.MinDateTimeIndex,
-                                SourceEnd = logCurveInfo.MaxDateTimeIndex,
-                                TargetStart =
-                                    secondMnemonic.MinDateTimeIndex,
-                                TargetEnd = secondMnemonic.MaxDateTimeIndex
-                            };
-                            resultList.Add(result);
-                        }
-                        if (witsmlLog.IndexType ==
-                            WitsmlLog.WITSML_INDEX_TYPE_MD &&
-                            (logCurveInfo.MaxIndex !=
-                             secondMnemonic.MaxIndex ||
-                             logCurveInfo.MinIndex !=
-                             secondMnemonic.MinIndex))
+                            ObjectType = "Log",
+                            LogType = witsmlLog.IndexType,
+                            ObjectUid = witsmlLog.Uid,
+                            ObjectName = witsmlLog.Name,
+                            Mnemonic = logCurveInfo.Mnemonic,
+                            ExistsOnSource = "TRUE",
+                            ExistsOnTarget = "TRUE",
+                            SourceStart =
+                                logCurveInfo.MinDateTimeIndex,
+                            SourceEnd = logCurveInfo.MaxDateTimeIndex,
+                            TargetStart =
+                                secondMnemonic.MinDateTimeIndex,
+                            TargetEnd = secondMnemonic.MaxDateTimeIndex
+                        };
+                        resultList.Add(result);
+                    }
+                    if (witsmlLog.IndexType ==
+                        WitsmlLog.WITSML_INDEX_TYPE_MD &&
+                        (logCurveInfo.MaxIndex !=
+                         secondMnemonic.MaxIndex ||
+                         logCurveInfo.MinIndex !=
+                         secondMnemonic.MinIndex))
+                    {
+                        var result = new WellboreSubObjectsComparisonItem()
                         {
-                            var result = new WellboreSubObjectsComparisonItem()
-                            {
-                                ObjectType = "Log",
-                                LogType = witsmlLog.IndexType,
-                                ObjectUid = witsmlLog.Uid,
-                                ObjectName = witsmlLog.Name,
-                                Mnemonic = logCurveInfo.Mnemonic,
-                                ExistsOnSource = "TRUE",
-                                ExistsOnTarget = "TRUE",
-                                SourceStart =
-                                    firstMnemonic.MinIndex?.Value,
-                                SourceEnd = firstMnemonic.MaxIndex?.Value,
-                                TargetStart =
-                                    secondMnemonic.MinIndex?.Value,
-                                TargetEnd = secondMnemonic.MaxIndex?.Value
-                            };
-                            resultList.Add(result);
-                        }
+                            ObjectType = "Log",
+                            LogType = witsmlLog.IndexType,
+                            ObjectUid = witsmlLog.Uid,
+                            ObjectName = witsmlLog.Name,
+                            Mnemonic = logCurveInfo.Mnemonic,
+                            ExistsOnSource = "TRUE",
+                            ExistsOnTarget = "TRUE",
+                            SourceStart =
+                                logCurveInfo.MinIndex?.Value,
+                            SourceEnd = logCurveInfo.MaxIndex?.Value,
+                            TargetStart =
+                                secondMnemonic.MinIndex?.Value,
+                            TargetEnd = secondMnemonic.MaxIndex?.Value
+                        };
+                        resultList.Add(result);
                     }
                 }
             }

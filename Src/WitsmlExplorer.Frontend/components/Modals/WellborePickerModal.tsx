@@ -23,7 +23,6 @@ import { useClipboardMixedObjectsReferences } from "components/ContextMenus/UseC
 
 export interface WellborePickerProps {
   selectedWellbore: Wellbore;
-  serverURl: string;
 }
 
 const WellborePickerModal = ({
