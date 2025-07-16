@@ -42,6 +42,7 @@ namespace WitsmlExplorer.Api.Models
         BatchModifyLogCurveInfo,
         DownloadLogData,
         OffsetLogCurves,
-        MinimumDataQc
+        MinimumDataQc,
+        WellboreSubObjectsComparison,
     }
 }

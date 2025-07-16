@@ -34,7 +34,10 @@ import {
   openWellboreProperties
 } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { DisplayModalAction } from "contexts/operationStateReducer";
+import {
+  DispatchOperation,
+  DisplayModalAction
+} from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshWellboresQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
@@ -58,6 +61,9 @@ import WellboreUidMappingModal, {
   WellboreUidMappingModalProps
 } from "../Modals/WellboreUidMappingModal.tsx";
 import { getTargetWellboreID } from "./UidMappingUtils.tsx";
+import WellborePickerModal, {
+  WellborePickerProps
+} from "components/Modals/WellborePickerModal.tsx";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -187,6 +193,28 @@ const WellboreContextMenu = (
 
   const onClickCopyWellbore = () => {
     copyWellbore(wellbore, connectedServer, dispatchOperation);
+  };
+
+  const onClickCompareWellbore = () => {
+    compareWellbore(wellbore, connectedServer, dispatchOperation);
+  };
+
+  const compareWellbore = async (
+    wellbore: Wellbore,
+    connectedServer: Server,
+    dispatchOperation: DispatchOperation
+  ) => {
+    const props: WellborePickerProps = {
+      selectedWellboreUid: wellbore.uid,
+      selectedWellUid: wellbore.wellUid,
+      serverURl: connectedServer.url
+    };
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellborePickerModal {...props} />
+    });
   };
 
   const onClickShowOnServer = async (server: Server) => {
@@ -395,6 +423,10 @@ const WellboreContextMenu = (
         <MenuItem key={"copyWellbore"} onClick={onClickCopyWellbore}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy wellbore</Typography>
+        </MenuItem>,
+        <MenuItem key={"compareWellbore"} onClick={onClickCompareWellbore}>
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Compare wellbore</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

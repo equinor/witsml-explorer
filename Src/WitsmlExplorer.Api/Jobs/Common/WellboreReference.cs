@@ -8,6 +8,7 @@ namespace WitsmlExplorer.Api.Jobs.Common
         public string WellboreUid { get; set; }
         public string WellName { get; set; }
         public string WellboreName { get; set; }
+        public string ServerUrl { get; set; }
 
         public string Description()
         {
