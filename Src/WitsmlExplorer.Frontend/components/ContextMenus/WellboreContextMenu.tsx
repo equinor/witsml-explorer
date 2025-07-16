@@ -205,8 +205,7 @@ const WellboreContextMenu = (
     dispatchOperation: DispatchOperation
   ) => {
     const props: WellborePickerProps = {
-      selectedWellboreUid: wellbore.uid,
-      selectedWellUid: wellbore.wellUid,
+      selectedWellbore: wellbore,
       serverURl: connectedServer.url
     };
     dispatchOperation({ type: OperationType.HideContextMenu });

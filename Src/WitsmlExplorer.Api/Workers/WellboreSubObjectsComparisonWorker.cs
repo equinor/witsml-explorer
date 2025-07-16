@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
-
-using MongoDB.Driver.Linq;
 
 using Witsml;
 using Witsml.Data;
@@ -24,7 +21,7 @@ using WitsmlExplorer.Api.Services;
 namespace WitsmlExplorer.Api.Workers;
 
 /// <summary>
-/// Worker for counting how many values are in each curve.
+/// Worker for comparing sub objects on 2 wellbores.
 /// </summary>
 public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsComparisonJob>, IWorker
 {
@@ -52,8 +49,8 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         IWitsmlClient sourceClient = GetSourceWitsmlClientOrThrow();
         IWitsmlClient targetClient = GetTargetWitsmlClientOrThrow();
 
-        WitsmlWellbore existingTargetWellbore = await WorkerTools.GetWellbore(targetClient, job.TargetWellbore, ReturnElements.All);
-        WitsmlWellbore existingSourceWellbore = await WorkerTools.GetWellbore(sourceClient, job.SourceWellbore, ReturnElements.All);
+        WitsmlWellbore existingTargetWellbore = await WorkerTools.GetWellbore(targetClient, job.TargetWellbore, ReturnElements.IdOnly);
+        WitsmlWellbore existingSourceWellbore = await WorkerTools.GetWellbore(sourceClient, job.SourceWellbore, ReturnElements.IdOnly);
 
         IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
         var sourceServerName = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceClient.GetServerHostname()))?.Name;
@@ -76,11 +73,11 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         reportItems.AddRange(FindMissingObjects(objectsOnTargetWellbore,
             objectsOnSourceWellbore, true));
 
-        reportItems.AddRange(ReportMissingMnemonics(sourceLogs, targetLogs, true));
-        reportItems.AddRange(ReportMissingMnemonics(targetLogs, sourceLogs, false));
+        reportItems.AddRange(FindMissingMnemonics(sourceLogs, targetLogs, true));
+        reportItems.AddRange(FindMissingMnemonics(targetLogs, sourceLogs, false));
 
-        reportItems.AddRange(ReportDifferentMnemonics(sourceLogs, targetLogs));
-        WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Comparison of 2 wellbores: ", jobId: job.JobInfo.Id);
+        reportItems.AddRange(FindMnemonicIndexRangeDifferences(sourceLogs, targetLogs));
+        WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Comparison of 2 wellbores is done.", jobId: job.JobInfo.Id);
         var report = GenerateReport(reportItems, sourceServerName,
             targetServerName, existingSourceWellbore.Name,
             existingTargetWellbore.Name);
@@ -100,43 +97,37 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         };
     }
 
-    private List<WellboreSubObjectsComparisonItem> ReportDifferentMnemonics(
-        WitsmlLogs firstLogs, WitsmlLogs secondLogs)
+    private List<WellboreSubObjectsComparisonItem> FindMnemonicIndexRangeDifferences(
+        WitsmlLogs sourceLogs, WitsmlLogs targetLogs)
     {
         var resultList = new List<WellboreSubObjectsComparisonItem>();
-        var sameLogs = firstLogs.Logs.Where(item1 =>
-            secondLogs.Logs.Any(item2 => item1.Uid == item2.Uid)).ToList();
+        var sameLogs = sourceLogs.Logs.Where(item1 =>
+            targetLogs.Logs.Any(item2 => item1.Uid == item2.Uid)).ToList();
         foreach (var witsmlLog in sameLogs)
         {
-            var firstLogCurveInfo =
-                firstLogs.Logs.Where(x => x.Uid == witsmlLog.Uid)
-                    .Select(x => x.LogCurveInfo).FirstOrDefault();
-            var secondLogCurveInfo =
-                secondLogs.Logs.Where(x => x.Uid == witsmlLog.Uid)
-                    .Select(x => x.LogCurveInfo).FirstOrDefault();
+            var firstLogCurveInfo = sourceLogs.Logs.FirstOrDefault(x => x.Uid == witsmlLog.Uid)!.LogCurveInfo!; ;
+            var secondLogCurveInfo = targetLogs.Logs.FirstOrDefault(x => x.Uid == witsmlLog.Uid)!.LogCurveInfo!;
 
             if (firstLogCurveInfo != null && secondLogCurveInfo != null)
             {
                 var sameLogCurves = firstLogCurveInfo.Where(item1 =>
-                        secondLogCurveInfo.Any(item2 => item1.Uid == item2.Uid))
+                        secondLogCurveInfo.Any(item2 => item1.Mnemonic == item2.Mnemonic))
                     .ToList();
 
                 foreach (var logCurveInfo in sameLogCurves)
                 {
-                    var firstMnemonic =
-                        firstLogCurveInfo
-                            .FirstOrDefault(x => x.Mnemonic == logCurveInfo.Mnemonic);
+                    var firstMnemonic = logCurveInfo;
                     var secondMnemonic =
                         secondLogCurveInfo
                             .FirstOrDefault(x => x.Mnemonic == logCurveInfo.Mnemonic);
 
-                    if (firstMnemonic != null && secondMnemonic != null)
+                    if (secondMnemonic != null)
                     {
                         if (witsmlLog.IndexType ==
                             WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME &&
-                            (firstMnemonic.MaxDateTimeIndex !=
+                            (logCurveInfo.MaxDateTimeIndex !=
                              secondMnemonic.MaxDateTimeIndex ||
-                             firstMnemonic.MinDateTimeIndex !=
+                             logCurveInfo.MinDateTimeIndex !=
                              secondMnemonic.MinDateTimeIndex))
                         {
                             var result = new WellboreSubObjectsComparisonItem()
@@ -148,8 +139,8 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                                 ExistsOnSource = "TRUE",
                                 ExistsOnTarget = "TRUE",
                                 SourceStart =
-                                    firstMnemonic.MinDateTimeIndex,
-                                SourceEnd = firstMnemonic.MaxDateTimeIndex,
+                                    logCurveInfo.MinDateTimeIndex,
+                                SourceEnd = logCurveInfo.MaxDateTimeIndex,
                                 TargetStart =
                                     secondMnemonic.MinDateTimeIndex,
                                 TargetEnd = secondMnemonic.MaxDateTimeIndex
@@ -158,9 +149,9 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                         }
                         if (witsmlLog.IndexType ==
                             WitsmlLog.WITSML_INDEX_TYPE_MD &&
-                            (firstMnemonic.MaxIndex !=
+                            (logCurveInfo.MaxIndex !=
                              secondMnemonic.MaxIndex ||
-                             firstMnemonic.MinIndex !=
+                             logCurveInfo.MinIndex !=
                              secondMnemonic.MinIndex))
                         {
                             var result = new WellboreSubObjectsComparisonItem()
@@ -187,43 +178,36 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         return resultList;
     }
 
-    private List<WellboreSubObjectsComparisonItem> ReportMissingMnemonics(WitsmlLogs firstLogs, WitsmlLogs secondLogs, bool missingSecond)
+    private List<WellboreSubObjectsComparisonItem> FindMissingMnemonics(WitsmlLogs sourceLogs, WitsmlLogs targetLogs, bool isSourceFirst)
     {
         var resultList = new List<WellboreSubObjectsComparisonItem>();
-        var sameLogs = firstLogs.Logs.Where(item1 => secondLogs.Logs.Any(item2 => item1.Uid == item2.Uid)).ToList();
+        var sameLogs = sourceLogs.Logs.Where(item1 => targetLogs.Logs.Any(item2 => item1.Uid == item2.Uid)).ToList();
         foreach (var witsmlLog in sameLogs)
         {
-            var firstLogCurveInfo =
-                 firstLogs.Logs.Where(x => x.Uid == witsmlLog.Uid).Select(x => x.LogCurveInfo).FirstOrDefault();
-            var secondLogCurveInfo =
-                secondLogs.Logs.Where(x => x.Uid == witsmlLog.Uid).Select(x => x.LogCurveInfo).FirstOrDefault();
-
-            if (firstLogCurveInfo != null && secondLogCurveInfo != null)
+            var firstLogCurveInfo = sourceLogs.Logs.FirstOrDefault(x => x.Uid == witsmlLog.Uid)!.LogCurveInfo!;
+            var secondLogCurveInfo = targetLogs.Logs.FirstOrDefault(x => x.Uid == witsmlLog.Uid)!.LogCurveInfo!;
+            var missingLogCurves =
+                firstLogCurveInfo.ExceptBy(
+                    secondLogCurveInfo.Select(x => x.Uid), x => x.Uid);
+            foreach (var logCurveInfo in missingLogCurves)
             {
-                var missingLogCurves =
-                    firstLogCurveInfo.ExceptBy(
-                        secondLogCurveInfo.Select(x => x.Uid), x => x.Uid);
-                foreach (var logCurveInfo in missingLogCurves)
+                var result = new WellboreSubObjectsComparisonItem()
                 {
-                    var result = new WellboreSubObjectsComparisonItem()
-                    {
-                        ObjectType = "Log",
-                        ObjectUid = witsmlLog.Uid,
-                        ObjectName = witsmlLog.Name,
-                        Mnemonic = logCurveInfo.Mnemonic,
-                        ExistsOnSource = missingSecond ? "TRUE" : "FALSE",
-                        ExistsOnTarget = missingSecond ? "FALSE" : "TRUE"
-                    };
-                    resultList.Add(result);
-                }
+                    ObjectType = "Log",
+                    ObjectUid = witsmlLog.Uid,
+                    ObjectName = witsmlLog.Name,
+                    Mnemonic = logCurveInfo.Mnemonic,
+                    ExistsOnSource = isSourceFirst ? "TRUE" : "FALSE",
+                    ExistsOnTarget = isSourceFirst ? "FALSE" : "TRUE"
+                };
+                resultList.Add(result);
             }
         }
-
         return resultList;
     }
 
 
-    private List<WellboreSubObjectsComparisonItem> FindMissingObjects(Dictionary<(EntityType, string), IWitsmlObjectList> objectsOnFirst, Dictionary<(EntityType, string), IWitsmlObjectList> objectsOnSecond, bool missingSecond)
+    private List<WellboreSubObjectsComparisonItem> FindMissingObjects(Dictionary<(EntityType, string), IWitsmlObjectList> objectsOnFirst, Dictionary<(EntityType, string), IWitsmlObjectList> objectsOnSecond, bool isSourceFirst)
     {
         var resultList = new List<WellboreSubObjectsComparisonItem>();
         foreach (KeyValuePair<(EntityType, string), IWitsmlObjectList> kvp in objectsOnFirst)
@@ -237,8 +221,8 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                     ObjectType = kvp.Key.Item1.ToString(),
                     ObjectUid = witsmlObjectOnWellbore.Uid,
                     ObjectName = witsmlObjectOnWellbore.Name,
-                    ExistsOnSource = missingSecond ? "TRUE" : "FALSE",
-                    ExistsOnTarget = missingSecond ? "FALSE" : "TRUE"
+                    ExistsOnSource = isSourceFirst ? "TRUE" : "FALSE",
+                    ExistsOnTarget = isSourceFirst ? "FALSE" : "TRUE"
                 };
                 if (kvp.Key.Item1 == EntityType.Log)
                 {

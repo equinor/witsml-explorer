@@ -1,5 +1,4 @@
 using WitsmlExplorer.Api.Jobs.Common;
-using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs;
 
@@ -20,16 +19,16 @@ public record WellboreSubObjectsComparisonJob : Job
     /// <returns>A string of job information provides WellUid, WellboreUid, logIndexType and LogUid.</returns>
     public override string Description()
     {
-        return $"Comparing sub objects of 2 wellbores - Uid: {SourceWellbore.WellboreUid}; SourceWellUid: {SourceWellbore.WellUid}; TargetWellboreUid: {TargetWellbore.WellboreUid}; TargetWellUid {TargetWellbore.WellboreUid};";
+        return $"Comparing sub objects of 2 wellbores - SourceWellboreUid: {SourceWellbore.WellboreUid}; SourceWellUid: {SourceWellbore.WellUid}; TargetWellboreUid: {TargetWellbore.WellboreUid}; TargetWellUid {TargetWellbore.WellUid};";
     }
 
     /// <summary>
-    /// Gets a name of source wellbore.
+    /// Gets a name of object.
     /// </summary>
     /// <returns>String of log object name.</returns>
     public override string GetObjectName()
     {
-        return SourceWellbore.WellboreName;
+        return null;
     }
 
     /// <summary>
@@ -38,7 +37,7 @@ public record WellboreSubObjectsComparisonJob : Job
     /// <returns>String of wellbore name.</returns>
     public override string GetWellboreName()
     {
-        return SourceWellbore.WellboreName;
+        return $"Source={SourceWellbore.WellboreName} Target={TargetWellbore.WellboreName}";
     }
 
     /// <summary>
@@ -47,6 +46,6 @@ public record WellboreSubObjectsComparisonJob : Job
     /// <returns>String of well name.</returns>
     public override string GetWellName()
     {
-        return SourceWellbore.WellName;
+        return $"Source={SourceWellbore.WellName} Target={TargetWellbore.WellName}"; ;
     }
 }

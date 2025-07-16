@@ -5,7 +5,6 @@ export default interface WellboreReference {
   wellboreUid: string;
   wellName: string;
   wellboreName: string;
-  serverUrl?: string;
 }
 
 export const toWellboreReference = (wellbore: Wellbore): WellboreReference => {

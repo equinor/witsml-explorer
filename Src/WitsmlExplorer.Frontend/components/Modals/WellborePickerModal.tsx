@@ -18,23 +18,25 @@ import WellboreService from "services/wellboreService";
 import styled from "styled-components";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { ReportModal } from "./ReportModal";
+import Wellbore from "models/wellbore";
+import { useClipboardMixedObjectsReferences } from "components/ContextMenus/UseClipboardReferences";
 
 export interface WellborePickerProps {
-  selectedWellUid: string;
-  selectedWellboreUid: string;
+  selectedWellbore: Wellbore;
   serverURl: string;
 }
 
 const WellborePickerModal = ({
-  selectedWellUid,
-  selectedWellboreUid,
-  serverURl
+  selectedWellbore
 }: WellborePickerProps): React.ReactElement => {
   const { servers } = useGetServers();
   const filteredServers = useServerFilter(servers);
   const [targetServer, setTargetServer] = useState<Server>();
-  const [wellUid, setWellUid] = useState<string>(selectedWellUid);
-  const [wellboreUid, setWellboreUid] = useState<string>(selectedWellboreUid);
+  const [wellUid, setWellUid] = useState<string>(selectedWellbore.wellUid);
+  const [wellboreUid, setWellboreUid] = useState<string>(selectedWellbore.uid);
+
+  const wellboreWithMixedObjectsReference =
+    useClipboardMixedObjectsReferences();
 
   const { connectedServer } = useConnectedServer();
 
@@ -49,16 +51,23 @@ const WellborePickerModal = ({
   };
 
   const onReset = () => {
-    setWellUid(selectedWellUid);
-    setWellboreUid(selectedWellboreUid);
+    setWellUid(selectedWellbore.wellUid);
+    setWellboreUid(selectedWellbore.uid);
+  };
+
+  const onPaste = () => {
+    setWellUid(wellboreWithMixedObjectsReference.wellboreReference.wellUid);
+    setWellboreUid(
+      wellboreWithMixedObjectsReference.wellboreReference.wellboreUid
+    );
   };
 
   const onSubmit = async () => {
     setIsLoading(true);
     setFetchError("");
     const targetWellbore = await WellboreService.getWellbore(
-      selectedWellUid,
-      selectedWellboreUid,
+      selectedWellbore.wellUid,
+      selectedWellbore.uid,
       null,
       targetServer
     );
@@ -67,16 +76,14 @@ const WellborePickerModal = ({
       const sourceWellboreReference: WellboreReference = {
         wellUid: wellUid,
         wellboreUid: wellboreUid,
-        wellboreName: "",
-        wellName: "",
-        serverUrl: serverURl
+        wellboreName: selectedWellbore.name,
+        wellName: selectedWellbore.wellName
       };
       const targetWellboreReference: WellboreReference = {
         wellUid: targetWellbore.wellUid,
         wellboreUid: targetWellbore.uid,
         wellboreName: targetWellbore.name,
-        wellName: targetWellbore.wellName,
-        serverUrl: targetServer.url
+        wellName: targetWellbore.wellName
       };
       dispatchOperation({ type: OperationType.HideModal });
       const job: WellboreSubObjectsComparisonJob = {
@@ -168,6 +175,12 @@ const WellborePickerModal = ({
           <ButtonsContainer>
             <Button onClick={onClear}>Clear</Button>
             <Button onClick={onReset}>Reset</Button>
+            <Button
+              onClick={onPaste}
+              disabled={wellboreWithMixedObjectsReference == null}
+            >
+              Paste
+            </Button>
             <></>
           </ButtonsContainer>
         </ModalContentLayout>
