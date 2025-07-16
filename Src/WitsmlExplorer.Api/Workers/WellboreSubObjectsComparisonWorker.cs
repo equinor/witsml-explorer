@@ -108,68 +108,65 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             var firstLogCurveInfo = witsmlLog.LogCurveInfo!;
             var secondLogCurveInfo = targetLogs.Logs.FirstOrDefault(x => x.Uid == witsmlLog.Uid)!.LogCurveInfo!;
 
-            if (firstLogCurveInfo != null && secondLogCurveInfo != null)
+            var sameLogCurves = firstLogCurveInfo.Where(item1 =>
+                    secondLogCurveInfo.Any(item2 => item1.Mnemonic == item2.Mnemonic))
+                .ToList();
+
+            foreach (var logCurveInfo in sameLogCurves)
             {
-                var sameLogCurves = firstLogCurveInfo.Where(item1 =>
-                        secondLogCurveInfo.Any(item2 => item1.Mnemonic == item2.Mnemonic))
-                    .ToList();
+                var secondMnemonic =
+                    secondLogCurveInfo
+                        .FirstOrDefault(x => x.Mnemonic == logCurveInfo.Mnemonic)!;
 
-                foreach (var logCurveInfo in sameLogCurves)
+                if (witsmlLog.IndexType ==
+                    WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME &&
+                    (logCurveInfo.MaxDateTimeIndex !=
+                     secondMnemonic.MaxDateTimeIndex ||
+                     logCurveInfo.MinDateTimeIndex !=
+                     secondMnemonic.MinDateTimeIndex))
                 {
-                    var secondMnemonic =
-                        secondLogCurveInfo
-                            .FirstOrDefault(x => x.Mnemonic == logCurveInfo.Mnemonic)!;
-
-                    if (witsmlLog.IndexType ==
-                        WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME &&
-                        (logCurveInfo.MaxDateTimeIndex !=
-                         secondMnemonic.MaxDateTimeIndex ||
-                         logCurveInfo.MinDateTimeIndex !=
-                         secondMnemonic.MinDateTimeIndex))
+                    var result = new WellboreSubObjectsComparisonItem()
                     {
-                        var result = new WellboreSubObjectsComparisonItem()
-                        {
-                            ObjectType = "Log",
-                            LogType = witsmlLog.IndexType,
-                            ObjectUid = witsmlLog.Uid,
-                            ObjectName = witsmlLog.Name,
-                            Mnemonic = logCurveInfo.Mnemonic,
-                            ExistsOnSource = "TRUE",
-                            ExistsOnTarget = "TRUE",
-                            SourceStart =
-                                logCurveInfo.MinDateTimeIndex,
-                            SourceEnd = logCurveInfo.MaxDateTimeIndex,
-                            TargetStart =
-                                secondMnemonic.MinDateTimeIndex,
-                            TargetEnd = secondMnemonic.MaxDateTimeIndex
-                        };
-                        resultList.Add(result);
-                    }
-                    if (witsmlLog.IndexType ==
-                        WitsmlLog.WITSML_INDEX_TYPE_MD &&
-                        (logCurveInfo.MaxIndex !=
-                         secondMnemonic.MaxIndex ||
-                         logCurveInfo.MinIndex !=
-                         secondMnemonic.MinIndex))
+                        ObjectType = "Log",
+                        LogType = witsmlLog.IndexType,
+                        ObjectUid = witsmlLog.Uid,
+                        ObjectName = witsmlLog.Name,
+                        Mnemonic = logCurveInfo.Mnemonic,
+                        ExistsOnSource = "TRUE",
+                        ExistsOnTarget = "TRUE",
+                        SourceStart =
+                            logCurveInfo.MinDateTimeIndex,
+                        SourceEnd = logCurveInfo.MaxDateTimeIndex,
+                        TargetStart =
+                            secondMnemonic.MinDateTimeIndex,
+                        TargetEnd = secondMnemonic.MaxDateTimeIndex
+                    };
+                    resultList.Add(result);
+                }
+                if (witsmlLog.IndexType ==
+                    WitsmlLog.WITSML_INDEX_TYPE_MD &&
+                    (logCurveInfo.MaxIndex !=
+                     secondMnemonic.MaxIndex ||
+                     logCurveInfo.MinIndex !=
+                     secondMnemonic.MinIndex))
+                {
+                    var result = new WellboreSubObjectsComparisonItem()
                     {
-                        var result = new WellboreSubObjectsComparisonItem()
-                        {
-                            ObjectType = "Log",
-                            LogType = witsmlLog.IndexType,
-                            ObjectUid = witsmlLog.Uid,
-                            ObjectName = witsmlLog.Name,
-                            Mnemonic = logCurveInfo.Mnemonic,
-                            ExistsOnSource = "TRUE",
-                            ExistsOnTarget = "TRUE",
-                            SourceStart =
-                                logCurveInfo.MinIndex?.Value,
-                            SourceEnd = logCurveInfo.MaxIndex?.Value,
-                            TargetStart =
-                                secondMnemonic.MinIndex?.Value,
-                            TargetEnd = secondMnemonic.MaxIndex?.Value
-                        };
-                        resultList.Add(result);
-                    }
+                        ObjectType = "Log",
+                        LogType = witsmlLog.IndexType,
+                        ObjectUid = witsmlLog.Uid,
+                        ObjectName = witsmlLog.Name,
+                        Mnemonic = logCurveInfo.Mnemonic,
+                        ExistsOnSource = "TRUE",
+                        ExistsOnTarget = "TRUE",
+                        SourceStart =
+                            logCurveInfo.MinIndex?.Value,
+                        SourceEnd = logCurveInfo.MaxIndex?.Value,
+                        TargetStart =
+                            secondMnemonic.MinIndex?.Value,
+                        TargetEnd = secondMnemonic.MaxIndex?.Value
+                    };
+                    resultList.Add(result);
                 }
             }
         }
