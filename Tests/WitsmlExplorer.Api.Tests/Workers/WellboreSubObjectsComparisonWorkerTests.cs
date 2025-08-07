@@ -101,8 +101,23 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
             var existsOnSource = reportItems.Where(x =>
                 x.ExistsOnSource.Equals("TRUE") && x.ExistsOnTarget.Equals("FALSE"));
+            var existsOnTarget = reportItems.Where(x =>
+                x.ExistsOnSource.Equals("FALSE") && x.ExistsOnTarget.Equals("TRUE"));
+            var logsExistsOnBoth = reportItems.Where(x =>
+                x.ExistsOnSource.Equals("TRUE") && x.ExistsOnTarget.Equals("TRUE"));
+            var sameFluidReport =
+                existsOnTarget.Where(x => x.ObjectUid.Equals("Uid_FluidsReport1"));
+            var log = logsExistsOnBoth.First();
+
+            Assert.True(sameFluidReport.Count().Equals(0));
             Assert.True(existsOnSource.Count().Equals(13));
+            Assert.True(existsOnTarget.Count().Equals(13));
             Assert.True(reportItems.Count().Equals(29));
+            Assert.True(logsExistsOnBoth.Count().Equals(3));
+            Assert.Equal("10", log.SourceStart);
+            Assert.Equal("15", log.SourceEnd);
+            Assert.Equal("1", log.TargetStart);
+            Assert.Equal("5", log.TargetEnd);
         }
 
         private void MockWorkers()
