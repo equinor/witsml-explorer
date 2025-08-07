@@ -101,7 +101,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
             var existsOnSource = reportItems.Where(x =>
                 x.ExistsOnSource.Equals("TRUE") && x.ExistsOnTarget.Equals("FALSE"));
-            Assert.True(existsOnSource.Count().Equals(12));
+            Assert.True(existsOnSource.Count().Equals(13));
             Assert.True(reportItems.Count().Equals(29));
         }
 
