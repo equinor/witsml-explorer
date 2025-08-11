@@ -63,14 +63,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         public async Task Execute_Compare_2_Wellbores()
         {
             //Arrange
-            WitsmlWellbore existing = CreateWellbore(TargetWellboreUid);
             var witsmlLog = new WitsmlLog();
             WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
-            WitsmlWellbores existingWells = new() { Wellbores = existing.AsItemInList() };
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(TargetWellUid, TargetWellboreUid);
-
-            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
-                               .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => existingWells);
 
             _sourceWitsmlClient.Setup(c =>
                     c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
@@ -200,7 +194,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 new WitsmlWellbore()
                 {
-                    Name = "targetWellboreName", Uid = "targetWellboreUid"
+                    Name = "sourceWellboreName", Uid = SourceWellboreUid
                 }
             };
 
@@ -217,11 +211,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
             {
                 new WitsmlWellbore()
                 {
-                    Uid = "targetWellboreUid", UidWell = "targetWellUid"
+                    Uid = TargetWellboreUid, UidWell = TargetWellUid
                 }
             };
 
-            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid("targetWellUid", "targetWellboreUid");
+            WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByUid(TargetWellUid, TargetWellboreUid);
 
             _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(query), It.IsAny<OptionsIn>(), null))
                 .ReturnsAsync((WitsmlWellbores _, OptionsIn _, CancellationToken? _) => targetWellbores);
@@ -445,8 +439,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         private static WellboreSubObjectsComparisonJob CreateJobTemplate()
         {
-            WellboreReference targetWellboreRef = new() { WellUid = "targetWellUid", WellboreUid = "targetWellboreUid" };
-            WellboreReference sourceWellboreRef = new() { WellUid = "sourceWellUid", WellboreUid = "sourceWellboreUid" };
+            WellboreReference targetWellboreRef = new() { WellUid = TargetWellUid, WellboreUid = TargetWellboreUid };
+            WellboreReference sourceWellboreRef = new() { WellUid = SourceWellUid, WellboreUid = SourceWellboreUid };
 
             return new WellboreSubObjectsComparisonJob
             {
