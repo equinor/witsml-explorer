@@ -12,11 +12,13 @@ using Witsml.Extensions;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
+using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Workers.Copy;
 
 namespace WitsmlExplorer.Api.Workers;
 
@@ -27,16 +29,19 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
 {
     private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
     private readonly ICountLogDataRowWorker _countLogDataRowWorker;
+    private readonly ICompareLogDataWorker _compareLogDataWorker;
     public JobType JobType => JobType.WellboreSubObjectsComparison;
 
     public WellboreSubObjectsComparisonWorker(
         ILogger<WellboreSubObjectsComparisonJob> logger,
         IWitsmlClientProvider witsmlClientProvider,
         ICountLogDataRowWorker countLogDataRowWorker,
+        ICompareLogDataWorker compareLogDataWorker,
         IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(
         witsmlClientProvider, logger)
     {
         _countLogDataRowWorker = countLogDataRowWorker;
+        _compareLogDataWorker = compareLogDataWorker;
         _witsmlServerRepository = witsmlServerRepository;
     }
 
@@ -44,6 +49,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
     /// Compares objects, mnemonics and ranges of 2 wellbores.
     /// </summary>
     /// <param name="job">The job model contains job-specific parameters.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Task of the workerResult in a report with a diffences.</returns>
     public override async Task<(WorkerResult, RefreshAction)> Execute(WellboreSubObjectsComparisonJob job, CancellationToken? cancellationToken = null)
     {
@@ -125,6 +131,12 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 }
             }
 
+            if (job.CheckLogsData)
+            {
+                var checkLogsData = await ChecksLogsData(witsmlLog, targetLog, cancellationToken);
+                resultList.AddRange(checkLogsData);
+            }
+
             foreach (var logCurveInfo in sameLogCurves)
             {
                 var secondMnemonic =
@@ -158,10 +170,10 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 }
                 if (witsmlLog.IndexType ==
                     WitsmlLog.WITSML_INDEX_TYPE_MD &&
-                    (logCurveInfo.MaxIndex !=
-                     secondMnemonic.MaxIndex ||
-                     logCurveInfo.MinIndex !=
-                     secondMnemonic.MinIndex))
+                    (logCurveInfo.MaxIndex.Value !=
+                     secondMnemonic.MaxIndex.Value ||
+                     logCurveInfo.MinIndex.Value !=
+                     secondMnemonic.MinIndex.Value))
                 {
                     var result = new WellboreSubObjectsComparisonItem()
                     {
@@ -201,6 +213,21 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             }
         };
         (WorkerResult WorkerResult, RefreshAction) resultOfTarget = await _countLogDataRowWorker.Execute(countLogsDataJobSource, cancellationToken);
+        if (resultOfTarget.WorkerResult.IsSuccess == false)
+        {
+            var result = new WellboreSubObjectsComparisonItem()
+            {
+                ObjectType = "Log",
+                LogType = sourceLog.IndexType,
+                ObjectUid = sourceLog.Uid,
+                ObjectName = sourceLog.Name,
+                ExistsOnSource = "TRUE",
+                ExistsOnTarget = "TRUE",
+                NumberOfMnemonicsOnTarget = "Checking number of mnemonics failed.",
+            };
+            resultList.Add(result);
+            return resultList;
+        }
         var countLogsDataJobTarget = new CountLogDataRowJob()
         {
             LogReference = new LogObject()
@@ -214,13 +241,22 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             UseTargetClient = false
         };
         (WorkerResult WorkerResult, RefreshAction) resultOfSource = await _countLogDataRowWorker.Execute(countLogsDataJobTarget, cancellationToken);
-        var mnemonicsOnSource =
-            countLogsDataJobSource.JobInfo.Report.ReportItems as
-                List<CountLogDataReportItem>;
-        var mnemonicsOnTarget =
-            countLogsDataJobTarget.JobInfo.Report.ReportItems as
-                List<CountLogDataReportItem>;
-        if (mnemonicsOnSource != null && mnemonicsOnTarget != null)
+        if (resultOfSource.WorkerResult.IsSuccess == false)
+        {
+            var result = new WellboreSubObjectsComparisonItem()
+            {
+                ObjectType = "Log",
+                LogType = sourceLog.IndexType,
+                ObjectUid = sourceLog.Uid,
+                ObjectName = sourceLog.Name,
+                ExistsOnSource = "TRUE",
+                ExistsOnTarget = "TRUE",
+                NumberOfMnemonicsOnSource = "Checking number of mnemonics failed.",
+            };
+            resultList.Add(result);
+            return resultList;
+        }
+        if (countLogsDataJobSource.JobInfo.Report.ReportItems is List<CountLogDataReportItem> mnemonicsOnSource && countLogsDataJobTarget.JobInfo.Report.ReportItems is List<CountLogDataReportItem> mnemonicsOnTarget)
         {
             var differencesInCount = mnemonicsOnSource.Where(b => mnemonicsOnTarget.Any(a => a.Mnemonic == b.Mnemonic && a.LogDataCount != b.LogDataCount));
             foreach (var difference in differencesInCount)
@@ -244,6 +280,64 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                     resultList.Add(result);
                 }
             }
+        }
+        return resultList;
+    }
+
+    private async Task<List<WellboreSubObjectsComparisonItem>> ChecksLogsData(WitsmlLog sourceLog, WitsmlLog targetLog, CancellationToken? cancellationToken)
+    {
+        var resultList = new List<WellboreSubObjectsComparisonItem>();
+        var compareLogsDataJobSource = new CompareLogDataJob
+        {
+            SourceLog = new ObjectReference
+            {
+                Uid = sourceLog.Uid,
+                WellUid = sourceLog.UidWell,
+                WellboreUid = sourceLog.UidWellbore,
+                WellName = sourceLog.NameWell,
+                WellboreName = sourceLog.NameWellbore,
+                Name = sourceLog.Name
+            },
+            TargetLog = new ObjectReference
+            {
+                Uid = targetLog.Uid,
+                WellUid = targetLog.UidWell,
+                WellboreUid = targetLog.UidWellbore,
+                WellName = targetLog.NameWell,
+                WellboreName = targetLog.NameWellbore,
+                Name = targetLog.Name
+            }
+        };
+        (WorkerResult WorkerResult, RefreshAction) resultFromWorker = await _compareLogDataWorker.Execute(compareLogsDataJobSource, cancellationToken);
+        if (resultFromWorker.WorkerResult.IsSuccess == false)
+        {
+            var result = new WellboreSubObjectsComparisonItem()
+            {
+                ObjectType = "Log",
+                LogType = sourceLog.IndexType,
+                ObjectUid = sourceLog.Uid,
+                ObjectName = sourceLog.Name,
+                ExistsOnSource = "TRUE",
+                ExistsOnTarget = "TRUE",
+                NumberOfIssuesInMnemonics = "Logs comparison failed."
+            };
+            resultList.Add(result);
+            return resultList;
+        }
+        var issues = compareLogsDataJobSource.JobInfo.Report.ReportItems;
+        if (issues.Any())
+        {
+            var result = new WellboreSubObjectsComparisonItem()
+            {
+                ObjectType = "Log",
+                LogType = sourceLog.IndexType,
+                ObjectUid = sourceLog.Uid,
+                ObjectName = sourceLog.Name,
+                ExistsOnSource = "TRUE",
+                ExistsOnTarget = "TRUE",
+                NumberOfIssuesInMnemonics = issues.Count().ToString()
+            };
+            resultList.Add(result);
         }
         return resultList;
     }
@@ -340,7 +434,6 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         if (entityType == EntityType.Log)
         {
             ((WitsmlLog)query.Objects.FirstOrDefault()).IndexType = logIndexType;
-
         }
 
         IWitsmlObjectList witsmlObjectList = await client.GetFromStoreNullableAsync(
@@ -350,7 +443,4 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
 
         return witsmlObjectList;
     }
-
-
-
 }

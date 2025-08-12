@@ -17,4 +17,5 @@ public class WellboreSubObjectsComparisonItem
     public string TargetEnd { get; set; }
     public string NumberOfMnemonicsOnSource { get; set; }
     public string NumberOfMnemonicsOnTarget { get; set; }
+    public string NumberOfIssuesInMnemonics { get; set; }
 }
