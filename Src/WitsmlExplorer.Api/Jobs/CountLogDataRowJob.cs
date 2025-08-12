@@ -3,7 +3,7 @@ using WitsmlExplorer.Api.Models;
 namespace WitsmlExplorer.Api.Jobs;
 
 /// <summary>
-/// Job for counting how many values are in each curve.  
+/// Job for counting how many values are in each curve.
 /// </summary>
 public record CountLogDataRowJob : Job
 {
@@ -11,6 +11,11 @@ public record CountLogDataRowJob : Job
     /// Log reference object
     /// </summary>
     public LogObject LogReference { get; init; }
+
+    /// <summary>
+    /// If to use target (default) or source client
+    /// </summary>
+    public bool UseTargetClient { get; set; } = true;
 
     /// <summary>
     /// Gets a description of the log reference object.
