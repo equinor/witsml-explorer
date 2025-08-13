@@ -170,10 +170,10 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 }
                 if (witsmlLog.IndexType ==
                     WitsmlLog.WITSML_INDEX_TYPE_MD &&
-                    (logCurveInfo.MaxIndex.Value !=
-                     secondMnemonic.MaxIndex.Value ||
-                     logCurveInfo.MinIndex.Value !=
-                     secondMnemonic.MinIndex.Value))
+                    (logCurveInfo.MaxIndex?.Value !=
+                     secondMnemonic.MaxIndex?.Value ||
+                     logCurveInfo.MinIndex?.Value !=
+                     secondMnemonic.MinIndex?.Value))
                 {
                     var result = new WellboreSubObjectsComparisonItem()
                     {
