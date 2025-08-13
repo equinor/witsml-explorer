@@ -37,7 +37,10 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
     public override async Task<(WorkerResult, RefreshAction)> Execute(CountLogDataRowJob job, CancellationToken? cancellationToken = null)
     {
         Logger.LogInformation("Counting log data rows started. {jobDescription}", job.Description());
-
+        if (job.JobInfo == null)
+        {
+            job.JobInfo = new JobInfo();
+        }
         string indexCurve = job.LogReference.IndexCurve;
         string logUid = job.LogReference.Uid;
         bool isDepthLog = job.LogReference.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
@@ -74,10 +77,6 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
     private (WorkerResult, RefreshAction) GetCountLogDataReportResult(CountLogDataRowJob job, IList<CountLogDataReportItem> reportItems, bool isDepth, string logUid)
     {
         Logger.LogInformation("Counting log data rows is done. {jobDescription}", job.Description());
-        if (job.JobInfo == null)
-        {
-            job.JobInfo = new JobInfo();
-        }
         job.JobInfo.Report = GetCountLogDataReport(reportItems, job.LogReference, isDepth);
         WorkerResult workerResult = new(job.UseTargetClient ? GetTargetWitsmlClientOrThrow().GetServerHostname() : GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Count data rows for the log: {logUid}", jobId: job.JobInfo.Id);
         return (workerResult, null);

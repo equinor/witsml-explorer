@@ -78,6 +78,10 @@ namespace WitsmlExplorer.Api.Workers
 
             try
             {
+                if (job.JobInfo == null)
+                {
+                    job.JobInfo = new JobInfo();
+                }
                 VerifyLogs(sourceLog, targetLog);
 
                 // Check log type
@@ -123,11 +127,6 @@ namespace WitsmlExplorer.Api.Workers
                         throw new ArgumentException($"mnemonic={mnemonic} does not exist in source log or target log.");
                     }
                     ReportProgress(job, (double)i / allMnemonics.Count);
-                }
-
-                if (job.JobInfo == null)
-                {
-                    job.JobInfo = new JobInfo();
                 }
                 BaseReport report = GenerateReport(sourceLog, targetLog);
                 job.JobInfo.Report = report;
