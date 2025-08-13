@@ -130,8 +130,14 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         DepthLogDecimals = 2
                     }
                 }.AsCollection());
+            var countLogDataRowWorker = new CountLogDataRowWorker(NullLogger<CountLogDataRowJob>.Instance,
+                _witsmlClientProvider.Object);
+            var compareLogDataRowWorker = new CompareLogDataWorker(NullLogger<CompareLogDataJob>.Instance,
+                _witsmlClientProvider.Object);
             _worker = new WellboreSubObjectsComparisonWorker(NullLogger<WellboreSubObjectsComparisonJob>.Instance,
                 _witsmlClientProvider.Object,
+                countLogDataRowWorker,
+                compareLogDataRowWorker,
                 documentRepository.Object);
         }
 

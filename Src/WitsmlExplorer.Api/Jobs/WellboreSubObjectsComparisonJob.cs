@@ -12,6 +12,10 @@ public record WellboreSubObjectsComparisonJob : Job
 
     public WellboreReference TargetWellbore { get; init; }
 
+    public bool CountLogsData { get; init; }
+
+    public bool CheckLogsData { get; init; }
+
 
     /// <summary>
     /// Gets a description

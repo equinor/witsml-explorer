@@ -10,6 +10,7 @@ import { useOperationState } from "hooks/useOperationState";
 import { useServerFilter } from "hooks/useServerFilter";
 import WellboreReference from "models/jobs/wellboreReference";
 import WellboreSubObjectsComparisonJob from "models/jobs/wellboreSubObjectsComparisonJob";
+import { Checkbox } from "components/StyledComponents/Checkbox";
 import MaxLength from "models/maxLength";
 import { Server } from "models/server";
 import { ChangeEvent, useState } from "react";
@@ -39,10 +40,15 @@ const WellborePickerModal = ({
 
   const { connectedServer } = useConnectedServer();
 
-  const { dispatchOperation } = useOperationState();
+  const {
+    operationState: { colors },
+    dispatchOperation
+  } = useOperationState();
 
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState("");
+  const [countLogsData, setCountLogsData] = useState(false);
+  const [checkLogsData, setCheckLogsData] = useState(false);
 
   const onClear = () => {
     setWellUid("");
@@ -87,7 +93,9 @@ const WellborePickerModal = ({
       dispatchOperation({ type: OperationType.HideModal });
       const job: WellboreSubObjectsComparisonJob = {
         sourceWellbore: sourceWellboreReference,
-        targetWellbore: targetWellboreReference
+        targetWellbore: targetWellboreReference,
+        countLogsData: countLogsData,
+        checkLogsData: checkLogsData
       };
       const jobId = await JobService.orderJobAtServer(
         JobType.WellboreSubObjectsComparison,
@@ -170,6 +178,20 @@ const WellborePickerModal = ({
             style={{
               paddingBottom: invalidUid(wellboreUid) ? 0 : "24px"
             }}
+          />
+          <Checkbox
+            label={`Count logs data`}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setCountLogsData(e.target.checked);
+            }}
+            colors={colors}
+          />
+          <Checkbox
+            label={`Check logs data`}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setCheckLogsData(e.target.checked);
+            }}
+            colors={colors}
           />
           <ButtonsContainer>
             <Button onClick={onClear}>Clear</Button>

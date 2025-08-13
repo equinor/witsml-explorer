@@ -17,10 +17,16 @@ using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Workers.Copy;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CompareLogDataWorker : BaseWorker<CompareLogDataJob>, IWorker
+    public interface ICompareLogDataWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(CompareLogDataJob job,
+            CancellationToken? cancellationToken = null);
+    }
+    public class CompareLogDataWorker : BaseWorker<CompareLogDataJob>, IWorker, ICompareLogDataWorker
     {
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         public JobType JobType => JobType.CompareLogData;
@@ -72,6 +78,10 @@ namespace WitsmlExplorer.Api.Workers
 
             try
             {
+                if (job.JobInfo == null)
+                {
+                    job.JobInfo = new JobInfo();
+                }
                 VerifyLogs(sourceLog, targetLog);
 
                 // Check log type
@@ -118,7 +128,6 @@ namespace WitsmlExplorer.Api.Workers
                     }
                     ReportProgress(job, (double)i / allMnemonics.Count);
                 }
-
                 BaseReport report = GenerateReport(sourceLog, targetLog);
                 job.JobInfo.Report = report;
             }
