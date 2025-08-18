@@ -455,7 +455,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 JobInfo = new JobInfo()
                 {
                     Id = "1"
-                }
+                },
+                CountLogsData = true
             };
         }
     }
