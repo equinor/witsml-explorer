@@ -49,6 +49,7 @@ const WellborePickerModal = ({
   const [fetchError, setFetchError] = useState("");
   const [countLogsData, setCountLogsData] = useState(false);
   const [checkLogsData, setCheckLogsData] = useState(false);
+  const [checkTimeBasedLogsData, setCheckTimeBasedLogsData] = useState(false);
 
   const onClear = () => {
     setWellUid("");
@@ -95,7 +96,8 @@ const WellborePickerModal = ({
         sourceWellbore: sourceWellboreReference,
         targetWellbore: targetWellboreReference,
         countLogsData: countLogsData,
-        checkLogsData: checkLogsData
+        checkLogsData: checkLogsData,
+        checkTimeBasedLogsData: checkTimeBasedLogsData
       };
       const jobId = await JobService.orderJobAtServer(
         JobType.WellboreSubObjectsComparison,
@@ -193,6 +195,15 @@ const WellborePickerModal = ({
             }}
             colors={colors}
           />
+          {checkLogsData && (
+            <Checkbox
+              label={`Check also time based logs data`}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setCheckTimeBasedLogsData(e.target.checked);
+              }}
+              colors={colors}
+            />
+          )}
           <ButtonsContainer>
             <Button onClick={onClear}>Clear</Button>
             <Button onClick={onReset}>Reset</Button>
