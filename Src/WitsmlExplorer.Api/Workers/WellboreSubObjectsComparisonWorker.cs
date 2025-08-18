@@ -133,9 +133,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
 
             if (job.CheckLogsData)
             {
-                if ((witsmlLog.IndexType ==
-                    WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME &&
-                    job.CheckTimeBasedLogsData) || witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+                if (job.CheckTimeBasedLogsData || witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
                 {
                     var checkLogsData = await ChecksLogsData(witsmlLog, targetLog, cancellationToken);
                     resultList.AddRange(checkLogsData);
