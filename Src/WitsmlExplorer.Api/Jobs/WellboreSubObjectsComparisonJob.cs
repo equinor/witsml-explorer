@@ -16,6 +16,8 @@ public record WellboreSubObjectsComparisonJob : Job
 
     public bool CheckLogsData { get; init; }
 
+    public bool CheckTimeBasedLogsData { get; init; }
+
 
     /// <summary>
     /// Gets a description
