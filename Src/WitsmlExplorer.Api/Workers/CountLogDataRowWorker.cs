@@ -15,10 +15,16 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers;
 
+public interface ICountLogDataRowWorker
+{
+    Task<(WorkerResult, RefreshAction)> Execute(CountLogDataRowJob job,
+        CancellationToken? cancellationToken = null);
+}
+
 /// <summary>
 /// Worker for counting how many values are in each curve.
 /// </summary>
-public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker
+public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, ICountLogDataRowWorker
 {
     public JobType JobType => JobType.CountLogDataRows;
     public CountLogDataRowWorker(ILogger<CountLogDataRowJob> logger, IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider, logger) { }
@@ -31,18 +37,21 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker
     public override async Task<(WorkerResult, RefreshAction)> Execute(CountLogDataRowJob job, CancellationToken? cancellationToken = null)
     {
         Logger.LogInformation("Counting log data rows started. {jobDescription}", job.Description());
-
+        if (job.JobInfo == null)
+        {
+            job.JobInfo = new JobInfo();
+        }
         string indexCurve = job.LogReference.IndexCurve;
         string logUid = job.LogReference.Uid;
         bool isDepthLog = job.LogReference.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD;
         List<CountLogDataReportItem> countLogDataReportItems = new();
 
-        var witsmlLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
+        var witsmlLog = await LogWorkerTools.GetLog(job.UseTargetClient ? GetTargetWitsmlClientOrThrow() : GetSourceWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
         if (witsmlLog == null)
         {
             var message = $"CountLogDataRowWorkerJob failed. Cannot find the witsml log for {job.Description()}";
             Logger.LogError(message);
-            return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message), null);
+            return (new WorkerResult(job.UseTargetClient ? GetTargetWitsmlClientOrThrow().GetServerHostname() : GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message), null);
         }
 
         var logMnemonics = witsmlLog.LogCurveInfo.Where(x => x.Mnemonic != indexCurve).Select(x => x.Mnemonic).ToList();
@@ -50,7 +59,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker
         var countLogDataReportItemTasks = logMnemonics.Select(async mnemonic =>
         {
             int mnemonicLogDataRowsCount = 0;
-            await using LogDataReader logDataReader = new(GetTargetWitsmlClientOrThrow(), witsmlLog, new List<string>() { mnemonic }, Logger);
+            await using LogDataReader logDataReader = new(job.UseTargetClient ? GetTargetWitsmlClientOrThrow() : GetSourceWitsmlClientOrThrow(), witsmlLog, new List<string>() { mnemonic }, Logger);
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             while (logData != null)
             {
@@ -69,7 +78,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker
     {
         Logger.LogInformation("Counting log data rows is done. {jobDescription}", job.Description());
         job.JobInfo.Report = GetCountLogDataReport(reportItems, job.LogReference, isDepth);
-        WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Count data rows for the log: {logUid}", jobId: job.JobInfo.Id);
+        WorkerResult workerResult = new(job.UseTargetClient ? GetTargetWitsmlClientOrThrow().GetServerHostname() : GetSourceWitsmlClientOrThrow().GetServerHostname(), true, $"Count data rows for the log: {logUid}", jobId: job.JobInfo.Id);
         return (workerResult, null);
     }
 

@@ -14,7 +14,8 @@ import {
   QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES,
   QUERY_KEY_LOCAL_PRIORITIZED_CURVES,
   QUERY_KEY_AGENT_SETTINGS,
-  QUERY_KEY_UID_MAPPING_BASIC_INFOS
+  QUERY_KEY_UID_MAPPING_BASIC_INFOS,
+  QUERY_KEY_ALL_OBJECTS_ON_WELLBORE
 } from "./queryKeys";
 
 export const refreshServersQuery = (queryClient: QueryClient) => {
@@ -38,6 +39,9 @@ export const refreshWellsQuery = (
   });
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_COMPONENTS, serverUrl.toLowerCase()]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_ALL_OBJECTS_ON_WELLBORE, serverUrl.toLowerCase()]
   });
 };
 
@@ -63,6 +67,13 @@ export const refreshWellboresQuery = (
   queryClient.invalidateQueries({
     queryKey: [
       QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase()
+    ]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_ALL_OBJECTS_ON_WELLBORE,
       serverUrl.toLowerCase(),
       wellUid.toLowerCase()
     ]
@@ -182,6 +193,12 @@ export const refreshPrioritizedCurves = (queryClient: QueryClient) => {
   });
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_LOCAL_PRIORITIZED_CURVES]
+  });
+};
+
+export const refreshAllObjectsOnWellbore = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_ALL_OBJECTS_ON_WELLBORE]
   });
 };
 

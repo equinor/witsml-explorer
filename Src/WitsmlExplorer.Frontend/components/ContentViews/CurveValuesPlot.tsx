@@ -84,7 +84,7 @@ export const CurveValuesPlot = React.memo(
     const {
       operationState: { colors, dateTimeFormat, theme }
     } = useOperationState();
-    const [enableScatter, setEnableScatter] = useState<boolean>(false);
+    const [enableScatter, setEnableScatter] = useState<boolean>(true);
     const [removeOutliers, setRemoveOutliers] = useState<boolean>(false);
     const [useCustomRanges, setUseCustomRanges] = useState<boolean>(false);
     const [outliersThresholdLevel, setOutliersThresholdLevel] =
@@ -476,6 +476,7 @@ const getChartOption = (
     tooltip: {
       show: true,
       trigger: "axis",
+      confine: true,
       axisPointer: {
         type: "line",
         axis: "y"

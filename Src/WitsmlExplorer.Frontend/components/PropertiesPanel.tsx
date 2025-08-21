@@ -11,6 +11,8 @@ import { getWellboreProperties } from "models/wellbore";
 import Icon from "styles/Icons";
 import React from "react";
 import { useParams } from "react-router-dom";
+import AuthorizationService from "services/authorizationService";
+import NotificationService from "services/notificationService";
 
 const PropertiesPanel = (): React.ReactElement => {
   const {
@@ -43,8 +45,17 @@ const PropertiesPanel = (): React.ReactElement => {
 
   const keys = Array.from(properties.keys());
 
-  const copyToClipboard = async (key: string) => {
+  const copyToClipboardWithNotification = async (key: string) => {
+    NotificationService.Instance.snackbarDispatcher.dispatch({
+      serverUrl: new URL(AuthorizationService.selectedServer.url),
+      message: "Copied to clipboard",
+      isSuccess: true
+    });
     await navigator.clipboard.writeText(key);
+  };
+
+  const copyToClipboard = async (text: string) => {
+    await copyToClipboardWithNotification(text);
   };
 
   const copyAllPropertiesToClipboard = async () => {
@@ -60,7 +71,8 @@ const PropertiesPanel = (): React.ReactElement => {
       tmpString.length > 1
         ? tmpString.slice(0, tmpString.length - 2)
         : tmpString;
-    await navigator.clipboard.writeText(resultString);
+
+    await copyToClipboardWithNotification(resultString);
   };
 
   return (

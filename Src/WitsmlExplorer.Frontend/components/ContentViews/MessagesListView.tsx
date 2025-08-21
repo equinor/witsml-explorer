@@ -13,6 +13,7 @@ import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
+import { measureToString } from "models/measure";
 import MessageObject from "models/messageObject";
 import { ObjectType } from "models/objectType";
 import { MouseEvent } from "react";
@@ -47,6 +48,7 @@ export default function MessagesListView() {
         messageText: msg.messageText,
         uid: msg.uid,
         name: msg.name,
+        md: measureToString(msg.md),
         typeMessage: msg.typeMessage,
         sourceName: msg.commonData.sourceName,
         dTimCreation: formatDateString(
@@ -71,6 +73,7 @@ export default function MessagesListView() {
     { property: "messageText", label: "messageText", type: ContentType.String },
     { property: "uid", label: "uid", type: ContentType.String },
     { property: "name", label: "name", type: ContentType.String },
+    { property: "md", label: "md", type: ContentType.Measure },
     { property: "typeMessage", label: "typeMessage", type: ContentType.String },
     {
       property: "sourceName",

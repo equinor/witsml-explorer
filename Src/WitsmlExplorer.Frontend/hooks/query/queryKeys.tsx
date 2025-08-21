@@ -16,3 +16,4 @@ export const QUERY_KEY_LOCAL_PRIORITIZED_CURVES = "universalLocalCurves";
 export const QUERY_KEY_JOB_INFO = "jobInfo";
 export const QUERY_KEY_AGENT_SETTINGS = "agentSettings";
 export const QUERY_KEY_UID_MAPPING_BASIC_INFOS = "uidMappingBasicInfos";
+export const QUERY_KEY_ALL_OBJECTS_ON_WELLBORE = "allobjectsonwellbore";

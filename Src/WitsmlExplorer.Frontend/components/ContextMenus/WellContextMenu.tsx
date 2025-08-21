@@ -46,7 +46,7 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
-import { useWellboreReference } from "./UseClipboardReferences";
+import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
 import { pasteWellbore } from "./CopyUtils";
 
 export interface WellContextMenuProps {
@@ -64,7 +64,8 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
-  const wellboreReference = useWellboreReference();
+  const wellboreWithMixedObjectsReference =
+    useClipboardMixedObjectsReferences();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -220,9 +221,14 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem
           key={"paste"}
           onClick={() => {
-            pasteWellbore(servers, wellboreReference, dispatchOperation, well);
+            pasteWellbore(
+              servers,
+              wellboreWithMixedObjectsReference,
+              dispatchOperation,
+              well
+            );
           }}
-          disabled={wellboreReference === null}
+          disabled={wellboreWithMixedObjectsReference === null}
         >
           <StyledIcon name="paste" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Paste wellbore</Typography>

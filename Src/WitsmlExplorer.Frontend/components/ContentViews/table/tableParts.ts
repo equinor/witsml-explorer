@@ -32,6 +32,7 @@ export interface ContentTableProps {
   ) => void;
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[]) => void;
+  onFilteredRowSelectionChange?: (rows: ContentTableRow[]) => void; // Callback with the selected rows that are not excluded by the filter
   onExpandedChange?: (expanded: ExpandedState) => void;
   insetColumns?: ContentTableColumn[];
   nested?: boolean;
@@ -47,6 +48,7 @@ export interface ContentTableProps {
   expanded?: ExpandedState; // Use this for a controlled expanded state
   autoRefresh?: boolean;
   disableFilters?: boolean; // Hides the input-fields that can be used as user-specified column filters. Does not disable other provided filters.
+  disableSearchParamsFilter?: boolean; // Prevents storing filter as search params
 }
 
 export enum Order {

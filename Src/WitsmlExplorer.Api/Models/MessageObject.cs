@@ -1,5 +1,7 @@
 using Witsml.Data;
+using Witsml.Data.Measures;
 
+using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Models
@@ -9,6 +11,7 @@ namespace WitsmlExplorer.Api.Models
         public string DTim { get; set; }
         public string MessageText { get; init; }
         public string TypeMessage { get; init; }
+        public MeasureWithDatum Md { get; init; }
         public CommonData CommonData { get; init; }
 
         public override WitsmlMessages ToWitsml()
@@ -22,6 +25,7 @@ namespace WitsmlExplorer.Api.Models
                 Uid = Uid,
                 Name = Name,
                 DTim = StringHelpers.ToUniversalDateTimeString(DTim),
+                Md = Md?.ToWitsml<WitsmlMeasuredDepthCoord>(),
                 MessageText = MessageText,
                 TypeMessage = TypeMessage,
                 CommonData = CommonData?.ToWitsml()

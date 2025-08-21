@@ -26,6 +26,7 @@ import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import StyledAccordion from "../StyledComponents/StyledAccordion";
 import ConfirmModal from "./ConfirmModal";
+import formatDateString from "components/DateFormatter";
 
 export interface ReportModal {
   report?: BaseReport;
@@ -48,7 +49,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
   const { jobId, report: reportProp } = props;
   const {
     dispatchOperation,
-    operationState: { colors }
+    operationState: { colors, timeZone, dateTimeFormat }
   } = useOperationState();
   const [report, setReport] = useState<BaseReport>(reportProp);
   const fetchedReport = useGetReportOnJobFinished(jobId);
@@ -79,11 +80,36 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         ? Object.keys(report.reportItems[0]).map((key) => ({
             property: key,
             label: key,
-            type: ContentType.String
+            type:
+              report.dateTimeColumns != null &&
+              report.dateTimeColumns.indexOf(key) > -1
+                ? ContentType.DateTime
+                : ContentType.String
           }))
         : [],
     [report]
   );
+
+  const getTableData = () => {
+    return report.reportItems.map((item) => {
+      {
+        const clonedItem = JSON.parse(JSON.stringify(item));
+        Object.keys(item).forEach((entry) => {
+          if (
+            report.dateTimeColumns !== null &&
+            report.dateTimeColumns.indexOf(entry) > -1
+          ) {
+            clonedItem[entry] = formatDateString(
+              item[entry],
+              timeZone,
+              dateTimeFormat
+            );
+          }
+        });
+        return clonedItem;
+      }
+    });
+  };
 
   const cancelJob = async (jobId: string) => {
     await JobService.cancelJob(jobId);
@@ -171,8 +197,9 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
               {columns.length > 0 && report.hasFile !== true && (
                 <ContentTable
                   columns={columns}
-                  data={report.reportItems}
+                  data={getTableData()}
                   downloadToCsvFileName={report.title.replace(/\s+/g, "")}
+                  disableSearchParamsFilter={true}
                 />
               )}
             </>

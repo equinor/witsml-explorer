@@ -17,7 +17,6 @@ import {
 } from "@tanstack/react-table";
 import { defaultRangeExtractor, useVirtualizer } from "@tanstack/react-virtual";
 import { useColumnDef } from "components/ContentViews/table/ColumnDef";
-import Panel from "components/ContentViews/table/Panel";
 import {
   initializeColumnVisibility,
   useStoreVisibilityEffect,
@@ -37,6 +36,7 @@ import {
   calculateRowHeight,
   componentSortingFn,
   constantTableOptions,
+  dateSortingFn,
   expanderId,
   isClickable,
   measureSortingFn,
@@ -44,11 +44,14 @@ import {
   toggleRow,
   useInitFilterFns
 } from "components/ContentViews/table/contentTableUtils";
+import Panel from "components/ContentViews/table/Panel";
 import {
   ContentTableColumn,
   ContentTableProps
 } from "components/ContentViews/table/tableParts";
-import { UserTheme } from "contexts/operationStateReducer";
+import { naturalDateTimeFormat } from "components/DateFormatter";
+import { DateTimeFormat, UserTheme } from "contexts/operationStateReducer";
+import { parse } from "date-fns";
 import { useOperationState } from "hooks/useOperationState";
 import { indexToNumber } from "models/logObject";
 import * as React from "react";
@@ -107,15 +110,17 @@ export const ContentTable = React.memo(
       viewId,
       downloadToCsvFileName = null,
       onRowSelectionChange,
+      onFilteredRowSelectionChange,
       onExpandedChange,
       initiallySelectedRows = [],
       rowSelection: controlledRowSelection = null,
       expanded: controlledExpansionState = null,
       autoRefresh = false,
-      disableFilters = false
+      disableFilters = false,
+      disableSearchParamsFilter = false
     } = contentTableProps;
     const {
-      operationState: { colors, theme }
+      operationState: { colors, theme, dateTimeFormat }
     } = useOperationState();
     const [previousIndex, setPreviousIndex] = useState<number>(null);
     const [rowSelection, setRowSelection] = useState<RowSelectionState>(
@@ -177,6 +182,24 @@ export const ContentTable = React.memo(
           const a = rowA.getValue(columnId);
           const b = rowB.getValue(columnId);
           return a === b ? 0 : a ? 1 : -1;
+        },
+        [dateSortingFn]: (rowA: Row<any>, rowB: Row<any>, columnId: string) => {
+          if (dateTimeFormat === DateTimeFormat.Raw) {
+            const a = new Date(rowA.getValue(columnId));
+            const b = new Date(rowB.getValue(columnId));
+            return a > b ? -1 : a < b ? 1 : 0;
+          }
+          const a = parse(
+            rowA.getValue(columnId),
+            naturalDateTimeFormat,
+            new Date()
+          );
+          const b = parse(
+            rowB.getValue(columnId),
+            naturalDateTimeFormat,
+            new Date()
+          );
+          return a > b ? -1 : a < b ? 1 : 0;
         }
       },
       columnResizeMode: "onChange",
@@ -229,10 +252,19 @@ export const ContentTable = React.memo(
             ? data.flatMap((dataRow) => flattenDataRecursively(dataRow))
             : data;
 
+        const filteredData = table
+          .getFilteredRowModel()
+          .flatRows.map((r) => r.original);
+
         onRowSelectionChange?.(
           flattenedData.filter(
             (dataRow, index) => newRowSelection[dataRow.id ?? index]
           )
+        );
+        onFilteredRowSelectionChange?.(
+          flattenedData
+            .filter((dataRow, index) => newRowSelection[dataRow.id ?? index])
+            .filter((r) => filteredData.includes(r))
         );
       },
       meta: {
@@ -290,6 +322,23 @@ export const ContentTable = React.memo(
     useEffect(() => {
       oldDataCountRef.current = autoRefresh ? data.length : null;
     }, [autoRefresh]);
+
+    useEffect(() => {
+      const filteredData = table
+        .getFilteredRowModel()
+        .flatRows.map((r) => r.original);
+
+      const selection = controlledRowSelection ?? rowSelection;
+
+      const allRows = table.getRowModel().flatRows;
+
+      const selectedFilteredRows = allRows
+        .filter((r, index) => selection[r.id ?? index])
+        .map((r) => r.original)
+        .filter((row) => filteredData.includes(row));
+
+      onFilteredRowSelectionChange?.(selectedFilteredRows);
+    }, [table.getFilteredRowModel()]);
 
     const columnItems = columnVirtualizer.getVirtualItems();
     const [spaceLeft, spaceRight] = calculateHorizontalSpace(
@@ -369,6 +418,7 @@ export const ContentTable = React.memo(
             downloadToCsvFileName={downloadToCsvFileName}
             stickyLeftColumns={stickyLeftColumns}
             disableFilters={disableFilters || nested}
+            disableSearchParamsFilter={disableSearchParamsFilter}
           />
         ) : null}
         <div
