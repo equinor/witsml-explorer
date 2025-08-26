@@ -116,13 +116,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
             var numberOfIssuesInMnemonics = countOfIssuesInMnemonics.First()
                 .NumberOfIssuesInMnemonics;
 
-            Assert.Equal(0, sameFluidReport.Count());
+            Assert.Empty(sameFluidReport);
             Assert.Equal(13, existsOnSource.Count());
             Assert.Equal(13, existsOnTarget.Count());
             Assert.Equal(33, reportItems.Count());
             Assert.Equal(7, logsExistsOnBoth.Count());
             Assert.Equal(3, differentNumberOfMnemonics.Count());
-            Assert.Equal(1, countOfIssuesInMnemonics.Count());
+            Assert.Single(countOfIssuesInMnemonics);
             Assert.Equal("3", numberOfIssuesInMnemonics);
             Assert.Equal("10", log.SourceStart);
             Assert.Equal("15", log.SourceEnd);
