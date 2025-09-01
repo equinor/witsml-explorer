@@ -39,6 +39,13 @@ import Wellbore from "models/wellbore";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import {
+  GetMultiLogWizardStepModalAction,
+  MultiLogWizardParams
+} from "../MultiLogUtils.tsx";
+import MultiLogSelectionService from "../MultiLogSelectionService.tsx";
+import { useNavigate } from "react-router-dom";
+import { getMultipleLogCurveSelectionViewPath } from "../../routes/utils/pathBuilder.ts";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (
@@ -54,6 +61,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
 
@@ -77,6 +85,27 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       dispatchOperation,
       PropertiesModalMode.New
     );
+  };
+
+  const onClickMultiLogSelect = async () => {
+    const action = GetMultiLogWizardStepModalAction(
+      {
+        targetServer: connectedServer,
+        wellbores: [wellbore],
+        indexType: indexType
+      } as MultiLogWizardParams,
+      (r) => {
+        MultiLogSelectionService.Instance.addMultiLogValues(
+          r.indexType,
+          r.curveInfos,
+          true
+        );
+        navigate({
+          pathname: getMultipleLogCurveSelectionViewPath(connectedServer.url)
+        });
+      }
+    );
+    dispatchOperation(action);
   };
 
   return (
@@ -165,7 +194,16 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               <Typography color={"primary"}>New Log</Typography>
             </MenuItem>
           ]}
-        </NestedMenuItem>
+        </NestedMenuItem>,
+        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+          <StyledIcon
+            name="viewList"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Add to Multiple Log Selection
+          </Typography>
+        </MenuItem>
       ]}
     />
   );

@@ -49,7 +49,10 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import React from "react";
-import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
+import {
+  getMultipleLogCurveSelectionViewPath,
+  getObjectGroupsViewPath
+} from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
@@ -58,6 +61,12 @@ import WellboreUidMappingModal, {
   WellboreUidMappingModalProps
 } from "../Modals/WellboreUidMappingModal.tsx";
 import { getTargetWellboreID } from "./UidMappingUtils.tsx";
+import {
+  GetMultiLogWizardStepModalAction,
+  MultiLogWizardParams
+} from "../MultiLogUtils.tsx";
+import MultiLogSelectionService from "../MultiLogSelectionService.tsx";
+import { useNavigate } from "react-router-dom";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -73,6 +82,7 @@ const WellboreContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
   const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
@@ -153,6 +163,26 @@ const WellboreContextMenu = (
       type: OperationType.DisplayModal,
       payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} />
     };
+    dispatchOperation(action);
+  };
+
+  const onClickMultiLogSelect = async () => {
+    const action = GetMultiLogWizardStepModalAction(
+      {
+        targetServer: connectedServer,
+        wellbores: [wellbore]
+      } as MultiLogWizardParams,
+      (r) => {
+        MultiLogSelectionService.Instance.addMultiLogValues(
+          r.indexType,
+          r.curveInfos,
+          true
+        );
+        navigate({
+          pathname: getMultipleLogCurveSelectionViewPath(connectedServer.url)
+        });
+      }
+    );
     dispatchOperation(action);
   };
 
@@ -311,6 +341,15 @@ const WellboreContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
+        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+          <StyledIcon
+            name="viewList"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Add to Multiple Log Selection
+          </Typography>
+        </MenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
             <MenuItem

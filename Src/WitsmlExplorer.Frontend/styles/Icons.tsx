@@ -56,7 +56,8 @@ import {
   tune,
   update,
   upload,
-  world
+  world,
+  view_list as viewList
 } from "@equinor/eds-icons";
 
 const icons = {
@@ -116,7 +117,8 @@ const icons = {
   tune,
   update,
   upload,
-  world
+  world,
+  viewList
 };
 
 Icon.add(icons);

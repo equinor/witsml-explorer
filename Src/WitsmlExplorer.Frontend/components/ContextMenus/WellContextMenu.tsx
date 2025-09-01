@@ -41,13 +41,22 @@ import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React from "react";
-import { getWellboresViewPath } from "routes/utils/pathBuilder";
+import {
+  getMultipleLogCurveSelectionViewPath,
+  getWellboresViewPath
+} from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
 import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
 import { pasteWellbore } from "./CopyUtils";
+import {
+  GetMultiLogWizardStepModalAction,
+  MultiLogWizardParams
+} from "../MultiLogUtils.tsx";
+import MultiLogSelectionService from "../MultiLogSelectionService.tsx";
+import { useNavigate } from "react-router-dom";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -61,6 +70,7 @@ export interface WellContextMenuProps {
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
   const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
@@ -173,6 +183,25 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       type: OperationType.DisplayModal,
       payload: <WellBatchUpdateModal {...wellBatchUpdateModalProps} />
     });
+  };
+
+  const onClickMultiLogSelect = async () => {
+    const action = GetMultiLogWizardStepModalAction(
+      {
+        targetServer: connectedServer
+      } as MultiLogWizardParams,
+      (r) => {
+        MultiLogSelectionService.Instance.addMultiLogValues(
+          r.indexType,
+          r.curveInfos,
+          true
+        );
+        navigate({
+          pathname: getMultipleLogCurveSelectionViewPath(connectedServer.url)
+        });
+      }
+    );
+    dispatchOperation(action);
   };
 
   return (
@@ -303,6 +332,15 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
           <StyledIcon name="search" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Missing Data Agent</Typography>
+        </MenuItem>,
+        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+          <StyledIcon
+            name="viewList"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Add to Multiple Log Selection
+          </Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

@@ -190,6 +190,7 @@ export const getTableData = (
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logName: logObject.name + getNameOccurrenceSuffix(allLogs, logObject),
         logUid: logObject.uid,
+        serverUrl: logCurveInfo.serverUrl,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
           ? logCurveInfo.minDepthIndex

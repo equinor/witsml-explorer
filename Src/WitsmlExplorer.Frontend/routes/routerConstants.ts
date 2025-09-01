@@ -10,6 +10,7 @@ export const JOBS_PATH = "jobs";
 export const QUERY_PATH = "query";
 export const SEARCH_PATH = "search";
 export const MULTIPLE_LOGS = "multilogs";
+export const MULTIPLE_LOG_CURVE_SELECTION_PATH = "multilogcurveselection";
 
 // URL Params
 export const SERVER_URL_PARAM = ":serverUrl";
@@ -52,6 +53,7 @@ export const MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH = `/${SERVER_ROUTE_PATH}/${
 export const JOBS_VIEW_NAVIGATION_PATH = `/${SERVER_ROUTE_PATH}/${JOBS_VIEW_ROUTE_PATH}`;
 export const QUERY_VIEW_NAVIGATION_PATH = `/${SERVER_ROUTE_PATH}/${QUERY_VIEW_ROUTE_PATH}`;
 export const SEARCH_VIEW_NAVIGATION_PATH = `/${SERVER_ROUTE_PATH}/${SEARCH_VIEW_ROUTE_PATH}`;
+export const MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH = `/${SERVER_ROUTE_PATH}/${MULTIPLE_LOG_CURVE_SELECTION_PATH}`;
 
 export enum RouterLogType {
   TIME = "time",
