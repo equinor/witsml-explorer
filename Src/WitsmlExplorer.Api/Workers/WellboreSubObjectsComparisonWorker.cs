@@ -110,25 +110,12 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             ?.Functions
             .Where(x => x.Name == _witsmlFunctionName)
             .Select(x => x.DataObjects);
-        var supportedObjectTypesOnSource = SupportedObjectTypes(serverCapabilitiesOnSource);
-        var supportedObjectTypesOnTarget = SupportedObjectTypes(serverCapabilitiesOnTarget);
+        var supportedObjectTypesOnSource = serverCapabilitiesOnSource.SelectMany(s => s.Select(ss => ss.Name.ToLower()));
+        var supportedObjectTypesOnTarget = serverCapabilitiesOnTarget.SelectMany(s => s.Select(ss => ss.Name.ToLower()));
         var result =
             supportedObjectTypesOnSource.Intersect(
                 supportedObjectTypesOnTarget);
         return result.ToList();
-    }
-
-    private List<string> SupportedObjectTypes(IEnumerable<List<WitsmlFunctionDataObject>> serverCapabilitiesOnTarget)
-    {
-        var result = new List<string>();
-        foreach (var functionDataObjects in serverCapabilitiesOnTarget)
-        {
-            foreach (var functionDataObject in functionDataObjects)
-            {
-                result.Add(functionDataObject.Name.ToLower());
-            }
-        }
-        return result;
     }
 
     private BaseReport GenerateReport(List<WellboreSubObjectsComparisonItem> reportItems, string sourceServerName, string targetServerName, string sourceWellbore, string targetWellbore)
