@@ -18,7 +18,6 @@ using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers.Copy;
 
 namespace WitsmlExplorer.Api.Workers;
 
@@ -27,6 +26,7 @@ namespace WitsmlExplorer.Api.Workers;
 /// </summary>
 public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsComparisonJob>, IWorker
 {
+    private const string _witsmlFunctionName = "WMLS_GetFromStore";
     private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
     private readonly ICountLogDataRowWorker _countLogDataRowWorker;
     private readonly ICompareLogDataWorker _compareLogDataWorker;
@@ -72,8 +72,10 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             return (new WorkerResult(targetClient.GetServerHostname(), false, errorMessageSameWellbore, errorMessageSameWellbore, sourceServerUrl: sourceClient.GetServerHostname()), null);
         }
         var reportItems = new List<WellboreSubObjectsComparisonItem>();
-        var objectsOnTargetWellbore = await GetWellboreObjects(job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, targetClient);
-        var objectsOnSourceWellbore = await GetWellboreObjects(job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, sourceClient);
+        var supportedObjectTypes = await
+            GetSupportedObjectTypes(sourceClient, targetClient);
+        var objectsOnTargetWellbore = await GetWellboreObjects(job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, targetClient, supportedObjectTypes);
+        var objectsOnSourceWellbore = await GetWellboreObjects(job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, sourceClient, supportedObjectTypes);
         var targetLogs = await GetLogs(job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, targetClient);
         var sourceLogs = await GetLogs(job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, sourceClient);
 
@@ -93,6 +95,40 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         job.JobInfo.Report = report;
         Logger.LogInformation("Comparing of 2 wellbores sub objects is done. {jobDescription}", job.Description());
         return (workerResult, null);
+    }
+
+    private async Task<List<string>> GetSupportedObjectTypes(IWitsmlClient sourceClient,
+        IWitsmlClient targetClient)
+    {
+        var serverCapabilitiesOnSource = (await sourceClient.GetCap())
+            .ServerCapabilities.FirstOrDefault()
+            ?.Functions
+            .Where(x => x.Name == _witsmlFunctionName)
+            .Select(x => x.DataObjects);
+        var serverCapabilitiesOnTarget = (await targetClient.GetCap())
+            .ServerCapabilities.FirstOrDefault()
+            ?.Functions
+            .Where(x => x.Name == _witsmlFunctionName)
+            .Select(x => x.DataObjects);
+        var supportedObjectTypesOnSource = SupportedObjectTypes(serverCapabilitiesOnSource);
+        var supportedObjectTypesOnTarget = SupportedObjectTypes(serverCapabilitiesOnTarget);
+        var result =
+            supportedObjectTypesOnSource.Intersect(
+                supportedObjectTypesOnTarget);
+        return result.ToList();
+    }
+
+    private List<string> SupportedObjectTypes(IEnumerable<List<WitsmlFunctionDataObject>> serverCapabilitiesOnTarget)
+    {
+        var result = new List<string>();
+        foreach (var functionDataObjects in serverCapabilitiesOnTarget)
+        {
+            foreach (var functionDataObject in functionDataObjects)
+            {
+                result.Add(functionDataObject.Name.ToLower());
+            }
+        }
+        return result;
     }
 
     private BaseReport GenerateReport(List<WellboreSubObjectsComparisonItem> reportItems, string sourceServerName, string targetServerName, string sourceWellbore, string targetWellbore)
@@ -126,14 +162,21 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             {
                 if (targetLog != null)
                 {
-                    var countLogsData = await CountLogsData(witsmlLog, targetLog, cancellationToken);
-                    resultList.AddRange(countLogsData);
+                    if (job.CheckTimeBasedLogsData && witsmlLog.IndexType ==
+                        WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME ||
+                        job.CheckDepthBasedLogsData && witsmlLog.IndexType ==
+                        WitsmlLog.WITSML_INDEX_TYPE_MD)
+                    {
+                        var countLogsData = await CountLogsData(witsmlLog,
+                            targetLog, cancellationToken);
+                        resultList.AddRange(countLogsData);
+                    }
                 }
             }
 
             if (job.CheckLogsData)
             {
-                if (job.CheckTimeBasedLogsData || witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+                if (job.CheckTimeBasedLogsData && witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME || job.CheckDepthBasedLogsData && witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
                 {
                     var checkLogsData = await ChecksLogsData(witsmlLog, targetLog, cancellationToken);
                     resultList.AddRange(checkLogsData);
@@ -226,7 +269,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 ObjectName = sourceLog.Name,
                 ExistsOnSource = "TRUE",
                 ExistsOnTarget = "TRUE",
-                NumberOfMnemonicsOnTarget = "Checking number of mnemonics failed.",
+                DataPointsOfMnemonicOnTarget = "Checking number of mnemonics failed.",
             };
             resultList.Add(result);
             return resultList;
@@ -254,7 +297,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 ObjectName = sourceLog.Name,
                 ExistsOnSource = "TRUE",
                 ExistsOnTarget = "TRUE",
-                NumberOfMnemonicsOnSource = "Checking number of mnemonics failed.",
+                DataPointsOfMnemonicOnSource = "Checking number of mnemonics failed.",
             };
             resultList.Add(result);
             return resultList;
@@ -277,8 +320,8 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                         Mnemonic = difference.Mnemonic,
                         ExistsOnSource = "TRUE",
                         ExistsOnTarget = "TRUE",
-                        NumberOfMnemonicsOnSource = difference.LogDataCount.ToString(),
-                        NumberOfMnemonicsOnTarget = mnemonicOnTarget.LogDataCount.ToString()
+                        DataPointsOfMnemonicOnSource = difference.LogDataCount.ToString(),
+                        DataPointsOfMnemonicOnTarget = mnemonicOnTarget.LogDataCount.ToString()
                     };
                     resultList.Add(result);
                 }
@@ -322,7 +365,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 ObjectName = sourceLog.Name,
                 ExistsOnSource = "TRUE",
                 ExistsOnTarget = "TRUE",
-                NumberOfIssuesInMnemonics = "Logs comparison failed."
+                NumberOfDifferencesInValuesInMnemonics = "Logs comparison failed."
             };
             resultList.Add(result);
             return resultList;
@@ -338,7 +381,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 ObjectName = sourceLog.Name,
                 ExistsOnSource = "TRUE",
                 ExistsOnTarget = "TRUE",
-                NumberOfIssuesInMnemonics = issues.Count().ToString()
+                NumberOfDifferencesInValuesInMnemonics = issues.Count().ToString()
             };
             resultList.Add(result);
         }
@@ -404,11 +447,12 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         return resultList;
     }
 
-    private static async Task<Dictionary<(EntityType, string), IWitsmlObjectList>> GetWellboreObjects(string wellUid, string wellboreUid, IWitsmlClient client)
+    private static async Task<Dictionary<(EntityType, string), IWitsmlObjectList>> GetWellboreObjects(string wellUid, string wellboreUid, IWitsmlClient client, List<string> supportedObjectTypes)
     {
         var result = new Dictionary<(EntityType, string), IWitsmlObjectList>();
         foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
         {
+            if (supportedObjectTypes.IndexOf(entityType.ToString().ToLower()) < 0) continue;
             if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
 
             result.Add((entityType, null), await GetWellboreObjectsByType(wellUid, wellboreUid, client, entityType));
