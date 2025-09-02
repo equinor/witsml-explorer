@@ -87,6 +87,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
             MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, false);
 
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
             var job = CreateJobTemplate();
 
             MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
@@ -314,6 +317,45 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     CancellationToken? _) => logMockObjects);
         }
 
+        public void MockServerCapabilites(Mock<IWitsmlClient> witsmlClient)
+        {
+            var serverCapabalities = new WitsmlCapServers()
+            {
+                ServerCapabilities = new List<WitsmlServerCapabilities>()
+                {
+                    new WitsmlServerCapabilities()
+                    {
+                        Functions = new List<WitsmlFunction>()
+                        {
+                            new WitsmlFunction()
+                            {
+                                DataObjects = GetDataObjects(),
+                                Name = "WMLS_GetFromStore"
+                            }
+                        }
+                    }
+                }
+
+            };
+            witsmlClient.Setup(client => client.GetCap()).ReturnsAsync(serverCapabalities);
+        }
+
+        private List<WitsmlFunctionDataObject> GetDataObjects()
+        {
+            var result = new List<WitsmlFunctionDataObject>();
+            foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
+            {
+                if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
+                var dataObject = new WitsmlFunctionDataObject()
+                {
+                    MaxDataNodes = 10000,
+                    MaxDataPoints = 8000000,
+                    Name = entityType.ToString()
+                };
+                result.Add(dataObject);
+            }
+            return result;
+        }
         private void SetupGetSourceWellbore()
         {
             WitsmlWellbores sourceWellbores = new();
@@ -574,6 +616,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 },
                 CountLogsData = true,
                 CheckLogsData = true,
+                CheckTimeBasedLogsData = true,
+                CheckDepthBasedLogsData = true
             };
         }
     }
