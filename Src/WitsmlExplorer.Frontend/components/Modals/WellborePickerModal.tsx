@@ -1,4 +1,9 @@
-import { Autocomplete, TextField } from "@equinor/eds-core-react";
+import {
+  Autocomplete,
+  TextField,
+  Radio,
+  Typography
+} from "@equinor/eds-core-react";
 import ModalDialog, {
   ModalContentLayout,
   ModalWidth
@@ -13,7 +18,7 @@ import WellboreSubObjectsComparisonJob from "models/jobs/wellboreSubObjectsCompa
 import { Checkbox } from "components/StyledComponents/Checkbox";
 import MaxLength from "models/maxLength";
 import { Server } from "models/server";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, CSSProperties, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import WellboreService from "services/wellboreService";
 import styled from "styled-components";
@@ -26,6 +31,12 @@ export interface WellborePickerProps {
   selectedWellbore: Wellbore;
 }
 
+enum CheckOptions {
+  CompareNumberOfDataPointsPerMnemonic = "CompareNumberOfDataPointsPerMnemonic",
+  CompareValuesOfDataPointsPerMnemonic = "CompareValuesOfDataPointsPerMnemonic",
+  None = "None"
+}
+
 const WellborePickerModal = ({
   selectedWellbore
 }: WellborePickerProps): React.ReactElement => {
@@ -34,6 +45,9 @@ const WellborePickerModal = ({
   const [targetServer, setTargetServer] = useState<Server>();
   const [wellUid, setWellUid] = useState<string>(selectedWellbore.wellUid);
   const [wellboreUid, setWellboreUid] = useState<string>(selectedWellbore.uid);
+  const [selectedCheckOption, setSelectedCheckOption] = useState<CheckOptions>(
+    CheckOptions.None
+  );
 
   const wellboreWithMixedObjectsReference =
     useClipboardMixedObjectsReferences();
@@ -47,9 +61,24 @@ const WellborePickerModal = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState("");
-  const [countLogsData, setCountLogsData] = useState(false);
-  const [checkLogsData, setCheckLogsData] = useState(false);
-  const [checkTimeBasedLogsData, setCheckTimeBasedLogsData] = useState(false);
+  const [performDeepLogComparison, setPerformDeepLogComparison] =
+    useState(false);
+  const [
+    compareNumbersOfDataPointsForDepth,
+    setCompareNumbersOfDataPointsForDepth
+  ] = useState(false);
+  const [
+    compareNumbersOfDataPointsForTime,
+    setCompareNumbersOfDataPointsForTime
+  ] = useState(false);
+  const [
+    compareValuesOfDataPointsForDepth,
+    setCompareValuesOfDataPointsForDepth
+  ] = useState(false);
+  const [
+    compareValuesOfDataPointsForTime,
+    setCompareValuesOfDataPointsForTime
+  ] = useState(false);
 
   const onClear = () => {
     setWellUid("");
@@ -95,9 +124,28 @@ const WellborePickerModal = ({
       const job: WellboreSubObjectsComparisonJob = {
         sourceWellbore: sourceWellboreReference,
         targetWellbore: targetWellboreReference,
-        countLogsData: countLogsData,
-        checkLogsData: checkLogsData,
-        checkTimeBasedLogsData: checkTimeBasedLogsData
+        countLogsData:
+          performDeepLogComparison &&
+          selectedCheckOption ===
+            CheckOptions.CompareValuesOfDataPointsPerMnemonic,
+        checkLogsData:
+          performDeepLogComparison &&
+          selectedCheckOption ===
+            CheckOptions.CompareNumberOfDataPointsPerMnemonic,
+        checkTimeBasedLogsData:
+          (selectedCheckOption ===
+            CheckOptions.CompareNumberOfDataPointsPerMnemonic &&
+            compareNumbersOfDataPointsForTime) ||
+          (selectedCheckOption ===
+            CheckOptions.CompareValuesOfDataPointsPerMnemonic &&
+            compareValuesOfDataPointsForTime),
+        checkDepthBasedLogsData:
+          (selectedCheckOption ===
+            CheckOptions.CompareNumberOfDataPointsPerMnemonic &&
+            compareNumbersOfDataPointsForDepth) ||
+          (selectedCheckOption ===
+            CheckOptions.CompareValuesOfDataPointsPerMnemonic &&
+            compareValuesOfDataPointsForDepth)
       };
       const jobId = await JobService.orderJobAtServer(
         JobType.WellboreSubObjectsComparison,
@@ -120,13 +168,32 @@ const WellborePickerModal = ({
     }
   };
 
+  const validate = (): boolean => {
+    return (
+      (performDeepLogComparison && selectedCheckOption === CheckOptions.None) ||
+      (performDeepLogComparison &&
+        selectedCheckOption ===
+          CheckOptions.CompareNumberOfDataPointsPerMnemonic &&
+        !compareNumbersOfDataPointsForDepth &&
+        !compareNumbersOfDataPointsForTime) ||
+      (performDeepLogComparison &&
+        selectedCheckOption ===
+          CheckOptions.CompareValuesOfDataPointsPerMnemonic &&
+        !compareValuesOfDataPointsForDepth &&
+        !compareValuesOfDataPointsForTime)
+    );
+  };
+
   return (
     <ModalDialog
       heading={`Compare wellbore with`}
       onSubmit={onSubmit}
       confirmColor={"primary"}
       confirmDisabled={
-        invalidUid(wellUid) || invalidUid(wellboreUid) || targetServer == null
+        validate() ||
+        invalidUid(wellUid) ||
+        invalidUid(wellboreUid) ||
+        targetServer == null
       }
       confirmText={`OK`}
       showCancelButton={true}
@@ -182,28 +249,99 @@ const WellborePickerModal = ({
             }}
           />
           <Checkbox
-            label={`Count logs data`}
+            label={`Perform deep log comparison`}
+            checked={performDeepLogComparison}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setCountLogsData(e.target.checked);
+              setPerformDeepLogComparison(e.target.checked);
+            }}
+            colors={colors}
+          />
+          <label style={alignLayout}>
+            <Radio
+              name="group"
+              disabled={!performDeepLogComparison}
+              checked={
+                selectedCheckOption ===
+                CheckOptions.CompareNumberOfDataPointsPerMnemonic
+              }
+              onChange={() => {
+                setSelectedCheckOption(
+                  CheckOptions.CompareNumberOfDataPointsPerMnemonic
+                );
+              }}
+            />
+            <Typography>Compare number of data points per mnemonic</Typography>
+          </label>
+          <Checkbox
+            style={checkboxStyle}
+            label={`Check depth domain`}
+            checked={compareNumbersOfDataPointsForDepth}
+            disabled={
+              selectedCheckOption !==
+              CheckOptions.CompareNumberOfDataPointsPerMnemonic
+            }
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setCompareNumbersOfDataPointsForDepth(e.target.checked);
             }}
             colors={colors}
           />
           <Checkbox
-            label={`Check logs data`}
+            style={checkboxStyle}
+            label={`Check time domain`}
+            disabled={
+              selectedCheckOption !==
+              CheckOptions.CompareNumberOfDataPointsPerMnemonic
+            }
+            checked={compareNumbersOfDataPointsForTime}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setCheckLogsData(e.target.checked);
+              setCompareNumbersOfDataPointsForTime(e.target.checked);
             }}
             colors={colors}
           />
-          {checkLogsData && (
-            <Checkbox
-              label={`Check also time based logs data`}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setCheckTimeBasedLogsData(e.target.checked);
+          <label style={alignLayout}>
+            <Radio
+              name="group"
+              disabled={!performDeepLogComparison}
+              checked={
+                selectedCheckOption ===
+                CheckOptions.CompareValuesOfDataPointsPerMnemonic
+              }
+              onChange={() => {
+                setSelectedCheckOption(
+                  CheckOptions.CompareValuesOfDataPointsPerMnemonic
+                );
               }}
-              colors={colors}
             />
-          )}
+            <Typography>Compare values of data points per mnemonic</Typography>
+          </label>
+
+          <Checkbox
+            style={checkboxStyle}
+            label={`Check depth domain`}
+            disabled={
+              selectedCheckOption !==
+              CheckOptions.CompareValuesOfDataPointsPerMnemonic
+            }
+            checked={compareValuesOfDataPointsForDepth}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setCompareValuesOfDataPointsForDepth(e.target.checked);
+            }}
+            colors={colors}
+          />
+          <Checkbox
+            style={checkboxStyle}
+            label={`Check time domain`}
+            disabled={
+              selectedCheckOption !==
+              CheckOptions.CompareValuesOfDataPointsPerMnemonic
+            }
+            checked={compareValuesOfDataPointsForTime}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setCompareValuesOfDataPointsForTime(e.target.checked);
+            }}
+            colors={colors}
+          />
+
           <ButtonsContainer>
             <Button onClick={onClear}>Clear</Button>
             <Button onClick={onReset}>Reset</Button>
@@ -229,6 +367,16 @@ const ButtonsContainer = styled.div`
   padding-left: 0.5rem;
   padding-bottom: 1rem;
 `;
+
+const alignLayout: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  paddingLeft: "24px"
+};
+
+const checkboxStyle: CSSProperties = {
+  paddingLeft: "48px"
+};
 
 const invalidUid = (uid: string) => {
   return uid == null || uid.length == 0 || uid.length > MaxLength.Uid;

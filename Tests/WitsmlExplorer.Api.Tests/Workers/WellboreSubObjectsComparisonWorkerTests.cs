@@ -87,6 +87,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
             MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
             MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, false);
 
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
             var job = CreateJobTemplate();
 
             MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
@@ -110,11 +113,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 existsOnTarget.Where(x => x.ObjectUid.Equals("Uid_FluidsReport1"));
             var log = logsExistsOnBoth.Last();
             var differentNumberOfMnemonics =
-                reportItems.Where(x => x.NumberOfMnemonicsOnSource != null);
+                reportItems.Where(x => x.DataPointsOfMnemonicOnSource != null);
             var countOfIssuesInMnemonics =
-                reportItems.Where(x => x.NumberOfIssuesInMnemonics != null);
+                reportItems.Where(x => x.NumberOfDifferencesInValuesInMnemonics != null);
             var numberOfIssuesInMnemonics = countOfIssuesInMnemonics.First()
-                .NumberOfIssuesInMnemonics;
+                .NumberOfDifferencesInValuesInMnemonics;
 
             Assert.Empty(sameFluidReport);
             Assert.Equal(13, existsOnSource.Count());
@@ -314,6 +317,45 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     CancellationToken? _) => logMockObjects);
         }
 
+        private void MockServerCapabilites(Mock<IWitsmlClient> witsmlClient)
+        {
+            var serverCapabalities = new WitsmlCapServers()
+            {
+                ServerCapabilities = new List<WitsmlServerCapabilities>()
+                {
+                    new WitsmlServerCapabilities()
+                    {
+                        Functions = new List<WitsmlFunction>()
+                        {
+                            new WitsmlFunction()
+                            {
+                                DataObjects = GetDataObjects(),
+                                Name = "WMLS_GetFromStore"
+                            }
+                        }
+                    }
+                }
+
+            };
+            witsmlClient.Setup(client => client.GetCap()).ReturnsAsync(serverCapabalities);
+        }
+
+        private List<WitsmlFunctionDataObject> GetDataObjects()
+        {
+            var result = new List<WitsmlFunctionDataObject>();
+            foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
+            {
+                if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
+                var dataObject = new WitsmlFunctionDataObject()
+                {
+                    MaxDataNodes = 10000,
+                    MaxDataPoints = 8000000,
+                    Name = entityType.ToString()
+                };
+                result.Add(dataObject);
+            }
+            return result;
+        }
         private void SetupGetSourceWellbore()
         {
             WitsmlWellbores sourceWellbores = new();
@@ -574,6 +616,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 },
                 CountLogsData = true,
                 CheckLogsData = true,
+                CheckTimeBasedLogsData = true,
+                CheckDepthBasedLogsData = true
             };
         }
     }
