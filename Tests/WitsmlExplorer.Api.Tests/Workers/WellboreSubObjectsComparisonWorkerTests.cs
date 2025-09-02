@@ -317,7 +317,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     CancellationToken? _) => logMockObjects);
         }
 
-        public void MockServerCapabilites(Mock<IWitsmlClient> witsmlClient)
+        private void MockServerCapabilites(Mock<IWitsmlClient> witsmlClient)
         {
             var serverCapabalities = new WitsmlCapServers()
             {
