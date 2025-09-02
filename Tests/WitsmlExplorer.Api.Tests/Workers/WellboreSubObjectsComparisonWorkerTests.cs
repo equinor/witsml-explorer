@@ -110,11 +110,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 existsOnTarget.Where(x => x.ObjectUid.Equals("Uid_FluidsReport1"));
             var log = logsExistsOnBoth.Last();
             var differentNumberOfMnemonics =
-                reportItems.Where(x => x.NumberOfMnemonicsOnSource != null);
+                reportItems.Where(x => x.DataPointsOfMnemonicOnSource != null);
             var countOfIssuesInMnemonics =
-                reportItems.Where(x => x.NumberOfIssuesInMnemonics != null);
+                reportItems.Where(x => x.NumberOfDifferencesInValuesInMnemonics != null);
             var numberOfIssuesInMnemonics = countOfIssuesInMnemonics.First()
-                .NumberOfIssuesInMnemonics;
+                .NumberOfDifferencesInValuesInMnemonics;
 
             Assert.Empty(sameFluidReport);
             Assert.Equal(13, existsOnSource.Count());
