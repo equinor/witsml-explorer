@@ -26,6 +26,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { ReportModal } from "./ReportModal";
 import Wellbore from "models/wellbore";
 import { useClipboardMixedObjectsReferences } from "components/ContextMenus/UseClipboardReferences";
+import WarningBar from "components/WarningBar";
 
 export interface WellborePickerProps {
   selectedWellbore: Wellbore;
@@ -253,6 +254,12 @@ const WellborePickerModal = ({
             checked={performDeepLogComparison}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setPerformDeepLogComparison(e.target.checked);
+              if (!e.target.checked) {
+                setCompareValuesOfDataPointsForDepth(false);
+                setCompareValuesOfDataPointsForTime(false);
+                setCompareNumbersOfDataPointsForDepth(false);
+                setCompareNumbersOfDataPointsForTime(false);
+              }
             }}
             colors={colors}
           />
@@ -268,6 +275,8 @@ const WellborePickerModal = ({
                 setSelectedCheckOption(
                   CheckOptions.CompareNumberOfDataPointsPerMnemonic
                 );
+                setCompareValuesOfDataPointsForDepth(false);
+                setCompareValuesOfDataPointsForTime(false);
               }}
             />
             <Typography>Compare number of data points per mnemonic</Typography>
@@ -310,6 +319,8 @@ const WellborePickerModal = ({
                 setSelectedCheckOption(
                   CheckOptions.CompareValuesOfDataPointsPerMnemonic
                 );
+                setCompareNumbersOfDataPointsForDepth(false);
+                setCompareNumbersOfDataPointsForTime(false);
               }}
             />
             <Typography>Compare values of data points per mnemonic</Typography>
@@ -341,6 +352,11 @@ const WellborePickerModal = ({
             }}
             colors={colors}
           />
+          {(compareNumbersOfDataPointsForTime ||
+            compareValuesOfDataPointsForTime) &&
+            performDeepLogComparison && (
+              <WarningBar message="Deep comparison of time logs could be time consuming." />
+            )}
 
           <ButtonsContainer>
             <Button onClick={onClear}>Clear</Button>
