@@ -29,8 +29,14 @@ import { LogCurveInfoRow } from "../LogCurveInfoListViewUtils.tsx";
 import { Button } from "../../StyledComponents/Button.tsx";
 import { Server } from "../../../models/server.ts";
 import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
+import { toDate } from "date-fns-tz";
+import styled from "styled-components";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
+
+interface CurveSpecificationMultiLog extends CurveSpecification {
+  server: Server;
+}
 
 interface MultiLogCurveSelectionValuesProps {
   multiLogCurveInfos: LogCurveInfoRow[];
@@ -41,6 +47,7 @@ interface MultiLogCurveSelectionValuesProps {
     wellboreId: string;
     logId: string;
   }[];
+  isDepthIndex: boolean;
   startIndex: string | number;
   endIndex: string | number;
   onSelectMnemonics: () => void;
@@ -53,6 +60,7 @@ const MultiLogCurveSelectionValues = (
     multiLogCurveInfos,
     logObjects,
     logInfos,
+    isDepthIndex,
     startIndex,
     endIndex,
     onSelectMnemonics
@@ -60,7 +68,6 @@ const MultiLogCurveSelectionValues = (
   const {
     operationState: { timeZone, dateTimeFormat, theme }
   } = useOperationState();
-  // const { servers } = useGetServers();
 
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
   const [isFetchedData, setIsFetchedData] = useState<boolean>(false);
@@ -106,7 +113,9 @@ const MultiLogCurveSelectionValues = (
           )
             .then((logData) => {
               if (logData?.data) {
-                logDatas.push(getLogDataWithProperNames(logData, logObjects));
+                logDatas.push(
+                  getLogDataWithProperNames(logData, logObjects, logInfo.server)
+                );
               }
             })
             .finally(() => {
@@ -125,11 +134,19 @@ const MultiLogCurveSelectionValues = (
                     const indexValues = logDatas[i].data.map(
                       (d) => d[logDatas[i].curveSpecifications[0].mnemonic]
                     );
-                    const joinedIndexValues = totalIndexValues
-                      .concat(indexValues)
-                      .toSorted(
-                        (iv1, iv2) => (iv1 as number) - (iv2 as number)
-                      ); //todo: datetime!!!
+                    const joinedIndexValues = isDepthIndex
+                      ? totalIndexValues
+                          .concat(indexValues)
+                          .toSorted(
+                            (iv1, iv2) => (iv1 as number) - (iv2 as number)
+                          )
+                      : totalIndexValues
+                          .concat(indexValues)
+                          .toSorted(
+                            (iv1, iv2) =>
+                              toDate(iv1 as string).getTime() -
+                              toDate(iv2 as string).getTime()
+                          );
 
                     const lastIndexValue = joinedIndexValues[0];
                     totalIndexValues = [joinedIndexValues[0]];
@@ -181,15 +198,6 @@ const MultiLogCurveSelectionValues = (
                     logDataRows.push(data);
                   }
 
-                  // const logDataRows =
-                  //   logDatas[0].data.map((data) => {
-                  //     const row: CurveValueRow = {
-                  //       id: String(data[indexCurve]),
-                  //       ...data
-                  //     };
-                  //     return row;
-                  // });
-
                   setTableData(logDataRows);
                 }
                 setIsFetchingData(false);
@@ -202,11 +210,18 @@ const MultiLogCurveSelectionValues = (
   }, [multiLogCurveInfos, logObjects, logInfos]);
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
-    const newColumns = curveSpecifications.map((curveSpecification) => {
+    const newColumns = curveSpecifications.map((cs, idx) => {
+      const curveSpecification = cs as CurveSpecificationMultiLog;
       return {
         columnOf: curveSpecification,
         property: curveSpecification.mnemonic,
-        label: `${curveSpecification.mnemonic} (${curveSpecification.unit})`,
+        label:
+          (idx === 0
+            ? isDepthIndex
+              ? "Depth"
+              : "Time"
+            : `[${curveSpecification.server.name}] ${curveSpecification.mnemonic}`) +
+          `(${curveSpecification.unit})`,
         type: getColumnType(curveSpecification)
       };
     });
@@ -239,7 +254,8 @@ const MultiLogCurveSelectionValues = (
 
   const getLogDataWithProperNames = (
     logData: LogData,
-    allLogs: LogObject[]
+    allLogs: LogObject[],
+    server: Server
   ): LogData => {
     const uidRegex = /\[uid=(.*?)\]/; // Matches on [uid=<...>]
 
@@ -275,7 +291,8 @@ const MultiLogCurveSelectionValues = (
       }
       return {
         ...spec,
-        mnemonic: newMnemonic
+        mnemonic: newMnemonic,
+        server: server
       };
     });
 
@@ -304,7 +321,10 @@ const MultiLogCurveSelectionValues = (
   return (
     <>
       <ContentContainer>
-        <CommonPanelContainer>
+        <CommonPanelContainer key="selectMnemonics">
+          <Button onClick={() => onSelectMnemonics()}>Select Mnemonics</Button>
+        </CommonPanelContainer>
+        <CommonPanelContainer key="showPlot">
           <EdsProvider density={normaliseThemeForEds(theme)}>
             <Switch
               checked={showPlot}
@@ -315,25 +335,26 @@ const MultiLogCurveSelectionValues = (
               Show Plot
             </Typography>
           </EdsProvider>
-          <Button onClick={() => onSelectMnemonics()}>Select Mnemonics</Button>
         </CommonPanelContainer>
         {isFetchingData ? (
           <ProgressSpinner message="Fetching data" />
         ) : showPlot ? (
-          <CurveValuesPlot
-            data={tableData}
-            columns={columns}
-            name={"Multiple Logs"}
-            isDescending={
-              logObjects?.[0].direction === WITSML_LOG_ORDERTYPE_DECREASING
-            }
-            autoRefresh={false}
-          />
+          <CurveValuesPlotContainer>
+            <CurveValuesPlot
+              data={tableData}
+              columns={columns}
+              name={"Multiple Logs"}
+              isDescending={
+                logObjects?.[0].direction === WITSML_LOG_ORDERTYPE_DECREASING
+              }
+              autoRefresh={false}
+            />
+          </CurveValuesPlotContainer>
         ) : (
           <ContentTable
             columns={columns}
             data={getTableData()}
-            checkableRows={true}
+            checkableRows={false}
             stickyLeftColumns={2}
             autoRefresh={false}
           />
@@ -342,6 +363,13 @@ const MultiLogCurveSelectionValues = (
     </>
   );
 };
+
+export const CurveValuesPlotContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+`;
 
 // const Message = styled.div`
 //   margin: 10px;

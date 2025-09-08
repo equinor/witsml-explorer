@@ -6,15 +6,16 @@ import { WITSML_INDEX_TYPE } from "./Constants.tsx";
 import { DisplayModalAction } from "../contexts/operationStateReducer.tsx";
 import SelectCurvesStepModal, {
   SelectCurvesStepModalProps
-} from "./Modals/MultiLogWizard/SelectCurvesStepModal.tsx";
+} from "./Modals/MultiLogCurveSelection/SelectCurvesStepModal.tsx";
 import OperationType from "../contexts/operationType.ts";
 import SelectLogsStepModal, {
   SelectLogsStepModalProps
-} from "./Modals/MultiLogWizard/SelectLogsStepModal.tsx";
+} from "./Modals/MultiLogCurveSelection/SelectLogsStepModal.tsx";
 import SelectWellboreStepModal, {
   SelectWellboreStepModalProps
-} from "./Modals/MultiLogWizard/SelectWellboreStepModal.tsx";
+} from "./Modals/MultiLogCurveSelection/SelectWellboreStepModal.tsx";
 import { LogCurveInfoRow } from "./ContentViews/LogCurveInfoListViewUtils.tsx";
+import MultiLogCurveInfo from "../models/multilogCurveInfo.ts";
 
 export interface MultiLogSelectionValues {
   curveInfos: MultiLogSelectionCurveInfo[];
@@ -40,6 +41,10 @@ export interface MultiLogWizardResult {
   targetServer: Server;
   indexType: WITSML_INDEX_TYPE;
   curveInfos: MultiLogSelectionCurveInfo[];
+}
+
+export interface MultiLogCurveInfoViewData extends MultiLogCurveInfo {
+  serverName?: string;
 }
 
 export function GetMultiLogWizardStepModalAction(

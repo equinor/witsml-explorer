@@ -36,6 +36,12 @@ import {
   WITSML_INDEX_TYPE_MD
 } from "../../Constants.tsx";
 import { useGetServers } from "../../../hooks/query/useGetServers.tsx";
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "../UserCredentialsModal.tsx";
+import AuthorizationService from "../../../services/authorizationService.ts";
+import { LoggedInUsernamesActionType } from "../../../contexts/loggedInUsernamesReducer.tsx";
+import { useLoggedInUsernames } from "../../../contexts/loggedInUsernamesContext.tsx";
 
 export interface SelectWellboreStepModalProps {
   targetServer?: Server;
@@ -59,12 +65,14 @@ const SelectWellboreStepModal = (
     dispatchOperation,
     operationState: { colors }
   } = useOperationState();
+  const { dispatchLoggedInUsernames } = useLoggedInUsernames();
   const { servers } = useGetServers();
 
   const [targetServerValue, setTargetServerValue] =
     useState<Server>(targetServer);
-  const [indexTypeValue, setIndexTypeValue] =
-    useState<WITSML_INDEX_TYPE>(indexType);
+  const [indexTypeValue, setIndexTypeValue] = useState<WITSML_INDEX_TYPE>(
+    indexType ?? WITSML_INDEX_TYPE_MD
+  );
 
   const { wells, isFetching: isFetchingWells } = useGetWells(
     targetServerValue,
@@ -78,11 +86,33 @@ const SelectWellboreStepModal = (
   );
   const [wellboreFilterValue, setWellboreFilterValue] = useState<string>("");
   const [expandedWellTreeItems, setExpandedWellTreeItems] = useState<string[]>(
-    well ? [well.uid] : []
+    preselectedWellbores?.length > 0
+      ? preselectedWellbores.map((wb) => calculateWellNodeId(wb.wellUid))
+      : well
+      ? [calculateWellNodeId(well.uid)]
+      : []
   );
-  const [selectedWellbores, setSelectedWellbores] = useState<Wellbore[]>(
-    preselectedWellbores ?? []
-  );
+  const [selectedWellbores, setSelectedWellbores] = useState<Wellbore[]>([]);
+
+  const onTargetServerChange = (targetServer: Server) => {
+    const userCredentialsModalProps: UserCredentialsModalProps = {
+      server: targetServer,
+      onConnectionVerified: (username) => {
+        dispatchOperation({ type: OperationType.HideModal });
+        AuthorizationService.onAuthorized(targetServer, username);
+        AuthorizationService.setSelectedServer(targetServer);
+        dispatchLoggedInUsernames({
+          type: LoggedInUsernamesActionType.AddLoggedInUsername,
+          payload: { serverId: targetServer.id, username }
+        });
+        setTargetServerValue(targetServer);
+      }
+    };
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <UserCredentialsModal {...userCredentialsModalProps} />
+    });
+  };
 
   const loadedWells = useMemo(() => {
     if (!isFetchingWells && !!wells && wells.length > 0) {
@@ -139,30 +169,38 @@ const SelectWellboreStepModal = (
       loadedWellbores.length > 0
     ) {
       for (const wellItem of treeData) {
-        const filteredWellboreTreeItems =
-          (!wellboreFilterValue || wellboreFilterValue.length == 0) &&
-          !!preselectedWellbores &&
-          preselectedWellbores.length > 0
-            ? wellItem.children.filter((wb) =>
-                preselectedWellbores.some(
-                  (pwb) =>
-                    wb.name
-                      .toLocaleLowerCase()
-                      .includes(pwb.name.toLocaleLowerCase()) ||
-                    wb.id
-                      .toLocaleLowerCase()
-                      .includes(pwb.name.toLocaleLowerCase())
-                )
-              )
-            : wellItem.children.filter(
-                (wb) =>
+        let filteredWellboreTreeItems: WellboreTreeItem[] = [];
+
+        if (!wellboreFilterValue || wellboreFilterValue.length == 0) {
+          if (!!preselectedWellbores && preselectedWellbores.length > 0) {
+            filteredWellboreTreeItems = wellItem.children.filter((wb) =>
+              preselectedWellbores.some(
+                (pwb) =>
                   wb.name
                     .toLocaleLowerCase()
-                    .includes(wellboreFilterValue.toLocaleLowerCase()) ||
+                    .includes(pwb.name.toLocaleLowerCase()) ||
                   wb.id
                     .toLocaleLowerCase()
-                    .includes(wellboreFilterValue.toLocaleLowerCase())
-              );
+                    .includes(pwb.name.toLocaleLowerCase())
+              )
+            );
+          } else if (
+            !targetServer ||
+            (!!well && well.uid == wellItem.well.uid)
+          ) {
+            filteredWellboreTreeItems = wellItem.children;
+          }
+        } else {
+          filteredWellboreTreeItems = wellItem.children.filter(
+            (wb) =>
+              wb.name
+                .toLocaleLowerCase()
+                .includes(wellboreFilterValue.toLocaleLowerCase()) ||
+              wb.id
+                .toLocaleLowerCase()
+                .includes(wellboreFilterValue.toLocaleLowerCase())
+          );
+        }
 
         if (
           !!filteredWellboreTreeItems &&
@@ -177,9 +215,9 @@ const SelectWellboreStepModal = (
           filteredData.push(filteredWellTreeItem);
         }
       }
-      setExpandedWellTreeItems(
-        wellboreFilterValue?.length > 0 ? filteredData.map((wti) => wti.id) : []
-      );
+      if (wellboreFilterValue?.length > 0) {
+        setExpandedWellTreeItems(filteredData.map((wti) => wti.id));
+      }
     }
     return filteredData;
   }, [loadedWells, loadedWellbores, wellboreFilterValue]);
@@ -196,15 +234,8 @@ const SelectWellboreStepModal = (
       setSelectedWellbores([]);
       return;
     }
-    const filteredSelectedWelbores = selectedWellbores.filter(
-      (wb) => wb.uid != wellbore.uid && wb.wellUid != wellbore.wellUid
-    );
 
-    if (filteredSelectedWelbores.length < selectedWellbores.length) {
-      setSelectedWellbores(filteredSelectedWelbores);
-    } else {
-      setSelectedWellbores(selectedWellbores.concat([wellbore]));
-    }
+    setSelectedWellbores([wellbore]);
   };
 
   const onSubmit = async () => {
@@ -220,6 +251,11 @@ const SelectWellboreStepModal = (
     dispatchOperation(action);
   };
 
+  const onCancel = async () => {
+    dispatchOperation({ type: OperationType.HideModal });
+    onWizardFinish();
+  };
+
   return (
     <>
       <ModalDialog
@@ -231,42 +267,48 @@ const SelectWellboreStepModal = (
           ) : (
             <ContentLayout>
               <HeaderLayout>
-                <StyledAutocomplete
-                  id={"targetServer"}
-                  label={"Target server:"}
-                  optionLabel={(s: Server) => `${s.name}`}
-                  defaultValue={targetServer?.name}
-                  options={servers}
-                  onOptionsChange={(changes) => {
-                    setTargetServerValue(changes.selectedItems[0] as Server);
-                  }}
-                  style={
-                    {
-                      "--eds-input-background": colors.ui.backgroundDefault
-                    } as CSSProperties
-                  }
-                  colors={colors}
-                  disabled={!!targetServer}
-                />
-                <StyledAutocomplete
-                  id={"indexType"}
-                  label={"Index type:"}
-                  // optionLabel={(it: WITSML_INDEX_TYPE) => `${it.toString()}`}
-                  defaultValue={indexType}
-                  options={[WITSML_INDEX_TYPE_MD, WITSML_INDEX_TYPE_DATE_TIME]}
-                  onOptionsChange={(changes) => {
-                    setIndexTypeValue(
-                      changes.selectedItems[0] as WITSML_INDEX_TYPE
-                    );
-                  }}
-                  style={
-                    {
-                      "--eds-input-background": colors.ui.backgroundDefault
-                    } as CSSProperties
-                  }
-                  colors={colors}
-                  disabled={!!indexType}
-                />
+                {!targetServer && (
+                  <StyledAutocomplete
+                    id={"targetServer"}
+                    label={"Target server:"}
+                    optionLabel={(s: Server) => `${s.name}`}
+                    selectedOptions={[targetServerValue?.name]}
+                    options={servers}
+                    onOptionsChange={(changes) => {
+                      onTargetServerChange(changes.selectedItems[0] as Server);
+                    }}
+                    style={
+                      {
+                        "--eds-input-background": colors.ui.backgroundDefault
+                      } as CSSProperties
+                    }
+                    colors={colors}
+                    disabled={!!targetServer}
+                  />
+                )}
+                {!indexType && (
+                  <StyledAutocomplete
+                    id={"indexType"}
+                    label={"Index type:"}
+                    selectedOptions={[indexTypeValue]}
+                    options={[
+                      WITSML_INDEX_TYPE_MD,
+                      WITSML_INDEX_TYPE_DATE_TIME
+                    ]}
+                    onOptionsChange={(changes) => {
+                      setIndexTypeValue(
+                        changes.selectedItems[0] as WITSML_INDEX_TYPE
+                      );
+                    }}
+                    style={
+                      {
+                        "--eds-input-background": colors.ui.backgroundDefault
+                      } as CSSProperties
+                    }
+                    colors={colors}
+                    disabled={!!indexType}
+                  />
+                )}
               </HeaderLayout>
               <BodyLayout>
                 <FilterField
@@ -295,19 +337,25 @@ const SelectWellboreStepModal = (
                 <WellWellboreTree
                   treeData={filteredTreeData}
                   expandedWells={expandedWellTreeItems}
-                  multiSelect={true}
                   onSelectedWellbore={(wellbore) =>
                     changeSelectedWellbore(wellbore)
                   }
-                  onNodeToggle={(_, nodeIs) => setExpandedWellTreeItems(nodeIs)}
+                  onNodeToggle={(_, nodeId) => setExpandedWellTreeItems(nodeId)}
                 ></WellWellboreTree>
               </BodyLayout>
             </ContentLayout>
           )
         }
+        switchButtonPlaces={true}
         onSubmit={() => onSubmit()}
+        onCancel={() => onCancel()}
         isLoading={isFetchingWells || isFetchingWellbores}
-        confirmDisabled={!selectedWellbores || selectedWellbores.length == 0}
+        confirmDisabled={
+          !selectedWellbores ||
+          selectedWellbores.length == 0 ||
+          !indexTypeValue ||
+          !targetServerValue
+        }
       />
     </>
   );
@@ -332,7 +380,7 @@ const ContentLayout = styled.div`
 
 const HeaderLayout = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   gap: 0.75rem;
 `;

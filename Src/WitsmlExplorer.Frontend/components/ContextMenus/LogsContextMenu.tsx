@@ -45,7 +45,7 @@ import {
 } from "../MultiLogUtils.tsx";
 import MultiLogSelectionService from "../MultiLogSelectionService.tsx";
 import { useNavigate } from "react-router-dom";
-import { getMultipleLogCurveSelectionViewPath } from "../../routes/utils/pathBuilder.ts";
+import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (
@@ -95,14 +95,16 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
         indexType: indexType
       } as MultiLogWizardParams,
       (r) => {
-        MultiLogSelectionService.Instance.addMultiLogValues(
-          r.indexType,
-          r.curveInfos,
-          true
-        );
-        navigate({
-          pathname: getMultipleLogCurveSelectionViewPath(connectedServer.url)
-        });
+        if (r?.curveInfos?.length > 0) {
+          MultiLogSelectionService.Instance.addMultiLogValues(
+            r.indexType,
+            r.curveInfos,
+            true
+          );
+          navigate({
+            pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+          });
+        }
       }
     );
     dispatchOperation(action);

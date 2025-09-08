@@ -19,8 +19,7 @@ import {
   WELLBORE_UID_PARAM,
   WELLSBORES_VIEW_NAVIGATION_PATH,
   WELLS_VIEW_NAVIGATION_PATH,
-  WELL_UID_PARAM,
-  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+  WELL_UID_PARAM
 } from "routes/routerConstants";
 
 export function getJobsViewPath(serverUrl: string) {
@@ -29,14 +28,6 @@ export function getJobsViewPath(serverUrl: string) {
     encodeURIComponent(serverUrl)
   );
   return jobsViewPath;
-}
-
-export function getMultipleLogCurveSelectionViewPath(serverUrl: string) {
-  const queryViewPath = MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH.replace(
-    SERVER_URL_PARAM,
-    encodeURIComponent(serverUrl)
-  );
-  return queryViewPath;
 }
 
 export function getQueryViewPath(serverUrl: string) {

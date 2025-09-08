@@ -86,7 +86,7 @@ export default class MultiLogSelectionService {
   public removeMultiLogValues(
     indexType: WITSML_INDEX_TYPE,
     values: MultiLogSelectionCurveInfo[]
-  ): boolean {
+  ): MultiLogSelectionValues {
     const multiLogValues = this.getMultiLogValues(indexType);
     if (
       !!multiLogValues &&
@@ -104,14 +104,12 @@ export default class MultiLogSelectionService {
           )
       );
       this.Storage.setItem(
-        MULTI_LOG_SELECTION_KEY,
+        MULTI_LOG_SELECTION_KEY + indexType,
         JSON.stringify(multiLogValues)
       );
       this._onMultilogSelectionStorageUpdated.dispatch(indexType);
-      return true;
-    } else {
-      return false;
     }
+    return this.getMultiLogValues(indexType);
   }
 
   public removeAllMultiLogValues(indexType: WITSML_INDEX_TYPE) {

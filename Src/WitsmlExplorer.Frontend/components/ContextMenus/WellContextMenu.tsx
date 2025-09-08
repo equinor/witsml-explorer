@@ -41,10 +41,7 @@ import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React from "react";
-import {
-  getMultipleLogCurveSelectionViewPath,
-  getWellboresViewPath
-} from "routes/utils/pathBuilder";
+import { getWellboresViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
@@ -57,6 +54,7 @@ import {
 } from "../MultiLogUtils.tsx";
 import MultiLogSelectionService from "../MultiLogSelectionService.tsx";
 import { useNavigate } from "react-router-dom";
+import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -188,17 +186,20 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const onClickMultiLogSelect = async () => {
     const action = GetMultiLogWizardStepModalAction(
       {
-        targetServer: connectedServer
+        targetServer: connectedServer,
+        well: well
       } as MultiLogWizardParams,
       (r) => {
-        MultiLogSelectionService.Instance.addMultiLogValues(
-          r.indexType,
-          r.curveInfos,
-          true
-        );
-        navigate({
-          pathname: getMultipleLogCurveSelectionViewPath(connectedServer.url)
-        });
+        if (r?.curveInfos?.length > 0) {
+          MultiLogSelectionService.Instance.addMultiLogValues(
+            r.indexType,
+            r.curveInfos,
+            true
+          );
+          navigate({
+            pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+          });
+        }
       }
     );
     dispatchOperation(action);

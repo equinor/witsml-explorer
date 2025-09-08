@@ -25,6 +25,7 @@ import LogCurveInfo from "../../../models/logCurveInfo.ts";
 import LogObjectService from "../../../services/logObjectService.tsx";
 import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "../../Constants.tsx";
 import { LogObjectRow } from "../../ContentViews/LogsListView.tsx";
+import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 
 export interface SelectCurvesStepModalProps {
   targetServer: Server;
@@ -102,32 +103,45 @@ const SelectCurvesStepModal = (
   }, [logObjects]);
 
   useEffect(() => {
-    let fetchingCount = wellbores.length;
-    for (const wellbore of wellbores) {
-      const logs = logObjects.filter(
-        (lo) => lo.wellboreUid == wellbore.uid && lo.wellUid == wellbore.wellUid
-      );
+    const getMnemonics = async () => {
+      let fetchingCount = wellbores.length;
+      let allMnemonics: MultiLogCurveInfo[] = [];
+      for (const wellbore of wellbores) {
+        const logs = logObjects.filter(
+          (lo) =>
+            lo.wellboreUid == wellbore.uid && lo.wellUid == wellbore.wellUid
+        );
 
-      if (!!logs && logs.length > 0) {
-        LogObjectService.getMultiLogsCurveInfo(
-          wellbore.wellUid,
-          wellbore.uid,
-          logs.map((l) => l.uid),
-          new AbortController().signal
-        )
-          .then((mnemonics) => {
-            if (!!mnemonics && mnemonics.length > 0) {
-              setLogCurveInfoList(logCurveInfoList.concat(...mnemonics));
+        if (!!logs && logs.length > 0) {
+          const mnemonics = await LogObjectService.getMultiLogsCurveInfo(
+            wellbore.wellUid,
+            wellbore.uid,
+            logs.map((l) => l.uid),
+            new AbortController().signal
+          );
+
+          if (mnemonics?.length > 0) {
+            const filteredMnemonics = mnemonics.filter(
+              (m) =>
+                m.mnemonic.toLowerCase() !==
+                logs.find((l) => l.uid == m.logUid).indexCurve.toLowerCase()
+            );
+            if (filteredMnemonics?.length > 0) {
+              allMnemonics = allMnemonics.concat(...filteredMnemonics);
             }
-          })
-          .finally(() => {
-            fetchingCount--;
-            if (fetchingCount < 1) setIsFetchingLogs(false);
-          });
-      } else {
-        fetchingCount--;
+          }
+
+          fetchingCount--;
+          if (fetchingCount < 1) {
+            setLogCurveInfoList(allMnemonics);
+            setIsFetchingLogs(false);
+          }
+        } else {
+          fetchingCount--;
+        }
       }
-    }
+    };
+    getMnemonics();
   }, [logObjects]);
 
   const panelElements = [
@@ -156,6 +170,7 @@ const SelectCurvesStepModal = (
 
   const onSubmit = async () => {
     if (!!selectedRows && selectedRows.length > 0) {
+      dispatchOperation({ type: OperationType.HideModal });
       onWizardFinish({
         targetServer: targetServer,
         indexType: indexType,
@@ -170,9 +185,14 @@ const SelectCurvesStepModal = (
         })
       } as MultiLogWizardResult);
     } else {
+      dispatchOperation({ type: OperationType.HideModal });
       onWizardFinish();
     }
+  };
+
+  const onCancel = async () => {
     dispatchOperation({ type: OperationType.HideModal });
+    onWizardFinish();
   };
 
   return (
@@ -211,7 +231,9 @@ const SelectCurvesStepModal = (
             />
           </ContentLayout>
         }
+        switchButtonPlaces={true}
         onSubmit={() => onSubmit()}
+        onCancel={() => onCancel()}
         isLoading={
           isFetchingUniversalPrioritizedCurves ||
           isFetchingLocalPrioritizedCurves ||

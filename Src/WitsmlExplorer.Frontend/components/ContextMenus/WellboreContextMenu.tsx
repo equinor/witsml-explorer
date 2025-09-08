@@ -49,10 +49,7 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import React from "react";
-import {
-  getMultipleLogCurveSelectionViewPath,
-  getObjectGroupsViewPath
-} from "routes/utils/pathBuilder";
+import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
@@ -67,6 +64,7 @@ import {
 } from "../MultiLogUtils.tsx";
 import MultiLogSelectionService from "../MultiLogSelectionService.tsx";
 import { useNavigate } from "react-router-dom";
+import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -173,14 +171,16 @@ const WellboreContextMenu = (
         wellbores: [wellbore]
       } as MultiLogWizardParams,
       (r) => {
-        MultiLogSelectionService.Instance.addMultiLogValues(
-          r.indexType,
-          r.curveInfos,
-          true
-        );
-        navigate({
-          pathname: getMultipleLogCurveSelectionViewPath(connectedServer.url)
-        });
+        if (r?.curveInfos?.length > 0) {
+          MultiLogSelectionService.Instance.addMultiLogValues(
+            r.indexType,
+            r.curveInfos,
+            true
+          );
+          navigate({
+            pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+          });
+        }
       }
     );
     dispatchOperation(action);

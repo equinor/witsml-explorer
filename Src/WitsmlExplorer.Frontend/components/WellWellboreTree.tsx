@@ -23,19 +23,12 @@ export interface WellTreeItem {
 interface WellWellboreTreeProps {
   treeData: WellTreeItem[];
   expandedWells: string[];
-  multiSelect?: boolean;
   onSelectedWellbore: (wellbore: Wellbore) => void;
   onNodeToggle: (_: SyntheticEvent<Element, Event>, nodeIds: string[]) => void;
 }
 
 const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
-  const {
-    treeData,
-    expandedWells,
-    multiSelect,
-    onSelectedWellbore,
-    onNodeToggle
-  } = props;
+  const { treeData, expandedWells, onSelectedWellbore, onNodeToggle } = props;
 
   const {
     operationState: { colors }
@@ -80,7 +73,6 @@ const WellWellboreTree = (props: WellWellboreTreeProps): React.ReactElement => {
               color={colors.interactive.primaryResting}
             />
           }
-          multiSelect={!!multiSelect}
           expanded={expandedWells}
           onNodeToggle={onNodeToggle}
         >
@@ -102,8 +94,6 @@ const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  min-height: 50vh;
-  max-height: 50vh;
   overflow-x: scroll;
 `;
 

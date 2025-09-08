@@ -83,6 +83,11 @@ const SelectLogsStepModal = (
     dispatchOperation(action);
   };
 
+  const onCancel = async () => {
+    dispatchOperation({ type: OperationType.HideModal });
+    onWizardFinish();
+  };
+
   const columns: ContentTableColumn[] = [
     ...(wellbores.length > 1
       ? [
@@ -176,7 +181,9 @@ const SelectLogsStepModal = (
             />
           </ContentLayout>
         }
+        switchButtonPlaces={true}
         onSubmit={() => onSubmit()}
+        onCancel={() => onCancel()}
         isLoading={isFetching}
         confirmDisabled={!selectedRows || selectedRows.length < 1}
         width={ModalWidth.LARGE}
