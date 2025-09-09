@@ -7,13 +7,13 @@ import { ISimpleEvent, SimpleEventDispatcher } from "ste-simple-events";
 
 const MULTI_LOG_SELECTION_KEY: string = "MULTI_LOG_SELECTION_KEY:";
 
-export default class MultiLogSelectionService {
-  private static _instance: MultiLogSelectionService;
+export default class MultiLogSelectionRepository {
+  private static _instance: MultiLogSelectionRepository;
 
   private _onMultilogSelectionStorageUpdated =
     new SimpleEventDispatcher<WITSML_INDEX_TYPE>();
 
-  public static get Instance(): MultiLogSelectionService {
+  public static get Instance(): MultiLogSelectionRepository {
     return this._instance || (this._instance = new this());
   }
 

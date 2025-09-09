@@ -31,6 +31,7 @@ import { Server } from "../../../models/server.ts";
 import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 import { toDate } from "date-fns-tz";
 import styled from "styled-components";
+import { MultiLogMetadata } from "../../MultiLogUtils.tsx";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -39,14 +40,9 @@ interface CurveSpecificationMultiLog extends CurveSpecification {
 }
 
 interface MultiLogCurveSelectionValuesProps {
-  multiLogCurveInfos: LogCurveInfoRow[];
+  multiLogCurveInfoRows: LogCurveInfoRow[];
   logObjects: LogObject[];
-  logInfos: {
-    server: Server;
-    wellId: string;
-    wellboreId: string;
-    logId: string;
-  }[];
+  multiLogMetadatas: MultiLogMetadata[];
   isDepthIndex: boolean;
   startIndex: string | number;
   endIndex: string | number;
@@ -57,9 +53,9 @@ const MultiLogCurveSelectionValues = (
   props: MultiLogCurveSelectionValuesProps
 ): React.ReactElement => {
   const {
-    multiLogCurveInfos,
+    multiLogCurveInfoRows,
     logObjects,
-    logInfos,
+    multiLogMetadatas,
     isDepthIndex,
     startIndex,
     endIndex,
@@ -79,14 +75,14 @@ const MultiLogCurveSelectionValues = (
   >([]);
 
   useEffect(() => {
-    if (!isFetchedData && logInfos?.length > 0) {
+    if (!isFetchedData && multiLogMetadatas?.length > 0) {
       setIsFetchingData(true);
 
-      let fetchingCount = logInfos.length;
+      let fetchingCount = multiLogMetadatas.length;
       const logDatas: LogData[] = [];
 
-      for (const logInfo of logInfos) {
-        const mnemonics = multiLogCurveInfos.filter((lcir) => {
+      for (const logInfo of multiLogMetadatas) {
+        const mnemonics = multiLogCurveInfoRows.filter((lcir) => {
           const mlci = lcir.logCurveInfo as MultiLogCurveInfo;
           return (
             mlci.serverUrl == logInfo.server.url &&
@@ -207,7 +203,7 @@ const MultiLogCurveSelectionValues = (
         }
       }
     }
-  }, [multiLogCurveInfos, logObjects, logInfos]);
+  }, [multiLogCurveInfoRows, logObjects, multiLogMetadatas]);
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
     const newColumns = curveSpecifications.map((cs, idx) => {
@@ -355,7 +351,7 @@ const MultiLogCurveSelectionValues = (
             columns={columns}
             data={getTableData()}
             checkableRows={false}
-            stickyLeftColumns={2}
+            stickyLeftColumns={1}
             autoRefresh={false}
           />
         )}

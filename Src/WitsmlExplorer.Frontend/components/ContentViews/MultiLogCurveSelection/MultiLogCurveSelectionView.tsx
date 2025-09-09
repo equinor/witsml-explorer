@@ -1,7 +1,7 @@
 import ProgressSpinner from "../../ProgressSpinner.tsx";
-import MultiLogSelectionService from "../../MultiLogSelectionService.tsx";
+import MultiLogSelectionRepository from "../../MultiLogSelectionRepository.tsx";
 import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "../../Constants.tsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import LogObject from "../../../models/logObject.tsx";
 import { useGetServers } from "../../../hooks/query/useGetServers.tsx";
 import {
@@ -9,7 +9,8 @@ import {
   GetEndIndex,
   MultiLogSelectionCurveInfo,
   GetMultiLogWizardStepModalAction,
-  MultiLogWizardParams
+  MultiLogWizardParams,
+  MultiLogMetadata
 } from "../../MultiLogUtils.tsx";
 import MultiLogCurveSelectionList from "./MultiLogCurveSelectionList.tsx";
 import MultiLogCurveSelectionValues from "./MultiLogCurveSelectionValues.tsx";
@@ -38,13 +39,13 @@ export default function MultiLogCurveSelectionView() {
 
   const [multiLogSelectionCurveInfos, setMultiLogSelectionCurveInfos] =
     useState<MultiLogSelectionCurveInfo[]>([]);
-  const authorizedMultiLogSelectionCurveInfosRef = useRef<
-    MultiLogSelectionCurveInfo[]
-  >([]);
   const [logCurveInfoRows, setLogCurveInfoRows] = useState<LogCurveInfoRow[]>(
     []
   );
   const [logObjects, setLogObjects] = useState<LogObject[]>([]);
+  const [multiLogMetadatas, setMultiLogMetadatas] = useState<
+    MultiLogMetadata[]
+  >([]);
   const [indexTypeValue, setIndexTypeValue] =
     useState<WITSML_INDEX_TYPE>(WITSML_INDEX_TYPE_MD);
   const [isDepthIndexValue, setIsDepthIndexValue] = useState<boolean>(true);
@@ -56,127 +57,158 @@ export default function MultiLogCurveSelectionView() {
   );
   const [isAuthorizing, setIsAuthorizing] = useState<boolean>(true);
   const [isFetchingLogs, setIsFetchingLogs] = useState<boolean>(true);
-  const [isFetchedLogs, setIsFetchedLogs] = useState<boolean>(false);
   const [showValues, setShowValues] = useState<boolean>(false);
 
   const setupData = useCallback(
     async (curveInfos: MultiLogSelectionCurveInfo[]) => {
-      setIsFetchedLogs(false);
-      setIsFetchingLogs(true);
-
       if (curveInfos?.length > 0) {
+        setIsFetchingLogs(true);
         setIsAuthorizing(true);
+        const authorizedCurveInfos =
+          await getAuthorizedMultiLogSelectionCurveInfos(curveInfos);
+        setIsAuthorizing(false);
 
-        const checkedServers = new Map<string, boolean>();
-        let curveInfosLeftToCheck = curveInfos.length;
+        let newMultiLogMetadatas: MultiLogMetadata[] = [];
+        let newLogObjects: LogObject[] = [];
 
-        for (const curveInfo of curveInfos) {
-          if (checkedServers.has(curveInfo.serverId)) {
-            if (checkedServers.get(curveInfo.serverId)) {
-              authorizedMultiLogSelectionCurveInfosRef.current.push(curveInfo);
-            }
-            if (--curveInfosLeftToCheck < 1) {
-              setIsAuthorizing(false);
-              setMultiLogSelectionCurveInfos(
-                authorizedMultiLogSelectionCurveInfosRef.current
-              );
-            }
-          } else {
-            const serverToAuthorize = servers.find(
-              (s) => s.id === curveInfo.serverId
-            );
-
-            if (serverToAuthorize) {
-              let finished = false;
-              checkedServers.set(serverToAuthorize.id, false);
-
-              const userCredentialsModalProps: UserCredentialsModalProps = {
-                server: serverToAuthorize,
-                onConnectionVerified: (username) => {
-                  dispatchOperation({ type: OperationType.HideModal });
-                  AuthorizationService.onAuthorized(
-                    serverToAuthorize,
-                    username
-                  );
-                  dispatchLoggedInUsernames({
-                    type: LoggedInUsernamesActionType.AddLoggedInUsername,
-                    payload: { serverId: serverToAuthorize.id, username }
-                  });
-                  authorizedMultiLogSelectionCurveInfosRef.current.push(
-                    curveInfo
-                  );
-                  checkedServers.set(serverToAuthorize.id, true);
-                  if (--curveInfosLeftToCheck < 1) {
-                    setIsAuthorizing(false);
-                    setMultiLogSelectionCurveInfos(
-                      authorizedMultiLogSelectionCurveInfosRef.current
-                    );
-                  }
-                  finished = true;
-                },
-                onCancel: () => {
-                  checkedServers.set(serverToAuthorize.id, false);
-                  if (--curveInfosLeftToCheck < 1) {
-                    setIsAuthorizing(false);
-                    setMultiLogSelectionCurveInfos(
-                      authorizedMultiLogSelectionCurveInfosRef.current
-                    );
-                  }
-                  finished = true;
-                }
+        if (authorizedCurveInfos?.length > 0) {
+          newMultiLogMetadatas = authorizedCurveInfos
+            .filter(
+              (ci, idx) =>
+                curveInfos.findIndex(
+                  (cii) =>
+                    ci.serverId == cii.serverId &&
+                    ci.wellId == cii.wellId &&
+                    ci.wellboreId == cii.wellboreId &&
+                    ci.logUid == cii.logUid
+                ) === idx
+            )
+            .map((ci) => {
+              return {
+                server: servers.find((s) => s.id === ci.serverId),
+                wellId: ci.wellId,
+                wellboreId: ci.wellboreId,
+                logId: ci.logUid
               };
-              dispatchOperation({
-                type: OperationType.DisplayModal,
-                payload: <UserCredentialsModal {...userCredentialsModalProps} />
-              });
-              while (!finished) {
-                await new Promise((f) => setTimeout(f, 1000));
-              }
-            }
+            });
+
+          if (newMultiLogMetadatas?.length > 0) {
+            newLogObjects = await getLogObjects(newMultiLogMetadatas);
           }
         }
+        setLoadedData(
+          authorizedCurveInfos,
+          newMultiLogMetadatas,
+          newLogObjects
+        );
       } else {
         setIsAuthorizing(false);
-        setMultiLogSelectionCurveInfos([]);
+        setLoadedData([], [], []);
       }
     },
     [servers, isDepthIndexValue, indexTypeValue]
   );
 
-  const logInfos = useMemo(() => {
-    if (multiLogSelectionCurveInfos?.length > 0) {
-      return multiLogSelectionCurveInfos
-        .filter(
-          (ci, idx) =>
-            multiLogSelectionCurveInfos.findIndex(
-              (cii) =>
-                ci.serverId == cii.serverId &&
-                ci.wellId == cii.wellId &&
-                ci.wellboreId == cii.wellboreId &&
-                ci.logUid == cii.logUid
-            ) === idx
-        )
-        .map((ci) => {
-          return {
-            server: servers.find((s) => s.id === ci.serverId),
-            wellId: ci.wellId,
-            wellboreId: ci.wellboreId,
-            logId: ci.logUid
+  const setLoadedData = (
+    newCurveInfos: MultiLogSelectionCurveInfo[],
+    newMultiLogMetadatas: MultiLogMetadata[],
+    newLogObjects: LogObject[]
+  ) => {
+    setMultiLogSelectionCurveInfos(newCurveInfos ?? []);
+    setMultiLogMetadatas(newMultiLogMetadatas ?? []);
+    setLogObjects(newLogObjects ?? []);
+    setIsFetchingLogs(false);
+  };
+
+  const getAuthorizedMultiLogSelectionCurveInfos = async (
+    curveInfos: MultiLogSelectionCurveInfo[]
+  ) => {
+    const result: MultiLogSelectionCurveInfo[] = [];
+    const checkedServers = new Map<string, boolean>();
+    let curveInfosLeftToCheck = curveInfos.length;
+
+    for (const curveInfo of curveInfos) {
+      if (checkedServers.has(curveInfo.serverId)) {
+        if (checkedServers.get(curveInfo.serverId)) {
+          result.push(curveInfo);
+        }
+        if (--curveInfosLeftToCheck < 1) {
+          return result;
+        }
+      } else {
+        const serverToAuthorize = servers.find(
+          (s) => s.id === curveInfo.serverId
+        );
+
+        if (serverToAuthorize) {
+          let finished = false;
+          checkedServers.set(serverToAuthorize.id, false);
+
+          const userCredentialsModalProps: UserCredentialsModalProps = {
+            server: serverToAuthorize,
+            onConnectionVerified: (username) => {
+              dispatchOperation({ type: OperationType.HideModal });
+              AuthorizationService.onAuthorized(serverToAuthorize, username);
+              dispatchLoggedInUsernames({
+                type: LoggedInUsernamesActionType.AddLoggedInUsername,
+                payload: { serverId: serverToAuthorize.id, username }
+              });
+              result.push(curveInfo);
+              checkedServers.set(serverToAuthorize.id, true);
+              if (--curveInfosLeftToCheck < 1) {
+                return result;
+              }
+              finished = true;
+            },
+            onCancel: () => {
+              checkedServers.set(serverToAuthorize.id, false);
+              if (--curveInfosLeftToCheck < 1) {
+                return result;
+              }
+              finished = true;
+            }
           };
-        });
-    } else {
-      return [];
+          dispatchOperation({
+            type: OperationType.DisplayModal,
+            payload: <UserCredentialsModal {...userCredentialsModalProps} />
+          });
+          while (!finished) {
+            await new Promise((f) => setTimeout(f, 1000));
+          }
+        }
+      }
     }
-  }, [multiLogSelectionCurveInfos, isDepthIndexValue, indexTypeValue]);
+  };
+
+  const getLogObjects = async (multiLogMetadatas: MultiLogMetadata[]) => {
+    let los: LogObject[] = [];
+    let fetchingCount = multiLogMetadatas.length;
+    for (const multiLogMetadata of multiLogMetadatas) {
+      const logObject = await ObjectService.getObject(
+        multiLogMetadata.wellId,
+        multiLogMetadata.wellboreId,
+        multiLogMetadata.logId,
+        ObjectType.Log,
+        new AbortController().signal,
+        multiLogMetadata.server
+      );
+
+      los = los.concat(logObject);
+
+      if (--fetchingCount < 1) {
+        return los;
+      }
+    }
+  };
 
   useEffect(() => {
     const unsubscribe =
-      MultiLogSelectionService.Instance.onMultilogSelectionStorageUpdated.subscribe(
+      MultiLogSelectionRepository.Instance.onMultilogSelectionStorageUpdated.subscribe(
         (indexType: WITSML_INDEX_TYPE) => {
           setIndexTypeValue(indexType);
           setIsDepthIndexValue(indexType == WITSML_INDEX_TYPE_MD);
           const values =
-            MultiLogSelectionService.Instance.getMultiLogValues(indexType);
+            MultiLogSelectionRepository.Instance.getMultiLogValues(indexType);
           setupData(values?.curveInfos);
         }
       );
@@ -188,44 +220,11 @@ export default function MultiLogCurveSelectionView() {
 
   useEffect(() => {
     const values =
-      MultiLogSelectionService.Instance.getMultiLogValues(indexTypeValue);
+      MultiLogSelectionRepository.Instance.getMultiLogValues(indexTypeValue);
     if (!!servers && servers.length > 0) {
       setupData(values?.curveInfos);
     }
   }, [servers, indexTypeValue]);
-
-  useEffect(() => {
-    const getLogObjects = async () => {
-      if (logInfos?.length > 0 && !isFetchedLogs) {
-        setIsFetchingLogs(true);
-        let los: LogObject[] = [];
-        let fetchingCount = logInfos.length;
-        for (const logInfo of logInfos) {
-          const logObject = await ObjectService.getObject(
-            logInfo.wellId,
-            logInfo.wellboreId,
-            logInfo.logId,
-            ObjectType.Log,
-            new AbortController().signal,
-            logInfo.server
-          );
-
-          los = los.concat(logObject);
-
-          if (--fetchingCount < 1) {
-            setLogObjects(los);
-            setIsFetchingLogs(false);
-            setIsFetchedLogs(true);
-          }
-        }
-      } else {
-        setLogObjects([]);
-        setIsFetchingLogs(false);
-        setIsFetchedLogs(false);
-      }
-    };
-    getLogObjects();
-  }, [logInfos, multiLogSelectionCurveInfos]);
 
   const onAdd = () => {
     const action = GetMultiLogWizardStepModalAction(
@@ -234,7 +233,7 @@ export default function MultiLogCurveSelectionView() {
       } as MultiLogWizardParams,
       (r) => {
         if (r?.curveInfos?.length > 0) {
-          MultiLogSelectionService.Instance.addMultiLogValues(
+          MultiLogSelectionRepository.Instance.addMultiLogValues(
             r.indexType,
             r.curveInfos,
             true
@@ -254,7 +253,7 @@ export default function MultiLogCurveSelectionView() {
         }
         onConfirm={() => {
           dispatchOperation({ type: OperationType.HideModal });
-          MultiLogSelectionService.Instance.removeAllMultiLogValues(
+          MultiLogSelectionRepository.Instance.removeAllMultiLogValues(
             indexTypeValue
           );
         }}
@@ -297,7 +296,7 @@ export default function MultiLogCurveSelectionView() {
               } as MultiLogSelectionCurveInfo;
             }
           );
-          MultiLogSelectionService.Instance.removeMultiLogValues(
+          MultiLogSelectionRepository.Instance.removeMultiLogValues(
             indexTypeValue,
             mlcis
           );
@@ -345,9 +344,9 @@ export default function MultiLogCurveSelectionView() {
         <ProgressSpinner message="Fetching data" />
       ) : showValues ? (
         <MultiLogCurveSelectionValues
-          multiLogCurveInfos={logCurveInfoRows}
+          multiLogCurveInfoRows={logCurveInfoRows}
           logObjects={logObjects}
-          logInfos={logInfos}
+          multiLogMetadatas={multiLogMetadatas}
           isDepthIndex={isDepthIndexValue}
           startIndex={startIndexValue}
           endIndex={endIndexValue}
@@ -356,7 +355,7 @@ export default function MultiLogCurveSelectionView() {
       ) : (
         <MultiLogCurveSelectionList
           multiLogSelectionCurveInfos={multiLogSelectionCurveInfos}
-          logInfos={logInfos}
+          multiLogMetadatas={multiLogMetadatas}
           logObjects={logObjects}
           indexType={indexTypeValue}
           onIndexTypeChange={setIndexTypeValue}

@@ -43,7 +43,7 @@ import {
   GetMultiLogWizardStepModalAction,
   MultiLogWizardParams
 } from "../MultiLogUtils.tsx";
-import MultiLogSelectionService from "../MultiLogSelectionService.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import { useNavigate } from "react-router-dom";
 import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
 
@@ -96,7 +96,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       } as MultiLogWizardParams,
       (r) => {
         if (r?.curveInfos?.length > 0) {
-          MultiLogSelectionService.Instance.addMultiLogValues(
+          MultiLogSelectionRepository.Instance.addMultiLogValues(
             r.indexType,
             r.curveInfos,
             true

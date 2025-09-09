@@ -8,11 +8,11 @@ import {
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
 import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
 import LogObject from "../../../models/logObject.tsx";
-import { Server } from "../../../models/server.ts";
 import LogObjectService from "../../../services/logObjectService.tsx";
 import LogCurveInfo from "../../../models/logCurveInfo.ts";
 import {
   MultiLogCurveInfoViewData,
+  MultiLogMetadata,
   MultiLogSelectionCurveInfo
 } from "../../MultiLogUtils.tsx";
 import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
@@ -29,12 +29,7 @@ import { Colors } from "../../../styles/Colors.tsx";
 
 interface MultiLogCurveSelectionListProps {
   multiLogSelectionCurveInfos: MultiLogSelectionCurveInfo[];
-  logInfos: {
-    server: Server;
-    wellId: string;
-    wellboreId: string;
-    logId: string;
-  }[];
+  multiLogMetadatas: MultiLogMetadata[];
   logObjects: LogObject[];
   indexType: WITSML_INDEX_TYPE;
   onIndexTypeChange: (indexType: WITSML_INDEX_TYPE) => void;
@@ -49,7 +44,7 @@ const MultiLogCurveSelectionList = (
 ): React.ReactElement => {
   const {
     multiLogSelectionCurveInfos,
-    logInfos,
+    multiLogMetadatas,
     logObjects,
     indexType,
     onIndexTypeChange,
@@ -77,7 +72,11 @@ const MultiLogCurveSelectionList = (
 
   useEffect(() => {
     const getLogObjects = async () => {
-      if (!isFetchedLogs && logInfos?.length > 0 && logObjects?.length > 0) {
+      if (
+        !isFetchedLogs &&
+        multiLogMetadatas?.length > 0 &&
+        logObjects?.length > 0
+      ) {
         setIsFetchingLogs(true);
 
         let logInfoProcessed: {
@@ -93,7 +92,7 @@ const MultiLogCurveSelectionList = (
         const logCurveInfos: MultiLogCurveInfoViewData[] = [];
         const indexCurveInfos: LogCurveInfo[] = [];
 
-        for (const logInfo of logInfos) {
+        for (const logInfo of multiLogMetadatas) {
           if (
             logInfoProcessed.some(
               (lip) =>
@@ -105,7 +104,7 @@ const MultiLogCurveSelectionList = (
             continue;
           }
 
-          const logs = logInfos.filter(
+          const logs = multiLogMetadatas.filter(
             (lo) =>
               lo.wellboreId == logInfo.wellboreId &&
               lo.wellId == logInfo.wellId &&
@@ -169,7 +168,7 @@ const MultiLogCurveSelectionList = (
       }
     };
     getLogObjects();
-  }, [logInfos, logObjects]);
+  }, [multiLogMetadatas, logObjects]);
 
   const updateSelectedRows = (rows: LogCurveInfoRow[]) => {
     if (rows.length > 1) {
@@ -196,9 +195,6 @@ const MultiLogCurveSelectionList = (
 
   const columns: ContentTableColumn[] = useMemo(() => {
     return [
-      ...(!isDepthIndex
-        ? [{ property: "isActive", label: "active", type: ContentType.String }]
-        : []),
       { property: "mnemonic", label: "mnemonic", type: ContentType.String },
       { property: "serverName", label: "serverName", type: ContentType.String },
       { property: "wellName", label: "wellName", type: ContentType.String },
@@ -247,6 +243,7 @@ const MultiLogCurveSelectionList = (
       <StyledAutocomplete
         id={"indexType"}
         label={"Index type:"}
+        hideClearButton={true}
         selectedOptions={[indexType]}
         options={[WITSML_INDEX_TYPE_MD, WITSML_INDEX_TYPE_DATE_TIME]}
         onOptionsChange={(changes) => {
@@ -272,7 +269,10 @@ const MultiLogCurveSelectionList = (
       </Button>
     </CommonPanelContainer>,
     <CommonPanelContainer key="removeAllPanel">
-      <Button disabled={logInfos?.length == 0} onClick={() => onRemoveAll()}>
+      <Button
+        disabled={multiLogMetadatas?.length == 0}
+        onClick={() => onRemoveAll()}
+      >
         Remove All
       </Button>
     </CommonPanelContainer>,
@@ -310,6 +310,7 @@ const MultiLogCurveSelectionList = (
               isDepthIndex
             )}
             checkableRows={true}
+            stickyLeftColumns={3}
             onRowSelectionChange={(rows) =>
               updateSelectedRows(rows as LogCurveInfoRow[])
             }

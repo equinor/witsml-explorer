@@ -17,6 +17,13 @@ import SelectWellboreStepModal, {
 import { LogCurveInfoRow } from "./ContentViews/LogCurveInfoListViewUtils.tsx";
 import MultiLogCurveInfo from "../models/multilogCurveInfo.ts";
 
+export interface MultiLogMetadata {
+  server: Server;
+  wellId: string;
+  wellboreId: string;
+  logId: string;
+}
+
 export interface MultiLogSelectionValues {
   curveInfos: MultiLogSelectionCurveInfo[];
 }
