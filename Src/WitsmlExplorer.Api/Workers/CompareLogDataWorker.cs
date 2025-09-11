@@ -17,7 +17,6 @@ using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
-using WitsmlExplorer.Api.Workers.Copy;
 
 namespace WitsmlExplorer.Api.Workers
 {
@@ -133,7 +132,7 @@ namespace WitsmlExplorer.Api.Workers
             }
             catch (ArgumentException e)
             {
-                string message = $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'";
+                string message = $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}': {e.Message}";
                 Logger.LogError(message);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message, e.Message, jobId: job.JobInfo.Id, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }

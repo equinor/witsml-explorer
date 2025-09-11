@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -69,9 +68,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
                 logData = await logDataReader.GetNextBatch();
             }
 
-            currentElapsedDuration++;
-            var progress = (((double)currentElapsedDuration /
-                             totalEstimatedDuration));
+            var progress = (double)Interlocked.Increment(ref currentElapsedDuration) / totalEstimatedDuration;
 
             job.ProgressReporter?.Report(progress);
             if (job.JobInfo != null) job.JobInfo.Progress = progress;
