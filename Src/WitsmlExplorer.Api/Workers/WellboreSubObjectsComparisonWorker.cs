@@ -135,6 +135,9 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         var resultList = new List<WellboreSubObjectsComparisonItem>();
         var sameLogs = sourceLogs.Logs.Where(item1 =>
             targetLogs.Logs.Any(item2 => item1.Uid == item2.Uid)).ToList();
+
+        var totalObjects = sameLogs.Count * 2;
+        var currentIndex = 0;
         foreach (var witsmlLog in sameLogs)
         {
             var firstLogCurveInfo = witsmlLog.LogCurveInfo!;
@@ -154,8 +157,17 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                         job.CheckDepthBasedLogsData && witsmlLog.IndexType ==
                         WitsmlLog.WITSML_INDEX_TYPE_MD)
                     {
+
+                        IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
+                        {
+                            currentIndex++;
+                            var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress / totalObjects);
+                            if (job.JobInfo != null) job.JobInfo.Progress = progress;
+                            job.ProgressReporter?.Report(progress);
+                        });
+
                         var countLogsData = await CountLogsData(witsmlLog,
-                            targetLog, cancellationToken);
+                            targetLog, subJobProgressReporter, cancellationToken);
                         resultList.AddRange(countLogsData);
                     }
                 }
@@ -231,7 +243,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         return resultList;
     }
 
-    private async Task<List<WellboreSubObjectsComparisonItem>> CountLogsData(WitsmlLog sourceLog, WitsmlLog targetLog, CancellationToken? cancellationToken)
+    private async Task<List<WellboreSubObjectsComparisonItem>> CountLogsData(WitsmlLog sourceLog, WitsmlLog targetLog, IProgress<double> progressReporter, CancellationToken? cancellationToken)
     {
         var resultList = new List<WellboreSubObjectsComparisonItem>();
         var countLogsDataJobSource = new CountLogDataRowJob()
@@ -242,8 +254,9 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 WellUid = sourceLog.UidWell,
                 WellboreUid = sourceLog.UidWellbore,
                 IndexCurve = sourceLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD ? "Depth" : "Time",
-                IndexType = sourceLog.IndexType
-            }
+                IndexType = sourceLog.IndexType,
+            },
+            ProgressReporter = progressReporter,
         };
         (WorkerResult WorkerResult, RefreshAction) resultOfTarget = await _countLogDataRowWorker.Execute(countLogsDataJobSource, cancellationToken);
         if (resultOfTarget.WorkerResult.IsSuccess == false)
@@ -271,6 +284,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 IndexCurve = targetLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD ? "Depth" : "Time",
                 IndexType = targetLog.IndexType,
             },
+            ProgressReporter = progressReporter,
             UseTargetClient = false
         };
         (WorkerResult WorkerResult, RefreshAction) resultOfSource = await _countLogDataRowWorker.Execute(countLogsDataJobTarget, cancellationToken);

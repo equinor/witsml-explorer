@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -55,7 +56,8 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
         }
 
         var logMnemonics = witsmlLog.LogCurveInfo.Where(x => x.Mnemonic != indexCurve).Select(x => x.Mnemonic).ToList();
-
+        var totalEstimatedDuration = logMnemonics.Count;
+        var currentElapsedDuration = 0;
         var countLogDataReportItemTasks = logMnemonics.Select(async mnemonic =>
         {
             int mnemonicLogDataRowsCount = 0;
@@ -66,6 +68,13 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
                 mnemonicLogDataRowsCount += logData.Data?.Count ?? 0;
                 logData = await logDataReader.GetNextBatch();
             }
+
+            currentElapsedDuration++;
+            var progress = (((double)currentElapsedDuration /
+                             totalEstimatedDuration));
+
+            job.ProgressReporter?.Report(progress);
+            if (job.JobInfo != null) job.JobInfo.Progress = progress;
 
             return new CountLogDataReportItem() { Mnemonic = mnemonic, LogDataCount = mnemonicLogDataRowsCount };
         }).ToList();
