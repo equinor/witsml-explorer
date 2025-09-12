@@ -47,6 +47,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
         List<CountLogDataReportItem> countLogDataReportItems = new();
 
         var witsmlLog = await LogWorkerTools.GetLog(job.UseTargetClient ? GetTargetWitsmlClientOrThrow() : GetSourceWitsmlClientOrThrow(), job.LogReference, ReturnElements.HeaderOnly);
+        cancellationToken?.ThrowIfCancellationRequested();
         if (witsmlLog == null)
         {
             var message = $"CountLogDataRowWorkerJob failed. Cannot find the witsml log for {job.Description()}";
@@ -64,6 +65,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             while (logData != null)
             {
+                cancellationToken?.ThrowIfCancellationRequested();
                 mnemonicLogDataRowsCount += logData.Data?.Count ?? 0;
                 logData = await logDataReader.GetNextBatch();
             }

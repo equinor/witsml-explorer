@@ -85,6 +85,8 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         var sourceLogs = await GetLogs(job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, sourceClient);
         ReportProgress(job, 0.1);
 
+        cancellationToken?.ThrowIfCancellationRequested();
+
         reportItems.AddRange(FindMissingObjects(objectsOnSourceWellbore,
             objectsOnTargetWellbore, true));
         reportItems.AddRange(FindMissingObjects(objectsOnTargetWellbore,
