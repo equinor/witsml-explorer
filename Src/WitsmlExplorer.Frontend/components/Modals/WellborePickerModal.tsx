@@ -128,11 +128,11 @@ const WellborePickerModal = ({
         countLogsData:
           performDeepLogComparison &&
           selectedCheckOption ===
-            CheckOptions.CompareValuesOfDataPointsPerMnemonic,
+            CheckOptions.CompareNumberOfDataPointsPerMnemonic,
         checkLogsData:
           performDeepLogComparison &&
           selectedCheckOption ===
-            CheckOptions.CompareNumberOfDataPointsPerMnemonic,
+            CheckOptions.CompareValuesOfDataPointsPerMnemonic,
         checkTimeBasedLogsData:
           (selectedCheckOption ===
             CheckOptions.CompareNumberOfDataPointsPerMnemonic &&
