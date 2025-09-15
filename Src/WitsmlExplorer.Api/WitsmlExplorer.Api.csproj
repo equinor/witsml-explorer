@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="NetCore.AutoRegisterDi" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Expressions" />
