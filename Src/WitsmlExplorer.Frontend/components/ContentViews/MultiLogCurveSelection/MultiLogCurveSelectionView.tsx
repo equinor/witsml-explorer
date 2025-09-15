@@ -31,11 +31,13 @@ import IndexRangeSelectionModal, {
 import { DisplayModalAction } from "../../../contexts/operationStateReducer.tsx";
 import ConfirmModal from "../../Modals/ConfirmModal.tsx";
 import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
+import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
 
 export default function MultiLogCurveSelectionView() {
   const { dispatchOperation } = useOperationState();
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
   const { servers } = useGetServers();
+  const { connectedServer } = useConnectedServer();
 
   const [multiLogSelectionCurveInfos, setMultiLogSelectionCurveInfos] =
     useState<MultiLogSelectionCurveInfo[]>([]);
@@ -60,8 +62,14 @@ export default function MultiLogCurveSelectionView() {
   const [showValues, setShowValues] = useState<boolean>(false);
 
   const setupData = useCallback(
-    async (curveInfos: MultiLogSelectionCurveInfo[]) => {
-      if (curveInfos?.length > 0) {
+    async (indexType: WITSML_INDEX_TYPE) => {
+      const multiLogValues =
+        MultiLogSelectionRepository.Instance.getMultiLogValues(indexType);
+
+      if (multiLogValues?.curveInfos?.length > 0) {
+        const curveInfos: MultiLogSelectionCurveInfo[] =
+          multiLogValues.curveInfos;
+
         setIsFetchingLogs(true);
         setIsAuthorizing(true);
         const authorizedCurveInfos =
@@ -125,15 +133,15 @@ export default function MultiLogCurveSelectionView() {
   ) => {
     const result: MultiLogSelectionCurveInfo[] = [];
     const checkedServers = new Map<string, boolean>();
-    let curveInfosLeftToCheck = curveInfos.length;
+
+    if (connectedServer) {
+      checkedServers.set(connectedServer.id, true);
+    }
 
     for (const curveInfo of curveInfos) {
       if (checkedServers.has(curveInfo.serverId)) {
         if (checkedServers.get(curveInfo.serverId)) {
           result.push(curveInfo);
-        }
-        if (--curveInfosLeftToCheck < 1) {
-          return result;
         }
       } else {
         const serverToAuthorize = servers.find(
@@ -155,16 +163,10 @@ export default function MultiLogCurveSelectionView() {
               });
               result.push(curveInfo);
               checkedServers.set(serverToAuthorize.id, true);
-              if (--curveInfosLeftToCheck < 1) {
-                return result;
-              }
               finished = true;
             },
             onCancel: () => {
               checkedServers.set(serverToAuthorize.id, false);
-              if (--curveInfosLeftToCheck < 1) {
-                return result;
-              }
               finished = true;
             }
           };
@@ -178,11 +180,12 @@ export default function MultiLogCurveSelectionView() {
         }
       }
     }
+
+    return result;
   };
 
   const getLogObjects = async (multiLogMetadatas: MultiLogMetadata[]) => {
-    let los: LogObject[] = [];
-    let fetchingCount = multiLogMetadatas.length;
+    const los: LogObject[] = [];
     for (const multiLogMetadata of multiLogMetadatas) {
       const logObject = await ObjectService.getObject(
         multiLogMetadata.wellId,
@@ -192,13 +195,9 @@ export default function MultiLogCurveSelectionView() {
         new AbortController().signal,
         multiLogMetadata.server
       );
-
-      los = los.concat(logObject);
-
-      if (--fetchingCount < 1) {
-        return los;
-      }
+      los.push(logObject);
     }
+    return los;
   };
 
   useEffect(() => {
@@ -207,9 +206,7 @@ export default function MultiLogCurveSelectionView() {
         (indexType: WITSML_INDEX_TYPE) => {
           setIndexTypeValue(indexType);
           setIsDepthIndexValue(indexType == WITSML_INDEX_TYPE_MD);
-          const values =
-            MultiLogSelectionRepository.Instance.getMultiLogValues(indexType);
-          setupData(values?.curveInfos);
+          setupData(indexType);
         }
       );
 
@@ -219,12 +216,16 @@ export default function MultiLogCurveSelectionView() {
   }, [servers]);
 
   useEffect(() => {
-    const values =
-      MultiLogSelectionRepository.Instance.getMultiLogValues(indexTypeValue);
     if (!!servers && servers.length > 0) {
-      setupData(values?.curveInfos);
+      setupData(indexTypeValue);
     }
-  }, [servers, indexTypeValue]);
+  }, [servers]);
+
+  const onIndexTypeChange = (indexType: WITSML_INDEX_TYPE) => {
+    setIndexTypeValue(indexType);
+    setIsDepthIndexValue(indexType == WITSML_INDEX_TYPE_MD);
+    setupData(indexType);
+  };
 
   const onAdd = () => {
     const action = GetMultiLogWizardStepModalAction(
@@ -312,6 +313,10 @@ export default function MultiLogCurveSelectionView() {
     });
   };
 
+  const onRefresh = () => {
+    setupData(indexTypeValue);
+  };
+
   const onShowValues = (selectedRows: LogCurveInfoRow[]) => {
     const props: IndexRangeSelectionModalProps = {
       isDepthIndex: isDepthIndexValue,
@@ -358,9 +363,10 @@ export default function MultiLogCurveSelectionView() {
           multiLogMetadatas={multiLogMetadatas}
           logObjects={logObjects}
           indexType={indexTypeValue}
-          onIndexTypeChange={setIndexTypeValue}
+          onIndexTypeChange={onIndexTypeChange}
           onAdd={onAdd}
           onRemoveAll={onRemoveAll}
+          onRefresh={onRefresh}
           onRemoveSelected={onRemoveSelected}
           onShowValues={onShowValues}
         />

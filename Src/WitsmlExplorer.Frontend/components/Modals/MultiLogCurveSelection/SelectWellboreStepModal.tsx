@@ -42,6 +42,7 @@ import UserCredentialsModal, {
 import AuthorizationService from "../../../services/authorizationService.ts";
 import { LoggedInUsernamesActionType } from "../../../contexts/loggedInUsernamesReducer.tsx";
 import { useLoggedInUsernames } from "../../../contexts/loggedInUsernamesContext.tsx";
+import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
 
 export interface SelectWellboreStepModalProps {
   targetServer?: Server;
@@ -67,6 +68,7 @@ const SelectWellboreStepModal = (
   } = useOperationState();
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
   const { servers } = useGetServers();
+  const { connectedServer } = useConnectedServer();
 
   const [targetServerValue, setTargetServerValue] =
     useState<Server>(targetServer);
@@ -95,28 +97,32 @@ const SelectWellboreStepModal = (
   const [selectedWellbores, setSelectedWellbores] = useState<Wellbore[]>([]);
 
   const onTargetServerChange = (targetServer: Server) => {
-    const userCredentialsModalProps: UserCredentialsModalProps = {
-      server: targetServer,
-      onConnectionVerified: (username) => {
-        dispatchOperation({ type: OperationType.HideModal });
-        AuthorizationService.onAuthorized(targetServer, username);
-        AuthorizationService.setSelectedServer(targetServer);
-        dispatchLoggedInUsernames({
-          type: LoggedInUsernamesActionType.AddLoggedInUsername,
-          payload: { serverId: targetServer.id, username }
-        });
-        setTargetServerValue(targetServer);
-      }
-    };
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <UserCredentialsModal {...userCredentialsModalProps} />
-    });
+    if (!!connectedServer && connectedServer.id === targetServer.id) {
+      setTargetServerValue(targetServer);
+    } else {
+      const userCredentialsModalProps: UserCredentialsModalProps = {
+        server: targetServer,
+        onConnectionVerified: (username) => {
+          dispatchOperation({ type: OperationType.HideModal });
+          AuthorizationService.onAuthorized(targetServer, username);
+          AuthorizationService.setSelectedServer(targetServer);
+          dispatchLoggedInUsernames({
+            type: LoggedInUsernamesActionType.AddLoggedInUsername,
+            payload: { serverId: targetServer.id, username }
+          });
+          setTargetServerValue(targetServer);
+        }
+      };
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: <UserCredentialsModal {...userCredentialsModalProps} />
+      });
+    }
   };
 
   const loadedWells = useMemo(() => {
     if (!isFetchingWells && !!wells && wells.length > 0) {
-      return wells.toSorted((a, b) => a.name.localeCompare(b.name));
+      return wells.toSorted((w1, w2) => w1.name.localeCompare(w2.name));
     } else {
       return [];
     }
@@ -124,7 +130,9 @@ const SelectWellboreStepModal = (
 
   const loadedWellbores = useMemo(() => {
     if (!isFetchingWellbores && !!wellbores && wellbores.length > 0) {
-      return wellbores?.toSorted((a, b) => a.name.localeCompare(b.name));
+      return wellbores?.toSorted((wb1, wb2) =>
+        wb1.name.localeCompare(wb2.name)
+      );
     } else {
       return [];
     }

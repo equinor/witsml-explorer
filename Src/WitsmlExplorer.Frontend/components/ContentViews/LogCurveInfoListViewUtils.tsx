@@ -135,7 +135,8 @@ export const getTableData = (
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
   isDepthIndex: boolean,
-  logUid: string = null
+  logUid: string = null,
+  extendLogCurveInfoObject: boolean = false
 ) => {
   if (!logCurveInfoList) return [];
 
@@ -190,7 +191,6 @@ export const getTableData = (
             : `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         logName: logObject.name + getNameOccurrenceSuffix(allLogs, logObject),
         logUid: logObject.uid,
-        serverUrl: logCurveInfo.serverUrl,
         mnemonic: logCurveInfo.mnemonic,
         minIndex: isDepthIndex
           ? logCurveInfo.minDepthIndex
@@ -221,7 +221,8 @@ export const getTableData = (
         isVisibleFunction: isVisibleFunction(isActive),
         qcInfo,
         qcTimestamp,
-        logCurveInfo
+        logCurveInfo,
+        ...(extendLogCurveInfoObject ? logCurveInfo : undefined)
       };
     })
     .sort((curve, curve2) => {

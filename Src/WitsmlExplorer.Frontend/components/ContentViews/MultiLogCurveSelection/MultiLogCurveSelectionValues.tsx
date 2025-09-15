@@ -7,14 +7,13 @@ import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
 import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
 import ProgressSpinner from "../../ProgressSpinner.tsx";
 import { CurveValuesPlot } from "../CurveValuesPlot.tsx";
-import { WITSML_LOG_ORDERTYPE_DECREASING } from "../../Constants.tsx";
 import {
   ContentTable,
   ContentTableRow,
   ContentType,
   ExportableContentTableColumn
 } from "../table";
-import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Icon, Switch, Typography } from "@equinor/eds-core-react";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
 import formatDateString from "../../DateFormatter.ts";
 import {
@@ -32,6 +31,7 @@ import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 import { toDate } from "date-fns-tz";
 import styled from "styled-components";
 import { MultiLogMetadata } from "../../MultiLogUtils.tsx";
+import { RouterLogType } from "../../../routes/routerConstants.ts";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -66,7 +66,7 @@ const MultiLogCurveSelectionValues = (
   } = useOperationState();
 
   const [isFetchingData, setIsFetchingData] = useState<boolean>(true);
-  const [isFetchedData, setIsFetchedData] = useState<boolean>(false);
+  // const [isFetchedData, setIsFetchedData] = useState<boolean>(false);
 
   const [showPlot, setShowPlot] = useState<boolean>(false);
   const [tableData, setTableData] = useState<CurveValueRow[]>([]);
@@ -75,159 +75,152 @@ const MultiLogCurveSelectionValues = (
   >([]);
 
   useEffect(() => {
-    if (!isFetchedData && multiLogMetadatas?.length > 0) {
-      setIsFetchingData(true);
+    const setupData = async () => {
+      let curveSpecifications: CurveSpecification[] = [];
+      const logDataRows = [];
 
-      let fetchingCount = multiLogMetadatas.length;
-      const logDatas: LogData[] = [];
+      if (multiLogMetadatas?.length > 0) {
+        setIsFetchingData(true);
 
-      for (const logInfo of multiLogMetadatas) {
-        const mnemonics = multiLogCurveInfoRows.filter((lcir) => {
-          const mlci = lcir.logCurveInfo as MultiLogCurveInfo;
-          return (
-            mlci.serverUrl == logInfo.server.url &&
-            lcir.wellUid == logInfo.wellId &&
-            lcir.wellboreUid == logInfo.wellboreId &&
-            mlci.logUid == logInfo.logId
-          );
-        });
+        const logDatas: LogData[] = [];
 
-        if (mnemonics?.length > 0) {
-          const logMnemonics: Record<string, string[]> = {
-            [logInfo.logId]: mnemonics.map((mlci) => mlci.mnemonic)
-          };
+        for (const logInfo of multiLogMetadatas) {
+          const mnemonics = multiLogCurveInfoRows.filter((lcir) => {
+            const mlci = lcir.logCurveInfo as MultiLogCurveInfo;
+            return (
+              mlci.serverUrl == logInfo.server.url &&
+              lcir.wellUid == logInfo.wellId &&
+              lcir.wellboreUid == logInfo.wellboreId &&
+              mlci.logUid == logInfo.logId
+            );
+          });
 
-          LogObjectService.getMultiLogData(
-            logInfo.wellId,
-            logInfo.wellboreId,
-            logMnemonics,
-            true,
-            startIndex.toString(),
-            endIndex.toString(),
-            new AbortController().signal,
-            logInfo.server
-          )
-            .then((logData) => {
-              if (logData?.data) {
-                logDatas.push(
-                  getLogDataWithProperNames(logData, logObjects, logInfo.server)
-                );
+          if (mnemonics?.length > 0) {
+            const logMnemonics: Record<string, string[]> = {
+              [logInfo.logId]: mnemonics.map((mlci) => mlci.mnemonic)
+            };
+
+            const logData = await LogObjectService.getMultiLogData(
+              logInfo.wellId,
+              logInfo.wellboreId,
+              logMnemonics,
+              true,
+              startIndex.toString(),
+              endIndex.toString(),
+              new AbortController().signal,
+              logInfo.server
+            );
+
+            if (logData?.data) {
+              logDatas.push(
+                getLogDataWithProperNames(logData, logObjects, logInfo.server)
+              );
+            }
+          }
+        }
+
+        if (logDatas.length > 0) {
+          curveSpecifications = [...logDatas[0].curveSpecifications];
+          const mainIndexCurve = curveSpecifications[0].mnemonic;
+
+          for (let i = 1; i < logDatas.length; i++) {
+            curveSpecifications.push(
+              ...logDatas[i].curveSpecifications.slice(1)
+            );
+          }
+
+          let joinedIndexValues: (string | number | boolean)[] =
+            logDatas[0].data.map((d) => d[mainIndexCurve]);
+
+          for (let i = 1; i < logDatas.length; i++) {
+            const indexValues = logDatas[i].data.map(
+              (d) => d[logDatas[i].curveSpecifications[0].mnemonic]
+            );
+            joinedIndexValues = joinedIndexValues.concat(indexValues);
+          }
+
+          joinedIndexValues = isDepthIndex
+            ? joinedIndexValues.toSorted(
+                (iv1, iv2) => (iv1 as number) - (iv2 as number)
+              )
+            : joinedIndexValues.toSorted(
+                (iv1, iv2) =>
+                  toDate(iv1 as string).getTime() -
+                  toDate(iv2 as string).getTime()
+              );
+
+          const lastIndexValue = joinedIndexValues[0];
+          const totalIndexValues = [joinedIndexValues[0]];
+          for (const indexValue of joinedIndexValues) {
+            if (indexValue !== lastIndexValue) {
+              totalIndexValues.push(indexValue);
+            }
+          }
+
+          for (const indexValue of totalIndexValues) {
+            let data = {
+              id: String(indexValue),
+              [mainIndexCurve]: indexValue
+            };
+
+            for (const logData of logDatas) {
+              const logDataRow = logData.data.find(
+                (d) => d[logData.curveSpecifications[0].mnemonic] === indexValue
+              );
+
+              for (let i = 1; i < logData.curveSpecifications.length; i++) {
+                data = {
+                  ...data,
+                  [logData.curveSpecifications[i].mnemonic]: logDataRow
+                    ? logDataRow[logData.curveSpecifications[i].mnemonic]
+                    : undefined
+                };
               }
-            })
-            .finally(() => {
-              fetchingCount--;
-              if (fetchingCount < 1) {
-                if (logDatas.length > 0) {
-                  const curveSpecifications = [
-                    ...logDatas[0].curveSpecifications
-                  ];
-                  const mainIndexCurve = curveSpecifications[0].mnemonic;
-                  let totalIndexValues = logDatas[0].data.map(
-                    (d) => d[mainIndexCurve]
-                  );
+            }
 
-                  for (let i = 1; i < logDatas.length; i++) {
-                    const indexValues = logDatas[i].data.map(
-                      (d) => d[logDatas[i].curveSpecifications[0].mnemonic]
-                    );
-                    const joinedIndexValues = isDepthIndex
-                      ? totalIndexValues
-                          .concat(indexValues)
-                          .toSorted(
-                            (iv1, iv2) => (iv1 as number) - (iv2 as number)
-                          )
-                      : totalIndexValues
-                          .concat(indexValues)
-                          .toSorted(
-                            (iv1, iv2) =>
-                              toDate(iv1 as string).getTime() -
-                              toDate(iv2 as string).getTime()
-                          );
-
-                    const lastIndexValue = joinedIndexValues[0];
-                    totalIndexValues = [joinedIndexValues[0]];
-                    for (const indexValue of joinedIndexValues) {
-                      if (indexValue !== lastIndexValue) {
-                        totalIndexValues.push(indexValue);
-                      }
-                    }
-                  }
-
-                  for (let i = 1; i < logDatas.length; i++) {
-                    curveSpecifications.push(
-                      ...logDatas[i].curveSpecifications.slice(1)
-                    );
-                  }
-
-                  updateColumns(curveSpecifications);
-
-                  const logDataRows = [];
-
-                  for (const indexValue of totalIndexValues) {
-                    let data = {
-                      id: String(indexValue),
-                      [mainIndexCurve]: indexValue
-                    };
-                    for (const logData of logDatas) {
-                      const logDataRow = logData.data.find(
-                        (d) =>
-                          d[logData.curveSpecifications[0].mnemonic] ===
-                          indexValue
-                      );
-
-                      for (
-                        let i = 1;
-                        i < logData.curveSpecifications.length;
-                        i++
-                      ) {
-                        data = {
-                          ...data,
-                          [logData.curveSpecifications[i].mnemonic]: logDataRow
-                            ? logDataRow[
-                                logData.curveSpecifications[i].mnemonic
-                              ]
-                            : undefined
-                        };
-                      }
-                    }
-
-                    logDataRows.push(data);
-                  }
-
-                  setTableData(logDataRows);
-                }
-                setIsFetchingData(false);
-                setIsFetchedData(true);
-              }
-            });
+            logDataRows.push(data);
+          }
         }
       }
-    }
-  }, [multiLogCurveInfoRows, logObjects, multiLogMetadatas]);
+
+      updateColumns(curveSpecifications);
+      setTableData(logDataRows);
+      setIsFetchingData(false);
+    };
+    setupData();
+  }, []);
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
-    const newColumns = curveSpecifications.map((cs, idx) => {
-      const curveSpecification = cs as CurveSpecificationMultiLog;
-      return {
-        columnOf: curveSpecification,
-        property: curveSpecification.mnemonic,
-        label:
-          (idx === 0
-            ? isDepthIndex
-              ? "Depth"
-              : "Time"
-            : `[${curveSpecification.server.name}] ${curveSpecification.mnemonic}`) +
-          `(${curveSpecification.unit})`,
-        type: getColumnType(curveSpecification)
-      };
-    });
-    const prevMnemonics = columns.map((column) => column.property);
-    const newMnemonics = newColumns.map((column) => column.property);
-    if (
-      prevMnemonics.length !== newMnemonics.length ||
-      prevMnemonics.some((value, index) => value !== newMnemonics[index])
-    ) {
-      setColumns(newColumns);
+    if (curveSpecifications?.length > 0) {
+      const newColumns = curveSpecifications.map((cs, idx) => {
+        const curveSpecification = cs as CurveSpecificationMultiLog;
+        return {
+          columnOf: curveSpecification,
+          property: curveSpecification.mnemonic,
+          label:
+            (idx === 0
+              ? isDepthIndex
+                ? "Depth"
+                : "Time"
+              : `[${curveSpecification.server.name}] ${curveSpecification.mnemonic}`) +
+            `(${curveSpecification.unit})`,
+          type: getColumnType(curveSpecification)
+        };
+      });
+
+      const prevMnemonics = columns.map((column) => column.property);
+      const newMnemonics = newColumns.map((column) => column.property);
+
+      if (
+        prevMnemonics.length !== newMnemonics.length ||
+        prevMnemonics.some((value, index) => value !== newMnemonics[index])
+      ) {
+        setColumns(newColumns);
+      } else {
+        setColumns([]);
+      }
+    } else {
+      setColumns([]);
     }
   };
 
@@ -318,7 +311,10 @@ const MultiLogCurveSelectionValues = (
     <>
       <ContentContainer>
         <CommonPanelContainer key="selectMnemonics">
-          <Button onClick={() => onSelectMnemonics()}>Select Mnemonics</Button>
+          <Button onClick={() => onSelectMnemonics()}>
+            <Icon name="arrowBack" />
+            Select Mnemonics
+          </Button>
         </CommonPanelContainer>
         <CommonPanelContainer key="showPlot">
           <EdsProvider density={normaliseThemeForEds(theme)}>
@@ -340,10 +336,11 @@ const MultiLogCurveSelectionValues = (
               data={tableData}
               columns={columns}
               name={"Multiple Logs"}
-              isDescending={
-                logObjects?.[0].direction === WITSML_LOG_ORDERTYPE_DECREASING
-              }
+              isDescending={true}
               autoRefresh={false}
+              routerLogType={
+                isDepthIndex ? RouterLogType.DEPTH : RouterLogType.TIME
+              }
             />
           </CurveValuesPlotContainer>
         ) : (
@@ -366,10 +363,5 @@ export const CurveValuesPlotContainer = styled.div`
   align-items: center;
   height: 100%;
 `;
-
-// const Message = styled.div`
-//   margin: 10px;
-//   padding: 10px;
-// `;
 
 export default MultiLogCurveSelectionValues;

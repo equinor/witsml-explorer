@@ -6,6 +6,7 @@ import {
   arrow_down as arrowDown,
   arrow_drop_right as arrowDropRight,
   arrow_forward as arrowForward,
+  arrow_back as arrowBack,
   arrow_up as arrowUp,
   assignment,
   beat,
@@ -57,7 +58,10 @@ import {
   update,
   upload,
   world,
-  view_list as viewList
+  view_list as viewList,
+  add_circle_outlined as addCircleOutlined,
+  remove_outlined as removeOutlined,
+  close_circle_outlined as closeCircleOutlined
 } from "@equinor/eds-icons";
 
 const icons = {
@@ -68,6 +72,7 @@ const icons = {
   arrowDown,
   arrowDropRight,
   arrowForward,
+  arrowBack,
   arrowUp,
   assignment,
   beat,
@@ -118,7 +123,10 @@ const icons = {
   update,
   upload,
   world,
-  viewList
+  viewList,
+  addCircleOutlined,
+  removeOutlined,
+  closeCircleOutlined
 };
 
 Icon.add(icons);

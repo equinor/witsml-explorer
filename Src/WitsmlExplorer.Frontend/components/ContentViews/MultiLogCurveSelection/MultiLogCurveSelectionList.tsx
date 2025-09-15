@@ -19,7 +19,7 @@ import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
 import { Button } from "../../StyledComponents/Button.tsx";
 import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 import styled from "styled-components";
-import { Autocomplete } from "@equinor/eds-core-react";
+import { Autocomplete, Icon } from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE,
   WITSML_INDEX_TYPE_DATE_TIME,
@@ -35,6 +35,7 @@ interface MultiLogCurveSelectionListProps {
   onIndexTypeChange: (indexType: WITSML_INDEX_TYPE) => void;
   onAdd: () => void;
   onRemoveAll: () => void;
+  onRefresh: () => void;
   onRemoveSelected: (selectedRows: LogCurveInfoRow[]) => void;
   onShowValues: (selectedRows: LogCurveInfoRow[]) => void;
 }
@@ -50,6 +51,7 @@ const MultiLogCurveSelectionList = (
     onIndexTypeChange,
     onAdd,
     onRemoveAll,
+    onRefresh,
     onRemoveSelected,
     onShowValues
   } = props;
@@ -65,18 +67,13 @@ const MultiLogCurveSelectionList = (
 
   const [isValidSelection, setIsValidSelection] = useState<boolean>(true);
   const [isFetchingLogs, setIsFetchingLogs] = useState<boolean>(true);
-  const [isFetchedLogs, setIsFetchedLogs] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<LogCurveInfoRow[]>([]);
 
   const isDepthIndex = indexType == WITSML_INDEX_TYPE_MD;
 
   useEffect(() => {
     const getLogObjects = async () => {
-      if (
-        !isFetchedLogs &&
-        multiLogMetadatas?.length > 0 &&
-        logObjects?.length > 0
-      ) {
+      if (multiLogMetadatas?.length > 0 && logObjects?.length > 0) {
         setIsFetchingLogs(true);
 
         let logInfoProcessed: {
@@ -162,8 +159,9 @@ const MultiLogCurveSelectionList = (
         setIndexCurveInfoList(indexCurveInfos);
         setLogCurveInfoList(logCurveInfos);
         setIsFetchingLogs(false);
-        setIsFetchedLogs(true);
       } else {
+        setIndexCurveInfoList([]);
+        setLogCurveInfoList([]);
         setIsFetchingLogs(false);
       }
     };
@@ -180,7 +178,10 @@ const MultiLogCurveSelectionList = (
         const rowUnit = indexCurveInfoList.find(
           (i) => i.logUid.toLowerCase() === row.logUid.toLowerCase()
         ).unit;
-        if (rowUnit.toLowerCase() !== lastRowUnit.toLowerCase()) {
+        if (
+          rowUnit.toLowerCase().replace(" ", "") !==
+          lastRowUnit.toLowerCase().replace(" ", "")
+        ) {
           isValid = false;
           break;
         }
@@ -258,13 +259,17 @@ const MultiLogCurveSelectionList = (
       />
     </CommonPanelContainer>,
     <CommonPanelContainer key="addPanel">
-      <Button onClick={() => onAdd()}>Add</Button>
+      <Button onClick={() => onAdd()}>
+        <Icon name="addCircleOutlined" />
+        Add
+      </Button>
     </CommonPanelContainer>,
     <CommonPanelContainer key="removeSelectedPanel">
       <Button
         disabled={selectedRows?.length < 1}
         onClick={() => onRemoveSelected(selectedRows)}
       >
+        <Icon name="removeOutlined" />
         Remove Selected
       </Button>
     </CommonPanelContainer>,
@@ -273,7 +278,14 @@ const MultiLogCurveSelectionList = (
         disabled={multiLogMetadatas?.length == 0}
         onClick={() => onRemoveAll()}
       >
+        <Icon name="closeCircleOutlined" />
         Remove All
+      </Button>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="refreshPanel">
+      <Button onClick={() => onRefresh()}>
+        <Icon name="refresh" />
+        Refresh
       </Button>
     </CommonPanelContainer>,
     <CommonPanelContainer key="showValuesPanel">
@@ -281,6 +293,7 @@ const MultiLogCurveSelectionList = (
         disabled={!isValidSelection || !selectedRows || selectedRows.length < 1}
         onClick={() => onShowValues(selectedRows)}
       >
+        <Icon name="done" />
         Show Values
       </Button>
     </CommonPanelContainer>
@@ -307,7 +320,9 @@ const MultiLogCurveSelectionList = (
               timeZone,
               dateTimeFormat,
               curveThreshold,
-              isDepthIndex
+              isDepthIndex,
+              null,
+              true
             )}
             checkableRows={true}
             stickyLeftColumns={3}
