@@ -192,5 +192,6 @@ export enum JobType {
   CountLogDataRows = "CountLogDataRows",
   DownloadLogData = "DownloadLogData",
   OffsetLogCurves = "OffsetLogCurves",
-  MinimumDataQc = "MinimumDataQc"
+  MinimumDataQc = "MinimumDataQc",
+  WellboreSubObjectsComparison = "WellboreSubObjectsComparison"
 }

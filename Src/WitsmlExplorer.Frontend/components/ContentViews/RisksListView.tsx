@@ -71,13 +71,14 @@ export default function RisksListView() {
 
   const columns: ContentTableColumn[] = [
     { property: "type", label: "type", type: ContentType.String },
+    { property: "id", label: "uid", type: ContentType.String },
     {
       property: "sourceName",
       label: "commonData.sourceName",
       type: ContentType.String
     },
-    { property: "mdBitStart", label: "mdBitStart", type: ContentType.String },
-    { property: "mdBitEnd", label: "mdBitEnd", type: ContentType.String },
+    { property: "mdBitStart", label: "mdBitStart", type: ContentType.Number },
+    { property: "mdBitEnd", label: "mdBitEnd", type: ContentType.Number },
     { property: "dTimStart", label: "dTimStart", type: ContentType.DateTime },
     { property: "dTimEnd", label: "dTimEnd", type: ContentType.DateTime },
     { property: "name", label: "name", type: ContentType.String },
