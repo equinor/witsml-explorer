@@ -32,6 +32,7 @@
     <PackageVersion Include="Spectre.Console" Version="0.48.0" />
     <PackageVersion Include="Spectre.Console.Cli" Version="0.48.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageVersion Include="System.Formats.Asn1" Version="9.0.9" />
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
     <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="6.0.3" />
     <PackageVersion Include="System.ServiceModel.Http" Version="8.0.0" />
