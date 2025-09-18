@@ -13,7 +13,8 @@ import {
   QUERY_VIEW_NAVIGATION_PATH,
   SEARCH_VIEW_NAVIGATION_PATH,
   WELLSBORES_VIEW_NAVIGATION_PATH,
-  WELLS_VIEW_NAVIGATION_PATH
+  WELLS_VIEW_NAVIGATION_PATH,
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
 } from "routes/routerConstants";
 
 export function useGetActiveRoute() {
@@ -37,6 +38,9 @@ export function useGetActiveRoute() {
   const isMultiLogCurveValuesView = !!useMatch(
     MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH
   );
+  const isMultiLogCurveSelectionView = !!useMatch(
+    MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+  );
   return {
     isJobsView,
     isQueryView,
@@ -51,6 +55,7 @@ export function useGetActiveRoute() {
     isLogObjectView,
     isLogCurveValuesView,
     isMultiLogsCurveInfoListView,
-    isMultiLogCurveValuesView
+    isMultiLogCurveValuesView,
+    isMultiLogCurveSelectionView
   };
 }
