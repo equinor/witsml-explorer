@@ -60,8 +60,9 @@ namespace WitsmlExplorer.Api.Query
             o.Name = string.Empty;
             if (objectProperty != null)
             {
-                o = QueryHelper.AddPropertyToObject(o, objectProperty, objectPropertyValue);
-            };
+                o = QueryHelper.AddPropertyToObject(o, objectProperty,
+                    objectPropertyValue);
+            }
 
             // TODO: REMOVE CASTING!
             return (IWitsmlObjectList)o.AsItemInWitsmlList();
