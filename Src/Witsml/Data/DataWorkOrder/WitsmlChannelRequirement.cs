@@ -20,16 +20,16 @@ public class WitsmlChannelRequirement
     public WitsmlTimeMeasure MaxInterval { get; set; }
 
     [XmlElement("minPrecision")]
-    public WitsmlGenericMeasure MinPrecision { get; set; }
+    public Measure MinPrecision { get; set; }
 
     [XmlElement("maxPrecision")]
-    public WitsmlGenericMeasure MaxPrecision { get; set; }
+    public Measure MaxPrecision { get; set; }
 
     [XmlElement("minValue")]
-    public WitsmlGenericMeasure MinValue { get; set; }
+    public Measure MinValue { get; set; }
 
     [XmlElement("maxValue")]
-    public WitsmlGenericMeasure MaxValue { get; set; }
+    public Measure MaxValue { get; set; }
 
     [XmlElement("minStep")]
     public WitsmlLengthMeasure MinStep { get; set; }
@@ -38,10 +38,10 @@ public class WitsmlChannelRequirement
     public WitsmlLengthMeasure MaxStep { get; set; }
 
     [XmlElement("minDelta")]
-    public WitsmlGenericMeasure MinDelta { get; set; }
+    public Measure MinDelta { get; set; }
 
     [XmlElement("maxDelta")]
-    public WitsmlGenericMeasure MaxDelta { get; set; }
+    public Measure MaxDelta { get; set; }
 
     [XmlElement("atency")]
     public WitsmlTimeMeasure Latency { get; set; }
