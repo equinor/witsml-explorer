@@ -12,6 +12,17 @@ public record WellboreSubObjectsComparisonJob : Job
 
     public WellboreReference TargetWellbore { get; init; }
 
+    public bool CountLogsData { get; init; }
+
+    public bool CheckLogsData { get; init; }
+
+    public bool CheckTimeBasedLogsData { get; init; }
+    public bool CheckDepthBasedLogsData { get; init; }
+
+    /// <summary>
+    /// Indicates, if the job can be cancelled
+    /// </summary>
+    public override bool IsCancelable => true;
 
     /// <summary>
     /// Gets a description

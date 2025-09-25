@@ -33,6 +33,7 @@ namespace Witsml
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             request.Headers.Add("user-agent", "witsml-explorer");
+            request.Headers.ExpectContinue = false;
             var response = await base.SendAsync(request, cancellationToken);
 
             switch (response.StatusCode)

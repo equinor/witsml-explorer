@@ -20,7 +20,12 @@ using WitsmlExplorer.Api.Services;
 
 namespace WitsmlExplorer.Api.Workers
 {
-    public class CompareLogDataWorker : BaseWorker<CompareLogDataJob>, IWorker
+    public interface ICompareLogDataWorker
+    {
+        Task<(WorkerResult, RefreshAction)> Execute(CompareLogDataJob job,
+            CancellationToken? cancellationToken = null);
+    }
+    public class CompareLogDataWorker : BaseWorker<CompareLogDataJob>, IWorker, ICompareLogDataWorker
     {
         private readonly IDocumentRepository<Server, Guid> _witsmlServerRepository;
         public JobType JobType => JobType.CompareLogData;
@@ -72,6 +77,10 @@ namespace WitsmlExplorer.Api.Workers
 
             try
             {
+                if (job.JobInfo == null)
+                {
+                    job.JobInfo = new JobInfo();
+                }
                 VerifyLogs(sourceLog, targetLog);
 
                 // Check log type
@@ -118,13 +127,12 @@ namespace WitsmlExplorer.Api.Workers
                     }
                     ReportProgress(job, (double)i / allMnemonics.Count);
                 }
-
                 BaseReport report = GenerateReport(sourceLog, targetLog);
                 job.JobInfo.Report = report;
             }
             catch (ArgumentException e)
             {
-                string message = $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}'";
+                string message = $"Compared log data for log: '{sourceLog.Name}' and '{targetLog.Name}': {e.Message}";
                 Logger.LogError(message);
                 return (new WorkerResult(GetTargetWitsmlClientOrThrow().GetServerHostname(), false, message, e.Message, jobId: job.JobInfo.Id, sourceServerUrl: GetSourceWitsmlClientOrThrow().GetServerHostname()), null);
             }
