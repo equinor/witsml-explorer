@@ -2,8 +2,8 @@ import React, { CSSProperties, useEffect, useMemo, useState } from "react";
 import { ProgressSpinnerOverlay } from "../../ProgressSpinner.tsx";
 import { ContentTable, ContentTableColumn, ContentType } from "../table";
 import {
-  getTableData,
-  LogCurveInfoRow
+  LogCurveInfoRow,
+  getTableData
 } from "../LogCurveInfoListViewUtils.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
 import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
@@ -60,7 +60,9 @@ const MultiLogCurveSelectionList = (
   } = useOperationState();
   const { curveThreshold } = useCurveThreshold();
   const [logObjectMap, setLogObjectMap] = useState<Map<string, LogObject>>();
-  const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>([]);
+  const [logCurveInfoList, setLogCurveInfoList] = useState<
+    MultiLogCurveInfoViewData[]
+  >([]);
   const [indexCurveInfoList, setIndexCurveInfoList] = useState<
     MultiLogCurveInfo[]
   >([]);
@@ -194,6 +196,67 @@ const MultiLogCurveSelectionList = (
     setSelectedRows(rows);
   };
 
+  const panelElements = [
+    <CommonPanelContainer key="refreshPanel">
+      <Button
+        aria-label="refresh"
+        variant="ghost_icon"
+        key="refreshObjects"
+        onClick={onRefresh}
+      >
+        <Icon name="refresh" />
+      </Button>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="indexTypePanel">
+      <StyledAutocomplete
+        id={"indexType"}
+        label={"Index type:"}
+        hideClearButton={true}
+        selectedOptions={[indexType]}
+        options={[WITSML_INDEX_TYPE_MD, WITSML_INDEX_TYPE_DATE_TIME]}
+        onOptionsChange={(changes) => {
+          onIndexTypeChange(changes.selectedItems[0] as WITSML_INDEX_TYPE);
+        }}
+        style={
+          {
+            "--eds-input-background": colors.ui.backgroundDefault
+          } as CSSProperties
+        }
+        colors={colors}
+      />
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="addPanel">
+      <Button onClick={onAdd}>
+        <Icon name="addCircleOutlined" />
+        Add
+      </Button>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="removeSelectedPanel">
+      <Button
+        disabled={selectedRows?.length < 1}
+        onClick={() => onRemoveSelected(selectedRows)}
+      >
+        <Icon name="removeOutlined" />
+        Remove Selected
+      </Button>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="removeAllPanel">
+      <Button disabled={multiLogMetadatas?.length == 0} onClick={onRemoveAll}>
+        <Icon name="closeCircleOutlined" />
+        Remove All
+      </Button>
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="showValuesPanel">
+      <Button
+        disabled={!isValidSelection || !selectedRows || selectedRows.length < 1}
+        onClick={() => onShowValues(selectedRows)}
+      >
+        <Icon name="done" />
+        Show Values
+      </Button>
+    </CommonPanelContainer>
+  ];
+
   const columns: ContentTableColumn[] = useMemo(() => {
     return [
       { property: "mnemonic", label: "mnemonic", type: ContentType.String },
@@ -239,66 +302,6 @@ const MultiLogCurveSelectionList = (
     ];
   }, [isDepthIndex, logObjectMap]);
 
-  const panelElements = [
-    <CommonPanelContainer key="indexTypePanel">
-      <StyledAutocomplete
-        id={"indexType"}
-        label={"Index type:"}
-        hideClearButton={true}
-        selectedOptions={[indexType]}
-        options={[WITSML_INDEX_TYPE_MD, WITSML_INDEX_TYPE_DATE_TIME]}
-        onOptionsChange={(changes) => {
-          onIndexTypeChange(changes.selectedItems[0] as WITSML_INDEX_TYPE);
-        }}
-        style={
-          {
-            "--eds-input-background": colors.ui.backgroundDefault
-          } as CSSProperties
-        }
-        colors={colors}
-      />
-    </CommonPanelContainer>,
-    <CommonPanelContainer key="addPanel">
-      <Button onClick={() => onAdd()}>
-        <Icon name="addCircleOutlined" />
-        Add
-      </Button>
-    </CommonPanelContainer>,
-    <CommonPanelContainer key="removeSelectedPanel">
-      <Button
-        disabled={selectedRows?.length < 1}
-        onClick={() => onRemoveSelected(selectedRows)}
-      >
-        <Icon name="removeOutlined" />
-        Remove Selected
-      </Button>
-    </CommonPanelContainer>,
-    <CommonPanelContainer key="removeAllPanel">
-      <Button
-        disabled={multiLogMetadatas?.length == 0}
-        onClick={() => onRemoveAll()}
-      >
-        <Icon name="closeCircleOutlined" />
-        Remove All
-      </Button>
-    </CommonPanelContainer>,
-    <CommonPanelContainer key="refreshPanel">
-      <Button onClick={() => onRefresh()}>
-        <Icon name="refresh" />
-        Refresh
-      </Button>
-    </CommonPanelContainer>,
-    <CommonPanelContainer key="showValuesPanel">
-      <Button
-        disabled={!isValidSelection || !selectedRows || selectedRows.length < 1}
-        onClick={() => onShowValues(selectedRows)}
-      >
-        <Icon name="done" />
-        Show Values
-      </Button>
-    </CommonPanelContainer>
-  ];
-
   return (
     <>
       {isFetchingLogs && <ProgressSpinnerOverlay message="Fetching Logs." />}
@@ -325,7 +328,7 @@ const MultiLogCurveSelectionList = (
               true
             )}
             checkableRows={true}
-            stickyLeftColumns={3}
+            stickyLeftColumns={2}
             onRowSelectionChange={(rows) =>
               updateSelectedRows(rows as LogCurveInfoRow[])
             }
