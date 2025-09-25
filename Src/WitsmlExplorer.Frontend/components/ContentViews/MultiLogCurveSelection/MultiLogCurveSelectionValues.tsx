@@ -32,7 +32,6 @@ import { toDate } from "date-fns-tz";
 import styled from "styled-components";
 import { MultiLogMetadata } from "../../MultiLogUtils.tsx";
 import { RouterLogType } from "../../../routes/routerConstants.ts";
-import randomColor from "randomcolor";
 import { Colors, dark } from "../../../styles/Colors.tsx";
 import AdjustDepthIndexRange from "../../Modals/TrimLogObject/AdjustDepthIndexRange.tsx";
 import AdjustDateTimeIndexRange from "../../Modals/TrimLogObject/AdjustDateTimeIndexRange.tsx";
@@ -124,12 +123,7 @@ const MultiLogCurveSelectionValues = (
       } as Colors;
 
       colorsCopy.interactive.tableHeaderFillResting =
-        i <= colorPalette.length
-          ? colorPalette[i]
-          : randomColor({
-              luminosity: "dark",
-              hue: colorPalette[i % colorPalette.length]
-            });
+        colorPalette[i % colorPalette.length];
 
       serverColorMap[usedServers[i].id] = colorsCopy;
     }
