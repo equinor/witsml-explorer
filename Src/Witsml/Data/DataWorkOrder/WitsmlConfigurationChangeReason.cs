@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Witsml.Data.DataWorkOrder;
@@ -9,7 +10,7 @@ public class WitsmlConfigurationChangeReason
     public string ChangedBy { get; set; }
 
     [XmlElement("dTimChanged")]
-    public DateTime DTimChanged { get; set; }
+    public string DTimChanged { get; set; }
 
     [XmlElement("isChangedDataRequirements")]
     public bool IsChangedDataRequirements { get; set; }
@@ -18,14 +19,14 @@ public class WitsmlConfigurationChangeReason
     public string Comments { get; set; }
 
     [XmlElement("channelAdded")]
-    public string[] ChannelAdded { get; set; }
+    public List<string> ChannelAdded { get; set; }
 
     [XmlElement("channelModified")]
-    public string[] ChannelModified { get; set; }
+    public List<string> ChannelModified { get; set; }
 
     [XmlElement("channelRemoved")]
-    public string[] ChannelRemoved { get; set; }
+    public List<string> ChannelRemoved { get; set; }
 
     [XmlElement("extensionNameValue")]
-    public WitsmlExtensionNameValue[] ExtensionNameValue { get; set; }
+    public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 }

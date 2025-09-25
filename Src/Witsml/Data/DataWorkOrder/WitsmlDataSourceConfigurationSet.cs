@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Witsml.Data.DataWorkOrder;
@@ -8,8 +9,8 @@ public class WitsmlDataSourceConfigurationSet
     public string Uid { get; set; }
 
     [XmlElement("dataSourceConfiguration")]
-    public WitsmlDataSourceConfiguration[] DataSourceConfiguration { get; set; }
+    public List<WitsmlDataSourceConfiguration> DataSourceConfigurations { get; set; }
 
     [XmlElement("extensionNameValue")]
-    public WitsmlExtensionNameValue[] ExtensionNameValue { get; set; }
+    public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 }

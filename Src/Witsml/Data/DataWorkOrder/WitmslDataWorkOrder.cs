@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-using Witsml.Data.Measures;
 using Witsml.Extensions;
 
 namespace Witsml.Data.DataWorkOrder
@@ -30,26 +29,28 @@ namespace Witsml.Data.DataWorkOrder
         public string Description { get; set; }
 
         [XmlElement("dTimPlannedStart")]
-        public DateTime DTimPlannedStart { get; set; }
+        public string DTimPlannedStart { get; set; }
 
         [XmlElement("dTimPlannedStart")]
-        public DateTime DTimPlannedStop { get; set; }
+        public string DTimPlannedStop { get; set; }
+
+        [XmlElement("assetContact")]
+        public List<WitsmlDataWorkOrderAssetContact> AssetContacts { get; set; }
+
+        [XmlElement("dataSourceConfigurationSet")]
+        public List<WitsmlDataSourceConfigurationSet> DataSourceConfigurationSets { get; set; }
+
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
+
+        [XmlElement("dwoVersion")]
+        public string DwoVersion { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
 
         [XmlElement("customData")]
         public WitsmlCustomData CustomData { get; set; }
-
-        [XmlElement("assetContact")]
-        public WitsmlDataWorkOrderAssetContact[] AssetContact { get; set; }
-
-        [XmlElement("dataSourceConfigurationSet")]
-        public WitsmlDataSourceConfigurationSet[] DataSourceConfigurationSet { get; set; }
-
-        [XmlElement("extensionNameValue")]
-        WitsmlExtensionNameValue[] ExtensionNameValue { get; set; }
-
     }
 }
 

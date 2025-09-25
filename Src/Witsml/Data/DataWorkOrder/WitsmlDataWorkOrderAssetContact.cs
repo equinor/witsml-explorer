@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Witsml.Data.DataWorkOrder;
@@ -29,5 +30,5 @@ public class WitsmlDataWorkOrderAssetContact
     public string TimeZone { get; set; }
 
     [XmlElement("extensionNameValue")]
-    public WitsmlExtensionNameValue[] ExtensionNameValue { get; set; }
+    public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 }

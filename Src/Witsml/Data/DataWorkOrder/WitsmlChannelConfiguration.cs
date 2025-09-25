@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -33,9 +34,6 @@ public class WitsmlChannelConfiguration
     [XmlElement("criticality")]
     public WitsmlChannelCriticality Criticality { get; set; }
 
-    [XmlIgnore]
-    public bool CriticalitySpecified { get; set; }
-
     [XmlElement("logName")]
     public string LogName { get; set; }
 
@@ -46,11 +44,11 @@ public class WitsmlChannelConfiguration
     public string Comments { get; set; }
 
     [XmlElement("requirement")]
-    public WitsmlChannelRequirement[] Requirement { get; set; }
+    public List<WitsmlChannelRequirement> Requirements { get; set; }
 
     [XmlElement("customData")]
     public WitsmlCustomData CustomData { get; set; }
 
     [XmlElement("extensionNameValue")]
-    public WitsmlExtensionNameValue[] ExtensionNameValue { get; set; }
+    public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 }

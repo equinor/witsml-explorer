@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -11,9 +12,6 @@ public class WitsmlChannelRequirement
 
     [XmlElement("purpose")]
     public WitsmlRequirementPurpose Purpose { get; set; }
-
-    [XmlIgnore]
-    public bool PurposeFieldSpecified { get; set; }
 
     [XmlElement("minInterval")]
     public WitsmlTimeMeasure MinInterval { get; set; }
@@ -54,13 +52,10 @@ public class WitsmlChannelRequirement
     [XmlElement("dynamicMdThreshold")]
     public bool DynamicMdThreshold { get; set; }
 
-    [XmlIgnore]
-    public bool DynamicMdThresholdFieldSpecified { get; set; }
-
     [XmlElement("comments")]
     public string Comments { get; set; }
 
     [XmlElement("extensionNameValue")]
-    public WitsmlExtensionNameValue[] ExtensionNameValue { get; set; }
+    public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -25,32 +26,17 @@ public class WitsmlDataSourceConfiguration
     [XmlElement("status")]
     public WitsmlSectionOrderStatus Status { get; set; }
 
-    [XmlIgnore]
-    public bool StatusSpecified { get; set; }
-
     [XmlElement("timeStatus")]
     public WitsmlOperationStatus TimeStatus { get; set; }
-
-    [XmlIgnore]
-    public bool TimeStatusSpecified { get; set; }
 
     [XmlElement("depthStatus")]
     public WitsmlOperationStatus DepthStatus { get; set; }
 
-    [XmlIgnore]
-    public bool DepthStatusSpecified { get; set; }
-
     [XmlElement("dTimPlannedStart")]
-    public DateTime DTimPlannedStart { get; set; }
-
-    [XmlElement("dTimPlannedStartSpecified")]
-    public bool DTimPlannedStartSpecified { get; set; }
+    public string DTimPlannedStart { get; set; }
 
     [XmlElement("dTimPlannedStop")]
-    public DateTime DTimPlannedStop { get; set; }
-
-    [XmlElement("dTimPlannedStopSpecified")]
-    public bool DTimPlannedStopSpecified { get; set; }
+    public string DTimPlannedStop { get; set; }
 
     [XmlElement("mDPlannedStart")]
     public WitsmlLengthMeasure MDPlannedStart { get; set; }
@@ -59,13 +45,10 @@ public class WitsmlDataSourceConfiguration
     public WitsmlLengthMeasure MDPlannedStop { get; set; }
 
     [XmlElement("dTimChangeDeadline")]
-    public DateTime DTimChangeDeadline { get; set; }
-
-    [XmlElement("dTimChangeDeadlineSpecified")]
-    public bool DTimChangeDeadlineSpecified { get; set; }
+    public string DTimChangeDeadline { get; set; }
 
     [XmlElement("channelConfiguration")]
-    public WitsmlChannelConfiguration[] ChannelConfiguration { get; set; }
+    public List<WitsmlChannelConfiguration> ChannelConfigurations { get; set; }
 
     [XmlElement("changeReason")]
     public WitsmlConfigurationChangeReason ChangeReason { get; set; }
@@ -74,10 +57,8 @@ public class WitsmlDataSourceConfiguration
     public WitsmlCustomData CustomData { get; set; }
 
     [XmlElement("ExtensionNameValue")]
-    public WitsmlExtensionNameValue[] ExtensionNameValue { get; set; }
+    public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
     [XmlElement("versionNumber")]
     public short VersionNumber { get; set; }
-
-    public bool VersionNumberSpecified { get; set; }
 }
