@@ -25,13 +25,14 @@ import {
 import { getSearchRegex } from "contexts/filter";
 import { DecimalPreference, UserTheme } from "contexts/operationStateReducer";
 import { useOperationState } from "hooks/useOperationState";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import Icon from "styles/Icons";
 import {
   STORAGE_CONTENTTABLE_ORDER_KEY,
   STORAGE_CONTENTTABLE_WIDTH_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
+import { Colors } from "../../../styles/Colors.tsx";
 
 declare module "@tanstack/react-table" {
   interface SortingFns {
@@ -39,6 +40,15 @@ declare module "@tanstack/react-table" {
     [componentSortingFn]: SortingFn<unknown>;
     [booleanSortingFn]: SortingFn<unknown>;
     [dateSortingFn]: SortingFn<unknown>;
+  }
+}
+
+declare module "@tanstack/react-table" {
+  // @ts-ignore
+  interface ColumnMeta {
+    type: ContentType;
+    headerColors?: Colors;
+    headerTooltip?: React.ReactNode;
   }
 }
 
@@ -75,7 +85,11 @@ export const useColumnDef = (
         accessorFn: (data) => data[column.property],
         header: column.label,
         size: width,
-        meta: { type: column.type },
+        meta: {
+          type: column.type,
+          headerColors: column.headerColors,
+          headerTooltip: column.headerTooltip
+        },
         sortingFn: getSortingFn(column),
         enableColumnFilter: column.type !== ContentType.Component,
         filterFn: getFilterFn(column),

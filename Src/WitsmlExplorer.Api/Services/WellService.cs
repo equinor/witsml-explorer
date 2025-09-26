@@ -59,7 +59,8 @@ namespace WitsmlExplorer.Api.Services
                             well.IsActive = true;
                         }
                     }
-                };
+                }
+
                 return wells;
             }
             catch (Exception)

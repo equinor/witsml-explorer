@@ -4,6 +4,7 @@ import {
   RowSelectionState
 } from "@tanstack/react-table";
 import React from "react";
+import { Colors } from "../../../styles/Colors.tsx";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
   columnOf: T;
@@ -15,6 +16,8 @@ export interface ContentTableColumn {
   type: ContentType;
   filterFn?: FilterFn<any>;
   width?: number;
+  headerColors?: Colors;
+  headerTooltip?: React.ReactNode;
 }
 
 export interface ContentTableRow {

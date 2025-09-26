@@ -268,7 +268,7 @@ namespace WitsmlExplorer.Api.Workers
                         missingDataItems.Add(GetReportItem(resultObject, property, check.ObjectType));
                     }
                 }
-            };
+            }
 
             return missingDataItems;
         }
