@@ -12,14 +12,14 @@ public class ChannelRequirement
     public RequirementPurpose Purpose { get; set; }
     public TimeMeasure MinInterval { get; set; }
     public TimeMeasure MaxInterval { get; set; }
-    public Measure.Measure MinPrecision { get; set; }
-    public Measure.Measure MaxPrecision { get; set; }
-    public Measure.Measure MinValue { get; set; }
-    public Measure.Measure MaxValue { get; set; }
+    public GenericMeasure MinPrecision { get; set; }
+    public GenericMeasure MaxPrecision { get; set; }
+    public GenericMeasure MinValue { get; set; }
+    public GenericMeasure MaxValue { get; set; }
     public LengthMeasure MinStep { get; set; }
     public LengthMeasure MaxStep { get; set; }
-    public Measure.Measure MinDelta { get; set; }
-    public Measure.Measure MaxDelta { get; set; }
+    public GenericMeasure MinDelta { get; set; }
+    public GenericMeasure MaxDelta { get; set; }
     public TimeMeasure Latency { get; set; }
     public LengthMeasure MdThreshold { get; set; }
     public bool DynamicMdThreshold { get; set; }
@@ -36,12 +36,18 @@ public static class ChannelRequirementExtensions
             Purpose = channelRequirement.Purpose.ConvertEnum<WitsmlRequirementPurpose>(),
             MinInterval = channelRequirement.MinInterval.ToWitsml<WitsmlTimeMeasure>(),
             MaxInterval = channelRequirement.MaxInterval.ToWitsml<WitsmlTimeMeasure>(),
+            MinPrecision = channelRequirement.MinPrecision.ToWitsml<Witsml.Data.Measures.Measure>(),
+            MaxPrecision = channelRequirement.MaxPrecision.ToWitsml<Witsml.Data.Measures.Measure>(),
+            MinValue = channelRequirement.MinValue.ToWitsml<Witsml.Data.Measures.Measure>(),
+            MaxValue = channelRequirement.MaxValue.ToWitsml<Witsml.Data.Measures.Measure>(),
             MinStep = channelRequirement.MinStep.ToWitsml<WitsmlLengthMeasure>(),
             MaxStep = channelRequirement.MaxStep.ToWitsml<WitsmlLengthMeasure>(),
             Latency = channelRequirement.Latency.ToWitsml<WitsmlTimeMeasure>(),
+            MinDelta = channelRequirement.MinDelta.ToWitsml<Witsml.Data.Measures.Measure>(),
+            MaxDelta = channelRequirement.MaxDelta.ToWitsml<Witsml.Data.Measures.Measure>(),
             MdThreshold = channelRequirement.MdThreshold.ToWitsml<WitsmlLengthMeasure>(),
             DynamicMdThreshold = channelRequirement.DynamicMdThreshold,
-            Comments = channelRequirement.Comments
+            Comments = channelRequirement.Comments,
         };
     }
 }
