@@ -5,6 +5,8 @@ using System.Xml.Serialization;
 using Witsml.Data;
 using Witsml.Data.DataWorkOrder;
 
+using WitsmlExplorer.Api.Services;
+
 namespace WitsmlExplorer.Api.Models.DataWorkOrder;
 
 public class DataWorkOrder : ObjectOnWellbore
@@ -43,8 +45,8 @@ public class DataWorkOrder : ObjectOnWellbore
             DataProvider = DataProvider,
             DataConsumer = DataConsumer,
             Description = Description,
-            DTimPlannedStart = DTimPlannedStart,
-            DTimPlannedStop = DTimPlannedStop,
+            DTimPlannedStart = StringHelpers.ToUniversalDateTimeString(DTimPlannedStart),
+            DTimPlannedStop = StringHelpers.ToUniversalDateTimeString(DTimPlannedStop),
             AssetContacts = AssetContacts?.Select(assetContact => assetContact?.ToWitsml())?.ToList(),
             DataSourceConfigurationSets = DataSourceConfigurationSets?.Select(configurationSet => configurationSet?.ToWitsml())?.ToList(),
             DwoVersion = DwoVersion,

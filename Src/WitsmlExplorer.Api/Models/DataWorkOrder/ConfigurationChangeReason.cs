@@ -3,6 +3,8 @@ using System.Linq;
 
 using Witsml.Data.DataWorkOrder;
 
+using WitsmlExplorer.Api.Services;
+
 namespace WitsmlExplorer.Api.Models.DataWorkOrder;
 
 public class ConfigurationChangeReason
@@ -24,7 +26,7 @@ public static class ConfigurationChangeReasonExtensions
         return new WitsmlConfigurationChangeReason
         {
             ChangedBy = configurationChangeReason.ChangedBy,
-            DTimChanged = configurationChangeReason.DTimChanged,
+            DTimChanged = StringHelpers.ToUniversalDateTimeString(configurationChangeReason.DTimChanged),
             IsChangedDataRequirements = configurationChangeReason.IsChangedDataRequirements,
             Comments = configurationChangeReason.Comments,
             ChannelAdded = configurationChangeReason.ChannelAdded,

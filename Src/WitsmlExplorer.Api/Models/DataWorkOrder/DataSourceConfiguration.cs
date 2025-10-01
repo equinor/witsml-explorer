@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Xml.Serialization;
+using System.Linq;
 
 using Witsml.Data.DataWorkOrder;
 using Witsml.Data.Measures;
 
 using WitsmlExplorer.Api.Models.Measure;
+using WitsmlExplorer.Api.Services;
 
 
 namespace WitsmlExplorer.Api.Models.DataWorkOrder;
@@ -25,7 +25,7 @@ public class DataSourceConfiguration
     public LengthMeasure MDPlannedStart { get; set; }
     public LengthMeasure MDPlannedStop { get; set; }
     public string DTimChangeDeadline { get; set; }
-    // public List<ChannelConfiguration> ChannelConfigurations { get; set; }
+    public List<ChannelConfiguration> ChannelConfigurations { get; set; }
     public ConfigurationChangeReason ChangeReason { get; set; }
     public short VersionNumber { get; set; }
 }
@@ -44,12 +44,12 @@ public static class DataSourceConfigurationExtensions
             Status = dataSourceConfiguration.Status.ConvertEnum<WitsmlSectionOrderStatus>(),
             TimeStatus = dataSourceConfiguration.TimeStatus.ConvertEnum<WitsmlOperationStatus>(),
             DepthStatus = dataSourceConfiguration.DepthStatus.ConvertEnum<WitsmlOperationStatus>(),
-            DTimPlannedStart = dataSourceConfiguration.DTimPlannedStart,
-            DTimPlannedStop = dataSourceConfiguration.DTimPlannedStop,
+            DTimPlannedStart = StringHelpers.ToUniversalDateTimeString(dataSourceConfiguration.DTimPlannedStart),
+            DTimPlannedStop = StringHelpers.ToUniversalDateTimeString(dataSourceConfiguration.DTimPlannedStop),
             MDPlannedStart = dataSourceConfiguration.MDPlannedStart?.ToWitsml<WitsmlLengthMeasure>(),
             MDPlannedStop = dataSourceConfiguration.MDPlannedStop?.ToWitsml<WitsmlLengthMeasure>(),
-            DTimChangeDeadline = dataSourceConfiguration.DTimChangeDeadline,
-            //  ChannelConfigurations = dataSourceConfiguration.ChannelConfigurations,
+            DTimChangeDeadline = StringHelpers.ToUniversalDateTimeString(dataSourceConfiguration.DTimChangeDeadline),
+            ChannelConfigurations = dataSourceConfiguration.ChannelConfigurations.Select(channelConfiguration => channelConfiguration?.ToWitsml())?.ToList(),
             ChangeReason = dataSourceConfiguration.ChangeReason.ToWitsml(),
             VersionNumber = dataSourceConfiguration.VersionNumber
         };
