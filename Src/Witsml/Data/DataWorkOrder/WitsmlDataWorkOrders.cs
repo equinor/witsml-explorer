@@ -11,7 +11,7 @@ namespace Witsml.Data.DataWorkOrder
         public string Version = "1.4.1.1";
 
         [XmlElement("dataWorkOrder")]
-        public List<WitsmlDataWorker> DataWorkOrders { get; set; } = new List<WitsmlDataWorker>();
+        public List<WitsmlDataWorkOrder> DataWorkOrders { get; set; } = new List<WitsmlDataWorkOrder>();
 
         public string TypeName => "dataWorkOrders";
 
@@ -19,7 +19,7 @@ namespace Witsml.Data.DataWorkOrder
         public IEnumerable<WitsmlObjectOnWellbore> Objects
         {
             get => DataWorkOrders;
-            set => DataWorkOrders = value.Select(obj => (WitsmlDataWorker)obj).ToList();
+            set => DataWorkOrders = value.Select(obj => (WitsmlDataWorkOrder)obj).ToList();
         }
     }
 }

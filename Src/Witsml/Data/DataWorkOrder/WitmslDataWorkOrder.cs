@@ -6,7 +6,7 @@ using Witsml.Extensions;
 
 namespace Witsml.Data.DataWorkOrder
 {
-    public class WitsmlDataWorker : WitsmlObjectOnWellbore
+    public class WitsmlDataWorkOrder : WitsmlObjectOnWellbore
     {
         public override WitsmlDataWorkOrders AsItemInWitsmlList()
         {
