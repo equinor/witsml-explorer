@@ -13,9 +13,9 @@ public class ConfigurationChangeReason
     public string DTimChanged { get; set; }
     public bool IsChangedDataRequirements { get; set; }
     public string Comments { get; set; }
-    public List<string> ChannelAdded { get; set; }
-    public List<string> ChannelModified { get; set; }
-    public List<string> ChannelRemoved { get; set; }
+    public List<string> ChannelsAdded { get; set; }
+    public List<string> ChannelsModified { get; set; }
+    public List<string> ChannelsRemoved { get; set; }
 
 }
 
@@ -29,9 +29,9 @@ public static class ConfigurationChangeReasonExtensions
             DTimChanged = StringHelpers.ToUniversalDateTimeString(configurationChangeReason.DTimChanged),
             IsChangedDataRequirements = configurationChangeReason.IsChangedDataRequirements,
             Comments = configurationChangeReason.Comments,
-            ChannelAdded = configurationChangeReason.ChannelAdded,
-            ChannelModified = configurationChangeReason.ChannelModified,
-            ChannelRemoved = configurationChangeReason.ChannelRemoved
+            ChannelAdded = configurationChangeReason.ChannelsAdded,
+            ChannelModified = configurationChangeReason.ChannelsModified,
+            ChannelRemoved = configurationChangeReason.ChannelsRemoved
         };
     }
 }

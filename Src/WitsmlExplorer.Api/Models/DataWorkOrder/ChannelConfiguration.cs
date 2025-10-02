@@ -11,9 +11,9 @@ namespace WitsmlExplorer.Api.Models.DataWorkOrder;
 public class ChannelConfiguration
 {
     public string Uid { get; set; }
-    public ShortNameStruct Mnemonic { get; set; }
+    public string Mnemonic { get; set; }
     public string Uom { get; set; }
-    public ShortNameStruct GlobalMnemonic { get; set; }
+    public string GlobalMnemonic { get; set; }
     public LogIndexType IndexType { get; set; }
     public string ToolName { get; set; }
     public string Service { get; set; }
@@ -32,9 +32,9 @@ public static class ChannelConfigurationExtensions
         return new WitsmlChannelConfiguration
         {
             Uid = channelConfiguration.Uid,
-            Mnemonic = channelConfiguration.Mnemonic.ToWitsml(),
+            Mnemonic = channelConfiguration.Mnemonic,
             Uom = channelConfiguration.Uom,
-            GlobalMnemonic = channelConfiguration.GlobalMnemonic.ToWitsml(),
+            GlobalMnemonic = channelConfiguration.GlobalMnemonic,
             IndexType = channelConfiguration.IndexType.ConvertEnum<WitsmlLogIndexType>(),
             ToolName = channelConfiguration.ToolName,
             Service = channelConfiguration.Service,

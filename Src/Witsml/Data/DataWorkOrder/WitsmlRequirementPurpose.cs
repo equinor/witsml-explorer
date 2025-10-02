@@ -6,29 +6,29 @@ public enum WitsmlRequirementPurpose
 {
 
     [XmlEnumAttribute("display range")]
-    Displayrange,
+    DisplayRange,
 
     [XmlEnum("sensor range")]
-    Sensorrange,
+    SensorRange,
 
     [XmlEnum("alarm threshold")]
-    Alarmthreshold,
+    AlarmThreshold,
 
     [XmlEnum("operational range")]
-    Operationalrange,
+    OperationalRange,
 
     [XmlEnum("calibration")]
     Calibration,
 
     [XmlEnum("safety range")]
-    Safetyrange,
+    SafetyRange,
 
     [XmlEnum("workflow specific")]
-    Workflowspecific,
+    WorkflowSpecific,
 
 
     [XmlEnum("quality requirements")]
-    Qualityrequirements,
+    QualityRequirements,
 
     [XmlEnum("other")]
     Other,

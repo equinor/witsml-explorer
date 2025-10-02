@@ -5,7 +5,7 @@ public enum WitsmlSectionOrderStatus
 {
 
     [XmlEnum("no ordered curves")]
-    NoOrderedcurves,
+    NoOrderedCurves,
 
     [XmlEnum("draft")]
     Draft,

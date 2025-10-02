@@ -11,13 +11,13 @@ public class WitsmlChannelConfiguration
     public string Uid { get; set; }
 
     [XmlElement("mnemonic")]
-    public WitsmlShortNameStruct Mnemonic { get; set; }
+    public string Mnemonic { get; set; }
 
     [XmlElement("uom")]
     public string Uom { get; set; }
 
     [XmlElement("globalMnemonic")]
-    public WitsmlShortNameStruct GlobalMnemonic { get; set; }
+    public string GlobalMnemonic { get; set; }
 
     [XmlElement("indexType")]
     public WitsmlLogIndexType IndexType { get; set; }
