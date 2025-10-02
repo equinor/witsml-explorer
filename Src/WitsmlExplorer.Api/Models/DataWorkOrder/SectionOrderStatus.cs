@@ -4,7 +4,7 @@ namespace WitsmlExplorer.Api.Models.DataWorkOrder;
 
 public enum SectionOrderStatus
 {
-    NoOrderedcurves,
+    NoOrderedCurves,
     Draft,
     Submitted,
     Approved,
