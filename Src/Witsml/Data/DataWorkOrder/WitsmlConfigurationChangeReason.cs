@@ -19,13 +19,13 @@ public class WitsmlConfigurationChangeReason
     public string Comments { get; set; }
 
     [XmlElement("channelAdded")]
-    public List<string> ChannelAdded { get; set; }
+    public List<string> ChannelsAdded { get; set; }
 
     [XmlElement("channelModified")]
-    public List<string> ChannelModified { get; set; }
+    public List<string> ChannelsModified { get; set; }
 
     [XmlElement("channelRemoved")]
-    public List<string> ChannelRemoved { get; set; }
+    public List<string> ChannelsRemoved { get; set; }
 
     [XmlElement("extensionNameValue")]
     public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }

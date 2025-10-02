@@ -29,9 +29,9 @@ public static class ConfigurationChangeReasonExtensions
             DTimChanged = StringHelpers.ToUniversalDateTimeString(configurationChangeReason.DTimChanged),
             IsChangedDataRequirements = configurationChangeReason.IsChangedDataRequirements,
             Comments = configurationChangeReason.Comments,
-            ChannelAdded = configurationChangeReason.ChannelsAdded,
-            ChannelModified = configurationChangeReason.ChannelsModified,
-            ChannelRemoved = configurationChangeReason.ChannelsRemoved
+            ChannelsAdded = configurationChangeReason.ChannelsAdded,
+            ChannelsModified = configurationChangeReason.ChannelsModified,
+            ChannelsRemoved = configurationChangeReason.ChannelsRemoved
         };
     }
 }
