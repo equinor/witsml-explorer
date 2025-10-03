@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 using Witsml.Data.DataWorkOrder;
@@ -43,6 +44,7 @@ public static class ChannelConfigurationExtensions
             LogName = channelConfiguration.LogName,
             Comments = channelConfiguration.Comments,
             Description = channelConfiguration.Description,
+            Requirements = channelConfiguration.Requirements?.Select(requirement => requirement?.ToWitsml())?.ToList(),
         };
     }
 }
