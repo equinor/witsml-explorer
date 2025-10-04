@@ -36,8 +36,8 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<ICollection<DataWorkOrder>> GetDataWorkOrders(string wellUid, string wellboreUid)
         {
-            WitsmlDataWorkOrders witsmlAtDataWorkOrders = DataWorkOrderQueries.GetWitsmlWorkOrder(wellUid, wellboreUid);
-            WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(witsmlAtDataWorkOrders, new OptionsIn(ReturnElements.Requested));
+            WitsmlDataWorkOrders witsmlDataWorkOrders = DataWorkOrderQueries.GetWitsmlWorkOrder(wellUid, wellboreUid);
+            WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(witsmlDataWorkOrders, new OptionsIn(ReturnElements.Requested));
             return result.DataWorkOrders.Select(DataWorkOrderFromWitsml).OrderBy(dataWorkOrder => dataWorkOrder.Name).ToList();
         }
 
