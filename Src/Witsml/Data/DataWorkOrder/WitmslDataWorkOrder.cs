@@ -31,7 +31,7 @@ namespace Witsml.Data.DataWorkOrder
         [XmlElement("dTimPlannedStart")]
         public string DTimPlannedStart { get; set; }
 
-        [XmlElement("dTimPlannedStart")]
+        [XmlElement("dTimPlannedStop")]
         public string DTimPlannedStop { get; set; }
 
         [XmlElement("assetContact")]
