@@ -25,6 +25,7 @@ export enum TemplateObjects {
   CementJob = "cementJob",
   ChangeLog = "changeLog",
   ConvCore = "convCore",
+  DataWorkOrder = "dataWorkOrder",
   DrillReport = "drillReport",
   FluidsReport = "fluidsReport",
   FormationMarker = "formationMarker",
@@ -107,7 +108,8 @@ export const getQueryTemplate = (
     if (
       templateObject === TemplateObjects.Well ||
       templateObject === TemplateObjects.Wellbore ||
-      templateObject === TemplateObjects.ChangeLog
+      templateObject === TemplateObjects.ChangeLog ||
+      templateObject === TemplateObjects.DataWorkOrder
     ) {
       return templates[templateObject + "IdOnly"];
     } else {
