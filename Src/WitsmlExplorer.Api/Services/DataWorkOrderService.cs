@@ -16,7 +16,7 @@ namespace WitsmlExplorer.Api.Services
 {
     public interface IDataWorkOrderService
     {
-        Task<DataWorkOrder> GetDataWorkOrder(string wellUid, string wellboreUid, string orderUid);
+        Task<DataWorkOrder> GetDataWorkOrder(string wellUid, string wellboreUid, string dwoUid);
         Task<ICollection<DataWorkOrder>> GetDataWorkOrders(string wellUid, string wellboreUid);
     }
 
@@ -26,28 +26,28 @@ namespace WitsmlExplorer.Api.Services
         {
         }
 
-        public async Task<DataWorkOrder> GetDataWorkOrder(string wellUid, string wellboreUid, string orderUid)
+        public async Task<DataWorkOrder> GetDataWorkOrder(string wellUid, string wellboreUid, string dwoUid)
         {
-            WitsmlDataWorkOrders query = DataWorkOrderQueries.QueryById(wellUid, wellboreUid, orderUid);
+            WitsmlDataWorkOrders query = DataWorkOrderQueries.QueryById(wellUid, wellboreUid, dwoUid);
             WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
             var workOrderObject = result.DataWorkOrders.FirstOrDefault();
-            return DataWorkOrderFromWitsml(workOrderObject);
+            return GetDataWorkOrderFromWitsml(workOrderObject);
         }
 
         public async Task<ICollection<DataWorkOrder>> GetDataWorkOrders(string wellUid, string wellboreUid)
         {
-            WitsmlDataWorkOrders witsmlDataWorkOrders = DataWorkOrderQueries.GetWitsmlWorkOrder(wellUid, wellboreUid);
-            WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(witsmlDataWorkOrders, new OptionsIn(ReturnElements.Requested));
-            return result.DataWorkOrders.Select(DataWorkOrderFromWitsml).OrderBy(dataWorkOrder => dataWorkOrder.Name).ToList();
+            WitsmlDataWorkOrders dwoQuery = DataWorkOrderQueries.GetWitsmlDataWorkOrder(wellUid, wellboreUid);
+            WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(dwoQuery, new OptionsIn(ReturnElements.Requested));
+            return result.DataWorkOrders.Select(GetDataWorkOrderFromWitsml).OrderBy(dataWorkOrder => dataWorkOrder.Name).ToList();
         }
 
-        private static List<DataSourceConfigurationSet> GetConfigurationSets(List<WitsmlDataSourceConfigurationSet> configurationSets)
+        private static List<DataSourceConfigurationSet> GetDataSourceConfigurationSets(List<WitsmlDataSourceConfigurationSet> configurationSets)
         {
             return configurationSets.Select(configurationSet =>
                 new DataSourceConfigurationSet
                 {
                     Uid = configurationSet.Uid,
-                    DataSourceConfigurations = GetConfigurations(configurationSet.DataSourceConfigurations),
+                    DataSourceConfigurations = GetDataSourceConfigurations(configurationSet.DataSourceConfigurations),
                 }
             ).ToList();
         }
@@ -99,7 +99,7 @@ namespace WitsmlExplorer.Api.Services
                 .ToList();
         }
 
-        private static List<DataSourceConfiguration> GetConfigurations(List<WitsmlDataSourceConfiguration> configurations)
+        private static List<DataSourceConfiguration> GetDataSourceConfigurations(List<WitsmlDataSourceConfiguration> configurations)
         {
             return configurations.Select(configuration =>
                     new DataSourceConfiguration
@@ -117,13 +117,13 @@ namespace WitsmlExplorer.Api.Services
                         MDPlannedStart = LengthMeasure.FromWitsml(configuration.MDPlannedStart),
                         DTimChangeDeadline = configuration.DTimChangeDeadline,
                         ChannelConfigurations = GetChannelConfigurations(configuration.ChannelConfigurations),
-                        ChangeReason = GetCongurationChangeReasonFromWitsml(configuration.ChangeReason),
+                        ChangeReason = GetConfigurationChangeReasonFromWitsml(configuration.ChangeReason),
                         VersionNumber = configuration.VersionNumber
                     })
                 .ToList();
         }
 
-        private static ConfigurationChangeReason GetCongurationChangeReasonFromWitsml(WitsmlConfigurationChangeReason reason)
+        private static ConfigurationChangeReason GetConfigurationChangeReasonFromWitsml(WitsmlConfigurationChangeReason reason)
         {
             var result = new ConfigurationChangeReason()
             {
@@ -138,7 +138,7 @@ namespace WitsmlExplorer.Api.Services
             return result;
         }
 
-        private static DataWorkOrder DataWorkOrderFromWitsml(WitsmlDataWorkOrder dataWorkOrder)
+        private static DataWorkOrder GetDataWorkOrderFromWitsml(WitsmlDataWorkOrder dataWorkOrder)
         {
             return new DataWorkOrder
             {
@@ -152,16 +152,16 @@ namespace WitsmlExplorer.Api.Services
                 DataConsumer = dataWorkOrder.DataConsumer,
                 DTimPlannedStart = dataWorkOrder.DTimPlannedStart,
                 DTimPlannedStop = dataWorkOrder.DTimPlannedStop,
-                DataSourceConfigurationSets = GetConfigurationSets(dataWorkOrder.DataSourceConfigurationSets),
+                DataSourceConfigurationSets = GetDataSourceConfigurationSets(dataWorkOrder.DataSourceConfigurationSets),
                 CommonData = new CommonData()
                 {
-                    DTimCreation = dataWorkOrder.CommonData.DTimCreation,
-                    DTimLastChange = dataWorkOrder.CommonData.DTimLastChange,
-                    ItemState = dataWorkOrder.CommonData.ItemState,
-                    Comments = dataWorkOrder.CommonData.Comments,
-                    DefaultDatum = dataWorkOrder.CommonData.DefaultDatum,
-                    SourceName = dataWorkOrder.CommonData.SourceName,
-                    ServiceCategory = dataWorkOrder.CommonData.ServiceCategory
+                    DTimCreation = dataWorkOrder.CommonData?.DTimCreation,
+                    DTimLastChange = dataWorkOrder.CommonData?.DTimLastChange,
+                    ItemState = dataWorkOrder.CommonData?.ItemState,
+                    Comments = dataWorkOrder.CommonData?.Comments,
+                    DefaultDatum = dataWorkOrder.CommonData?.DefaultDatum,
+                    SourceName = dataWorkOrder.CommonData?.SourceName,
+                    ServiceCategory = dataWorkOrder.CommonData?.ServiceCategory
                 }
             };
         }

@@ -18,6 +18,8 @@ namespace WitsmlExplorer.Api.Models
     {
         Well,
         Wellbore,
+        Attachment,
+        DataWorkOrder,
         BhaRun,
         FluidsReport,
         FormationMarker,
@@ -28,9 +30,7 @@ namespace WitsmlExplorer.Api.Models
         Risk,
         Tubular,
         Trajectory,
-        WbGeometry,
-        Attachment,
-        DataWorkOrder
+        WbGeometry
     }
 
     public static class EntityTypeHelper
@@ -52,7 +52,9 @@ namespace WitsmlExplorer.Api.Models
         {
             return type switch
             {
+                EntityType.Attachment => new WitsmlAttachment(),
                 EntityType.BhaRun => new WitsmlBhaRun(),
+                EntityType.DataWorkOrder => new WitsmlDataWorkOrder(),
                 EntityType.FluidsReport => new WitsmlFluidsReport(),
                 EntityType.FormationMarker => new WitsmlFormationMarker(),
                 EntityType.Log => new WitsmlLog(),
@@ -65,8 +67,6 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => new WitsmlWbGeometry(),
                 EntityType.Well => null,
                 EntityType.Wellbore => null,
-                EntityType.Attachment => new WitsmlAttachment(),
-                EntityType.DataWorkOrder => new WitsmlDataWorkOrder(),
                 _ => null,
             };
         }
@@ -84,7 +84,9 @@ namespace WitsmlExplorer.Api.Models
         {
             return type switch
             {
+                EntityType.Attachment => new WitsmlAttachments(),
                 EntityType.BhaRun => new WitsmlBhaRuns(),
+                EntityType.DataWorkOrder => new WitsmlDataWorkOrders(),
                 EntityType.FluidsReport => new WitsmlFluidsReports(),
                 EntityType.FormationMarker => new WitsmlFormationMarkers(),
                 EntityType.Log => new WitsmlLogs(),
@@ -97,8 +99,6 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => new WitsmlWbGeometrys(),
                 EntityType.Well => null,
                 EntityType.Wellbore => null,
-                EntityType.Attachment => new WitsmlAttachments(),
-                EntityType.DataWorkOrder => new WitsmlDataWorkOrders(),
                 _ => null,
             };
         }
@@ -107,7 +107,9 @@ namespace WitsmlExplorer.Api.Models
         {
             return type switch
             {
+                EntityType.Attachment => typeof(Attachment),
                 EntityType.BhaRun => typeof(BhaRun),
+                EntityType.DataWorkOrder => typeof(DataWorkOrder.DataWorkOrder),
                 EntityType.FluidsReport => typeof(FluidsReport),
                 EntityType.FormationMarker => typeof(FormationMarker),
                 EntityType.Log => typeof(LogObject),
@@ -120,8 +122,6 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.WbGeometry => typeof(WbGeometry),
                 EntityType.Well => typeof(Well),
                 EntityType.Wellbore => typeof(Wellbore),
-                EntityType.Attachment => typeof(Attachment),
-                EntityType.DataWorkOrder => typeof(DataWorkOrder.DataWorkOrder),
                 _ => null,
             };
         }

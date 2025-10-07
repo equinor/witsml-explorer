@@ -42,9 +42,6 @@ namespace WitsmlExplorer.Api.Tests.Services
             string nameWell = "d";
             string uid = "e";
             string name = "f";
-            string messageText = "g";
-            string typeMessage = "informational";
-            string dTim = "2022-11-07T16:36:12.311+05:30";
             string sourceName = "h";
             string dTimCreation = "2022-11-07T15:36:12.311+05:30";
             string dTimLastChange = "2022-11-07T17:36:12.311+05:30";
@@ -126,7 +123,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                     Uid = "uid",
                     DataSourceConfigurations = new List<WitsmlDataSourceConfiguration>()
                     {
-                        new WitsmlDataSourceConfiguration()
+                        new ()
                         {
                             Uid = "uid",
                             Name = "name",

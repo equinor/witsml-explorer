@@ -18,8 +18,8 @@ public static class DataWorkOrderHandler
 
     }
     [Produces(typeof(DataWorkOrder))]
-    public static async Task<IResult> GetDataWorkOrder(string wellUid, string wellboreUid, string dataWorkOrderUid, IDataWorkOrderService dataWorkOrderService)
+    public static async Task<IResult> GetDataWorkOrder(string wellUid, string wellboreUid, string dwoUid, IDataWorkOrderService dataWorkOrderService)
     {
-        return TypedResults.Ok(await dataWorkOrderService.GetDataWorkOrder(wellUid, wellboreUid, dataWorkOrderUid));
+        return TypedResults.Ok(await dataWorkOrderService.GetDataWorkOrder(wellUid, wellboreUid, dwoUid));
     }
 }

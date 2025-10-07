@@ -8,13 +8,13 @@ namespace WitsmlExplorer.Api.Query;
 
 public static class DataWorkOrderQueries
 {
-    public static WitsmlDataWorkOrders GetWitsmlWorkOrder(string wellUid, string wellboreUid, string workOrderUid = "")
+    public static WitsmlDataWorkOrders GetWitsmlDataWorkOrder(string wellUid, string wellboreUid, string dwoUid = "")
     {
         return new WitsmlDataWorkOrders
         {
             DataWorkOrders = new WitsmlDataWorkOrder()
             {
-                Uid = workOrderUid,
+                Uid = dwoUid,
                 UidWell = wellUid,
                 UidWellbore = wellboreUid,
                 NameWell = "",
@@ -43,13 +43,13 @@ public static class DataWorkOrderQueries
         };
     }
 
-    public static WitsmlDataWorkOrders QueryById(string wellUid, string wellboreUid, string workOrderUid)
+    public static WitsmlDataWorkOrders QueryById(string wellUid, string wellboreUid, string dwoUid)
     {
         return new WitsmlDataWorkOrders()
         {
             DataWorkOrders = new WitsmlDataWorkOrder()
             {
-                Uid = workOrderUid,
+                Uid = dwoUid,
                 UidWell = wellUid,
                 UidWellbore = wellboreUid
             }.AsItemInList()
