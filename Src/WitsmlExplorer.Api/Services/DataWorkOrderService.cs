@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Services
 
         private static List<DataSourceConfigurationSet> GetDataSourceConfigurationSets(List<WitsmlDataSourceConfigurationSet> configurationSets)
         {
-            return configurationSets.Select(configurationSet =>
+            return configurationSets?.Select(configurationSet =>
                 new DataSourceConfigurationSet
                 {
                     Uid = configurationSet.Uid,
@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Api.Services
 
         private static List<ChannelConfiguration> GetChannelConfigurations(List<WitsmlChannelConfiguration> configurations)
         {
-            return configurations.Select(configuration =>
+            return configurations?.Select(configuration =>
                 new ChannelConfiguration
                 {
                     Uid = configuration.Uid,
@@ -76,7 +76,7 @@ namespace WitsmlExplorer.Api.Services
 
         private static List<ChannelRequirement> GetChannelRequirementsFromWitsml(List<WitsmlChannelRequirement> requirements)
         {
-            return requirements.Select(requirement =>
+            return requirements?.Select(requirement =>
                     new ChannelRequirement
                     {
                         Uid = requirement.Uid,
@@ -101,7 +101,7 @@ namespace WitsmlExplorer.Api.Services
 
         private static List<DataSourceConfiguration> GetDataSourceConfigurations(List<WitsmlDataSourceConfiguration> configurations)
         {
-            return configurations.Select(configuration =>
+            return configurations?.Select(configuration =>
                     new DataSourceConfiguration
                     {
                         Uid = configuration.Uid,
