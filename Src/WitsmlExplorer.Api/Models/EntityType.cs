@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 
 using Witsml.Data;
+using Witsml.Data.DataWorkOrder;
 using Witsml.Data.MudLog;
 using Witsml.Data.Rig;
 using Witsml.Data.Tubular;
@@ -28,7 +29,8 @@ namespace WitsmlExplorer.Api.Models
         Tubular,
         Trajectory,
         WbGeometry,
-        Attachment
+        Attachment,
+        DataWorkOrder
     }
 
     public static class EntityTypeHelper
@@ -64,6 +66,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.Well => null,
                 EntityType.Wellbore => null,
                 EntityType.Attachment => new WitsmlAttachment(),
+                EntityType.DataWorkOrder => new WitsmlDataWorkOrder(),
                 _ => null,
             };
         }
@@ -95,6 +98,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.Well => null,
                 EntityType.Wellbore => null,
                 EntityType.Attachment => new WitsmlAttachments(),
+                EntityType.DataWorkOrder => new WitsmlDataWorkOrders(),
                 _ => null,
             };
         }
@@ -117,6 +121,7 @@ namespace WitsmlExplorer.Api.Models
                 EntityType.Well => typeof(Well),
                 EntityType.Wellbore => typeof(Wellbore),
                 EntityType.Attachment => typeof(Attachment),
+                EntityType.DataWorkOrder => typeof(DataWorkOrder.DataWorkOrder),
                 _ => null,
             };
         }
