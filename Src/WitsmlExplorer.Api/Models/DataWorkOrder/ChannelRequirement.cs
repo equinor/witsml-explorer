@@ -9,7 +9,7 @@ namespace WitsmlExplorer.Api.Models.DataWorkOrder;
 public class ChannelRequirement
 {
     public string Uid { get; set; }
-    public RequirementPurpose Purpose { get; set; }
+    public string Purpose { get; set; }
     public TimeMeasure MinInterval { get; set; }
     public TimeMeasure MaxInterval { get; set; }
     public GenericMeasure MinPrecision { get; set; }
@@ -33,7 +33,7 @@ public static class ChannelRequirementExtensions
         return new WitsmlChannelRequirement
         {
             Uid = channelRequirement.Uid,
-            Purpose = channelRequirement.Purpose.ConvertEnum<WitsmlRequirementPurpose>(),
+            Purpose = channelRequirement.Purpose,
             MinInterval = channelRequirement.MinInterval.ToWitsml<WitsmlTimeMeasure>(),
             MaxInterval = channelRequirement.MaxInterval.ToWitsml<WitsmlTimeMeasure>(),
             MinPrecision = channelRequirement.MinPrecision.ToWitsml<Witsml.Data.Measures.Measure>(),

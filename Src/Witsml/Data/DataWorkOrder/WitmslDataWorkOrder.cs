@@ -31,7 +31,7 @@ namespace Witsml.Data.DataWorkOrder
         [XmlElement("dTimPlannedStart")]
         public string DTimPlannedStart { get; set; }
 
-        [XmlElement("dTimPlannedStart")]
+        [XmlElement("dTimPlannedStop")]
         public string DTimPlannedStop { get; set; }
 
         [XmlElement("assetContact")]
@@ -43,7 +43,7 @@ namespace Witsml.Data.DataWorkOrder
         [XmlElement("extensionNameValue")]
         public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
-        [XmlElement("dwoVersion")]
+        [XmlAttribute("dwoVersion")]
         public string DwoVersion { get; set; }
 
         [XmlElement("commonData")]

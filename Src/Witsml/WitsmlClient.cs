@@ -157,7 +157,10 @@ namespace Witsml
                     response.SuppMsgOut);
 
                 if (response.IsSuccessful())
+                {
                     return XmlHelper.Deserialize(response.XMLout, query);
+                }
+
 
                 WMLS_GetBaseMsgResponse errorResponse =
                     await _client.WMLS_GetBaseMsgAsync(response.Result);

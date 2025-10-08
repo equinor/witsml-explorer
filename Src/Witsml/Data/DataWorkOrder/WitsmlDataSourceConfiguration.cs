@@ -24,13 +24,13 @@ public class WitsmlDataSourceConfiguration
     public WitsmlRefNameString Tubular { get; set; }
 
     [XmlElement("status")]
-    public WitsmlSectionOrderStatus Status { get; set; }
+    public string Status { get; set; }
 
     [XmlElement("timeStatus")]
-    public WitsmlOperationStatus TimeStatus { get; set; }
+    public string TimeStatus { get; set; }
 
     [XmlElement("depthStatus")]
-    public WitsmlOperationStatus DepthStatus { get; set; }
+    public string DepthStatus { get; set; }
 
     [XmlElement("dTimPlannedStart")]
     public string DTimPlannedStart { get; set; }
@@ -59,6 +59,6 @@ public class WitsmlDataSourceConfiguration
     [XmlElement("ExtensionNameValue")]
     public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
-    [XmlElement("versionNumber")]
+    [XmlAttribute("versionNumber")]
     public short VersionNumber { get; set; }
 }
