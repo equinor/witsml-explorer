@@ -158,18 +158,7 @@ namespace Witsml
 
                 if (response.IsSuccessful())
                 {
-                    try
-                    {
-                        var dse = XmlHelper.Deserialize(response.XMLout, query);
-                        return dse;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                        throw;
-                    }
-
-
+                    return XmlHelper.Deserialize(response.XMLout, query);
                 }
 
 
