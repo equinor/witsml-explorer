@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
     public static class WellboreHandler
     {
         [Produces(typeof(IEnumerable<Wellbore>))]
-        public static async Task<IResult> GetWellbores(string wellUid, IWellboreService wellboreService, IDataWorkOrderService dataWorkOrderService)
+        public static async Task<IResult> GetWellbores(string wellUid, IWellboreService wellboreService)
         {
             return TypedResults.Ok(await wellboreService.GetWellbores(wellUid ?? ""));
         }
