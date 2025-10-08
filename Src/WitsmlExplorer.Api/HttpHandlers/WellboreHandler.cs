@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
@@ -12,9 +13,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
     public static class WellboreHandler
     {
         [Produces(typeof(IEnumerable<Wellbore>))]
-        public static async Task<IResult> GetWellbores(string wellUid, IWellboreService wellboreService)
+        public static async Task<IResult> GetWellbores(string wellUid, IWellboreService wellboreService, IDataWorkOrderService dataWorkOrderService)
         {
-            return TypedResults.Ok(await wellboreService.GetWellbores(wellUid ?? ""));
+            var wellbores = await wellboreService.GetWellbores(wellUid ?? "");
+            var dwo =
+                await dataWorkOrderService.GetDataWorkOrders(
+                    wellbores.First().WellUid, wellbores.First().Uid);
+            return TypedResults.Ok(wellbores);
         }
 
         [Produces(typeof(Wellbore))]

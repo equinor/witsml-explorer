@@ -11,7 +11,7 @@ public class WitsmlChannelRequirement
     public string Uid { get; set; }
 
     [XmlElement("purpose")]
-    public WitsmlRequirementPurpose Purpose { get; set; }
+    public string Purpose { get; set; }
 
     [XmlElement("minInterval")]
     public WitsmlTimeMeasure MinInterval { get; set; }
@@ -43,7 +43,7 @@ public class WitsmlChannelRequirement
     [XmlElement("maxDelta")]
     public Measure MaxDelta { get; set; }
 
-    [XmlElement("atency")]
+    [XmlElement("latency")]
     public WitsmlTimeMeasure Latency { get; set; }
 
     [XmlElement("mdThreshold")]

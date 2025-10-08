@@ -17,9 +17,9 @@ public class DataSourceConfiguration
     public string Description { get; set; }
     public LengthMeasure NominalHoleSize { get; set; }
     public RefNameString Tubular { get; set; }
-    public SectionOrderStatus Status { get; set; }
-    public OperationStatus TimeStatus { get; set; }
-    public OperationStatus DepthStatus { get; set; }
+    public string Status { get; set; }
+    public string TimeStatus { get; set; }
+    public string DepthStatus { get; set; }
     public string DTimPlannedStart { get; set; }
     public string DTimPlannedStop { get; set; }
     public LengthMeasure MDPlannedStart { get; set; }
@@ -41,9 +41,9 @@ public static class DataSourceConfigurationExtensions
             Description = dataSourceConfiguration.Description,
             NominalHoleSize = dataSourceConfiguration.NominalHoleSize?.ToWitsml<WitsmlLengthMeasure>(),
             Tubular = dataSourceConfiguration.Tubular.ToWitsml(),
-            Status = dataSourceConfiguration.Status.ConvertEnum<WitsmlSectionOrderStatus>(),
-            TimeStatus = dataSourceConfiguration.TimeStatus.ConvertEnum<WitsmlOperationStatus>(),
-            DepthStatus = dataSourceConfiguration.DepthStatus.ConvertEnum<WitsmlOperationStatus>(),
+            Status = dataSourceConfiguration.Status,
+            TimeStatus = dataSourceConfiguration.TimeStatus,
+            DepthStatus = dataSourceConfiguration.DepthStatus,
             DTimPlannedStart = StringHelpers.ToUniversalDateTimeString(dataSourceConfiguration.DTimPlannedStart),
             DTimPlannedStop = StringHelpers.ToUniversalDateTimeString(dataSourceConfiguration.DTimPlannedStop),
             MDPlannedStart = dataSourceConfiguration.MDPlannedStart?.ToWitsml<WitsmlLengthMeasure>(),

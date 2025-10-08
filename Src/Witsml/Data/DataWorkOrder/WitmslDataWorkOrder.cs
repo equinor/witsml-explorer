@@ -43,7 +43,7 @@ namespace Witsml.Data.DataWorkOrder
         [XmlElement("extensionNameValue")]
         public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
-        [XmlElement("dwoVersion")]
+        [XmlAttribute("dwoVersion")]
         public string DwoVersion { get; set; }
 
         [XmlElement("commonData")]

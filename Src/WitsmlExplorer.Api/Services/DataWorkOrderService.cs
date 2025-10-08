@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,11 +62,11 @@ namespace WitsmlExplorer.Api.Services
                     Uom = configuration.Uom,
                     Mnemonic = configuration.Mnemonic,
                     GlobalMnemonic = configuration.GlobalMnemonic,
-                    IndexType = configuration.IndexType.ConvertEnum<LogIndexType>(),
+                    IndexType = configuration.IndexType,
                     ToolName = configuration.ToolName,
                     Service = configuration.Service,
                     SensorOffset = LengthMeasure.FromWitsml(configuration.SensorOffset),
-                    Criticality = configuration.Criticality.ConvertEnum<ChannelCriticality>(),
+                    Criticality = configuration.Criticality,
                     LogName = configuration.LogName,
                     Description = configuration.Description,
                     Comments = configuration.Comments,
@@ -80,7 +81,7 @@ namespace WitsmlExplorer.Api.Services
                     new ChannelRequirement
                     {
                         Uid = requirement.Uid,
-                        Purpose = requirement.Purpose.ConvertEnum<RequirementPurpose>(),
+                        Purpose = requirement.Purpose,
                         MinInterval = TimeMeasure.FromWitsml(requirement.MinInterval),
                         MaxInterval = TimeMeasure.FromWitsml(requirement.MaxInterval),
                         MinPrecision = GenericMeasure.FromWitsml(requirement.MinPrecision),
@@ -99,32 +100,61 @@ namespace WitsmlExplorer.Api.Services
                 .ToList();
         }
 
-        private static List<DataSourceConfiguration> GetDataSourceConfigurations(List<WitsmlDataSourceConfiguration> configurations)
+        private static List<DataSourceConfiguration>
+            GetDataSourceConfigurations(
+                List<WitsmlDataSourceConfiguration> configurations)
         {
-            return configurations?.Select(configuration =>
-                    new DataSourceConfiguration
-                    {
-                        Uid = configuration.Uid,
-                        Name = configuration.Name,
-                        Description = configuration.Description,
-                        NominalHoleSize = LengthMeasure.FromWitsml(configuration.NominalHoleSize),
-                        Status = configuration.Status.ConvertEnum<SectionOrderStatus>(),
-                        TimeStatus = configuration.TimeStatus.ConvertEnum<OperationStatus>(),
-                        DepthStatus = configuration.DepthStatus.ConvertEnum<OperationStatus>(),
-                        DTimPlannedStart = configuration.DTimPlannedStart,
-                        DTimPlannedStop = configuration.DTimPlannedStop,
-                        MDPlannedStop = LengthMeasure.FromWitsml(configuration.MDPlannedStop),
-                        MDPlannedStart = LengthMeasure.FromWitsml(configuration.MDPlannedStart),
-                        DTimChangeDeadline = configuration.DTimChangeDeadline,
-                        ChannelConfigurations = GetChannelConfigurations(configuration.ChannelConfigurations),
-                        ChangeReason = GetConfigurationChangeReasonFromWitsml(configuration.ChangeReason),
-                        VersionNumber = configuration.VersionNumber
-                    })
-                .ToList();
+            try
+            {
+                var res = configurations?.Select(configuration =>
+                        new DataSourceConfiguration
+                        {
+                            Uid = configuration.Uid,
+                            Name = configuration.Name,
+                            Description = configuration.Description,
+                            NominalHoleSize =
+                                LengthMeasure.FromWitsml(configuration
+                                    .NominalHoleSize),
+                            Status = configuration.Status,
+                            TimeStatus =
+                                configuration.TimeStatus,
+                            DepthStatus =
+                                configuration.DepthStatus,
+                            DTimPlannedStart = configuration.DTimPlannedStart,
+                            DTimPlannedStop = configuration.DTimPlannedStop,
+                            MDPlannedStop =
+                                LengthMeasure.FromWitsml(configuration
+                                    .MDPlannedStop),
+                            MDPlannedStart =
+                                LengthMeasure.FromWitsml(configuration
+                                    .MDPlannedStart),
+                            DTimChangeDeadline =
+                                configuration.DTimChangeDeadline,
+                            ChannelConfigurations =
+                                GetChannelConfigurations(configuration
+                                    .ChannelConfigurations),
+                            ChangeReason =
+                                GetConfigurationChangeReasonFromWitsml(
+                                    configuration.ChangeReason),
+                            VersionNumber = configuration.VersionNumber
+                        })
+                    .ToList();
+
+                return res;
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
         }
 
         private static ConfigurationChangeReason GetConfigurationChangeReasonFromWitsml(WitsmlConfigurationChangeReason reason)
         {
+            if (reason == null)
+                return null;
             var result = new ConfigurationChangeReason()
             {
                 ChangedBy = reason.ChangedBy,

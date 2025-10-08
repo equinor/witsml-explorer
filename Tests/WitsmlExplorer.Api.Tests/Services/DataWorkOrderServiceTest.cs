@@ -12,7 +12,6 @@ using Witsml.Data.Measures;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
-using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.DataWorkOrder;
 using WitsmlExplorer.Api.Services;
 
@@ -139,9 +138,9 @@ namespace WitsmlExplorer.Api.Tests.Services
                                 UidRef = "uid ref",
                                 Value = "value"
                             },
-                            Status = WitsmlSectionOrderStatus.Approved,
-                            TimeStatus = WitsmlOperationStatus.Completed,
-                            DepthStatus = WitsmlOperationStatus.Active,
+                            Status = "Approved",
+                            TimeStatus = "Completed",
+                            DepthStatus = "Active",
                             DTimChangeDeadline = "2022-11-08T15:36:12.311+05:30",
                             ChannelConfigurations = new List<WitsmlChannelConfiguration>()
                             {
@@ -151,7 +150,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                                     Mnemonic = "mnemonic",
                                     Uom = "uom",
                                     GlobalMnemonic = "global mnemonic",
-                                    IndexType = WitsmlLogIndexType.Length,
+                                    IndexType = "length",
                                     ToolName = "tool name",
                                     Service = "service",
                                     SensorOffset = new WitsmlLengthMeasure()
@@ -159,7 +158,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                                         Uom = "uom",
                                         Value = "1.0"
                                     },
-                                    Criticality = WitsmlChannelCriticality.High,
+                                    Criticality = "High",
                                     LogName = "log name",
                                     Description = "description",
                                     Comments = "comments",
@@ -168,7 +167,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                                         new()
                                         {
                                             Uid = "uid",
-                                            Purpose = WitsmlRequirementPurpose.Calibration,
+                                            Purpose = "Calibration",
                                             MinInterval = new WitsmlTimeMeasure()
                                             {
                                                 Uom = "uom",

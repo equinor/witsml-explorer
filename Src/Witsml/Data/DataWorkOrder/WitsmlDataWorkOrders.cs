@@ -13,7 +13,7 @@ namespace Witsml.Data.DataWorkOrder
         [XmlElement("dataWorkOrder")]
         public List<WitsmlDataWorkOrder> DataWorkOrders { get; set; } = new List<WitsmlDataWorkOrder>();
 
-        public string TypeName => "dataWorkOrders";
+        public string TypeName => "dataWorkOrder";
 
         [XmlIgnore]
         public IEnumerable<WitsmlObjectOnWellbore> Objects

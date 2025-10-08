@@ -15,11 +15,11 @@ public class ChannelConfiguration
     public string Mnemonic { get; set; }
     public string Uom { get; set; }
     public string GlobalMnemonic { get; set; }
-    public LogIndexType IndexType { get; set; }
+    public string IndexType { get; set; }
     public string ToolName { get; set; }
     public string Service { get; set; }
     public LengthMeasure SensorOffset { get; set; }
-    public ChannelCriticality Criticality { get; set; }
+    public string Criticality { get; set; }
     public string LogName { get; set; }
     public string Description { get; set; }
     public string Comments { get; set; }
@@ -36,11 +36,11 @@ public static class ChannelConfigurationExtensions
             Mnemonic = channelConfiguration.Mnemonic,
             Uom = channelConfiguration.Uom,
             GlobalMnemonic = channelConfiguration.GlobalMnemonic,
-            IndexType = channelConfiguration.IndexType.ConvertEnum<WitsmlLogIndexType>(),
+            IndexType = channelConfiguration.IndexType,
             ToolName = channelConfiguration.ToolName,
             Service = channelConfiguration.Service,
             SensorOffset = channelConfiguration.SensorOffset.ToWitsml<WitsmlLengthMeasure>(),
-            Criticality = channelConfiguration.Criticality.ConvertEnum<WitsmlChannelCriticality>(),
+            Criticality = channelConfiguration.Criticality,
             LogName = channelConfiguration.LogName,
             Comments = channelConfiguration.Comments,
             Description = channelConfiguration.Description,

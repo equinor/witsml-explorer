@@ -20,7 +20,7 @@ public class WitsmlChannelConfiguration
     public string GlobalMnemonic { get; set; }
 
     [XmlElement("indexType")]
-    public WitsmlLogIndexType IndexType { get; set; }
+    public string IndexType { get; set; }
 
     [XmlElement("toolName")]
     public string ToolName { get; set; }
@@ -32,7 +32,7 @@ public class WitsmlChannelConfiguration
     public WitsmlLengthMeasure SensorOffset { get; set; }
 
     [XmlElement("criticality")]
-    public WitsmlChannelCriticality Criticality { get; set; }
+    public string Criticality { get; set; }
 
     [XmlElement("logName")]
     public string LogName { get; set; }
