@@ -43,7 +43,7 @@
         <mDPlannedStop uom="" />
         <dTimChangeDeadline />
         <channelConfiguration uid="">
-          <mnemonic />
+          <mnemonic namingSystem="" />
           <uom />
           <globalMnemonic namingSystem="" />
           <indexType />
