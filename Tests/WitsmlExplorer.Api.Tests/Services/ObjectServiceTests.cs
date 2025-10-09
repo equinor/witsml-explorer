@@ -123,8 +123,9 @@ namespace WitsmlExplorer.Api.Tests.Services
         }
 
         [Fact]
-        public async Task GetExpandableObjectsCount_FourTypesExist_ReturnCount()
+        public async Task GetExpandableObjectsCount_FiveTypesExist_ReturnCount()
         {
+            SetupReturnsObjectList(EntityType.DataWorkOrder, 1);
             SetupReturnsObjectList(EntityType.FluidsReport, 0);
             SetupReturnsObjectList(EntityType.MudLog, 2);
             SetupReturnsObjectList(EntityType.Trajectory, 4);
@@ -132,7 +133,8 @@ namespace WitsmlExplorer.Api.Tests.Services
             SetupReturnsObjectList(EntityType.WbGeometry, 6);
 
             Dictionary<EntityType, int> result = await _service.GetExpandableObjectsCount("uidWell", "uidWellbore");
-            Assert.Equal(5, result.Count);
+            Assert.Equal(6, result.Count);
+            Assert.Equal(1, result[EntityType.DataWorkOrder]);
             Assert.Equal(0, result[EntityType.FluidsReport]);
             Assert.Equal(2, result[EntityType.MudLog]);
             Assert.Equal(4, result[EntityType.Trajectory]);
