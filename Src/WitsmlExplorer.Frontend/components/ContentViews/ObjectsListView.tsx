@@ -1,3 +1,5 @@
+import DataWorkOrdersListView from "components/ContentViews/DataWorkOrderListView";
+import EntityType from "models/entityType";
 import { ReactElement } from "react";
 import { useParams } from "react-router-dom";
 import { useConnectedServer } from "../../contexts/connectedServerContext";
@@ -21,6 +23,7 @@ import WbGeometriesListView from "./WbGeometriesListView";
 enum ObjectGroupUrlParams {
   BhaRun = "BhaRun",
   ChangeLog = "ChangeLog",
+  DataWorkOrder = "DataWorkOrder",
   FluidsReport = "FluidsReport",
   FormationMarker = "FormationMarker",
   Message = "Message",
@@ -35,6 +38,7 @@ enum ObjectGroupUrlParams {
 const objectGroupViews: Record<ObjectGroupUrlParams, ReactElement> = {
   [ObjectGroupUrlParams.BhaRun]: <BhaRunsListView />,
   [ObjectGroupUrlParams.ChangeLog]: <ChangeLogsListView />,
+  [ObjectGroupUrlParams.DataWorkOrder]: <DataWorkOrdersListView />,
   [ObjectGroupUrlParams.FluidsReport]: <FluidsReportsListView />,
   [ObjectGroupUrlParams.FormationMarker]: <FormationMarkersListView />,
   [ObjectGroupUrlParams.Message]: <MessagesListView />,
@@ -54,7 +58,11 @@ export function ObjectsListView() {
     wellUid,
     wellboreUid
   );
-  const { isFetching } = useGetObjects(
+  const {
+    objects,
+    isFetching: isFetchingObjects,
+    isFetched: isFetchedObjects
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -62,14 +70,21 @@ export function ObjectsListView() {
   );
 
   if (isFetchedWellbore && !wellbore) {
+    return <ItemNotFound itemType={EntityType.Wellbore} />;
+  }
+
+  if (isFetchedObjects && !objects?.length) {
     return (
-      <ItemNotFound itemType={pluralizeObjectType(objectGroup as ObjectType)} />
+      <ItemNotFound
+        itemType={pluralizeObjectType(objectGroup as ObjectType)}
+        isMultiple
+      />
     );
   }
 
   return (
     <>
-      {isFetching && (
+      {isFetchingObjects && (
         <ProgressSpinnerOverlay
           message={`Fetching ${pluralizeObjectType(objectGroup as ObjectType)}`}
         />
