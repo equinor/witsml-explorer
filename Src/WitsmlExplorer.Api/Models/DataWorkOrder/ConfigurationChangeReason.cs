@@ -11,12 +11,11 @@ public class ConfigurationChangeReason
 {
     public string ChangedBy { get; set; }
     public string DTimChanged { get; set; }
-    public bool IsChangedDataRequirements { get; set; }
+    public bool? IsChangedDataRequirements { get; set; }
     public string Comments { get; set; }
     public List<string> ChannelsAdded { get; set; }
     public List<string> ChannelsModified { get; set; }
     public List<string> ChannelsRemoved { get; set; }
-
 }
 
 public static class ConfigurationChangeReasonExtensions

@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Witsml.Data.DataWorkOrder;
@@ -12,8 +12,14 @@ public class WitsmlConfigurationChangeReason
     [XmlElement("dTimChanged")]
     public string DTimChanged { get; set; }
 
+    [XmlIgnore]
+    public bool? IsChangedDataRequirements { get; set; }
     [XmlElement("isChangedDataRequirements")]
-    public bool IsChangedDataRequirements { get; set; }
+    public string IsChangedDataRequirementsText
+    {
+        get => IsChangedDataRequirements.HasValue ? XmlConvert.ToString(IsChangedDataRequirements.Value) : null;
+        set => IsChangedDataRequirements = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
+    }
 
     [XmlElement("comments")]
     public string Comments { get; set; }

@@ -50,7 +50,7 @@ public static class DataSourceConfigurationExtensions
             MDPlannedStop = dataSourceConfiguration.MDPlannedStop?.ToWitsml<WitsmlLengthMeasure>(),
             DTimChangeDeadline = StringHelpers.ToUniversalDateTimeString(dataSourceConfiguration.DTimChangeDeadline),
             ChannelConfigurations = dataSourceConfiguration.ChannelConfigurations.Select(channelConfiguration => channelConfiguration?.ToWitsml())?.ToList(),
-            ChangeReason = dataSourceConfiguration.ChangeReason.ToWitsml(),
+            ChangeReason = dataSourceConfiguration.ChangeReason?.ToWitsml(),
             VersionNumber = dataSourceConfiguration.VersionNumber
         };
     }
