@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using Witsml.Data;
+using Witsml.Data.DataWorkOrder;
 using Witsml.Data.MudLog;
 using Witsml.Data.Rig;
 using Witsml.Data.Tubular;
@@ -17,7 +18,9 @@ namespace WitsmlExplorer.Api.Tests.Models
         public void EntityTypeToPluralLowercase_Get_CorrectResult()
         {
             Dictionary<EntityType, string> strings = EntityTypeHelper.ToPluralLowercase();
+            Assert.Equal("attachments", strings[EntityType.Attachment]);
             Assert.Equal("bharuns", strings[EntityType.BhaRun]);
+            Assert.Equal("dataworkorders", strings[EntityType.DataWorkOrder]);
             Assert.Equal("logs", strings[EntityType.Log]);
             Assert.Equal("messages", strings[EntityType.Message]);
             Assert.Equal("mudlogs", strings[EntityType.MudLog]);
@@ -26,13 +29,14 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.Equal("trajectories", strings[EntityType.Trajectory]);
             Assert.Equal("tubulars", strings[EntityType.Tubular]);
             Assert.Equal("wbgeometries", strings[EntityType.WbGeometry]);
-            Assert.Equal("attachments", strings[EntityType.Attachment]);
         }
 
         [Fact]
         public void EntityTypeToObjectOnWellbore_GetAllWellboreObjects_CorrectType()
         {
+            Assert.IsType<WitsmlAttachment>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Attachment));
             Assert.IsType<WitsmlBhaRun>(EntityTypeHelper.ToObjectOnWellbore(EntityType.BhaRun));
+            Assert.IsType<WitsmlDataWorkOrder>(EntityTypeHelper.ToObjectOnWellbore(EntityType.DataWorkOrder));
             Assert.IsType<WitsmlLog>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Log));
             Assert.IsType<WitsmlMessage>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Message));
             Assert.IsType<WitsmlMudLog>(EntityTypeHelper.ToObjectOnWellbore(EntityType.MudLog));
@@ -41,13 +45,14 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.IsType<WitsmlTrajectory>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Trajectory));
             Assert.IsType<WitsmlTubular>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Tubular));
             Assert.IsType<WitsmlWbGeometry>(EntityTypeHelper.ToObjectOnWellbore(EntityType.WbGeometry));
-            Assert.IsType<WitsmlAttachment>(EntityTypeHelper.ToObjectOnWellbore(EntityType.Attachment));
         }
 
         [Fact]
         public void EntityTypeToObjectList_GetAllWellboreObjectLists_CorrectType()
         {
+            Assert.IsType<WitsmlAttachments>(EntityTypeHelper.ToObjectList(EntityType.Attachment));
             Assert.IsType<WitsmlBhaRuns>(EntityTypeHelper.ToObjectList(EntityType.BhaRun));
+            Assert.IsType<WitsmlDataWorkOrders>(EntityTypeHelper.ToObjectList(EntityType.DataWorkOrder));
             Assert.IsType<WitsmlLogs>(EntityTypeHelper.ToObjectList(EntityType.Log));
             Assert.IsType<WitsmlMessages>(EntityTypeHelper.ToObjectList(EntityType.Message));
             Assert.IsType<WitsmlMudLogs>(EntityTypeHelper.ToObjectList(EntityType.MudLog));
@@ -56,7 +61,6 @@ namespace WitsmlExplorer.Api.Tests.Models
             Assert.IsType<WitsmlTrajectories>(EntityTypeHelper.ToObjectList(EntityType.Trajectory));
             Assert.IsType<WitsmlTubulars>(EntityTypeHelper.ToObjectList(EntityType.Tubular));
             Assert.IsType<WitsmlWbGeometrys>(EntityTypeHelper.ToObjectList(EntityType.WbGeometry));
-            Assert.IsType<WitsmlAttachments>(EntityTypeHelper.ToObjectList(EntityType.Attachment));
         }
     }
 }

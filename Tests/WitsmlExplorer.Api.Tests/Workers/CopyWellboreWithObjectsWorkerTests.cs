@@ -10,6 +10,7 @@ using Moq;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Data.DataWorkOrder;
 using Witsml.Data.MudLog;
 using Witsml.Data.Rig;
 using Witsml.Data.Tubular;
@@ -233,6 +234,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IWitsmlObjectList objectList = entityType
                 switch
                 {
+                    EntityType.Attachment => new WitsmlAttachments(),
+                    EntityType.DataWorkOrder => new WitsmlDataWorkOrders(),
                     EntityType.BhaRun => GetBhaRuns(wellboreUid),
                     EntityType.FluidsReport => GetFluidsReports(wellboreUid),
                     EntityType.FormationMarker => new WitsmlFormationMarkers(),
@@ -243,7 +246,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     EntityType.Tubular => new WitsmlTubulars(),
                     EntityType.Trajectory => new WitsmlTrajectories(),
                     EntityType.WbGeometry => new WitsmlWbGeometrys(),
-                    EntityType.Attachment => new WitsmlAttachments(),
                     _ => null
                 };
 
