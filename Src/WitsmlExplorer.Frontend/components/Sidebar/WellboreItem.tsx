@@ -194,7 +194,6 @@ export default function WellboreItem({
           wellUid={wellUid}
           wellboreUid={wellboreUid}
           objectType={ObjectType.DataWorkOrder}
-          onGroupContextMenu={preventContextMenuPropagation}
           ObjectContextMenu={DataWorkOrderContextMenu}
         />
         <ObjectGroupItem

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -49,8 +50,14 @@ public class WitsmlChannelRequirement
     [XmlElement("mdThreshold")]
     public WitsmlLengthMeasure MdThreshold { get; set; }
 
+    [XmlIgnore]
+    public bool? DynamicMdThreshold { get; set; }
     [XmlElement("dynamicMdThreshold")]
-    public bool DynamicMdThreshold { get; set; }
+    public string DynamicMdThresholdText
+    {
+        get => DynamicMdThreshold.HasValue ? XmlConvert.ToString(DynamicMdThreshold.Value) : null;
+        set => DynamicMdThreshold = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
+    }
 
     [XmlElement("comments")]
     public string Comments { get; set; }

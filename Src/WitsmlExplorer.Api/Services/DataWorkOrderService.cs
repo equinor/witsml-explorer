@@ -42,18 +42,18 @@ namespace WitsmlExplorer.Api.Services
             return result.DataWorkOrders.Select(GetDataWorkOrderFromWitsml).OrderBy(dataWorkOrder => dataWorkOrder.Name).ToList();
         }
 
-        private static List<DataSourceConfigurationSet> GetDataSourceConfigurationSets(List<WitsmlDataSourceConfigurationSet> configurationSets)
+        private static List<DataSourceConfigurationSet> GetDataSourceConfigurationSetsFromWitsml(List<WitsmlDataSourceConfigurationSet> configurationSets)
         {
             return configurationSets?.Select(configurationSet =>
                 new DataSourceConfigurationSet
                 {
                     Uid = configurationSet.Uid,
-                    DataSourceConfigurations = GetDataSourceConfigurations(configurationSet.DataSourceConfigurations),
+                    DataSourceConfigurations = GetDataSourceConfigurationsFromWitsml(configurationSet.DataSourceConfigurations),
                 }
             ).ToList();
         }
 
-        private static List<ChannelConfiguration> GetChannelConfigurations(List<WitsmlChannelConfiguration> configurations)
+        private static List<ChannelConfiguration> GetChannelConfigurationsFromWitsml(List<WitsmlChannelConfiguration> configurations)
         {
             return configurations?.Select(configuration =>
                 new ChannelConfiguration
@@ -101,7 +101,7 @@ namespace WitsmlExplorer.Api.Services
         }
 
         private static List<DataSourceConfiguration>
-            GetDataSourceConfigurations(
+            GetDataSourceConfigurationsFromWitsml(
                 List<WitsmlDataSourceConfiguration> configurations)
         {
             return configurations?.Select(configuration =>
@@ -129,7 +129,7 @@ namespace WitsmlExplorer.Api.Services
                     DTimChangeDeadline =
                         configuration.DTimChangeDeadline,
                     ChannelConfigurations =
-                        GetChannelConfigurations(configuration
+                        GetChannelConfigurationsFromWitsml(configuration
                             .ChannelConfigurations),
                     ChangeReason =
                         GetConfigurationChangeReasonFromWitsml(
@@ -156,9 +156,26 @@ namespace WitsmlExplorer.Api.Services
             return result;
         }
 
+        private static List<DataWorkOrderAssetContact> GetAssetContactsFromWitsml(List<WitsmlDataWorkOrderAssetContact> assetContacts)
+        {
+            return assetContacts?.Select(contact =>
+                new DataWorkOrderAssetContact
+                {
+                    Uid = contact.Uid,
+                    CompanyName = contact.CompanyName,
+                    Name = contact.Name,
+                    Role = contact.Role,
+                    EmailAddress = contact.EmailAddress,
+                    PhoneNum = contact.PhoneNum,
+                    Availability = contact.Availability,
+                    TimeZone = contact.TimeZone
+                }
+            ).ToList();
+        }
+
         private static DataWorkOrder GetDataWorkOrderFromWitsml(WitsmlDataWorkOrder dataWorkOrder)
         {
-            return new DataWorkOrder
+            return dataWorkOrder == null ? null : new DataWorkOrder
             {
                 Uid = dataWorkOrder.Uid,
                 Name = dataWorkOrder.Name,
@@ -166,11 +183,14 @@ namespace WitsmlExplorer.Api.Services
                 WellboreName = dataWorkOrder.NameWellbore,
                 WellUid = dataWorkOrder.UidWell,
                 WellName = dataWorkOrder.NameWell,
+                Field = dataWorkOrder.Field,
                 DataProvider = dataWorkOrder.DataProvider,
                 DataConsumer = dataWorkOrder.DataConsumer,
+                Description = dataWorkOrder.Description,
                 DTimPlannedStart = dataWorkOrder.DTimPlannedStart,
                 DTimPlannedStop = dataWorkOrder.DTimPlannedStop,
-                DataSourceConfigurationSets = GetDataSourceConfigurationSets(dataWorkOrder.DataSourceConfigurationSets),
+                AssetContacts = GetAssetContactsFromWitsml(dataWorkOrder.AssetContacts),
+                DataSourceConfigurationSets = GetDataSourceConfigurationSetsFromWitsml(dataWorkOrder.DataSourceConfigurationSets),
                 CommonData = new CommonData()
                 {
                     DTimCreation = dataWorkOrder.CommonData?.DTimCreation,

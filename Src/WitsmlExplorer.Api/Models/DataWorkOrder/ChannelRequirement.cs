@@ -22,7 +22,7 @@ public class ChannelRequirement
     public GenericMeasure MaxDelta { get; set; }
     public TimeMeasure Latency { get; set; }
     public LengthMeasure MdThreshold { get; set; }
-    public bool DynamicMdThreshold { get; set; }
+    public bool? DynamicMdThreshold { get; set; }
     public string Comments { get; set; }
 }
 

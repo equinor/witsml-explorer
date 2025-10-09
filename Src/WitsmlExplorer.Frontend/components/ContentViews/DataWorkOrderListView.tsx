@@ -4,13 +4,18 @@ import {
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table";
+import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
+import DataWorkOrderContextMenu from "components/ContextMenus/DataWorkOrderContextMenu";
+import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
 import DataWorkOrder from "models/dataWorkOrder/dataWorkOrder";
 import { ObjectType } from "models/objectType";
+import { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 
 export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
@@ -19,7 +24,8 @@ export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
 
 export default function DataWorkOrdersListView() {
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { timeZone, dateTimeFormat },
+    dispatchOperation
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
@@ -31,6 +37,24 @@ export default function DataWorkOrdersListView() {
   );
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.DataWorkOrder);
+
+  const onContextMenu = (
+    event: MouseEvent<HTMLLIElement>,
+    {},
+    checkedDataWorkOrderRows: DataWorkOrderRow[]
+  ) => {
+    const contextProps: ObjectContextMenuProps = {
+      checkedObjects: checkedDataWorkOrderRows.map((row) => row.dataWorkOrder)
+    };
+    const position = getContextMenuPosition(event);
+    dispatchOperation({
+      type: OperationType.DisplayContextMenu,
+      payload: {
+        component: <DataWorkOrderContextMenu {...contextProps} />,
+        position
+      }
+    });
+  };
 
   const getTableData = () => {
     return dataWorkOrders.map((dataWorkOrder) => {
@@ -106,6 +130,7 @@ export default function DataWorkOrdersListView() {
         viewId="dataWorkOrdersListView"
         columns={columns}
         data={getTableData()}
+        onContextMenu={onContextMenu}
         checkableRows
         showRefresh
         downloadToCsvFileName="DataWorkOrders"
