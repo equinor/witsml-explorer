@@ -1,0 +1,115 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import { useGetObjects } from "hooks/query/useGetObjects";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
+import DataWorkOrder from "models/dataWorkOrder/dataWorkOrder";
+import { ObjectType } from "models/objectType";
+import { useParams } from "react-router-dom";
+
+export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
+  dataWorkOrder: DataWorkOrder;
+}
+
+export default function DataWorkOrdersListView() {
+  const {
+    operationState: { timeZone, dateTimeFormat }
+  } = useOperationState();
+  const { wellUid, wellboreUid } = useParams();
+  const { connectedServer } = useConnectedServer();
+  const { objects: dataWorkOrders } = useGetObjects(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    ObjectType.DataWorkOrder
+  );
+
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.DataWorkOrder);
+
+  const getTableData = () => {
+    return dataWorkOrders.map((dataWorkOrder) => {
+      return {
+        ...dataWorkOrder,
+        ...dataWorkOrder.commonData,
+        id: dataWorkOrder.uid,
+        dataWorkOrder: dataWorkOrder,
+        dTimPlannedStart: formatDateString(
+          dataWorkOrder.dTimPlannedStart,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimPlannedStop: formatDateString(
+          dataWorkOrder.dTimPlannedStop,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimCreation: formatDateString(
+          dataWorkOrder.commonData.dTimCreation,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimLastChange: formatDateString(
+          dataWorkOrder.commonData.dTimLastChange,
+          timeZone,
+          dateTimeFormat
+        )
+      };
+    });
+  };
+
+  const columns: ContentTableColumn[] = [
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "field", label: "field", type: ContentType.String },
+    {
+      property: "dataProvider",
+      label: "dataProvider",
+      type: ContentType.String
+    },
+    {
+      property: "dataConsumer",
+      label: "dataConsumer",
+      type: ContentType.String
+    },
+    { property: "description", label: "description", type: ContentType.String },
+    {
+      property: "dTimPlannedStart",
+      label: "dTimPlannedStart",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimPlannedStop",
+      label: "dTimPlannedStop",
+      type: ContentType.DateTime
+    },
+    { property: "uid", label: "uid", type: ContentType.String },
+    {
+      property: "dTimCreation",
+      label: "commonData.dTimCreation",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimLastChange",
+      label: "commonData.dTimLastChange",
+      type: ContentType.DateTime
+    }
+  ];
+
+  return (
+    dataWorkOrders && (
+      <ContentTable
+        viewId="dataWorkOrdersListView"
+        columns={columns}
+        data={getTableData()}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName="DataWorkOrders"
+      />
+    )
+  );
+}

@@ -52,6 +52,7 @@ export enum TemplateObjects {
 export const ObjectTypeToTemplateObject: Record<ObjectType, TemplateObjects> = {
   [ObjectType.BhaRun]: TemplateObjects.BhaRun,
   [ObjectType.ChangeLog]: TemplateObjects.ChangeLog,
+  [ObjectType.DataWorkOrder]: TemplateObjects.DataWorkOrder,
   [ObjectType.FluidsReport]: TemplateObjects.FluidsReport,
   [ObjectType.FormationMarker]: TemplateObjects.FormationMarker,
   [ObjectType.Log]: TemplateObjects.Log,

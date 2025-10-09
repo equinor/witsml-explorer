@@ -78,6 +78,18 @@ export const objectToProperties: Record<string, string[]> = {
     "drillingParams",
     ...commonDataProperties
   ],
+  [ObjectType.DataWorkOrder]: [
+    selectAllProperties,
+    ...objectUnderWellboreProperties,
+    "dataProvider",
+    "dataConsumer",
+    "description",
+    "dTimPlannedStart",
+    "dTimPlannedStop",
+    "assetContacts",
+    "dataSourceConfigurationSets",
+    ...commonDataProperties
+  ],
   [ObjectType.FluidsReport]: [
     selectAllProperties,
     ...objectUnderWellboreProperties,

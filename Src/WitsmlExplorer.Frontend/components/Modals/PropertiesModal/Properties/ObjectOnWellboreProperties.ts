@@ -26,6 +26,8 @@ export const getObjectOnWellboreProperties = <T extends ObjectType>(
       >[];
     case ObjectType.ChangeLog:
       return [];
+    case ObjectType.DataWorkOrder:
+      return [];
     case ObjectType.FluidsReport:
       return getFluidsReportProperties(mode) as PropertiesModalProperty<
         ObjectTypeToModel[T]
