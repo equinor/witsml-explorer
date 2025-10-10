@@ -71,6 +71,7 @@ namespace WitsmlExplorer.Api
 
             app.MapGet(routes[EntityType.DataWorkOrder], DataWorkOrderHandler.GetDataWorkOrders, useOAuth2);
             app.MapGet(routes[EntityType.DataWorkOrder] + "/{dwoUid}", DataWorkOrderHandler.GetDataWorkOrder, useOAuth2);
+            app.MapGet(routes[EntityType.DataWorkOrder] + "/{dwoUid}/" + ComponentType.DataSourceConfigurationSet.ToPluralLowercase(), DataWorkOrderHandler.GetDataSourceConfigurationSets, useOAuth2);
 
             app.MapGet(routes[EntityType.FluidsReport], FluidsReportHandler.GetFluidsReports, useOAuth2);
             app.MapGet(routes[EntityType.FluidsReport] + "/{fluidsReportUid}", FluidsReportHandler.GetFluidsReport, useOAuth2);

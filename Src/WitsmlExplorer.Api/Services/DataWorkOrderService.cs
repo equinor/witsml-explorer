@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Witsml.Data;
 using Witsml.Data.DataWorkOrder;
-using Witsml.Helpers;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
@@ -19,6 +16,7 @@ namespace WitsmlExplorer.Api.Services
     {
         Task<DataWorkOrder> GetDataWorkOrder(string wellUid, string wellboreUid, string dwoUid);
         Task<ICollection<DataWorkOrder>> GetDataWorkOrders(string wellUid, string wellboreUid);
+        Task<ICollection<DataSourceConfigurationSet>> GetDataSourceConfigurationSets(string wellUid, string wellboreUid, string dwoUid);
     }
 
     public class DataWorkOrderService : WitsmlService, IDataWorkOrderService
@@ -29,17 +27,26 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<DataWorkOrder> GetDataWorkOrder(string wellUid, string wellboreUid, string dwoUid)
         {
-            WitsmlDataWorkOrders query = DataWorkOrderQueries.QueryById(wellUid, wellboreUid, dwoUid);
-            WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            WitsmlDataWorkOrders query = DataWorkOrderQueries.GetShortWitsmlDataWorkOrder(wellUid, wellboreUid, dwoUid);
+            WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
             var workOrderObject = result.DataWorkOrders.FirstOrDefault();
             return GetDataWorkOrderFromWitsml(workOrderObject);
         }
 
         public async Task<ICollection<DataWorkOrder>> GetDataWorkOrders(string wellUid, string wellboreUid)
         {
-            WitsmlDataWorkOrders dwoQuery = DataWorkOrderQueries.GetWitsmlDataWorkOrder(wellUid, wellboreUid);
+            WitsmlDataWorkOrders dwoQuery = DataWorkOrderQueries.GetShortWitsmlDataWorkOrder(wellUid, wellboreUid);
             WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(dwoQuery, new OptionsIn(ReturnElements.Requested));
             return result.DataWorkOrders.Select(GetDataWorkOrderFromWitsml).OrderBy(dataWorkOrder => dataWorkOrder.Name).ToList();
+        }
+
+        public async Task<ICollection<DataSourceConfigurationSet>> GetDataSourceConfigurationSets(string wellUid, string wellboreUid, string dwoUid)
+        {
+            WitsmlDataWorkOrders dwoQuery = DataWorkOrderQueries.QueryById(wellUid, wellboreUid, dwoUid);
+            WitsmlDataWorkOrders result = await _witsmlClient.GetFromStoreAsync(dwoQuery, new OptionsIn(ReturnElements.All));
+            var witsmlDataSourceConfigurationSets = result?.DataWorkOrders?.FirstOrDefault()?.DataSourceConfigurationSets;
+            var dataSourceConfigurationSets = GetDataSourceConfigurationSetsFromWitsml(witsmlDataSourceConfigurationSets);
+            return dataSourceConfigurationSets;
         }
 
         private static List<DataSourceConfigurationSet> GetDataSourceConfigurationSetsFromWitsml(List<WitsmlDataSourceConfigurationSet> configurationSets)
