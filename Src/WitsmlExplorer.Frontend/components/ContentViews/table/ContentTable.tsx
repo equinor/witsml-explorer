@@ -439,6 +439,7 @@ export const ContentTable = React.memo(
                   const header = table.getLeafHeaders()[column.index];
                   return (
                     <Tooltip
+                      key={header.id + " tooltip"}
                       disableHoverListener={
                         !header.column.columnDef?.meta?.headerTooltip
                       }
