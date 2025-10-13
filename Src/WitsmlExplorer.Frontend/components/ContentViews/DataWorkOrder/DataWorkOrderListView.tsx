@@ -16,7 +16,8 @@ import { useOperationState } from "hooks/useOperationState";
 import DataWorkOrder from "models/dataWorkOrder/dataWorkOrder";
 import { ObjectType } from "models/objectType";
 import { MouseEvent } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getObjectViewPath } from "routes/utils/pathBuilder";
 
 export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
   dataWorkOrder: DataWorkOrder;
@@ -27,6 +28,7 @@ export default function DataWorkOrdersListView() {
     operationState: { timeZone, dateTimeFormat },
     dispatchOperation
   } = useOperationState();
+  const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { objects: dataWorkOrders } = useGetObjects(
@@ -54,6 +56,18 @@ export default function DataWorkOrdersListView() {
         position
       }
     });
+  };
+
+  const onSelect = (dataWorkOrder: DataWorkOrderRow) => {
+    navigate(
+      getObjectViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        ObjectType.DataWorkOrder,
+        dataWorkOrder.uid
+      )
+    );
   };
 
   const getTableData = () => {
@@ -131,6 +145,7 @@ export default function DataWorkOrdersListView() {
         columns={columns}
         data={getTableData()}
         onContextMenu={onContextMenu}
+        onSelect={onSelect}
         checkableRows
         showRefresh
         downloadToCsvFileName="DataWorkOrders"

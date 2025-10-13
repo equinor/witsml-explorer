@@ -1,4 +1,4 @@
-import DataWorkOrdersListView from "components/ContentViews/DataWorkOrderListView";
+import DataWorkOrdersListView from "components/ContentViews/DataWorkOrder/DataWorkOrderListView";
 import EntityType from "models/entityType";
 import { ReactElement } from "react";
 import { useParams } from "react-router-dom";
