@@ -8,6 +8,7 @@ import {
   createHashRouter
 } from "react-router-dom";
 import {
+  COMPONENT_VIEW_ROUTE_PATH,
   JOBS_VIEW_ROUTE_PATH,
   LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
   LOG_OBJECTS_VIEW_ROUTE_PATH,
@@ -26,6 +27,7 @@ import {
 } from "routes/routerConstants";
 import { isDesktopApp } from "tools/desktopAppHelpers";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
+import { ComponentView } from "../components/ContentViews/ComponentView";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import { ErrorView } from "../components/ContentViews/ErrorView";
 import JobsView from "../components/ContentViews/JobsView";
@@ -96,6 +98,11 @@ const router = createRouter([
           {
             path: OBJECT_VIEW_ROUTE_PATH,
             element: <ObjectView />,
+            errorElement: <ErrorView />
+          },
+          {
+            path: COMPONENT_VIEW_ROUTE_PATH,
+            element: <ComponentView />,
             errorElement: <ErrorView />
           },
           {

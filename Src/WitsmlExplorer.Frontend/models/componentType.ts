@@ -1,3 +1,4 @@
+import DataSourceConfigurationSet from "models/dataWorkOrder/dataSourceConfigurationSet";
 import Fluid from "models/fluid";
 import GeologyInterval from "models/geologyInterval";
 import LogCurveInfo from "models/logCurveInfo";
@@ -12,7 +13,8 @@ export enum ComponentType {
   TrajectoryStation = "TrajectoryStation",
   TubularComponent = "TubularComponent",
   WbGeometrySection = "WbGeometrySection",
-  Fluid = "Fluid"
+  Fluid = "Fluid",
+  DataSourceConfigurationSet = "DataSourceConfigurationSet"
 }
 
 export const getParentType = (componentType: ComponentType): ObjectType => {
@@ -29,6 +31,8 @@ export const getParentType = (componentType: ComponentType): ObjectType => {
       return ObjectType.WbGeometry;
     case ComponentType.Fluid:
       return ObjectType.FluidsReport;
+    case ComponentType.DataSourceConfigurationSet:
+      return ObjectType.DataWorkOrder;
     default:
       return undefined;
   }
@@ -41,4 +45,5 @@ export type ComponentTypeToModel = {
   [ComponentType.TubularComponent]: TubularComponent;
   [ComponentType.WbGeometrySection]: WbGeometrySection;
   [ComponentType.Fluid]: Fluid;
+  [ComponentType.DataSourceConfigurationSet]: DataSourceConfigurationSet;
 };
