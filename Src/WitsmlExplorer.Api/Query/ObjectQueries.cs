@@ -61,7 +61,7 @@ namespace WitsmlExplorer.Api.Query
             if (objectProperty != null)
             {
                 o = QueryHelper.AddPropertyToObject(o, objectProperty, objectPropertyValue);
-            };
+            }
 
             // TODO: REMOVE CASTING!
             return (IWitsmlObjectList)o.AsItemInWitsmlList();

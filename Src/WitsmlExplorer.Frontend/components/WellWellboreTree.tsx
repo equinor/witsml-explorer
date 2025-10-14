@@ -94,8 +94,6 @@ const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  min-height: 50vh;
-  max-height: 50vh;
   overflow-x: scroll;
 `;
 

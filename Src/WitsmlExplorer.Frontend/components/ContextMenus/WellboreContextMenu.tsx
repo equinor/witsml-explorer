@@ -61,6 +61,13 @@ import WellboreUidMappingModal, {
   WellboreUidMappingModalProps
 } from "../Modals/WellboreUidMappingModal.tsx";
 import { getTargetWellboreID } from "./UidMappingUtils.tsx";
+import {
+  GetMultiLogWizardStepModalAction,
+  MultiLogWizardParams
+} from "../MultiLogUtils.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
+import { useNavigate } from "react-router-dom";
+import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
 import WellborePickerModal, {
   WellborePickerProps
 } from "components/Modals/WellborePickerModal.tsx";
@@ -79,6 +86,7 @@ const WellboreContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
   const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
@@ -159,6 +167,28 @@ const WellboreContextMenu = (
       type: OperationType.DisplayModal,
       payload: <DeleteEmptyMnemonicsModal {...deleteEmptyMnemonicsModalProps} />
     };
+    dispatchOperation(action);
+  };
+
+  const onClickMultiLogSelect = async () => {
+    const action = GetMultiLogWizardStepModalAction(
+      {
+        targetServer: connectedServer,
+        wellbores: [wellbore]
+      } as MultiLogWizardParams,
+      (r) => {
+        if (r?.curveInfos?.length > 0) {
+          MultiLogSelectionRepository.Instance.addMultiLogValues(
+            r.indexType,
+            r.curveInfos,
+            true
+          );
+          navigate({
+            pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+          });
+        }
+      }
+    );
     dispatchOperation(action);
   };
 
@@ -336,6 +366,15 @@ const WellboreContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
+        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+          <StyledIcon
+            name="viewList"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Add to Multiple Log Selection
+          </Typography>
+        </MenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
             <MenuItem

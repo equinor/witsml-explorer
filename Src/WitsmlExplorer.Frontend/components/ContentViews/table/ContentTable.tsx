@@ -1,4 +1,4 @@
-import { TableBody, TableHead } from "@mui/material";
+import { TableBody, TableHead, Tooltip } from "@mui/material";
 import {
   ColumnSizingState,
   ExpandedState,
@@ -438,34 +438,51 @@ export const ContentTable = React.memo(
                 {columnItems.map((column) => {
                   const header = table.getLeafHeaders()[column.index];
                   return (
-                    <StyledTh
-                      key={header.id}
-                      style={{
-                        width: header.getSize(),
-                        left:
-                          column.index < stickyLeftColumns ? column.start : 0
-                      }}
-                      sticky={column.index < stickyLeftColumns ? 1 : 0}
-                      colors={colors}
+                    <Tooltip
+                      key={header.id + " tooltip"}
+                      disableHoverListener={
+                        !header.column.columnDef?.meta?.headerTooltip
+                      }
+                      disableFocusListener={
+                        !header.column.columnDef?.meta?.headerTooltip
+                      }
+                      disableTouchListener={
+                        !header.column.columnDef?.meta?.headerTooltip
+                      }
+                      title={header.column.columnDef?.meta?.headerTooltip}
+                      arrow
                     >
-                      <div
-                        role="button"
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) => onHeaderClick(e, header)}
+                      <StyledTh
+                        key={header.id}
+                        style={{
+                          width: header.getSize(),
+                          left:
+                            column.index < stickyLeftColumns ? column.start : 0
+                        }}
+                        sticky={column.index < stickyLeftColumns ? 1 : 0}
+                        colors={
+                          header.column.columnDef?.meta?.headerColors ?? colors
+                        }
                       >
-                        {header.column.getIsSorted() &&
-                          sortingIcons[
-                            header.column.getIsSorted() as SortDirection
-                          ]}
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+                        <div
+                          role="button"
+                          style={{ cursor: "pointer" }}
+                          onClick={(e) => onHeaderClick(e, header)}
+                        >
+                          {header.column.getIsSorted() &&
+                            sortingIcons[
+                              header.column.getIsSorted() as SortDirection
+                            ]}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </div>
+                        {header.id != selectId && header.id != expanderId && (
+                          <Resizer header={header} />
                         )}
-                      </div>
-                      {header.id != selectId && header.id != expanderId && (
-                        <Resizer header={header} />
-                      )}
-                    </StyledTh>
+                      </StyledTh>
+                    </Tooltip>
                   );
                 })}
                 <th style={{ width: `${spaceRight}px` }} />

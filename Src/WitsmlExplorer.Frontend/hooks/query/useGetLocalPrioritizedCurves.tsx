@@ -1,7 +1,11 @@
 import { QUERY_KEY_LOCAL_PRIORITIZED_CURVES } from "./queryKeys.tsx";
 import { QueryOptions } from "./queryOptions.tsx";
 import LogCurvePriorityService from "../../services/logCurvePriorityService.tsx";
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import {
+  QueryObserverResult,
+  useQueries,
+  useQuery
+} from "@tanstack/react-query";
 
 export const getLocalPrioritizedCurvesQueryKey = (
   wellUid: string,
@@ -30,6 +34,20 @@ export const localPrioritizedCurvesQuery = (
   ...options
 });
 
+export const multipleLocalPrioritizedCurvesQuery = (
+  wellUid: string,
+  wellboreUid: string
+) => ({
+  queryKey: getLocalPrioritizedCurvesQueryKey(wellUid, wellboreUid),
+  queryFn: async () => {
+    return await LogCurvePriorityService.getPrioritizedCurves(
+      false,
+      wellUid,
+      wellboreUid
+    );
+  }
+});
+
 type LocalPrioritizedCurvesQueryResult = Omit<
   QueryObserverResult<string[], unknown>,
   "data"
@@ -47,4 +65,19 @@ export const useGetLocalPrioritizedCurves = (
   );
 
   return { localPrioritizedCurves: data, ...state };
+};
+
+//todo: fix types
+export const useGetMultipleLocalPrioritizedCurves = (
+  wellComplexIds: { wellUid: string; wellboreUid: string }[]
+): { objects: string[]; isFetching: boolean }[] => {
+  const result = useQueries<string[]>({
+    queries: wellComplexIds.map(({ wellUid, wellboreUid }) =>
+      multipleLocalPrioritizedCurvesQuery(wellUid, wellboreUid)
+    )
+  });
+
+  return result.map((r) => {
+    return { objects: r.data as string[], isFetching: r.isFetching };
+  });
 };

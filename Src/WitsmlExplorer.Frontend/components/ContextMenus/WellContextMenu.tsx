@@ -48,6 +48,13 @@ import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
 import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
 import { pasteWellbore } from "./CopyUtils";
+import {
+  GetMultiLogWizardStepModalAction,
+  MultiLogWizardParams
+} from "../MultiLogUtils.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
+import { useNavigate } from "react-router-dom";
+import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -61,6 +68,7 @@ export interface WellContextMenuProps {
 const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const { dispatchOperation, well, servers, checkedWellRows } = props;
   const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
   const openInQueryView = useOpenInQueryView();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
@@ -173,6 +181,28 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
       type: OperationType.DisplayModal,
       payload: <WellBatchUpdateModal {...wellBatchUpdateModalProps} />
     });
+  };
+
+  const onClickMultiLogSelect = async () => {
+    const action = GetMultiLogWizardStepModalAction(
+      {
+        targetServer: connectedServer,
+        well: well
+      } as MultiLogWizardParams,
+      (r) => {
+        if (r?.curveInfos?.length > 0) {
+          MultiLogSelectionRepository.Instance.addMultiLogValues(
+            r.indexType,
+            r.curveInfos,
+            true
+          );
+          navigate({
+            pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+          });
+        }
+      }
+    );
+    dispatchOperation(action);
   };
 
   return (
@@ -303,6 +333,15 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
         <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
           <StyledIcon name="search" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Missing Data Agent</Typography>
+        </MenuItem>,
+        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+          <StyledIcon
+            name="viewList"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Add to Multiple Log Selection
+          </Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem
