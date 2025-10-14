@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import DataSourceConfigurationView from "components/ContentViews/DataWorkOrder/DataSourceConfigurationView";
 import { MultiLogCurveValuesView } from "components/ContentViews/MultiLogCurveValuesView";
 import MultiLogsCurveInfoListView from "components/ContentViews/MultiLogsCurveInfoListView";
 import { SearchListView } from "components/ContentViews/SearchListView";
@@ -9,6 +10,7 @@ import {
 } from "react-router-dom";
 import {
   COMPONENT_VIEW_ROUTE_PATH,
+  DATA_SOURCE_CONFIGURATION_VIEW_ROUTE_PATH,
   JOBS_VIEW_ROUTE_PATH,
   LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
   LOG_OBJECTS_VIEW_ROUTE_PATH,
@@ -148,6 +150,11 @@ const router = createRouter([
           {
             path: SEARCH_VIEW_ROUTE_PATH,
             element: <SearchListView />,
+            errorElement: <ErrorView />
+          },
+          {
+            path: DATA_SOURCE_CONFIGURATION_VIEW_ROUTE_PATH,
+            element: <DataSourceConfigurationView />,
             errorElement: <ErrorView />
           },
           {
