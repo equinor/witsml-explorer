@@ -1,15 +1,32 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetComponents } from "hooks/query/useGetComponents";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
-import { useParams } from "react-router-dom";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
+import { getDataSourceConfigurationViewPath } from "routes/utils/pathBuilder";
 
 export default function DataSourceConfigurationSetView() {
-  const { wellUid, wellboreUid, objectUid } = useParams();
+  const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
+  const {
+    operationState: { timeZone, dateTimeFormat }
+  } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const {
     components: dataSourceConfigurationSets,
-    isFetched: isFetchedDataSourceConfigurationSets
+    isFetching,
+    isFetched
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -17,8 +34,119 @@ export default function DataSourceConfigurationSetView() {
     objectUid,
     ComponentType.DataSourceConfigurationSet
   );
+  const navigate = useNavigate();
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.DataWorkOrder);
 
-  if (isFetchedDataSourceConfigurationSets && !dataSourceConfigurationSets) {
+  const dataSourceConfigurationSet = dataSourceConfigurationSets?.find(
+    (set) => set.uid === componentUid
+  );
+  const dataSourceConfigurations =
+    dataSourceConfigurationSet?.dataSourceConfigurations ?? [];
+
+  const onSelect = (row: ContentTableRow) => {
+    navigate(
+      getDataSourceConfigurationViewPath(
+        connectedServer?.url,
+        wellUid,
+        wellboreUid,
+        objectUid,
+        componentUid,
+        row.id
+      )
+    );
+  };
+
+  const columns: ContentTableColumn[] = [
+    {
+      property: "versionNumber",
+      label: "versionNumber",
+      type: ContentType.String
+    },
+    { property: "name", label: "name", type: ContentType.String },
+    { property: "numChannels", label: "channels", type: ContentType.String },
+    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "description", label: "description", type: ContentType.String },
+    { property: "status", label: "status", type: ContentType.String },
+    {
+      property: "nominalHoleSize",
+      label: "nominalHoleSize",
+      type: ContentType.Measure
+    },
+    { property: "tubular", label: "tubular", type: ContentType.String },
+    { property: "depthStatus", label: "depthStatus", type: ContentType.String },
+    { property: "timeStatus", label: "timeStatus", type: ContentType.String },
+    {
+      property: "dTimPlannedStart",
+      label: "dTimPlannedStart",
+      type: ContentType.DateTime
+    },
+    {
+      property: "dTimPlannedStop",
+      label: "dTimPlannedStop",
+      type: ContentType.DateTime
+    },
+    {
+      property: "mdPlannedStart",
+      label: "mdPlannedStart",
+      type: ContentType.Measure
+    },
+    {
+      property: "mdPlannedStop",
+      label: "mdPlannedStop",
+      type: ContentType.Measure
+    },
+    {
+      property: "dTimChangeDeadline",
+      label: "dTimChangeDeadline",
+      type: ContentType.DateTime
+    },
+    {
+      property: "changeReason",
+      label: "changeReason",
+      type: ContentType.Component
+    }
+  ];
+
+  const dataSourceConfigurationRows = dataSourceConfigurations.map(
+    (dataSourceConfiguration) => {
+      return {
+        id: dataSourceConfiguration.uid,
+        uid: dataSourceConfiguration.uid,
+        versionNumber: dataSourceConfiguration.versionNumber,
+        name: dataSourceConfiguration.name,
+        numChannels: dataSourceConfiguration.channelConfigurations.length,
+        description: dataSourceConfiguration.description,
+        status: dataSourceConfiguration.status,
+        nominalHoleSize: measureToString(
+          dataSourceConfiguration.nominalHoleSize
+        ),
+        tubular: dataSourceConfiguration.tubular?.value,
+        depthStatus: dataSourceConfiguration.depthStatus,
+        timeStatus: dataSourceConfiguration.timeStatus,
+        dTimPlannedStart: formatDateString(
+          dataSourceConfiguration.dTimPlannedStart,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimPlannedStop: formatDateString(
+          dataSourceConfiguration.dTimPlannedStop,
+          timeZone,
+          dateTimeFormat
+        ),
+        mdPlannedStart: measureToString(dataSourceConfiguration.mdPlannedStart),
+        mdPlannedStop: measureToString(dataSourceConfiguration.mdPlannedStop),
+        dTimChangeDeadline: formatDateString(
+          dataSourceConfiguration.dTimChangeDeadline,
+          timeZone,
+          dateTimeFormat
+        ),
+        changeReason: <div>TODO: ConfigurationChangeReason</div>,
+        dataSourceConfiguration: dataSourceConfiguration
+      };
+    }
+  );
+
+  if (isFetched && !dataSourceConfigurationSets) {
     return (
       <ItemNotFound
         itemType={ComponentType.DataSourceConfigurationSet}
@@ -27,5 +155,20 @@ export default function DataSourceConfigurationSetView() {
     );
   }
 
-  return <div>TODO: DataSourceConfigurationSetView</div>;
+  return (
+    <>
+      {isFetching && (
+        <ProgressSpinnerOverlay message="Fetching DataSourceConfigurationSets." />
+      )}
+      <ContentTable
+        viewId="dataSourceConfigurations"
+        columns={columns}
+        data={dataSourceConfigurationRows}
+        onSelect={onSelect}
+        checkableRows
+        showRefresh
+        downloadToCsvFileName="DataSourceConfigurations"
+      />
+    </>
+  );
 }

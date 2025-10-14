@@ -13,8 +13,11 @@ import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
 import DataSourceConfigurationSet from "models/dataWorkOrder/dataSourceConfigurationSet";
 import { ObjectType } from "models/objectType";
-import { useNavigate, useParams } from "react-router-dom";
-import { getComponentViewPath } from "routes/utils/pathBuilder";
+import { useParams } from "react-router-dom";
+import {
+  getComponentViewPath,
+  getDataSourceConfigurationViewPath
+} from "routes/utils/pathBuilder";
 
 export interface DataSourceConfigurationSetRow extends ContentTableRow {
   id: string;
@@ -29,7 +32,6 @@ export default function DataSourceConfigurationSetsTable() {
     operationState: { colors }
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
-  const navigate = useNavigate();
   const { object: dataWorkOrder } = useGetObject(
     connectedServer,
     wellUid,
@@ -60,8 +62,15 @@ export default function DataSourceConfigurationSetsTable() {
     );
   };
 
-  const onSelect = (row: DataSourceConfigurationSetRow) => {
-    navigate(getSetPath(row.uid));
+  const getConfigPath = (setUid: string, configUid: string) => {
+    return getDataSourceConfigurationViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      setUid,
+      configUid
+    );
   };
 
   const columns: ContentTableColumn[] = [
@@ -71,11 +80,25 @@ export default function DataSourceConfigurationSetsTable() {
       label: "Configurations",
       type: ContentType.String
     },
+    {
+      property: "lastConfig",
+      label: "Last Configuration",
+      type: ContentType.Component
+    },
     { property: "uid", label: "uid", type: ContentType.String }
   ];
 
   const dataSourceConfigurationSetRows: DataSourceConfigurationSetRow[] =
     dataSourceConfigurationSets.map((dataSourceConfigurationSet) => {
+      const lastConfig =
+        dataSourceConfigurationSet.dataSourceConfigurations?.reduce(
+          (last, current) =>
+            last == null ||
+            (current.versionNumber ?? 0) > (last.versionNumber ?? 0)
+              ? current
+              : last,
+          undefined
+        );
       return {
         id: dataSourceConfigurationSet.uid,
         uid: dataSourceConfigurationSet.uid,
@@ -87,7 +110,15 @@ export default function DataSourceConfigurationSetsTable() {
             to={getSetPath(dataSourceConfigurationSet.uid)}
             colors={colors}
           >
-            Show Set
+            Show set
+          </StyledLink>
+        ),
+        lastConfig: (
+          <StyledLink
+            to={getConfigPath(dataSourceConfigurationSet.uid, lastConfig?.uid)}
+            colors={colors}
+          >
+            {lastConfig?.name}
           </StyledLink>
         )
       };
@@ -102,7 +133,6 @@ export default function DataSourceConfigurationSetsTable() {
         viewId="dataSourceConfigurationSets"
         columns={columns}
         data={dataSourceConfigurationSetRows}
-        onSelect={onSelect}
         checkableRows
         showRefresh
         downloadToCsvFileName={`DataWorkOrder_${dataWorkOrder?.name}_dataSourceConfigurationSets`}

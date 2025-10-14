@@ -12,7 +12,7 @@ export default interface ChannelConfiguration {
   toolName: string;
   service: string;
   sensorOffset: Measure;
-  channelCriticality: ChannelCriticality;
+  criticality: ChannelCriticality;
   logName: string;
   description: string;
   comments: string;
