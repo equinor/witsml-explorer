@@ -209,7 +209,6 @@ export default function MultiLogCurveSelectionView() {
           setupData(indexType);
         }
       );
-
     return function cleanup() {
       unsubscribe();
     };

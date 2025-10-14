@@ -259,46 +259,54 @@ const MultiLogCurveSelectionList = (
 
   const columns: ContentTableColumn[] = useMemo(() => {
     return [
-      { property: "mnemonic", label: "mnemonic", type: ContentType.String },
-      { property: "serverName", label: "serverName", type: ContentType.String },
-      { property: "wellName", label: "wellName", type: ContentType.String },
+      { property: "mnemonic", label: "Mnemonic", type: ContentType.String },
       {
-        property: "wellboreName",
-        label: "wellboreName",
+        property: "serverName",
+        label: "Server Name",
         type: ContentType.String
       },
-      { property: "logName", label: "logName", type: ContentType.String },
+      { property: "wellName", label: "Well Name", type: ContentType.String },
+      {
+        property: "wellboreName",
+        label: "Wellbore Name",
+        type: ContentType.String
+      },
+      { property: "logName", label: "Log Name", type: ContentType.String },
       {
         property: "minIndex",
-        label: "minIndex",
+        label: "Min Index",
         type: isDepthIndex ? ContentType.Number : ContentType.DateTime
       },
       {
         property: "maxIndex",
-        label: "maxIndex",
+        label: "Max Index",
         type: isDepthIndex ? ContentType.Number : ContentType.DateTime
       },
       {
         property: "classWitsml",
-        label: "classWitsml",
+        label: "Class Witsml",
         type: ContentType.String
       },
-      { property: "unit", label: "unit", type: ContentType.String },
+      { property: "unit", label: "Unit", type: ContentType.String },
       {
         property: "sensorOffset",
-        label: "sensorOffset",
+        label: "Sensor Offset",
         type: ContentType.Measure
       },
       {
         property: "curveDescription",
-        label: "curveDescription",
+        label: "Curve Description",
         type: ContentType.String
       },
-      { property: "mnemAlias", label: "mnemAlias", type: ContentType.String },
-      { property: "traceState", label: "traceState", type: ContentType.String },
-      { property: "nullValue", label: "nullValue", type: ContentType.String },
-      { property: "uid", label: "uid", type: ContentType.String },
-      { property: "serverUrl", label: "serverUrl", type: ContentType.String }
+      { property: "mnemAlias", label: "Mnem Alias", type: ContentType.String },
+      {
+        property: "traceState",
+        label: "Trace State",
+        type: ContentType.String
+      },
+      { property: "nullValue", label: "Null Value", type: ContentType.String },
+      { property: "uid", label: "UID", type: ContentType.String },
+      { property: "serverUrl", label: "Server Url", type: ContentType.String }
     ];
   }, [isDepthIndex, logObjectMap]);
 

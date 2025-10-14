@@ -91,42 +91,46 @@ const SelectLogsStepModal = (
   const columns: ContentTableColumn[] = [
     ...(wellbores.length > 1
       ? [
-          { property: "wellName", label: "wellName", type: ContentType.String },
+          {
+            property: "wellName",
+            label: "Well Name",
+            type: ContentType.String
+          },
           {
             property: "wellboreName",
-            label: "wellboreName",
+            label: "Wellbore Name",
             type: ContentType.String
           }
         ]
       : []),
-    { property: "name", label: "name", type: ContentType.String },
+    { property: "name", label: "Name", type: ContentType.String },
     {
       property: "startIndex",
-      label: "startIndex",
+      label: "Start Index",
       type: isDepthIndex ? ContentType.Measure : ContentType.DateTime
     },
     {
       property: "endIndex",
-      label: "endIndex",
+      label: "End Index",
       type: isDepthIndex ? ContentType.Measure : ContentType.DateTime
     },
-    { property: "mnemonics", label: "mnemonics", type: ContentType.Number },
+    { property: "mnemonics", label: "Mnemonics", type: ContentType.Number },
     {
       property: "serviceCompany",
-      label: "serviceCompany",
+      label: "Service Company",
       type: ContentType.String
     },
-    { property: "runNumber", label: "runNumber", type: ContentType.String },
-    { property: "indexType", label: "indexType", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String },
+    { property: "runNumber", label: "Run Number", type: ContentType.String },
+    { property: "indexType", label: "Index Type", type: ContentType.String },
+    { property: "uid", label: "UID", type: ContentType.String },
     {
       property: "dTimCreation",
-      label: "commonData.dTimCreation",
+      label: "Created",
       type: ContentType.DateTime
     },
     {
       property: "dTimLastChange",
-      label: "commonData.dTimLastChange",
+      label: "Last Change",
       type: ContentType.DateTime
     }
   ];

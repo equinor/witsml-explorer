@@ -95,19 +95,11 @@ export const useGetMultipleObjects = <T extends ObjectType>(
   wellComplexIds: { server: Server; wellId: string; wellboreId: string }[],
   objectType: T
 ): { objects: ObjectTypeToModel[T][]; isFetching: boolean }[] => {
-  // const { data, isFetching } = useQueries<ObjectTypeToModel[T][][]>({
   const result = useQueries<ObjectTypeToModel[T][][]>({
     queries: wellComplexIds?.map(({ server, wellId, wellboreId }) =>
       multipleObjectsQuery<T>(server, wellId, wellboreId, objectType)
     )
-    // combine: (results) => {
-    //   return {
-    //     data: results.map((result) => result.data),
-    //     isFetching: results.some((result) => result.isFetching)
-    //   }
-    // }
   });
-  // return { objects: data, isFetching };
   return result.map((r) => {
     return {
       objects: r.data as ObjectTypeToModel[T][],

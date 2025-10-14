@@ -33,7 +33,6 @@ export default class MultiLogSelectionRepository {
       try {
         return JSON.parse(result) as MultiLogSelectionValues;
       } catch {
-        // console.log(e);
         return undefined;
       }
     } else {

@@ -75,12 +75,6 @@ export const useGetMultipleLocalPrioritizedCurves = (
     queries: wellComplexIds.map(({ wellUid, wellboreUid }) =>
       multipleLocalPrioritizedCurvesQuery(wellUid, wellboreUid)
     )
-    // combine: (results) => {
-    //   return {
-    //     data: results.map((result) => result.data),
-    //     isFetching: results.some((result) => result.isFetching)
-    //   }
-    // }
   });
 
   return result.map((r) => {

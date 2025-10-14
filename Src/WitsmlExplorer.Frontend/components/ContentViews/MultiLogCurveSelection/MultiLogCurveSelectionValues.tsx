@@ -270,7 +270,6 @@ const MultiLogCurveSelectionValues = (
       setTableColumns(
         curveSpecifications.map((cs, idx) => {
           const curveSpecification = cs as CurveSpecificationMultiLog;
-          // @ts-ignore
           return {
             columnOf: curveSpecification,
             property: curveSpecification.mnemonic,
