@@ -105,7 +105,6 @@ const SelectWellboreStepModal = (
         onConnectionVerified: (username) => {
           dispatchOperation({ type: OperationType.HideModal });
           AuthorizationService.onAuthorized(targetServer, username);
-          AuthorizationService.setSelectedServer(targetServer);
           dispatchLoggedInUsernames({
             type: LoggedInUsernamesActionType.AddLoggedInUsername,
             payload: { serverId: targetServer.id, username }

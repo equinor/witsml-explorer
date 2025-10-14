@@ -117,7 +117,8 @@ const SelectCurvesStepModal = (
             wellbore.wellUid,
             wellbore.uid,
             logs.map((l) => l.uid),
-            new AbortController().signal
+            new AbortController().signal,
+            targetServer
           );
 
           if (mnemonics?.length > 0) {
