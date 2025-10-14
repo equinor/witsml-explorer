@@ -147,13 +147,13 @@ const MultiLogCurveSelectionValues = (
       const logDatas: LogData[] = [];
 
       for (const logInfo of multiLogMetadatas) {
-        const mnemonics = multiLogCurveInfoRows.filter((lcir) => {
-          const mlci = lcir.logCurveInfo as MultiLogCurveInfo;
+        const mnemonics = multiLogCurveInfoRows.filter((infoRow) => {
+          const curveInfo = infoRow.logCurveInfo as MultiLogCurveInfo;
           return (
-            mlci.serverUrl == logInfo.server.url &&
-            lcir.wellUid == logInfo.wellId &&
-            lcir.wellboreUid == logInfo.wellboreId &&
-            mlci.logUid == logInfo.logId
+            curveInfo.serverUrl == logInfo.server.url &&
+            infoRow.wellUid == logInfo.wellId &&
+            infoRow.wellboreUid == logInfo.wellboreId &&
+            curveInfo.logUid == logInfo.logId
           );
         });
 
