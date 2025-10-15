@@ -5,12 +5,16 @@ import {
   ContentType
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
+import { ConfigurationChangeReasonModal } from "components/Modals/ConfigurationChangeReasonModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
+import { StyledLinkButton } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
+import ConfigurationChangeReason from "models/dataWorkOrder/configurationChangeReason";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,7 +24,8 @@ import { getDataSourceConfigurationViewPath } from "routes/utils/pathBuilder";
 export default function DataSourceConfigurationSetView() {
   const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
   const {
-    operationState: { timeZone, dateTimeFormat }
+    operationState: { colors, timeZone, dateTimeFormat },
+    dispatchOperation
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const {
@@ -56,56 +61,16 @@ export default function DataSourceConfigurationSetView() {
     );
   };
 
-  const columns: ContentTableColumn[] = [
-    {
-      property: "versionNumber",
-      label: "versionNumber",
-      type: ContentType.String
-    },
-    { property: "name", label: "name", type: ContentType.String },
-    { property: "numChannels", label: "channels", type: ContentType.String },
-    { property: "uid", label: "uid", type: ContentType.String },
-    { property: "description", label: "description", type: ContentType.String },
-    { property: "status", label: "status", type: ContentType.String },
-    {
-      property: "nominalHoleSize",
-      label: "nominalHoleSize",
-      type: ContentType.Measure
-    },
-    { property: "tubular", label: "tubular", type: ContentType.String },
-    { property: "depthStatus", label: "depthStatus", type: ContentType.String },
-    { property: "timeStatus", label: "timeStatus", type: ContentType.String },
-    {
-      property: "dTimPlannedStart",
-      label: "dTimPlannedStart",
-      type: ContentType.DateTime
-    },
-    {
-      property: "dTimPlannedStop",
-      label: "dTimPlannedStop",
-      type: ContentType.DateTime
-    },
-    {
-      property: "mdPlannedStart",
-      label: "mdPlannedStart",
-      type: ContentType.Measure
-    },
-    {
-      property: "mdPlannedStop",
-      label: "mdPlannedStop",
-      type: ContentType.Measure
-    },
-    {
-      property: "dTimChangeDeadline",
-      label: "dTimChangeDeadline",
-      type: ContentType.DateTime
-    },
-    {
-      property: "changeReason",
-      label: "changeReason",
-      type: ContentType.Component
-    }
-  ];
+  const onClickChangeReason = (
+    event: React.MouseEvent,
+    changeReason: ConfigurationChangeReason
+  ) => {
+    event.stopPropagation();
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <ConfigurationChangeReasonModal changeReason={changeReason} />
+    });
+  };
 
   const dataSourceConfigurationRows = dataSourceConfigurations.map(
     (dataSourceConfiguration) => {
@@ -140,7 +105,16 @@ export default function DataSourceConfigurationSetView() {
           timeZone,
           dateTimeFormat
         ),
-        changeReason: <div>TODO: ConfigurationChangeReason</div>,
+        changeReason: dataSourceConfiguration.changeReason && (
+          <StyledLinkButton
+            colors={colors}
+            onClick={(event) =>
+              onClickChangeReason(event, dataSourceConfiguration.changeReason)
+            }
+          >
+            See details
+          </StyledLinkButton>
+        ),
         dataSourceConfiguration: dataSourceConfiguration
       };
     }
@@ -165,10 +139,60 @@ export default function DataSourceConfigurationSetView() {
         columns={columns}
         data={dataSourceConfigurationRows}
         onSelect={onSelect}
-        checkableRows
         showRefresh
         downloadToCsvFileName="DataSourceConfigurations"
       />
     </>
   );
 }
+
+const columns: ContentTableColumn[] = [
+  {
+    property: "versionNumber",
+    label: "versionNumber",
+    type: ContentType.String
+  },
+  { property: "name", label: "name", type: ContentType.String },
+  { property: "numChannels", label: "channels", type: ContentType.String },
+  { property: "uid", label: "uid", type: ContentType.String },
+  { property: "description", label: "description", type: ContentType.String },
+  { property: "status", label: "status", type: ContentType.String },
+  {
+    property: "nominalHoleSize",
+    label: "nominalHoleSize",
+    type: ContentType.Measure
+  },
+  { property: "tubular", label: "tubular", type: ContentType.String },
+  { property: "depthStatus", label: "depthStatus", type: ContentType.String },
+  { property: "timeStatus", label: "timeStatus", type: ContentType.String },
+  {
+    property: "dTimPlannedStart",
+    label: "dTimPlannedStart",
+    type: ContentType.DateTime
+  },
+  {
+    property: "dTimPlannedStop",
+    label: "dTimPlannedStop",
+    type: ContentType.DateTime
+  },
+  {
+    property: "mdPlannedStart",
+    label: "mdPlannedStart",
+    type: ContentType.Measure
+  },
+  {
+    property: "mdPlannedStop",
+    label: "mdPlannedStop",
+    type: ContentType.Measure
+  },
+  {
+    property: "dTimChangeDeadline",
+    label: "dTimChangeDeadline",
+    type: ContentType.DateTime
+  },
+  {
+    property: "changeReason",
+    label: "changeReason",
+    type: ContentType.Component
+  }
+];

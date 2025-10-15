@@ -13,6 +13,7 @@ import formatDateString from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { Button } from "components/StyledComponents/Button";
+import { StyledLinkButton } from "components/StyledComponents/Link";
 import OperationType from "contexts/operationType";
 import { refreshJobInfoQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetJobInfo } from "hooks/query/useGetJobInfo";
@@ -194,11 +195,14 @@ export const JobsView = (): React.ReactElement => {
               (jobInfo.status === JobStatus.Finished ||
                 jobInfo.status === JobStatus.Cancelled) &&
               jobInfo.reportType !== ReportType.None ? (
-                <ReportButton onClick={() => onClickReport(jobInfo.id)}>
+                <StyledLinkButton
+                  colors={colors}
+                  onClick={() => onClickReport(jobInfo.id)}
+                >
                   {jobInfo.reportType === ReportType.File
                     ? "Download File"
                     : "Report"}
-                </ReportButton>
+                </StyledLinkButton>
               ) : null,
             jobInfo: jobInfo
           };
@@ -263,10 +267,6 @@ const StyledSwitch = styled(Switch)<{ colors: Colors }>`
     color: ${(props) => props.colors.infographic.primaryMossGreen};
     margin-left: 0;
   }
-`;
-const ReportButton = styled.div`
-  text-decoration: underline;
-  cursor: pointer;
 `;
 
 export default JobsView;

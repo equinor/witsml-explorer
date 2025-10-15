@@ -4,8 +4,9 @@ import {
   ContentTableRow,
   ContentType
 } from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
-import StyledLink from "components/StyledComponents/Link";
+import { StyledLink } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -29,7 +30,7 @@ export interface DataSourceConfigurationSetRow extends ContentTableRow {
 export default function DataSourceConfigurationSetsTable() {
   const { wellUid, wellboreUid, objectUid } = useParams();
   const {
-    operationState: { colors }
+    operationState: { colors, dateTimeFormat, timeZone }
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { object: dataWorkOrder } = useGetObject(
@@ -73,21 +74,6 @@ export default function DataSourceConfigurationSetsTable() {
     );
   };
 
-  const columns: ContentTableColumn[] = [
-    { property: "set", label: "Set", type: ContentType.Component },
-    {
-      property: "numConfigurations",
-      label: "Configurations",
-      type: ContentType.String
-    },
-    {
-      property: "lastConfig",
-      label: "Last Configuration",
-      type: ContentType.Component
-    },
-    { property: "uid", label: "uid", type: ContentType.String }
-  ];
-
   const dataSourceConfigurationSetRows: DataSourceConfigurationSetRow[] =
     dataSourceConfigurationSets.map((dataSourceConfigurationSet) => {
       const lastConfig =
@@ -104,6 +90,16 @@ export default function DataSourceConfigurationSetsTable() {
         uid: dataSourceConfigurationSet.uid,
         numConfigurations:
           dataSourceConfigurationSet.dataSourceConfigurations?.length ?? 0,
+        dTimPlannedStart: formatDateString(
+          lastConfig?.dTimPlannedStart,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimPlannedStop: formatDateString(
+          lastConfig?.dTimPlannedStop,
+          timeZone,
+          dateTimeFormat
+        ),
         dataSourceConfigurationSet: dataSourceConfigurationSet,
         set: (
           <StyledLink
@@ -133,10 +129,34 @@ export default function DataSourceConfigurationSetsTable() {
         viewId="dataSourceConfigurationSets"
         columns={columns}
         data={dataSourceConfigurationSetRows}
-        checkableRows
         showRefresh
         downloadToCsvFileName={`DataWorkOrder_${dataWorkOrder?.name}_dataSourceConfigurationSets`}
       />
     </>
   );
 }
+
+const columns: ContentTableColumn[] = [
+  {
+    property: "lastConfig",
+    label: "Last Configuration",
+    type: ContentType.Component
+  },
+  {
+    property: "dTimPlannedStart",
+    label: "Planned Start",
+    type: ContentType.DateTime
+  },
+  {
+    property: "dTimPlannedStop",
+    label: "Planned Stop",
+    type: ContentType.DateTime
+  },
+  { property: "set", label: "Set", type: ContentType.Component },
+  {
+    property: "numConfigurations",
+    label: "Configurations",
+    type: ContentType.String
+  },
+  { property: "uid", label: "uid (set)", type: ContentType.String }
+];

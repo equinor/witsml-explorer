@@ -1,15 +1,15 @@
-import { FC, useLayoutEffect, useRef } from "react";
-import { VirtualItem, Virtualizer } from "@tanstack/react-virtual";
-import Well from "../../../models/well.tsx";
-import { useOperationState } from "../../../hooks/useOperationState.tsx";
-import { WellIndicator } from "../../StyledComponents/WellIndicator.tsx";
 import { Divider } from "@equinor/eds-core-react";
+import { VirtualItem, Virtualizer } from "@tanstack/react-virtual";
+import { FC, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
-import WellItem from "../WellItem";
+import { useOperationState } from "../../../hooks/useOperationState.tsx";
 import { UidMappingBasicInfo } from "../../../models/uidMapping.tsx";
+import Well from "../../../models/well.tsx";
+import { WellIndicator } from "../../StyledComponents/WellIndicator.tsx";
+import WellItem from "../WellItem";
 
 const SidebarVirtualItem: FC<{
-  virtualItem: VirtualItem<HTMLDivElement>;
+  virtualItem: VirtualItem;
   well: Well;
   uidMappingBasicInfos: UidMappingBasicInfo[];
   virtualizer: Virtualizer<HTMLDivElement, Element>;
@@ -60,12 +60,12 @@ const WellListing = styled.div`
 `;
 
 const StyledVirtualItem = styled.div.attrs<{
-  virtualItem: VirtualItem<HTMLDivElement>;
+  virtualItem: VirtualItem;
 }>((props) => ({
   style: {
     transform: `translateY(${props.virtualItem.start}px)`
   }
-}))<{ virtualItem: VirtualItem<HTMLDivElement> }>`
+}))<{ virtualItem: VirtualItem }>`
   position: absolute;
   top: 0;
   left: 0;

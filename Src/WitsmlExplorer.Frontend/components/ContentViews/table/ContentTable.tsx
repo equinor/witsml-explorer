@@ -38,6 +38,7 @@ import {
   constantTableOptions,
   dateSortingFn,
   expanderId,
+  INSET_VERTICAL_SPACING,
   isClickable,
   measureSortingFn,
   selectId,
@@ -136,7 +137,7 @@ export const ContentTable = React.memo(
     const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
     const cellHeight = sizes[theme].cellHeight;
     const headCellHeight = sizes[theme].headCellHeight;
-    const noData = useMemo(() => [], []);
+    const noData = useMemo<any[]>(() => [], []);
 
     const columnDef = useColumnDef(
       viewId,
@@ -624,11 +625,22 @@ const Inset = (props: InsetProps): React.ReactElement => {
     >
       <td
         style={{
-          height: `${cellHeight * data.length + headCellHeight}px`,
+          height: `${
+            cellHeight * data.length +
+            headCellHeight +
+            INSET_VERTICAL_SPACING * 2
+          }px`,
           padding: 0
         }}
       >
-        <ContentTable columns={columns} data={data} showPanel={false} />
+        <div
+          style={{
+            marginTop: INSET_VERTICAL_SPACING,
+            marginBottom: INSET_VERTICAL_SPACING
+          }}
+        >
+          <ContentTable columns={columns} data={data} showPanel={false} />
+        </div>
       </td>
     </tr>
   );
