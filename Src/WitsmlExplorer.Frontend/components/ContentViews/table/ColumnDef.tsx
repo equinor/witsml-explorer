@@ -91,10 +91,12 @@ export const useColumnDef = (
     );
 
     if (savedOrder) {
-      const sortedColumns = savedOrder.flatMap((label) => {
-        const foundColumn = columnDef.find((col) => col.id == label);
-        return foundColumn == null ? [] : foundColumn;
-      });
+      const sortedColumns: ColumnDef<any, any>[] = savedOrder.flatMap(
+        (label) => {
+          const foundColumn = columnDef.find((col) => col.id == label);
+          return foundColumn == null ? [] : [foundColumn];
+        }
+      );
       const columnsWithoutOrder = columnDef.filter(
         (col) => !savedOrder.includes(col.id)
       );
@@ -258,7 +260,7 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
     ),
     cell: ({ row, table }) => {
       return row.getCanExpand() ? (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", margin: isCompactMode ? "-4px" : "0" }}>
           <IconButton
             onClick={(event) => {
               event.stopPropagation();

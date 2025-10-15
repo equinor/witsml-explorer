@@ -12,14 +12,14 @@ public class ChannelRequirement
     public string Purpose { get; set; }
     public TimeMeasure MinInterval { get; set; }
     public TimeMeasure MaxInterval { get; set; }
-    public GenericMeasure MinPrecision { get; set; }
-    public GenericMeasure MaxPrecision { get; set; }
-    public GenericMeasure MinValue { get; set; }
-    public GenericMeasure MaxValue { get; set; }
+    public LengthMeasure MinPrecision { get; set; }
+    public LengthMeasure MaxPrecision { get; set; }
+    public LengthMeasure MinValue { get; set; }
+    public LengthMeasure MaxValue { get; set; }
     public LengthMeasure MinStep { get; set; }
     public LengthMeasure MaxStep { get; set; }
-    public GenericMeasure MinDelta { get; set; }
-    public GenericMeasure MaxDelta { get; set; }
+    public LengthMeasure MinDelta { get; set; }
+    public LengthMeasure MaxDelta { get; set; }
     public TimeMeasure Latency { get; set; }
     public LengthMeasure MdThreshold { get; set; }
     public bool? DynamicMdThreshold { get; set; }
