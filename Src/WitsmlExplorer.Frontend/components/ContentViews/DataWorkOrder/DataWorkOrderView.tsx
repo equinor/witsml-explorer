@@ -11,6 +11,9 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import styled from "styled-components";
+import { PropertiesReadOnlyProperty } from "../Common/PropertiesReadOnlyRenderer";
+import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
+import { CommonGridView } from "../Common/CommonGridView";
 
 export default function DataWorkOrderView() {
   const { wellUid, wellboreUid, objectUid } = useParams();
@@ -33,9 +36,60 @@ export default function DataWorkOrderView() {
     return <ItemNotFound itemType={ObjectType.DataWorkOrder} />;
   }
 
+  const properties: PropertiesReadOnlyProperty[] = [
+    {
+      property: "name",
+      propertyType: PropertyType.String
+    },
+    {
+      property: "field",
+      propertyType: PropertyType.String
+    },
+    {
+      property: "dataProvider",
+      propertyType: PropertyType.String
+    },
+    {
+      property: "dataConsumer",
+      propertyType: PropertyType.String
+    },
+    {
+      property: "description",
+      propertyType: PropertyType.String
+    },
+    {
+      property: "dTimPlannedStart",
+      propertyType: PropertyType.DateTime
+    },
+    {
+      property: "dTimPlannedStop",
+      propertyType: PropertyType.DateTime
+    },
+    {
+      property: "uid",
+      propertyType: PropertyType.String
+    },
+    {
+      property: "commonData.dTimCreation",
+      propertyType: PropertyType.DateTime
+    },
+    {
+      property: "commonData.dTimLastChange",
+      propertyType: PropertyType.DateTime
+    }
+  ];
+
+  const dataWorkOrderProperties = {
+    title: `Properties for `,
+    properties: properties,
+    object: dataWorkOrder
+  };
+
   return (
     <ContentLayout>
-      <div>TODO: Properties</div>
+      <div>
+        <CommonGridView {...dataWorkOrderProperties} />
+      </div>
       <Tabs
         activeTab={tabIndex}
         onChange={setTabIndex}
