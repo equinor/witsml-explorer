@@ -12,7 +12,9 @@ import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
-import DataSourceConfigurationSet from "models/dataWorkOrder/dataSourceConfigurationSet";
+import DataSourceConfigurationSet, {
+  getLastDataSourceConfiguration
+} from "models/dataWorkOrder/dataSourceConfigurationSet";
 import { ObjectType } from "models/objectType";
 import { useParams } from "react-router-dom";
 import {
@@ -76,15 +78,9 @@ export default function DataSourceConfigurationSetsTable() {
 
   const dataSourceConfigurationSetRows: DataSourceConfigurationSetRow[] =
     dataSourceConfigurationSets.map((dataSourceConfigurationSet) => {
-      const lastConfig =
-        dataSourceConfigurationSet.dataSourceConfigurations?.reduce(
-          (last, current) =>
-            last == null ||
-            (current.versionNumber ?? 0) > (last.versionNumber ?? 0)
-              ? current
-              : last,
-          undefined
-        );
+      const lastConfig = getLastDataSourceConfiguration(
+        dataSourceConfigurationSet
+      );
       return {
         id: dataSourceConfigurationSet.uid,
         uid: dataSourceConfigurationSet.uid,
