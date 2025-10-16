@@ -5,13 +5,13 @@ import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { useOperationState } from "hooks/useOperationState";
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
 import { Box } from "@mui/material";
 import QueryDataGrid from "components/ContentViews/QueryDataGrid";
 import { QueryEditorTypes } from "components/ContentViews/QueryView/components/QueryOptions/QueryOptions";
 import ResultMeta from "components/ContentViews/QueryView/components/ResultMeta";
+import { StyledTab } from "components/StyledComponents/StyledTab";
 import QueryOptions from "./components/QueryOptions";
 
 const QueryView = (): React.ReactElement => {
@@ -134,10 +134,6 @@ const StyledClearIcon = styled(Icon)`
   &:hover {
     background-color: rgba(0, 0, 0, 0.1);
   }
-`;
-
-const StyledTab = styled(Tabs.Tab)<{ colors: Colors }>`
-  color: ${(props) => props.colors.infographic.primaryMossGreen};
 `;
 
 export default QueryView;
