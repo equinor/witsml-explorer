@@ -43,6 +43,8 @@ export const ReadOnlyPropertiesRenderer = <T,>({
         return measureToString(value, decimalSetting);
       case PropertyType.DateTime:
         return formatDateString(value, timeZone, dateTimeFormat);
+      case PropertyType.RefNameString:
+        return value?.value;
       default:
         return String(value);
     }

@@ -27,9 +27,7 @@ const Layout = styled.div<{ columns: number }>`
   margin-top: 12px;
   margin-bottom: 12px;
   display: grid;
-  grid-template-columns: repeat(${(props) => props.columns}, 1fr);
+  grid-template-columns: repeat(${(props) => props.columns}, auto);
   gap: 20px;
   justify-content: start;
-  width: fit-content;
-  max-width: 100%;
 `;
