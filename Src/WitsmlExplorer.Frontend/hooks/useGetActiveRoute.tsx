@@ -7,6 +7,7 @@ import {
   LOG_OBJECTS_VIEW_NAVIGATION_PATH,
   LOG_OBJECT_VIEW_NAVIGATION_PATH,
   LOG_TYPES_VIEW_NAVIGATION_PATH,
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH,
   MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH,
   MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH,
   OBJECTS_VIEW_NAVIGATION_PATH,
@@ -40,6 +41,9 @@ export function useGetActiveRoute() {
   const isMultiLogCurveValuesView = !!useMatch(
     MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH
   );
+  const isMultiLogCurveSelectionView = !!useMatch(
+    MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+  );
   const isDataSourceConfigurationView = !!useMatch(
     DATA_SOURCE_CONFIGURATION_VIEW_NAVIGATION_PATH
   );
@@ -59,6 +63,7 @@ export function useGetActiveRoute() {
     isLogCurveValuesView,
     isMultiLogsCurveInfoListView,
     isMultiLogCurveValuesView,
+    isMultiLogCurveSelectionView,
     isDataSourceConfigurationView
   };
 }

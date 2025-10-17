@@ -1,4 +1,4 @@
-import { EdsProvider, Switch, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Icon, Switch, Typography } from "@equinor/eds-core-react";
 import { WITSML_LOG_ORDERTYPE_DECREASING } from "components/Constants";
 import { CurveValuesPlot } from "components/ContentViews/CurveValuesPlot";
 import {
@@ -29,12 +29,17 @@ import {
   ContentContainer
 } from "../StyledComponents/Container";
 import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
+import AdjustDepthIndexRange from "../Modals/TrimLogObject/AdjustDepthIndexRange.tsx";
+import AdjustDateTimeIndexRange from "../Modals/TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import { Button } from "../StyledComponents/Button.tsx";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import { Colors, dark } from "../../styles/Colors.tsx";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const MultiLogCurveValuesView = (): React.ReactElement => {
   const {
-    operationState: { timeZone, dateTimeFormat, theme }
+    operationState: { timeZone, dateTimeFormat, theme, colors }
   } = useOperationState();
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -42,6 +47,11 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
   const { wellUid, wellboreUid, logType } = useParams();
+  const [startIndexValue, setStartIndexValue] = useState<string | number>(
+    startIndex
+  );
+  const [endIndexValue, setEndIndexValue] = useState<string | number>(endIndex);
+  const [isValidIndexRange, setIsValidIndexRange] = useState<boolean>(true);
   const [columns, setColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
   >([]);
@@ -57,6 +67,7 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
     isFetched: isFetchedLogs
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
 
+  const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLogs;
 
   const updateColumns = (curveSpecifications: CurveSpecification[]) => {
@@ -96,14 +107,18 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
   useEffect(() => {
     refreshData();
     return () => controller.current?.abort();
-  }, [startIndex, endIndex, allLogs]);
+  }, [allLogs]);
+
+  const onRefresh = async () => {
+    refreshData();
+  };
 
   const refreshData = () => {
     setTableData([]);
     setIsLoading(true);
 
     if (allLogs && !isFetching) {
-      getLogData(startIndex, endIndex)
+      getLogData(startIndexValue.toString(), endIndexValue.toString())
         .catch(truncateAbortHandler)
         .then(() => setIsLoading(false));
     }
@@ -162,19 +177,55 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
 
   return (
     <>
-      <ContentContainer>
-        <CommonPanelContainer>
-          <EdsProvider density={normaliseThemeForEds(theme)}>
-            <Switch
-              checked={showPlot}
-              onChange={() => setShowPlot(!showPlot)}
-              size={theme === UserTheme.Compact ? "small" : "default"}
-            />
-            <Typography style={{ minWidth: "max-content" }}>
-              Show Plot
-            </Typography>
-          </EdsProvider>
-        </CommonPanelContainer>
+      <StyledContentContainer colors={colors}>
+        <HeaderContent>
+          <CommonPanelContainer key="selectIndexRange">
+            {isDepthIndex ? (
+              <AdjustDepthIndexRange
+                minValue={+startIndex}
+                maxValue={+endIndex}
+                isDescending={false}
+                hideSetButtons={true}
+                onStartValueChanged={setStartIndexValue}
+                onEndValueChanged={setEndIndexValue}
+                onValidChange={setIsValidIndexRange}
+              />
+            ) : (
+              <AdjustDateTimeIndexRange
+                minDate={startIndex}
+                maxDate={endIndex}
+                isDescending={false}
+                hideSetButtons={true}
+                onStartDateChanged={setStartIndexValue}
+                onEndDateChanged={setEndIndexValue}
+                onValidChange={setIsValidIndexRange}
+              />
+            )}
+          </CommonPanelContainer>
+          <CommonPanelContainer key="refreshPanel">
+            <Button
+              aria-label="refresh"
+              variant="ghost_icon"
+              key="refreshObjects"
+              onClick={onRefresh}
+              disabled={!isValidIndexRange}
+            >
+              <Icon name="refresh" />
+            </Button>
+          </CommonPanelContainer>
+          <CommonPanelContainer>
+            <EdsProvider density={normaliseThemeForEds(theme)}>
+              <Switch
+                checked={showPlot}
+                onChange={() => setShowPlot(!showPlot)}
+                size={theme === UserTheme.Compact ? "small" : "default"}
+              />
+              <Typography style={{ minWidth: "max-content" }}>
+                Show Plot
+              </Typography>
+            </EdsProvider>
+          </CommonPanelContainer>
+        </HeaderContent>
         {isLoading && <ProgressSpinner message="Fetching data" />}
         {!isLoading && !tableData.length && (
           <Message>
@@ -202,13 +253,65 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
               autoRefresh={false}
             />
           ))}
-      </ContentContainer>
+      </StyledContentContainer>
     </>
   );
 };
+
 const Message = styled.div`
   margin: 10px;
   padding: 10px;
+`;
+
+export const HeaderContent = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 0px 0px 5px;
+`;
+
+const StyledContentContainer = styled(ContentContainer)<{
+  colors: Colors;
+}>`
+  background-color: ${(props) => props.colors.ui.backgroundDefault};
+  color: ${(props) => props.colors.text.staticIconsDefault};
+  div[class*="InputWrapper__Container"] {
+    label {
+      color: ${(props) => props.colors.text.staticTextLabel};
+    }
+  }
+  div[class*="Input__Container"][disabled] {
+    background: ${(props) => props.colors.text.staticTextFieldDefault};
+    border-bottom: 1px solid #575d63;
+  }
+  div[class*="Input__Container"] {
+    background-color: ${(props) => props.colors.text.staticTextFieldDefault};
+  }
+  div[class*="DateTimeField__Layout"] {
+    svg {
+      fill: ${(props) => props.colors.text.staticIconsDefault};
+    }
+    label {
+      color: ${(props) => props.colors.text.staticIconsDefault};
+    }
+  }
+  input[type="datetime-local"] {
+    color-scheme: ${({ colors }) => (colors === dark ? "dark" : "")};
+  }
+  ${({ colors }) =>
+    colors === dark
+      ? `
+      button[disabled]:disabled {
+        background: #565656;
+        border:1px solid #565656;
+        color:#9CA6AC;
+      }
+      button[class*="Autocomplete__StyledButton"]:disabled {
+        background: none;
+        border: none;
+      }
+      `
+      : ""};
 `;
 
 const getColumnType = (curveSpecification: CurveSpecification) => {

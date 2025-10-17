@@ -1,4 +1,8 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import {
+  QueryObserverResult,
+  useQueries,
+  useQuery
+} from "@tanstack/react-query";
 import { ObjectType, ObjectTypeToModel } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
@@ -47,6 +51,25 @@ export const objectsQuery = <T extends ObjectType>(
     !(options?.enabled === false)
 });
 
+export const multipleObjectsQuery = <T extends ObjectType>(
+  server: Server,
+  wellUid: string,
+  wellboreUid: string,
+  objectType: T
+) => ({
+  queryKey: getObjectsQueryKey(server?.url, wellUid, wellboreUid, objectType),
+  queryFn: async () => {
+    const objects = await ObjectService.getObjects<T>(
+      wellUid,
+      wellboreUid,
+      objectType,
+      null,
+      server
+    );
+    return objects;
+  }
+});
+
 type ObjectsQueryResult<T extends ObjectType> = Omit<
   QueryObserverResult<ObjectTypeToModel[T][], unknown>,
   "data"
@@ -65,4 +88,22 @@ export const useGetObjects = <T extends ObjectType>(
     objectsQuery<T>(server, wellUid, wellboreUid, objectType, options)
   );
   return { objects: data, ...state };
+};
+
+//todo: fix types
+export const useGetMultipleObjects = <T extends ObjectType>(
+  wellComplexIds: { server: Server; wellId: string; wellboreId: string }[],
+  objectType: T
+): { objects: ObjectTypeToModel[T][]; isFetching: boolean }[] => {
+  const result = useQueries<ObjectTypeToModel[T][][]>({
+    queries: wellComplexIds?.map(({ server, wellId, wellboreId }) =>
+      multipleObjectsQuery<T>(server, wellId, wellboreId, objectType)
+    )
+  });
+  return result.map((r) => {
+    return {
+      objects: r.data as ObjectTypeToModel[T][],
+      isFetching: r.isFetching
+    };
+  });
 };

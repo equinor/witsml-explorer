@@ -2,8 +2,9 @@ import { ErrorDetails } from "models/errorDetails";
 import { ApiClient } from "services/apiClient";
 import AuthorizationService from "services/authorizationService";
 import NotificationService from "services/notificationService";
-import LogCurveInfo from "../models/logCurveInfo";
 import { LogData } from "../models/logData";
+import MultiLogCurveInfo from "../models/multilogCurveInfo.ts";
+import { Server } from "../models/server.ts";
 
 export default class LogObjectService {
   public static async getLogData(
@@ -62,7 +63,8 @@ export default class LogObjectService {
     startIndexIsInclusive: boolean,
     startIndex: string,
     endIndex: string,
-    abortSignal: AbortSignal
+    abortSignal: AbortSignal,
+    server?: Server
   ): Promise<LogData> {
     if (Object.entries(logMnemonics).length === 0) return;
     const params = [`startIndexIsInclusive=${startIndexIsInclusive}`];
@@ -76,7 +78,8 @@ export default class LogObjectService {
     const response = await ApiClient.post(
       pathName,
       JSON.stringify(logMnemonics),
-      abortSignal
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();
@@ -103,15 +106,17 @@ export default class LogObjectService {
     wellUid: string,
     wellboreUid: string,
     logUids: string[],
-    abortSignal: AbortSignal
-  ): Promise<LogCurveInfo[]> {
+    abortSignal: AbortSignal,
+    server?: Server
+  ): Promise<MultiLogCurveInfo[]> {
     if (logUids.length === 0) return;
     const pathName = `/api/wells/${wellUid}/wellbores/${wellboreUid}/multilog/mnemonics`;
 
     const response = await ApiClient.post(
       pathName,
       JSON.stringify(logUids),
-      abortSignal
+      abortSignal,
+      server
     );
     if (response.ok) {
       return response.json();

@@ -1,6 +1,5 @@
 version: '3.7'
 services:
-
   mongo: # Remove this if you are not using mongodb.
     image: mongo:4.4.1
     container_name: witsmlexplorer-mongodb
@@ -30,15 +29,15 @@ services:
     container_name: witsmlexplorer-frontend
 
   nginx:
-    image: nginx:1.21-alpine
+    image: nginx:1.29-alpine
     restart: unless-stopped
     container_name: witsmlexplorer-nginx
     ports:
       - 80:80
       - 443:443
     volumes:
-      - /data/nginx:/etc/nginx     #May be changed
-      - /data/logs:/var/log/nginx  #May be changed
+      - /data/nginx:/etc/nginx #May be changed
+      - /data/logs:/var/log/nginx #May be changed
     depends_on:
       - web
       - api
