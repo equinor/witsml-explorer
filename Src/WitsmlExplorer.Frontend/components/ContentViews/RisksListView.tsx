@@ -13,6 +13,7 @@ import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
+import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import RiskObject from "models/riskObject";
 import { MouseEvent } from "react";
@@ -44,12 +45,8 @@ export default function RisksListView() {
         ...risk,
         ...risk.commonData,
         id: risk.uid,
-        mdBitStart: `${risk.mdBitStart?.value?.toFixed(4) ?? ""} ${
-          risk.mdBitStart?.uom ?? ""
-        }`,
-        mdBitEnd: `${risk.mdBitEnd?.value?.toFixed(4) ?? ""} ${
-          risk.mdBitEnd?.uom ?? ""
-        }`,
+        mdBitStart: measureToString(risk.mdBitStart),
+        mdBitEnd: measureToString(risk.mdBitEnd),
         dTimStart: formatDateString(risk.dTimStart, timeZone, dateTimeFormat),
         dTimEnd: formatDateString(risk.dTimEnd, timeZone, dateTimeFormat),
         details: risk.details,

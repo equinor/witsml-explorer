@@ -16,6 +16,7 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
+import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import TubularComponent from "models/tubularComponent";
 import React from "react";
@@ -115,19 +116,11 @@ export default function TubularView() {
       typeTubularComponent: tubularComponent.typeTubularComponent,
       sequence: tubularComponent.sequence,
       description: tubularComponent.description,
-      innerDiameter: `${tubularComponent.id?.value?.toFixed(4)} ${
-        tubularComponent.id?.uom
-      }`,
-      od: `${tubularComponent.od?.value?.toFixed(4)} ${
-        tubularComponent.od?.uom
-      }`,
-      len: `${tubularComponent.len?.value?.toFixed(4)} ${
-        tubularComponent.len?.uom
-      }`,
+      innerDiameter: measureToString(tubularComponent.id),
+      od: measureToString(tubularComponent.od),
+      len: measureToString(tubularComponent.len),
       numJointStand: tubularComponent.numJointStand,
-      wtPerLen: `${tubularComponent.wtPerLen?.value?.toFixed(4)} ${
-        tubularComponent.wtPerLen?.uom
-      }`,
+      wtPerLen: measureToString(tubularComponent.wtPerLen),
       configCon: tubularComponent.configCon,
       typeMaterial: tubularComponent.typeMaterial,
       vendor: tubularComponent.vendor,

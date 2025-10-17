@@ -3,6 +3,9 @@ export default interface Measure {
   uom: string;
 }
 
-export function measureToString(measure: Measure): string {
-  return `${measure?.value?.toFixed(4) ?? ""} ${measure?.uom ?? ""}`;
+export function measureToString(measure: Measure, decimals?: number): string {
+  if (decimals && measure?.value) {
+    return `${measure?.value?.toFixed(decimals) ?? ""} ${measure?.uom ?? ""}`;
+  }
+  return `${measure?.value ?? ""} ${measure?.uom ?? ""}`;
 }

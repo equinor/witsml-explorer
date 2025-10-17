@@ -1,6 +1,9 @@
 import { Tabs } from "@equinor/eds-core-react";
 import AssetContactsTable from "components/ContentViews/DataWorkOrder/AssetContactsTable";
 import DataSourceConfigurationSetsTable from "components/ContentViews/DataWorkOrder/DataSourceConfigurationSetsTable";
+import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
+import { ReadOnlyPropertiesGrid } from "components/ReadOnlyProperties/ReadOnlyPropertiesGrid";
+import { ReadOnlyPropertiesRendererProperty } from "components/ReadOnlyProperties/ReadOnlyPropertiesRenderer";
 import { StyledTab } from "components/StyledComponents/StyledTab";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -35,7 +38,7 @@ export default function DataWorkOrderView() {
 
   return (
     <ContentLayout>
-      <div>TODO: Properties</div>
+      <ReadOnlyPropertiesGrid properties={properties} object={dataWorkOrder} />
       <Tabs
         activeTab={tabIndex}
         onChange={setTabIndex}
@@ -65,3 +68,38 @@ const ContentLayout = styled.div`
   height: 100%;
   gap: 1rem;
 `;
+
+const properties: ReadOnlyPropertiesRendererProperty[] = [
+  {
+    property: "name",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "field",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "dataProvider",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "dTimPlannedStop",
+    propertyType: PropertyType.DateTime
+  },
+  {
+    property: "description",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "dTimPlannedStart",
+    propertyType: PropertyType.DateTime
+  },
+  {
+    property: "dataConsumer",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "uid",
+    propertyType: PropertyType.String
+  }
+];
