@@ -1,6 +1,9 @@
 import { Tabs } from "@equinor/eds-core-react";
 import AssetContactsTable from "components/ContentViews/DataWorkOrder/AssetContactsTable";
 import DataSourceConfigurationSetsTable from "components/ContentViews/DataWorkOrder/DataSourceConfigurationSetsTable";
+import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
+import { ReadOnlyPropertiesGrid } from "components/ReadOnlyProperties/ReadOnlyPropertiesGrid";
+import { ReadOnlyPropertiesRendererProperty } from "components/ReadOnlyProperties/ReadOnlyPropertiesRenderer";
 import { StyledTab } from "components/StyledComponents/StyledTab";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -11,9 +14,6 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import styled from "styled-components";
-import { PropertiesReadOnlyProperty } from "../Common/PropertiesReadOnlyRenderer";
-import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
-import { CommonGridView } from "../Common/CommonGridView";
 
 export default function DataWorkOrderView() {
   const { wellUid, wellboreUid, objectUid } = useParams();
@@ -36,60 +36,9 @@ export default function DataWorkOrderView() {
     return <ItemNotFound itemType={ObjectType.DataWorkOrder} />;
   }
 
-  const properties: PropertiesReadOnlyProperty[] = [
-    {
-      property: "name",
-      propertyType: PropertyType.String
-    },
-    {
-      property: "field",
-      propertyType: PropertyType.String
-    },
-    {
-      property: "dataProvider",
-      propertyType: PropertyType.String
-    },
-    {
-      property: "dataConsumer",
-      propertyType: PropertyType.String
-    },
-    {
-      property: "description",
-      propertyType: PropertyType.String
-    },
-    {
-      property: "dTimPlannedStart",
-      propertyType: PropertyType.DateTime
-    },
-    {
-      property: "dTimPlannedStop",
-      propertyType: PropertyType.DateTime
-    },
-    {
-      property: "uid",
-      propertyType: PropertyType.String
-    },
-    {
-      property: "commonData.dTimCreation",
-      propertyType: PropertyType.DateTime
-    },
-    {
-      property: "commonData.dTimLastChange",
-      propertyType: PropertyType.DateTime
-    }
-  ];
-
-  const dataWorkOrderProperties = {
-    title: `Properties for `,
-    properties: properties,
-    object: dataWorkOrder
-  };
-
   return (
     <ContentLayout>
-      <div>
-        <CommonGridView {...dataWorkOrderProperties} />
-      </div>
+      <ReadOnlyPropertiesGrid properties={properties} object={dataWorkOrder} />
       <Tabs
         activeTab={tabIndex}
         onChange={setTabIndex}
@@ -119,3 +68,38 @@ const ContentLayout = styled.div`
   height: 100%;
   gap: 1rem;
 `;
+
+const properties: ReadOnlyPropertiesRendererProperty[] = [
+  {
+    property: "name",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "field",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "dataProvider",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "dTimPlannedStop",
+    propertyType: PropertyType.DateTime
+  },
+  {
+    property: "description",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "dTimPlannedStart",
+    propertyType: PropertyType.DateTime
+  },
+  {
+    property: "dataConsumer",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "uid",
+    propertyType: PropertyType.String
+  }
+];
