@@ -75,23 +75,23 @@ const properties: ReadOnlyPropertiesRendererProperty[] = [
     propertyType: PropertyType.String
   },
   {
-    property: "field",
-    propertyType: PropertyType.String
+    property: "dTimPlannedStart",
+    propertyType: PropertyType.DateTime
   },
   {
     property: "dataProvider",
     propertyType: PropertyType.String
   },
   {
-    property: "dTimPlannedStop",
-    propertyType: PropertyType.DateTime
-  },
-  {
     property: "description",
     propertyType: PropertyType.String
   },
   {
-    property: "dTimPlannedStart",
+    property: "field",
+    propertyType: PropertyType.String
+  },
+  {
+    property: "dTimPlannedStop",
     propertyType: PropertyType.DateTime
   },
   {

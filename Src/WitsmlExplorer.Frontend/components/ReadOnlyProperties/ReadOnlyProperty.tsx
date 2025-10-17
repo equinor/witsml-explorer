@@ -5,7 +5,7 @@ import { Colors } from "styles/Colors";
 
 export interface ReadOnlyProperty {
   label: string;
-  value: string;
+  value?: string;
 }
 
 export const ReadOnlyProperty = ({ label, value }: ReadOnlyProperty) => {
@@ -25,7 +25,8 @@ const PropertyLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  max-width: 400px;
+  min-width: 150px;
+  max-width: 300px;
 `;
 
 const PropertyLabel = styled(Typography)<{ colors: Colors }>`

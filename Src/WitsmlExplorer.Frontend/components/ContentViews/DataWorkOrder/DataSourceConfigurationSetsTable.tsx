@@ -102,7 +102,7 @@ export default function DataSourceConfigurationSetsTable() {
             to={getSetPath(dataSourceConfigurationSet.uid)}
             colors={colors}
           >
-            Show set
+            Show versions
           </StyledLink>
         ),
         lastConfig: (
@@ -151,7 +151,7 @@ const columns: ContentTableColumn[] = [
   { property: "set", label: "Set", type: ContentType.Component },
   {
     property: "numConfigurations",
-    label: "Configurations",
+    label: "Versions",
     type: ContentType.String
   },
   { property: "uid", label: "uid (set)", type: ContentType.String }

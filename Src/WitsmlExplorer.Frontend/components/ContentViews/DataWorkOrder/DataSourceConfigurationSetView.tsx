@@ -14,7 +14,7 @@ import { useGetComponents } from "hooks/query/useGetComponents";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
-import ConfigurationChangeReason from "models/dataWorkOrder/configurationChangeReason";
+import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
 import { measureToString } from "models/measure";
 import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
@@ -63,12 +63,16 @@ export default function DataSourceConfigurationSetView() {
 
   const onClickChangeReason = (
     event: React.MouseEvent,
-    changeReason: ConfigurationChangeReason
+    dataSourceConfiguration: DataSourceConfiguration
   ) => {
     event.stopPropagation();
     dispatchOperation({
       type: OperationType.DisplayModal,
-      payload: <ConfigurationChangeReasonModal changeReason={changeReason} />
+      payload: (
+        <ConfigurationChangeReasonModal
+          dataSourceConfiguration={dataSourceConfiguration}
+        />
+      )
     });
   };
 
@@ -109,7 +113,7 @@ export default function DataSourceConfigurationSetView() {
           <StyledLinkButton
             colors={colors}
             onClick={(event) =>
-              onClickChangeReason(event, dataSourceConfiguration.changeReason)
+              onClickChangeReason(event, dataSourceConfiguration)
             }
           >
             See details
