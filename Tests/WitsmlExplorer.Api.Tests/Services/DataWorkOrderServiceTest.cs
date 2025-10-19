@@ -181,22 +181,22 @@ namespace WitsmlExplorer.Api.Tests.Services
                                             MinPrecision = new Measure()
                                             {
                                                 Uom = "uom",
-                                                Value = "value"
+                                                Value = "1.0"
                                             },
                                             MaxPrecision = new Measure()
                                             {
                                                 Uom = "uom",
-                                                Value = "value"
+                                                Value = "1.0"
                                             },
                                             MinValue = new Measure()
                                             {
                                                 Uom = "uom",
-                                                Value = "value"
+                                                Value = "1.0"
                                             },
                                             MaxValue = new Measure()
                                             {
                                                 Uom = "uom",
-                                                Value = "value"
+                                                Value = "1.0"
                                             },
                                             MinStep = new WitsmlLengthMeasure()
                                             {
@@ -211,12 +211,12 @@ namespace WitsmlExplorer.Api.Tests.Services
                                             MinDelta = new Measure()
                                             {
                                                 Uom = "uom",
-                                                Value = "value"
+                                                Value = "1.0"
                                             },
                                             MaxDelta = new Measure()
                                             {
                                                 Uom = "uom",
-                                                Value = "value"
+                                                Value = "1.0"
                                             },
                                             Latency = new WitsmlTimeMeasure()
                                             {
