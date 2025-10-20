@@ -53,14 +53,14 @@ namespace WitsmlExplorer.Api.Services
                 {
                     if (wellbore.IsActive == "true")
                     {
-                        Well well = wells.FirstOrDefault(well =>
-                            well.Uid == wellbore.UidWell);
+                        Well well = wells.FirstOrDefault(well => well.Uid == wellbore.UidWell);
                         if (well != null)
                         {
                             well.IsActive = true;
                         }
                     }
                 }
+
                 return wells;
             }
             catch (Exception)

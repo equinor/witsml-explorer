@@ -67,6 +67,7 @@ namespace WitsmlExplorer.Api.Workers
         {
             return "The job was cancelled by the user.";
         }
+
         private async Task<WitsmlCapServers> GetTargetServerCapabilities()
         {
             if (_targetServerCapabilities == null)

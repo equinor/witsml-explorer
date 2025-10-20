@@ -22,7 +22,7 @@ public static class DataWorkOrderQueries
                 NameWellbore = "",
                 Name = "",
                 DwoVersion = "",
-                // Field = "",
+                Field = "",
                 DataProvider = "",
                 DataConsumer = "",
                 Description = "",
