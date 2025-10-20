@@ -277,7 +277,7 @@ namespace WitsmlExplorer.Api.Workers.Copy
                     Phase = "Copy " + entityType,
                     Name = objectOnWellbore.Name,
                     Uid = objectOnWellbore.Uid,
-                    Message = copyObjectResult.result.Message,
+                    Message = $"{copyObjectResult.result.Message} {copyObjectResult.result.Reason}",
                     Status = GetJobStatus(copyObjectResult.result.IsSuccess, cancellationToken)
                 };
                 progressReporter.Report(1.0); //Report the progress for this object in case the sub-job does not report any progress.

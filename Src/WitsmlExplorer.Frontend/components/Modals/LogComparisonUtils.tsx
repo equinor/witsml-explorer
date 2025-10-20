@@ -95,53 +95,6 @@ export function calculateMismatchedIndexes(
   return mismatchedIndexes;
 }
 
-const toFixed = (value: string | number): string => {
-  const number = Number(value);
-  if (Number.isNaN(number)) {
-    return missingIndex;
-  }
-  return number.toFixed(4);
-};
-
-export function markNumberDifferences(
-  string1: string | number,
-  string2: string | number
-): (string | JSX.Element)[][] {
-  string1 = toFixed(string1);
-  string2 = toFixed(string2);
-  if (string1 == missingIndex || string2 == missingIndex) {
-    return [[<mark key="1">{string1}</mark>], [<mark key="2">{string2}</mark>]];
-  }
-  if (string1.length > string2.length) {
-    string2 = " ".repeat(string1.length - string2.length) + string2;
-  } else if (string2.length > string1.length) {
-    string1 = " ".repeat(string2.length - string1.length) + string1;
-  }
-
-  let firstDifference = -1;
-  for (let i = 0; i < string1.length; i++) {
-    const char1 = string1.charAt(i);
-    const char2 = string2.charAt(i);
-    if (char1 !== char2) {
-      firstDifference = i;
-      break;
-    }
-  }
-  if (firstDifference === -1) {
-    return [[string1], [string2]];
-  }
-  return [
-    [
-      string1.slice(0, firstDifference),
-      <mark key="mark">{string1.slice(firstDifference)}</mark>
-    ],
-    [
-      string2.slice(0, firstDifference),
-      <mark key="mark">{string2.slice(firstDifference)}</mark>
-    ]
-  ];
-}
-
 export function markDateTimeStringDifferences(
   string1: string,
   string2: string

@@ -5,17 +5,23 @@ import { Colors } from "../styles/Colors";
 
 export interface ItemNotFoundProps {
   itemType: string;
+  isMultiple?: boolean;
 }
 
 export function ItemNotFound(props: ItemNotFoundProps) {
-  const { itemType } = props;
+  const { itemType, isMultiple } = props;
   const {
     operationState: { colors }
   } = useOperationState();
+
+  const warning = isMultiple
+    ? `No ${itemType} could be found.`
+    : `The requested ${itemType} could not be found.`;
+
   return (
     <>
       <Heading colors={colors}>{`${itemType} Not Found`}</Heading>
-      <Typography>{`The requested ${itemType} could not be found.`}</Typography>
+      <Typography>{warning}</Typography>
     </>
   );
 }

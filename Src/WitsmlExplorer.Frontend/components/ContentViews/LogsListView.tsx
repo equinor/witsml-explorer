@@ -15,6 +15,10 @@ import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import formatDateString from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
+import {
+  CommonPanelContainer,
+  ContentContainer
+} from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -23,18 +27,14 @@ import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
-import { ObjectType } from "models/objectType";
+import { ObjectType, pluralizeObjectType } from "models/objectType";
 import { MouseEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
-import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
-import {
-  CommonPanelContainer,
-  ContentContainer
-} from "../StyledComponents/Container";
-import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
 import { getLogObjectViewPath } from "routes/utils/pathBuilder";
+import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
+import { normaliseThemeForEds } from "tools/themeHelpers";
 
 export interface LogObjectRow extends ContentTableRow, LogObject {
   logObject: LogObject;
@@ -55,12 +55,11 @@ export default function LogsListView() {
     isFetching: isFetchingWellbore,
     isFetched: isFetchedWellbore
   } = useGetWellbore(connectedServer, wellUid, wellboreUid);
-  const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.Log
-  );
+  const {
+    objects: allLogs,
+    isFetching: isFetchingLogs,
+    isFetched
+  } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
   const isTimeIndexed = logType === RouterLogType.TIME;
   const logs = filterLogsByType(
     allLogs,
@@ -68,6 +67,12 @@ export default function LogsListView() {
   );
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
   const isFetching = isFetchingWellbore || isFetchingLogs;
+
+  if (isFetched && !logs?.length) {
+    return (
+      <ItemNotFound itemType={pluralizeObjectType(ObjectType.Log)} isMultiple />
+    );
+  }
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,

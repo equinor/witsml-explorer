@@ -1,4 +1,5 @@
 import BhaRunContextMenu from "components/ContextMenus/BhaRunContextMenu";
+import DataWorkOrderContextMenu from "components/ContextMenus/DataWorkOrderContextMenu";
 import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
 import FormationMarkerContextMenu from "components/ContextMenus/FormationMarkerContextMenu";
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
@@ -18,6 +19,7 @@ export const ObjectTypeToContextMenu: Record<
 > = {
   [ObjectType.BhaRun]: BhaRunContextMenu,
   [ObjectType.ChangeLog]: null,
+  [ObjectType.DataWorkOrder]: DataWorkOrderContextMenu,
   [ObjectType.FluidsReport]: FluidsReportContextMenu,
   [ObjectType.FormationMarker]: FormationMarkerContextMenu,
   [ObjectType.Log]: LogObjectContextMenu,

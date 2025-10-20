@@ -1,5 +1,6 @@
 import BhaRun from "models/bhaRun";
 import ChangeLog from "models/changeLog";
+import DataWorkOrder from "models/dataWorkOrder/dataWorkOrder";
 import FluidsReport from "models/fluidsReport";
 import FormationMarker from "models/formationMarker";
 import LogObject from "models/logObject";
@@ -14,6 +15,7 @@ import WbGeometryObject from "models/wbGeometry";
 export enum ObjectType {
   BhaRun = "BhaRun",
   ChangeLog = "ChangeLog",
+  DataWorkOrder = "DataWorkOrder",
   FluidsReport = "FluidsReport",
   FormationMarker = "FormationMarker",
   Log = "Log",
@@ -35,6 +37,7 @@ export const pluralizeObjectType = (objectType: ObjectType) => {
 export type ObjectTypeToModel = {
   [ObjectType.BhaRun]: BhaRun;
   [ObjectType.ChangeLog]: ChangeLog;
+  [ObjectType.DataWorkOrder]: DataWorkOrder;
   [ObjectType.FluidsReport]: FluidsReport;
   [ObjectType.FormationMarker]: FormationMarker;
   [ObjectType.Log]: LogObject;

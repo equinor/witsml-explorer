@@ -1,7 +1,9 @@
+import { Icon, Tooltip } from "@equinor/eds-core-react";
 import {
   getContextMenuPosition,
   preventContextMenuPropagation
 } from "components/ContextMenus/ContextMenu";
+import DataWorkOrderContextMenu from "components/ContextMenus/DataWorkOrderContextMenu.tsx";
 import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
 import LogsContextMenu, {
   LogsContextMenuProps
@@ -35,9 +37,8 @@ import Wellbore from "models/wellbore";
 import { MouseEvent } from "react";
 import { getObjectGroupsViewPath } from "routes/utils/pathBuilder";
 import styled from "styled-components";
-import { WellIndicator } from "../StyledComponents/WellIndicator";
 import { UidMappingBasicInfo } from "../../models/uidMapping.tsx";
-import { Icon, Tooltip } from "@equinor/eds-core-react";
+import { WellIndicator } from "../StyledComponents/WellIndicator";
 
 interface WellboreItemProps {
   wellUid: string;
@@ -188,6 +189,12 @@ export default function WellboreItem({
           wellboreUid={wellboreUid}
           objectType={ObjectType.ChangeLog}
           onGroupContextMenu={preventContextMenuPropagation}
+        />
+        <ObjectGroupItem
+          wellUid={wellUid}
+          wellboreUid={wellboreUid}
+          objectType={ObjectType.DataWorkOrder}
+          ObjectContextMenu={DataWorkOrderContextMenu}
         />
         <ObjectGroupItem
           wellUid={wellUid}

@@ -212,6 +212,7 @@ const shouldFetchGroupObjects = (
 
 export const isExpandableGroupObject = (objectType: ObjectType) => {
   const expandableGroupObject = [
+    ObjectType.DataWorkOrder,
     ObjectType.FluidsReport,
     ObjectType.MudLog,
     ObjectType.Trajectory,

@@ -1,11 +1,16 @@
 import { Breadcrumbs as EdsBreadcrumbs } from "@equinor/eds-core-react";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { useGetComponents } from "hooks/query/useGetComponents.tsx";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useGetActiveRoute } from "hooks/useGetActiveRoute";
 import { useOperationState } from "hooks/useOperationState";
 import { capitalize } from "lodash";
+import { ComponentType, ComponentTypeToModel } from "models/componentType.ts";
+import DataSourceConfigurationSet, {
+  getLastDataSourceConfiguration
+} from "models/dataWorkOrder/dataSourceConfigurationSet.ts";
 import {
   ObjectType,
   ObjectTypeToModel,
@@ -24,6 +29,7 @@ import {
   useSearchParams
 } from "react-router-dom";
 import {
+  getComponentViewPath,
   getLogObjectsViewPath,
   getLogObjectViewPath,
   getLogTypesViewPath,
@@ -54,16 +60,27 @@ export function Breadcrumbs() {
     isObjectGroupsView,
     isObjectsView,
     isObjectView,
+    isComponentView,
     isLogTypesView,
     isLogObjectsView,
     isLogObjectView,
     isLogCurveValuesView,
     isMultiLogsCurveInfoListView,
-    isMultiLogCurveValuesView
+    isMultiLogCurveValuesView,
+    isDataSourceConfigurationView
   } = useGetActiveRoute();
 
-  const { serverUrl, wellUid, wellboreUid, objectGroup, objectUid, logType } =
-    useParams();
+  const {
+    serverUrl,
+    wellUid,
+    wellboreUid,
+    objectGroup,
+    objectUid,
+    logType,
+    componentGroup,
+    componentUid,
+    dataSourceConfigurationUid
+  } = useParams();
   const [searchParams] = useSearchParams();
   const { connectedServer } = useConnectedServer();
   const [breadcrumbContent, setBreadcrumbContent] = useState([]);
@@ -76,6 +93,14 @@ export function Breadcrumbs() {
     objectGroup as ObjectType,
     objectUid
   );
+  const { components } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    componentGroup as ComponentType
+  );
+  const component = components?.find((c) => c.uid === componentUid);
 
   const createBreadcrumbContent = () => {
     return [
@@ -103,6 +128,15 @@ export function Breadcrumbs() {
         isObjectView,
         isLogObjectView
       ),
+      getComponentCrumb(
+        serverUrl,
+        objectGroup,
+        object,
+        componentGroup,
+        component,
+        navigate,
+        isComponentView
+      ),
       getLogCurveValuesCrumb(isLogCurveValuesView),
       getMultiLogsCurveInfoListCrumb(
         serverUrl,
@@ -114,7 +148,12 @@ export function Breadcrumbs() {
         isMultiLogCurveValuesView,
         searchParams
       ),
-      getMultiLogCurveValuesCrumb(isMultiLogCurveValuesView)
+      getMultiLogCurveValuesCrumb(isMultiLogCurveValuesView),
+      getDataSourceConfigurationCrumb(
+        component as DataSourceConfigurationSet,
+        dataSourceConfigurationUid,
+        isDataSourceConfigurationView
+      )
     ].filter((item) => item.name);
   };
 
@@ -127,13 +166,15 @@ export function Breadcrumbs() {
     well,
     wellbore,
     object,
+    component,
     logType,
     isJobsView,
     isQueryView,
     isSearchView,
     isLogCurveValuesView,
     isMultiLogsCurveInfoListView,
-    isMultiLogCurveValuesView
+    isMultiLogCurveValuesView,
+    isDataSourceConfigurationView
   ]);
 
   return (
@@ -325,6 +366,48 @@ function getObjectCrumb<T extends ObjectType>(
     : {};
 }
 
+const getComponentCrumb = <T extends ComponentType>(
+  serverUrl: string,
+  objectGroup: string,
+  object: ObjectTypeToModel[ObjectType],
+  componentGroup: string,
+  component: ComponentTypeToModel[T],
+  navigate: NavigateFunction,
+  isComponentView: boolean
+) => {
+  if (
+    !serverUrl ||
+    !objectGroup ||
+    !object ||
+    !componentGroup ||
+    !component ||
+    componentGroup !== ComponentType.DataSourceConfigurationSet
+  )
+    return {};
+  // Need special handling for each component as they don't have a common name property.
+  // Currently only DataSourceConfigurationSet has it's own component view.
+  const lastConfig = getLastDataSourceConfiguration(
+    component as DataSourceConfigurationSet
+  );
+  return {
+    name: `${lastConfig?.name} Versions`,
+    onClick: () => {
+      if (isComponentView) return;
+      navigate(
+        getComponentViewPath(
+          serverUrl,
+          object.wellUid,
+          object.wellboreUid,
+          objectGroup,
+          object.uid,
+          componentGroup,
+          component.uid
+        )
+      );
+    }
+  };
+};
+
 const getLogCurveValuesCrumb = (isLogCurveValuesView: boolean) => {
   return isLogCurveValuesView ? { name: "Data" } : {};
 };
@@ -370,6 +453,19 @@ const getMultiLogsCurveInfoListCrumb = (
 
 const getMultiLogCurveValuesCrumb = (isMultiLogCurveValuesView: boolean) => {
   return isMultiLogCurveValuesView ? { name: "Multi Data" } : {};
+};
+
+const getDataSourceConfigurationCrumb = (
+  component: DataSourceConfigurationSet,
+  dataSourceConfigurationUid: string,
+  isDataSourceConfigurationView: boolean
+) => {
+  const config = component?.dataSourceConfigurations?.find(
+    (c) => c.uid === dataSourceConfigurationUid
+  );
+  return isDataSourceConfigurationView
+    ? { name: `Version ${config?.versionNumber}` }
+    : {};
 };
 
 const getJobsCrumb = (isJobsView: boolean) => {

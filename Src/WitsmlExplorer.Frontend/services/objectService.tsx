@@ -52,7 +52,7 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json().catch(() => null);
+      return response.json().catch((): null => null);
     } else {
       return null;
     }
