@@ -168,12 +168,11 @@ const SelectComparisonServersModal = (
     }
 
     if (multiLogSelectionCurveInfos.length > 0) {
-      MultiLogSelectionRepository.Instance.createMultiLogValues(
+      MultiLogSelectionRepository.Instance.addMultiLogValues(
         indexType,
-        multiLogSelectionCurveInfos
+        multiLogSelectionCurveInfos,
+        true
       );
-    } else {
-      MultiLogSelectionRepository.Instance.removeAllMultiLogValues(indexType);
     }
 
     dispatchOperation({ type: OperationType.HideModal });
