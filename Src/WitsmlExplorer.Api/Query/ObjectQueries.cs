@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 using Witsml.Data;
 using Witsml.Data.DataWorkOrder;
 using Witsml.Data.MudLog;
 using Witsml.Data.Tubular;
 
-using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 

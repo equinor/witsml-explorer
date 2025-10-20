@@ -262,13 +262,10 @@ namespace WitsmlExplorer.Api.Workers
             {
                 foreach (string property in check.Properties)
                 {
-                    var propertyValue =
-                        QueryHelper.GetPropertyFromObject(resultObject,
-                            property);
+                    var propertyValue = QueryHelper.GetPropertyFromObject(resultObject, property);
                     if (IsPropertyEmpty(propertyValue))
                     {
-                        missingDataItems.Add(GetReportItem(resultObject,
-                            property, check.ObjectType));
+                        missingDataItems.Add(GetReportItem(resultObject, property, check.ObjectType));
                     }
                 }
             }
