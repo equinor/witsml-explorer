@@ -1,10 +1,12 @@
 import { ApiClient } from "./apiClient";
+import { Server } from "../models/server.ts";
 
 export default class LogCurvePriorityService {
   public static async getPrioritizedCurves(
     isUniversal: boolean,
     wellUid?: string,
     wellboreUid?: string,
+    server?: Server,
     abortSignal?: AbortSignal
   ): Promise<string[]> {
     const path = isUniversal
@@ -12,7 +14,7 @@ export default class LogCurvePriorityService {
       : `/api/wells/${encodeURIComponent(
           wellUid
         )}/wellbores/${encodeURIComponent(wellboreUid)}/logCurvePriority`;
-    const response = await ApiClient.get(path, abortSignal);
+    const response = await ApiClient.get(path, abortSignal, server);
     if (response.ok) {
       return response.json();
     } else {

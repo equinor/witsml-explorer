@@ -19,7 +19,8 @@ import {
   WELLBORE_UID_PARAM,
   WELLSBORES_VIEW_NAVIGATION_PATH,
   WELLS_VIEW_NAVIGATION_PATH,
-  WELL_UID_PARAM
+  WELL_UID_PARAM,
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
 } from "routes/routerConstants";
 
 export function getJobsViewPath(serverUrl: string) {
@@ -219,5 +220,17 @@ export function getMultiLogCurveValuesViewPath(
       .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
       .replace(OBJECT_GROUP_PARAM, objectGroup)
       .replace(LOG_TYPE_PARAM, logType);
+  return logCurveValuesViewPath;
+}
+
+export function getMultipleLogCurveSelectionViewPath(
+  serverUrl: string,
+  logType: string
+) {
+  const logCurveValuesViewPath =
+    MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH.replace(
+      SERVER_URL_PARAM,
+      encodeURIComponent(serverUrl)
+    ).replace(LOG_TYPE_PARAM, logType);
   return logCurveValuesViewPath;
 }

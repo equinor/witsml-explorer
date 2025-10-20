@@ -6,6 +6,7 @@ import {
   useQueries,
   useQuery
 } from "@tanstack/react-query";
+import { Server } from "../../models/server.ts";
 
 export const getLocalPrioritizedCurvesQueryKey = (
   wellUid: string,
@@ -21,6 +22,7 @@ export const getLocalPrioritizedCurvesQueryKey = (
 export const localPrioritizedCurvesQuery = (
   wellUid: string,
   wellboreUid: string,
+  server?: Server,
   options?: QueryOptions
 ) => ({
   queryKey: getLocalPrioritizedCurvesQueryKey(wellUid, wellboreUid),
@@ -28,7 +30,8 @@ export const localPrioritizedCurvesQuery = (
     return await LogCurvePriorityService.getPrioritizedCurves(
       false,
       wellUid,
-      wellboreUid
+      wellboreUid,
+      server
     );
   },
   ...options
@@ -36,14 +39,16 @@ export const localPrioritizedCurvesQuery = (
 
 export const multipleLocalPrioritizedCurvesQuery = (
   wellUid: string,
-  wellboreUid: string
+  wellboreUid: string,
+  server?: Server
 ) => ({
   queryKey: getLocalPrioritizedCurvesQueryKey(wellUid, wellboreUid),
   queryFn: async () => {
     return await LogCurvePriorityService.getPrioritizedCurves(
       false,
       wellUid,
-      wellboreUid
+      wellboreUid,
+      server
     );
   }
 });
@@ -58,10 +63,11 @@ type LocalPrioritizedCurvesQueryResult = Omit<
 export const useGetLocalPrioritizedCurves = (
   wellUid: string,
   wellboreUid: string,
-  options?: QueryOptions
+  options?: QueryOptions,
+  server?: Server
 ): LocalPrioritizedCurvesQueryResult => {
   const { data, ...state } = useQuery<string[]>(
-    localPrioritizedCurvesQuery(wellUid, wellboreUid, options)
+    localPrioritizedCurvesQuery(wellUid, wellboreUid, server, options)
   );
 
   return { localPrioritizedCurves: data, ...state };
@@ -69,11 +75,11 @@ export const useGetLocalPrioritizedCurves = (
 
 //todo: fix types
 export const useGetMultipleLocalPrioritizedCurves = (
-  wellComplexIds: { wellUid: string; wellboreUid: string }[]
+  wellComplexIds: { wellUid: string; wellboreUid: string; server?: Server }[]
 ): { objects: string[]; isFetching: boolean }[] => {
   const result = useQueries<string[]>({
-    queries: wellComplexIds.map(({ wellUid, wellboreUid }) =>
-      multipleLocalPrioritizedCurvesQuery(wellUid, wellboreUid)
+    queries: wellComplexIds.map(({ wellUid, wellboreUid, server }) =>
+      multipleLocalPrioritizedCurvesQuery(wellUid, wellboreUid, server)
     )
   });
 
