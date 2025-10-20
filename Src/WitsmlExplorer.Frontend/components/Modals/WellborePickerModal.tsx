@@ -1,32 +1,32 @@
 import {
   Autocomplete,
-  TextField,
   Radio,
+  TextField,
   Typography
 } from "@equinor/eds-core-react";
+import { useClipboardMixedObjectsReferences } from "components/ContextMenus/UseClipboardReferences";
 import ModalDialog, {
   ModalContentLayout,
   ModalWidth
 } from "components/Modals/ModalDialog";
 import { Button } from "components/StyledComponents/Button";
+import { Checkbox } from "components/StyledComponents/Checkbox";
+import WarningBar from "components/WarningBar";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOperationState } from "hooks/useOperationState";
 import { useServerFilter } from "hooks/useServerFilter";
 import WellboreReference from "models/jobs/wellboreReference";
 import WellboreSubObjectsComparisonJob from "models/jobs/wellboreSubObjectsComparisonJob";
-import { Checkbox } from "components/StyledComponents/Checkbox";
 import MaxLength from "models/maxLength";
 import { Server } from "models/server";
+import Wellbore from "models/wellbore";
 import { ChangeEvent, CSSProperties, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import WellboreService from "services/wellboreService";
 import styled from "styled-components";
-import { useConnectedServer } from "contexts/connectedServerContext";
 import { ReportModal } from "./ReportModal";
-import Wellbore from "models/wellbore";
-import { useClipboardMixedObjectsReferences } from "components/ContextMenus/UseClipboardReferences";
-import WarningBar from "components/WarningBar";
 
 export interface WellborePickerProps {
   selectedWellbore: Wellbore;
@@ -163,7 +163,10 @@ const WellborePickerModal = ({
       }
     } catch (e) {
       console.error(e);
-      setFetchError("Failed to fetch");
+      const message = !targetWellbore
+        ? "Target wellbore not found"
+        : "Failed to fetch";
+      setFetchError(message);
     } finally {
       setIsLoading(false);
     }

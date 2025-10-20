@@ -33,7 +33,7 @@ namespace Witsml
         Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> TestConnectionAsync();
         Task<WitsmlCapServers> GetCap();
-        Task<List<string>> GetSupportedObjectTypes();
+        Task<List<string>> GetSupportedObjectTypes(string functionName = "WMLS_GetFromStore");
         Uri GetServerHostname();
     }
 
@@ -44,7 +44,6 @@ namespace Witsml
         private readonly Uri _serverUrl;
         private IQueryLogger _queryLogger;
         private readonly WitsmlMetrics _witsmlMetrics;
-        private const string WitsmlFunctionName = "WMLS_GetFromStore";
 
         [Obsolete("Use the WitsmlClientOptions based constructor instead")]
         public WitsmlClient(string hostname, string username, string password, WitsmlClientCapabilities clientCapabilities, TimeSpan? requestTimeout = null,
@@ -503,12 +502,12 @@ namespace Witsml
             throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
         }
 
-        public async Task<List<string>> GetSupportedObjectTypes()
+        public async Task<List<string>> GetSupportedObjectTypes(string functionName = "WMLS_GetFromStore")
         {
             var serverCapabilities = (await GetCap())
                 .ServerCapabilities.FirstOrDefault()
                 ?.Functions
-                .Where(x => x.Name == WitsmlFunctionName)
+                .Where(x => x.Name == functionName)
                 .Select(x => x.DataObjects);
             var supportedObjectTypes
                 = serverCapabilities.SelectMany(s => s.Select(ss => ss.Name.ToLower()));
