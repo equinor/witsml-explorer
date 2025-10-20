@@ -175,10 +175,14 @@ namespace WitsmlExplorer.Api.Services
 
         public async Task<ICollection<SelectableObjectOnWellbore>> GetAllObjectsOnWellbore(string wellUid, string wellboreUid)
         {
+            var supportedObjectTypes =
+                await _witsmlClient.GetSupportedObjectTypes();
             var result = new List<SelectableObjectOnWellbore>();
             foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
             {
-                if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue; //TODO: Check where this is used and test it with and without a DWO server
+                if (supportedObjectTypes.IndexOf(entityType.ToString().ToLower()) < 0)
+                    continue;
+                if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
                 var objects = await GetWellboreObjectsByType(wellUid, wellboreUid, entityType);
                 result.AddRange(ToSelectableObjectOnWellbore(objects, entityType, string.Empty));
             }

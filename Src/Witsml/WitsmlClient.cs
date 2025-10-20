@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.ServiceModel;
@@ -32,6 +33,7 @@ namespace Witsml
         Task<string> DeleteFromStoreAsync(string query, OptionsIn optionsIn = null);
         Task<QueryResult> TestConnectionAsync();
         Task<WitsmlCapServers> GetCap();
+        Task<List<string>> GetSupportedObjectTypes(string functionName = "WMLS_GetFromStore");
         Uri GetServerHostname();
     }
 
@@ -498,6 +500,19 @@ namespace Witsml
 
             WMLS_GetBaseMsgResponse errorResponse = await _client.WMLS_GetBaseMsgAsync(response.Result);
             throw new Exception($"Error while querying store: {response.Result} - {errorResponse.Result}. {response.SuppMsgOut}");
+        }
+
+        public async Task<List<string>> GetSupportedObjectTypes(string functionName = "WMLS_GetFromStore")
+        {
+            var serverCapabilities = (await GetCap())
+                .ServerCapabilities.FirstOrDefault()
+                ?.Functions
+                .Where(x => x.Name == functionName)
+                .Select(x => x.DataObjects);
+            var supportedObjectTypes
+                = serverCapabilities.SelectMany(s => s.Select(ss => ss.Name.ToLower()));
+
+            return supportedObjectTypes.ToList();
         }
 
         private void LogQueriesSentAndReceived<T>(string function, Uri serverUrl, T query, OptionsIn optionsIn,
