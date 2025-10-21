@@ -154,5 +154,5 @@ const columns: ContentTableColumn[] = [
     label: "Versions",
     type: ContentType.String
   },
-  { property: "uid", label: "uid (set)", type: ContentType.String }
+  { property: "uid", label: "uid", type: ContentType.String }
 ];
