@@ -25,7 +25,6 @@ import {
 export interface DataSourceConfigurationSetRow extends ContentTableRow {
   id: string;
   uid: string;
-  numConfigurations: number;
   dataSourceConfigurationSet: DataSourceConfigurationSet;
 }
 
@@ -81,11 +80,12 @@ export default function DataSourceConfigurationSetsTable() {
       const lastConfig = getLastDataSourceConfiguration(
         dataSourceConfigurationSet
       );
+      const versionCount =
+        dataSourceConfigurationSet.dataSourceConfigurations?.length ?? 0;
+
       return {
         id: dataSourceConfigurationSet.uid,
         uid: dataSourceConfigurationSet.uid,
-        numConfigurations:
-          dataSourceConfigurationSet.dataSourceConfigurations?.length ?? 0,
         dTimPlannedStart: formatDateString(
           lastConfig?.dTimPlannedStart,
           timeZone,
@@ -97,12 +97,12 @@ export default function DataSourceConfigurationSetsTable() {
           dateTimeFormat
         ),
         dataSourceConfigurationSet: dataSourceConfigurationSet,
-        set: (
+        version: (
           <StyledLink
             to={getSetPath(dataSourceConfigurationSet.uid)}
             colors={colors}
           >
-            Show versions
+            {versionCount} available
           </StyledLink>
         ),
         lastConfig: (
@@ -136,7 +136,14 @@ const columns: ContentTableColumn[] = [
   {
     property: "lastConfig",
     label: "Last Configuration",
-    type: ContentType.Component
+    type: ContentType.Component,
+    width: 250
+  },
+  {
+    property: "version",
+    label: "Versions",
+    type: ContentType.Component,
+    width: 150
   },
   {
     property: "dTimPlannedStart",
@@ -147,12 +154,6 @@ const columns: ContentTableColumn[] = [
     property: "dTimPlannedStop",
     label: "Planned Stop",
     type: ContentType.DateTime
-  },
-  { property: "set", label: "Set", type: ContentType.Component },
-  {
-    property: "numConfigurations",
-    label: "Versions",
-    type: ContentType.String
   },
   { property: "uid", label: "uid", type: ContentType.String }
 ];
