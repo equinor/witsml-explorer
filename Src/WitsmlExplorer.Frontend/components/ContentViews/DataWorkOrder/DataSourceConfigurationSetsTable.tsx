@@ -6,7 +6,7 @@ import {
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
-import { StyledLink } from "components/StyledComponents/Link";
+import { StyledLink, StyledLinkButton } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -21,6 +21,11 @@ import {
   getComponentViewPath,
   getDataSourceConfigurationViewPath
 } from "routes/utils/pathBuilder";
+import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
+import OperationType from "contexts/operationType";
+import { ConfigurationChangeReasonModal } from "components/Modals/ConfigurationChangeReasonModal";
+
+import { MouseEventHandler } from "react";
 
 export interface DataSourceConfigurationSetRow extends ContentTableRow {
   id: string;
@@ -31,7 +36,8 @@ export interface DataSourceConfigurationSetRow extends ContentTableRow {
 export default function DataSourceConfigurationSetsTable() {
   const { wellUid, wellboreUid, objectUid } = useParams();
   const {
-    operationState: { colors, dateTimeFormat, timeZone }
+    operationState: { colors, dateTimeFormat, timeZone },
+    dispatchOperation
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { object: dataWorkOrder } = useGetObject(
@@ -75,6 +81,22 @@ export default function DataSourceConfigurationSetsTable() {
     );
   };
 
+  const handleChangeReasonClick =
+    (
+      dataSourceConfiguration: DataSourceConfiguration
+    ): MouseEventHandler<HTMLDivElement> =>
+    (e) => {
+      e.stopPropagation();
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: (
+          <ConfigurationChangeReasonModal
+            dataSourceConfiguration={dataSourceConfiguration}
+          />
+        )
+      });
+    };
+
   const dataSourceConfigurationSetRows: DataSourceConfigurationSetRow[] =
     dataSourceConfigurationSets.map((dataSourceConfigurationSet) => {
       const lastConfig = getLastDataSourceConfiguration(
@@ -104,6 +126,14 @@ export default function DataSourceConfigurationSetsTable() {
           >
             {versionCount} available
           </StyledLink>
+        ),
+        changeReason: lastConfig.changeReason && (
+          <StyledLinkButton
+            colors={colors}
+            onClick={handleChangeReasonClick(lastConfig)}
+          >
+            See details
+          </StyledLinkButton>
         ),
         lastConfig: (
           <StyledLink
@@ -138,6 +168,12 @@ const columns: ContentTableColumn[] = [
     label: "Last Configuration",
     type: ContentType.Component,
     width: 250
+  },
+  {
+    property: "changeReason",
+    label: "changeReason",
+    type: ContentType.Component,
+    width: 150
   },
   {
     property: "version",
