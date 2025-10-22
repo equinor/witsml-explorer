@@ -109,13 +109,13 @@ const WellborePickerModal = ({
     );
 
     try {
-      const sourceWellboreReference: WellboreReference = {
+      const selectedWellboreReference: WellboreReference = {
         wellUid: selectedWellbore.wellUid,
         wellboreUid: selectedWellbore.uid,
         wellboreName: selectedWellbore.name,
         wellName: selectedWellbore.wellName
       };
-      const targetWellboreReference: WellboreReference = {
+      const sourceWellboreReference: WellboreReference = {
         wellUid: targetWellbore.wellUid,
         wellboreUid: targetWellbore.uid,
         wellboreName: targetWellbore.name,
@@ -124,7 +124,7 @@ const WellborePickerModal = ({
       dispatchOperation({ type: OperationType.HideModal });
       const job: WellboreSubObjectsComparisonJob = {
         sourceWellbore: sourceWellboreReference,
-        targetWellbore: targetWellboreReference,
+        targetWellbore: selectedWellboreReference,
         countLogsData:
           performDeepLogComparison &&
           selectedCheckOption ===
@@ -151,8 +151,8 @@ const WellborePickerModal = ({
       const jobId = await JobService.orderJobAtServer(
         JobType.WellboreSubObjectsComparison,
         job,
-        targetServer,
-        connectedServer
+        connectedServer,
+        targetServer
       );
       if (jobId) {
         const reportModalProps = { jobId };
