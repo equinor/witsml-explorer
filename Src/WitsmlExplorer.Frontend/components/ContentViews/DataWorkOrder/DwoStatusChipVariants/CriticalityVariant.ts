@@ -4,5 +4,5 @@ export const CRITICALITY_VARIANT: {
   [key in ChannelCriticality]: "default" | "active" | "warning";
 } = {
   [ChannelCriticality.High]: "warning",
-  [ChannelCriticality.Normal]: "active"
+  [ChannelCriticality.Normal]: "default"
 };

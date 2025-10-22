@@ -39,10 +39,11 @@ const PropertyLayout = styled.div`
 `;
 
 const PropertyLabel = styled(Typography)<{ colors: Colors }>`
-  font-size: 0.8rem;
-  color: ${(props) => props.colors.text.staticIconsTertiary};
+  font-size: 12px;
+  color: ${(props) => props.colors.text.staticIconsTertiary} !important;
 `;
 
 const PropertyValue = styled(Typography)<{ colors: Colors }>`
+  font-size: 14px;
   color: ${(props) => props.colors.text.staticIconsDefault};
 `;

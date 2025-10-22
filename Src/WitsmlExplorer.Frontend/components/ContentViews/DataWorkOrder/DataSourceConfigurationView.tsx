@@ -18,6 +18,8 @@ import {
 import { Chip } from "../../StyledComponents/Chip";
 import { OperationStatus } from "../../../models/dataWorkOrder/operationStatus.ts";
 import { SectionOrderStatus } from "../../../models/dataWorkOrder/sectionOrderStatus.ts";
+import { Typography } from "../../StyledComponents/Typography.tsx";
+import { useOperationState } from "../../../hooks/useOperationState.tsx";
 
 export default function DataSourceConfigurationView() {
   const {
@@ -28,6 +30,7 @@ export default function DataSourceConfigurationView() {
     dataSourceConfigurationUid
   } = useParams();
   const { connectedServer } = useConnectedServer();
+  const { colors } = useOperationState().operationState;
   const { object: dataWorkOrder, isFetched: isFetchedDataWorkOrder } =
     useGetObject(
       connectedServer,
@@ -65,6 +68,9 @@ export default function DataSourceConfigurationView() {
         object={dataSourceConfiguration}
         columns={7}
       />
+      <Typography colors={colors} $primary style={{ paddingTop: "0.5rem" }}>
+        Channels
+      </Typography>
       <ChannelConfigurationsTable />
     </ContentLayout>
   );
@@ -74,7 +80,6 @@ const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 1rem;
 `;
 
 const properties: ReadOnlyPropertiesRendererProperty[] = [

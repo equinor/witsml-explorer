@@ -15,6 +15,7 @@ import {
 } from "../ContentViews/DataWorkOrder/DwoStatusChipVariants";
 import { SectionOrderStatus } from "../../models/dataWorkOrder/sectionOrderStatus.ts";
 import { OperationStatus } from "../../models/dataWorkOrder/operationStatus.ts";
+import { Typography } from "../StyledComponents/Typography.tsx";
 
 export interface ConfigurationChangeReasonModalProps {
   dataSourceConfiguration: DataSourceConfiguration;
@@ -43,6 +44,7 @@ export const ConfigurationChangeReasonModal = (
             properties={configurationProperties}
             object={dataSourceConfiguration}
             columns={3}
+            noMargin
           />
           <Divider
             style={{
@@ -50,44 +52,53 @@ export const ConfigurationChangeReasonModal = (
               backgroundColor: colors.interactive.disabledBorder
             }}
           />
-          <HorizontalLayout>
-            <div
-              style={{
-                backgroundColor: colors.ui.backgroundLight,
-                padding: "1rem",
-                borderRadius: "4px"
-              }}
+          <div>
+            <Typography
+              colors={colors}
+              style={{ paddingBottom: "0.5rem", fontSize: "14px" }}
             >
-              <ul>
-                <li>
-                  <ReadOnlyProperty
-                    label={`${changeReason?.channelsAdded?.length} Added`}
-                    value={changeReason?.channelsAdded?.join(", ")}
-                  />
-                </li>
-                <li>
-                  <ReadOnlyProperty
-                    label={`${changeReason?.channelsModified?.length} Modified`}
-                    value={changeReason?.channelsModified?.join(", ")}
-                  />
-                </li>
-                <li>
-                  <ReadOnlyProperty
-                    label={`${changeReason?.channelsRemoved?.length} Removed`}
-                    value={changeReason?.channelsRemoved?.join(", ")}
-                  />
-                </li>
-                <li>
-                  <ReadOnlyProperty label="Changed data requirements" />
-                </li>
-              </ul>
-            </div>
-            <ReadOnlyPropertiesGrid
-              properties={changeProperties}
-              object={changeReason}
-              columns={1}
-            />
-          </HorizontalLayout>
+              Affected channels
+            </Typography>
+            <HorizontalLayout>
+              <div
+                style={{
+                  backgroundColor: colors.ui.backgroundLight,
+                  borderRadius: "4px"
+                }}
+              >
+                <ul>
+                  <li>
+                    <ReadOnlyProperty
+                      label={`${changeReason?.channelsAdded?.length} Added`}
+                      value={changeReason?.channelsAdded?.join(", ")}
+                    />
+                  </li>
+                  <li>
+                    <ReadOnlyProperty
+                      label={`${changeReason?.channelsModified?.length} Modified`}
+                      value={changeReason?.channelsModified?.join(", ")}
+                    />
+                  </li>
+                  <li>
+                    <ReadOnlyProperty
+                      label={`${changeReason?.channelsRemoved?.length} Removed`}
+                      value={changeReason?.channelsRemoved?.join(", ")}
+                    />
+                  </li>
+                  {changeReason.isChangedDataRequirements && (
+                    <li>
+                      <ReadOnlyProperty label="Changed data requirements (isChangeDataRequirements=true)" />
+                    </li>
+                  )}
+                </ul>
+              </div>
+              <ReadOnlyPropertiesGrid
+                properties={changeProperties}
+                object={changeReason}
+                columns={1}
+              />
+            </HorizontalLayout>
+          </div>
         </VerticalLayout>
       }
     />

@@ -25,6 +25,7 @@ import {
   OPERATION_VARIANT,
   SECTION_ORDER_VARIANT
 } from "./DwoStatusChipVariants";
+import { Typography } from "../../StyledComponents/Typography.tsx";
 
 export default function DataSourceConfigurationSetView() {
   const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
@@ -154,6 +155,9 @@ export default function DataSourceConfigurationSetView() {
 
   return (
     <>
+      <Typography colors={colors} $primary style={{ padding: "1rem 0 0.5rem" }}>
+        Data source configurations (Versions)
+      </Typography>
       {isFetching && (
         <ProgressSpinnerOverlay message="Fetching DataSourceConfigurationSets." />
       )}
