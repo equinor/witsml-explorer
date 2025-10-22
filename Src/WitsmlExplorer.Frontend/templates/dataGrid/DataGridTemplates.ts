@@ -5,6 +5,7 @@ import { dataGridBhaRun } from "templates/dataGrid/objects/DataGridBhaRun";
 import { dataGridCementJob } from "templates/dataGrid/objects/DataGridCementJob";
 import { dataGridChangeLog } from "templates/dataGrid/objects/DataGridChangeLog";
 import { dataGridConvCore } from "templates/dataGrid/objects/DataGridConvCore";
+import { dataGridDataWorkOrder } from "templates/dataGrid/objects/DataGridDataWorkOrder";
 import { dataGridFluidsReport } from "templates/dataGrid/objects/DataGridFluidsReport";
 import { dataGridFormationMarker } from "templates/dataGrid/objects/DataGridFormationMarker";
 import { dataGridLog } from "templates/dataGrid/objects/DataGridLog";
@@ -32,6 +33,8 @@ export const getDataGridTemplate = (
       return dataGridChangeLog;
     case TemplateObjects.ConvCore:
       return dataGridConvCore;
+    case TemplateObjects.DataWorkOrder:
+      return dataGridDataWorkOrder;
     case TemplateObjects.FluidsReport:
       return dataGridFluidsReport;
     case TemplateObjects.FormationMarker:

@@ -1,0 +1,172 @@
+<dataWorkOrders xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <dataWorkOrder uidWell="" uidWellbore="" uid="" dwoVersion="">
+    <nameWell />
+    <nameWellbore />
+    <name />
+    <field />
+    <dataProvider />
+    <dataConsumer />
+    <description />
+    <dTimPlannedStart />
+    <dTimPlannedStop />
+    <assetContact uid="">
+      <companyName />
+      <name />
+      <role />
+      <emailAddress />
+      <phoneNum />
+      <availability />
+      <timeZone />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </assetContact>
+    <dataSourceConfigurationSet uid="">
+      <dataSourceConfiguration uid="" versionNumber="">
+        <name />
+        <description />
+        <nominalHoleSize uom="" />
+        <tubular uidRef="" />
+        <status />
+        <timeStatus />
+        <depthStatus />
+        <dTimPlannedStart />
+        <dTimPlannedStop />
+        <mDPlannedStart uom="" />
+        <mDPlannedStop uom="" />
+        <dTimChangeDeadline />
+        <channelConfiguration uid="">
+          <mnemonic namingSystem="" />
+          <uom />
+          <globalMnemonic namingSystem="" />
+          <indexType />
+          <toolName />
+          <service />
+          <sensorOffset uom="" />
+          <criticality />
+          <logName />
+          <description />
+          <comments />
+          <requirement uid="">
+            <purpose />
+            <minInterval uom="" />
+            <maxInterval uom="" />
+            <minPrecision uom="" />
+            <maxPrecision uom="" />
+            <minValue uom="" />
+            <maxValue uom="" />
+            <minStep uom="" />
+            <maxStep uom="" />
+            <minDelta uom="" />
+            <maxDelta uom="" />
+            <latency uom="" />
+            <mdThreshold uom="" />
+            <dynamicMdThreshold />
+            <comments />
+            <extensionNameValue uid="">
+              <name />
+              <value uom="" />
+              <dataType />
+              <dTim />
+              <md uom="" datum="" />
+              <index />
+              <measureClass />
+              <description />
+            </extensionNameValue>
+          </requirement>
+          <customData />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </channelConfiguration>
+        <changeReason>
+          <changedBy />
+          <dTimChanged />
+          <isChangedDataRequirements />
+          <comments />
+          <channelAdded />
+          <channelModified />
+          <channelRemoved />
+          <extensionNameValue uid="">
+            <name />
+            <value uom="" />
+            <dataType />
+            <dTim />
+            <md uom="" datum="" />
+            <index />
+            <measureClass />
+            <description />
+          </extensionNameValue>
+        </changeReason>
+        <customData />
+        <extensionNameValue uid="">
+          <name />
+          <value uom="" />
+          <dataType />
+          <dTim />
+          <md uom="" datum="" />
+          <index />
+          <measureClass />
+          <description />
+        </extensionNameValue>
+      </dataSourceConfiguration>
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </dataSourceConfigurationSet>
+    <extensionNameValue uid="">
+      <name />
+      <value uom="" />
+      <dataType />
+      <dTim />
+      <md uom="" datum="" />
+      <index />
+      <measureClass />
+      <description />
+    </extensionNameValue>
+    <commonData>
+      <sourceName />
+      <dTimCreation />
+      <dTimLastChange />
+      <itemState />
+      <serviceCategory />
+      <comments />
+      <acquisitionTimeZone dTim="" />
+      <defaultDatum uidRef="" />
+      <privateGroupOnly />
+      <extensionAny />
+      <extensionNameValue uid="">
+        <name />
+        <value uom="" />
+        <dataType />
+        <dTim />
+        <md uom="" datum="" />
+        <index />
+        <measureClass />
+        <description />
+      </extensionNameValue>
+    </commonData>
+    <customData />
+  </dataWorkOrder>
+</dataWorkOrders>

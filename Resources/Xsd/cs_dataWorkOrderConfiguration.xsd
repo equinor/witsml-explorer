@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+	<!-- 
+	Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at	http://www.energistics.org.  
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:include schemaLocation="attgrp_uid.xsd"/>
+	<xsd:include schemaLocation="cs_extensionNameValue.xsd"/>
+	<xsd:include schemaLocation="cs_customData.xsd"/>
+	<xsd:include schemaLocation="typ_dataWorkOrderTypes.xsd"/>
+
+	<!--                                                         -->
+	<xsd:complexType name="cs_dataWorkOrderAssetContact">
+		<xsd:annotation>
+			<xsd:documentation>
+				Represents contact information for an asset within a data work order.
+				Please ensure that you have the necessary permission to enter personal information. 
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="companyName" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Company name.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Contact name.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="role" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Contact's role.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="emailAddress" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Contact email address.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="phoneNum" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Asset contact telephone number.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="availability" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Contact's availability.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="timeZone" type="witsml:timeZone" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The time zone in which the contact is located. It is the deviation in hours and minutes from UTC. This should be the normal time zone at the well and not a seasonally adjusted value such as daylight savings time.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+					<xsd:appinfo>Modified-in-version=1.4.0, By-issue=1.3.1-71, Change=Added</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the asset contact.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="cs_dataSourceConfigurationSet">
+		<xsd:annotation>
+			<xsd:documentation>A container for grouping multiple versions of the same DataSourceConfiguration associated with an order.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="dataSourceConfiguration" type="witsml:cs_dataSourceConfiguration" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A list of data source configurations for the order. Each configuration represents a specific version containing its own set of ordered channels.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for this version set of data source configurations.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="cs_dataSourceConfiguration">
+		<xsd:annotation>
+			<xsd:documentation>Contains information about the order for a specific drilling section.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="name" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Human-readable name of the data source configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Description providing additional context about the data source configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nominalHoleSize" type="witsml:lengthMeasure" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The nominal hole size associated with this data source configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="tubular" type="witsml:refNameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>This represents a foreign key to the tubular (assembly) that will be utilized in this configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="status" type="witsml:sectionOrderStatus" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Status of the order for this configuration. This indicates the current progress or approval stage of the section within the data work order lifecycle.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="timeStatus" type="witsml:operationStatus" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Current status of the time-based operation in this configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="depthStatus" type="witsml:operationStatus" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Current status of the depth-based operation in this configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPlannedStart" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The anticipated date and time for the commencement of data delivery for this configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimPlannedStop" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The anticipated date and time for the end of data delivery for this configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mDPlannedStart" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The anticipated depth at which data delivery for this configuration is expected to begin.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mDPlannedStop" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The anticipated depth at which data delivery for this configuration is expected to end.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimChangeDeadline" type="witsml:timestamp" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Change deadline for the order for this section. This datetime represents the deadline for making regular changes to the section. 
+					Changes made after this point may incur penalties in KPIs or be flagged as late changes, depending on the agreed-upon terms.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="channelConfiguration" type="witsml:cs_channelConfiguration" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A list of channels that should be used for the configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="changeReason" type="witsml:cs_configurationChangeReason" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Represents the reason for a change of a data source configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="customData" type="witsml:cs_customData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A container element that can contain custom or user defined data elements.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the configuration.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+		<xsd:attribute name="versionNumber"  type="witsml:positiveCount">
+			<xsd:annotation>
+				<xsd:documentation>Specifies the version of the data source configuration. Each new version represents a distinct update or revision, allowing for the tracking of changes over time without altering previous versions.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="cs_configurationChangeReason">
+		<xsd:annotation>
+			<xsd:documentation>Represents the reason for a change of a data source configuration.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="changedBy" type="witsml:nameString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name or identifier of the person or system responsible for the changes.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dTimChanged" type="witsml:timestamp" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The date and time when the changes were made.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="isChangedDataRequirements" type="xsd:boolean" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Indicates whether this version introduces changes that affect the data to be delivered.
+
+						This value should be set to true whenever a channel is added, removed, or any of the following channel configuration properties are modified:
+						- mnemonic
+						- uom
+						- globalMnemonic
+						- indexType
+						- toolName
+						- service
+						- sensorOffset
+						- criticality
+						- requirements *
+						
+						* Requirements exceptions
+						- comments
+						- extensionNameValue
+						- If the requirementPurpose of the modified requirement is set to "display range".
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="comments" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Comments describing the reason or context for the changes.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="channelAdded" type="witsml:nameString" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A list of the mnemonic names of all channels added since the previous configuration version.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="channelModified" type="witsml:nameString" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A list of the mnemonic names of all channels modified since the previous configuration version.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="channelRemoved" type="witsml:nameString" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>A list of the mnemonic names of all channels removed since the previous configuration version.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="cs_channelConfiguration">
+		<xsd:annotation>
+			<xsd:documentation>WITSML Order Log - Curve Information</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="mnemonic" type="witsml:shortNameStruct" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						The curve name. This must be unique for all curves in a log. The naming authority for the mnemonic can be catptured in the namingSystem attribute. Since both the mnemonic and uid have similar requirements within the context of a WITSML server, the uid can be derived from the mnemonic (e.g., by converting blank to underscore).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="uom" type="witsml:uomString" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Unit of measurement of the data values.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="globalMnemonic" type="witsml:shortNameStruct" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A standardized mnemonic name for this channel.</xsd:documentation>					
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="indexType" type="witsml:LogIndexType" minOccurs="1" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The kind of index (date time, measured depth, etc.).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="toolName" type="witsml:str32" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Data source, could be tool name/id.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="service" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The service this channel provides.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="sensorOffset" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						The planned consistent distance from the downhole equipment vertical reference (the drill bit, for MWD logs; the tool zero reference for wireline logs) at which the channel values are measured or calculated. This is typically, but not always, the distance from the bit to the sensor. This element is only informative (channel values are presented at actual depth, not requiring subtraction of an offset).
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="criticality" type="witsml:channelCriticality" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Criticality of the channel specified as low, medium or high.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="logName" type="witsml:nameString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>The name of the log that the channel is expected to be a part of. The log might not exist yet.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="witsml:descriptionString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Free format description of the channel configuration.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="comments" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Optional comments providing additional context.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="requirement" type="witsml:cs_channelRequirement" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Quality requirement of the channel data.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="customData" type="witsml:cs_customData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>A container element that can contain custom or user defined data elements.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the channel configuration.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+	<!--                                                         -->
+	<xsd:complexType name="cs_channelRequirement">
+		<xsd:annotation>
+			<xsd:documentation>Specifies a quality requirement of the channel data.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="purpose" type="witsml:requirementPurpose" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Describes the purpose of the requirement, such as operational range, display range, or safety-related constraints.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="minInterval" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Minimum expected time interval between data points.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxInterval" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum allowable time interval between data points.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="minPrecision" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the minimum number of significant digits that must be preserved in curve values. This ensures sufficient numeric detail relative to the unit of measure.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxPrecision" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the maximum number of significant digits that should be preserved in curve values. This limits unnecessary precision while retaining adequate detail for the unit of measure.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="minValue" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Minimum data value relative to the purpose and the defined unit for the channel.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxValue" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>
+						Maximum data value relative to the purpose and the defined unit for the channel.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="minStep" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Specifies the minimum step size for the channel's data index.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxStep" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Specifies the maximum step size for the channel's data index.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="minDelta" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Minimum expected rate of change between the values in consecutive indexes.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="maxDelta" type="witsml:genericMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum allowable rate of change between the values in consecutive indexes.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="latency" type="witsml:timeMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Indicates the maximum acceptable delay in data delivery for the channel expressed in seconds.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mdThreshold" type="witsml:lengthMeasure" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Maximum allowable delta between the row index and the min or max index for the log subject to index direction and expressed in the index unit.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="dynamicMdThreshold" type="xsd:boolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Indicates that the threshold value is to be determined dynamically during data delivery. Used only when MdThreshold is not specified.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="comments" type="witsml:commentString" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation>Optional comments providing additional context.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="extensionNameValue" type="witsml:cs_extensionNameValue" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Extensions to the schema based on a name-value construct.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="witsml:attgrp_uid">
+			<xsd:annotation>
+				<xsd:documentation>Unique identifier for the order log.</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attributeGroup>
+	</xsd:complexType>
+</xsd:schema>

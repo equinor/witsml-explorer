@@ -145,6 +145,9 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         {
             Title = $"Wellbore sub objects comparison",
             ReportItems = reportItems,
+            Summary = reportItems.Count > 0
+                ? $"Found {reportItems.Count:n0} mismatches between the objects in the wellbores '{sourceWellbore}' and '{targetWellbore}'."
+                : $"No mismatches were found between the objects in the wellbores '{sourceWellbore}' and '{targetWellbore}'.",
             JobDetails = $"SourceServer::{sourceServerName}|TargetServer::{targetServerName}|SourceWellbore::{sourceWellbore}|TargetWellbore::{targetWellbore}"
         };
     }

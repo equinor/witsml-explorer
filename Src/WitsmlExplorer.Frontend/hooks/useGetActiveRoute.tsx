@@ -1,10 +1,13 @@
 import { useMatch } from "react-router-dom";
 import {
+  COMPONENT_VIEW_NAVIGATION_PATH,
+  DATA_SOURCE_CONFIGURATION_VIEW_NAVIGATION_PATH,
   JOBS_VIEW_NAVIGATION_PATH,
   LOG_CURVE_VALUES_VIEW_NAVIGATION_PATH,
   LOG_OBJECTS_VIEW_NAVIGATION_PATH,
   LOG_OBJECT_VIEW_NAVIGATION_PATH,
   LOG_TYPES_VIEW_NAVIGATION_PATH,
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH,
   MULTI_LOGS_CURVE_INFO_LIST_VIEW_NAVIGATION_PATH,
   MULTI_LOGS_CURVE_VALUES_NAVIGATION_PATH,
   OBJECTS_VIEW_NAVIGATION_PATH,
@@ -13,8 +16,7 @@ import {
   QUERY_VIEW_NAVIGATION_PATH,
   SEARCH_VIEW_NAVIGATION_PATH,
   WELLSBORES_VIEW_NAVIGATION_PATH,
-  WELLS_VIEW_NAVIGATION_PATH,
-  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+  WELLS_VIEW_NAVIGATION_PATH
 } from "routes/routerConstants";
 
 export function useGetActiveRoute() {
@@ -26,6 +28,7 @@ export function useGetActiveRoute() {
   const isObjectGroupsView = !!useMatch(OBJECT_GROUPS_VIEW_NAVIGATION_PATH);
   const isObjectsView = !!useMatch(OBJECTS_VIEW_NAVIGATION_PATH);
   const isObjectView = !!useMatch(OBJECT_VIEW_NAVIGATION_PATH);
+  const isComponentView = !!useMatch(COMPONENT_VIEW_NAVIGATION_PATH);
   const isLogTypesView = !!useMatch(LOG_TYPES_VIEW_NAVIGATION_PATH);
   const isLogObjectsView = !!useMatch(LOG_OBJECTS_VIEW_NAVIGATION_PATH);
   const isLogObjectView = !!useMatch(LOG_OBJECT_VIEW_NAVIGATION_PATH);
@@ -41,6 +44,9 @@ export function useGetActiveRoute() {
   const isMultiLogCurveSelectionView = !!useMatch(
     MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
   );
+  const isDataSourceConfigurationView = !!useMatch(
+    DATA_SOURCE_CONFIGURATION_VIEW_NAVIGATION_PATH
+  );
   return {
     isJobsView,
     isQueryView,
@@ -50,12 +56,14 @@ export function useGetActiveRoute() {
     isObjectGroupsView,
     isObjectsView,
     isObjectView,
+    isComponentView,
     isLogTypesView,
     isLogObjectsView,
     isLogObjectView,
     isLogCurveValuesView,
     isMultiLogsCurveInfoListView,
     isMultiLogCurveValuesView,
-    isMultiLogCurveSelectionView
+    isMultiLogCurveSelectionView,
+    isDataSourceConfigurationView
   };
 }

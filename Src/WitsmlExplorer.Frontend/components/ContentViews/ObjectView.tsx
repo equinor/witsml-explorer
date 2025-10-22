@@ -1,3 +1,4 @@
+import DataWorkOrderView from "components/ContentViews/DataWorkOrder/DataWorkOrderView";
 import { ReactElement } from "react";
 import { useParams } from "react-router-dom";
 import FluidsView from "./FluidsView";
@@ -11,7 +12,8 @@ enum ObjectGroupUrlParams {
   Trajectory = "Trajectory",
   Tubular = "Tubular",
   WbGeometry = "WbGeometry",
-  FluidsReport = "FluidsReport"
+  FluidsReport = "FluidsReport",
+  DataWorkOrder = "DataWorkOrder"
 }
 
 const objectViews: Record<ObjectGroupUrlParams, ReactElement> = {
@@ -19,7 +21,8 @@ const objectViews: Record<ObjectGroupUrlParams, ReactElement> = {
   [ObjectGroupUrlParams.Trajectory]: <TrajectoryView />,
   [ObjectGroupUrlParams.Tubular]: <TubularView />,
   [ObjectGroupUrlParams.WbGeometry]: <WbGeometryView />,
-  [ObjectGroupUrlParams.FluidsReport]: <FluidsView />
+  [ObjectGroupUrlParams.FluidsReport]: <FluidsView />,
+  [ObjectGroupUrlParams.DataWorkOrder]: <DataWorkOrderView />
 };
 
 export function ObjectView() {

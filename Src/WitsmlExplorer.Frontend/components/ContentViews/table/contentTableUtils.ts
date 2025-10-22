@@ -108,6 +108,8 @@ export function isClickable(
   );
 }
 
+export const INSET_VERTICAL_SPACING = 8;
+
 export function calculateRowHeight(
   row: Row<any>,
   headCellHeight: number,
@@ -117,7 +119,8 @@ export function calculateRowHeight(
     return (
       headCellHeight +
       cellHeight +
-      cellHeight * (row.original.inset?.length ?? 0)
+      cellHeight * (row.original.inset?.length ?? 0) +
+      INSET_VERTICAL_SPACING * 2
     );
   }
   return cellHeight;
@@ -133,7 +136,7 @@ export const useInitFilterFns = (table: Table<any>) => {
 };
 
 export const calculateHorizontalSpace = (
-  columnItems: VirtualItem<HTMLDivElement>[],
+  columnItems: VirtualItem[],
   totalSize: number,
   stickyLeftColumns: number
 ) => {

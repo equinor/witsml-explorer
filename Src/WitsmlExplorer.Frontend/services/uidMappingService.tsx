@@ -5,6 +5,7 @@ import {
   UidMappingBasicInfo,
   UidMappingDbQuery
 } from "../models/uidMapping.tsx";
+import { Server } from "../models/server.ts";
 
 export default class UidMappingService {
   public static async addUidMapping(
@@ -41,12 +42,13 @@ export default class UidMappingService {
   }
 
   public static async getUidMappingBasicInfos(
+    server: Server,
     abortSignal?: AbortSignal
   ): Promise<UidMappingBasicInfo[]> {
     const response = await ApiClient.get(
       `/api/uidmapping/basicinfos`,
       abortSignal,
-      undefined
+      server
     );
     if (response.ok) {
       return response.json();

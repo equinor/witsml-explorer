@@ -25,6 +25,7 @@ export enum TemplateObjects {
   CementJob = "cementJob",
   ChangeLog = "changeLog",
   ConvCore = "convCore",
+  DataWorkOrder = "dataWorkOrder",
   DrillReport = "drillReport",
   FluidsReport = "fluidsReport",
   FormationMarker = "formationMarker",
@@ -51,6 +52,7 @@ export enum TemplateObjects {
 export const ObjectTypeToTemplateObject: Record<ObjectType, TemplateObjects> = {
   [ObjectType.BhaRun]: TemplateObjects.BhaRun,
   [ObjectType.ChangeLog]: TemplateObjects.ChangeLog,
+  [ObjectType.DataWorkOrder]: TemplateObjects.DataWorkOrder,
   [ObjectType.FluidsReport]: TemplateObjects.FluidsReport,
   [ObjectType.FormationMarker]: TemplateObjects.FormationMarker,
   [ObjectType.Log]: TemplateObjects.Log,
@@ -107,7 +109,8 @@ export const getQueryTemplate = (
     if (
       templateObject === TemplateObjects.Well ||
       templateObject === TemplateObjects.Wellbore ||
-      templateObject === TemplateObjects.ChangeLog
+      templateObject === TemplateObjects.ChangeLog ||
+      templateObject === TemplateObjects.DataWorkOrder
     ) {
       return templates[templateObject + "IdOnly"];
     } else {

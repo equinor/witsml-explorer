@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 using Witsml.Data;
+using Witsml.Data.DataWorkOrder;
 using Witsml.Data.MudLog;
 using Witsml.Data.Tubular;
 
-using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
 
@@ -120,6 +119,10 @@ namespace WitsmlExplorer.Api.Query
                     ((WitsmlFluidsReport)objectOnWellbore).Fluids = componentUids.Select(uid =>
                         new WitsmlFluid { Uid = uid }).ToList();
                     break;
+                case ComponentType.DataSourceConfigurationSet:
+                    ((WitsmlDataWorkOrder)objectOnWellbore).DataSourceConfigurationSets = componentUids.Select(uid =>
+                        new WitsmlDataSourceConfigurationSet { Uid = uid }).ToList();
+                    break;
                 default:
                     throw new ArgumentException($"Invalid component type {componentType}");
             }
@@ -135,6 +138,7 @@ namespace WitsmlExplorer.Api.Query
                 ComponentType.TubularComponent => ((WitsmlTubular)objectOnWellbore).TubularComponents.Select(component => component.Uid),
                 ComponentType.WbGeometrySection => ((WitsmlWbGeometry)objectOnWellbore).WbGeometrySections.Select(component => component.Uid),
                 ComponentType.Fluid => ((WitsmlFluidsReport)objectOnWellbore).Fluids.Select(component => component.Uid),
+                ComponentType.DataSourceConfigurationSet => ((WitsmlDataWorkOrder)objectOnWellbore).DataSourceConfigurationSets.Select(component => component.Uid),
                 _ => throw new ArgumentException($"Invalid component type {componentType}"),
             };
         }
@@ -168,6 +172,9 @@ namespace WitsmlExplorer.Api.Query
                     return target;
                 case ComponentType.Fluid:
                     ((WitsmlFluidsReport)target).Fluids = ((WitsmlFluidsReport)source).Fluids.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
+                    return target;
+                case ComponentType.DataSourceConfigurationSet:
+                    ((WitsmlDataWorkOrder)target).DataSourceConfigurationSets = ((WitsmlDataWorkOrder)source).DataSourceConfigurationSets.Where((component) => uidsToCopy.Contains(component.Uid)).ToList();
                     return target;
                 default:
                     throw new ArgumentException($"Invalid component type {componentType}");
