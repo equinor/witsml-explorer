@@ -20,6 +20,11 @@ import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { getDataSourceConfigurationViewPath } from "routes/utils/pathBuilder";
+import { Chip } from "../../StyledComponents/Chip";
+import {
+  OPERATION_VARIANT,
+  SECTION_ORDER_VARIANT
+} from "./DwoStatusChipVariants";
 
 export default function DataSourceConfigurationSetView() {
   const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
@@ -85,13 +90,27 @@ export default function DataSourceConfigurationSetView() {
         name: dataSourceConfiguration.name,
         numChannels: dataSourceConfiguration.channelConfigurations.length,
         description: dataSourceConfiguration.description,
-        status: dataSourceConfiguration.status,
+        status: (
+          <Chip variant={SECTION_ORDER_VARIANT[dataSourceConfiguration.status]}>
+            {dataSourceConfiguration.status}
+          </Chip>
+        ),
         nominalHoleSize: measureToString(
           dataSourceConfiguration.nominalHoleSize
         ),
         tubular: dataSourceConfiguration.tubular?.value,
-        depthStatus: dataSourceConfiguration.depthStatus,
-        timeStatus: dataSourceConfiguration.timeStatus,
+        depthStatus: (
+          <Chip
+            variant={OPERATION_VARIANT[dataSourceConfiguration.depthStatus]}
+          >
+            {dataSourceConfiguration.depthStatus}
+          </Chip>
+        ),
+        timeStatus: (
+          <Chip variant={OPERATION_VARIANT[dataSourceConfiguration.timeStatus]}>
+            {dataSourceConfiguration.timeStatus}
+          </Chip>
+        ),
         dTimPlannedStart: formatDateString(
           dataSourceConfiguration.dTimPlannedStart,
           timeZone,
@@ -160,15 +179,19 @@ const columns: ContentTableColumn[] = [
   { property: "numChannels", label: "channels", type: ContentType.String },
   { property: "uid", label: "uid", type: ContentType.String },
   { property: "description", label: "description", type: ContentType.String },
-  { property: "status", label: "status", type: ContentType.String },
+  { property: "status", label: "status", type: ContentType.Component },
   {
     property: "nominalHoleSize",
     label: "nominalHoleSize",
     type: ContentType.Measure
   },
   { property: "tubular", label: "tubular", type: ContentType.String },
-  { property: "depthStatus", label: "depthStatus", type: ContentType.String },
-  { property: "timeStatus", label: "timeStatus", type: ContentType.String },
+  {
+    property: "depthStatus",
+    label: "depthStatus",
+    type: ContentType.Component
+  },
+  { property: "timeStatus", label: "timeStatus", type: ContentType.Component },
   {
     property: "dTimPlannedStart",
     label: "dTimPlannedStart",

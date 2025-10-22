@@ -8,6 +8,13 @@ import { useOperationState } from "hooks/useOperationState";
 import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
 import React from "react";
 import styled from "styled-components";
+import { Chip } from "../StyledComponents/Chip";
+import {
+  OPERATION_VARIANT,
+  SECTION_ORDER_VARIANT
+} from "../ContentViews/DataWorkOrder/DwoStatusChipVariants";
+import { SectionOrderStatus } from "../../models/dataWorkOrder/sectionOrderStatus.ts";
+import { OperationStatus } from "../../models/dataWorkOrder/operationStatus.ts";
 
 export interface ConfigurationChangeReasonModalProps {
   dataSourceConfiguration: DataSourceConfiguration;
@@ -107,7 +114,12 @@ const configurationProperties: ReadOnlyPropertiesRendererProperty[] = [
   },
   {
     property: "status",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <Chip variant={SECTION_ORDER_VARIANT[value as SectionOrderStatus]}>
+        {value}
+      </Chip>
+    )
   },
   {
     property: "uid",
@@ -119,11 +131,17 @@ const configurationProperties: ReadOnlyPropertiesRendererProperty[] = [
   },
   {
     property: "depthStatus",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+    )
   },
   {
     property: "timeStatus",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+    )
   }
 ];
 

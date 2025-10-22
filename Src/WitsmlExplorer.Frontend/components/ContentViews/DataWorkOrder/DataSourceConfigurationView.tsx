@@ -11,6 +11,13 @@ import { ObjectType } from "models/objectType";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import styled from "styled-components";
+import {
+  OPERATION_VARIANT,
+  SECTION_ORDER_VARIANT
+} from "./DwoStatusChipVariants";
+import { Chip } from "../../StyledComponents/Chip";
+import { OperationStatus } from "../../../models/dataWorkOrder/operationStatus.ts";
+import { SectionOrderStatus } from "../../../models/dataWorkOrder/sectionOrderStatus.ts";
 
 export default function DataSourceConfigurationView() {
   const {
@@ -81,7 +88,10 @@ const properties: ReadOnlyPropertiesRendererProperty[] = [
   },
   {
     property: "depthStatus",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+    )
   },
   {
     property: "dTimPlannedStart",
@@ -105,11 +115,19 @@ const properties: ReadOnlyPropertiesRendererProperty[] = [
   },
   {
     property: "status",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <Chip variant={SECTION_ORDER_VARIANT[value as SectionOrderStatus]}>
+        {value}
+      </Chip>
+    )
   },
   {
     property: "timeStatus",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+    )
   },
   {
     property: "dTimPlannedStop",

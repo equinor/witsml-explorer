@@ -9,6 +9,8 @@ import { useGetComponents } from "hooks/query/useGetComponents";
 import { ComponentType } from "models/componentType";
 import { measureToString } from "models/measure";
 import { useParams } from "react-router-dom";
+import { Chip } from "../../StyledComponents/Chip";
+import { CRITICALITY_VARIANT } from "./DwoStatusChipVariants";
 
 export default function ChannelSetsTable() {
   const {
@@ -50,7 +52,11 @@ export default function ChannelSetsTable() {
       toolName: channelConfiguration.toolName,
       service: channelConfiguration.service,
       sensorOffset: measureToString(channelConfiguration.sensorOffset),
-      criticality: channelConfiguration.criticality,
+      criticality: (
+        <Chip variant={CRITICALITY_VARIANT[channelConfiguration.criticality]}>
+          {channelConfiguration.criticality}
+        </Chip>
+      ),
       logName: channelConfiguration.logName,
       description: channelConfiguration.description,
       comments: channelConfiguration.comments,
@@ -93,7 +99,11 @@ export default function ChannelSetsTable() {
 
 const columns: ContentTableColumn[] = [
   { property: "mnemonic", label: "mnemonic", type: ContentType.String },
-  { property: "criticality", label: "criticality", type: ContentType.String },
+  {
+    property: "criticality",
+    label: "criticality",
+    type: ContentType.Component
+  },
   {
     property: "globalMnemonic",
     label: "globalMnemonic",

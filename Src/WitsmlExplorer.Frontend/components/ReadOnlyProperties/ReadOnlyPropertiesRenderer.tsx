@@ -5,7 +5,7 @@ import { ReadOnlyProperty } from "components/ReadOnlyProperties/ReadOnlyProperty
 import { DecimalPreference } from "contexts/operationStateReducer";
 import { useOperationState } from "hooks/useOperationState";
 import { measureToString } from "models/measure";
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";
 
 export interface ReadOnlyPropertiesRendererProps<T> {
   properties: ReadOnlyPropertiesRendererProperty[];
@@ -15,6 +15,7 @@ export interface ReadOnlyPropertiesRendererProps<T> {
 export interface ReadOnlyPropertiesRendererProperty {
   label?: string;
   property: string;
+  renderProperty?: (property: string) => ReactNode;
   propertyType: PropertyType;
 }
 
@@ -57,6 +58,7 @@ export const ReadOnlyPropertiesRenderer = <T,>({
           key={prop.property}
           label={prop.label || prop.property}
           value={getFormattedPropertyValue(prop)}
+          renderValue={prop.renderProperty}
         />
       ))}
     </>
