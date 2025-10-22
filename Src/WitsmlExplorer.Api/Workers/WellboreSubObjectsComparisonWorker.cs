@@ -138,7 +138,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         return result.ToList();
     }
 
-    private BaseReport GenerateReport(List<WellboreSubObjectsComparisonItem> reportItems, string targetServerName, string sourceServerName, string targetWellbore, string sourceWellbore)
+    private BaseReport GenerateReport(List<WellboreSubObjectsComparisonItem> reportItems, string sourceServerName, string targetServerName, string sourceWellbore, string targetWellbore)
     {
 
         return new BaseReport

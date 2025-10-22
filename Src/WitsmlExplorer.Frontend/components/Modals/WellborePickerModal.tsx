@@ -43,7 +43,7 @@ const WellborePickerModal = ({
 }: WellborePickerProps): React.ReactElement => {
   const { servers } = useGetServers();
   const filteredServers = useServerFilter(servers);
-  const [targetServer, setTargetServer] = useState<Server>();
+  const [sourceServer, setSourceServer] = useState<Server>();
   const [wellUid, setWellUid] = useState<string>(selectedWellbore.wellUid);
   const [wellboreUid, setWellboreUid] = useState<string>(selectedWellbore.uid);
   const [selectedCheckOption, setSelectedCheckOption] = useState<CheckOptions>(
@@ -101,30 +101,30 @@ const WellborePickerModal = ({
   const onSubmit = async () => {
     setIsLoading(true);
     setFetchError("");
-    const targetWellbore = await WellboreService.getWellbore(
+    const sourceWellbore = await WellboreService.getWellbore(
       wellUid,
       wellboreUid,
       null,
-      targetServer
+      sourceServer
     );
 
     try {
-      const selectedWellboreReference: WellboreReference = {
+      const targetWellboreReference: WellboreReference = {
         wellUid: selectedWellbore.wellUid,
         wellboreUid: selectedWellbore.uid,
         wellboreName: selectedWellbore.name,
         wellName: selectedWellbore.wellName
       };
       const sourceWellboreReference: WellboreReference = {
-        wellUid: targetWellbore.wellUid,
-        wellboreUid: targetWellbore.uid,
-        wellboreName: targetWellbore.name,
-        wellName: targetWellbore.wellName
+        wellUid: sourceWellbore.wellUid,
+        wellboreUid: sourceWellbore.uid,
+        wellboreName: sourceWellbore.name,
+        wellName: sourceWellbore.wellName
       };
       dispatchOperation({ type: OperationType.HideModal });
       const job: WellboreSubObjectsComparisonJob = {
         sourceWellbore: sourceWellboreReference,
-        targetWellbore: selectedWellboreReference,
+        targetWellbore: targetWellboreReference,
         countLogsData:
           performDeepLogComparison &&
           selectedCheckOption ===
@@ -152,7 +152,7 @@ const WellborePickerModal = ({
         JobType.WellboreSubObjectsComparison,
         job,
         connectedServer,
-        targetServer
+        sourceServer
       );
       if (jobId) {
         const reportModalProps = { jobId };
@@ -163,8 +163,8 @@ const WellborePickerModal = ({
       }
     } catch (e) {
       console.error(e);
-      const message = !targetWellbore
-        ? "Target wellbore not found"
+      const message = !sourceWellbore
+        ? "Source wellbore not found"
         : "Failed to fetch";
       setFetchError(message);
     } finally {
@@ -197,7 +197,7 @@ const WellborePickerModal = ({
         validate() ||
         invalidUid(wellUid) ||
         invalidUid(wellboreUid) ||
-        targetServer == null
+        sourceServer == null
       }
       confirmText={`OK`}
       showCancelButton={true}
@@ -208,11 +208,11 @@ const WellborePickerModal = ({
         <ModalContentLayout>
           <Autocomplete
             id="server"
-            label={`Compare to server ${targetServer?.name ?? ""}`}
+            label={`Compare to server ${sourceServer?.name ?? ""}`}
             options={filteredServers}
             optionLabel={(server: Server) => server.name}
             onOptionsChange={({ selectedItems }) => {
-              setTargetServer(selectedItems[0]);
+              setSourceServer(selectedItems[0]);
             }}
             style={{
               paddingBottom: "24px"
