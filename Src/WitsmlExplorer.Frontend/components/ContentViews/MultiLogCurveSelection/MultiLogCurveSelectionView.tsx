@@ -207,7 +207,9 @@ export default function MultiLogCurveSelectionView() {
         new AbortController().signal,
         multiLogMetadata.server
       );
-      los.push(logObject);
+      if (logObject) {
+        los.push(logObject);
+      }
     }
     return los;
   };
