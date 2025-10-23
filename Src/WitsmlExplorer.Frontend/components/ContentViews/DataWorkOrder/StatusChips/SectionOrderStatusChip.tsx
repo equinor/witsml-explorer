@@ -1,8 +1,8 @@
 import { SectionOrderStatus } from "../../../../models/dataWorkOrder/sectionOrderStatus.ts";
-import { Chip } from "../../../StyledComponents/Chip";
 import React, { FC } from "react";
 import Icon from "../../../../styles/Icons.tsx";
 import { capitalize } from "lodash";
+import { StyledStatusChip, TableFriendlyType } from "./styles.ts";
 
 const SECTION_ORDER_VARIANT: {
   [key in SectionOrderStatus]: "error" | "active" | "default";
@@ -15,20 +15,25 @@ const SECTION_ORDER_VARIANT: {
 
 type SectionOrderStatusChipProps = {
   status: SectionOrderStatus;
-};
+} & TableFriendlyType;
 
 export const SectionOrderStatusChip: FC<SectionOrderStatusChipProps> = ({
-  status
+  status,
+  ...rest
 }) => {
   const variant = SECTION_ORDER_VARIANT[status];
 
   if (status === SectionOrderStatus.Submitted)
     return (
-      <Chip variant={variant}>
+      <StyledStatusChip variant={variant} {...rest}>
         <Icon name="done" size={16} />
         {capitalize(status)}
-      </Chip>
+      </StyledStatusChip>
     );
 
-  return <Chip variant={variant}>{capitalize(status)}</Chip>;
+  return (
+    <StyledStatusChip variant={variant} {...rest}>
+      {capitalize(status)}
+    </StyledStatusChip>
+  );
 };

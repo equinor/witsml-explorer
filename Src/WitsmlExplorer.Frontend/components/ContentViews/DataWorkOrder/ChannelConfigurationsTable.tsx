@@ -57,6 +57,7 @@ export default function ChannelSetsTable() {
       criticality: (
         <ChannelCriticalityStatusChip
           status={channelConfiguration.criticality}
+          $tableFriendly
         />
       ),
       logName: channelConfiguration.logName,

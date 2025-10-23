@@ -1,7 +1,7 @@
 import { ChannelCriticality } from "../../../../models/dataWorkOrder/channelCriticality.ts";
 import { FC } from "react";
-import { Chip } from "../../../StyledComponents/Chip";
 import { capitalize } from "lodash";
+import { StyledStatusChip, TableFriendlyType } from "./styles.ts";
 
 const CRITICALITY_VARIANT: {
   [key in ChannelCriticality]: "default" | "active" | "warning";
@@ -12,10 +12,12 @@ const CRITICALITY_VARIANT: {
 
 type ChannelCriticalityStatusChipProps = {
   status: ChannelCriticality;
-};
+} & TableFriendlyType;
 
 export const ChannelCriticalityStatusChip: FC<
   ChannelCriticalityStatusChipProps
-> = ({ status }) => (
-  <Chip variant={CRITICALITY_VARIANT[status]}>{capitalize(status)}</Chip>
+> = ({ status, ...rest }) => (
+  <StyledStatusChip variant={CRITICALITY_VARIANT[status]} {...rest}>
+    {capitalize(status)}
+  </StyledStatusChip>
 );

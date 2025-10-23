@@ -97,17 +97,26 @@ export default function DataSourceConfigurationSetView() {
           dataSourceConfiguration.channelConfigurations.length + " Channels",
         description: dataSourceConfiguration.description,
         status: (
-          <SectionOrderStatusChip status={dataSourceConfiguration.status} />
+          <SectionOrderStatusChip
+            status={dataSourceConfiguration.status}
+            $tableFriendly
+          />
         ),
         nominalHoleSize: measureToString(
           dataSourceConfiguration.nominalHoleSize
         ),
         tubular: dataSourceConfiguration.tubular?.value,
         depthStatus: (
-          <OperationStatusChip status={dataSourceConfiguration.depthStatus} />
+          <OperationStatusChip
+            status={dataSourceConfiguration.depthStatus}
+            $tableFriendly
+          />
         ),
         timeStatus: (
-          <OperationStatusChip status={dataSourceConfiguration.timeStatus} />
+          <OperationStatusChip
+            status={dataSourceConfiguration.timeStatus}
+            $tableFriendly
+          />
         ),
         dTimPlannedStart: formatDateString(
           dataSourceConfiguration.dTimPlannedStart,
