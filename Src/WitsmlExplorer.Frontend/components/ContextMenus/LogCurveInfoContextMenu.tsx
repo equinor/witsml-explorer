@@ -1,13 +1,13 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
-import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListViewUtils";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
   menuItemText,
   onClickDeleteComponents,
-  onClickShowObjectOnServer
+  onClickShowObjectOnServer,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
 import { copyComponents } from "components/ContextMenus/CopyUtils";
@@ -54,6 +54,15 @@ import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal
 import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 import { refreshPrioritizedCurves } from "../../hooks/query/queryRefreshHelpers.tsx";
 import { useQueryClient } from "@tanstack/react-query";
+import SelectComparisonServersModal, {
+  MULTI_LOG_MULTI_TARGET_COMPARISON_TYPE_MNEMONIC,
+  SelectComparisonServersModalProps
+} from "../Modals/MultiLogCurveSelection/SelectComparisonServersModal.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
+import { getMultipleLogCurveSelectionViewPath } from "../../routes/utils/pathBuilder.ts";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import { useNavigate } from "react-router-dom";
+import { MultiLogSelectionCurveInfo } from "../MultiLogUtils.tsx";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -87,6 +96,7 @@ const LogCurveInfoContextMenu = (
   } = props;
 
   const filteredServers = useServerFilter(servers);
+  const navigate = useNavigate();
 
   const { connectedServer } = useConnectedServer();
 
@@ -188,6 +198,57 @@ const LogCurveInfoContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
+  };
+
+  const onClickMultiLogMultiTargetAdd = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    if (checkedLogCurveInfoRows.length > 0) {
+      const curveInfos = checkedLogCurveInfoRows.map((row) => {
+        return {
+          serverId: selectedServer.id,
+          wellId: selectedLog.wellUid,
+          wellboreId: selectedLog.wellboreUid,
+          logUid: selectedLog.uid,
+          mnemonic: row.mnemonic
+        } as MultiLogSelectionCurveInfo;
+      });
+
+      MultiLogSelectionRepository.Instance.addMultiLogValues(
+        selectedLog.indexType as WITSML_INDEX_TYPE,
+        curveInfos,
+        true
+      );
+
+      navigate({
+        pathname: getMultipleLogCurveSelectionViewPath(
+          connectedServer?.url,
+          selectedLog.indexType === WITSML_INDEX_TYPE_MD
+            ? RouterLogType.DEPTH
+            : RouterLogType.TIME
+        )
+      });
+    }
+  };
+
+  const onClickMultiLogServerComparison = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    const selectComparisonServersModalProps: SelectComparisonServersModalProps =
+      {
+        sourceServer: connectedServer,
+        comparisonType: MULTI_LOG_MULTI_TARGET_COMPARISON_TYPE_MNEMONIC,
+        indexType: selectedLog.indexType as WITSML_INDEX_TYPE,
+        logObject: selectedLog,
+        mnemonics: checkedLogCurveInfoRows.map((lc) => lc.mnemonic)
+      };
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: (
+        <SelectComparisonServersModal {...selectComparisonServersModalProps} />
+      )
+    };
+    dispatchOperation(action);
   };
 
   const onClickEditPriority = () => {
@@ -433,6 +494,29 @@ const LogCurveInfoContextMenu = (
               ComponentType.Mnemonic,
               checkedLogCurveInfoRowsWithoutIndexCurve
             )}
+          </Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"multiLogMultiTargetAdd"}
+          onClick={onClickMultiLogMultiTargetAdd}
+          disabled={checkedLogCurveInfoRows.length === 0}
+        >
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>
+            Add To Multiple Log Selection
+          </Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"multiLogServerComparison"}
+          onClick={onClickMultiLogServerComparison}
+          disabled={checkedLogCurveInfoRows.length === 0}
+        >
+          <StyledIcon
+            name="compare"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Compare Log Curves With Servers
           </Typography>
         </MenuItem>,
         <NestedMenuItem

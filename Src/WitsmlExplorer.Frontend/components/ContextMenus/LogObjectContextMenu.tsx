@@ -1,7 +1,7 @@
 import { Typography } from "@equinor/eds-core-react";
 import { Divider, MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -70,6 +70,10 @@ import MinimumDataQcModal, {
 import { useGetLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
 import { useGetUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
 import AgentSettingsModal from "../Modals/AgentSettingsModal.tsx";
+import SelectComparisonServersModal, {
+  MULTI_LOG_MULTI_TARGET_COMPARISON_TYPE_PRIORITIZED_CURVES,
+  SelectComparisonServersModalProps
+} from "../Modals/MultiLogCurveSelection/SelectComparisonServersModal.tsx";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -318,6 +322,27 @@ const LogObjectContextMenu = (
     dispatchOperation(action);
   };
 
+  const onClickMultiLogServerComparison = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    const logObject = checkedObjects[0] as LogObject;
+
+    const selectComparisonServersModalProps: SelectComparisonServersModalProps =
+      {
+        sourceServer: connectedServer,
+        comparisonType:
+          MULTI_LOG_MULTI_TARGET_COMPARISON_TYPE_PRIORITIZED_CURVES,
+        indexType: logObject.indexType as WITSML_INDEX_TYPE,
+        logObject: logObject
+      };
+    const action: DisplayModalAction = {
+      type: OperationType.DisplayModal,
+      payload: (
+        <SelectComparisonServersModal {...selectComparisonServersModalProps} />
+      )
+    };
+    dispatchOperation(action);
+  };
+
   const onClickOpenSeveralLogs = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     if (checkedObjects.length === 1) {
@@ -364,6 +389,15 @@ const LogObjectContextMenu = (
         <StyledIcon name="paste" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>
           {menuItemText("paste", "mnemonic", logCurvesReference?.componentUids)}
+        </Typography>
+      </MenuItem>,
+      <MenuItem
+        key={"multiLogServerComparison"}
+        onClick={onClickMultiLogServerComparison}
+      >
+        <StyledIcon name="compare" color={colors.interactive.primaryResting} />
+        <Typography color={"primary"}>
+          Compare Prioritized Curves With Servers
         </Typography>
       </MenuItem>,
       <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} icon="edit">
