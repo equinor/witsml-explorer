@@ -290,7 +290,7 @@ const SettingsModal = (): React.ReactElement => {
                   logout();
                 }}
               >
-                <Typography>Logout</Typography>
+                Logout
               </Button>
             </HorizontalLayout>
           )}
