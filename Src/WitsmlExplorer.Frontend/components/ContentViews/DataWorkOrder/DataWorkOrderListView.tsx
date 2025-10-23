@@ -18,6 +18,7 @@ import { ObjectType } from "models/objectType";
 import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getObjectViewPath } from "routes/utils/pathBuilder";
+import { StyledLink } from "../../StyledComponents/Link.tsx";
 
 export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
   dataWorkOrder: DataWorkOrder;
@@ -25,7 +26,7 @@ export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
 
 export default function DataWorkOrdersListView() {
   const {
-    operationState: { timeZone, dateTimeFormat },
+    operationState: { colors, timeZone, dateTimeFormat },
     dispatchOperation
   } = useOperationState();
   const navigate = useNavigate();
@@ -58,16 +59,17 @@ export default function DataWorkOrdersListView() {
     });
   };
 
-  const onSelect = (dataWorkOrder: DataWorkOrderRow) => {
-    navigate(
-      getObjectViewPath(
-        connectedServer?.url,
-        wellUid,
-        wellboreUid,
-        ObjectType.DataWorkOrder,
-        dataWorkOrder.uid
-      )
+  const getDwoDetailPath = (dwoId: string) =>
+    getObjectViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      ObjectType.DataWorkOrder,
+      dwoId
     );
+
+  const onSelect = (dataWorkOrder: DataWorkOrderRow) => {
+    navigate(getDwoDetailPath(dataWorkOrder.uid));
   };
 
   const getTableData = () => {
@@ -77,6 +79,11 @@ export default function DataWorkOrdersListView() {
         ...dataWorkOrder.commonData,
         id: dataWorkOrder.uid,
         dataWorkOrder: dataWorkOrder,
+        setsCount: (
+          <StyledLink to={getDwoDetailPath(dataWorkOrder.uid)} colors={colors}>
+            {dataWorkOrder.dataSourceConfigurationSets.length} Sets
+          </StyledLink>
+        ),
         dTimPlannedStart: formatDateString(
           dataWorkOrder.dTimPlannedStart,
           timeZone,
@@ -104,6 +111,12 @@ export default function DataWorkOrdersListView() {
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
     { property: "field", label: "field", type: ContentType.String },
+    {
+      property: "setsCount",
+      label: "dataSourceConfigurationSets",
+      type: ContentType.Component,
+      width: 200
+    },
     {
       property: "dataProvider",
       label: "dataProvider",
