@@ -7,7 +7,7 @@ import {
 import formatDateString from "components/DateFormatter";
 import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
-import { StyledLinkButton } from "components/StyledComponents/Link";
+import { StyledLink, StyledLinkButton } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -20,12 +20,9 @@ import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { getDataSourceConfigurationViewPath } from "routes/utils/pathBuilder";
-import { Chip } from "../../StyledComponents/Chip";
-import {
-  OPERATION_VARIANT,
-  SECTION_ORDER_VARIANT
-} from "./DwoStatusChipVariants";
 import { Typography } from "../../StyledComponents/Typography.tsx";
+import { OperationStatusChip, SectionOrderStatusChip } from "./StatusChips";
+import Icon from "../../../styles/Icons.tsx";
 
 export default function DataSourceConfigurationSetView() {
   const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
@@ -54,18 +51,17 @@ export default function DataSourceConfigurationSetView() {
   const dataSourceConfigurations =
     dataSourceConfigurationSet?.dataSourceConfigurations ?? [];
 
-  const onSelect = (row: ContentTableRow) => {
-    navigate(
-      getDataSourceConfigurationViewPath(
-        connectedServer?.url,
-        wellUid,
-        wellboreUid,
-        objectUid,
-        componentUid,
-        row.id
-      )
+  const getConfigPath = (configId: string) =>
+    getDataSourceConfigurationViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      componentUid,
+      configId
     );
-  };
+
+  const onSelect = (row: ContentTableRow) => navigate(getConfigPath(row.id));
 
   const onClickChangeReason = (
     event: React.MouseEvent,
@@ -88,29 +84,30 @@ export default function DataSourceConfigurationSetView() {
         id: dataSourceConfiguration.uid,
         uid: dataSourceConfiguration.uid,
         versionNumber: dataSourceConfiguration.versionNumber,
-        name: dataSourceConfiguration.name,
-        numChannels: dataSourceConfiguration.channelConfigurations.length,
+        name: (
+          <StyledLink
+            to={getConfigPath(dataSourceConfiguration.uid)}
+            colors={colors}
+          >
+            <Icon name="gridLayers" size={16} />
+            {dataSourceConfiguration.name}
+          </StyledLink>
+        ),
+        numChannels:
+          dataSourceConfiguration.channelConfigurations.length + " Channels",
         description: dataSourceConfiguration.description,
         status: (
-          <Chip variant={SECTION_ORDER_VARIANT[dataSourceConfiguration.status]}>
-            {dataSourceConfiguration.status}
-          </Chip>
+          <SectionOrderStatusChip status={dataSourceConfiguration.status} />
         ),
         nominalHoleSize: measureToString(
           dataSourceConfiguration.nominalHoleSize
         ),
         tubular: dataSourceConfiguration.tubular?.value,
         depthStatus: (
-          <Chip
-            variant={OPERATION_VARIANT[dataSourceConfiguration.depthStatus]}
-          >
-            {dataSourceConfiguration.depthStatus}
-          </Chip>
+          <OperationStatusChip status={dataSourceConfiguration.depthStatus} />
         ),
         timeStatus: (
-          <Chip variant={OPERATION_VARIANT[dataSourceConfiguration.timeStatus]}>
-            {dataSourceConfiguration.timeStatus}
-          </Chip>
+          <OperationStatusChip status={dataSourceConfiguration.timeStatus} />
         ),
         dTimPlannedStart: formatDateString(
           dataSourceConfiguration.dTimPlannedStart,
@@ -179,7 +176,7 @@ const columns: ContentTableColumn[] = [
     label: "versionNumber",
     type: ContentType.String
   },
-  { property: "name", label: "name", type: ContentType.String },
+  { property: "name", label: "name", type: ContentType.Component },
   { property: "numChannels", label: "channels", type: ContentType.String },
   { property: "uid", label: "uid", type: ContentType.String },
   { property: "description", label: "description", type: ContentType.String },

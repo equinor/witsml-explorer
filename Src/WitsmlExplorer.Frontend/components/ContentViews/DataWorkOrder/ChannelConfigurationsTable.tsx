@@ -9,10 +9,9 @@ import { useGetComponents } from "hooks/query/useGetComponents";
 import { ComponentType } from "models/componentType";
 import { measureToString } from "models/measure";
 import { useParams } from "react-router-dom";
-import { Chip } from "../../StyledComponents/Chip";
-import { CRITICALITY_VARIANT } from "./DwoStatusChipVariants";
 import { Typography } from "../../StyledComponents/Typography.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
+import { ChannelCriticalityStatusChip } from "./StatusChips";
 
 export default function ChannelSetsTable() {
   const {
@@ -56,9 +55,9 @@ export default function ChannelSetsTable() {
       service: channelConfiguration.service,
       sensorOffset: measureToString(channelConfiguration.sensorOffset),
       criticality: (
-        <Chip variant={CRITICALITY_VARIANT[channelConfiguration.criticality]}>
-          {channelConfiguration.criticality}
-        </Chip>
+        <ChannelCriticalityStatusChip
+          status={channelConfiguration.criticality}
+        />
       ),
       logName: channelConfiguration.logName,
       description: channelConfiguration.description,

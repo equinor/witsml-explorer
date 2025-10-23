@@ -26,6 +26,7 @@ import OperationType from "contexts/operationType";
 import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
 
 import { MouseEventHandler } from "react";
+import Icon from "../../../styles/Icons.tsx";
 
 export interface DataSourceConfigurationSetRow extends ContentTableRow {
   id: string;
@@ -124,6 +125,7 @@ export default function DataSourceConfigurationSetsTable() {
             to={getSetPath(dataSourceConfigurationSet.uid)}
             colors={colors}
           >
+            <Icon name="gridLayers" size={16} />
             {versionCount} available
           </StyledLink>
         ),
@@ -140,6 +142,7 @@ export default function DataSourceConfigurationSetsTable() {
             to={getConfigPath(dataSourceConfigurationSet.uid, lastConfig?.uid)}
             colors={colors}
           >
+            <Icon name="gridLayers" size={16} />
             {lastConfig?.name}
           </StyledLink>
         )

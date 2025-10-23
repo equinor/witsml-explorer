@@ -11,15 +11,11 @@ import { ObjectType } from "models/objectType";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import styled from "styled-components";
-import {
-  OPERATION_VARIANT,
-  SECTION_ORDER_VARIANT
-} from "./DwoStatusChipVariants";
-import { Chip } from "../../StyledComponents/Chip";
 import { OperationStatus } from "../../../models/dataWorkOrder/operationStatus.ts";
 import { SectionOrderStatus } from "../../../models/dataWorkOrder/sectionOrderStatus.ts";
 import { Typography } from "../../StyledComponents/Typography.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
+import { OperationStatusChip, SectionOrderStatusChip } from "./StatusChips";
 
 export default function DataSourceConfigurationView() {
   const {
@@ -95,7 +91,7 @@ const properties: ReadOnlyPropertiesRendererProperty[] = [
     property: "depthStatus",
     propertyType: PropertyType.String,
     renderProperty: (value) => (
-      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+      <OperationStatusChip status={value as OperationStatus} />
     )
   },
   {
@@ -122,16 +118,14 @@ const properties: ReadOnlyPropertiesRendererProperty[] = [
     property: "status",
     propertyType: PropertyType.String,
     renderProperty: (value) => (
-      <Chip variant={SECTION_ORDER_VARIANT[value as SectionOrderStatus]}>
-        {value}
-      </Chip>
+      <SectionOrderStatusChip status={value as SectionOrderStatus} />
     )
   },
   {
     property: "timeStatus",
     propertyType: PropertyType.String,
     renderProperty: (value) => (
-      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+      <OperationStatusChip status={value as OperationStatus} />
     )
   },
   {

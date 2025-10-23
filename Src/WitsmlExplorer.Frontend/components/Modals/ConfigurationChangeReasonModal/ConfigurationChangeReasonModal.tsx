@@ -6,16 +6,16 @@ import { ReadOnlyPropertiesRendererProperty } from "components/ReadOnlyPropertie
 import { useOperationState } from "hooks/useOperationState";
 import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
 import React from "react";
-import { Chip } from "../../StyledComponents/Chip";
-import {
-  OPERATION_VARIANT,
-  SECTION_ORDER_VARIANT
-} from "../../ContentViews/DataWorkOrder/DwoStatusChipVariants";
+
 import { SectionOrderStatus } from "../../../models/dataWorkOrder/sectionOrderStatus.ts";
 import { OperationStatus } from "../../../models/dataWorkOrder/operationStatus.ts";
 import { Typography } from "../../StyledComponents/Typography.tsx";
 import { HorizontalLayout, VerticalLayout } from "./styles.ts";
 import AffectedGroup, { ListLabel } from "./AffectedGroup";
+import {
+  OperationStatusChip,
+  SectionOrderStatusChip
+} from "../../ContentViews/DataWorkOrder/StatusChips";
 
 export interface ConfigurationChangeReasonModalProps {
   dataSourceConfiguration: DataSourceConfiguration;
@@ -119,9 +119,7 @@ const configurationProperties: ReadOnlyPropertiesRendererProperty[] = [
     property: "status",
     propertyType: PropertyType.String,
     renderProperty: (value) => (
-      <Chip variant={SECTION_ORDER_VARIANT[value as SectionOrderStatus]}>
-        {value}
-      </Chip>
+      <SectionOrderStatusChip status={value as SectionOrderStatus} />
     )
   },
   {
@@ -136,14 +134,14 @@ const configurationProperties: ReadOnlyPropertiesRendererProperty[] = [
     property: "depthStatus",
     propertyType: PropertyType.String,
     renderProperty: (value) => (
-      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+      <OperationStatusChip status={value as OperationStatus} />
     )
   },
   {
     property: "timeStatus",
     propertyType: PropertyType.String,
     renderProperty: (value) => (
-      <Chip variant={OPERATION_VARIANT[value as OperationStatus]}>{value}</Chip>
+      <OperationStatusChip status={value as OperationStatus} />
     )
   }
 ];

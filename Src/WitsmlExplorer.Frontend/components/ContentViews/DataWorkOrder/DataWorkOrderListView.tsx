@@ -19,6 +19,7 @@ import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getObjectViewPath } from "routes/utils/pathBuilder";
 import { StyledLink } from "../../StyledComponents/Link.tsx";
+import Icon from "../../../styles/Icons.tsx";
 
 export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
   dataWorkOrder: DataWorkOrder;
@@ -81,6 +82,7 @@ export default function DataWorkOrdersListView() {
         dataWorkOrder: dataWorkOrder,
         setsCount: (
           <StyledLink to={getDwoDetailPath(dataWorkOrder.uid)} colors={colors}>
+            <Icon name="layers" size={16} />
             {dataWorkOrder.dataSourceConfigurationSets.length} Sets
           </StyledLink>
         ),
