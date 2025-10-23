@@ -11,6 +11,8 @@ import { measureToString } from "models/measure";
 import { useParams } from "react-router-dom";
 import { Chip } from "../../StyledComponents/Chip";
 import { CRITICALITY_VARIANT } from "./DwoStatusChipVariants";
+import { Typography } from "../../StyledComponents/Typography.tsx";
+import { useOperationState } from "../../../hooks/useOperationState.tsx";
 
 export default function ChannelSetsTable() {
   const {
@@ -21,6 +23,7 @@ export default function ChannelSetsTable() {
     dataSourceConfigurationUid
   } = useParams();
   const { connectedServer } = useConnectedServer();
+  const { colors } = useOperationState().operationState;
 
   const { components: dataSourceConfigurationSets, isFetching } =
     useGetComponents(
@@ -90,6 +93,11 @@ export default function ChannelSetsTable() {
         columns={columns}
         data={channelConfigurationRows}
         insetColumns={insetColumns}
+        renderInsetTitle={(insetCount) => (
+          <Typography colors={colors} $primary>
+            Requirements ({insetCount})
+          </Typography>
+        )}
         showRefresh
         downloadToCsvFileName="ChannelConfigurations"
       />

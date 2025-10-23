@@ -3,7 +3,7 @@ import {
   FilterFn,
   RowSelectionState
 } from "@tanstack/react-table";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Colors } from "../../../styles/Colors.tsx";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
@@ -38,6 +38,7 @@ export interface ContentTableProps {
   onFilteredRowSelectionChange?: (rows: ContentTableRow[]) => void; // Callback with the selected rows that are not excluded by the filter
   onExpandedChange?: (expanded: ExpandedState) => void;
   insetColumns?: ContentTableColumn[];
+  renderInsetTitle?: (insetCount: number) => ReactNode; //Possible to render title in max height of cell with inset count available
   nested?: boolean;
   nestedProperty?: string;
   panelElements?: React.ReactElement[];
