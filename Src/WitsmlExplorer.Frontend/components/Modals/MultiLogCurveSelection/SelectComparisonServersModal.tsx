@@ -215,7 +215,12 @@ const SelectComparisonServersModal = (
 
   const columns: ContentTableColumn[] = [
     { property: "name", label: "name", type: ContentType.String },
-    { property: "url", label: "url", type: ContentType.String }
+    {
+      property: "url",
+      label: "url",
+      type: ContentType.String,
+      width: 500
+    }
   ];
 
   const tableData = useMemo((): ServerRow[] => {
