@@ -218,12 +218,13 @@ const MultiLogCurveSelectionValues = (
                 toDate(iv2 as string).getTime()
             );
 
-        const lastIndexValue = joinedIndexValues[0];
+        let lastIndexValue = joinedIndexValues[0];
         const totalIndexValues = [joinedIndexValues[0]];
         for (const indexValue of joinedIndexValues) {
           if (indexValue !== lastIndexValue) {
             totalIndexValues.push(indexValue);
           }
+          lastIndexValue = indexValue;
         }
 
         for (const indexValue of totalIndexValues) {
@@ -238,10 +239,13 @@ const MultiLogCurveSelectionValues = (
             );
 
             for (let i = 1; i < logData.curveSpecifications.length; i++) {
+              const curveSpec = logData.curveSpecifications[
+                i
+              ] as CurveSpecificationMultiLog;
               data = {
                 ...data,
-                [logData.curveSpecifications[i].mnemonic]: logDataRow
-                  ? logDataRow[logData.curveSpecifications[i].mnemonic]
+                [curveSpec.mnemonic]: logDataRow
+                  ? logDataRow[curveSpec.mnemonic]
                   : undefined
               };
             }
@@ -281,6 +285,7 @@ const MultiLogCurveSelectionValues = (
                 : `${curveSpecification.mnemonic}`) +
               ` (${curveSpecification.unit})`,
             type: getColumnType(curveSpecification),
+            width: idx === 0 ? undefined : 200,
             headerColors:
               idx > 0 ? serverColors[curveSpecification.server.id] : undefined,
             headerTooltip: curveSpecification.logObject ? (
@@ -305,7 +310,9 @@ const MultiLogCurveSelectionValues = (
           const curveSpecification = cs as CurveSpecificationMultiLog;
           return {
             columnOf: curveSpecification,
-            property: curveSpecification.mnemonic,
+            property:
+              curveSpecification.mnemonic +
+              (idx === 0 ? "" : ` - ${curveSpecification.server.id}`),
             label:
               (idx === 0
                 ? isDepthIndex
@@ -356,7 +363,9 @@ const MultiLogCurveSelectionValues = (
           const log = allLogs.find((log) => log.uid === uid);
           const newKey = key.replace(
             uidRegex,
-            ` - ${log.name}${getNameOccurrenceSuffix(allLogs, log)}`
+            ` - ${log.name}${getNameOccurrenceSuffix(allLogs, log)} - ${
+              server.id
+            }`
           );
           newRow[newKey] = row[key];
         } else {
@@ -375,7 +384,10 @@ const MultiLogCurveSelectionValues = (
         logObject = allLogs.find((log) => log.uid === uid);
         newMnemonic = spec.mnemonic.replace(
           uidRegex,
-          ` - ${logObject.name}${getNameOccurrenceSuffix(allLogs, logObject)}`
+          ` - ${logObject.name}${getNameOccurrenceSuffix(
+            allLogs,
+            logObject
+          )} - ${server.id}`
         );
       }
       return {

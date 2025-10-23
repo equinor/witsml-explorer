@@ -10,12 +10,16 @@ import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
 import { useOperationState } from "hooks/useOperationState";
 import { useNavigate } from "react-router-dom";
-import { getJobsViewPath, getQueryViewPath } from "routes/utils/pathBuilder";
+import {
+  getJobsViewPath,
+  getMultipleLogCurveSelectionViewPath,
+  getQueryViewPath
+} from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
-import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../routes/routerConstants.ts";
+import { RouterLogType } from "../routes/routerConstants.ts";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -41,7 +45,10 @@ export default function TopRightCornerMenu() {
 
   const openMultiLogSelect = () => {
     navigate({
-      pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+      pathname: getMultipleLogCurveSelectionViewPath(
+        connectedServer?.url,
+        RouterLogType.DEPTH
+      )
     });
   };
 
