@@ -5,7 +5,7 @@ import {
   ContentType
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
-import { ConfigurationChangeReasonModal } from "components/Modals/ConfigurationChangeReasonModal";
+import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { StyledLinkButton } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";

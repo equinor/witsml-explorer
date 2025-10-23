@@ -10,8 +10,10 @@ export const light: Colors = {
     textHighlight: tokens.colors.interactive.text_highlight.hex,
     dangerHover: tokens.colors.interactive.danger__hover.hex,
     dangerResting: tokens.colors.interactive.danger__resting.hex,
+    dangerText: tokens.colors.interactive.danger__text.hex,
     warningResting: tokens.colors.interactive.warning__resting.hex,
     warningHover: tokens.colors.interactive.warning__hover.hex,
+    warningText: tokens.colors.interactive.warning__text.hex,
     disabledBorder: tokens.colors.interactive.disabled__border.hex,
     primaryHover: tokens.colors.interactive.primary__hover.hex,
     primaryResting: tokens.colors.interactive.primary__resting.hex,
@@ -53,7 +55,9 @@ export const dark: Colors = {
     dangerHighlight: "#FF667019",
     dangerHover: "#FF949B",
     dangerResting: tokens.colors.interactive.danger__resting.hex,
+    dangerText: "#FF6670",
     warningResting: tokens.colors.interactive.warning__resting.hex,
+    warningText: "#FFC67A",
     warningHover: "#FFDAA8",
     disabledBorder: "#3E4F5C",
     primaryHover: "#ADE2E6",
@@ -97,8 +101,10 @@ export interface Colors {
     textHighlight: string;
     dangerHover: string;
     dangerResting: string;
+    dangerText: string;
     warningResting: string;
     warningHover: string;
+    warningText: string;
     disabledBorder: string;
     primaryHover: string;
     primaryResting: string;

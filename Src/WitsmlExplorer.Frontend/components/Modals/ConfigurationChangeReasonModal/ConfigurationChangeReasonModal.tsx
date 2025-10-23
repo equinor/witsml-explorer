@@ -3,25 +3,25 @@ import ModalDialog, { ModalWidth } from "components/Modals/ModalDialog";
 import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
 import { ReadOnlyPropertiesGrid } from "components/ReadOnlyProperties/ReadOnlyPropertiesGrid";
 import { ReadOnlyPropertiesRendererProperty } from "components/ReadOnlyProperties/ReadOnlyPropertiesRenderer";
-import { ReadOnlyProperty } from "components/ReadOnlyProperties/ReadOnlyProperty";
 import { useOperationState } from "hooks/useOperationState";
 import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
 import React from "react";
-import styled from "styled-components";
-import { Chip } from "../StyledComponents/Chip";
+import { Chip } from "../../StyledComponents/Chip";
 import {
   OPERATION_VARIANT,
   SECTION_ORDER_VARIANT
-} from "../ContentViews/DataWorkOrder/DwoStatusChipVariants";
-import { SectionOrderStatus } from "../../models/dataWorkOrder/sectionOrderStatus.ts";
-import { OperationStatus } from "../../models/dataWorkOrder/operationStatus.ts";
-import { Typography } from "../StyledComponents/Typography.tsx";
+} from "../../ContentViews/DataWorkOrder/DwoStatusChipVariants";
+import { SectionOrderStatus } from "../../../models/dataWorkOrder/sectionOrderStatus.ts";
+import { OperationStatus } from "../../../models/dataWorkOrder/operationStatus.ts";
+import { Typography } from "../../StyledComponents/Typography.tsx";
+import { HorizontalLayout, VerticalLayout } from "./styles.ts";
+import AffectedGroup, { ListLabel } from "./AffectedGroup";
 
 export interface ConfigurationChangeReasonModalProps {
   dataSourceConfiguration: DataSourceConfiguration;
 }
 
-export const ConfigurationChangeReasonModal = (
+const ConfigurationChangeReasonModal = (
   props: ConfigurationChangeReasonModalProps
 ): React.ReactElement => {
   const { dataSourceConfiguration } = props;
@@ -67,27 +67,30 @@ export const ConfigurationChangeReasonModal = (
                 }}
               >
                 <ul>
-                  <li>
-                    <ReadOnlyProperty
-                      label={`${changeReason?.channelsAdded?.length} Added`}
-                      value={changeReason?.channelsAdded?.join(", ")}
-                    />
-                  </li>
-                  <li>
-                    <ReadOnlyProperty
-                      label={`${changeReason?.channelsModified?.length} Modified`}
-                      value={changeReason?.channelsModified?.join(", ")}
-                    />
-                  </li>
-                  <li>
-                    <ReadOnlyProperty
-                      label={`${changeReason?.channelsRemoved?.length} Removed`}
-                      value={changeReason?.channelsRemoved?.join(", ")}
-                    />
-                  </li>
+                  <AffectedGroup
+                    label={`${changeReason?.channelsAdded?.length} Added`}
+                    color={colors.interactive.primaryResting}
+                  >
+                    {changeReason?.channelsAdded?.join(", ")}
+                  </AffectedGroup>
+                  <AffectedGroup
+                    label={`${changeReason?.channelsModified?.length} Modified`}
+                    color={colors.interactive.warningText}
+                  >
+                    {changeReason?.channelsModified?.join(", ")}
+                  </AffectedGroup>
+                  <AffectedGroup
+                    label={`${changeReason?.channelsRemoved?.length} Removed`}
+                    color={colors.interactive.dangerText}
+                  >
+                    {changeReason?.channelsRemoved?.join(", ")}
+                  </AffectedGroup>
                   {changeReason.isChangedDataRequirements && (
                     <li>
-                      <ReadOnlyProperty label="Changed data requirements (isChangeDataRequirements=true)" />
+                      <ListLabel>
+                        Changed data requirements
+                        (isChangeDataRequirements=true)
+                      </ListLabel>
                     </li>
                   )}
                 </ul>
@@ -105,18 +108,7 @@ export const ConfigurationChangeReasonModal = (
   );
 };
 
-const VerticalLayout = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const HorizontalLayout = styled.div`
-  display: grid;
-  grid-template-columns: 60% 40%;
-  gap: 1rem;
-  width: 100%;
-`;
+export default ConfigurationChangeReasonModal;
 
 const configurationProperties: ReadOnlyPropertiesRendererProperty[] = [
   {

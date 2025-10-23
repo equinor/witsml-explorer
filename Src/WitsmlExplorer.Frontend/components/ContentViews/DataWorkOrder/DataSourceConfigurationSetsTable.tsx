@@ -23,7 +23,7 @@ import {
 } from "routes/utils/pathBuilder";
 import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
 import OperationType from "contexts/operationType";
-import { ConfigurationChangeReasonModal } from "components/Modals/ConfigurationChangeReasonModal";
+import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
 
 import { MouseEventHandler } from "react";
 
@@ -171,7 +171,7 @@ const columns: ContentTableColumn[] = [
   },
   {
     property: "changeReason",
-    label: "changeReason",
+    label: "Last Change Reason",
     type: ContentType.Component,
     width: 150
   },
@@ -191,5 +191,5 @@ const columns: ContentTableColumn[] = [
     label: "Planned Stop",
     type: ContentType.DateTime
   },
-  { property: "uid", label: "uid", type: ContentType.String }
+  { property: "uid", label: "Configuration Set uid", type: ContentType.String }
 ];
