@@ -18,6 +18,7 @@ export interface ContentTableColumn {
   width?: number;
   headerColors?: Colors;
   headerTooltip?: React.ReactNode;
+  exportValue?: (row: any) => string;
 }
 
 export interface ContentTableRow {

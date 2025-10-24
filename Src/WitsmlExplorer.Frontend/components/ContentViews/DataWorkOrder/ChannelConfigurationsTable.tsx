@@ -9,8 +9,8 @@ import { useGetComponents } from "hooks/query/useGetComponents";
 import { ComponentType } from "models/componentType";
 import { measureToString } from "models/measure";
 import { useParams } from "react-router-dom";
-import { Typography } from "../../StyledComponents/Typography.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
+import { Typography } from "../../StyledComponents/Typography.tsx";
 import { ChannelCriticalityStatusChip } from "./StatusChips";
 
 export default function ChannelSetsTable() {
@@ -79,7 +79,8 @@ export default function ChannelSetsTable() {
         latency: measureToString(requirement.latency),
         mdThreshold: measureToString(requirement.mdThreshold),
         dynamicMdThreshold: requirement.dynamicMdThreshold
-      }))
+      })),
+      channelConfiguration
     })
   );
 
@@ -110,7 +111,8 @@ const columns: ContentTableColumn[] = [
   {
     property: "criticality",
     label: "criticality",
-    type: ContentType.Component
+    type: ContentType.Component,
+    exportValue: (row) => row.channelConfiguration?.criticality
   },
   {
     property: "globalMnemonic",

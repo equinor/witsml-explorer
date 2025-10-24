@@ -18,8 +18,8 @@ import { ObjectType } from "models/objectType";
 import { MouseEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getObjectViewPath } from "routes/utils/pathBuilder";
-import { StyledLink } from "../../StyledComponents/Link.tsx";
 import Icon from "../../../styles/Icons.tsx";
+import { StyledLink } from "../../StyledComponents/Link.tsx";
 
 export interface DataWorkOrderRow extends ContentTableRow, DataWorkOrder {
   dataWorkOrder: DataWorkOrder;
@@ -121,6 +121,8 @@ export default function DataWorkOrdersListView() {
       property: "setsCount",
       label: "dataSourceConfigurationSets",
       type: ContentType.Component,
+      exportValue: (row) =>
+        `${row.dataSourceConfigurationSets?.length ?? 0} Sets`,
       width: 200
     },
     {

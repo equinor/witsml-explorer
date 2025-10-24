@@ -72,8 +72,8 @@ export const useColumnDef = (
     let columnDef: ColumnDef<any, any>[] = columns.map((column, index) => {
       const isPrimaryNestedColumn = nested && index === 0;
       const width =
-        column.width ??
         savedWidths?.[column.property] ??
+        column.width ??
         calculateColumnWidth(
           column.property,
           isCompactMode,

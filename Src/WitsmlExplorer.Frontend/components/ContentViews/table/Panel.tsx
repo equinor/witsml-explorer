@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
+import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -18,7 +19,6 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
-import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -123,7 +123,15 @@ const Panel = (props: PanelProps) => {
         row
           .getVisibleCells()
           .filter((cell) => !csvIgnoreColumns.includes(cell.column.id))
-          .map((cell) => cell.getValue()?.toString() || "")
+          .map((cell) => {
+            const originalColumn = columns?.find(
+              (col) => col.property === cell.column.id
+            );
+            if (originalColumn?.exportValue) {
+              return originalColumn.exportValue(row.original)?.toString() ?? "";
+            }
+            return cell.getValue()?.toString() || "";
+          })
           .map((value) => encloseCell(value))
           .join(exportOptions.separator)
       )
