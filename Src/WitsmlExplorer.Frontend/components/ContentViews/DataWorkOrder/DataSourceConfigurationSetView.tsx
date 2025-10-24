@@ -88,6 +88,7 @@ export default function DataSourceConfigurationSetView() {
           <StyledLink
             to={getConfigPath(dataSourceConfiguration.uid)}
             colors={colors}
+            onClick={(e) => e.stopPropagation()}
           >
             <Icon name="gridLayers" size={16} />
             {dataSourceConfiguration.name}

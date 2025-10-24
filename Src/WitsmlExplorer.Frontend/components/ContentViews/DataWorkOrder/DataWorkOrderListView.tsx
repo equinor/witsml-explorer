@@ -81,7 +81,11 @@ export default function DataWorkOrdersListView() {
         id: dataWorkOrder.uid,
         dataWorkOrder: dataWorkOrder,
         setsCount: (
-          <StyledLink to={getDwoDetailPath(dataWorkOrder.uid)} colors={colors}>
+          <StyledLink
+            to={getDwoDetailPath(dataWorkOrder.uid)}
+            colors={colors}
+            onClick={(e) => e.stopPropagation()}
+          >
             <Icon name="layers" size={16} />
             {dataWorkOrder.dataSourceConfigurationSets.length} Sets
           </StyledLink>
