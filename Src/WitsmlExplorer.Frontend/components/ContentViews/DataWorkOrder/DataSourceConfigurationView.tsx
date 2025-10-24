@@ -11,6 +11,11 @@ import { ObjectType } from "models/objectType";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import styled from "styled-components";
+import { OperationStatus } from "../../../models/dataWorkOrder/operationStatus.ts";
+import { SectionOrderStatus } from "../../../models/dataWorkOrder/sectionOrderStatus.ts";
+import { Typography } from "../../StyledComponents/Typography.tsx";
+import { useOperationState } from "../../../hooks/useOperationState.tsx";
+import { OperationStatusChip, SectionOrderStatusChip } from "./StatusChips";
 
 export default function DataSourceConfigurationView() {
   const {
@@ -21,6 +26,7 @@ export default function DataSourceConfigurationView() {
     dataSourceConfigurationUid
   } = useParams();
   const { connectedServer } = useConnectedServer();
+  const { colors } = useOperationState().operationState;
   const { object: dataWorkOrder, isFetched: isFetchedDataWorkOrder } =
     useGetObject(
       connectedServer,
@@ -58,6 +64,9 @@ export default function DataSourceConfigurationView() {
         object={dataSourceConfiguration}
         columns={7}
       />
+      <Typography colors={colors} $primary style={{ paddingTop: "0.5rem" }}>
+        Channels
+      </Typography>
       <ChannelConfigurationsTable />
     </ContentLayout>
   );
@@ -67,7 +76,6 @@ const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 1rem;
 `;
 
 const properties: ReadOnlyPropertiesRendererProperty[] = [
@@ -81,7 +89,10 @@ const properties: ReadOnlyPropertiesRendererProperty[] = [
   },
   {
     property: "depthStatus",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <OperationStatusChip status={value as OperationStatus} />
+    )
   },
   {
     property: "dTimPlannedStart",
@@ -105,11 +116,17 @@ const properties: ReadOnlyPropertiesRendererProperty[] = [
   },
   {
     property: "status",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <SectionOrderStatusChip status={value as SectionOrderStatus} />
+    )
   },
   {
     property: "timeStatus",
-    propertyType: PropertyType.String
+    propertyType: PropertyType.String,
+    renderProperty: (value) => (
+      <OperationStatusChip status={value as OperationStatus} />
+    )
   },
   {
     property: "dTimPlannedStop",

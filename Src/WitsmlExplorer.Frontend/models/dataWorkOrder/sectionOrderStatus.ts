@@ -1,6 +1,6 @@
 export enum SectionOrderStatus {
-  NoOrderedCurves = "NoOrderedCurves",
-  Draft = "Draft",
-  Submitted = "Submitted",
-  Approved = "Approved"
+  NoOrderedCurves = "no ordered curves",
+  Draft = "draft",
+  Submitted = "submitted",
+  Approved = "approved"
 }

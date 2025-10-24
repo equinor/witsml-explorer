@@ -5,9 +5,16 @@ import { Colors } from "styles/Colors";
 export const StyledLink = styled(Link)<{ colors: Colors }>`
   color: ${({ colors }) => colors.interactive.primaryResting};
   text-decoration: underline;
+
+  svg {
+    margin-right: 0.2rem;
+    vertical-align: middle;
+  }
+
   &:visited {
     color: ${({ colors }) => colors.interactive.primaryResting};
   }
+
   &:hover {
     color: ${({ colors }) => colors.interactive.primaryHover};
   }

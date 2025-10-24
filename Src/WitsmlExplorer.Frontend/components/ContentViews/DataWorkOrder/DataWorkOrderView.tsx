@@ -1,4 +1,4 @@
-import { Tabs } from "@equinor/eds-core-react";
+import { Divider, Tabs } from "@equinor/eds-core-react";
 import AssetContactsTable from "components/ContentViews/DataWorkOrder/AssetContactsTable";
 import DataSourceConfigurationSetsTable from "components/ContentViews/DataWorkOrder/DataSourceConfigurationSetsTable";
 import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
@@ -10,10 +10,11 @@ import { useGetObject } from "hooks/query/useGetObject";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
 import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import styled from "styled-components";
+import { Colors } from "../../../styles/Colors.tsx";
 
 export default function DataWorkOrderView() {
   const { wellUid, wellboreUid, objectUid } = useParams();
@@ -45,10 +46,13 @@ export default function DataWorkOrderView() {
         scrollable
         style={{ whiteSpace: "nowrap" }}
       >
-        <Tabs.List>
-          <StyledTab colors={colors}>Configuration sets</StyledTab>
-          <StyledTab colors={colors}>Contacts</StyledTab>
-        </Tabs.List>
+        <TabStack colors={colors}>
+          <Tabs.List style={{ minWidth: "fit-content" }}>
+            <StyledTab colors={colors}>Configuration sets</StyledTab>
+            <StyledTab colors={colors}>Contacts</StyledTab>
+          </Tabs.List>
+          <Divider />
+        </TabStack>
         <Tabs.Panels>
           <Tabs.Panel>
             <DataSourceConfigurationSetsTable />
@@ -67,6 +71,19 @@ const ContentLayout = styled.div`
   flex-direction: column;
   height: 100%;
   gap: 1rem;
+`;
+
+const TabStack = styled.div<{ colors: Colors }>`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+
+  hr {
+    width: 100%;
+    margin: 0;
+    background-color: ${({ colors }) => colors.interactive.disabledBorder};
+  }
 `;
 
 const properties: ReadOnlyPropertiesRendererProperty[] = [

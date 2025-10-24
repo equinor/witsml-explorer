@@ -5,9 +5,9 @@ import {
   ContentType
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
-import { ConfigurationChangeReasonModal } from "components/Modals/ConfigurationChangeReasonModal";
+import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
-import { StyledLinkButton } from "components/StyledComponents/Link";
+import { StyledLink, StyledLinkButton } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
@@ -20,6 +20,9 @@ import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { getDataSourceConfigurationViewPath } from "routes/utils/pathBuilder";
+import { Typography } from "../../StyledComponents/Typography.tsx";
+import { OperationStatusChip, SectionOrderStatusChip } from "./StatusChips";
+import Icon from "../../../styles/Icons.tsx";
 
 export default function DataSourceConfigurationSetView() {
   const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
@@ -48,18 +51,17 @@ export default function DataSourceConfigurationSetView() {
   const dataSourceConfigurations =
     dataSourceConfigurationSet?.dataSourceConfigurations ?? [];
 
-  const onSelect = (row: ContentTableRow) => {
-    navigate(
-      getDataSourceConfigurationViewPath(
-        connectedServer?.url,
-        wellUid,
-        wellboreUid,
-        objectUid,
-        componentUid,
-        row.id
-      )
+  const getConfigPath = (configId: string) =>
+    getDataSourceConfigurationViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      componentUid,
+      configId
     );
-  };
+
+  const onSelect = (row: ContentTableRow) => navigate(getConfigPath(row.id));
 
   const onClickChangeReason = (
     event: React.MouseEvent,
@@ -82,16 +84,41 @@ export default function DataSourceConfigurationSetView() {
         id: dataSourceConfiguration.uid,
         uid: dataSourceConfiguration.uid,
         versionNumber: dataSourceConfiguration.versionNumber,
-        name: dataSourceConfiguration.name,
-        numChannels: dataSourceConfiguration.channelConfigurations.length,
+        name: (
+          <StyledLink
+            to={getConfigPath(dataSourceConfiguration.uid)}
+            colors={colors}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Icon name="gridLayers" size={16} />
+            {dataSourceConfiguration.name}
+          </StyledLink>
+        ),
+        numChannels:
+          dataSourceConfiguration.channelConfigurations.length + " Channels",
         description: dataSourceConfiguration.description,
-        status: dataSourceConfiguration.status,
+        status: (
+          <SectionOrderStatusChip
+            status={dataSourceConfiguration.status}
+            $tableFriendly
+          />
+        ),
         nominalHoleSize: measureToString(
           dataSourceConfiguration.nominalHoleSize
         ),
         tubular: dataSourceConfiguration.tubular?.value,
-        depthStatus: dataSourceConfiguration.depthStatus,
-        timeStatus: dataSourceConfiguration.timeStatus,
+        depthStatus: (
+          <OperationStatusChip
+            status={dataSourceConfiguration.depthStatus}
+            $tableFriendly
+          />
+        ),
+        timeStatus: (
+          <OperationStatusChip
+            status={dataSourceConfiguration.timeStatus}
+            $tableFriendly
+          />
+        ),
         dTimPlannedStart: formatDateString(
           dataSourceConfiguration.dTimPlannedStart,
           timeZone,
@@ -135,6 +162,9 @@ export default function DataSourceConfigurationSetView() {
 
   return (
     <>
+      <Typography colors={colors} $primary style={{ padding: "1rem 0 0.5rem" }}>
+        Data source configurations (Versions)
+      </Typography>
       {isFetching && (
         <ProgressSpinnerOverlay message="Fetching DataSourceConfigurationSets." />
       )}
@@ -156,19 +186,23 @@ const columns: ContentTableColumn[] = [
     label: "versionNumber",
     type: ContentType.String
   },
-  { property: "name", label: "name", type: ContentType.String },
+  { property: "name", label: "name", type: ContentType.Component },
   { property: "numChannels", label: "channels", type: ContentType.String },
   { property: "uid", label: "uid", type: ContentType.String },
   { property: "description", label: "description", type: ContentType.String },
-  { property: "status", label: "status", type: ContentType.String },
+  { property: "status", label: "status", type: ContentType.Component },
   {
     property: "nominalHoleSize",
     label: "nominalHoleSize",
     type: ContentType.Measure
   },
   { property: "tubular", label: "tubular", type: ContentType.String },
-  { property: "depthStatus", label: "depthStatus", type: ContentType.String },
-  { property: "timeStatus", label: "timeStatus", type: ContentType.String },
+  {
+    property: "depthStatus",
+    label: "depthStatus",
+    type: ContentType.Component
+  },
+  { property: "timeStatus", label: "timeStatus", type: ContentType.Component },
   {
     property: "dTimPlannedStart",
     label: "dTimPlannedStart",

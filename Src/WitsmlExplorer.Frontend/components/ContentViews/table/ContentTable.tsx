@@ -56,7 +56,7 @@ import { parse } from "date-fns";
 import { useOperationState } from "hooks/useOperationState";
 import { indexToNumber } from "models/logObject";
 import * as React from "react";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, ReactNode, useEffect, useMemo, useState } from "react";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
@@ -102,6 +102,7 @@ export const ContentTable = React.memo(
       onContextMenu,
       checkableRows,
       insetColumns,
+      renderInsetTitle,
       nested,
       nestedProperty,
       panelElements,
@@ -510,7 +511,8 @@ export const ContentTable = React.memo(
                         height: `${calculateRowHeight(
                           row,
                           headCellHeight,
-                          cellHeight
+                          cellHeight,
+                          !!renderInsetTitle
                         )}px`,
                         transform: `translateY(${virtualRow.start}px)`
                       }}
@@ -572,6 +574,7 @@ export const ContentTable = React.memo(
                           data={row.original.inset}
                           columns={insetColumns}
                           colors={colors}
+                          title={renderInsetTitle?.(row.original.inset?.length)}
                         />
                       )}
                   </Fragment>
@@ -623,11 +626,20 @@ interface InsetProps {
   data: any[];
   columns: ContentTableColumn[];
   colors: Colors;
+  title?: ReactNode;
 }
 
 const Inset = (props: InsetProps): React.ReactElement => {
-  const { parentStart, cellHeight, headCellHeight, data, columns, colors } =
-    props;
+  const {
+    parentStart,
+    cellHeight,
+    headCellHeight,
+    data,
+    columns,
+    colors,
+    title
+  } = props;
+
   return (
     <tr
       style={{
@@ -656,6 +668,15 @@ const Inset = (props: InsetProps): React.ReactElement => {
             marginBottom: INSET_VERTICAL_SPACING
           }}
         >
+          {title ? (
+            <div
+              style={{
+                height: cellHeight
+              }}
+            >
+              {title}
+            </div>
+          ) : null}
           <ContentTable columns={columns} data={data} showPanel={false} />
         </div>
       </td>

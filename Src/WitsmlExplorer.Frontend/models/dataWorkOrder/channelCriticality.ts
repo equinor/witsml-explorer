@@ -1,4 +1,4 @@
 export enum ChannelCriticality {
-  Normal = "Normal",
-  High = "High"
+  Normal = "normal",
+  High = "high"
 }

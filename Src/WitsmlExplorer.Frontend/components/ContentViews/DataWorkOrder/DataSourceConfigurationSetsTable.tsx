@@ -6,7 +6,7 @@ import {
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
-import { StyledLink } from "components/StyledComponents/Link";
+import { StyledLink, StyledLinkButton } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -21,18 +21,24 @@ import {
   getComponentViewPath,
   getDataSourceConfigurationViewPath
 } from "routes/utils/pathBuilder";
+import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
+import OperationType from "contexts/operationType";
+import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
+
+import { MouseEventHandler } from "react";
+import Icon from "../../../styles/Icons.tsx";
 
 export interface DataSourceConfigurationSetRow extends ContentTableRow {
   id: string;
   uid: string;
-  numConfigurations: number;
   dataSourceConfigurationSet: DataSourceConfigurationSet;
 }
 
 export default function DataSourceConfigurationSetsTable() {
   const { wellUid, wellboreUid, objectUid } = useParams();
   const {
-    operationState: { colors, dateTimeFormat, timeZone }
+    operationState: { colors, dateTimeFormat, timeZone },
+    dispatchOperation
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { object: dataWorkOrder } = useGetObject(
@@ -76,16 +82,33 @@ export default function DataSourceConfigurationSetsTable() {
     );
   };
 
+  const handleChangeReasonClick =
+    (
+      dataSourceConfiguration: DataSourceConfiguration
+    ): MouseEventHandler<HTMLDivElement> =>
+    (e) => {
+      e.stopPropagation();
+      dispatchOperation({
+        type: OperationType.DisplayModal,
+        payload: (
+          <ConfigurationChangeReasonModal
+            dataSourceConfiguration={dataSourceConfiguration}
+          />
+        )
+      });
+    };
+
   const dataSourceConfigurationSetRows: DataSourceConfigurationSetRow[] =
     dataSourceConfigurationSets.map((dataSourceConfigurationSet) => {
       const lastConfig = getLastDataSourceConfiguration(
         dataSourceConfigurationSet
       );
+      const versionCount =
+        dataSourceConfigurationSet.dataSourceConfigurations?.length ?? 0;
+
       return {
         id: dataSourceConfigurationSet.uid,
         uid: dataSourceConfigurationSet.uid,
-        numConfigurations:
-          dataSourceConfigurationSet.dataSourceConfigurations?.length ?? 0,
         dTimPlannedStart: formatDateString(
           lastConfig?.dTimPlannedStart,
           timeZone,
@@ -97,19 +120,29 @@ export default function DataSourceConfigurationSetsTable() {
           dateTimeFormat
         ),
         dataSourceConfigurationSet: dataSourceConfigurationSet,
-        set: (
+        version: (
           <StyledLink
             to={getSetPath(dataSourceConfigurationSet.uid)}
             colors={colors}
           >
-            Show versions
+            <Icon name="gridLayers" size={16} />
+            {versionCount} available
           </StyledLink>
+        ),
+        changeReason: lastConfig.changeReason && (
+          <StyledLinkButton
+            colors={colors}
+            onClick={handleChangeReasonClick(lastConfig)}
+          >
+            See details
+          </StyledLinkButton>
         ),
         lastConfig: (
           <StyledLink
             to={getConfigPath(dataSourceConfigurationSet.uid, lastConfig?.uid)}
             colors={colors}
           >
+            <Icon name="gridLayers" size={16} />
             {lastConfig?.name}
           </StyledLink>
         )
@@ -136,7 +169,20 @@ const columns: ContentTableColumn[] = [
   {
     property: "lastConfig",
     label: "Last Configuration",
-    type: ContentType.Component
+    type: ContentType.Component,
+    width: 250
+  },
+  {
+    property: "changeReason",
+    label: "Last Change Reason",
+    type: ContentType.Component,
+    width: 150
+  },
+  {
+    property: "version",
+    label: "Versions",
+    type: ContentType.Component,
+    width: 150
   },
   {
     property: "dTimPlannedStart",
@@ -148,11 +194,5 @@ const columns: ContentTableColumn[] = [
     label: "Planned Stop",
     type: ContentType.DateTime
   },
-  { property: "set", label: "Set", type: ContentType.Component },
-  {
-    property: "numConfigurations",
-    label: "Versions",
-    type: ContentType.String
-  },
-  { property: "uid", label: "uid (set)", type: ContentType.String }
+  { property: "uid", label: "Configuration Set uid", type: ContentType.String }
 ];
