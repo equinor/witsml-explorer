@@ -20,9 +20,9 @@ import { ObjectType } from "models/objectType";
 import { useNavigate, useParams } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
 import { getDataSourceConfigurationViewPath } from "routes/utils/pathBuilder";
+import Icon from "../../../styles/Icons.tsx";
 import { Typography } from "../../StyledComponents/Typography.tsx";
 import { OperationStatusChip, SectionOrderStatusChip } from "./StatusChips";
-import Icon from "../../../styles/Icons.tsx";
 
 export default function DataSourceConfigurationSetView() {
   const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
@@ -186,11 +186,21 @@ const columns: ContentTableColumn[] = [
     label: "versionNumber",
     type: ContentType.String
   },
-  { property: "name", label: "name", type: ContentType.Component },
+  {
+    property: "name",
+    label: "name",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.name
+  },
   { property: "numChannels", label: "channels", type: ContentType.String },
   { property: "uid", label: "uid", type: ContentType.String },
   { property: "description", label: "description", type: ContentType.String },
-  { property: "status", label: "status", type: ContentType.Component },
+  {
+    property: "status",
+    label: "status",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.status
+  },
   {
     property: "nominalHoleSize",
     label: "nominalHoleSize",
@@ -200,9 +210,15 @@ const columns: ContentTableColumn[] = [
   {
     property: "depthStatus",
     label: "depthStatus",
-    type: ContentType.Component
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.depthStatus
   },
-  { property: "timeStatus", label: "timeStatus", type: ContentType.Component },
+  {
+    property: "timeStatus",
+    label: "timeStatus",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.timeStatus
+  },
   {
     property: "dTimPlannedStart",
     label: "dTimPlannedStart",
@@ -231,6 +247,7 @@ const columns: ContentTableColumn[] = [
   {
     property: "changeReason",
     label: "changeReason",
-    type: ContentType.Component
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.changeReason?.comments
   }
 ];

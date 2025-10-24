@@ -5,13 +5,16 @@ import {
   ContentType
 } from "components/ContentViews/table";
 import formatDateString from "components/DateFormatter";
+import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { StyledLink, StyledLinkButton } from "components/StyledComponents/Link";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
+import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
 import DataSourceConfigurationSet, {
   getLastDataSourceConfiguration
 } from "models/dataWorkOrder/dataSourceConfigurationSet";
@@ -21,9 +24,6 @@ import {
   getComponentViewPath,
   getDataSourceConfigurationViewPath
 } from "routes/utils/pathBuilder";
-import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
-import OperationType from "contexts/operationType";
-import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
 
 import { MouseEventHandler } from "react";
 import Icon from "../../../styles/Icons.tsx";
@@ -145,7 +145,8 @@ export default function DataSourceConfigurationSetsTable() {
             <Icon name="gridLayers" size={16} />
             {lastConfig?.name}
           </StyledLink>
-        )
+        ),
+        config: lastConfig
       };
     });
 
@@ -170,18 +171,24 @@ const columns: ContentTableColumn[] = [
     property: "lastConfig",
     label: "Last Configuration",
     type: ContentType.Component,
+    exportValue: (row) => row.config?.name,
     width: 250
   },
   {
     property: "changeReason",
     label: "Last Change Reason",
     type: ContentType.Component,
+    exportValue: (row) => row.config?.changeReason?.comments,
     width: 150
   },
   {
     property: "version",
     label: "Versions",
     type: ContentType.Component,
+    exportValue: (row) =>
+      `${
+        row.dataSourceConfigurationSet?.dataSourceConfigurations?.length ?? 0
+      } available`,
     width: 150
   },
   {

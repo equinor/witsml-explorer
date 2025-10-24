@@ -137,13 +137,20 @@ export const ColumnOptionsMenu = (props: {
     table.setColumnSizing(
       Object.assign(
         {},
-        ...table.getLeafHeaders().map((header) => ({
-          [header.id]: calculateColumnWidth(
-            header.id,
-            isCompactMode,
-            (header.column.columnDef.meta as { type: ContentType })?.type
-          )
-        }))
+        ...table.getLeafHeaders().map((header) => {
+          const originalColumn = columns?.find(
+            (col) => col.property === header.id
+          );
+          return {
+            [header.id]:
+              originalColumn?.width ??
+              calculateColumnWidth(
+                header.id,
+                isCompactMode,
+                (header.column.columnDef.meta as { type: ContentType })?.type
+              )
+          };
+        })
       )
     );
   };
