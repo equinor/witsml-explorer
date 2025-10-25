@@ -306,7 +306,12 @@ const MultiLogCurveSelectionList = (
       },
       { property: "nullValue", label: "Null Value", type: ContentType.String },
       { property: "uid", label: "UID", type: ContentType.String },
-      { property: "serverUrl", label: "Server Url", type: ContentType.String }
+      {
+        property: "serverUrl",
+        label: "Server Url",
+        type: ContentType.String,
+        width: 600
+      }
     ];
   }, [isDepthIndex, logObjectMap]);
 

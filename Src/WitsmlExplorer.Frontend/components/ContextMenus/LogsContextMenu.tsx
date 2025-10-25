@@ -45,7 +45,8 @@ import {
 } from "../MultiLogUtils.tsx";
 import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import { useNavigate } from "react-router-dom";
-import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import { getMultipleLogCurveSelectionViewPath } from "routes/utils/pathBuilder.ts";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (
@@ -101,8 +102,14 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
             r.curveInfos,
             true
           );
+
           navigate({
-            pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+            pathname: getMultipleLogCurveSelectionViewPath(
+              connectedServer?.url,
+              indexType === WITSML_INDEX_TYPE_MD
+                ? RouterLogType.DEPTH
+                : RouterLogType.TIME
+            )
           });
         }
       }
@@ -198,10 +205,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           ]}
         </NestedMenuItem>,
         <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
-          <StyledIcon
-            name="viewList"
-            color={colors.interactive.primaryResting}
-          />
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>
             Add to Multiple Log Selection
           </Typography>

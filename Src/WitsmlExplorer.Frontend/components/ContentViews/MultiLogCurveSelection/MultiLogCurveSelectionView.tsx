@@ -1,6 +1,10 @@
 import ProgressSpinner from "../../ProgressSpinner.tsx";
 import MultiLogSelectionRepository from "../../MultiLogSelectionRepository.tsx";
-import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "../../Constants.tsx";
+import {
+  WITSML_INDEX_TYPE,
+  WITSML_INDEX_TYPE_DATE_TIME,
+  WITSML_INDEX_TYPE_MD
+} from "../../Constants.tsx";
 import { useCallback, useEffect, useState } from "react";
 import LogObject from "../../../models/logObject.tsx";
 import { useGetServers } from "../../../hooks/query/useGetServers.tsx";
@@ -32,12 +36,15 @@ import { DisplayModalAction } from "../../../contexts/operationStateReducer.tsx"
 import ConfirmModal from "../../Modals/ConfirmModal.tsx";
 import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
+import { useParams } from "react-router-dom";
+import { RouterLogType } from "../../../routes/routerConstants.ts";
 
 export default function MultiLogCurveSelectionView() {
   const { dispatchOperation } = useOperationState();
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
   const { servers } = useGetServers();
   const { connectedServer } = useConnectedServer();
+  const { logType } = useParams();
 
   const [multiLogSelectionCurveInfos, setMultiLogSelectionCurveInfos] =
     useState<MultiLogSelectionCurveInfo[]>([]);
@@ -48,8 +55,13 @@ export default function MultiLogCurveSelectionView() {
   const [multiLogMetadatas, setMultiLogMetadatas] = useState<
     MultiLogMetadata[]
   >([]);
-  const [indexTypeValue, setIndexTypeValue] =
-    useState<WITSML_INDEX_TYPE>(WITSML_INDEX_TYPE_MD);
+  const [indexTypeValue, setIndexTypeValue] = useState<WITSML_INDEX_TYPE>(
+    logType
+      ? logType === RouterLogType.DEPTH
+        ? WITSML_INDEX_TYPE_MD
+        : WITSML_INDEX_TYPE_DATE_TIME
+      : WITSML_INDEX_TYPE_MD
+  );
   const [isDepthIndexValue, setIsDepthIndexValue] = useState<boolean>(true);
   const [startIndexValue, setStartIndexValue] = useState<string | number>(
     GetStartIndex(isDepthIndexValue, [])
@@ -195,7 +207,9 @@ export default function MultiLogCurveSelectionView() {
         new AbortController().signal,
         multiLogMetadata.server
       );
-      los.push(logObject);
+      if (logObject) {
+        los.push(logObject);
+      }
     }
     return los;
   };
