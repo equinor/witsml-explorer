@@ -184,7 +184,9 @@ export const getTableData = (
           curveThreshold
         );
       return {
-        id: `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
+        id:
+          (logCurveInfo.serverUrl ? `${logCurveInfo.serverUrl}` : "") +
+          `${logCurveInfo.logUid}-${logCurveInfo.mnemonic}`,
         uid:
           logUid === null
             ? `${logCurveInfo.uid}`
