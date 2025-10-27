@@ -63,6 +63,7 @@ interface CurveValuesPlotProps {
   name: string;
   autoRefresh: boolean;
   isDescending?: boolean;
+  routerLogType?: RouterLogType;
 }
 
 export const CurveValuesPlot = React.memo(
@@ -72,7 +73,8 @@ export const CurveValuesPlot = React.memo(
       columns: rawColumns,
       name,
       autoRefresh,
-      isDescending = false
+      isDescending = false,
+      routerLogType
     } = props;
     const columns = useMemo(
       () =>
@@ -84,7 +86,7 @@ export const CurveValuesPlot = React.memo(
     const {
       operationState: { colors, dateTimeFormat, theme }
     } = useOperationState();
-    const [enableScatter, setEnableScatter] = useState<boolean>(false);
+    const [enableScatter, setEnableScatter] = useState<boolean>(true);
     const [removeOutliers, setRemoveOutliers] = useState<boolean>(false);
     const [useCustomRanges, setUseCustomRanges] = useState<boolean>(false);
     const [outliersThresholdLevel, setOutliersThresholdLevel] =
@@ -104,7 +106,9 @@ export const CurveValuesPlot = React.memo(
     const [defineCustomRanges, setDefineCustomRanges] =
       useState<boolean>(false);
     const { logType } = useParams();
-    const isTimeLog = logType === RouterLogType.TIME;
+    const isTimeLog = routerLogType
+      ? routerLogType === RouterLogType.TIME
+      : logType === RouterLogType.TIME;
     const extraWidth = getExtraWidth(data, columns, dateTimeFormat, isTimeLog);
     const width =
       Math.min(maxColumns, columns.length - 1) * COLUMN_WIDTH + extraWidth;
@@ -476,6 +480,7 @@ const getChartOption = (
     tooltip: {
       show: true,
       trigger: "axis",
+      confine: true,
       axisPointer: {
         type: "line",
         axis: "y"

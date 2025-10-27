@@ -9,6 +9,7 @@ export const activeId = "active"; //implemented specifically for LogCurveInfoLis
 export const measureSortingFn = "measure";
 export const componentSortingFn = "component";
 export const booleanSortingFn = "boolean";
+export const dateSortingFn = "date";
 
 export const constantTableOptions = {
   enableColumnResizing: true,
@@ -107,16 +108,21 @@ export function isClickable(
   );
 }
 
+export const INSET_VERTICAL_SPACING = 8;
+
 export function calculateRowHeight(
   row: Row<any>,
   headCellHeight: number,
-  cellHeight: number
+  cellHeight: number,
+  hasInitTitle?: boolean
 ): number {
   if (row.getIsExpanded() && (row.original.inset?.length || 0) !== 0) {
     return (
       headCellHeight +
       cellHeight +
-      cellHeight * (row.original.inset?.length ?? 0)
+      cellHeight * (row.original.inset?.length ?? 0) +
+      (hasInitTitle ? cellHeight : 0) +
+      INSET_VERTICAL_SPACING * 2
     );
   }
   return cellHeight;
@@ -132,7 +138,7 @@ export const useInitFilterFns = (table: Table<any>) => {
 };
 
 export const calculateHorizontalSpace = (
-  columnItems: VirtualItem<HTMLDivElement>[],
+  columnItems: VirtualItem[],
   totalSize: number,
   stickyLeftColumns: number
 ) => {

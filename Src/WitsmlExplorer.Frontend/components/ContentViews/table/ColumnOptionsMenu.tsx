@@ -47,6 +47,7 @@ export const ColumnOptionsMenu = (props: {
   selectedColumnsStatus: string;
   firstToggleableIndex: number;
   disableFilters: boolean;
+  disableSearchParamsFilter: boolean;
 }): React.ReactElement => {
   const {
     table,
@@ -57,7 +58,8 @@ export const ColumnOptionsMenu = (props: {
     stickyLeftColumns,
     selectedColumnsStatus,
     firstToggleableIndex,
-    disableFilters
+    disableFilters,
+    disableSearchParamsFilter
   } = props;
   const {
     operationState: { colors, theme }
@@ -74,7 +76,7 @@ export const ColumnOptionsMenu = (props: {
   const isCompactMode = theme === UserTheme.Compact;
 
   useEffect(() => {
-    if (disableFilters) return;
+    if (disableFilters || disableSearchParamsFilter) return;
     const filterString = searchParams.get("filter");
     const initialFilter = JSON.parse(filterString);
     const bothEmpty =
@@ -135,13 +137,20 @@ export const ColumnOptionsMenu = (props: {
     table.setColumnSizing(
       Object.assign(
         {},
-        ...table.getLeafHeaders().map((header) => ({
-          [header.id]: calculateColumnWidth(
-            header.id,
-            isCompactMode,
-            (header.column.columnDef.meta as { type: ContentType })?.type
-          )
-        }))
+        ...table.getLeafHeaders().map((header) => {
+          const originalColumn = columns?.find(
+            (col) => col.property === header.id
+          );
+          return {
+            [header.id]:
+              originalColumn?.width ??
+              calculateColumnWidth(
+                header.id,
+                isCompactMode,
+                (header.column.columnDef.meta as { type: ContentType })?.type
+              )
+          };
+        })
       )
     );
   };
@@ -191,7 +200,9 @@ export const ColumnOptionsMenu = (props: {
     setFilterValues(newFilterValues);
     // Debounce updating the column filter and search params to reduce re-renders
     updateColumnFilter(newValue, column);
-    updateFilterSearchParams(newFilterValues);
+    if (!disableSearchParamsFilter) {
+      updateFilterSearchParams(newFilterValues);
+    }
   };
 
   const updateColumnFilter = useCallback(

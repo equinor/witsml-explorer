@@ -64,16 +64,21 @@ namespace WitsmlExplorer.Api.Jobs
     }
 
     public record
-        CopyWellboreWithObjectsJob : ICopyJob<WellboreReference, WellboreReference>
+        CopyWellboreWithObjectsJob : ICopyJob<MixedObjectsReferences, WellboreReference>
     {
         public override string GetWellName()
         {
-            return $"Source={Source.WellName} Target={Target.WellName}";
+            return $"Source={Source.WellboreReference.WellName} Target={Target.WellName}";
         }
         public override string GetWellboreName()
         {
-            return $"Source={Source.WellboreName} Target={Target.WellboreName}";
+            return $"Source={Source.WellboreReference.WellboreName} Target={Target.WellboreName}";
         }
+        /// <summary>
+        /// Indicates, if the job can be cancelled
+        /// </summary>
+        public bool CopyAllChildObjects => false;
+
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>

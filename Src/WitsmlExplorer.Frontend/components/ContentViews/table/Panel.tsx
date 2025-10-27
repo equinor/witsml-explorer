@@ -1,8 +1,9 @@
-import { EdsProvider, Typography } from "@equinor/eds-core-react";
+import { EdsProvider, Tooltip, Typography } from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
+import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -32,6 +33,7 @@ export interface PanelProps {
   stickyLeftColumns?: number;
   downloadToCsvFileName?: string;
   disableFilters?: boolean;
+  disableSearchParamsFilter?: boolean;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -49,10 +51,11 @@ const Panel = (props: PanelProps) => {
     expandableRows = false,
     downloadToCsvFileName = null,
     stickyLeftColumns,
-    disableFilters = false
+    disableFilters = false,
+    disableSearchParamsFilter = false
   } = props;
   const {
-    operationState: { theme }
+    operationState: { decimals, theme }
   } = useOperationState();
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -70,6 +73,11 @@ const Panel = (props: PanelProps) => {
   const selectedItemsText = checkableRows
     ? `Row: ${numberOfCheckedItems}/${numberOfItems}`
     : `Items: ${numberOfItems}`;
+
+  const decimalInfo =
+    decimals !== DecimalPreference.Raw
+      ? "Decimals: " + parseInt(decimals).toString()
+      : "";
 
   useEffect(() => {
     return () => {
@@ -115,7 +123,15 @@ const Panel = (props: PanelProps) => {
         row
           .getVisibleCells()
           .filter((cell) => !csvIgnoreColumns.includes(cell.column.id))
-          .map((cell) => cell.getValue()?.toString() || "")
+          .map((cell) => {
+            const originalColumn = columns?.find(
+              (col) => col.property === cell.column.id
+            );
+            if (originalColumn?.exportValue) {
+              return originalColumn.exportValue(row.original)?.toString() ?? "";
+            }
+            return cell.getValue()?.toString() || "";
+          })
           .map((value) => encloseCell(value))
           .join(exportOptions.separator)
       )
@@ -128,6 +144,9 @@ const Panel = (props: PanelProps) => {
       <EdsProvider density={normaliseThemeForEds(theme)}>
         <Typography>{selectedItemsText}</Typography>
         <Typography>{selectedColumnsStatus}</Typography>
+        <Tooltip title="Displayed decimal places can be adjusted in your settings.">
+          <Typography>{decimalInfo}</Typography>
+        </Tooltip>
         <ColumnOptionsMenu
           checkableRows={checkableRows}
           table={table}
@@ -138,6 +157,7 @@ const Panel = (props: PanelProps) => {
           selectedColumnsStatus={selectedColumnsStatus}
           firstToggleableIndex={firstToggleableIndex}
           disableFilters={disableFilters}
+          disableSearchParamsFilter={disableSearchParamsFilter}
         />
         {showRefresh && (
           <Button

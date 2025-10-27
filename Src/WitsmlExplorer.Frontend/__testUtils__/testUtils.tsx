@@ -21,6 +21,7 @@ import AxisDefinition from "models/AxisDefinition";
 import BhaRun from "models/bhaRun";
 import ChangeLog from "models/changeLog";
 import CommonData from "models/commonData";
+import DataWorkOrder from "models/dataWorkOrder/dataWorkOrder";
 import FluidsReport from "models/fluidsReport";
 import FormationMarker from "models/formationMarker";
 import JobInfo from "models/jobs/jobInfo";
@@ -283,6 +284,24 @@ export function getChangeLog(overrides?: Partial<ChangeLog>): ChangeLog {
   };
 }
 
+export function getDataWorkOrder(
+  overrides?: Partial<DataWorkOrder>
+): DataWorkOrder {
+  return {
+    ...getObjectOnWellbore(),
+    field: "",
+    dataProvider: "",
+    dataConsumer: "",
+    description: "",
+    dTimPlannedStart: "",
+    dTimPlannedStop: "",
+    assetContacts: [],
+    dataSourceConfigurationSets: [],
+    commonData: getCommonData(),
+    ...overrides
+  };
+}
+
 export function getFluidsReport(
   overrides?: Partial<FluidsReport>
 ): FluidsReport {
@@ -328,6 +347,7 @@ export function getMessage(overrides?: Partial<MessageObject>): MessageObject {
     dTim: "",
     typeMessage: "",
     commonData: getCommonData(),
+    md: getMeasureWithDatum(),
     ...overrides
   };
 }
@@ -429,6 +449,7 @@ export function getWbGeometry(
 const getObjectMapping = {
   [ObjectType.BhaRun]: getBhaRun,
   [ObjectType.ChangeLog]: getChangeLog,
+  [ObjectType.DataWorkOrder]: getDataWorkOrder,
   [ObjectType.FluidsReport]: getFluidsReport,
   [ObjectType.FormationMarker]: getFormationMarker,
   [ObjectType.Message]: getMessage,

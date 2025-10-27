@@ -1,11 +1,13 @@
 import { ErrorDetails } from "models/errorDetails";
 import ObjectOnWellbore from "models/objectOnWellbore";
+
 import ObjectSearchResult from "models/objectSearchResult";
 import {
   ObjectType,
   ObjectTypeToModel,
   pluralizeObjectType
 } from "models/objectType";
+import SelectableObjectOnWellbore from "models/selectableObjectOnWellbore";
 import { Server } from "models/server";
 import { ExpandableObjectsCount } from "models/wellbore";
 import { ApiClient, throwError } from "services/apiClient";
@@ -50,7 +52,7 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json().catch(() => null);
+      return response.json().catch((): null => null);
     } else {
       return null;
     }
@@ -67,6 +69,26 @@ export default class ObjectService {
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
       )}/idonly/${objectType}`,
+      abortSignal,
+      server
+    );
+    if (response.ok) {
+      return response.json();
+    } else {
+      return [];
+    }
+  }
+
+  public static async getAllObjectsOnWellbore(
+    wellUid: string,
+    wellboreUid: string,
+    abortSignal?: AbortSignal,
+    server?: Server
+  ): Promise<SelectableObjectOnWellbore[]> {
+    const response = await ApiClient.get(
+      `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
+        wellboreUid
+      )}/allobjectsonwellbore`,
       abortSignal,
       server
     );

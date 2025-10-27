@@ -3,6 +3,8 @@ import {
   accessible,
   account_circle as accountCircle,
   add,
+  add_circle_outlined as addCircleOutlined,
+  arrow_back as arrowBack,
   arrow_down as arrowDown,
   arrow_drop_right as arrowDropRight,
   arrow_forward as arrowForward,
@@ -15,6 +17,7 @@ import {
   chevron_right as chevronRight,
   chevron_up as chevronUp,
   clear,
+  close_circle_outlined as closeCircleOutlined,
   cloud_download as cloudDownload,
   cloud_off as cloudOff,
   cloud_upload as cloudUpload,
@@ -35,10 +38,12 @@ import {
   folder_open as folderOpen,
   format_line_spacing as formatLine,
   go_to as goTo,
+  grid_layers as gridLayers,
   in_progress as inProgress,
   info_circle as infoCircle,
   keyboard,
   launch,
+  layers,
   link,
   more_vertical as moreVertical,
   new_alert as newAlert,
@@ -46,6 +51,7 @@ import {
   person,
   play,
   refresh,
+  remove_outlined as removeOutlined,
   save,
   search,
   settings,
@@ -56,6 +62,7 @@ import {
   tune,
   update,
   upload,
+  view_list as viewList,
   world
 } from "@equinor/eds-icons";
 
@@ -67,6 +74,7 @@ const icons = {
   arrowDown,
   arrowDropRight,
   arrowForward,
+  arrowBack,
   arrowUp,
   assignment,
   beat,
@@ -95,12 +103,14 @@ const icons = {
   folderOpen,
   formatLine,
   goTo,
+  gridLayers,
   infoCircle,
   inProgress,
   isActive,
   keyboard,
   launch,
   link,
+  layers,
   moreVertical,
   newAlert,
   paste,
@@ -116,7 +126,11 @@ const icons = {
   tune,
   update,
   upload,
-  world
+  world,
+  viewList,
+  addCircleOutlined,
+  removeOutlined,
+  closeCircleOutlined
 };
 
 Icon.add(icons);

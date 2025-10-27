@@ -12,6 +12,8 @@ export const getBatchModifyObjectOnWellboreProperties = <T extends ObjectType>(
       return [];
     case ObjectType.ChangeLog:
       return [];
+    case ObjectType.DataWorkOrder:
+      return [];
     case ObjectType.FluidsReport:
       return [];
     case ObjectType.FormationMarker:

@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'Src/WitsmlExplorer.Frontend/**'
+      - 'yarn.lock'
 
 permissions: {}
 
@@ -18,7 +19,7 @@ jobs:
         with:
           node-version: '20'
       - name: Install dependencies
-        run: yarn
+        run: yarn install --frozen-lockfile
         working-directory: ./Src/WitsmlExplorer.Frontend
       - name: Linting
         run: yarn lint

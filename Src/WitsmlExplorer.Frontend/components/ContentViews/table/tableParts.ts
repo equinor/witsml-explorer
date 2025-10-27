@@ -3,7 +3,8 @@ import {
   FilterFn,
   RowSelectionState
 } from "@tanstack/react-table";
-import React from "react";
+import React, { ReactNode } from "react";
+import { Colors } from "../../../styles/Colors.tsx";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
   columnOf: T;
@@ -15,6 +16,9 @@ export interface ContentTableColumn {
   type: ContentType;
   filterFn?: FilterFn<any>;
   width?: number;
+  headerColors?: Colors;
+  headerTooltip?: React.ReactNode;
+  exportValue?: (row: any) => string;
 }
 
 export interface ContentTableRow {
@@ -32,8 +36,10 @@ export interface ContentTableProps {
   ) => void;
   checkableRows?: boolean;
   onRowSelectionChange?: (rows: ContentTableRow[]) => void;
+  onFilteredRowSelectionChange?: (rows: ContentTableRow[]) => void; // Callback with the selected rows that are not excluded by the filter
   onExpandedChange?: (expanded: ExpandedState) => void;
   insetColumns?: ContentTableColumn[];
+  renderInsetTitle?: (insetCount: number) => ReactNode; //Possible to render title in max height of cell with inset count available
   nested?: boolean;
   nestedProperty?: string;
   panelElements?: React.ReactElement[];
@@ -47,6 +53,7 @@ export interface ContentTableProps {
   expanded?: ExpandedState; // Use this for a controlled expanded state
   autoRefresh?: boolean;
   disableFilters?: boolean; // Hides the input-fields that can be used as user-specified column filters. Does not disable other provided filters.
+  disableSearchParamsFilter?: boolean; // Prevents storing filter as search params
 }
 
 export enum Order {

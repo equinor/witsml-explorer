@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import DataSourceConfigurationView from "components/ContentViews/DataWorkOrder/DataSourceConfigurationView";
 import { MultiLogCurveValuesView } from "components/ContentViews/MultiLogCurveValuesView";
 import MultiLogsCurveInfoListView from "components/ContentViews/MultiLogsCurveInfoListView";
 import { SearchListView } from "components/ContentViews/SearchListView";
@@ -8,6 +9,8 @@ import {
   createHashRouter
 } from "react-router-dom";
 import {
+  COMPONENT_VIEW_ROUTE_PATH,
+  DATA_SOURCE_CONFIGURATION_VIEW_ROUTE_PATH,
   JOBS_VIEW_ROUTE_PATH,
   LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
   LOG_OBJECTS_VIEW_ROUTE_PATH,
@@ -22,10 +25,12 @@ import {
   SEARCH_VIEW_ROUTE_PATH,
   SERVER_ROUTE_PATH,
   WELLSBORES_VIEW_ROUTE_PATH,
-  WELLS_VIEW_ROUTE_PATH
+  WELLS_VIEW_ROUTE_PATH,
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
 } from "routes/routerConstants";
 import { isDesktopApp } from "tools/desktopAppHelpers";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
+import { ComponentView } from "../components/ContentViews/ComponentView";
 import { CurveValuesView } from "../components/ContentViews/CurveValuesView";
 import { ErrorView } from "../components/ContentViews/ErrorView";
 import JobsView from "../components/ContentViews/JobsView";
@@ -44,6 +49,7 @@ import AuthRoute from "./AuthRoute";
 import { ErrorPage } from "./ErrorPage";
 import { PageNotFound } from "./PageNotFound";
 import Root from "./Root";
+import MultiLogCurveSelectionView from "../components/ContentViews/MultiLogCurveSelection/MultiLogCurveSelectionView.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -99,6 +105,11 @@ const router = createRouter([
             errorElement: <ErrorView />
           },
           {
+            path: COMPONENT_VIEW_ROUTE_PATH,
+            element: <ComponentView />,
+            errorElement: <ErrorView />
+          },
+          {
             path: LOG_TYPES_VIEW_ROUTE_PATH,
             element: <LogTypeListView />,
             errorElement: <ErrorView />
@@ -144,10 +155,20 @@ const router = createRouter([
             errorElement: <ErrorView />
           },
           {
+            path: DATA_SOURCE_CONFIGURATION_VIEW_ROUTE_PATH,
+            element: <DataSourceConfigurationView />,
+            errorElement: <ErrorView />
+          },
+          {
             path: "*",
             element: <ViewNotFound />
           }
         ]
+      },
+      {
+        path: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH,
+        element: <MultiLogCurveSelectionView />,
+        errorElement: <ErrorView />
       },
       {
         path: "*",

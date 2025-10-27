@@ -148,7 +148,7 @@ namespace WitsmlExplorer.Api.Services
                     ?.SelectMany(n => n.CredentialIds)
                     ?.ToList()
                     ?? new List<string>();
-                _logger.LogDebug("Matching on {credentialIdOrHost} for server {server}", credentialIds.Count == 0 ? "host" : $"credentialIds {string.Join(", ", credentialIds)}", server);
+                _logger.LogDebug("Matching on {credentialIdOrHost} for server {server}", credentialIds.Count == 0 ? "host" : $"credentialIds {string.Join(", ", credentialIds)}", SanitizeForLog(server));
                 var matchingCredentials = credentialIds.IsNullOrEmpty()
                     ? _witsmlServerCredentials.WitsmlCreds.Where(n => n.Host.EqualsIgnoreCase(server))
                     : _witsmlServerCredentials.WitsmlCreds.Where(n => credentialIds.Contains(n.CredentialId, StringComparer.InvariantCultureIgnoreCase));
@@ -239,6 +239,16 @@ namespace WitsmlExplorer.Api.Services
         public string GetCacheId(IEssentialHeaders eh)
         {
             return _useOAuth2 ? GetClaimFromToken(eh.GetBearerToken(), SUBJECT) : eh.GetCookieValue();
+        }
+        /// <summary>
+        /// Sanitizes user provided Uri for logging to avoid log-forging attacks.
+        /// Removes carriage returns and newlines.
+        /// </summary>
+        private static string SanitizeForLog(Uri uri)
+        {
+            if (uri == null) return string.Empty;
+            // Remove \r and \n to prevent log forging
+            return uri.ToString().Replace("\r", "").Replace("\n", "");
         }
     }
 }

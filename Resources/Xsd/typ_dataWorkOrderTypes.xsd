@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified" 
+	targetNamespace="http://www.witsml.org/schemas/1series" 
+	xmlns:witsml="http://www.witsml.org/schemas/1series" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.4.1.1">
+
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2012 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+
+	<xsd:include schemaLocation="typ_baseType.xsd"/>
+
+	<xsd:simpleType name="sectionOrderStatus">
+		<xsd:annotation>
+			<xsd:documentation>
+				Status of the work order for this section. This indicates the current progress or approval stage of the section within the data order lifecycle.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractTypeEnum">
+			<xsd:enumeration value="no ordered curves">
+				<xsd:annotation>
+					<xsd:documentation>The section work order is created but not yet populated with curves.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="draft">
+				<xsd:annotation>
+					<xsd:documentation>The section work order is in the draft stage and may be modified before submission.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="submitted">
+				<xsd:annotation>
+					<xsd:documentation>The section work order has been submitted for review and is awaiting approval.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="approved">
+				<xsd:annotation>
+					<xsd:documentation>The section work order is approved.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="operationStatus">
+		<xsd:annotation>
+			<xsd:documentation>Status indicating the current state of the operation.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractTypeEnum">
+			<xsd:enumeration value="inactive">
+				<xsd:annotation>
+					<xsd:documentation>The operation is defined but not currently running.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="active">
+				<xsd:annotation>
+					<xsd:documentation>The operation is currently in progress.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="completed">
+				<xsd:annotation>
+					<xsd:documentation>The operation has been completed.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="channelCriticality">
+		<xsd:annotation>
+			<xsd:documentation>Defines the criticality level of a channel, representing its relative priority or importance.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractTypeEnum">
+			<xsd:enumeration value="normal">
+				<xsd:annotation>
+					<xsd:documentation>Indicates that this channel has normal priority.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="high">
+				<xsd:annotation>
+					<xsd:documentation>Indicates that this channel has high priority.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--                                                         -->
+	<xsd:simpleType name="requirementPurpose">
+		<xsd:annotation>
+			<xsd:documentation>
+				Enumeration of order channel requirements purpose types.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="witsml:abstractTypeEnum">
+			<xsd:enumeration value="display range">
+				<xsd:annotation>
+					<xsd:documentation>Specifies the range of values for visualizing data on dashboards or displays.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="sensor range">
+				<xsd:annotation>
+					<xsd:documentation>Defines the operating range of sensors, reflecting the physical limits or expected tool responses.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="alarm threshold">
+				<xsd:annotation>
+					<xsd:documentation>Indicates critical thresholds for triggering alerts or alarms when values exceed safe or expected ranges.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="operational range">
+				<xsd:annotation>
+					<xsd:documentation>Represents the expected range of values during normal drilling operations, used for monitoring or detecting deviations.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="calibration">
+				<xsd:annotation>
+					<xsd:documentation>Specifies values required for calibrating tools or sensors to ensure accurate measurements.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="safety range">
+				<xsd:annotation>
+					<xsd:documentation>Defines critical ranges related to safety protocols, such as preventing equipment failures or well instability.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="workflow specific">
+				<xsd:annotation>
+					<xsd:documentation>Used for ranges or requirements tied to a specific workflow, such as directional drilling or mud logging.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="quality requirements">
+				<xsd:annotation>
+					<xsd:documentation>Used for requirements related to data quality assessment, may contain any combination of order elements irrespective of their workflow or domain purpose.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="other">
+				<xsd:annotation>
+					<xsd:documentation>Used for requirements outside the enumerated list.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType> 
+	<!--                                                         -->
+	<xsd:simpleType name="dwoVersionString">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="32"/>
+			<xsd:pattern value="[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?(\+[A-Za-z0-9.-]+)?"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

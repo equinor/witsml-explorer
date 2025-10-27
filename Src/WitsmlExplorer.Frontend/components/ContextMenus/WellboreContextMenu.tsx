@@ -34,7 +34,10 @@ import {
   openWellboreProperties
 } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { DisplayModalAction } from "contexts/operationStateReducer";
+import {
+  DispatchOperation,
+  DisplayModalAction
+} from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshWellboresQuery } from "hooks/query/queryRefreshHelpers";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
@@ -58,6 +61,16 @@ import WellboreUidMappingModal, {
   WellboreUidMappingModalProps
 } from "../Modals/WellboreUidMappingModal.tsx";
 import { getTargetWellboreID } from "./UidMappingUtils.tsx";
+import {
+  GetMultiLogWizardStepModalAction,
+  MultiLogWizardParams
+} from "../MultiLogUtils.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
+import { useNavigate } from "react-router-dom";
+import { MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH } from "../../routes/routerConstants.ts";
+import WellborePickerModal, {
+  WellborePickerProps
+} from "components/Modals/WellborePickerModal.tsx";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -73,6 +86,7 @@ const WellboreContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const objectReferences = useClipboardReferences();
   const { connectedServer } = useConnectedServer();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { capObjects } = useGetCapObjects(connectedServer, {
     placeholderData: Object.entries(ObjectType)
@@ -156,6 +170,28 @@ const WellboreContextMenu = (
     dispatchOperation(action);
   };
 
+  const onClickMultiLogSelect = async () => {
+    const action = GetMultiLogWizardStepModalAction(
+      {
+        targetServer: connectedServer,
+        wellbores: [wellbore]
+      } as MultiLogWizardParams,
+      (r) => {
+        if (r?.curveInfos?.length > 0) {
+          MultiLogSelectionRepository.Instance.addMultiLogValues(
+            r.indexType,
+            r.curveInfos,
+            true
+          );
+          navigate({
+            pathname: MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+          });
+        }
+      }
+    );
+    dispatchOperation(action);
+  };
+
   const onClickRefresh = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
     refreshWellboresQuery(queryClient, connectedServer?.url, wellbore.wellUid);
@@ -187,6 +223,25 @@ const WellboreContextMenu = (
 
   const onClickCopyWellbore = () => {
     copyWellbore(wellbore, connectedServer, dispatchOperation);
+  };
+
+  const onClickCompareWellbore = () => {
+    compareWellbore(wellbore, dispatchOperation);
+  };
+
+  const compareWellbore = async (
+    wellbore: Wellbore,
+    dispatchOperation: DispatchOperation
+  ) => {
+    const props: WellborePickerProps = {
+      selectedWellbore: wellbore
+    };
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellborePickerModal {...props} />
+    });
   };
 
   const onClickShowOnServer = async (server: Server) => {
@@ -311,6 +366,15 @@ const WellboreContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
+        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+          <StyledIcon
+            name="viewList"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>
+            Add to Multiple Log Selection
+          </Typography>
+        </MenuItem>,
         <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
           {[
             <MenuItem
@@ -395,6 +459,10 @@ const WellboreContextMenu = (
         <MenuItem key={"copyWellbore"} onClick={onClickCopyWellbore}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy wellbore</Typography>
+        </MenuItem>,
+        <MenuItem key={"compareWellbore"} onClick={onClickCompareWellbore}>
+          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Compare wellbore</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem

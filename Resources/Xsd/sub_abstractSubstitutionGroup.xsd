@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	targetNamespace="http://www.energistics.org/schemas/abstract"
+	xmlns:abs="http://www.energistics.org/schemas/abstract"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	version="1.0.0">
+
+	<!-- Energistics License Agreement
+	This file is distributed under the Energistics License Agreement at
+	http://www.energistics.org
+	Use of this file constitutes agreement with the Energistics License Agreement.
+	Copyright (c) 2008 Energistics. All rights reserved.
+	Energistics, WITSML, PRODML and RESQML are trademarks or registered trademarks of Energistics.
+	-->
+	<!--                                                         -->
+	<xsd:element name="abstractDataObject" type="abs:abstractObject" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>Substitution group for normative data objects.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!--                                                         -->
+	<xsd:element name="abstractContextualObject" type="abs:abstractObject" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>Substitution group for contextual objects.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!--                                                         -->
+	<xsd:complexType name="abstractObject" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>The intended abstract supertype of all schema roots 
+			that may be a member of a substitution group (whether contextual or data).
+			The type of root global elements should be extended from this type and the 
+			root global element should be declared to be a member of one of the above substitution groups.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:complexType>
+	<!--                                                         -->
+</xsd:schema>

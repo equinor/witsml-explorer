@@ -38,6 +38,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}", ObjectHandler.GetObjectsIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}/{objectUid}", ObjectHandler.GetObjectIdOnly, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/countexpandable", ObjectHandler.GetExpandableObjectsCount, useOAuth2);
+            app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/allobjectsonwellbore", ObjectHandler.GetAllObjectsOnWellbore, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedLocalCurves, useOAuth2);
             app.MapGet("/universal/logCurvePriority", LogCurvePriorityHandler.GetPrioritizedUniversalCurves, useOAuth2);
@@ -67,6 +68,10 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.Attachment] + "/{attachmentUid}", AttachmentHandler.GetAttachment, useOAuth2);
 
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/changelogs", ChangeLogHandler.GetChangeLogs, useOAuth2);
+
+            app.MapGet(routes[EntityType.DataWorkOrder], DataWorkOrderHandler.GetDataWorkOrders, useOAuth2);
+            app.MapGet(routes[EntityType.DataWorkOrder] + "/{dwoUid}", DataWorkOrderHandler.GetDataWorkOrder, useOAuth2);
+            app.MapGet(routes[EntityType.DataWorkOrder] + "/{dwoUid}/" + ComponentType.DataSourceConfigurationSet.ToPluralLowercase(), DataWorkOrderHandler.GetDataSourceConfigurationSets, useOAuth2);
 
             app.MapGet(routes[EntityType.FluidsReport], FluidsReportHandler.GetFluidsReports, useOAuth2);
             app.MapGet(routes[EntityType.FluidsReport] + "/{fluidsReportUid}", FluidsReportHandler.GetFluidsReport, useOAuth2);

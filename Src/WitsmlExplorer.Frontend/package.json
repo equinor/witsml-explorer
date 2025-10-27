@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest run",
@@ -32,6 +32,7 @@
     "@tanstack/react-query": "^5.18.0",
     "@tanstack/react-table": "^8.9.2",
     "@tanstack/react-virtual": "^3.9.0",
+    "@types/randomcolor": "^0.5.9",
     "ace-builds": "^1.29.0",
     "buffer": "^6.0.3",
     "date-fns": "^2.29.3",
@@ -44,6 +45,7 @@
     "notistack": "^3.0.1",
     "prettier": "^2.7.1",
     "prop-types": "15.8.1",
+    "randomcolor": "^0.6.2",
     "raw-loader": "^4.0.2",
     "react": "^18.2.0",
     "react-ace": "^10.1.0",
@@ -72,18 +74,18 @@
     "@types/uuidv4": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^8.8.1",
     "@typescript-eslint/parser": "^8.8.1",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^5.0.2",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-react": "^7.37.1",
-    "globals": "^15.11.0",
+    "globals": "^16.0.0",
     "jsdom": "^24.1.1",
     "lint-staged": "^15.2.4",
     "typescript": "^5.4.3",
     "typescript-eslint": "^8.8.1",
-    "vite": "^6.1.0",
-    "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^3.0.5"
+    "vite": "7.1.11",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   }
 }

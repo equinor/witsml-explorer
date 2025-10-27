@@ -3,5 +3,6 @@
   "tabWidth": 2,
   "semi": true,
   "singleQuote": false,
-  "quoteProps": "consistent"
+  "quoteProps": "consistent",
+  "endOfLine": "lf"
 }
