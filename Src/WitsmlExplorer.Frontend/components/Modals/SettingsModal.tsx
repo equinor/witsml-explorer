@@ -44,6 +44,10 @@ const timeZoneLabels: Record<TimeZone, string> = {
   )} Brazil/Brasilia`,
   [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,
   [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
+  [TimeZone.Amsterdam]: `${getOffsetFromTimeZone(
+    TimeZone.Amsterdam
+  )} Europe/Amsterdam`,
+  [TimeZone.Oman]: `${getOffsetFromTimeZone(TimeZone.Oman)} Oman/Muscat`,
   [TimeZone.NewDelhi]: `${getOffsetFromTimeZone(
     TimeZone.NewDelhi
   )} India/New Delhi`,
