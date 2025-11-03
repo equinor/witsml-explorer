@@ -75,7 +75,7 @@ export const useColumnDef = (
         savedWidths?.[column.property] ??
         column.width ??
         calculateColumnWidth(
-          column.property,
+          column.label,
           isCompactMode,
           column.type,
           isPrimaryNestedColumn

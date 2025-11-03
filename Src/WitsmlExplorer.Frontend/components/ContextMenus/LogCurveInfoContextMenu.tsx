@@ -1,6 +1,6 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
-import { WITSML_INDEX_TYPE_MD } from "components/Constants";
+import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListViewUtils";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
@@ -54,6 +54,11 @@ import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal
 import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 import { refreshPrioritizedCurves } from "../../hooks/query/queryRefreshHelpers.tsx";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { MultiLogSelectionCurveInfo } from "../MultiLogUtils.tsx";
+import MultiLogSelectionRepository from "components/MultiLogSelectionRepository.tsx";
+import { getMultipleLogCurveSelectionViewPath } from "../../routes/utils/pathBuilder.ts";
+import { RouterLogType } from "routes/routerConstants.ts";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -87,6 +92,7 @@ const LogCurveInfoContextMenu = (
   } = props;
 
   const filteredServers = useServerFilter(servers);
+  const navigate = useNavigate();
 
   const { connectedServer } = useConnectedServer();
 
@@ -188,6 +194,37 @@ const LogCurveInfoContextMenu = (
       type: OperationType.DisplayModal,
       payload: <AnalyzeGapModal {...analyzeGapModalProps} />
     });
+  };
+
+  const onClickMultiLogMultiTargetAdd = async () => {
+    dispatchOperation({ type: OperationType.HideContextMenu });
+
+    if (checkedLogCurveInfoRows.length > 0) {
+      const curveInfos = checkedLogCurveInfoRows.map((row) => {
+        return {
+          serverId: selectedServer.id,
+          wellId: selectedLog.wellUid,
+          wellboreId: selectedLog.wellboreUid,
+          logUid: selectedLog.uid,
+          mnemonic: row.mnemonic
+        } as MultiLogSelectionCurveInfo;
+      });
+
+      MultiLogSelectionRepository.Instance.addMultiLogValues(
+        selectedLog.indexType as WITSML_INDEX_TYPE,
+        curveInfos,
+        true
+      );
+
+      navigate({
+        pathname: getMultipleLogCurveSelectionViewPath(
+          connectedServer?.url,
+          selectedLog.indexType === WITSML_INDEX_TYPE_MD
+            ? RouterLogType.DEPTH
+            : RouterLogType.TIME
+        )
+      });
+    }
   };
 
   const onClickEditPriority = () => {
@@ -433,6 +470,16 @@ const LogCurveInfoContextMenu = (
               ComponentType.Mnemonic,
               checkedLogCurveInfoRowsWithoutIndexCurve
             )}
+          </Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"multiLogMultiTargetAdd"}
+          onClick={onClickMultiLogMultiTargetAdd}
+          disabled={checkedLogCurveInfoRows.length === 0}
+        >
+          <StyledIcon name="add" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>
+            Add To Multiple Log Selection
           </Typography>
         </MenuItem>,
         <NestedMenuItem
