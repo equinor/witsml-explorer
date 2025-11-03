@@ -29,7 +29,7 @@
     "out/"
   ],
   "devDependencies": {
-    "@playwright/test": "^1.43.1",
+    "@playwright/test": "^1.56.1",
     "@types/cross-spawn": "^6.0.6",
     "@vitejs/plugin-react": "^5.0.2",
     "cross-env": "^7.0.3",
