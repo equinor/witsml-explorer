@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
@@ -40,11 +42,16 @@ namespace WitsmlExplorer.Api.Repositories
             return documents.ToList<TDocument>();
         }
 
+        public async Task<ICollection<TDocument>> GetDocumentsAsync(Expression<Func<TDocument, bool>> expression)
+        {
+            var result = await _collection.FindAsync(expression);
+            return result.ToList<TDocument>();
+        }
+
         public async Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document)
         {
             var filter = Builders<TDocument>.Filter.Eq("_id", id);
-            await _collection.FindOneAndReplaceAsync(filter, document);
-            return await GetDocumentAsync(document.Id);
+            return await _collection.FindOneAndReplaceAsync(filter, document);
         }
 
         public async Task<TDocument> CreateDocumentAsync(TDocument document)

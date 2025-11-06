@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Configuration;
 
 namespace WitsmlExplorer.Api.Repositories
@@ -51,6 +55,25 @@ namespace WitsmlExplorer.Api.Repositories
 
             var results = new List<TDocument>();
             var iterator = container.GetItemQueryIterator<TDocument>(queryDefinition);
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                results.AddRange(response);
+            }
+
+            return results;
+        }
+
+        public async Task<ICollection<TDocument>> GetDocumentsAsync(Expression<Func<TDocument, bool>> expression)
+        {
+            var container = _cosmosClient.GetContainer(_dbName, _containerId);
+
+            var results = new List<TDocument>();
+
+            var iterator = container.GetItemLinqQueryable<TDocument>()
+                .Where(expression)
+                .ToFeedIterator();
+
             while (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync();
