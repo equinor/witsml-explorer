@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 using LiteDB;
@@ -33,6 +35,12 @@ namespace WitsmlExplorer.Api.Repositories
         public Task<ICollection<TDocument>> GetDocumentsAsync()
         {
             var documents = _collection.FindAll();
+            return Task.FromResult<ICollection<TDocument>>(new List<TDocument>(documents));
+        }
+
+        public Task<ICollection<TDocument>> GetDocumentsAsync(Expression<Func<TDocument, bool>> expression)
+        {
+            var documents = _collection.Find(expression);
             return Task.FromResult<ICollection<TDocument>>(new List<TDocument>(documents));
         }
 

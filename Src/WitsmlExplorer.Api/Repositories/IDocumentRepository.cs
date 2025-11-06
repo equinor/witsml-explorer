@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace WitsmlExplorer.Api.Repositories
@@ -8,6 +9,7 @@ namespace WitsmlExplorer.Api.Repositories
     {
         Task<TDocument> GetDocumentAsync(TDocumentId id);
         Task<ICollection<TDocument>> GetDocumentsAsync();
+        Task<ICollection<TDocument>> GetDocumentsAsync(Expression<Func<TDocument, bool>> expression);
         Task<TDocument> CreateDocumentAsync(TDocument document);
         Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document);
         Task DeleteDocumentAsync(TDocumentId id);
