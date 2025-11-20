@@ -3,6 +3,7 @@ import { useOperationState } from "hooks/useOperationState";
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import { ReactNode } from "react";
+import Ellipsible from "./Ellipsible";
 
 export interface ReadOnlyProperty {
   label: string;
@@ -43,7 +44,7 @@ const PropertyLabel = styled(Typography)<{ colors: Colors }>`
   color: ${(props) => props.colors.text.staticIconsTertiary} !important;
 `;
 
-const PropertyValue = styled(Typography)<{ colors: Colors }>`
+const PropertyValue = styled(Ellipsible)<{ colors: Colors }>`
   font-size: 14px;
   color: ${(props) => props.colors.text.staticIconsDefault};
 `;
