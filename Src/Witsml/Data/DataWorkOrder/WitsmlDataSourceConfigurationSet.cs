@@ -5,6 +5,7 @@ namespace Witsml.Data.DataWorkOrder;
 
 public class WitsmlDataSourceConfigurationSet
 {
+
     [XmlAttribute("uid")]
     public string Uid { get; set; }
 
