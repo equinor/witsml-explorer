@@ -5,8 +5,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.IdentityModel.Tokens;
-
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
