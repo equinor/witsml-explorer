@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 using Witsml;
 using Witsml.Data;
@@ -15,6 +14,7 @@ using Witsml.Data.Curves;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Models;

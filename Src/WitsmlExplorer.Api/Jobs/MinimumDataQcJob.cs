@@ -1,7 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-
-using Microsoft.IdentityModel.Tokens;
 
 using WitsmlExplorer.Api.Models;
 
