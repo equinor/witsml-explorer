@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Microsoft.IdentityModel.Tokens;
-
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 
