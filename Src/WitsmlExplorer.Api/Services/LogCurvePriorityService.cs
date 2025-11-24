@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Services
         }
 
         prioritizedCurves = prioritizedCurves.Distinct().ToList();
-        string logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
+        var logCurvePriorityId = GetLogCurvePriorityId(wellUid, wellboreUid);
         LogCurvePriority logCurvePriority = await logCurvePriorityRepository.GetDocumentAsync(logCurvePriorityId);
         if (logCurvePriority == null)
         {
