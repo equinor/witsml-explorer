@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Microsoft.IdentityModel.Tokens;
-
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs.Common;
 
 namespace WitsmlExplorer.Api.Jobs
