@@ -67,7 +67,6 @@ namespace WitsmlExplorer.Api.Services
         return await UpdatePrioritizedUniversalCurves(prioritizedCurves);
     }
 
-
     private async Task<IList<string>> CreatePrioritizedCurves(string wellUid, string wellboreUid, IList<string> prioritizedCurves)
     {
         LogCurvePriority logCurvePriorityToCreate = CreateLogCurvePriorityLocalObject(wellUid, wellboreUid, prioritizedCurves);
