@@ -4,7 +4,6 @@ using System.Xml.Serialization;
 using Witsml.Data.Measures;
 
 namespace Witsml.Data.DataWorkOrder;
-using System;
 
 public class WitsmlDataSourceConfiguration
 {
