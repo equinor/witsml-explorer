@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+
+using WitsmlExplorer.Api.Models.Measure;
+
 namespace WitsmlExplorer.Api.Models
 {
     public class Well
@@ -15,5 +19,9 @@ namespace WitsmlExplorer.Api.Models
         public string StatusWell { get; init; }
         public string PurposeWell { get; init; }
         public bool? IsActive { get; set; }
+        public LengthMeasure WaterDepth { get; init; }
+        public List<WellDatum> WellDatum { get; init; }
+        public List<Location> WellLocation { get; init; }
+        public List<ReferencePoint> ReferencePoint { get; init; }
     }
 }

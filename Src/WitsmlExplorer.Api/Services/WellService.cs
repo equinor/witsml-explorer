@@ -9,6 +9,7 @@ using Witsml.Helpers;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
@@ -130,7 +131,11 @@ namespace WitsmlExplorer.Api.Services
                         ItemState = well.CommonData?.ItemState,
                         StatusWell = well.StatusWell,
                         PurposeWell = well.PurposeWell,
-                        Country = well.Country
+                        Country = well.Country,
+                        WaterDepth = LengthMeasure.FromWitsml(well.WaterDepth),
+                        WellDatum = WellDatum.FromWitsmlWellDatum(well.WellDatum),
+                        WellLocation = Location.FromWitsmlLocation(well.WellLocation),
+                        ReferencePoint = ReferencePoint.FromWitsmlReferencePoint(well.ReferencePoint)
                     }
                     ).ToList();
                 timeMeasurer.LogMessage = executionTime => $"Fetched {wells.Count} wells in {executionTime} ms.";

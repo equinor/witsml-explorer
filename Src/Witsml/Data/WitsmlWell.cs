@@ -6,7 +6,7 @@ using Witsml.Data.Measures;
 
 namespace Witsml.Data
 {
-    public class WellDatum
+    public class WitsmlWellDatum
     {
         [XmlAttribute("uid")]
         public string Uid { get; set; }
@@ -16,6 +16,17 @@ namespace Witsml.Data
         public string Code { get; set; }
         [XmlElement("elevation")]
         public WitsmlMeasureWithDatum Elevation { get; set; }
+
+        public static WitsmlWellDatum ToFetch()
+        {
+            return new()
+            {
+                Uid = string.Empty,
+                Name = string.Empty,
+                Code = string.Empty,
+                Elevation = WitsmlMeasureWithDatum.ToFetch()
+            };
+        }
     }
 
     public class WitsmlWell
@@ -51,13 +62,16 @@ namespace Witsml.Data
         public string PurposeWell { get; set; }
 
         [XmlElement("wellDatum")]
-        public List<WellDatum> WellDatum { get; set; }
+        public List<WitsmlWellDatum> WellDatum { get; set; }
 
         [XmlElement("waterDepth")]
         public WitsmlLengthMeasure WaterDepth { get; set; }
 
         [XmlElement("wellLocation")]
         public List<WitsmlLocation> WellLocation { get; set; }
+
+        [XmlElement("referencePoint")]
+        public List<WitsmlReferencePoint> ReferencePoint { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
