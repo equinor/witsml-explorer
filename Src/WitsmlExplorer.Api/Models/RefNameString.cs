@@ -16,7 +16,7 @@ namespace WitsmlExplorer.Api.Models
             };
         }
 
-        public static RefNameString FromWitsmlRefNameString(Witsml.Data.WitsmlRefNameString witsmlRefNameString)
+        public static RefNameString FromWitsmlRefNameString(WitsmlRefNameString witsmlRefNameString)
         {
             return witsmlRefNameString == null ?
                 null :

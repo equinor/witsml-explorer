@@ -133,9 +133,9 @@ namespace WitsmlExplorer.Api.Services
                         PurposeWell = well.PurposeWell,
                         Country = well.Country,
                         WaterDepth = LengthMeasure.FromWitsml(well.WaterDepth),
-                        WellDatum = Models.WellDatum.FromWitsmlWellDatum(well.WellDatum),
-                        WellLocation = Models.Location.FromWitsmlLocation(well.WellLocation),
-                        ReferencePoint = Models.ReferencePoint.FromWitsmlReferencePoint(well.ReferencePoint)
+                        WellDatum = WellDatum.FromWitsmlWellDatum(well.WellDatum),
+                        WellLocation = Location.FromWitsmlLocation(well.WellLocation),
+                        ReferencePoint = ReferencePoint.FromWitsmlReferencePoint(well.ReferencePoint)
                     }
                     ).ToList();
                 timeMeasurer.LogMessage = executionTime => $"Fetched {wells.Count} wells in {executionTime} ms.";

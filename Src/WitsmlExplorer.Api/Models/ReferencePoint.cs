@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Witsml.Data;
+
 namespace WitsmlExplorer.Api.Models
 {
     public class ReferencePoint
@@ -8,7 +10,7 @@ namespace WitsmlExplorer.Api.Models
         public string Name { get; set; }
         public List<Location> Location { get; set; }
 
-        public static ReferencePoint FromWitsmlReferencePoint(Witsml.Data.WitsmlReferencePoint witsmlReferencePoint)
+        public static ReferencePoint FromWitsmlReferencePoint(WitsmlReferencePoint witsmlReferencePoint)
         {
             return witsmlReferencePoint == null
                 ? null
@@ -19,7 +21,7 @@ namespace WitsmlExplorer.Api.Models
                 };
         }
 
-        public static List<ReferencePoint> FromWitsmlReferencePoint(IEnumerable<Witsml.Data.WitsmlReferencePoint> witsmlReferencePoint)
+        public static List<ReferencePoint> FromWitsmlReferencePoint(IEnumerable<WitsmlReferencePoint> witsmlReferencePoint)
         {
             return witsmlReferencePoint?.Select(FromWitsmlReferencePoint).ToList() ?? new List<ReferencePoint>();
         }
