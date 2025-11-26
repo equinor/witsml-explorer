@@ -19,14 +19,14 @@ namespace WitsmlExplorer.Api.Tests.Query
             WellLocation = new WitsmlLocation
             {
                 Uid = "locationUid",
-                Latitude = new Measure
+                Latitude = new WitsmlPlaneAngleMeasure
                 {
                     Value = "63.4279799"
                 }
             },
-            WellDatum = new List<WellDatum>
+            WellDatum = new List<WitsmlWellDatum>
             {
-                new WellDatum
+                new WitsmlWellDatum
                 {
                     Uid = "wellDatumUid",
                     Name = "wellDatumName"
@@ -179,7 +179,7 @@ namespace WitsmlExplorer.Api.Tests.Query
         public void AddPropertiesToObject_AddsMultiplePropertiesWithValues()
         {
 
-            List<WellDatum> datumValue = _well.WellDatum;
+            List<WitsmlWellDatum> datumValue = _well.WellDatum;
             _well.WellDatum = null;
             var regionValue = "regionValue";
             var sourceNameValue = "sourceNameValue";
@@ -205,7 +205,7 @@ namespace WitsmlExplorer.Api.Tests.Query
             var value = new WitsmlLocation
             {
                 Uid = "newLocationUid",
-                Latitude = new Measure
+                Latitude = new WitsmlPlaneAngleMeasure
                 {
                     Value = "63.4279798"
                 }
@@ -222,7 +222,7 @@ namespace WitsmlExplorer.Api.Tests.Query
         public string Name { get; set; }
         public string Field { get; set; }
         public string Region { get; set; }
-        public List<WellDatum> WellDatum { get; set; }
+        public List<WitsmlWellDatum> WellDatum { get; set; }
         public WitsmlLocation WellLocation { get; set; }
         public WitsmlCommonData CommonData { get; set; }
     }
