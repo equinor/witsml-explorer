@@ -25,6 +25,7 @@ interface CommonProps<T> {
   helperText?: string;
   required?: boolean;
   disabled?: boolean;
+  hideIfEmpty?: boolean;
 }
 
 // options are only allowed for PropertyType.Options

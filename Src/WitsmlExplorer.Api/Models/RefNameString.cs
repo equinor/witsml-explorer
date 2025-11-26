@@ -15,5 +15,16 @@ namespace WitsmlExplorer.Api.Models
                 Value = Value
             };
         }
+
+        public static RefNameString FromWitsmlRefNameString(Witsml.Data.WitsmlRefNameString witsmlRefNameString)
+        {
+            return witsmlRefNameString == null ?
+                null :
+                new RefNameString
+                {
+                    UidRef = witsmlRefNameString.UidRef,
+                    Value = witsmlRefNameString.Value
+                };
+        }
     }
 }
