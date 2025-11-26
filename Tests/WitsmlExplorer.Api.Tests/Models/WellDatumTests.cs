@@ -21,7 +21,7 @@ namespace WitsmlExplorer.Api.Tests.Models
             {
                 Name = name,
                 Code = code,
-                Elevation = new Witsml.Data.Measures.WitsmlMeasureWithDatum { Value = elevation }
+                Elevation = new Witsml.Data.Measures.WitsmlMeasureWithDatum { Datum = elevation, Value = "1.0" }
             };
 
             List<WitsmlWellDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
@@ -30,7 +30,7 @@ namespace WitsmlExplorer.Api.Tests.Models
 
             Assert.Equal(newWellDatum.Name, sourceWitsmlDatum.Name);
             Assert.Equal(newWellDatum.Code, sourceWitsmlDatum.Code);
-            Assert.Equal(newWellDatum.Elevation.Value.ToString(), sourceWitsmlDatum.Elevation.Value);
+            Assert.Equal(newWellDatum.Elevation.Datum, sourceWitsmlDatum.Elevation.Datum);
         }
 
         [Fact]
