@@ -1,4 +1,5 @@
 using Witsml.Data;
+using Witsml.Data.Measures;
 
 using WitsmlExplorer.Api.Models;
 
@@ -15,12 +16,12 @@ namespace WitsmlExplorer.Api.Tests.Models
         {
             var sourceWitsmlLocation = new WitsmlLocation
             {
-                Latitude = new WitsmlMeasure { Uom = "LatitudeUom", Value = "LatitudeValue" },
-                Longitude = new WitsmlMeasure { Uom = "LongitudeUom", Value = "LongitudeValue" },
-                Easting = new WitsmlMeasure { Uom = "EastingUom", Value = "EastingValue" },
-                Northing = new WitsmlMeasure { Uom = "NorthingUom", Value = "NorthingValue" },
-                LocalX = new WitsmlMeasure { Uom = "LocalXUom", Value = "LocalXValue" },
-                LocalY = new WitsmlMeasure { Uom = "LocalYUom", Value = "LocalYValue" },
+                Latitude = new WitsmlPlaneAngleMeasure { Uom = "LatitudeUom", Value = "LatitudeValue" },
+                Longitude = new WitsmlPlaneAngleMeasure { Uom = "LongitudeUom", Value = "LongitudeValue" },
+                Easting = new WitsmlLengthMeasure { Uom = "EastingUom", Value = "EastingValue" },
+                Northing = new WitsmlLengthMeasure { Uom = "NorthingUom", Value = "NorthingValue" },
+                LocalX = new WitsmlLengthMeasure { Uom = "LocalXUom", Value = "LocalXValue" },
+                LocalY = new WitsmlLengthMeasure { Uom = "LocalYUom", Value = "LocalYValue" },
             };
 
             var newWellLocation = WellLocation.FromWitsmlLocation(sourceWitsmlLocation);
