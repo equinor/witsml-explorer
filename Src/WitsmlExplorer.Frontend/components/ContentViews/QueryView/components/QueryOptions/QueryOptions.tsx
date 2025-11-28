@@ -23,6 +23,7 @@ import {
 } from "../../../QueryViewUtils.tsx";
 import TemplatePicker from "./TemplatePicker";
 import DataGridSwitch from "./DataGridSwitch";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner.tsx";
 
 export enum QueryEditorTypes {
   AceEditor = "AceEditor",
@@ -80,16 +81,20 @@ const QueryOptions: FC<QueryOptionsProps> = ({
         returnElements !== ReturnElements.None
           ? returnElements
           : undefined;
+      const startTime = Date.now();
       let response = await QueryService.postQuery(
         query,
         storeFunction,
         requestReturnElements,
         optionsIn?.trim()
       );
+      const endTime = Date.now();
       if (response.startsWith("<")) {
         response = formatXml(response);
       }
+      const responseTime = endTime - startTime;
       dispatchQuery({ type: QueryActionType.SetResult, result: response });
+      dispatchQuery({ type: QueryActionType.SetResponseTime, responseTime });
       setIsLoading(false);
     };
     const isValid = validateAndFormatQuery();
@@ -120,6 +125,7 @@ const QueryOptions: FC<QueryOptionsProps> = ({
 
   return (
     <Box>
+      {isLoading && <ProgressSpinnerOverlay message={`Fetching query data.`} />}
       <Stack
         justifyContent="space-between"
         direction="row"
