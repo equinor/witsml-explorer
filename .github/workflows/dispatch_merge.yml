@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Create repository dispatch event
         run: |
-          curl -L \
+          status=$(curl -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.DISPATCH_TOKEN }}"\
