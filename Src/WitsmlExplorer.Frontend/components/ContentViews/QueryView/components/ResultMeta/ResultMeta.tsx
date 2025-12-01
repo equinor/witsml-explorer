@@ -10,15 +10,24 @@ const ResultMeta: FC = () => {
   } = useContext(QueryContext);
 
   const { result } = queries[tabIndex];
+
+  const responseTime = queries[tabIndex].responseTime;
   const parser = new XMLParser();
   const resultObj = parser.parse(result);
   const templateObject = Object.keys(resultObj)?.[0]?.slice(0, -1);
+  const templateObjectUpperCase =
+    templateObject !== undefined
+      ? templateObject[0].toUpperCase() + templateObject.slice(1)
+      : "";
   const resultCount = countItemsAtDepth2(resultObj, templateObject);
 
   return (
     <Layout>
       {resultCount > 0 && (
-        <Typography>{`Number of ${templateObject}s: ${resultCount}`}</Typography>
+        <StyledTypography>{`Executed in: ${responseTime} ms,  ${templateObjectUpperCase}s: ${resultCount}`}</StyledTypography>
+      )}
+      {resultCount === undefined && (
+        <StyledTypography>{`Executed in: ${responseTime} ms`}</StyledTypography>
       )}
     </Layout>
   );
@@ -26,6 +35,10 @@ const ResultMeta: FC = () => {
 
 const Layout = styled.div`
   padding-left: 46px;
+`;
+
+const StyledTypography = styled(Typography)`
+  font-size: 0.8rem;
 `;
 
 function countItemsAtDepth2(obj: any, templateObject: string) {
