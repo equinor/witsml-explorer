@@ -33,7 +33,10 @@ const Layout = styled.div<{ columns: number; noMargin?: boolean }>`
           margin-bottom: 12px;
         `}
   display: grid;
-  grid-template-columns: repeat(${(props) => props.columns}, auto);
+  grid-template-columns: repeat(
+    ${(props) => props.columns},
+    minmax(auto, 200px)
+  );
   gap: 20px;
   justify-content: start;
 `;
