@@ -228,7 +228,7 @@ const validateQueryState = (queryState: QueryState): boolean => {
     (query) =>
       hasValidProperty(query, "query", "string") &&
       hasValidProperty(query, "result", "string") &&
-      hasValidProperty(query, "responseTime", "string") &&
+      hasValidProperty(query, "responseTime", "number") &&
       hasValidProperty(query, "storeFunction", "string") &&
       hasValidProperty(query, "returnElements", "string") &&
       hasValidProperty(query, "optionsIn", "string") &&
