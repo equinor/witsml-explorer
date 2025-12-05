@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
@@ -24,12 +26,12 @@ namespace WitsmlExplorer.Api.Repositories
             _collection = db.GetCollection<TDocument>(collectionName);
         }
 
-        public Task InitClientAsync()
+        public Task InitClientAsync(string PartitionKeyPath)
         {
             return Task.CompletedTask;
         }
 
-        public async Task<TDocument> GetDocumentAsync(TDocumentId id)
+        public async Task<TDocument> GetDocumentAsync(TDocumentId id, string partitionKeyValue = null)
         {
             var filter = Builders<TDocument>.Filter.Eq("_id", id);
             var documents = await _collection.FindAsync(filter);
@@ -54,16 +56,39 @@ namespace WitsmlExplorer.Api.Repositories
             return await _collection.FindOneAndReplaceAsync(filter, document);
         }
 
+        public async Task UpdateDocumentsAsync(IList<TDocument> documents)
+        {
+            var replaceModels = new List<ReplaceOneModel<TDocument>>();
+
+            foreach (var document in documents)
+            {
+                var filter = Builders<TDocument>.Filter.Eq("_id", document.Id);
+                replaceModels.Add(new ReplaceOneModel<TDocument>(filter, document));
+            }
+
+            await _collection.BulkWriteAsync(replaceModels);
+        }
+
         public async Task<TDocument> CreateDocumentAsync(TDocument document)
         {
             await _collection.InsertOneAsync(document);
             return await GetDocumentAsync(document.Id);
         }
 
-        public async Task DeleteDocumentAsync(TDocumentId id)
+        public async Task CreateDocumentsAsync(IList<TDocument> documents)
+        {
+            await _collection.InsertManyAsync(documents);
+        }
+
+        public async Task DeleteDocumentAsync(TDocumentId id, string partitionKeyValue = null)
         {
             var filter = Builders<TDocument>.Filter.Eq("_id", id);
             await _collection.FindOneAndDeleteAsync(filter);
+        }
+
+        public async Task DeleteDocumentsAsync(Expression<Func<TDocument, bool>> expression)
+        {
+            await _collection.DeleteManyAsync(expression);
         }
     }
 }

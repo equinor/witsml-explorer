@@ -59,6 +59,7 @@ import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "../../routes/routerConstants.ts";
 import { WITSML_INDEX_TYPE_MD } from "../Constants.tsx";
+import MnemonicsMappingUploadModal from "../Modals/MnemonicsMappingUploadModal.tsx";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -214,6 +215,13 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     dispatchOperation(action);
   };
 
+  const onClickUploadMnemnonicsMappings = async () => {
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <MnemonicsMappingUploadModal />
+    });
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -348,6 +356,13 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           <Typography color={"primary"}>
             Add to Multiple Log Selection
           </Typography>
+        </MenuItem>,
+        <MenuItem
+          key={"uploadMnemonicsMappings"}
+          onClick={onClickUploadMnemnonicsMappings}
+        >
+          <StyledIcon name="upload" color={colors.interactive.primaryResting} />
+          <Typography color={"primary"}>Upload Mnemonics Mappings</Typography>
         </MenuItem>,
         <Divider key={"divider"} />,
         <MenuItem
