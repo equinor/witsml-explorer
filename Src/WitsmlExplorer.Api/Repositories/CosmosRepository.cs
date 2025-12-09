@@ -30,10 +30,10 @@ namespace WitsmlExplorer.Api.Repositories
                 AllowBulkExecution = true
             });
         }
-        public async Task InitClientAsync(string partitionKeyPath = "/id")
+        public async Task InitClientAsync(string partitionKeyPath)
         {
             await _cosmosClient.CreateDatabaseIfNotExistsAsync(_dbName);
-            await _cosmosClient.GetDatabase(_dbName).CreateContainerIfNotExistsAsync(new ContainerProperties { Id = _containerId, PartitionKeyPath = partitionKeyPath });
+            await _cosmosClient.GetDatabase(_dbName).CreateContainerIfNotExistsAsync(new ContainerProperties { Id = _containerId, PartitionKeyPath = partitionKeyPath ?? "/id" });
         }
 
         public async Task<TDocument> GetDocumentAsync(TDocumentId id, string partitionKeyValue = null)
