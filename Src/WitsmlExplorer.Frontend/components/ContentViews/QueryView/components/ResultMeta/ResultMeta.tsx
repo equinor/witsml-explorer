@@ -23,12 +23,10 @@ const ResultMeta: FC = () => {
 
   return (
     <Layout>
-      {resultCount > 0 && (
-        <StyledTypography>{`Executed in: ${responseTime} ms,  ${templateObjectUpperCase}s: ${resultCount}`}</StyledTypography>
-      )}
-      {resultCount === undefined && (
-        <StyledTypography>{`Executed in: ${responseTime} ms`}</StyledTypography>
-      )}
+      <StyledTypography>
+        {`Executed in: ${responseTime} ms`}
+        {resultCount > 0 && `, ${templateObjectUpperCase}s: ${resultCount}`}
+      </StyledTypography>
     </Layout>
   );
 };
