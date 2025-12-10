@@ -56,79 +56,92 @@ namespace WitsmlExplorer.Api.Workers
             {
                 if (job.Overwrite)
                 {
-                    await _mnemonicsMappingRepository.DeleteDocumentsAsync(m => m.VendorName == job.VendorName);
-                    await _mnemonicsMappingRepository.CreateDocumentsAsync(
-                        newMappings.Select(g => new MnemonicsMapping(Guid.NewGuid())
-                        {
-                            VendorName = job.VendorName,
-                            GlobalMnemonicName = g.Key,
-                            VendorMnemonicNames = g.Select(i => i[1]).Distinct().ToList()
-                        }).ToList()
-                    );
+                    await ReplaceDocuments(job.VendorName, newMappings);
                 }
                 else
                 {
-                    var documentsToUpdate = new List<MnemonicsMapping>();
-                    var documentsToInsert = new List<MnemonicsMapping>();
+                    await UpsertDocuments(job.VendorName, newMappings, foundMappings, cancellationToken);
+                }
 
-                    foreach (var mapping in newMappings)
-                    {
-                        var foundMapping = foundMappings.FirstOrDefault(fm => fm.GlobalMnemonicName == mapping.Key);
-
-                        if (foundMapping != null)
-                        {
-                            var newVendorMnemonicNames = mapping.Select(i => i[1])
-                                .Concat(foundMapping.VendorMnemonicNames)
-                                .Distinct()
-                                .ToList();
-
-                            documentsToUpdate.Add(new MnemonicsMapping(foundMapping.Id)
-                            {
-                                VendorName = job.VendorName,
-                                GlobalMnemonicName = mapping.Key,
-                                VendorMnemonicNames = newVendorMnemonicNames
-                            });
-                        }
-                        else
-                        {
-                            documentsToInsert.Add(new MnemonicsMapping(Guid.NewGuid())
-                            {
-                                VendorName = job.VendorName,
-                                GlobalMnemonicName = mapping.Key,
-                                VendorMnemonicNames = mapping.Select(i => i[1]).Distinct().ToList()
-                            });
-                        }
-                    }
-
-                    if (cancellationToken is { IsCancellationRequested: true })
-                    {
-                        return GetCancellationWorkerResult();
-                    }
-
-                    if (documentsToUpdate.Any())
-                    {
-                        await _mnemonicsMappingRepository.UpdateDocumentsAsync(documentsToUpdate);
-                    }
-
-                    if (documentsToInsert.Any())
-                    {
-                        await _mnemonicsMappingRepository.CreateDocumentsAsync(documentsToInsert);
-                    }
+                if (cancellationToken is { IsCancellationRequested: true })
+                {
+                    return GetCancellationWorkerResult();
                 }
             }
             else
             {
-                await _mnemonicsMappingRepository.CreateDocumentsAsync(
-                    newMappings.Select(g => new MnemonicsMapping(Guid.NewGuid())
-                    {
-                        VendorName = job.VendorName,
-                        GlobalMnemonicName = g.Key,
-                        VendorMnemonicNames = g.Select(i => i[1]).Distinct().ToList()
-                    }).ToList());
+                await InsertDocuments(job.VendorName, newMappings);
             }
 
             WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, (job.Overwrite ? "Replaced" : "Added") + $" mnemonics' mappings for vendor: {job.VendorName}", jobId: job.JobInfo.Id);
             return new(workerResult, null);
+        }
+
+        private async Task InsertDocuments(string vendorName, IEnumerable<IGrouping<string, IList<string>>> newMappings)
+        {
+            await _mnemonicsMappingRepository.CreateDocumentsAsync(
+                newMappings.Select(g => new MnemonicsMapping(Guid.NewGuid())
+                {
+                    VendorName = vendorName,
+                    GlobalMnemonicName = g.Key,
+                    VendorMnemonicNames = g.Select(i => i[1]).Distinct().ToList()
+                }).ToList());
+        }
+
+        private async Task UpsertDocuments(string vendorName, IEnumerable<IGrouping<string, IList<string>>> newMappings, ICollection<MnemonicsMapping> foundMappings, CancellationToken? cancellationToken)
+        {
+            var documentsToUpdate = new List<MnemonicsMapping>();
+            var documentsToInsert = new List<MnemonicsMapping>();
+
+            foreach (var mapping in newMappings)
+            {
+                var foundMapping = foundMappings.FirstOrDefault(fm => fm.GlobalMnemonicName == mapping.Key);
+
+                if (foundMapping != null)
+                {
+                    var newVendorMnemonicNames = mapping.Select(i => i[1])
+                        .Concat(foundMapping.VendorMnemonicNames)
+                        .Distinct()
+                        .ToList();
+
+                    documentsToUpdate.Add(new MnemonicsMapping(foundMapping.Id)
+                    {
+                        VendorName = vendorName,
+                        GlobalMnemonicName = mapping.Key,
+                        VendorMnemonicNames = newVendorMnemonicNames
+                    });
+                }
+                else
+                {
+                    documentsToInsert.Add(new MnemonicsMapping(Guid.NewGuid())
+                    {
+                        VendorName = vendorName,
+                        GlobalMnemonicName = mapping.Key,
+                        VendorMnemonicNames = mapping.Select(i => i[1]).Distinct().ToList()
+                    });
+                }
+
+                if (cancellationToken is { IsCancellationRequested: true })
+                {
+                    return;
+                }
+            }
+
+            if (documentsToUpdate.Any())
+            {
+                await _mnemonicsMappingRepository.UpdateDocumentsAsync(documentsToUpdate);
+            }
+
+            if (documentsToInsert.Any())
+            {
+                await _mnemonicsMappingRepository.CreateDocumentsAsync(documentsToInsert);
+            }
+        }
+
+        private async Task ReplaceDocuments(string vendorName, IEnumerable<IGrouping<string, IList<string>>> newMappings)
+        {
+            await _mnemonicsMappingRepository.DeleteDocumentsAsync(m => m.VendorName == vendorName);
+            await InsertDocuments(vendorName, newMappings);
         }
 
         private string JobValidation(MnemonicsMappingJob job)
