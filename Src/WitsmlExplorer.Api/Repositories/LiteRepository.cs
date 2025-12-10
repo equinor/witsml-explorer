@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 using LiteDB;
@@ -21,12 +22,12 @@ namespace WitsmlExplorer.Api.Repositories
             _collection = db.GetCollection<TDocument>(collectionName);
         }
 
-        public Task InitClientAsync()
+        public Task InitClientAsync(string PartitionKeyPath)
         {
             return Task.CompletedTask;
         }
 
-        public Task<TDocument> GetDocumentAsync(TDocumentId id)
+        public Task<TDocument> GetDocumentAsync(TDocumentId id, string partitionKeyValue = null)
         {
             var document = _collection.FindById(new BsonValue(id));
             return Task.FromResult(document);
@@ -46,8 +47,17 @@ namespace WitsmlExplorer.Api.Repositories
 
         public Task<TDocument> UpdateDocumentAsync(TDocumentId id, TDocument document)
         {
-            _collection.Update(document);
+            _collection.Delete(new BsonValue(id));
+            _collection.Insert(document);
             return GetDocumentAsync(id);
+        }
+
+        public async Task UpdateDocumentsAsync(IList<TDocument> documents)
+        {
+            foreach (var document in documents)
+            {
+                await UpdateDocumentAsync(document.Id, document);
+            }
         }
 
         public Task<TDocument> CreateDocumentAsync(TDocument document)
@@ -56,9 +66,20 @@ namespace WitsmlExplorer.Api.Repositories
             return GetDocumentAsync(document.Id);
         }
 
-        public Task DeleteDocumentAsync(TDocumentId id)
+        public Task CreateDocumentsAsync(IList<TDocument> documents)
+        {
+            return Task.FromResult(_collection.InsertBulk(documents));
+        }
+
+        public Task DeleteDocumentAsync(TDocumentId id, string partitionKeyValue = null)
         {
             _collection.Delete(new BsonValue(id));
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteDocumentsAsync(Expression<Func<TDocument, bool>> expression)
+        {
+            _collection.DeleteMany(expression);
             return Task.CompletedTask;
         }
     }

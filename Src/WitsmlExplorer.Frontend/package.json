@@ -51,6 +51,7 @@
     "react-ace": "^10.1.0",
     "react-dom": "^18.2.0",
     "react-idle-timer": "^5.4.2",
+    "react-papaparse": "^4.4.0",
     "react-router-dom": "^6.20.1",
     "react-virtualized-auto-sizer": "^1.0.7",
     "react-window": "^1.8.7",
