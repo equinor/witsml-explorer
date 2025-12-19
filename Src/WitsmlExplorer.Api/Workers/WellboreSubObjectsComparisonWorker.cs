@@ -430,8 +430,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             return resultList;
         }
         var issues = compareLogsDataJobSource.JobInfo.Report.ReportItems;
-        IEnumerable<object> enumerable = issues as object[] ?? issues.ToArray();
-        if (enumerable.Any())
+        if (issues.Any())
         {
             var result = new WellboreSubObjectsComparisonItem()
             {
@@ -441,7 +440,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 ObjectName = sourceLog.Name,
                 ExistsOnSource = "TRUE",
                 ExistsOnTarget = "TRUE",
-                NumberOfDifferencesInValuesInMnemonics = enumerable.Count().ToString()
+                NumberOfDifferencesInValuesInMnemonics = issues.Count().ToString()
             };
             resultList.Add(result);
         }
