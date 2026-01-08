@@ -34,6 +34,7 @@ export interface PanelProps {
   downloadToCsvFileName?: string;
   disableFilters?: boolean;
   disableSearchParamsFilter?: boolean;
+  responseTime?: number;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -48,6 +49,7 @@ const Panel = (props: PanelProps) => {
     table,
     viewId,
     columns,
+    responseTime,
     expandableRows = false,
     downloadToCsvFileName = null,
     stickyLeftColumns,
@@ -178,6 +180,9 @@ const Panel = (props: PanelProps) => {
           >
             <Icon name="download" />
           </Button>
+        )}
+        {responseTime != null && (
+          <Typography>Response time: {responseTime} ms</Typography>
         )}
         {panelElements}
       </EdsProvider>

@@ -24,6 +24,22 @@ export const getObjectsQueryKey = (
   ];
 };
 
+export async function withQueryTiming<T>(
+  queryFn: () => Promise<T>
+): Promise<TimedResponse<T>> {
+  const start = Date.now();
+  const data = await queryFn();
+  return {
+    data,
+    responseTime: Date.now() - start
+  };
+}
+
+export type TimedResponse<T> = {
+  data: T;
+  responseTime: number;
+};
+
 export const objectsQuery = <T extends ObjectType>(
   server: Server,
   wellUid: string,
@@ -32,16 +48,16 @@ export const objectsQuery = <T extends ObjectType>(
   options?: QueryOptions
 ) => ({
   queryKey: getObjectsQueryKey(server?.url, wellUid, wellboreUid, objectType),
-  queryFn: async () => {
-    const objects = await ObjectService.getObjects<T>(
-      wellUid,
-      wellboreUid,
-      objectType,
-      null,
-      server
-    );
-    return objects;
-  },
+  queryFn: () =>
+    withQueryTiming(() =>
+      ObjectService.getObjects<T>(
+        wellUid,
+        wellboreUid,
+        objectType,
+        null,
+        server
+      )
+    ),
   ...options,
   enabled:
     !!server &&
@@ -71,10 +87,11 @@ export const multipleObjectsQuery = <T extends ObjectType>(
 });
 
 type ObjectsQueryResult<T extends ObjectType> = Omit<
-  QueryObserverResult<ObjectTypeToModel[T][], unknown>,
+  QueryObserverResult<TimedResponse<ObjectTypeToModel[T][]>, unknown>,
   "data"
 > & {
   objects: ObjectTypeToModel[T][];
+  responseTime: number;
 };
 
 export const useGetObjects = <T extends ObjectType>(
@@ -84,10 +101,10 @@ export const useGetObjects = <T extends ObjectType>(
   objectType: T,
   options?: QueryOptions
 ): ObjectsQueryResult<T> => {
-  const { data, ...state } = useQuery<ObjectTypeToModel[T][]>(
+  const { data, ...state } = useQuery<TimedResponse<ObjectTypeToModel[T][]>>(
     objectsQuery<T>(server, wellUid, wellboreUid, objectType, options)
   );
-  return { objects: data, ...state };
+  return { objects: data?.data, responseTime: data?.responseTime, ...state };
 };
 
 //todo: fix types
