@@ -33,7 +33,7 @@ export default function DataWorkOrdersListView() {
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: dataWorkOrders } = useGetObjects(
+  const { objects: dataWorkOrders, responseTime: responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -170,6 +170,7 @@ export default function DataWorkOrdersListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="DataWorkOrders"
+        responseTime={responseTime}
       />
     )
   );

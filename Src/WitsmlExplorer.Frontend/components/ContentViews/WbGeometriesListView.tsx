@@ -32,7 +32,7 @@ export default function WbGeometriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: wbGeometries } = useGetObjects(
+  const { objects: wbGeometries, responseTime: responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -133,6 +133,7 @@ export default function WbGeometriesListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="WbGeometries"
+        responseTime={responseTime}
       />
     )
   );

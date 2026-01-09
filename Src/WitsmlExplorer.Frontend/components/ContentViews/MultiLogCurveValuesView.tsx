@@ -64,7 +64,8 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
   const {
     objects: allLogs,
     isFetching: isFetchingLogs,
-    isFetched: isFetchedLogs
+    isFetched: isFetchedLogs,
+    responseTime: responseTime
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
 
   const isDepthIndex = logType === RouterLogType.DEPTH;
@@ -251,6 +252,7 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
               checkableRows={true}
               stickyLeftColumns={2}
               autoRefresh={false}
+              responseTime={responseTime}
             />
           ))}
       </StyledContentContainer>

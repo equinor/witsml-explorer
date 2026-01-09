@@ -124,8 +124,8 @@ export default function MessagesListView() {
         onContextMenu={onContextMenu}
         checkableRows
         showRefresh
-        responseTime={responseTime}
         downloadToCsvFileName="Messages"
+        responseTime={responseTime}
       />
     )
   );

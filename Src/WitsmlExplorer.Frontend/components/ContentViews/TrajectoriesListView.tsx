@@ -27,7 +27,7 @@ export default function TrajectoriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: trajectories } = useGetObjects(
+  const { objects: trajectories, responseTime: responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -156,6 +156,7 @@ export default function TrajectoriesListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="Trajectories"
+        responseTime={responseTime}
       />
     )
   );

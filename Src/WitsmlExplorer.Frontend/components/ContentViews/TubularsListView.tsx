@@ -26,7 +26,7 @@ export default function TubularsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: tubulars } = useGetObjects(
+  const { objects: tubulars, responseTime: responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -110,6 +110,7 @@ export default function TubularsListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="Tubulars"
+        responseTime={responseTime}
       />
     )
   );
