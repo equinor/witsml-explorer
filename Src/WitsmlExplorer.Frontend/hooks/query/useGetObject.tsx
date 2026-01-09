@@ -57,9 +57,9 @@ const updatePartialObjects = <T extends ObjectType>(
     } else {
       existingObjects.data.splice(existingObjectIndex, 1);
     }
-    queryClient.setQueryData<ObjectTypeToModel[T][]>(
+    queryClient.setQueryData<TimedResponse<ObjectTypeToModel[T][]>>(
       objectsQueryKey,
-      existingObjects.data
+      existingObjects
     );
   }
 };
