@@ -9,7 +9,7 @@ import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECT } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { getObjectsQueryKey } from "./useGetObjects";
+import { getObjectsQueryKey, TimedResponse } from "./useGetObjects";
 
 export const getObjectQueryKey = (
   serverUrl: string,
@@ -44,19 +44,22 @@ const updatePartialObjects = <T extends ObjectType>(
     objectType
   );
   const existingObjects =
-    queryClient.getQueryData<ObjectTypeToModel[T][]>(objectsQueryKey);
+    queryClient.getQueryData<TimedResponse<ObjectTypeToModel[T][]>>(
+      objectsQueryKey
+    );
+
   if (existingObjects) {
-    const existingObjectIndex = existingObjects.findIndex(
+    const existingObjectIndex = existingObjects.data.findIndex(
       (o) => o.uid === objectUid
     );
     if (object) {
-      existingObjects[existingObjectIndex] = object;
+      existingObjects.data[existingObjectIndex] = object;
     } else {
-      existingObjects.splice(existingObjectIndex, 1);
+      existingObjects.data.splice(existingObjectIndex, 1);
     }
     queryClient.setQueryData<ObjectTypeToModel[T][]>(
       objectsQueryKey,
-      existingObjects
+      existingObjects.data
     );
   }
 };
