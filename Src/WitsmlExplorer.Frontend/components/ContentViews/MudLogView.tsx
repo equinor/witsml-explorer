@@ -49,7 +49,7 @@ export default function MudLogView() {
   const {
     object: mudLog,
     isFetched: isFetchedMudLog,
-    responseTime: responseTime
+    responseTime: responseTimeObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -58,7 +58,11 @@ export default function MudLogView() {
     objectUid
   );
 
-  const { components: geologyIntervals, isFetching } = useGetComponents(
+  const {
+    components: geologyIntervals,
+    isFetching,
+    responseTime: responseTimeComponents
+  } = useGetComponents(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -158,7 +162,11 @@ export default function MudLogView() {
         insetColumns={insetColumns}
         showRefresh
         downloadToCsvFileName={`MudLog_${mudLog?.name}`}
-        responseTime={responseTime}
+        responseTime={
+          responseTimeObject > responseTimeComponents
+            ? responseTimeObject
+            : responseTimeComponents
+        }
       />
     </>
   );
