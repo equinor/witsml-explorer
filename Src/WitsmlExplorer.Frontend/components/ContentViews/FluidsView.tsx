@@ -39,7 +39,7 @@ export default function FluidsView() {
   } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: fluidsReport, responseTime: responseTime } = useGetObject(
+  const { object: fluidsReport, responseTime } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,

@@ -27,7 +27,7 @@ export default function TrajectoriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: trajectories, responseTime: responseTime } = useGetObjects(
+  const { objects: trajectories, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

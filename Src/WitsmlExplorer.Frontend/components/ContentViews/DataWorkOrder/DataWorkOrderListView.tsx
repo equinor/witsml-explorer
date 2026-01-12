@@ -33,7 +33,7 @@ export default function DataWorkOrdersListView() {
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: dataWorkOrders, responseTime: responseTime } = useGetObjects(
+  const { objects: dataWorkOrders, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

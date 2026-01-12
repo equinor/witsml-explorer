@@ -29,7 +29,7 @@ export default function RigsListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: rigs, responseTime: responseTime } = useGetObjects(
+  const { objects: rigs, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

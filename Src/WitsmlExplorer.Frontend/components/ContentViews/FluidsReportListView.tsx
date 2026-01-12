@@ -32,7 +32,7 @@ export default function FluidsReportsListView() {
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
   const navigate = useNavigate();
-  const { objects: fluidsReports, responseTime: responseTime } = useGetObjects(
+  const { objects: fluidsReports, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

@@ -18,7 +18,7 @@ export default function ChangeLogsListView() {
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
 
-  const { objects: changeLogs, responseTime: responseTime } = useGetObjects(
+  const { objects: changeLogs, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

@@ -30,7 +30,7 @@ export default function RisksListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: risks, responseTime: responseTime } = useGetObjects(
+  const { objects: risks, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

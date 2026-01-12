@@ -4,7 +4,7 @@ import Well from "../../models/well";
 import WellService from "../../services/wellService";
 import { QUERY_KEY_WELLS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { TimedResponse, withQueryTiming } from "./useGetObjects";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getWellsQueryKey = (serverUrl: string) => {
   return [QUERY_KEY_WELLS, serverUrl?.toLowerCase()];

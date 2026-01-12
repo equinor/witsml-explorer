@@ -4,7 +4,7 @@ import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
 import { QUERY_KEY_WELLBORES } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { TimedResponse, withQueryTiming } from "./useGetObjects";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getWellboresQueryKey = (serverUrl: string, wellUid: string) => {
   return [

@@ -40,7 +40,7 @@ export default function MudLogsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: mudLogs, responseTime: responseTime } = useGetObjects(
+  const { objects: mudLogs, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

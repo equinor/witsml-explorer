@@ -8,6 +8,7 @@ import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getObjectsQueryKey = (
   serverUrl: string,
@@ -22,22 +23,6 @@ export const getObjectsQueryKey = (
     wellboreUid?.toLowerCase(),
     objectType?.toLowerCase()
   ];
-};
-
-export async function withQueryTiming<T>(
-  queryFn: () => Promise<T>
-): Promise<TimedResponse<T>> {
-  const start = Date.now();
-  const data = await queryFn();
-  return {
-    data,
-    responseTime: Date.now() - start
-  };
-}
-
-export type TimedResponse<T> = {
-  data: T;
-  responseTime: number;
 };
 
 export const objectsQuery = <T extends ObjectType>(

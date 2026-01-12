@@ -9,11 +9,8 @@ import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECT } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import {
-  getObjectsQueryKey,
-  TimedResponse,
-  withQueryTiming
-} from "./useGetObjects";
+import { getObjectsQueryKey } from "./useGetObjects";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getObjectQueryKey = (
   serverUrl: string,
@@ -67,33 +64,6 @@ const updatePartialObjects = <T extends ObjectType>(
     );
   }
 };
-
-export const objectsQuery = <T extends ObjectType>(
-  server: Server,
-  wellUid: string,
-  wellboreUid: string,
-  objectType: T,
-  options?: QueryOptions
-) => ({
-  queryKey: getObjectsQueryKey(server?.url, wellUid, wellboreUid, objectType),
-  queryFn: () =>
-    withQueryTiming(() =>
-      ObjectService.getObjects<T>(
-        wellUid,
-        wellboreUid,
-        objectType,
-        null,
-        server
-      )
-    ),
-  ...options,
-  enabled:
-    !!server &&
-    !!wellUid &&
-    !!wellboreUid &&
-    !!objectType &&
-    !(options?.enabled === false)
-});
 
 export const objectQuery = <T extends ObjectType>(
   queryClient: QueryClient,

@@ -32,7 +32,7 @@ export default function WbGeometriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: wbGeometries, responseTime: responseTime } = useGetObjects(
+  const { objects: wbGeometries, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

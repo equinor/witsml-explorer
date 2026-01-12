@@ -26,7 +26,7 @@ export default function TubularsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: tubulars, responseTime: responseTime } = useGetObjects(
+  const { objects: tubulars, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

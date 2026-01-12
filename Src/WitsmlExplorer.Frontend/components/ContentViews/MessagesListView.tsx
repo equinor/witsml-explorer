@@ -30,7 +30,7 @@ export default function MessagesListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: messages, responseTime: responseTime } = useGetObjects(
+  const { objects: messages, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
