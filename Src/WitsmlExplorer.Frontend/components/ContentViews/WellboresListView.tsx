@@ -38,7 +38,8 @@ export default function WellboresListView() {
   const {
     wellbores,
     isFetching: isFetchingWellbores,
-    isFetched: isFetchedWellbores
+    isFetched: isFetchedWellbores,
+    responseTime: responseTime
   } = useGetWellbores(connectedServer, wellUid);
   const isFetching = isFetchingWell || isFetchingWellbores;
   const {
@@ -146,6 +147,7 @@ export default function WellboresListView() {
         downloadToCsvFileName="Wellbores"
         checkableRows
         showRefresh
+        responseTime={responseTime}
       />
     </>
   );

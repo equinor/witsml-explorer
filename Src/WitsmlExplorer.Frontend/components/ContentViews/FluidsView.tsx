@@ -39,7 +39,7 @@ export default function FluidsView() {
   } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: fluidsReport } = useGetObject(
+  const { object: fluidsReport, responseTime: responseTime } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -292,6 +292,7 @@ export default function FluidsView() {
         insetColumns={insetColumns}
         showRefresh
         downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
+        responseTime={responseTime}
       />
     </>
   );

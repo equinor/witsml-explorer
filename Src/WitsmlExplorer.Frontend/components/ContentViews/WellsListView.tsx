@@ -25,7 +25,11 @@ export interface WellRow extends ContentTableRow, Well {}
 
 export default function WellsListView() {
   const { connectedServer } = useConnectedServer();
-  const { wells, isFetching } = useGetWells(connectedServer, {
+  const {
+    wells,
+    isFetching,
+    responseTime: responseTime
+  } = useGetWells(connectedServer, {
     placeholderData: []
   });
   const { servers } = useGetServers();
@@ -76,7 +80,7 @@ export default function WellsListView() {
   };
 
   const getTableData = () => {
-    return wells.map((well) => {
+    return wells?.map((well) => {
       return {
         ...well,
         id: well.uid,
@@ -111,6 +115,7 @@ export default function WellsListView() {
           checkableRows
           downloadToCsvFileName="Wells"
           showRefresh
+          responseTime={responseTime}
         />
       )}
     </>

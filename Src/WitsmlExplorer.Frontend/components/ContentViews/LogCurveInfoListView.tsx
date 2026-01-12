@@ -52,7 +52,8 @@ export default function LogCurveInfoListView() {
   const {
     object: logObject,
     isFetching: isFetchingLog,
-    isFetched: isFetchedLog
+    isFetched: isFetchedLog,
+    responseTime: responseTime
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -270,6 +271,7 @@ export default function LogCurveInfoListView() {
           checkableRows
           showRefresh
           downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
+          responseTime={responseTime}
         />
       )}
     </>

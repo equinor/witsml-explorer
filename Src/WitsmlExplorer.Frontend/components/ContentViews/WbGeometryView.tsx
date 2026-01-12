@@ -31,7 +31,11 @@ export default function WbGeometryView() {
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: wbGeometry, isFetched: isFetchedWbGeometry } = useGetObject(
+  const {
+    object: wbGeometry,
+    isFetched: isFetchedWbGeometry,
+    responseTime: responseTime
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -135,6 +139,7 @@ export default function WbGeometryView() {
         checkableRows
         showRefresh
         downloadToCsvFileName={`WbGeometry_${wbGeometry?.name}`}
+        responseTime={responseTime}
       />
     </>
   );

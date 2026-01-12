@@ -39,7 +39,11 @@ export default function TubularView() {
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: tubular, isFetched: isFetchedTubular } = useGetObject(
+  const {
+    object: tubular,
+    isFetched: isFetchedTubular,
+    responseTime: responseTime
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -146,6 +150,7 @@ export default function TubularView() {
         checkableRows
         showRefresh
         downloadToCsvFileName={`Tubular_${tubular?.name}`}
+        responseTime={responseTime}
       />
     </>
   );

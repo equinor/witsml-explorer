@@ -4,6 +4,7 @@ import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
 import { QUERY_KEY_WELLBORES } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
+import { TimedResponse, withQueryTiming } from "./useGetObjects";
 
 export const getWellboresQueryKey = (serverUrl: string, wellUid: string) => {
   return [
@@ -19,19 +20,21 @@ export const wellboresQuery = (
   options?: QueryOptions
 ) => ({
   queryKey: getWellboresQueryKey(server?.url, wellUid),
-  queryFn: async () => {
-    const wellbores = await WellboreService.getWellbores(wellUid, null, server);
-    return wellbores;
-  },
+  queryFn: () =>
+    withQueryTiming(() => {
+      const wellbores = WellboreService.getWellbores(wellUid, null, server);
+      return wellbores;
+    }),
   ...options,
   enabled: !!server && wellUid != null && !(options?.enabled === false)
 });
 
 type WellboresQueryResult = Omit<
-  QueryObserverResult<Wellbore[], unknown>,
+  QueryObserverResult<TimedResponse<Wellbore[]>, unknown>,
   "data"
 > & {
   wellbores: Wellbore[];
+  responseTime: number;
 };
 
 export const useGetWellbores = (
@@ -39,8 +42,8 @@ export const useGetWellbores = (
   wellUid: string,
   options?: QueryOptions
 ): WellboresQueryResult => {
-  const { data, ...state } = useQuery<Wellbore[]>(
+  const { data, ...state } = useQuery<TimedResponse<Wellbore[]>>(
     wellboresQuery(server, wellUid, options)
   );
-  return { wellbores: data, ...state };
+  return { wellbores: data?.data, responseTime: data?.responseTime, ...state };
 };
