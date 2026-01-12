@@ -6,7 +6,7 @@ import { useGetWells } from "./useGetWells";
 
 type WellQueryResult = Omit<
   QueryObserverResult<Well, unknown>,
-  "data" | "refetch"
+  "data" | "refetch" | "promise"
 > & {
   well: Well | undefined;
 };
