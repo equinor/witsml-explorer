@@ -53,7 +53,7 @@ export default function LogCurveInfoListView() {
     object: logObject,
     isFetching: isFetchingLog,
     isFetched: isFetchedLog,
-    responseTime: responseTime
+    responseTime: responseTimeObjects
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -64,14 +64,17 @@ export default function LogCurveInfoListView() {
 
   const { agentSettings } = useGetAgentSettings();
 
-  const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
-    useGetComponents(
-      connectedServer,
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.Mnemonic
-    );
+  const {
+    components: logCurveInfoList,
+    isFetching: isFetchingLogCurveInfo,
+    responseTime: responseTimeComponents
+  } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.Mnemonic
+  );
   const [hideEmptyMnemonics, setHideEmptyMnemonics] = useState<boolean>(false);
   const [showOnlyPrioritizedCurves, setShowOnlyPrioritizedCurves] =
     useState<boolean>(false);
@@ -271,7 +274,11 @@ export default function LogCurveInfoListView() {
           checkableRows
           showRefresh
           downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
-          responseTime={responseTime}
+          responseTime={
+            responseTimeObjects > responseTimeComponents
+              ? responseTimeObjects
+              : responseTimeComponents
+          }
         />
       )}
     </>
