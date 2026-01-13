@@ -39,18 +39,20 @@ export default function FluidsView() {
   } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: fluidsReport } = useGetObject(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.FluidsReport,
-    objectUid
-  );
+  const { object: fluidsReport, responseTime: responseTimeObject } =
+    useGetObject(
+      connectedServer,
+      wellUid,
+      wellboreUid,
+      ObjectType.FluidsReport,
+      objectUid
+    );
 
   const {
     components: fluids,
     isFetching,
-    isFetched
+    isFetched,
+    responseTime: responseTimeComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -292,6 +294,11 @@ export default function FluidsView() {
         insetColumns={insetColumns}
         showRefresh
         downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
+        responseTime={
+          responseTimeObject > responseTimeComponents
+            ? responseTimeObject
+            : responseTimeComponents
+        }
       />
     </>
   );

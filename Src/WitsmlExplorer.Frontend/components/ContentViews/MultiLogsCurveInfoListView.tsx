@@ -58,12 +58,11 @@ export default function MultiLogsCurveInfoListView() {
     ...prioritizedLocalCurves,
     ...prioritizedUniversalCurves
   ].filter((value, index, self) => self.indexOf(value) === index);
-  const { objects: allLogs, isFetching: isFetchingLogs } = useGetObjects(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.Log
-  );
+  const {
+    objects: allLogs,
+    isFetching: isFetchingLogs,
+    responseTime: responseTime
+  } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
 
   const isDepthIndex = logType === RouterLogType.DEPTH;
@@ -206,6 +205,7 @@ export default function MultiLogsCurveInfoListView() {
           downloadToCsvFileName={`LogCurveInfo_${logsSearchParams
             .replace("[", "")
             .replace("]", "")}`}
+          responseTime={responseTime}
         />
       )}
     </>

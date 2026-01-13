@@ -42,7 +42,11 @@ export default function TrajectoryView() {
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: trajectory, isFetched: isFetchedTrajectory } = useGetObject(
+  const {
+    object: trajectory,
+    isFetched: isFetchedTrajectory,
+    responseTime: responseTimeObject
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -50,7 +54,11 @@ export default function TrajectoryView() {
     objectUid
   );
 
-  const { components: trajectoryStations, isFetching } = useGetComponents(
+  const {
+    components: trajectoryStations,
+    isFetching,
+    responseTime: responseTimeComponents
+  } = useGetComponents(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -139,6 +147,11 @@ export default function TrajectoryView() {
         checkableRows
         showRefresh
         downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
+        responseTime={
+          responseTimeObject > responseTimeComponents
+            ? responseTimeObject
+            : responseTimeComponents
+        }
       />
     </>
   );

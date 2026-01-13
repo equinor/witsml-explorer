@@ -40,7 +40,7 @@ export default function MudLogsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: mudLogs } = useGetObjects(
+  const { objects: mudLogs, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -145,6 +145,7 @@ export default function MudLogsListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="MudLogs"
+        responseTime={responseTime}
       />
     )
   );

@@ -30,7 +30,7 @@ export default function RisksListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: risks } = useGetObjects(
+  const { objects: risks, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -133,6 +133,7 @@ export default function RisksListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="Risks"
+        responseTime={responseTime}
       />
     )
   );

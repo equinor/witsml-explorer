@@ -29,7 +29,7 @@ export default function BhaRunsListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: bhaRuns } = useGetObjects(
+  const { objects: bhaRuns, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -130,6 +130,7 @@ export default function BhaRunsListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="BhaRuns"
+        responseTime={responseTime}
       />
     )
   );

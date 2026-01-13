@@ -45,6 +45,7 @@ export interface ContentTableProps {
   panelElements?: React.ReactElement[];
   showPanel?: boolean;
   showRefresh?: boolean;
+  responseTime?: number;
   stickyLeftColumns?: number; // how many columns should be sticky
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
   downloadToCsvFileName?: string;

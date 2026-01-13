@@ -29,7 +29,7 @@ export default function RigsListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: rigs } = useGetObjects(
+  const { objects: rigs, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -157,6 +157,7 @@ export default function RigsListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="Rigs"
+        responseTime={responseTime}
       />
     )
   );

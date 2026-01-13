@@ -18,7 +18,7 @@ export default function ChangeLogsListView() {
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
 
-  const { objects: changeLogs } = useGetObjects(
+  const { objects: changeLogs, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -76,6 +76,7 @@ export default function ChangeLogsListView() {
         data={getTableData()}
         showRefresh
         downloadToCsvFileName="ChangeLogs"
+        responseTime={responseTime}
       />
     )
   );
