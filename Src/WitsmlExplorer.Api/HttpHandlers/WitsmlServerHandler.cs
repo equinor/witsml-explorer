@@ -48,9 +48,9 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
         private static bool ValidateUrl(Server witsmlServer)
         {
-            var uri = witsmlServer.Url.AbsoluteUri;
-            bool isValidUrl = Uri.TryCreate(uri, UriKind.Absolute, out Uri uriResult)
-                              && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            var uri = witsmlServer.Url;
+            bool isValidUrl = uri?.IsAbsoluteUri == true
+                              && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
             return isValidUrl;
         }
 
