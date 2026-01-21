@@ -258,7 +258,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
                 style={labelStyle}
                 htmlFor="depthLogDecimals"
               />
-              <Tooltip title="This is text.">
+              <Tooltip title="Defines the decimal precision this WITSML server uses for depth log indices. Must match the server's actual precision to prevent index conflicts when copying or comparing data between servers.">
                 <Icon
                   name="infoCircle"
                   color={colors.interactive.primaryResting}
