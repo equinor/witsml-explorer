@@ -60,6 +60,8 @@ import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "../../routes/routerConstants.ts";
 import { WITSML_INDEX_TYPE_MD } from "../Constants.tsx";
 import MnemonicsMappingUploadModal from "../Modals/MnemonicsMappingUploadModal.tsx";
+import { useOperationState } from "hooks/useOperationState.tsx";
+import { IsUserRoleAdvanced, IsUserRoleExpert } from "components/UserRoles.ts";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -79,6 +81,10 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const filteredServers = useServerFilter(servers);
   const wellboreWithMixedObjectsReference =
     useClipboardMixedObjectsReferences();
+
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -292,78 +298,92 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
-          {[
-            <MenuItem
-              key={"openQuery"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Well,
-                  storeFunction: StoreFunction.GetFromStore,
-                  wellUid: well.uid
-                })
-              }
-              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
-            >
-              <StyledIcon
-                name="textField"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>Open in query view</Typography>
-            </MenuItem>,
-            <MenuItem
-              key={"newWell"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Well,
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: uuid()
-                })
-              }
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>New Well</Typography>
-            </MenuItem>,
-            <MenuItem
-              key={"newWellbore"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Wellbore,
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: well.uid,
-                  wellboreUid: uuid()
-                })
-              }
-              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>New Wellbore</Typography>
-            </MenuItem>
-          ]}
-        </NestedMenuItem>,
-        <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
-          <StyledIcon name="search" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Missing Data Agent</Typography>
-        </MenuItem>,
-        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
-          <StyledIcon name="add" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            Add to Multiple Log Selection
-          </Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"uploadMnemonicsMappings"}
-          onClick={onClickUploadMnemnonicsMappings}
-        >
-          <StyledIcon name="upload" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Upload Mnemonics Mappings</Typography>
-        </MenuItem>,
+        IsUserRoleAdvanced(userRole) && (
+          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+            {[
+              <MenuItem
+                key={"openQuery"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Well,
+                    storeFunction: StoreFunction.GetFromStore,
+                    wellUid: well.uid
+                  })
+                }
+                disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
+              >
+                <StyledIcon
+                  name="textField"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>Open in query view</Typography>
+              </MenuItem>,
+              <MenuItem
+                key={"newWell"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Well,
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: uuid()
+                  })
+                }
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>New Well</Typography>
+              </MenuItem>,
+              <MenuItem
+                key={"newWellbore"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Wellbore,
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: well.uid,
+                    wellboreUid: uuid()
+                  })
+                }
+                disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>New Wellbore</Typography>
+              </MenuItem>
+            ]}
+          </NestedMenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
+            <StyledIcon
+              name="search"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Missing Data Agent</Typography>
+          </MenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+            <StyledIcon name="add" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>
+              Add to Multiple Log Selection
+            </Typography>
+          </MenuItem>
+        ),
+        IsUserRoleExpert(userRole) && (
+          <MenuItem
+            key={"uploadMnemonicsMappings"}
+            onClick={onClickUploadMnemnonicsMappings}
+          >
+            <StyledIcon
+              name="upload"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Upload Mnemonics Mappings</Typography>
+          </MenuItem>
+        ),
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}

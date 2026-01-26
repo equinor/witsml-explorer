@@ -59,6 +59,8 @@ import { MultiLogSelectionCurveInfo } from "../MultiLogUtils.tsx";
 import MultiLogSelectionRepository from "components/MultiLogSelectionRepository.tsx";
 import { getMultipleLogCurveSelectionViewPath } from "../../routes/utils/pathBuilder.ts";
 import { RouterLogType } from "routes/routerConstants.ts";
+import { IsUserRoleAdvanced } from "components/UserRoles.ts";
+import { useOperationState } from "hooks/useOperationState.tsx";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -90,6 +92,10 @@ const LogCurveInfoContextMenu = (
     setPrioritizedUniversalCurves,
     isMultiLog = false
   } = props;
+
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const filteredServers = useServerFilter(servers);
   const navigate = useNavigate();
@@ -446,109 +452,119 @@ const LogCurveInfoContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        <MenuItem
-          key={"analyzeGaps"}
-          onClick={onClickAnalyzeGaps}
-          disabled={
-            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
-          }
-        >
-          <StyledIcon name="beat" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Analyze gaps</Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"offset"}
-          onClick={onClickOffset}
-          disabled={
-            checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 || isMultiLog
-          }
-        >
-          <StyledIcon name="tune" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            {menuItemText(
-              "offset",
-              ComponentType.Mnemonic,
-              checkedLogCurveInfoRowsWithoutIndexCurve
-            )}
-          </Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"multiLogMultiTargetAdd"}
-          onClick={onClickMultiLogMultiTargetAdd}
-          disabled={checkedLogCurveInfoRows.length === 0}
-        >
-          <StyledIcon name="add" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            Add To Multiple Log Selection
-          </Typography>
-        </MenuItem>,
-        <NestedMenuItem
-          key={"logPriorityCurves"}
-          label={"Log Priority Curves"}
-          icon="favoriteOutlined"
-        >
+        IsUserRoleAdvanced(userRole) && (
           <MenuItem
-            key={"setPriority"}
-            onClick={() =>
-              onlyPrioritizedCurvesAreChecked
-                ? onClickRemovePriority(false)
-                : onClickSetPriority(false)
+            key={"analyzeGaps"}
+            onClick={onClickAnalyzeGaps}
+            disabled={
+              checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
+              isMultiLog
             }
           >
-            <StyledIcon
-              name={
+            <StyledIcon name="beat" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Analyze gaps</Typography>
+          </MenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem
+            key={"offset"}
+            onClick={onClickOffset}
+            disabled={
+              checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
+              isMultiLog
+            }
+          >
+            <StyledIcon name="tune" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>
+              {menuItemText(
+                "offset",
+                ComponentType.Mnemonic,
+                checkedLogCurveInfoRowsWithoutIndexCurve
+              )}
+            </Typography>
+          </MenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem
+            key={"multiLogMultiTargetAdd"}
+            onClick={onClickMultiLogMultiTargetAdd}
+            disabled={checkedLogCurveInfoRows.length === 0}
+          >
+            <StyledIcon name="add" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>
+              Add To Multiple Log Selection
+            </Typography>
+          </MenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <NestedMenuItem
+            key={"logPriorityCurves"}
+            label={"Log Priority Curves"}
+            icon="favoriteOutlined"
+          >
+            <MenuItem
+              key={"setPriority"}
+              onClick={() =>
                 onlyPrioritizedCurvesAreChecked
-                  ? "favoriteFilled"
-                  : "favoriteOutlined"
+                  ? onClickRemovePriority(false)
+                  : onClickSetPriority(false)
               }
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>
-              {onlyPrioritizedCurvesAreChecked
-                ? "Remove Local Priority"
-                : "Set Local Priority"}
-            </Typography>
-          </MenuItem>
-          <MenuItem
-            key={"setUniversalPriority"}
-            onClick={() =>
-              onlyPrioritizedUniversalCurvesAreChecked
-                ? onClickRemovePriority(true)
-                : onClickSetPriority(true)
-            }
-          >
-            <StyledIcon
-              name={
+            >
+              <StyledIcon
+                name={
+                  onlyPrioritizedCurvesAreChecked
+                    ? "favoriteFilled"
+                    : "favoriteOutlined"
+                }
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>
+                {onlyPrioritizedCurvesAreChecked
+                  ? "Remove Local Priority"
+                  : "Set Local Priority"}
+              </Typography>
+            </MenuItem>
+            <MenuItem
+              key={"setUniversalPriority"}
+              onClick={() =>
                 onlyPrioritizedUniversalCurvesAreChecked
-                  ? "favoriteFilled"
-                  : "favoriteOutlined"
+                  ? onClickRemovePriority(true)
+                  : onClickSetPriority(true)
               }
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>
-              {onlyPrioritizedUniversalCurvesAreChecked
-                ? "Remove Universal Priority"
-                : "Set Universal Priority"}
-            </Typography>
-          </MenuItem>
-          <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
-            <StyledIcon
-              name="favoriteOutlined"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>Edit Local Priority</Typography>
-          </MenuItem>
-          <MenuItem
-            key={"editUniversalPriority"}
-            onClick={onClickEditUniversalPriority}
-          >
-            <StyledIcon
-              name="favoriteOutlined"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>Edit Universal Priority</Typography>
-          </MenuItem>
-        </NestedMenuItem>,
+            >
+              <StyledIcon
+                name={
+                  onlyPrioritizedUniversalCurvesAreChecked
+                    ? "favoriteFilled"
+                    : "favoriteOutlined"
+                }
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>
+                {onlyPrioritizedUniversalCurvesAreChecked
+                  ? "Remove Universal Priority"
+                  : "Set Universal Priority"}
+              </Typography>
+            </MenuItem>
+            <MenuItem key={"editPriority"} onClick={onClickEditPriority}>
+              <StyledIcon
+                name="favoriteOutlined"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Edit Local Priority</Typography>
+            </MenuItem>
+            <MenuItem
+              key={"editUniversalPriority"}
+              onClick={onClickEditUniversalPriority}
+            >
+              <StyledIcon
+                name="favoriteOutlined"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Edit Universal Priority</Typography>
+            </MenuItem>
+          </NestedMenuItem>
+        ),
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}

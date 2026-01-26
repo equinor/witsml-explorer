@@ -122,6 +122,7 @@ export const OffsetLogCurveModal = (
                   setIsValidInterval(isValid)
                 }
               />
+              IsUserRoleAdvanced(userRole) && ({" "}
               <TextField
                 id={"depthOffset"}
                 label="Offset"
@@ -134,6 +135,7 @@ export const OffsetLogCurveModal = (
                     : null
                 }
               />
+              ,
             </>
           ) : (
             <>

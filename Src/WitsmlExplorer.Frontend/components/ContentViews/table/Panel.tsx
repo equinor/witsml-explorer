@@ -19,6 +19,7 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
+import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -57,7 +58,7 @@ const Panel = (props: PanelProps) => {
     disableSearchParamsFilter = false
   } = props;
   const {
-    operationState: { decimals, theme }
+    operationState: { decimals, theme, userRole }
   } = useOperationState();
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -181,7 +182,7 @@ const Panel = (props: PanelProps) => {
             <Icon name="download" />
           </Button>
         )}
-        {responseTime != null && (
+        {responseTime != null && IsUserRoleAdvanced(userRole) && (
           <Typography>Response time: {responseTime} ms</Typography>
         )}
         {panelElements}

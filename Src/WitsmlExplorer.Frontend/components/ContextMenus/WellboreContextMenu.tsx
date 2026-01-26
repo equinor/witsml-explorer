@@ -74,6 +74,7 @@ import { RouterLogType } from "../../routes/routerConstants.ts";
 import WellborePickerModal, {
   WellborePickerProps
 } from "components/Modals/WellborePickerModal.tsx";
+import { IsUserRoleAdvanced, IsUserRoleExpert } from "components/UserRoles.ts";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -95,6 +96,10 @@ const WellboreContextMenu = (
     placeholderData: Object.entries(ObjectType)
   });
   const filteredServers = useServerFilter(servers);
+
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -358,120 +363,135 @@ const WellboreContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        <NestedMenuItem
-          key={"mapUidOnServer"}
-          label={"Map UID From Server"}
-          icon={"link"}
-        >
-          {servers
-            .filter((server: Server) => server.id != connectedServer.id)
-            .map((server: Server) => (
+        IsUserRoleExpert(userRole) && (
+          <NestedMenuItem
+            key={"mapUidOnServer"}
+            label={"Map UID From Server"}
+            icon={"link"}
+          >
+            {servers
+              .filter((server: Server) => server.id != connectedServer.id)
+              .map((server: Server) => (
+                <MenuItem
+                  key={server.name}
+                  onClick={() => onClickMapUidOnServer(wellbore, server)}
+                >
+                  <Typography color={"primary"}>{server.name}</Typography>
+                </MenuItem>
+              ))}
+          </NestedMenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+            <StyledIcon
+              name="viewList"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>
+              Add to Multiple Log Selection
+            </Typography>
+          </MenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+            {[
               <MenuItem
-                key={server.name}
-                onClick={() => onClickMapUidOnServer(wellbore, server)}
+                key={"openQuery"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Wellbore,
+                    storeFunction: StoreFunction.GetFromStore,
+                    wellUid: wellbore.wellUid,
+                    wellboreUid: wellbore.uid
+                  })
+                }
+                disabled={
+                  !!checkedWellboreRows && checkedWellboreRows.length !== 1
+                }
               >
-                <Typography color={"primary"}>{server.name}</Typography>
-              </MenuItem>
-            ))}
-        </NestedMenuItem>,
-        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
-          <StyledIcon
-            name="viewList"
-            color={colors.interactive.primaryResting}
-          />
-          <Typography color={"primary"}>
-            Add to Multiple Log Selection
-          </Typography>
-        </MenuItem>,
-        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
-          {[
-            <MenuItem
-              key={"openQuery"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Wellbore,
-                  storeFunction: StoreFunction.GetFromStore,
-                  wellUid: wellbore.wellUid,
-                  wellboreUid: wellbore.uid
-                })
-              }
-              disabled={
-                !!checkedWellboreRows && checkedWellboreRows.length !== 1
-              }
-            >
-              <StyledIcon
-                name="textField"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>Open in query view</Typography>
-            </MenuItem>,
-            <MenuItem
-              key={"newWellbore"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Wellbore,
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: wellbore.wellUid,
-                  wellboreUid: uuid()
-                })
-              }
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>New Wellbore</Typography>
-            </MenuItem>,
-            <NestedMenuItem
-              key={"newObjects"}
-              label={"New object"}
-              icon={"add"}
-              disabled={
-                !!checkedWellboreRows && checkedWellboreRows.length !== 1
-              }
-            >
-              {Object.values(ObjectType)
-                .filter((objectType) => capObjects.includes(objectType))
-                .map((objectType) => (
-                  <MenuItem
-                    key={objectType}
-                    onClick={() =>
-                      openInQueryView({
-                        templateObject: ObjectTypeToTemplateObject[objectType],
-                        storeFunction: StoreFunction.AddToStore,
-                        wellUid: wellbore.wellUid,
-                        wellboreUid: wellbore.uid,
-                        objectUid: uuid()
-                      })
-                    }
-                    disabled={
-                      !!checkedWellboreRows && checkedWellboreRows.length !== 1
-                    }
-                  >
-                    <StyledIcon
-                      name="add"
-                      color={colors.interactive.primaryResting}
-                    />
-                    <Typography
-                      color={"primary"}
-                    >{`New ${objectType}`}</Typography>
-                  </MenuItem>
-                ))}
-            </NestedMenuItem>
-          ]}
-        </NestedMenuItem>,
-        <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
-          <StyledIcon name="search" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Missing Data Agent</Typography>
-        </MenuItem>,
+                <StyledIcon
+                  name="textField"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>Open in query view</Typography>
+              </MenuItem>,
+              <MenuItem
+                key={"newWellbore"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Wellbore,
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: wellbore.wellUid,
+                    wellboreUid: uuid()
+                  })
+                }
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>New Wellbore</Typography>
+              </MenuItem>,
+              <NestedMenuItem
+                key={"newObjects"}
+                label={"New object"}
+                icon={"add"}
+                disabled={
+                  !!checkedWellboreRows && checkedWellboreRows.length !== 1
+                }
+              >
+                {Object.values(ObjectType)
+                  .filter((objectType) => capObjects.includes(objectType))
+                  .map((objectType) => (
+                    <MenuItem
+                      key={objectType}
+                      onClick={() =>
+                        openInQueryView({
+                          templateObject:
+                            ObjectTypeToTemplateObject[objectType],
+                          storeFunction: StoreFunction.AddToStore,
+                          wellUid: wellbore.wellUid,
+                          wellboreUid: wellbore.uid,
+                          objectUid: uuid()
+                        })
+                      }
+                      disabled={
+                        !!checkedWellboreRows &&
+                        checkedWellboreRows.length !== 1
+                      }
+                    >
+                      <StyledIcon
+                        name="add"
+                        color={colors.interactive.primaryResting}
+                      />
+                      <Typography
+                        color={"primary"}
+                      >{`New ${objectType}`}</Typography>
+                    </MenuItem>
+                  ))}
+              </NestedMenuItem>
+            ]}
+          </NestedMenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
+            <StyledIcon
+              name="search"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Missing Data Agent</Typography>
+          </MenuItem>
+        ),
         <MenuItem key={"copyWellbore"} onClick={onClickCopyWellbore}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy wellbore</Typography>
         </MenuItem>,
-        <MenuItem key={"compareWellbore"} onClick={onClickCompareWellbore}>
-          <StyledIcon name="copy" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Compare wellbore</Typography>
-        </MenuItem>,
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem key={"compareWellbore"} onClick={onClickCompareWellbore}>
+            <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Compare wellbore</Typography>
+          </MenuItem>
+        ),
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}

@@ -47,6 +47,8 @@ import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import { useNavigate } from "react-router-dom";
 import { RouterLogType } from "../../routes/routerConstants.ts";
 import { getMultipleLogCurveSelectionViewPath } from "routes/utils/pathBuilder.ts";
+import { IsUserRoleAdvanced } from "components/UserRoles.ts";
+import { useOperationState } from "hooks/useOperationState.tsx";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (
@@ -65,6 +67,10 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
+
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -120,25 +126,27 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        <MenuItem
-          key={"refresh"}
-          onClick={() =>
-            onClickRefresh(
-              dispatchOperation,
-              queryClient,
-              connectedServer?.url,
-              wellbore.wellUid,
-              wellbore.uid,
-              ObjectType.Log
-            )
-          }
-        >
-          <StyledIcon
-            name="refresh"
-            color={colors.interactive.primaryResting}
-          />
-          <Typography color={"primary"}>{`Refresh Logs`}</Typography>
-        </MenuItem>,
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem
+            key={"refresh"}
+            onClick={() =>
+              onClickRefresh(
+                dispatchOperation,
+                queryClient,
+                connectedServer?.url,
+                wellbore.wellUid,
+                wellbore.uid,
+                ObjectType.Log
+              )
+            }
+          >
+            <StyledIcon
+              name="refresh"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>{`Refresh Logs`}</Typography>
+          </MenuItem>
+        ),
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>
@@ -182,34 +190,38 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
-          {[
-            <MenuItem
-              key={"newObject"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Log,
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: wellbore.wellUid,
-                  wellboreUid: wellbore.uid,
-                  objectUid: uuid()
-                })
-              }
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>New Log</Typography>
-            </MenuItem>
-          ]}
-        </NestedMenuItem>,
-        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
-          <StyledIcon name="add" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            Add to Multiple Log Selection
-          </Typography>
-        </MenuItem>
+        IsUserRoleAdvanced(userRole) && (
+          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+            {[
+              <MenuItem
+                key={"newObject"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Log,
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: wellbore.wellUid,
+                    wellboreUid: wellbore.uid,
+                    objectUid: uuid()
+                  })
+                }
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>New Log</Typography>
+              </MenuItem>
+            ]}
+          </NestedMenuItem>
+        ),
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+            <StyledIcon name="add" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>
+              Add to Multiple Log Selection
+            </Typography>
+          </MenuItem>
+        )
       ]}
     />
   );

@@ -10,6 +10,7 @@ import {
   OffsetLogCurveModal,
   OffsetLogCurveModalProps
 } from "components/Modals/OffsetLogCurveModal";
+import { IsUserRoleAdvanced } from "components/UserRoles";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
@@ -34,6 +35,10 @@ const MnemonicsContextMenu = (
 ): React.ReactElement => {
   const { dispatchOperation } = useOperationState();
   const { log, mnemonics, indexRanges } = props;
+
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const deleteLogCurveValues = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -90,16 +95,18 @@ const MnemonicsContextMenu = (
           />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"offset"}
-          onClick={onClickOffset}
-          disabled={indexRanges.length != 1}
-        >
-          <StyledIcon name="tune" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            {menuItemText("offset", ComponentType.Mnemonic, mnemonics)}
-          </Typography>
-        </MenuItem>
+        IsUserRoleAdvanced(userRole) && (
+          <MenuItem
+            key={"offset"}
+            onClick={onClickOffset}
+            disabled={indexRanges.length != 1}
+          >
+            <StyledIcon name="tune" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>
+              {menuItemText("offset", ComponentType.Mnemonic, mnemonics)}
+            </Typography>
+          </MenuItem>
+        )
       ]}
     />
   );

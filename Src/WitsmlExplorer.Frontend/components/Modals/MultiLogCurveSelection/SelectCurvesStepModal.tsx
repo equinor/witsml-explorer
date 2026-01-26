@@ -26,6 +26,7 @@ import LogObjectService from "../../../services/logObjectService.tsx";
 import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "../../Constants.tsx";
 import { LogObjectRow } from "../../ContentViews/LogsListView.tsx";
 import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
+import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 export interface SelectCurvesStepModalProps {
   targetServer: Server;
@@ -42,7 +43,7 @@ const SelectCurvesStepModal = (
     props;
   const {
     dispatchOperation,
-    operationState: { timeZone, dateTimeFormat, theme }
+    operationState: { timeZone, dateTimeFormat, theme, userRole }
   } = useOperationState();
   const { curveThreshold } = useCurveThreshold();
   const allLocalPrioritizedCurves = useGetMultipleLocalPrioritizedCurves(
@@ -154,19 +155,21 @@ const SelectCurvesStepModal = (
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    <CommonPanelContainer key="showPriority">
-      <Switch
-        checked={showOnlyPrioritizedCurves}
-        disabled={
-          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
-        }
-        onChange={() =>
-          setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
-        }
-        size={theme === UserTheme.Compact ? "small" : "default"}
-      />
-      <Typography>Show Only Prioritized Curves</Typography>
-    </CommonPanelContainer>
+    IsUserRoleAdvanced(userRole) && (
+      <CommonPanelContainer key="showPriority">
+        <Switch
+          checked={showOnlyPrioritizedCurves}
+          disabled={
+            allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+          }
+          onChange={() =>
+            setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
+          }
+          size={theme === UserTheme.Compact ? "small" : "default"}
+        />
+        <Typography>Show Only Prioritized Curves</Typography>
+      </CommonPanelContainer>
+    )
   ];
 
   const onSubmit = async () => {

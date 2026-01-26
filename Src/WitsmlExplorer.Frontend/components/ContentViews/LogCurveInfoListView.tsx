@@ -39,11 +39,12 @@ import {
   LoadExistingMinQcReport
 } from "./MinimumDataQcUtils.tsx";
 import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
+import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
-    operationState: { timeZone, dateTimeFormat, theme }
+    operationState: { timeZone, dateTimeFormat, theme, userRole }
   } = useOperationState();
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
@@ -213,30 +214,34 @@ export default function LogCurveInfoListView() {
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    <CommonPanelContainer key="showPriority">
-      <Switch
-        checked={showOnlyPrioritizedCurves}
-        disabled={
-          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
-        }
-        onChange={() =>
-          setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
-        }
-        size={theme === UserTheme.Compact ? "small" : "default"}
-      />
-      <Typography>Show Only Prioritized Curves</Typography>
-    </CommonPanelContainer>,
-    <CommonPanelContainer key="showMinimumDataQc">
-      <Switch
-        checked={showMinimumDataQc}
-        disabled={
-          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
-        }
-        onChange={handleMinimumDataQcSwitchChange}
-        size={theme === UserTheme.Compact ? "small" : "default"}
-      />
-      <Typography>Show Minimum Data QC</Typography>
-    </CommonPanelContainer>
+    IsUserRoleAdvanced(userRole) && (
+      <CommonPanelContainer key="showPriority">
+        <Switch
+          checked={showOnlyPrioritizedCurves}
+          disabled={
+            allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+          }
+          onChange={() =>
+            setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
+          }
+          size={theme === UserTheme.Compact ? "small" : "default"}
+        />
+        <Typography>Show Only Prioritized Curves</Typography>
+      </CommonPanelContainer>
+    ),
+    IsUserRoleAdvanced(userRole) && (
+      <CommonPanelContainer key="showMinimumDataQc">
+        <Switch
+          checked={showMinimumDataQc}
+          disabled={
+            allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+          }
+          onChange={handleMinimumDataQcSwitchChange}
+          size={theme === UserTheme.Compact ? "small" : "default"}
+        />
+        <Typography>Show Minimum Data QC</Typography>
+      </CommonPanelContainer>
+    )
   ];
 
   return (

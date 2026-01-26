@@ -83,6 +83,7 @@ export const LogHeaderDateTimeField = (
   return (
     <Layout>
       <Horizontal>
+        IsUserRoleAdvanced(userRole) && (
         <TextField
           id={"offset"}
           label={"UTC offset"}
@@ -93,6 +94,7 @@ export const LogHeaderDateTimeField = (
             width: "94px"
           }}
         />
+        )
         <TextField
           id={label}
           label={label}

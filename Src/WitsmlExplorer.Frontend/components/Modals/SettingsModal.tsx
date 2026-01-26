@@ -8,6 +8,7 @@ import {
   DateTimeFormat,
   DecimalPreference,
   TimeZone,
+  UserRole,
   UserTheme
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -25,7 +26,8 @@ import {
   STORAGE_HOTKEYS_ENABLED_KEY,
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
-  STORAGE_TIMEZONE_KEY
+  STORAGE_TIMEZONE_KEY,
+  STORAGE_USER_ROLE_KEY
 } from "tools/localStorageHelpers";
 
 const iconSizes: { [key in UserTheme]: 24 | 32 | 16 | 18 | 40 } = {
@@ -64,7 +66,8 @@ const SettingsModal = (): React.ReactElement => {
       colors,
       dateTimeFormat,
       decimals,
-      hotKeysEnabled
+      hotKeysEnabled,
+      userRole
     },
     dispatchOperation
   } = useOperationState();
@@ -145,6 +148,15 @@ const SettingsModal = (): React.ReactElement => {
     setCheckedDecimalPreference(selectedValue);
   };
 
+  const onChangeUserRole = (event: any) => {
+    const selectedUserRole = event.target.value;
+    setLocalStorageItem<UserRole>(STORAGE_USER_ROLE_KEY, selectedUserRole);
+    dispatchOperation({
+      type: OperationType.SetUserRole,
+      payload: selectedUserRole
+    });
+  };
+
   const onChangeHotKeysEnabled = (event: ChangeEvent<HTMLInputElement>) => {
     const hotKeysEnabled = event.target.checked;
     setLocalStorageItem<boolean>(STORAGE_HOTKEYS_ENABLED_KEY, hotKeysEnabled);
@@ -217,6 +229,20 @@ const SettingsModal = (): React.ReactElement => {
               <option value={DateTimeFormat.Natural}>
                 dd.MM.yyyy HH:mm:ss.SSS
               </option>
+            </StyledNativeSelect>
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <RowIcon name="accessible" />
+            <StyledNativeSelect
+              id={"native-select-mode"}
+              label={"User Role"}
+              onChange={onChangeUserRole}
+              defaultValue={userRole}
+              colors={colors}
+            >
+              <option value={"regular"}>Regular User</option>
+              <option value={"advanced"}>Advanced User</option>
+              <option value={"expert"}>Expert User</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>

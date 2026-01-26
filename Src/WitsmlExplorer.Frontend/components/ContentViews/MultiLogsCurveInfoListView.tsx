@@ -30,11 +30,12 @@ import {
   getColumns,
   getTableData
 } from "./LogCurveInfoListViewUtils";
+import { IsUserRoleAdvanced } from "components/UserRoles";
 
 export default function MultiLogsCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
-    operationState: { timeZone, dateTimeFormat, theme }
+    operationState: { timeZone, dateTimeFormat, theme, userRole }
   } = useOperationState();
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType } = useParams();
@@ -155,19 +156,21 @@ export default function MultiLogsCurveInfoListView() {
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    <CommonPanelContainer key="showPriority">
-      <Switch
-        checked={showOnlyPrioritizedCurves}
-        disabled={
-          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
-        }
-        onChange={() =>
-          setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
-        }
-        size={theme === UserTheme.Compact ? "small" : "default"}
-      />
-      <Typography>Show Only Prioritized Curves</Typography>
-    </CommonPanelContainer>
+    IsUserRoleAdvanced(userRole) && (
+      <CommonPanelContainer key="showPriority">
+        <Switch
+          checked={showOnlyPrioritizedCurves}
+          disabled={
+            allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+          }
+          onChange={() =>
+            setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
+          }
+          size={theme === UserTheme.Compact ? "small" : "default"}
+        />
+        <Typography>Show Only Prioritized Curves</Typography>
+      </CommonPanelContainer>
+    )
   ];
 
   return (

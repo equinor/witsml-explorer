@@ -70,6 +70,7 @@ import MinimumDataQcModal, {
 import { useGetLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
 import { useGetUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
 import AgentSettingsModal from "../Modals/AgentSettingsModal.tsx";
+import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -92,6 +93,10 @@ const LogObjectContextMenu = (
   const filteredServers = useServerFilter(servers);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -366,144 +371,158 @@ const LogObjectContextMenu = (
           {menuItemText("paste", "mnemonic", logCurvesReference?.componentUids)}
         </Typography>
       </MenuItem>,
-      <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} icon="edit">
-        {[
-          <MenuItem
-            key={"trimlogobject"}
-            onClick={onClickTrimLogObject}
-            disabled={checkedObjects.length !== 1}
-          >
-            <StyledIcon
-              name="formatLine"
-              color={colors.interactive.primaryResting}
+      IsUserRoleAdvanced(userRole) && (
+        <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} icon="edit">
+          {[
+            <MenuItem
+              key={"trimlogobject"}
+              onClick={onClickTrimLogObject}
+              disabled={checkedObjects.length !== 1}
+            >
+              <StyledIcon
+                name="formatLine"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Trim range</Typography>
+            </MenuItem>,
+            <MenuItem
+              key={"splice"}
+              onClick={onClickSplice}
+              disabled={checkedObjects.length < 2}
+            >
+              <StyledIcon
+                name="compare"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Splice logs</Typography>
+            </MenuItem>,
+            <BatchModifyMenuItem
+              key="batchModify"
+              checkedObjects={checkedObjects}
+              objectType={ObjectType.Log}
             />
-            <Typography color={"primary"}>Trim range</Typography>
-          </MenuItem>,
-          <MenuItem
-            key={"splice"}
-            onClick={onClickSplice}
-            disabled={checkedObjects.length < 2}
-          >
-            <StyledIcon
-              name="compare"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>Splice logs</Typography>
-          </MenuItem>,
-          <BatchModifyMenuItem
-            key="batchModify"
-            checkedObjects={checkedObjects}
-            objectType={ObjectType.Log}
-          />
-        ]}
-        ,
-      </NestedMenuItem>,
+          ]}
+          ,
+        </NestedMenuItem>
+      ),
       <Divider key={uuid()} />,
-      <NestedMenuItem
-        key={"agentslognestedmenu"}
-        label={"Agents"}
-        icon="person"
-      >
-        {[
-          <MenuItem
-            key={"comparelogheader"}
-            onClick={onClickCompareHeader}
-            disabled={checkedObjects.length > 2}
-          >
-            <StyledIcon
-              name="compare"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`${menuItemText(
-              "compare",
-              "log",
-              []
-            )} header`}</Typography>
-          </MenuItem>,
-          <MenuItem
-            key={"comparelogdata"}
-            onClick={onClickCompareData}
-            disabled={checkedObjects.length > 2}
-          >
-            <StyledIcon
-              name="compare"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`${menuItemText(
-              "compare",
-              "log",
-              []
-            )} data`}</Typography>
-          </MenuItem>,
-          <MenuItem
-            key={"analyzeGaps"}
-            onClick={onClickAnalyzeGaps}
-            disabled={checkedObjects.length !== 1}
-          >
-            <StyledIcon name="beat" color={colors.interactive.primaryResting} />
-            <Typography color={"primary"}>Analyze gaps</Typography>
-          </MenuItem>,
-          <MenuItem
-            key={"checkHeader"}
-            onClick={onClickCheckHeader}
-            disabled={checkedObjects.length !== 1}
-          >
-            <StyledIcon
-              name="compare"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`${menuItemText(
-              "check",
-              "log header",
-              []
-            )}`}</Typography>
-          </MenuItem>,
-          <MenuItem
-            key={"countLogData"}
-            onClick={onClickCountLogData}
-            disabled={checkedObjects.length !== 1}
-          >
-            <StyledIcon
-              name="assignment"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`${menuItemText(
-              "count",
-              "log data",
-              []
-            )}`}</Typography>
-          </MenuItem>,
-          <MenuItem
-            key={"deleteEmptyMnemonics"}
-            onClick={onClickDeleteEmptyMnemonics}
-          >
-            <StyledIcon
-              name="deleteToTrash"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>Delete empty mnemonics</Typography>
-          </MenuItem>,
-          <MenuItem
-            key={"minimumDataQc"}
-            onClick={onClickMinimumDataQc}
-            disabled={
-              localPrioritizedCurves.length == 0 &&
-              universalPrioritizedCurves.length == 0
-            }
-          >
-            <StyledIcon name="beat" color={colors.interactive.primaryResting} />
-            <Typography color={"primary"}>Minimum Data QC</Typography>
-          </MenuItem>,
-          <Divider key={uuid()} />,
-          <MenuItem key={"agentSettings"} onClick={onClickAgentSettings}>
-            <StyledIcon
-              name="settings"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>Agent Settings</Typography>
-          </MenuItem>
-        ]}
-      </NestedMenuItem>,
+      IsUserRoleAdvanced(userRole) && (
+        <NestedMenuItem
+          key={"agentslognestedmenu"}
+          label={"Agents"}
+          icon="person"
+        >
+          {[
+            <MenuItem
+              key={"comparelogheader"}
+              onClick={onClickCompareHeader}
+              disabled={checkedObjects.length > 2}
+            >
+              <StyledIcon
+                name="compare"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>{`${menuItemText(
+                "compare",
+                "log",
+                []
+              )} header`}</Typography>
+            </MenuItem>,
+            <MenuItem
+              key={"comparelogdata"}
+              onClick={onClickCompareData}
+              disabled={checkedObjects.length > 2}
+            >
+              <StyledIcon
+                name="compare"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>{`${menuItemText(
+                "compare",
+                "log",
+                []
+              )} data`}</Typography>
+            </MenuItem>,
+            IsUserRoleAdvanced(userRole) && (
+              <MenuItem
+                key={"analyzeGaps"}
+                onClick={onClickAnalyzeGaps}
+                disabled={checkedObjects.length !== 1}
+              >
+                <StyledIcon
+                  name="beat"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>Analyze gaps</Typography>
+              </MenuItem>
+            ),
+            <MenuItem
+              key={"checkHeader"}
+              onClick={onClickCheckHeader}
+              disabled={checkedObjects.length !== 1}
+            >
+              <StyledIcon
+                name="compare"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>{`${menuItemText(
+                "check",
+                "log header",
+                []
+              )}`}</Typography>
+            </MenuItem>,
+            <MenuItem
+              key={"countLogData"}
+              onClick={onClickCountLogData}
+              disabled={checkedObjects.length !== 1}
+            >
+              <StyledIcon
+                name="assignment"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>{`${menuItemText(
+                "count",
+                "log data",
+                []
+              )}`}</Typography>
+            </MenuItem>,
+            <MenuItem
+              key={"deleteEmptyMnemonics"}
+              onClick={onClickDeleteEmptyMnemonics}
+            >
+              <StyledIcon
+                name="deleteToTrash"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Delete empty mnemonics</Typography>
+            </MenuItem>,
+            IsUserRoleAdvanced(userRole) && (
+              <MenuItem
+                key={"minimumDataQc"}
+                onClick={onClickMinimumDataQc}
+                disabled={
+                  localPrioritizedCurves.length == 0 &&
+                  universalPrioritizedCurves.length == 0
+                }
+              >
+                <StyledIcon
+                  name="beat"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>Minimum Data QC</Typography>
+              </MenuItem>
+            ),
+            <Divider key={uuid()} />,
+            <MenuItem key={"agentSettings"} onClick={onClickAgentSettings}>
+              <StyledIcon
+                name="settings"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Agent Settings</Typography>
+            </MenuItem>
+          ]}
+        </NestedMenuItem>
+      ),
       <Divider key={uuid()} />,
       <MenuItem
         key={"importlogdata"}

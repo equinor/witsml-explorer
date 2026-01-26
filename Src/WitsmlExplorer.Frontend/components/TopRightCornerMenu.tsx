@@ -20,6 +20,7 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
 import { RouterLogType } from "../routes/routerConstants.ts";
+import { IsUserRoleAdvanced, IsUserRoleExpert } from "./UserRoles.ts";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -28,6 +29,9 @@ export default function TopRightCornerMenu() {
   const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
   const { dispatchLoggedInUsernames } = useLoggedInUsernames();
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const openSettingsMenu = () => {
     dispatchOperation({
@@ -110,28 +114,35 @@ export default function TopRightCornerMenu() {
         <Icon name="assignment" />
         {showLabels && "Jobs"}
       </Button>
-      <Button
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openQueryView}
-        disabled={!isConnected}
-      >
-        <Icon name="code" />
-        {showLabels && "Query"}
-      </Button>
-      <Button
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openUidModal}
-      >
-        <Icon name="link" />
-        {showLabels && "UID Mapping"}
-      </Button>
-      <Button
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openMultiLogSelect}
-      >
-        <Icon name="viewList" />
-        {showLabels && "Multiple Log Selection"}
-      </Button>
+      {IsUserRoleAdvanced(userRole) && (
+        <Button
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openQueryView}
+          disabled={!isConnected}
+        >
+          <Icon name="code" />
+          {showLabels && "Query"}
+        </Button>
+      )}
+      {IsUserRoleExpert(userRole) && (
+        <Button
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openUidModal}
+        >
+          <Icon name="link" />
+          {showLabels && "UID Mapping"}
+        </Button>
+      )}
+
+      {IsUserRoleAdvanced(userRole) && (
+        <Button
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openMultiLogSelect}
+        >
+          <Icon name="viewList" />
+          {showLabels && "Multiple Log Selection"}
+        </Button>
+      )}
       <Button
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}
