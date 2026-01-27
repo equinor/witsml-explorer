@@ -8,7 +8,11 @@ import { Server } from "../../models/server";
 import ComponentService from "../../services/componentService";
 import { QUERY_KEY_COMPONENTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { TimedResponse, withQueryTiming } from "./queryTiming";
+import {
+  TimedResponse,
+  withQueryTiming,
+  wrapPlaceholderData
+} from "./queryTiming";
 
 export const getComponentsQueryKey = (
   serverUrl: string,
@@ -55,8 +59,8 @@ export const componentsQuery = <T extends ComponentType>(
       );
       return components;
     }),
-
   ...options,
+  placeholderData: wrapPlaceholderData(options?.placeholderData),
   gcTime: 0,
   enabled:
     !!server &&
