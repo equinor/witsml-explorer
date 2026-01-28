@@ -6,9 +6,14 @@ import LogCurveInfoContextMenu, {
 } from "components/ContextMenus/LogCurveInfoContextMenu";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import { DisplayModalAction, UserTheme } from "contexts/operationStateReducer";
+import {
+  DisplayModalAction,
+  UserRole,
+  UserTheme
+} from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -31,20 +36,19 @@ import MinimumDataQcModal, {
   MinimumDataQcModalProps
 } from "../Modals/MinimumDataQcModal.tsx";
 import {
-  LogCurveInfoRow,
   getColumns,
-  getTableData
+  getTableData,
+  LogCurveInfoRow
 } from "./LogCurveInfoListViewUtils";
 import {
   IsQcReportJobRunning,
   LoadExistingMinQcReport
 } from "./MinimumDataQcUtils.tsx";
-import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
-    operationState: { timeZone, dateTimeFormat, theme, userRole }
+    operationState: { timeZone, dateTimeFormat, theme }
   } = useOperationState();
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType, objectUid } = useParams();
@@ -217,8 +221,8 @@ export default function LogCurveInfoListView() {
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    IsUserRoleAdvanced(userRole) && (
-      <CommonPanelContainer key="showPriority">
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="showPriority">
+      <CommonPanelContainer>
         <Switch
           checked={showOnlyPrioritizedCurves}
           disabled={
@@ -231,9 +235,9 @@ export default function LogCurveInfoListView() {
         />
         <Typography>Show Only Prioritized Curves</Typography>
       </CommonPanelContainer>
-    ),
-    IsUserRoleAdvanced(userRole) && (
-      <CommonPanelContainer key="showMinimumDataQc">
+    </RoleLimitedAccess>,
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="showMinimumDataQc">
+      <CommonPanelContainer>
         <Switch
           checked={showMinimumDataQc}
           disabled={
@@ -244,7 +248,7 @@ export default function LogCurveInfoListView() {
         />
         <Typography>Show Minimum Data QC</Typography>
       </CommonPanelContainer>
-    )
+    </RoleLimitedAccess>
   ];
 
   return (

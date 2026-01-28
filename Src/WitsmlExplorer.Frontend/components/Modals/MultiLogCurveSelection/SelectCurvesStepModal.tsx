@@ -1,32 +1,35 @@
+import { Switch, Typography } from "@equinor/eds-core-react";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import React, { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import ModalDialog, { ModalWidth } from "../ModalDialog.tsx";
+import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
+import {
+  UserRole,
+  UserTheme
+} from "../../../contexts/operationStateReducer.tsx";
+import OperationType from "../../../contexts/operationType.ts";
+import { useGetMultipleLocalPrioritizedCurves } from "../../../hooks/query/useGetLocalPrioritizedCurves.tsx";
+import { useGetUniversalPrioritizedCurves } from "../../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
+import { useOperationState } from "../../../hooks/useOperationState.tsx";
+import LogCurveInfo from "../../../models/logCurveInfo.ts";
+import LogObject from "../../../models/logObject.tsx";
+import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 import { Server } from "../../../models/server.ts";
 import Wellbore from "../../../models/wellbore.tsx";
-import { useOperationState } from "../../../hooks/useOperationState.tsx";
-import OperationType from "../../../contexts/operationType.ts";
-import { ContentTable } from "../../ContentViews/table";
-import { Switch, Typography } from "@equinor/eds-core-react";
+import LogObjectService from "../../../services/logObjectService.tsx";
+import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "../../Constants.tsx";
 import {
   getColumns,
   getTableData
 } from "../../ContentViews/LogCurveInfoListViewUtils.tsx";
-import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
-import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
-import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
-import { useGetMultipleLocalPrioritizedCurves } from "../../../hooks/query/useGetLocalPrioritizedCurves.tsx";
-import { useGetUniversalPrioritizedCurves } from "../../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
+import { LogObjectRow } from "../../ContentViews/LogsListView.tsx";
+import { ContentTable } from "../../ContentViews/table";
 import {
   MultiLogSelectionCurveInfo,
   MultiLogWizardResult
 } from "../../MultiLogUtils.tsx";
-import LogObject from "../../../models/logObject.tsx";
-import LogCurveInfo from "../../../models/logCurveInfo.ts";
-import LogObjectService from "../../../services/logObjectService.tsx";
-import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "../../Constants.tsx";
-import { LogObjectRow } from "../../ContentViews/LogsListView.tsx";
-import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
-import { IsUserRoleAdvanced } from "components/UserRoles.ts";
+import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
+import ModalDialog, { ModalWidth } from "../ModalDialog.tsx";
 
 export interface SelectCurvesStepModalProps {
   targetServer: Server;
@@ -43,7 +46,7 @@ const SelectCurvesStepModal = (
     props;
   const {
     dispatchOperation,
-    operationState: { timeZone, dateTimeFormat, theme, userRole }
+    operationState: { timeZone, dateTimeFormat, theme }
   } = useOperationState();
   const { curveThreshold } = useCurveThreshold();
   const allLocalPrioritizedCurves = useGetMultipleLocalPrioritizedCurves(
@@ -155,8 +158,8 @@ const SelectCurvesStepModal = (
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    IsUserRoleAdvanced(userRole) && (
-      <CommonPanelContainer key="showPriority">
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="showPriority">
+      <CommonPanelContainer>
         <Switch
           checked={showOnlyPrioritizedCurves}
           disabled={
@@ -169,7 +172,7 @@ const SelectCurvesStepModal = (
         />
         <Typography>Show Only Prioritized Curves</Typography>
       </CommonPanelContainer>
-    )
+    </RoleLimitedAccess>
   ];
 
   const onSubmit = async () => {

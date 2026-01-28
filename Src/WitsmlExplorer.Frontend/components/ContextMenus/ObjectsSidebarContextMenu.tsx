@@ -18,8 +18,9 @@ import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
-import { IsUserRoleAdvanced } from "components/UserRoles";
+import { RoleLimitedAccess } from "components/UserRoles";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { UserRole } from "contexts/operationStateReducer";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -49,10 +50,6 @@ const ObjectsSidebarContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
-
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const onClickNewObject = () => {
     const newObject: ObjectOnWellbore = {
@@ -137,8 +134,8 @@ const ObjectsSidebarContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        IsUserRoleAdvanced(userRole) && (
-          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
+          <NestedMenuItem label={"Query"} icon="textField">
             {[
               <MenuItem
                 key={"newObject"}
@@ -160,7 +157,7 @@ const ObjectsSidebarContextMenu = (
               </MenuItem>
             ]}
           </NestedMenuItem>
-        )
+        </RoleLimitedAccess>
       ]}
     />
   );

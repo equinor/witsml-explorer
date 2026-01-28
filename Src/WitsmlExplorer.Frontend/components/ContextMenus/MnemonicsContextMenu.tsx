@@ -2,15 +2,16 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
-  menuItemText
+  menuItemText,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import {
   OffsetLogCurveModal,
   OffsetLogCurveModalProps
 } from "components/Modals/OffsetLogCurveModal";
-import { IsUserRoleAdvanced } from "components/UserRoles";
+import { RoleLimitedAccess } from "components/UserRoles";
+import { UserRole } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
 import { ComponentType } from "models/componentType";
@@ -35,10 +36,6 @@ const MnemonicsContextMenu = (
 ): React.ReactElement => {
   const { dispatchOperation } = useOperationState();
   const { log, mnemonics, indexRanges } = props;
-
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const deleteLogCurveValues = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -95,18 +92,14 @@ const MnemonicsContextMenu = (
           />
           <Typography color={"primary"}>Delete</Typography>
         </MenuItem>,
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem
-            key={"offset"}
-            onClick={onClickOffset}
-            disabled={indexRanges.length != 1}
-          >
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="offset">
+          <MenuItem onClick={onClickOffset} disabled={indexRanges.length != 1}>
             <StyledIcon name="tune" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>
               {menuItemText("offset", ComponentType.Mnemonic, mnemonics)}
             </Typography>
           </MenuItem>
-        )
+        </RoleLimitedAccess>
       ]}
     />
   );

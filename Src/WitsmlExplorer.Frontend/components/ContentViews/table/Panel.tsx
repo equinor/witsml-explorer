@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
+import { isUserRoleAdvanced } from "components/UserRoles.ts";
 import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 import {
   refreshObjectQuery,
@@ -19,7 +20,6 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
-import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -182,7 +182,7 @@ const Panel = (props: PanelProps) => {
             <Icon name="download" />
           </Button>
         )}
-        {responseTime != null && IsUserRoleAdvanced(userRole) && (
+        {responseTime != null && isUserRoleAdvanced(userRole) && (
           <Typography>Response time: {responseTime} ms</Typography>
         )}
         {panelElements}

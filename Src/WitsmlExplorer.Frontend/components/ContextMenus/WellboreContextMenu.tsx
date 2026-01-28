@@ -10,8 +10,8 @@ import {
 import { WellboreRow } from "components/ContentViews/WellboresListView";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
-  menuItemText
+  menuItemText,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import {
   copyWellbore,
@@ -33,10 +33,15 @@ import {
   openObjectOnWellboreProperties,
   openWellboreProperties
 } from "components/Modals/PropertiesModal/openPropertiesHelpers";
+import WellborePickerModal, {
+  WellborePickerProps
+} from "components/Modals/WellborePickerModal.tsx";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DispatchOperation,
-  DisplayModalAction
+  DisplayModalAction,
+  UserRole
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshWellboresQuery } from "hooks/query/queryRefreshHelpers";
@@ -52,6 +57,7 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getMultipleLogCurveSelectionViewPath,
   getObjectGroupsViewPath
@@ -60,21 +66,16 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
+import { RouterLogType } from "../../routes/routerConstants.ts";
 import WellboreUidMappingModal, {
   WellboreUidMappingModalProps
 } from "../Modals/WellboreUidMappingModal.tsx";
-import { getTargetWellboreID } from "./UidMappingUtils.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import {
   GetMultiLogWizardStepModalAction,
   MultiLogWizardParams
 } from "../MultiLogUtils.tsx";
-import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
-import { useNavigate } from "react-router-dom";
-import { RouterLogType } from "../../routes/routerConstants.ts";
-import WellborePickerModal, {
-  WellborePickerProps
-} from "components/Modals/WellborePickerModal.tsx";
-import { IsUserRoleAdvanced, IsUserRoleExpert } from "components/UserRoles.ts";
+import { getTargetWellboreID } from "./UidMappingUtils.tsx";
 
 export interface WellboreContextMenuProps {
   servers: Server[];
@@ -96,10 +97,6 @@ const WellboreContextMenu = (
     placeholderData: Object.entries(ObjectType)
   });
   const filteredServers = useServerFilter(servers);
-
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const onClickNewWellbore = () => {
     const newWellbore: Wellbore = {
@@ -363,12 +360,8 @@ const WellboreContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        IsUserRoleExpert(userRole) && (
-          <NestedMenuItem
-            key={"mapUidOnServer"}
-            label={"Map UID From Server"}
-            icon={"link"}
-          >
+        <RoleLimitedAccess requiredRole={UserRole.Expert} key="mapUidOnServer">
+          <NestedMenuItem label={"Map UID From Server"} icon={"link"}>
             {servers
               .filter((server: Server) => server.id != connectedServer.id)
               .map((server: Server) => (
@@ -380,9 +373,12 @@ const WellboreContextMenu = (
                 </MenuItem>
               ))}
           </NestedMenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="multiLogSelect"
+        >
+          <MenuItem onClick={onClickMultiLogSelect}>
             <StyledIcon
               name="viewList"
               color={colors.interactive.primaryResting}
@@ -391,9 +387,9 @@ const WellboreContextMenu = (
               Add to Multiple Log Selection
             </Typography>
           </MenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
-          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
+          <NestedMenuItem label={"Query"} icon="textField">
             {[
               <MenuItem
                 key={"openQuery"}
@@ -472,26 +468,32 @@ const WellboreContextMenu = (
               </NestedMenuItem>
             ]}
           </NestedMenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="missingDataAgent"
+        >
+          <MenuItem onClick={onClickMissingDataAgent}>
             <StyledIcon
               name="search"
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Missing Data Agent</Typography>
           </MenuItem>
-        ),
+        </RoleLimitedAccess>,
         <MenuItem key={"copyWellbore"} onClick={onClickCopyWellbore}>
           <StyledIcon name="copy" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>Copy wellbore</Typography>
         </MenuItem>,
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem key={"compareWellbore"} onClick={onClickCompareWellbore}>
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="compareWellbore"
+        >
+          <MenuItem onClick={onClickCompareWellbore}>
             <StyledIcon name="copy" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>Compare wellbore</Typography>
           </MenuItem>
-        ),
+        </RoleLimitedAccess>,
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}

@@ -20,17 +20,19 @@ import MissingDataAgentModal, {
 } from "components/Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import {
-  openWellProperties,
-  openWellboreProperties
+  openWellboreProperties,
+  openWellProperties
 } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import WellBatchUpdateModal, {
   WellBatchUpdateModalProps
 } from "components/Modals/WellBatchUpdateModal";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
-  HideModalAction
+  HideModalAction,
+  UserRole
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshWellsQuery } from "hooks/query/queryRefreshHelpers";
@@ -41,6 +43,7 @@ import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getMultipleLogCurveSelectionViewPath,
   getWellboresViewPath
@@ -49,19 +52,16 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
-import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
-import { pasteWellbore } from "./CopyUtils";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import { WITSML_INDEX_TYPE_MD } from "../Constants.tsx";
+import MnemonicsMappingUploadModal from "../Modals/MnemonicsMappingUploadModal.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import {
   GetMultiLogWizardStepModalAction,
   MultiLogWizardParams
 } from "../MultiLogUtils.tsx";
-import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
-import { useNavigate } from "react-router-dom";
-import { RouterLogType } from "../../routes/routerConstants.ts";
-import { WITSML_INDEX_TYPE_MD } from "../Constants.tsx";
-import MnemonicsMappingUploadModal from "../Modals/MnemonicsMappingUploadModal.tsx";
-import { useOperationState } from "hooks/useOperationState.tsx";
-import { IsUserRoleAdvanced, IsUserRoleExpert } from "components/UserRoles.ts";
+import { pasteWellbore } from "./CopyUtils";
+import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -81,10 +81,6 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
   const filteredServers = useServerFilter(servers);
   const wellboreWithMixedObjectsReference =
     useClipboardMixedObjectsReferences();
-
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const onClickNewWell = () => {
     const newWell: Well = {
@@ -298,8 +294,8 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        IsUserRoleAdvanced(userRole) && (
-          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
+          <NestedMenuItem label={"Query"} icon="textField">
             {[
               <MenuItem
                 key={"openQuery"}
@@ -354,36 +350,42 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
               </MenuItem>
             ]}
           </NestedMenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="missingDataAgent"
+        >
+          <MenuItem onClick={onClickMissingDataAgent}>
             <StyledIcon
               name="search"
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Missing Data Agent</Typography>
           </MenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="multiLogSelect"
+        >
+          <MenuItem onClick={onClickMultiLogSelect}>
             <StyledIcon name="add" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>
               Add to Multiple Log Selection
             </Typography>
           </MenuItem>
-        ),
-        IsUserRoleExpert(userRole) && (
-          <MenuItem
-            key={"uploadMnemonicsMappings"}
-            onClick={onClickUploadMnemnonicsMappings}
-          >
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Expert}
+          key="uploadMnemonicsMappings"
+        >
+          <MenuItem onClick={onClickUploadMnemnonicsMappings}>
             <StyledIcon
               name="upload"
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Upload Mnemonics Mappings</Typography>
           </MenuItem>
-        ),
+        </RoleLimitedAccess>,
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}

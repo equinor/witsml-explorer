@@ -6,10 +6,11 @@
 } from "@equinor/eds-core-react";
 import { Divider, Tooltip } from "@mui/material";
 import { Checkbox } from "components/StyledComponents/Checkbox";
-import { IsUserRoleExpert } from "components/UserRoles";
+import { RoleLimitedAccess } from "components/UserRoles";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "contexts/filter";
+import { UserRole } from "contexts/operationStateReducer";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
@@ -31,7 +32,7 @@ const FilterPanel = (): React.ReactElement => {
   const { curveThreshold, setCurveThreshold } = useCurveThreshold();
   const { selectedFilter, updateSelectedFilter } = useContext(FilterContext);
   const {
-    operationState: { colors, userRole }
+    operationState: { colors }
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { capObjects } = useGetCapObjects(connectedServer, {
@@ -138,7 +139,7 @@ const FilterPanel = (): React.ReactElement => {
             label={"Only show growing logs"}
             colors={colors}
           />
-          {IsUserRoleExpert(userRole) && (
+          <RoleLimitedAccess requiredRole={UserRole.Expert}>
             <Checkbox
               onChange={onChangeUidMapping}
               checked={selectedFilter.uidMapping}
@@ -148,7 +149,7 @@ const FilterPanel = (): React.ReactElement => {
               label={"Only show mapped wellbores"}
               colors={colors}
             />
-          )}
+          </RoleLimitedAccess>
         </InnerContainer>
 
         <Divider />

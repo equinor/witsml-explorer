@@ -7,11 +7,11 @@ import {
   StoreFunction
 } from "components/ContentViews/QueryViewUtils";
 import {
-  StyledIcon,
   menuItemText,
   onClickDeleteObjects,
   onClickRefreshObject,
-  onClickShowObjectOnServer
+  onClickShowObjectOnServer,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { onClickCopyToServer } from "components/ContextMenus/CopyToServer";
 import {
@@ -20,7 +20,8 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import { DispatchOperation } from "contexts/operationStateReducer";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
+import { DispatchOperation, UserRole } from "contexts/operationStateReducer";
 import { OpenInQueryView } from "hooks/useOpenInQueryView";
 import { IndexCurve } from "models/indexCurve";
 import LogObject from "models/logObject";
@@ -30,11 +31,9 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 import OperationType from "../../contexts/operationType";
 import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
-import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
-import { IsUserRoleAdvanced } from "components/UserRoles.ts";
-import { useOperationState } from "hooks/useOperationState.tsx";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -53,9 +52,6 @@ export const ObjectMenuItems = (
 ): React.ReactElement[] => {
   const objectReferences = useClipboardReferencesOfType(objectType);
   const { connectedServer } = useConnectedServer();
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const onClickDuplicateObjectOnWellbore = () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
@@ -213,9 +209,8 @@ export const ObjectMenuItems = (
           </MenuItem>
         ))}
     </NestedMenuItem>,
-    IsUserRoleAdvanced(userRole) && (
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
       <NestedMenuItem
-        key={"queryItems"}
         label={"Query"}
         icon="textField"
         disabled={checkedObjects.length !== 1}
@@ -258,6 +253,6 @@ export const ObjectMenuItems = (
           </MenuItem>
         ]}
       </NestedMenuItem>
-    )
+    </RoleLimitedAccess>
   ];
 };

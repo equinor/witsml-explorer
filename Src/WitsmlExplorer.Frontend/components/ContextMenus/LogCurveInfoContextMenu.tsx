@@ -1,13 +1,14 @@
 import { Divider, Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { LogCurveInfoRow } from "components/ContentViews/LogCurveInfoListViewUtils";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
   menuItemText,
   onClickDeleteComponents,
-  onClickShowObjectOnServer
+  onClickShowObjectOnServer,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { CopyComponentsToServerMenuItem } from "components/ContextMenus/CopyComponentsToServer";
 import { copyComponents } from "components/ContextMenus/CopyUtils";
@@ -30,10 +31,13 @@ import {
 import { getLogCurveInfoProperties } from "components/Modals/PropertiesModal/Properties/LogCurveInfoProperties";
 import { PropertiesModal } from "components/Modals/PropertiesModal/PropertiesModal";
 import SelectIndexToDisplayModal from "components/Modals/SelectIndexToDisplayModal";
+import MultiLogSelectionRepository from "components/MultiLogSelectionRepository.tsx";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import {
   DisplayModalAction,
   HideContextMenuAction,
-  HideModalAction
+  HideModalAction,
+  UserRole
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useServerFilter } from "hooks/useServerFilter";
@@ -47,20 +51,16 @@ import { toObjectReference } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { RouterLogType } from "routes/routerConstants.ts";
 import JobService, { JobType } from "services/jobService";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import { colors } from "styles/Colors";
-import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
 import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 import { refreshPrioritizedCurves } from "../../hooks/query/queryRefreshHelpers.tsx";
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { MultiLogSelectionCurveInfo } from "../MultiLogUtils.tsx";
-import MultiLogSelectionRepository from "components/MultiLogSelectionRepository.tsx";
 import { getMultipleLogCurveSelectionViewPath } from "../../routes/utils/pathBuilder.ts";
-import { RouterLogType } from "routes/routerConstants.ts";
-import { IsUserRoleAdvanced } from "components/UserRoles.ts";
-import { useOperationState } from "hooks/useOperationState.tsx";
+import LogCurveInfoBatchUpdateModal from "../Modals/LogCurveInfoBatchUpdateModal";
+import { MultiLogSelectionCurveInfo } from "../MultiLogUtils.tsx";
 
 export interface LogCurveInfoContextMenuProps {
   checkedLogCurveInfoRows: LogCurveInfoRow[];
@@ -92,10 +92,6 @@ const LogCurveInfoContextMenu = (
     setPrioritizedUniversalCurves,
     isMultiLog = false
   } = props;
-
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const filteredServers = useServerFilter(servers);
   const navigate = useNavigate();
@@ -452,9 +448,8 @@ const LogCurveInfoContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        IsUserRoleAdvanced(userRole) && (
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="analyzeGaps">
           <MenuItem
-            key={"analyzeGaps"}
             onClick={onClickAnalyzeGaps}
             disabled={
               checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
@@ -464,10 +459,9 @@ const LogCurveInfoContextMenu = (
             <StyledIcon name="beat" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>Analyze gaps</Typography>
           </MenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="offset">
           <MenuItem
-            key={"offset"}
             onClick={onClickOffset}
             disabled={
               checkedLogCurveInfoRowsWithoutIndexCurve.length === 0 ||
@@ -483,10 +477,12 @@ const LogCurveInfoContextMenu = (
               )}
             </Typography>
           </MenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="multiLogMultiTargetAdd"
+        >
           <MenuItem
-            key={"multiLogMultiTargetAdd"}
             onClick={onClickMultiLogMultiTargetAdd}
             disabled={checkedLogCurveInfoRows.length === 0}
           >
@@ -495,13 +491,12 @@ const LogCurveInfoContextMenu = (
               Add To Multiple Log Selection
             </Typography>
           </MenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
-          <NestedMenuItem
-            key={"logPriorityCurves"}
-            label={"Log Priority Curves"}
-            icon="favoriteOutlined"
-          >
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="logPriorityCurves"
+        >
+          <NestedMenuItem label={"Log Priority Curves"} icon="favoriteOutlined">
             <MenuItem
               key={"setPriority"}
               onClick={() =>
@@ -564,7 +559,7 @@ const LogCurveInfoContextMenu = (
               <Typography color={"primary"}>Edit Universal Priority</Typography>
             </MenuItem>
           </NestedMenuItem>
-        ),
+        </RoleLimitedAccess>,
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}
@@ -577,17 +572,18 @@ const LogCurveInfoContextMenu = (
           />
           <Typography color={"primary"}>Properties</Typography>
         </MenuItem>,
-        <MenuItem
-          key={"batchUpdate"}
-          onClick={onClickBatchUpdate}
-          disabled={checkedLogCurveInfoRows.length < 2 || isMultiLog}
-        >
-          <StyledIcon
-            name="settings"
-            color={colors.interactive.primaryResting}
-          />
-          <Typography color={"primary"}>Batch Update</Typography>
-        </MenuItem>
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="batchUpdate">
+          <MenuItem
+            onClick={onClickBatchUpdate}
+            disabled={checkedLogCurveInfoRows.length < 2 || isMultiLog}
+          >
+            <StyledIcon
+              name="settings"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Batch Update</Typography>
+          </MenuItem>
+        </RoleLimitedAccess>
       ]}
     />
   );

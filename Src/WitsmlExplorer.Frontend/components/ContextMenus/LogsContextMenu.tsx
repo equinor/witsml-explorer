@@ -12,21 +12,23 @@ import {
 } from "components/ContentViews/QueryViewUtils";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
   menuItemText,
   onClickRefresh,
-  onClickShowGroupOnServer
+  onClickShowGroupOnServer,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
-  HideModalAction
+  HideModalAction,
+  UserRole
 } from "contexts/operationStateReducer";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useServerFilter } from "hooks/useServerFilter";
@@ -37,18 +39,16 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { getMultipleLogCurveSelectionViewPath } from "routes/utils/pathBuilder.ts";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import {
   GetMultiLogWizardStepModalAction,
   MultiLogWizardParams
 } from "../MultiLogUtils.tsx";
-import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
-import { useNavigate } from "react-router-dom";
-import { RouterLogType } from "../../routes/routerConstants.ts";
-import { getMultipleLogCurveSelectionViewPath } from "routes/utils/pathBuilder.ts";
-import { IsUserRoleAdvanced } from "components/UserRoles.ts";
-import { useOperationState } from "hooks/useOperationState.tsx";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (
@@ -67,10 +67,6 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
-
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -126,27 +122,25 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
   return (
     <ContextMenu
       menuItems={[
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem
-            key={"refresh"}
-            onClick={() =>
-              onClickRefresh(
-                dispatchOperation,
-                queryClient,
-                connectedServer?.url,
-                wellbore.wellUid,
-                wellbore.uid,
-                ObjectType.Log
-              )
-            }
-          >
-            <StyledIcon
-              name="refresh"
-              color={colors.interactive.primaryResting}
-            />
-            <Typography color={"primary"}>{`Refresh Logs`}</Typography>
-          </MenuItem>
-        ),
+        <MenuItem
+          key={"refresh"}
+          onClick={() =>
+            onClickRefresh(
+              dispatchOperation,
+              queryClient,
+              connectedServer?.url,
+              wellbore.wellUid,
+              wellbore.uid,
+              ObjectType.Log
+            )
+          }
+        >
+          <StyledIcon
+            name="refresh"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>{`Refresh Logs`}</Typography>
+        </MenuItem>,
         <MenuItem key={"newLog"} onClick={onClickNewLog}>
           <StyledIcon name="add" color={colors.interactive.primaryResting} />
           <Typography color={"primary"}>New log</Typography>
@@ -190,8 +184,8 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        IsUserRoleAdvanced(userRole) && (
-          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
+          <NestedMenuItem label={"Query"} icon="textField">
             {[
               <MenuItem
                 key={"newObject"}
@@ -213,15 +207,18 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               </MenuItem>
             ]}
           </NestedMenuItem>
-        ),
-        IsUserRoleAdvanced(userRole) && (
-          <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="multiLogSelect"
+        >
+          <MenuItem onClick={onClickMultiLogSelect}>
             <StyledIcon name="add" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>
               Add to Multiple Log Selection
             </Typography>
           </MenuItem>
-        )
+        </RoleLimitedAccess>
       ]}
     />
   );

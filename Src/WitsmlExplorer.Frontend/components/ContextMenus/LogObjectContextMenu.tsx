@@ -5,8 +5,8 @@ import { WITSML_INDEX_TYPE_MD } from "components/Constants";
 import { BatchModifyMenuItem } from "components/ContextMenus/BatchModifyMenuItem";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
-  menuItemText
+  menuItemText,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { onClickPaste } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
@@ -35,8 +35,9 @@ import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModa
 import { ReportModal } from "components/Modals/ReportModal";
 import SpliceLogsModal from "components/Modals/SpliceLogsModal";
 import TrimLogObjectModal from "components/Modals/TrimLogObject/TrimLogObjectModal";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
-import { DisplayModalAction } from "contexts/operationStateReducer";
+import { DisplayModalAction, UserRole } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
@@ -60,17 +61,16 @@ import {
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import { useGetLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
+import { useGetUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
 import ObjectReference from "../../models/jobs/objectReference";
+import AgentSettingsModal from "../Modals/AgentSettingsModal.tsx";
 import CopyMnemonicsModal, {
   CopyMnemonicsModalProps
 } from "../Modals/CopyMnemonicsModal";
 import MinimumDataQcModal, {
   MinimumDataQcModalProps
 } from "../Modals/MinimumDataQcModal.tsx";
-import { useGetLocalPrioritizedCurves } from "../../hooks/query/useGetLocalPrioritizedCurves.tsx";
-import { useGetUniversalPrioritizedCurves } from "../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
-import AgentSettingsModal from "../Modals/AgentSettingsModal.tsx";
-import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 const LogObjectContextMenu = (
   props: ObjectContextMenuProps
@@ -93,10 +93,6 @@ const LogObjectContextMenu = (
   const filteredServers = useServerFilter(servers);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-  const {
-    operationState: { userRole }
-  } = useOperationState();
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -371,8 +367,11 @@ const LogObjectContextMenu = (
           {menuItemText("paste", "mnemonic", logCurvesReference?.componentUids)}
         </Typography>
       </MenuItem>,
-      IsUserRoleAdvanced(userRole) && (
-        <NestedMenuItem key={"editlognestedmenu"} label={"Edit"} icon="edit">
+      <RoleLimitedAccess
+        requiredRole={UserRole.Advanced}
+        key="editlognestedmenu"
+      >
+        <NestedMenuItem label={"Edit"} icon="edit">
           {[
             <MenuItem
               key={"trimlogobject"}
@@ -404,14 +403,15 @@ const LogObjectContextMenu = (
           ]}
           ,
         </NestedMenuItem>
-      ),
-      <Divider key={uuid()} />,
-      IsUserRoleAdvanced(userRole) && (
-        <NestedMenuItem
-          key={"agentslognestedmenu"}
-          label={"Agents"}
-          icon="person"
-        >
+      </RoleLimitedAccess>,
+      <RoleLimitedAccess requiredRole={UserRole.Advanced} key={uuid()}>
+        <Divider key={uuid()} />
+      </RoleLimitedAccess>,
+      <RoleLimitedAccess
+        requiredRole={UserRole.Advanced}
+        key="agentslognestedmenu"
+      >
+        <NestedMenuItem label={"Agents"} icon="person">
           {[
             <MenuItem
               key={"comparelogheader"}
@@ -443,19 +443,17 @@ const LogObjectContextMenu = (
                 []
               )} data`}</Typography>
             </MenuItem>,
-            IsUserRoleAdvanced(userRole) && (
-              <MenuItem
-                key={"analyzeGaps"}
-                onClick={onClickAnalyzeGaps}
-                disabled={checkedObjects.length !== 1}
-              >
-                <StyledIcon
-                  name="beat"
-                  color={colors.interactive.primaryResting}
-                />
-                <Typography color={"primary"}>Analyze gaps</Typography>
-              </MenuItem>
-            ),
+            <MenuItem
+              key={"analyzeGaps"}
+              onClick={onClickAnalyzeGaps}
+              disabled={checkedObjects.length !== 1}
+            >
+              <StyledIcon
+                name="beat"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Analyze gaps</Typography>
+            </MenuItem>,
             <MenuItem
               key={"checkHeader"}
               onClick={onClickCheckHeader}
@@ -496,22 +494,20 @@ const LogObjectContextMenu = (
               />
               <Typography color={"primary"}>Delete empty mnemonics</Typography>
             </MenuItem>,
-            IsUserRoleAdvanced(userRole) && (
-              <MenuItem
-                key={"minimumDataQc"}
-                onClick={onClickMinimumDataQc}
-                disabled={
-                  localPrioritizedCurves.length == 0 &&
-                  universalPrioritizedCurves.length == 0
-                }
-              >
-                <StyledIcon
-                  name="beat"
-                  color={colors.interactive.primaryResting}
-                />
-                <Typography color={"primary"}>Minimum Data QC</Typography>
-              </MenuItem>
-            ),
+            <MenuItem
+              key={"minimumDataQc"}
+              onClick={onClickMinimumDataQc}
+              disabled={
+                localPrioritizedCurves.length == 0 &&
+                universalPrioritizedCurves.length == 0
+              }
+            >
+              <StyledIcon
+                name="beat"
+                color={colors.interactive.primaryResting}
+              />
+              <Typography color={"primary"}>Minimum Data QC</Typography>
+            </MenuItem>,
             <Divider key={uuid()} />,
             <MenuItem key={"agentSettings"} onClick={onClickAgentSettings}>
               <StyledIcon
@@ -522,7 +518,7 @@ const LogObjectContextMenu = (
             </MenuItem>
           ]}
         </NestedMenuItem>
-      ),
+      </RoleLimitedAccess>,
       <Divider key={uuid()} />,
       <MenuItem
         key={"importlogdata"}

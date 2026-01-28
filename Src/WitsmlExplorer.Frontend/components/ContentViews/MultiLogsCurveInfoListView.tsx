@@ -10,8 +10,9 @@ import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 
+import { RoleLimitedAccess } from "components/UserRoles";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import { UserTheme } from "contexts/operationStateReducer";
+import { UserRole, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -26,16 +27,15 @@ import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import LogObjectService from "services/logObjectService";
 import {
-  LogCurveInfoRow,
   getColumns,
-  getTableData
+  getTableData,
+  LogCurveInfoRow
 } from "./LogCurveInfoListViewUtils";
-import { IsUserRoleAdvanced } from "components/UserRoles";
 
 export default function MultiLogsCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
   const {
-    operationState: { timeZone, dateTimeFormat, theme, userRole }
+    operationState: { timeZone, dateTimeFormat, theme }
   } = useOperationState();
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, logType } = useParams();
@@ -156,8 +156,8 @@ export default function MultiLogsCurveInfoListView() {
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    IsUserRoleAdvanced(userRole) && (
-      <CommonPanelContainer key="showPriority">
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="showPriority">
+      <CommonPanelContainer>
         <Switch
           checked={showOnlyPrioritizedCurves}
           disabled={
@@ -170,7 +170,7 @@ export default function MultiLogsCurveInfoListView() {
         />
         <Typography>Show Only Prioritized Curves</Typography>
       </CommonPanelContainer>
-    )
+    </RoleLimitedAccess>
   ];
 
   return (

@@ -148,8 +148,8 @@ const SettingsModal = (): React.ReactElement => {
     setCheckedDecimalPreference(selectedValue);
   };
 
-  const onChangeUserRole = (event: any) => {
-    const selectedUserRole = event.target.value;
+  const onChangeUserRole = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedUserRole = event.target.value as UserRole;
     setLocalStorageItem<UserRole>(STORAGE_USER_ROLE_KEY, selectedUserRole);
     dispatchOperation({
       type: OperationType.SetUserRole,
@@ -240,9 +240,9 @@ const SettingsModal = (): React.ReactElement => {
               defaultValue={userRole}
               colors={colors}
             >
-              <option value={"regular"}>Regular User</option>
-              <option value={"advanced"}>Advanced User</option>
-              <option value={"expert"}>Expert User</option>
+              <option value={UserRole.Regular}>Regular User</option>
+              <option value={UserRole.Advanced}>Advanced User</option>
+              <option value={UserRole.Expert}>Expert User</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
