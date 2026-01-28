@@ -6,6 +6,7 @@ import { Button } from "components/StyledComponents/Button";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useLoggedInUsernames } from "contexts/loggedInUsernamesContext";
 import { LoggedInUsernamesActionType } from "contexts/loggedInUsernamesReducer";
+import { UserRole } from "contexts/operationStateReducer.tsx";
 import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
 import { useOperationState } from "hooks/useOperationState";
@@ -18,8 +19,9 @@ import {
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
 import Icon from "styles/Icons";
-import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
 import { RouterLogType } from "../routes/routerConstants.ts";
+import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
+import { RoleLimitedAccess } from "./UserRoles.ts";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -110,28 +112,34 @@ export default function TopRightCornerMenu() {
         <Icon name="assignment" />
         {showLabels && "Jobs"}
       </Button>
-      <Button
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openQueryView}
-        disabled={!isConnected}
-      >
-        <Icon name="code" />
-        {showLabels && "Query"}
-      </Button>
-      <Button
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openUidModal}
-      >
-        <Icon name="link" />
-        {showLabels && "UID Mapping"}
-      </Button>
-      <Button
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openMultiLogSelect}
-      >
-        <Icon name="viewList" />
-        {showLabels && "Multiple Log Selection"}
-      </Button>
+      <RoleLimitedAccess requiredRole={UserRole.Advanced}>
+        <Button
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openQueryView}
+          disabled={!isConnected}
+        >
+          <Icon name="code" />
+          {showLabels && "Query"}
+        </Button>
+      </RoleLimitedAccess>
+      <RoleLimitedAccess requiredRole={UserRole.Expert}>
+        <Button
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openUidModal}
+        >
+          <Icon name="link" />
+          {showLabels && "UID Mapping"}
+        </Button>
+      </RoleLimitedAccess>
+      <RoleLimitedAccess requiredRole={UserRole.Advanced}>
+        <Button
+          variant={showLabels ? "ghost" : "ghost_icon"}
+          onClick={openMultiLogSelect}
+        >
+          <Icon name="viewList" />
+          {showLabels && "Multiple Log Selection"}
+        </Button>
+      </RoleLimitedAccess>
       <Button
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}

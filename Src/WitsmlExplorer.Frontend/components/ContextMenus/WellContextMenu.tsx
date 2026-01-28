@@ -20,17 +20,19 @@ import MissingDataAgentModal, {
 } from "components/Modals/MissingDataAgentModal";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import {
-  openWellProperties,
-  openWellboreProperties
+  openWellboreProperties,
+  openWellProperties
 } from "components/Modals/PropertiesModal/openPropertiesHelpers";
 import WellBatchUpdateModal, {
   WellBatchUpdateModalProps
 } from "components/Modals/WellBatchUpdateModal";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
-  HideModalAction
+  HideModalAction,
+  UserRole
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshWellsQuery } from "hooks/query/queryRefreshHelpers";
@@ -41,6 +43,7 @@ import { Server } from "models/server";
 import Well from "models/well";
 import Wellbore from "models/wellbore";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getMultipleLogCurveSelectionViewPath,
   getWellboresViewPath
@@ -49,17 +52,16 @@ import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
 import { v4 as uuid } from "uuid";
-import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
-import { pasteWellbore } from "./CopyUtils";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import { WITSML_INDEX_TYPE_MD } from "../Constants.tsx";
+import MnemonicsMappingUploadModal from "../Modals/MnemonicsMappingUploadModal.tsx";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import {
   GetMultiLogWizardStepModalAction,
   MultiLogWizardParams
 } from "../MultiLogUtils.tsx";
-import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
-import { useNavigate } from "react-router-dom";
-import { RouterLogType } from "../../routes/routerConstants.ts";
-import { WITSML_INDEX_TYPE_MD } from "../Constants.tsx";
-import MnemonicsMappingUploadModal from "../Modals/MnemonicsMappingUploadModal.tsx";
+import { pasteWellbore } from "./CopyUtils";
+import { useClipboardMixedObjectsReferences } from "./UseClipboardReferences";
 
 export interface WellContextMenuProps {
   dispatchOperation: (
@@ -292,78 +294,98 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
-          {[
-            <MenuItem
-              key={"openQuery"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Well,
-                  storeFunction: StoreFunction.GetFromStore,
-                  wellUid: well.uid
-                })
-              }
-              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
-            >
-              <StyledIcon
-                name="textField"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>Open in query view</Typography>
-            </MenuItem>,
-            <MenuItem
-              key={"newWell"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Well,
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: uuid()
-                })
-              }
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>New Well</Typography>
-            </MenuItem>,
-            <MenuItem
-              key={"newWellbore"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Wellbore,
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: well.uid,
-                  wellboreUid: uuid()
-                })
-              }
-              disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>New Wellbore</Typography>
-            </MenuItem>
-          ]}
-        </NestedMenuItem>,
-        <MenuItem key={"missingDataAgent"} onClick={onClickMissingDataAgent}>
-          <StyledIcon name="search" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Missing Data Agent</Typography>
-        </MenuItem>,
-        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
-          <StyledIcon name="add" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            Add to Multiple Log Selection
-          </Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"uploadMnemonicsMappings"}
-          onClick={onClickUploadMnemnonicsMappings}
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
+          <NestedMenuItem label={"Query"} icon="textField">
+            {[
+              <MenuItem
+                key={"openQuery"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Well,
+                    storeFunction: StoreFunction.GetFromStore,
+                    wellUid: well.uid
+                  })
+                }
+                disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
+              >
+                <StyledIcon
+                  name="textField"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>Open in query view</Typography>
+              </MenuItem>,
+              <MenuItem
+                key={"newWell"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Well,
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: uuid()
+                  })
+                }
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>New Well</Typography>
+              </MenuItem>,
+              <MenuItem
+                key={"newWellbore"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Wellbore,
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: well.uid,
+                    wellboreUid: uuid()
+                  })
+                }
+                disabled={!!checkedWellRows && checkedWellRows?.length !== 1}
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>New Wellbore</Typography>
+              </MenuItem>
+            ]}
+          </NestedMenuItem>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="missingDataAgent"
         >
-          <StyledIcon name="upload" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>Upload Mnemonics Mappings</Typography>
-        </MenuItem>,
+          <MenuItem onClick={onClickMissingDataAgent}>
+            <StyledIcon
+              name="search"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Missing Data Agent</Typography>
+          </MenuItem>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="multiLogSelect"
+        >
+          <MenuItem onClick={onClickMultiLogSelect}>
+            <StyledIcon name="add" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>
+              Add to Multiple Log Selection
+            </Typography>
+          </MenuItem>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Expert}
+          key="uploadMnemonicsMappings"
+        >
+          <MenuItem onClick={onClickUploadMnemnonicsMappings}>
+            <StyledIcon
+              name="upload"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Upload Mnemonics Mappings</Typography>
+          </MenuItem>
+        </RoleLimitedAccess>,
         <Divider key={"divider"} />,
         <MenuItem
           key={"properties"}

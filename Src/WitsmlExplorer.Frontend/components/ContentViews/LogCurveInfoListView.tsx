@@ -6,9 +6,14 @@ import LogCurveInfoContextMenu, {
 } from "components/ContextMenus/LogCurveInfoContextMenu";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import { DisplayModalAction, UserTheme } from "contexts/operationStateReducer";
+import {
+  DisplayModalAction,
+  UserRole,
+  UserTheme
+} from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetComponents } from "hooks/query/useGetComponents";
 import { useGetObject } from "hooks/query/useGetObject";
@@ -31,9 +36,9 @@ import MinimumDataQcModal, {
   MinimumDataQcModalProps
 } from "../Modals/MinimumDataQcModal.tsx";
 import {
-  LogCurveInfoRow,
   getColumns,
-  getTableData
+  getTableData,
+  LogCurveInfoRow
 } from "./LogCurveInfoListViewUtils";
 import {
   IsQcReportJobRunning,
@@ -216,30 +221,34 @@ export default function LogCurveInfoListView() {
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    <CommonPanelContainer key="showPriority">
-      <Switch
-        checked={showOnlyPrioritizedCurves}
-        disabled={
-          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
-        }
-        onChange={() =>
-          setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
-        }
-        size={theme === UserTheme.Compact ? "small" : "default"}
-      />
-      <Typography>Show Only Prioritized Curves</Typography>
-    </CommonPanelContainer>,
-    <CommonPanelContainer key="showMinimumDataQc">
-      <Switch
-        checked={showMinimumDataQc}
-        disabled={
-          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
-        }
-        onChange={handleMinimumDataQcSwitchChange}
-        size={theme === UserTheme.Compact ? "small" : "default"}
-      />
-      <Typography>Show Minimum Data QC</Typography>
-    </CommonPanelContainer>
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="showPriority">
+      <CommonPanelContainer>
+        <Switch
+          checked={showOnlyPrioritizedCurves}
+          disabled={
+            allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+          }
+          onChange={() =>
+            setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
+          }
+          size={theme === UserTheme.Compact ? "small" : "default"}
+        />
+        <Typography>Show Only Prioritized Curves</Typography>
+      </CommonPanelContainer>
+    </RoleLimitedAccess>,
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="showMinimumDataQc">
+      <CommonPanelContainer>
+        <Switch
+          checked={showMinimumDataQc}
+          disabled={
+            allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+          }
+          onChange={handleMinimumDataQcSwitchChange}
+          size={theme === UserTheme.Compact ? "small" : "default"}
+        />
+        <Typography>Show Minimum Data QC</Typography>
+      </CommonPanelContainer>
+    </RoleLimitedAccess>
   ];
 
   return (

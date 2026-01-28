@@ -10,8 +10,9 @@ import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { useConnectedServer } from "contexts/connectedServerContext";
 
+import { RoleLimitedAccess } from "components/UserRoles";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
-import { UserTheme } from "contexts/operationStateReducer";
+import { UserRole, UserTheme } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useGetServers } from "hooks/query/useGetServers";
@@ -26,9 +27,9 @@ import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
 import LogObjectService from "services/logObjectService";
 import {
-  LogCurveInfoRow,
   getColumns,
-  getTableData
+  getTableData,
+  LogCurveInfoRow
 } from "./LogCurveInfoListViewUtils";
 
 export default function MultiLogsCurveInfoListView() {
@@ -155,19 +156,21 @@ export default function MultiLogsCurveInfoListView() {
       />
       <Typography>Hide Empty Curves</Typography>
     </CommonPanelContainer>,
-    <CommonPanelContainer key="showPriority">
-      <Switch
-        checked={showOnlyPrioritizedCurves}
-        disabled={
-          allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
-        }
-        onChange={() =>
-          setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
-        }
-        size={theme === UserTheme.Compact ? "small" : "default"}
-      />
-      <Typography>Show Only Prioritized Curves</Typography>
-    </CommonPanelContainer>
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="showPriority">
+      <CommonPanelContainer>
+        <Switch
+          checked={showOnlyPrioritizedCurves}
+          disabled={
+            allPrioritizedCurves.length === 0 && !showOnlyPrioritizedCurves
+          }
+          onChange={() =>
+            setShowOnlyPrioritizedCurves(!showOnlyPrioritizedCurves)
+          }
+          size={theme === UserTheme.Compact ? "small" : "default"}
+        />
+        <Typography>Show Only Prioritized Curves</Typography>
+      </CommonPanelContainer>
+    </RoleLimitedAccess>
   ];
 
   return (

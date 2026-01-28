@@ -12,21 +12,23 @@ import {
 } from "components/ContentViews/QueryViewUtils";
 import ContextMenu from "components/ContextMenus/ContextMenu";
 import {
-  StyledIcon,
   menuItemText,
   onClickRefresh,
-  onClickShowGroupOnServer
+  onClickShowGroupOnServer,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { pasteObjectOnWellbore } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
   DisplayModalAction,
   HideContextMenuAction,
-  HideModalAction
+  HideModalAction,
+  UserRole
 } from "contexts/operationStateReducer";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useServerFilter } from "hooks/useServerFilter";
@@ -37,16 +39,16 @@ import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import Wellbore from "models/wellbore";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { getMultipleLogCurveSelectionViewPath } from "routes/utils/pathBuilder.ts";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
 import {
   GetMultiLogWizardStepModalAction,
   MultiLogWizardParams
 } from "../MultiLogUtils.tsx";
-import MultiLogSelectionRepository from "../MultiLogSelectionRepository.tsx";
-import { useNavigate } from "react-router-dom";
-import { RouterLogType } from "../../routes/routerConstants.ts";
-import { getMultipleLogCurveSelectionViewPath } from "routes/utils/pathBuilder.ts";
 
 export interface LogsContextMenuProps {
   dispatchOperation: (
@@ -182,34 +184,41 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
-          {[
-            <MenuItem
-              key={"newObject"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: TemplateObjects.Log,
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: wellbore.wellUid,
-                  wellboreUid: wellbore.uid,
-                  objectUid: uuid()
-                })
-              }
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>New Log</Typography>
-            </MenuItem>
-          ]}
-        </NestedMenuItem>,
-        <MenuItem key={"multiLogSelect"} onClick={onClickMultiLogSelect}>
-          <StyledIcon name="add" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>
-            Add to Multiple Log Selection
-          </Typography>
-        </MenuItem>
+        <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
+          <NestedMenuItem label={"Query"} icon="textField">
+            {[
+              <MenuItem
+                key={"newObject"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: TemplateObjects.Log,
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: wellbore.wellUid,
+                    wellboreUid: wellbore.uid,
+                    objectUid: uuid()
+                  })
+                }
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>New Log</Typography>
+              </MenuItem>
+            ]}
+          </NestedMenuItem>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="multiLogSelect"
+        >
+          <MenuItem onClick={onClickMultiLogSelect}>
+            <StyledIcon name="add" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>
+              Add to Multiple Log Selection
+            </Typography>
+          </MenuItem>
+        </RoleLimitedAccess>
       ]}
     />
   );
