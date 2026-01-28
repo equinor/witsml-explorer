@@ -24,21 +24,21 @@ import { ItemNotFound } from "routes/ItemNotFound";
 import { RouterLogType } from "routes/routerConstants";
 import { truncateAbortHandler } from "services/apiClient";
 import LogCurvePriorityService from "services/logCurvePriorityService";
+import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
+import BaseReport from "../../models/reports/BaseReport.tsx";
+import NotificationService from "../../services/notificationService.ts";
+import MinimumDataQcModal, {
+  MinimumDataQcModalProps
+} from "../Modals/MinimumDataQcModal.tsx";
 import {
   LogCurveInfoRow,
   getColumns,
   getTableData
 } from "./LogCurveInfoListViewUtils";
-import MinimumDataQcModal, {
-  MinimumDataQcModalProps
-} from "../Modals/MinimumDataQcModal.tsx";
-import BaseReport from "../../models/reports/BaseReport.tsx";
-import NotificationService from "../../services/notificationService.ts";
 import {
   IsQcReportJobRunning,
   LoadExistingMinQcReport
 } from "./MinimumDataQcUtils.tsx";
-import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
 
 export default function LogCurveInfoListView() {
   const { curveThreshold } = useCurveThreshold();
@@ -53,7 +53,7 @@ export default function LogCurveInfoListView() {
     object: logObject,
     isFetching: isFetchingLog,
     isFetched: isFetchedLog,
-    responseTime: responseTimeObjects
+    responseTime: responseTimeObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -90,6 +90,9 @@ export default function LogCurveInfoListView() {
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
   const isDepthIndex = logType === RouterLogType.DEPTH;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
   const allPrioritizedCurves = [
     ...prioritizedLocalCurves,
     ...prioritizedUniversalCurves
@@ -274,11 +277,7 @@ export default function LogCurveInfoListView() {
           checkableRows
           showRefresh
           downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
-          responseTime={
-            responseTimeObjects > responseTimeComponents
-              ? responseTimeObjects
-              : responseTimeComponents
-          }
+          responseTime={responseTime}
         />
       )}
     </>

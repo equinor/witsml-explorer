@@ -44,6 +44,7 @@ export default function TrajectoryView() {
   const { connectedServer } = useConnectedServer();
   const {
     object: trajectory,
+    isFetching: isFetchingTrajectory,
     isFetched: isFetchedTrajectory,
     responseTime: responseTimeObject
   } = useGetObject(
@@ -56,7 +57,7 @@ export default function TrajectoryView() {
 
   const {
     components: trajectoryStations,
-    isFetching,
+    isFetching: isFetchingTrajectoryStations,
     responseTime: responseTimeComponents
   } = useGetComponents(
     connectedServer,
@@ -66,6 +67,11 @@ export default function TrajectoryView() {
     ComponentType.TrajectoryStation,
     { placeholderData: [] }
   );
+
+  const isFetching = isFetchingTrajectory || isFetchingTrajectoryStations;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
@@ -147,11 +153,7 @@ export default function TrajectoryView() {
         checkableRows
         showRefresh
         downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
-        responseTime={
-          responseTimeObject > responseTimeComponents
-            ? responseTimeObject
-            : responseTimeComponents
-        }
+        responseTime={responseTime}
       />
     </>
   );
