@@ -33,6 +33,7 @@ export default function WbGeometryView() {
   const { connectedServer } = useConnectedServer();
   const {
     object: wbGeometry,
+    isFetching: isFetchingWbGeometry,
     isFetched: isFetchedWbGeometry,
     responseTime: responseTimeObject
   } = useGetObject(
@@ -45,7 +46,7 @@ export default function WbGeometryView() {
 
   const {
     components: wbGeometrySections,
-    isFetching,
+    isFetching: isFetchingWbGeometrySections,
     responseTime: responseTimeComponents
   } = useGetComponents(
     connectedServer,
@@ -55,6 +56,11 @@ export default function WbGeometryView() {
     ComponentType.WbGeometrySection,
     { placeholderData: [] }
   );
+
+  const isFetching = isFetchingWbGeometry || isFetchingWbGeometrySections;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
@@ -134,7 +140,7 @@ export default function WbGeometryView() {
 
   return (
     <>
-      {isFetching && <ProgressSpinnerOverlay message="Fetching Trajectory." />}
+      {isFetching && <ProgressSpinnerOverlay message="Fetching WbGeometry." />}
       <ContentTable
         viewId="wbGeometryView"
         columns={columns}
@@ -143,11 +149,7 @@ export default function WbGeometryView() {
         checkableRows
         showRefresh
         downloadToCsvFileName={`WbGeometry_${wbGeometry?.name}`}
-        responseTime={
-          responseTimeObject > responseTimeComponents
-            ? responseTimeObject
-            : responseTimeComponents
-        }
+        responseTime={responseTime}
       />
     </>
   );
