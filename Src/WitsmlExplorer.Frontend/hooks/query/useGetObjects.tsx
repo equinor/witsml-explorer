@@ -8,7 +8,11 @@ import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { TimedResponse, withQueryTiming } from "./queryTiming";
+import {
+  TimedResponse,
+  withQueryTiming,
+  wrapPlaceholderData
+} from "./queryTiming";
 
 export const getObjectsQueryKey = (
   serverUrl: string,
@@ -43,6 +47,7 @@ export const objectsQuery = <T extends ObjectType>(
         server
       )
     ),
+  placeholderData: wrapPlaceholderData(options?.placeholderData),
   ...options,
   enabled:
     !!server &&
