@@ -39,7 +39,6 @@ import {
   IsQcReportJobRunning,
   LoadExistingMinQcReport
 } from "./MinimumDataQcUtils.tsx";
-import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
 import { IsUserRoleAdvanced } from "components/UserRoles.ts";
 
 export default function LogCurveInfoListView() {
