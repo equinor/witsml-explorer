@@ -4,7 +4,11 @@ import Well from "../../models/well";
 import WellService from "../../services/wellService";
 import { QUERY_KEY_WELLS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { TimedResponse, withQueryTiming } from "./queryTiming";
+import {
+  TimedResponse,
+  withQueryTiming,
+  wrapPlaceholderData
+} from "./queryTiming";
 
 export const getWellsQueryKey = (serverUrl: string) => {
   return [QUERY_KEY_WELLS, serverUrl?.toLowerCase()];
@@ -18,6 +22,7 @@ export const wellsQuery = (server: Server, options?: QueryOptions) => ({
       return wells;
     }),
   ...options,
+  placeholderData: wrapPlaceholderData(options?.placeholderData),
   enabled: !!server && !(options?.enabled === false)
 });
 

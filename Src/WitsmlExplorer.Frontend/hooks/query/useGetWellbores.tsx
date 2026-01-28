@@ -4,7 +4,11 @@ import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
 import { QUERY_KEY_WELLBORES } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import { TimedResponse, withQueryTiming } from "./queryTiming";
+import {
+  TimedResponse,
+  withQueryTiming,
+  wrapPlaceholderData
+} from "./queryTiming";
 
 export const getWellboresQueryKey = (serverUrl: string, wellUid: string) => {
   return [
@@ -25,6 +29,7 @@ export const wellboresQuery = (
       const wellbores = WellboreService.getWellbores(wellUid, null, server);
       return wellbores;
     }),
+  placeholderData: wrapPlaceholderData(options?.placeholderData),
   ...options,
   enabled: !!server && wellUid != null && !(options?.enabled === false)
 });

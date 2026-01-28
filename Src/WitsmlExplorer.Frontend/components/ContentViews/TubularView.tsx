@@ -41,6 +41,7 @@ export default function TubularView() {
   const { connectedServer } = useConnectedServer();
   const {
     object: tubular,
+    isFetching: isFetchingTubular,
     isFetched: isFetchedTubular,
     responseTime: responseTimeObject
   } = useGetObject(
@@ -53,7 +54,7 @@ export default function TubularView() {
 
   const {
     components: tubularComponents,
-    isFetching,
+    isFetching: isFetchingTubularComponents,
     responseTime: responseTimeComponents
   } = useGetComponents(
     connectedServer,
@@ -63,6 +64,11 @@ export default function TubularView() {
     ComponentType.TubularComponent,
     { placeholderData: [] }
   );
+
+  const isFetching = isFetchingTubular || isFetchingTubularComponents;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
@@ -145,7 +151,7 @@ export default function TubularView() {
 
   return (
     <>
-      {isFetching && <ProgressSpinnerOverlay message="Fetching Trajectory." />}
+      {isFetching && <ProgressSpinnerOverlay message="Fetching Tubular." />}
       <ContentTable
         viewId="tubularView"
         columns={columns}
@@ -154,11 +160,7 @@ export default function TubularView() {
         checkableRows
         showRefresh
         downloadToCsvFileName={`Tubular_${tubular?.name}`}
-        responseTime={
-          responseTimeObject > responseTimeComponents
-            ? responseTimeObject
-            : responseTimeComponents
-        }
+        responseTime={responseTime}
       />
     </>
   );
