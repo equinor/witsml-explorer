@@ -18,6 +18,7 @@ import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
+import { IsUserRoleAdvanced } from "components/UserRoles";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
@@ -48,6 +49,10 @@ const ObjectsSidebarContextMenu = (
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
+
+  const {
+    operationState: { userRole }
+  } = useOperationState();
 
   const onClickNewObject = () => {
     const newObject: ObjectOnWellbore = {
@@ -132,28 +137,30 @@ const ObjectsSidebarContextMenu = (
               </MenuItem>
             ))}
         </NestedMenuItem>,
-        <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
-          {[
-            <MenuItem
-              key={"newObject"}
-              onClick={() =>
-                openInQueryView({
-                  templateObject: ObjectTypeToTemplateObject[objectType],
-                  storeFunction: StoreFunction.AddToStore,
-                  wellUid: wellbore.wellUid,
-                  wellboreUid: wellbore.uid,
-                  objectUid: uuid()
-                })
-              }
-            >
-              <StyledIcon
-                name="add"
-                color={colors.interactive.primaryResting}
-              />
-              <Typography color={"primary"}>{`New ${objectType}`}</Typography>
-            </MenuItem>
-          ]}
-        </NestedMenuItem>
+        IsUserRoleAdvanced(userRole) && (
+          <NestedMenuItem key={"queryItems"} label={"Query"} icon="textField">
+            {[
+              <MenuItem
+                key={"newObject"}
+                onClick={() =>
+                  openInQueryView({
+                    templateObject: ObjectTypeToTemplateObject[objectType],
+                    storeFunction: StoreFunction.AddToStore,
+                    wellUid: wellbore.wellUid,
+                    wellboreUid: wellbore.uid,
+                    objectUid: uuid()
+                  })
+                }
+              >
+                <StyledIcon
+                  name="add"
+                  color={colors.interactive.primaryResting}
+                />
+                <Typography color={"primary"}>{`New ${objectType}`}</Typography>
+              </MenuItem>
+            ]}
+          </NestedMenuItem>
+        )
       ]}
     />
   );
