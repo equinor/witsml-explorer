@@ -9,6 +9,7 @@ namespace WitsmlExplorer.Api.Models
 {
     public class WellLocation
     {
+        public string Uid { get; init; }
         public WellMeasure Latitude { get; private init; }
         public WellMeasure Longitude { get; private init; }
         public WellMeasure Easting { get; private init; }
@@ -22,6 +23,7 @@ namespace WitsmlExplorer.Api.Models
                 ? null
                 : new WellLocation
                 {
+                    Uid = witsmlLocation.Uid,
                     Latitude = WellMeasure.FromWitsmlMeasure(witsmlLocation.Latitude),
                     Longitude = WellMeasure.FromWitsmlMeasure(witsmlLocation.Longitude),
                     Easting = WellMeasure.FromWitsmlMeasure(witsmlLocation.Easting),

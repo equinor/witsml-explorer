@@ -9,6 +9,8 @@ namespace Witsml.Data
 {
     public class WitsmlReferencePoint
     {
+        [XmlAttribute("uid")]
+        public string Uid { get; set; }
         [XmlElement("name")]
         public string Name { get; set; }
         [XmlElement("location")]
@@ -18,6 +20,7 @@ namespace Witsml.Data
         {
             return new()
             {
+                Uid = string.Empty,
                 Name = string.Empty,
                 Location = new List<WitsmlLocation>()
                 {

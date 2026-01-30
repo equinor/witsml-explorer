@@ -7,6 +7,7 @@ namespace WitsmlExplorer.Api.Models
 {
     public class ReferencePoint
     {
+        public string Uid { get; init; }
         public string Name { get; set; }
         public List<Location> Location { get; set; }
 
@@ -16,6 +17,7 @@ namespace WitsmlExplorer.Api.Models
                 ? null
                 : new ReferencePoint
                 {
+                    Uid = witsmlReferencePoint.Uid,
                     Name = witsmlReferencePoint.Name,
                     Location = Models.Location.FromWitsmlLocation(witsmlReferencePoint.Location)
                 };
