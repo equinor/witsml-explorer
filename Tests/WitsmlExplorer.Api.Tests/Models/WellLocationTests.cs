@@ -16,6 +16,7 @@ namespace WitsmlExplorer.Api.Tests.Models
         {
             var sourceWitsmlLocation = new WitsmlLocation
             {
+                Uid = "uid",
                 Latitude = new WitsmlPlaneAngleMeasure { Uom = "LatitudeUom", Value = "LatitudeValue" },
                 Longitude = new WitsmlPlaneAngleMeasure { Uom = "LongitudeUom", Value = "LongitudeValue" },
                 Easting = new WitsmlLengthMeasure { Uom = "EastingUom", Value = "EastingValue" },
@@ -25,6 +26,7 @@ namespace WitsmlExplorer.Api.Tests.Models
             };
 
             var newWellLocation = WellLocation.FromWitsmlLocation(sourceWitsmlLocation);
+            Assert.Equal(newWellLocation.Uid, sourceWitsmlLocation.Uid);
             Assert.Equal(newWellLocation.Latitude.Uom, sourceWitsmlLocation.Latitude.Uom);
             Assert.Equal(newWellLocation.Latitude.Value, sourceWitsmlLocation.Latitude.Value);
             Assert.Equal(newWellLocation.Longitude.Uom, sourceWitsmlLocation.Longitude.Uom);
