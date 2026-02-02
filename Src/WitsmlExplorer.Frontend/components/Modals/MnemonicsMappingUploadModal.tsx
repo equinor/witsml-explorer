@@ -107,6 +107,18 @@ const MnemonicsMappingUploadModal = (): React.ReactElement => {
                   style={{ backgroundColor: colors.ui.backgroundLight }}
                 >
                   <List>
+                    <List.Item>
+                      What is the problem it solves:
+                      <List>
+                        <List.Item>
+                          Adds translation table of mnemonics between vendor
+                          mnemonics names and global names.
+                          <br />
+                          It solves differencies in mnemonics names between
+                          vendors.
+                        </List.Item>
+                      </List>
+                    </List.Item>
                     <List.Item>Supported filetype: csv</List.Item>
                     <List.Item>
                       The csv is expected to have this format:
@@ -117,6 +129,17 @@ const MnemonicsMappingUploadModal = (): React.ReactElement => {
                           BTCS-T;RT_AC
                           <br />
                           XBC1-T;RT_AC
+                        </List.Item>
+                      </List>
+                    </List.Item>
+                    <List.Item>
+                      How it works and where it's used in WEx
+                      <List>
+                        <List.Item>
+                          It's going to be used in currently implemented
+                          functionality for multi log/multi target, where it
+                          will load mnemonics based on the table from different
+                          target servers with the wellbores with matching names.
                         </List.Item>
                       </List>
                     </List.Item>
