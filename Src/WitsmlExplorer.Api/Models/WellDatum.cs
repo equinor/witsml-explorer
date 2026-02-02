@@ -9,6 +9,7 @@ namespace WitsmlExplorer.Api.Models
 {
     public record WellDatum
     {
+        public string Uid { get; init; }
         public string Name { get; private init; }
         public string Code { get; private init; }
         public MeasureWithDatum Elevation { get; private init; }
@@ -19,6 +20,7 @@ namespace WitsmlExplorer.Api.Models
                 ? null
                 : new WellDatum
                 {
+                    Uid = witsmlWellDatum.Uid,
                     Name = witsmlWellDatum.Name,
                     Code = witsmlWellDatum.Code,
                     Elevation = MeasureWithDatum.FromWitsml(witsmlWellDatum.Elevation),
