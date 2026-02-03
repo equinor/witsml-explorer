@@ -1,18 +1,18 @@
-import React, { ChangeEvent, useState } from "react";
-import ModalDialog from "./ModalDialog.tsx";
-import OperationType from "../../contexts/operationType.ts";
-import styled from "styled-components";
-import { useOperationState } from "../../hooks/useOperationState.tsx";
-import { Typography } from "../StyledComponents/Typography.tsx";
-import { Checkbox } from "../StyledComponents/Checkbox.tsx";
 import { Accordion, List, TextField } from "@equinor/eds-core-react";
+import * as Papa from "papaparse";
+import React, { ChangeEvent, useState } from "react";
+import { useCSVReader } from "react-papaparse";
+import styled from "styled-components";
+import OperationType from "../../contexts/operationType.ts";
+import { useOperationState } from "../../hooks/useOperationState.tsx";
 import MnemonicsMappingJob from "../../models/jobs/mnemonicsMappingJob.tsx";
 import JobService, { JobType } from "../../services/jobService.tsx";
-import * as Papa from "papaparse";
-import { useCSVReader } from "react-papaparse";
 import { Button } from "../StyledComponents/Button.tsx";
+import { Checkbox } from "../StyledComponents/Checkbox.tsx";
 import StyledAccordion from "../StyledComponents/StyledAccordion";
+import { Typography } from "../StyledComponents/Typography.tsx";
 import { StyledAccordionHeader } from "./LogComparisonModal.tsx";
+import ModalDialog from "./ModalDialog.tsx";
 
 const MnemonicsMappingUploadModal = (): React.ReactElement => {
   const {
@@ -108,14 +108,13 @@ const MnemonicsMappingUploadModal = (): React.ReactElement => {
                 >
                   <List>
                     <List.Item>
-                      What is the problem it solves:
+                      What it does:
                       <List>
                         <List.Item>
-                          Adds translation table of mnemonics between vendor
-                          mnemonics names and global names.
+                          Adds a translation table between vendor mnemonics and
+                          global mnemonics.
                           <br />
-                          It solves differencies in mnemonics names between
-                          vendors.
+                          This resolves naming differences across vendors.
                         </List.Item>
                       </List>
                     </List.Item>
@@ -124,22 +123,21 @@ const MnemonicsMappingUploadModal = (): React.ReactElement => {
                       The csv is expected to have this format:
                       <List>
                         <List.Item>
-                          "Vendor Mnemonic";"Global Mnemonic"
+                          Vendor Mnemonic,Global Mnemonic
                           <br />
-                          BTCS-T;RT_AC
+                          BTCS-T,RT_AC
                           <br />
-                          XBC1-T;RT_AC
+                          XBC1-T,RT_AC
                         </List.Item>
                       </List>
                     </List.Item>
                     <List.Item>
-                      How it works and where it's used in WEx
+                      How it is used in WEx
                       <List>
                         <List.Item>
-                          It's going to be used in currently implemented
-                          functionality for multi log/multi target, where it
-                          will load mnemonics based on the table from different
-                          target servers with the wellbores with matching names.
+                          Used for multi-log / multi-target comparisons to match
+                          mnemonics across servers and wellbores with consistent
+                          names.
                         </List.Item>
                       </List>
                     </List.Item>
