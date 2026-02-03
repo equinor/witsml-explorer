@@ -6,8 +6,6 @@ using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Models;
 
-using WellDatum = Witsml.Data.WellDatum;
-
 namespace WitsmlExplorer.Api.Query
 {
     public static class WellQueries
@@ -88,9 +86,19 @@ namespace WitsmlExplorer.Api.Query
                     TimeZone = "",
                     StatusWell = "",
                     PurposeWell = "",
-                    WellDatum = new List<WellDatum>(),
+                    WellDatum = new List<WitsmlWellDatum>()
+                    {
+                        WitsmlWellDatum.ToFetch()
+                    },
                     WaterDepth = Measure.ToFetch<WitsmlLengthMeasure>(),
-                    WellLocation = new List<WitsmlLocation>(),
+                    WellLocation = new List<WitsmlLocation>()
+                    {
+                        WitsmlLocation.ToFetch()
+                    },
+                    ReferencePoint = new List<WitsmlReferencePoint>()
+                    {
+                        WitsmlReferencePoint.ToFetch()
+                    },
                     CommonData = new WitsmlCommonData
                     {
                         DTimCreation = "",

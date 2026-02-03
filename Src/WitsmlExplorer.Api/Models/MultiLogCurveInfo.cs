@@ -7,5 +7,6 @@ namespace WitsmlExplorer.Api.Models
 
         }
         public string LogUid { get; init; }
+        public string ServerUrl { get; init; }
     }
 }

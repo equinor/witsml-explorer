@@ -8,6 +8,7 @@ import {
   DateTimeFormat,
   DecimalPreference,
   TimeZone,
+  UserRole,
   UserTheme
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -25,7 +26,8 @@ import {
   STORAGE_HOTKEYS_ENABLED_KEY,
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
-  STORAGE_TIMEZONE_KEY
+  STORAGE_TIMEZONE_KEY,
+  STORAGE_USER_ROLE_KEY
 } from "tools/localStorageHelpers";
 
 const iconSizes: { [key in UserTheme]: 24 | 32 | 16 | 18 | 40 } = {
@@ -44,6 +46,10 @@ const timeZoneLabels: Record<TimeZone, string> = {
   )} Brazil/Brasilia`,
   [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,
   [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
+  [TimeZone.Amsterdam]: `${getOffsetFromTimeZone(
+    TimeZone.Amsterdam
+  )} Europe/Amsterdam`,
+  [TimeZone.Oman]: `${getOffsetFromTimeZone(TimeZone.Oman)} Oman/Muscat`,
   [TimeZone.NewDelhi]: `${getOffsetFromTimeZone(
     TimeZone.NewDelhi
   )} India/New Delhi`,
@@ -60,7 +66,8 @@ const SettingsModal = (): React.ReactElement => {
       colors,
       dateTimeFormat,
       decimals,
-      hotKeysEnabled
+      hotKeysEnabled,
+      userRole
     },
     dispatchOperation
   } = useOperationState();
@@ -141,6 +148,15 @@ const SettingsModal = (): React.ReactElement => {
     setCheckedDecimalPreference(selectedValue);
   };
 
+  const onChangeUserRole = (event: ChangeEvent<HTMLSelectElement>) => {
+    const selectedUserRole = event.target.value as UserRole;
+    setLocalStorageItem<UserRole>(STORAGE_USER_ROLE_KEY, selectedUserRole);
+    dispatchOperation({
+      type: OperationType.SetUserRole,
+      payload: selectedUserRole
+    });
+  };
+
   const onChangeHotKeysEnabled = (event: ChangeEvent<HTMLInputElement>) => {
     const hotKeysEnabled = event.target.checked;
     setLocalStorageItem<boolean>(STORAGE_HOTKEYS_ENABLED_KEY, hotKeysEnabled);
@@ -213,6 +229,20 @@ const SettingsModal = (): React.ReactElement => {
               <option value={DateTimeFormat.Natural}>
                 dd.MM.yyyy HH:mm:ss.SSS
               </option>
+            </StyledNativeSelect>
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <RowIcon name="accessible" />
+            <StyledNativeSelect
+              id={"native-select-mode"}
+              label={"User Role"}
+              onChange={onChangeUserRole}
+              defaultValue={userRole}
+              colors={colors}
+            >
+              <option value={UserRole.Regular}>Regular User</option>
+              <option value={UserRole.Advanced}>Advanced User</option>
+              <option value={UserRole.Expert}>Expert User</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>
@@ -290,7 +320,7 @@ const SettingsModal = (): React.ReactElement => {
                   logout();
                 }}
               >
-                <Typography>Logout</Typography>
+                Logout
               </Button>
             </HorizontalLayout>
           )}

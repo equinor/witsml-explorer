@@ -1,4 +1,4 @@
-import { TableBody, TableHead } from "@mui/material";
+import { TableBody, TableHead, Tooltip } from "@mui/material";
 import {
   ColumnSizingState,
   ExpandedState,
@@ -38,6 +38,7 @@ import {
   constantTableOptions,
   dateSortingFn,
   expanderId,
+  INSET_VERTICAL_SPACING,
   isClickable,
   measureSortingFn,
   selectId,
@@ -55,7 +56,7 @@ import { parse } from "date-fns";
 import { useOperationState } from "hooks/useOperationState";
 import { indexToNumber } from "models/logObject";
 import * as React from "react";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, ReactNode, useEffect, useMemo, useState } from "react";
 import { Colors } from "styles/Colors";
 import Icon from "styles/Icons";
 
@@ -101,6 +102,7 @@ export const ContentTable = React.memo(
       onContextMenu,
       checkableRows,
       insetColumns,
+      renderInsetTitle,
       nested,
       nestedProperty,
       panelElements,
@@ -108,6 +110,7 @@ export const ContentTable = React.memo(
       showRefresh = false,
       stickyLeftColumns = 0,
       viewId,
+      responseTime,
       downloadToCsvFileName = null,
       onRowSelectionChange,
       onFilteredRowSelectionChange,
@@ -136,7 +139,7 @@ export const ContentTable = React.memo(
     const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
     const cellHeight = sizes[theme].cellHeight;
     const headCellHeight = sizes[theme].headCellHeight;
-    const noData = useMemo(() => [], []);
+    const noData = useMemo<any[]>(() => [], []);
 
     const columnDef = useColumnDef(
       viewId,
@@ -419,6 +422,7 @@ export const ContentTable = React.memo(
             stickyLeftColumns={stickyLeftColumns}
             disableFilters={disableFilters || nested}
             disableSearchParamsFilter={disableSearchParamsFilter}
+            responseTime={responseTime}
           />
         ) : null}
         <div
@@ -438,34 +442,51 @@ export const ContentTable = React.memo(
                 {columnItems.map((column) => {
                   const header = table.getLeafHeaders()[column.index];
                   return (
-                    <StyledTh
-                      key={header.id}
-                      style={{
-                        width: header.getSize(),
-                        left:
-                          column.index < stickyLeftColumns ? column.start : 0
-                      }}
-                      sticky={column.index < stickyLeftColumns ? 1 : 0}
-                      colors={colors}
+                    <Tooltip
+                      key={header.id + " tooltip"}
+                      disableHoverListener={
+                        !header.column.columnDef?.meta?.headerTooltip
+                      }
+                      disableFocusListener={
+                        !header.column.columnDef?.meta?.headerTooltip
+                      }
+                      disableTouchListener={
+                        !header.column.columnDef?.meta?.headerTooltip
+                      }
+                      title={header.column.columnDef?.meta?.headerTooltip}
+                      arrow
                     >
-                      <div
-                        role="button"
-                        style={{ cursor: "pointer" }}
-                        onClick={(e) => onHeaderClick(e, header)}
+                      <StyledTh
+                        key={header.id}
+                        style={{
+                          width: header.getSize(),
+                          left:
+                            column.index < stickyLeftColumns ? column.start : 0
+                        }}
+                        sticky={column.index < stickyLeftColumns ? 1 : 0}
+                        colors={
+                          header.column.columnDef?.meta?.headerColors ?? colors
+                        }
                       >
-                        {header.column.getIsSorted() &&
-                          sortingIcons[
-                            header.column.getIsSorted() as SortDirection
-                          ]}
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+                        <div
+                          role="button"
+                          style={{ cursor: "pointer" }}
+                          onClick={(e) => onHeaderClick(e, header)}
+                        >
+                          {header.column.getIsSorted() &&
+                            sortingIcons[
+                              header.column.getIsSorted() as SortDirection
+                            ]}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </div>
+                        {header.id != selectId && header.id != expanderId && (
+                          <Resizer header={header} />
                         )}
-                      </div>
-                      {header.id != selectId && header.id != expanderId && (
-                        <Resizer header={header} />
-                      )}
-                    </StyledTh>
+                      </StyledTh>
+                    </Tooltip>
                   );
                 })}
                 <th style={{ width: `${spaceRight}px` }} />
@@ -492,7 +513,8 @@ export const ContentTable = React.memo(
                         height: `${calculateRowHeight(
                           row,
                           headCellHeight,
-                          cellHeight
+                          cellHeight,
+                          !!renderInsetTitle
                         )}px`,
                         transform: `translateY(${virtualRow.start}px)`
                       }}
@@ -554,6 +576,7 @@ export const ContentTable = React.memo(
                           data={row.original.inset}
                           columns={insetColumns}
                           colors={colors}
+                          title={renderInsetTitle?.(row.original.inset?.length)}
                         />
                       )}
                   </Fragment>
@@ -605,11 +628,20 @@ interface InsetProps {
   data: any[];
   columns: ContentTableColumn[];
   colors: Colors;
+  title?: ReactNode;
 }
 
 const Inset = (props: InsetProps): React.ReactElement => {
-  const { parentStart, cellHeight, headCellHeight, data, columns, colors } =
-    props;
+  const {
+    parentStart,
+    cellHeight,
+    headCellHeight,
+    data,
+    columns,
+    colors,
+    title
+  } = props;
+
   return (
     <tr
       style={{
@@ -624,11 +656,31 @@ const Inset = (props: InsetProps): React.ReactElement => {
     >
       <td
         style={{
-          height: `${cellHeight * data.length + headCellHeight}px`,
+          height: `${
+            cellHeight * data.length +
+            headCellHeight +
+            INSET_VERTICAL_SPACING * 2
+          }px`,
           padding: 0
         }}
       >
-        <ContentTable columns={columns} data={data} showPanel={false} />
+        <div
+          style={{
+            marginTop: INSET_VERTICAL_SPACING,
+            marginBottom: INSET_VERTICAL_SPACING
+          }}
+        >
+          {title ? (
+            <div
+              style={{
+                height: cellHeight
+              }}
+            >
+              {title}
+            </div>
+          ) : null}
+          <ContentTable columns={columns} data={data} showPanel={false} />
+        </div>
       </td>
     </tr>
   );

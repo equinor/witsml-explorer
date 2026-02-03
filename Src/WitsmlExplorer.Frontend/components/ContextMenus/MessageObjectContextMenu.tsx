@@ -17,7 +17,9 @@ import ObjectPickerModal, {
   ObjectPickerProps
 } from "components/Modals/ObjectPickerModal";
 import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
+import { RoleLimitedAccess } from "components/UserRoles";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { UserRole } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
@@ -69,18 +71,22 @@ const MessageObjectContextMenu = (
 
   const extraMenuItems = (): React.ReactElement[] => {
     return [
-      <MenuItem
-        key={"compare"}
-        onClick={onClickCompare}
-        disabled={checkedObjects.length !== 1}
-      >
-        <StyledIcon name="compare" color={colors.interactive.primaryResting} />
-        <Typography color={"primary"}>{`${menuItemText(
-          "Compare",
-          "message",
-          []
-        )}`}</Typography>
-      </MenuItem>,
+      <RoleLimitedAccess requiredRole={UserRole.Advanced} key="compare">
+        <MenuItem
+          onClick={onClickCompare}
+          disabled={checkedObjects.length !== 1}
+        >
+          <StyledIcon
+            name="compare"
+            color={colors.interactive.primaryResting}
+          />
+          <Typography color={"primary"}>{`${menuItemText(
+            "Compare",
+            "message",
+            []
+          )}`}</Typography>
+        </MenuItem>
+      </RoleLimitedAccess>,
       <Divider key={"divider"} />,
       <MenuItem
         key={"properties"}

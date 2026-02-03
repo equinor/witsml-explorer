@@ -44,5 +44,6 @@ namespace WitsmlExplorer.Api.Models
         OffsetLogCurves,
         MinimumDataQc,
         WellboreSubObjectsComparison,
+        MnemonicsMapping
     }
 }

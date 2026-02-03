@@ -10,6 +10,7 @@ import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECT } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
 import { getObjectsQueryKey } from "./useGetObjects";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getObjectQueryKey = (
   serverUrl: string,
@@ -44,17 +45,20 @@ const updatePartialObjects = <T extends ObjectType>(
     objectType
   );
   const existingObjects =
-    queryClient.getQueryData<ObjectTypeToModel[T][]>(objectsQueryKey);
+    queryClient.getQueryData<TimedResponse<ObjectTypeToModel[T][]>>(
+      objectsQueryKey
+    );
+
   if (existingObjects) {
-    const existingObjectIndex = existingObjects.findIndex(
+    const existingObjectIndex = existingObjects.data.findIndex(
       (o) => o.uid === objectUid
     );
     if (object) {
-      existingObjects[existingObjectIndex] = object;
+      existingObjects.data[existingObjectIndex] = object;
     } else {
-      existingObjects.splice(existingObjectIndex, 1);
+      existingObjects.data.splice(existingObjectIndex, 1);
     }
-    queryClient.setQueryData<ObjectTypeToModel[T][]>(
+    queryClient.setQueryData<TimedResponse<ObjectTypeToModel[T][]>>(
       objectsQueryKey,
       existingObjects
     );
@@ -77,26 +81,28 @@ export const objectQuery = <T extends ObjectType>(
     objectType,
     objectUid
   ),
-  queryFn: async () => {
-    const object = await ObjectService.getObject<T>(
-      wellUid,
-      wellboreUid,
-      objectUid,
-      objectType,
-      null,
-      server
-    );
-    updatePartialObjects(
-      queryClient,
-      server,
-      objectType,
-      wellUid,
-      wellboreUid,
-      objectUid,
-      object
-    );
-    return object;
-  },
+  queryFn: () =>
+    withQueryTiming(async () => {
+      const object = await ObjectService.getObject<T>(
+        wellUid,
+        wellboreUid,
+        objectUid,
+        objectType,
+        null,
+        server
+      );
+      updatePartialObjects(
+        queryClient,
+        server,
+        objectType,
+        wellUid,
+        wellboreUid,
+        objectUid,
+        object
+      );
+      return object;
+    }),
+
   ...options,
   gcTime: 0,
   enabled:
@@ -109,10 +115,11 @@ export const objectQuery = <T extends ObjectType>(
 });
 
 type ObjectQueryResult<T extends ObjectType> = Omit<
-  QueryObserverResult<ObjectTypeToModel[T], unknown>,
+  QueryObserverResult<TimedResponse<ObjectTypeToModel[T]>, unknown>,
   "data"
 > & {
   object: ObjectTypeToModel[T];
+  responseTime: number;
 };
 
 export const useGetObject = <T extends ObjectType>(
@@ -124,7 +131,7 @@ export const useGetObject = <T extends ObjectType>(
   options?: QueryOptions
 ): ObjectQueryResult<T> => {
   const queryClient = useQueryClient();
-  const { data, ...state } = useQuery<ObjectTypeToModel[T]>(
+  const { data, ...state } = useQuery<TimedResponse<ObjectTypeToModel[T]>>(
     objectQuery<T>(
       queryClient,
       server,
@@ -135,5 +142,5 @@ export const useGetObject = <T extends ObjectType>(
       options
     )
   );
-  return { object: data, ...state };
+  return { object: data?.data, responseTime: data?.responseTime, ...state };
 };

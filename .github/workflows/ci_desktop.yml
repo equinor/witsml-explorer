@@ -7,6 +7,7 @@ on:
       - 'Src/WitsmlExplorer.Api/**'
       - 'Src/WitsmlExplorer.Frontend/**'
       - 'Src/WitsmlExplorer.Desktop/**'
+      - 'yarn.lock'
 
 permissions: {}
 
@@ -20,7 +21,7 @@ jobs:
         with:
           node-version: '20'
       - name: Install dependencies
-        run: yarn --network-timeout 100000
+        run: yarn install --frozen-lockfile --network-timeout 100000
         working-directory: ./Src/WitsmlExplorer.Desktop
       - name: Linting
         run: yarn lint

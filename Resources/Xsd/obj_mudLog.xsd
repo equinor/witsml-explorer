@@ -17,7 +17,7 @@
 	-->
 	<!--                                                         -->
 	<xsd:import namespace="http://www.energistics.org/schemas/abstract"
-		     schemaLocation="../../abstract_v1.0/xsd_schemas/sub_abstractSubstitutionGroup.xsd"/>
+		     schemaLocation="sub_abstractSubstitutionGroup.xsd"/>
 	<!--                                                         -->
 	<xsd:include schemaLocation="cs_documentInfo.xsd"/>
 	<xsd:include schemaLocation="grp_mudLog.xsd"/>

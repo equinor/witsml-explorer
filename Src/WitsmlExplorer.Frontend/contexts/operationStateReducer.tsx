@@ -21,7 +21,15 @@ export enum TimeZone {
   London = "Europe/London",
   NewDelhi = "Asia/Kolkata",
   Houston = "America/Chicago",
-  Malaysia = "Asia/Kuala_Lumpur"
+  Malaysia = "Asia/Kuala_Lumpur",
+  Amsterdam = "Europe/Amsterdam",
+  Oman = "Asia/Muscat"
+}
+
+export enum UserRole {
+  Regular = "regular",
+  Advanced = "advanced",
+  Expert = "expert"
 }
 
 export enum DateTimeFormat {
@@ -91,6 +99,11 @@ export interface SetDecimalAction extends PayloadAction {
   payload: DecimalPreference;
 }
 
+export interface SetUserRoleAction extends PayloadAction {
+  type: OperationType.SetUserRole;
+  payload: UserRole;
+}
+
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
@@ -101,6 +114,7 @@ export interface OperationState {
   dateTimeFormat: DateTimeFormat;
   decimals: DecimalPreference;
   hotKeysEnabled: boolean;
+  userRole: UserRole;
 }
 
 export interface MousePosition {
@@ -133,7 +147,8 @@ export const initOperationStateReducer = (): [
     colors: Light,
     dateTimeFormat: DateTimeFormat.Raw,
     decimals: DecimalPreference.Raw,
-    hotKeysEnabled: false
+    hotKeysEnabled: false,
+    userRole: UserRole.Regular
   };
   return useReducer(reducer, initialState);
 };
@@ -161,6 +176,8 @@ export const reducer = (
       return setDateTimeFormat(state, action as SetDateTimeFormatAction);
     case OperationType.SetDecimal:
       return setDecimal(state, action as SetDecimalAction);
+    case OperationType.SetUserRole:
+      return setUserRole(state, action as SetUserRoleAction);
     case OperationType.SetHotKeysEnabled:
       return setHotKeysEnabled(state, action as SetHotKeysEnabledAction);
     default:
@@ -252,6 +269,13 @@ const setDecimal = (state: OperationState, { payload }: SetDecimalAction) => {
   };
 };
 
+const setUserRole = (state: OperationState, { payload }: SetUserRoleAction) => {
+  return {
+    ...state,
+    userRole: payload
+  };
+};
+
 const setHotKeysEnabled = (
   state: OperationState,
   { payload }: SetHotKeysEnabledAction
@@ -272,6 +296,7 @@ export type OperationAction =
   | SetModeAction
   | SetDateTimeFormatAction
   | SetDecimalAction
+  | SetUserRoleAction
   | SetHotKeysEnabledAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

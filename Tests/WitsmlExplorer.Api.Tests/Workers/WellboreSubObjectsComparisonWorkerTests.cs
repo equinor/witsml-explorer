@@ -11,6 +11,7 @@ using Moq;
 using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
+using Witsml.Data.DataWorkOrder;
 using Witsml.Data.MudLog;
 using Witsml.Data.Rig;
 using Witsml.Data.Tubular;
@@ -44,6 +45,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         private readonly Mock<IWitsmlClient> _targetWitsmlClient = new();
         private readonly Mock<IWitsmlClientProvider> _witsmlClientProvider = new();
 
+        private readonly Mock<ICountLogDataRowWorker> _countLogDataRowWorker;
+        private readonly Mock<ICompareLogDataWorker> _compareLogDataRowWorker;
+
         private readonly Uri _targetUri = new("https://target");
         private readonly Uri _sourceUri = new("https://source");
 
@@ -56,6 +60,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
         {
             _witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_targetWitsmlClient.Object);
             _witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_sourceWitsmlClient.Object);
+            _countLogDataRowWorker = new Mock<ICountLogDataRowWorker>();
+            _compareLogDataRowWorker = new Mock<ICompareLogDataWorker>();
             MockWorkers();
         }
 
@@ -82,10 +88,15 @@ namespace WitsmlExplorer.Api.Tests.Workers
             MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
             MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, false);
 
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
             var job = CreateJobTemplate();
 
             MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
             MakeLogsListSetups(_targetWitsmlClient, job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, false);
+
+
 
             //Act
             (WorkerResult, RefreshAction) result = await _worker.Execute(job);
@@ -101,21 +112,134 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 x.ExistsOnSource.Equals("TRUE") && x.ExistsOnTarget.Equals("TRUE"));
             var sameFluidReport =
                 existsOnTarget.Where(x => x.ObjectUid.Equals("Uid_FluidsReport1"));
-            var log = logsExistsOnBoth.First();
+            var log = logsExistsOnBoth.Last();
+            var differentNumberOfMnemonics =
+                reportItems.Where(x => x.DataPointsOfMnemonicOnSource != null);
+            var countOfIssuesInMnemonics =
+                reportItems.Where(x => x.NumberOfDifferencesInValuesInMnemonics != null);
+            var numberOfIssuesInMnemonics = countOfIssuesInMnemonics.First()
+                .NumberOfDifferencesInValuesInMnemonics;
 
-            Assert.True(sameFluidReport.Count().Equals(0));
-            Assert.True(existsOnSource.Count().Equals(13));
-            Assert.True(existsOnTarget.Count().Equals(13));
-            Assert.True(reportItems.Count().Equals(29));
-            Assert.True(logsExistsOnBoth.Count().Equals(3));
+            Assert.Empty(sameFluidReport);
+            Assert.Equal(13, existsOnSource.Count());
+            Assert.Equal(13, existsOnTarget.Count());
+            Assert.Equal(33, reportItems.Count());
+            Assert.Equal(7, logsExistsOnBoth.Count());
+            Assert.Equal(3, differentNumberOfMnemonics.Count());
+            Assert.Single(countOfIssuesInMnemonics);
+            Assert.Equal("3", numberOfIssuesInMnemonics);
             Assert.Equal("10", log.SourceStart);
             Assert.Equal("15", log.SourceEnd);
             Assert.Equal("1", log.TargetStart);
             Assert.Equal("5", log.TargetEnd);
+
         }
 
         private void MockWorkers()
         {
+            _countLogDataRowWorker
+                .Setup(worker => worker.Execute(It.IsAny<CountLogDataRowJob>(), null))
+                .ReturnsAsync((CountLogDataRowJob job, object _) =>
+                {
+                    if (job.LogReference.WellboreUid == "targetWellboreUid")
+                    {
+                        job.JobInfo = new JobInfo
+                        {
+                            Report = new CountLogDataReport()
+                            {
+                                ReportItems = new List<CountLogDataReportItem>()
+                                {
+                                    new ()
+                                    {
+                                        Mnemonic = "a",
+                                        LogDataCount = 1
+                                    },
+                                    new ()
+                                    {
+                                        Mnemonic = "b",
+                                        LogDataCount = 2
+                                    },
+                                    new ()
+                                    {
+                                        Mnemonic = "c",
+                                        LogDataCount = 3
+                                    }
+                                }
+                            }
+                        };
+                    }
+                    else
+                    {
+                        job.JobInfo = new JobInfo
+                        {
+                            Report = new CountLogDataReport()
+                            {
+                                ReportItems = new List<CountLogDataReportItem>()
+                                {
+                                    new ()
+                                    {
+                                        Mnemonic = "a",
+                                        LogDataCount = 11
+                                    },
+                                    new ()
+                                    {
+                                        Mnemonic = "b",
+                                        LogDataCount = 12
+                                    },
+                                    new ()
+                                    {
+                                        Mnemonic = "c",
+                                        LogDataCount = 13
+                                    }
+                                }
+                            }
+                        };
+                    }
+
+                    return (new WorkerResult(null, true, null), null);
+
+                });
+
+
+            ;
+
+            _compareLogDataRowWorker
+                .Setup(worker => worker.Execute(It.IsAny<CompareLogDataJob>(), null))
+                .ReturnsAsync((CompareLogDataJob job, object _) =>
+                {
+                    job.JobInfo = new JobInfo
+                    {
+                        Report = new BaseReport()
+                        {
+                            ReportItems = new List<CompareLogDataItem>()
+                            {
+                                new ()
+                                {
+                                    Mnemonic = "a",
+                                    Index = "1",
+                                    SourceValue = "",
+                                    TargetValue = ""
+                                },
+                                new ()
+                                {
+                                    Mnemonic = "b",
+                                    Index = "3",
+                                    SourceValue = "",
+                                    TargetValue = ""
+                                },
+                                new ()
+                                {
+                                    Mnemonic = "c",
+                                    Index = "4",
+                                    SourceValue = "",
+                                    TargetValue = ""
+                                }
+                            }
+                        }
+                    };
+
+                    return (new WorkerResult(null, true, null), null);
+                });
             Mock<IObjectService> objectServiceMock = new();
             objectServiceMock.Setup(os => os.GetAllObjectsOnWellbore(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new List<SelectableObjectOnWellbore>());
             Mock<IDocumentRepository<Server, Guid>> documentRepository = new();
@@ -130,14 +254,13 @@ namespace WitsmlExplorer.Api.Tests.Workers
                         DepthLogDecimals = 2
                     }
                 }.AsCollection());
-            var countLogDataRowWorker = new CountLogDataRowWorker(NullLogger<CountLogDataRowJob>.Instance,
-                _witsmlClientProvider.Object);
-            var compareLogDataRowWorker = new CompareLogDataWorker(NullLogger<CompareLogDataJob>.Instance,
-                _witsmlClientProvider.Object);
+
+
+
             _worker = new WellboreSubObjectsComparisonWorker(NullLogger<WellboreSubObjectsComparisonJob>.Instance,
                 _witsmlClientProvider.Object,
-                countLogDataRowWorker,
-                compareLogDataRowWorker,
+                _countLogDataRowWorker.Object,
+                _compareLogDataRowWorker.Object,
                 documentRepository.Object);
         }
 
@@ -145,7 +268,9 @@ namespace WitsmlExplorer.Api.Tests.Workers
         /// Method to create a list of mock objects for the given wellboreUid.
         /// </summary>
         /// <param name="client"></param>
+        /// <param name="wellUid"></param>
         /// <param name="wellboreUid"></param>
+        /// <param name="isSource"></param>
         /// <param name="cancellationToken"></param>
         private static void MakeObjectListSetups(Mock<IWitsmlClient> client, string wellUid, string wellboreUid, bool isSource, CancellationToken? cancellationToken = null)
         {
@@ -154,6 +279,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 IWitsmlObjectList objectList = entityType
                 switch
                 {
+                    EntityType.Attachment => new WitsmlAttachments(),
+                    EntityType.DataWorkOrder => new WitsmlDataWorkOrders(),
                     EntityType.BhaRun => isSource ? GetBhaRuns(wellboreUid) : GetBhaRunsTarget(wellboreUid),
                     EntityType.FluidsReport => isSource ? GetFluidsReports(wellboreUid) : GetFluidsReportsTarget(wellboreUid),
                     EntityType.FormationMarker => new WitsmlFormationMarkers(),
@@ -164,7 +291,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     EntityType.Tubular => new WitsmlTubulars(),
                     EntityType.Trajectory => new WitsmlTrajectories(),
                     EntityType.WbGeometry => new WitsmlWbGeometrys(),
-                    EntityType.Attachment => new WitsmlAttachments(),
                     _ => null
                 };
 
@@ -193,6 +319,45 @@ namespace WitsmlExplorer.Api.Tests.Workers
                     CancellationToken? _) => logMockObjects);
         }
 
+        private void MockServerCapabilites(Mock<IWitsmlClient> witsmlClient)
+        {
+            var serverCapabalities = new WitsmlCapServers()
+            {
+                ServerCapabilities = new List<WitsmlServerCapabilities>()
+                {
+                    new WitsmlServerCapabilities()
+                    {
+                        Functions = new List<WitsmlFunction>()
+                        {
+                            new WitsmlFunction()
+                            {
+                                DataObjects = GetDataObjects(),
+                                Name = "WMLS_GetFromStore"
+                            }
+                        }
+                    }
+                }
+
+            };
+            witsmlClient.Setup(client => client.GetCap()).ReturnsAsync(serverCapabalities);
+        }
+
+        private List<WitsmlFunctionDataObject> GetDataObjects()
+        {
+            var result = new List<WitsmlFunctionDataObject>();
+            foreach (EntityType entityType in Enum.GetValues(typeof(EntityType)))
+            {
+                if (entityType is EntityType.Well or EntityType.Wellbore or EntityType.Log) continue;
+                var dataObject = new WitsmlFunctionDataObject()
+                {
+                    MaxDataNodes = 10000,
+                    MaxDataPoints = 8000000,
+                    Name = entityType.ToString()
+                };
+                result.Add(dataObject);
+            }
+            return result;
+        }
         private void SetupGetSourceWellbore()
         {
             WitsmlWellbores sourceWellbores = new();
@@ -438,11 +603,6 @@ namespace WitsmlExplorer.Api.Tests.Workers
             return It.Is<T>(q => XmlHelper.Serialize(q, false) == XmlHelper.Serialize(query, false));
         }
 
-        private static WitsmlWellbore CreateWellbore(string uid, string name = null)
-        {
-            return new WitsmlWellbore { Uid = uid, Name = name ?? uid, UidWell = TargetWellUid, NameWell = "targetWellName" };
-        }
-
         private static WellboreSubObjectsComparisonJob CreateJobTemplate()
         {
             WellboreReference targetWellboreRef = new() { WellUid = TargetWellUid, WellboreUid = TargetWellboreUid };
@@ -455,7 +615,11 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 JobInfo = new JobInfo()
                 {
                     Id = "1"
-                }
+                },
+                CountLogsData = true,
+                CheckLogsData = true,
+                CheckTimeBasedLogsData = true,
+                CheckDepthBasedLogsData = true
             };
         }
     }

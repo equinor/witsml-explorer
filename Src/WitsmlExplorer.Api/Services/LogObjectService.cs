@@ -5,8 +5,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.IdentityModel.Tokens;
-
 using Witsml;
 using Witsml.Data;
 using Witsml.Extensions;
@@ -159,7 +157,7 @@ namespace WitsmlExplorer.Api.Services
         {
             var logGetters = logUids.Select(logUid => GetMultiLogCurveInfo(wellUid, wellboreUid, logUid)).ToList();
             var resultTask = await Task.WhenAll(logGetters);
-            var result = resultTask.SelectMany(i => i).ToList();
+            var result = resultTask.Where(rt => rt is not null).SelectMany(i => i).ToList();
             return result;
         }
 
@@ -331,6 +329,7 @@ namespace WitsmlExplorer.Api.Services
                     Uid = logCurveInfo.Uid,
                     Mnemonic = logCurveInfo.Mnemonic,
                     LogUid = logUid,
+                    ServerUrl = _witsmlClient.GetServerHostname().ToString(),
                     ClassWitsml = logCurveInfo.ClassWitsml,
                     MaxDateTimeIndex = logCurveInfo.MaxDateTimeIndex,
                     MaxDepthIndex = logCurveInfo.MaxIndex?.Value,

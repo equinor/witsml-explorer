@@ -3,6 +3,7 @@ import bhaRun from "templates/all/bhaRun.xml?raw";
 import cementJob from "templates/all/cementJob.xml?raw";
 import changeLog from "templates/all/changeLog.xml?raw";
 import convCore from "templates/all/convCore.xml?raw";
+import dataWorkOrder from "templates/all/dataWorkOrder.xml?raw";
 import drillReport from "templates/all/drillReport.xml?raw";
 import fluidsReport from "templates/all/fluidsReport.xml?raw";
 import formationMarker from "templates/all/formationMarker.xml?raw";
@@ -25,6 +26,7 @@ import wbGeometry from "templates/all/wbGeometry.xml?raw";
 import well from "templates/all/well.xml?raw";
 import wellbore from "templates/all/wellbore.xml?raw";
 import changeLogIdOnly from "templates/changeLog_id-only.xml?raw";
+import dataWorkOrderIdOnly from "templates/dataWorkOrder_id-only.xml?raw";
 import logDataOnly from "templates/log_data-only.xml?raw";
 import logHeaderOnly from "templates/log_header-only.xml?raw";
 import mudLogDataOnly from "templates/mudLog_data-only.xml?raw";
@@ -38,6 +40,7 @@ import wellboreIdOnly from "templates/wellbore_id-only.xml?raw";
 
 export const templates: Record<string, string> = {
   changeLogIdOnly,
+  dataWorkOrderIdOnly,
   logDataOnly,
   logHeaderOnly,
   mudLogDataOnly,
@@ -53,6 +56,7 @@ export const templates: Record<string, string> = {
   cementJob,
   changeLog,
   convCore,
+  dataWorkOrder,
   drillReport,
   fluidsReport,
   formationMarker,

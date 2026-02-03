@@ -31,7 +31,7 @@ export default function FormationMarkersListView() {
   const { dispatchOperation } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: formationMarkers } = useGetObjects(
+  const { objects: formationMarkers, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -112,6 +112,7 @@ export default function FormationMarkersListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="FormationMarkers"
+        responseTime={responseTime}
       />
     )
   );

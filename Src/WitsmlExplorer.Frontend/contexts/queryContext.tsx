@@ -15,6 +15,7 @@ import { v4 as uuid } from "uuid";
 export interface QueryElement {
   query: string;
   result: string;
+  responseTime: number;
   storeFunction: StoreFunction;
   returnElements: ReturnElements;
   optionsIn: string;
@@ -39,6 +40,7 @@ export const QueryContext = React.createContext<QueryContext>(
 const getDefaultQueryElement = (): QueryElement => ({
   query: "",
   result: "",
+  responseTime: 0,
   storeFunction: StoreFunction.GetFromStore,
   returnElements: ReturnElements.All,
   optionsIn: "",
@@ -54,6 +56,7 @@ export enum QueryActionType {
   SetQuery,
   SetResult,
   SetStoreFunction,
+  SetResponseTime,
   SetReturnElements,
   SetOptionsIn,
   SetFromTemplatePreset,
@@ -69,6 +72,7 @@ export interface QueryAction {
   query?: string;
   result?: string;
   storeFunction?: StoreFunction;
+  responseTime?: number;
   returnElements?: ReturnElements;
   optionsIn?: string;
   templatePreset?: QueryTemplatePreset;
@@ -90,6 +94,9 @@ export const queryReducer = (
       return { queries, tabIndex };
     case QueryActionType.SetStoreFunction:
       queries[tabIndex].storeFunction = action.storeFunction;
+      return { queries, tabIndex };
+    case QueryActionType.SetResponseTime:
+      queries[tabIndex].responseTime = action.responseTime;
       return { queries, tabIndex };
     case QueryActionType.SetReturnElements:
       queries[tabIndex].returnElements = action.returnElements;
@@ -123,6 +130,7 @@ const setFromTemplatePreset = (
   const newQuery: QueryElement = {
     query: template,
     result: "",
+    responseTime: 0,
     storeFunction:
       action.templatePreset.storeFunction ?? defaultValues.storeFunction,
     returnElements:
@@ -220,6 +228,7 @@ const validateQueryState = (queryState: QueryState): boolean => {
     (query) =>
       hasValidProperty(query, "query", "string") &&
       hasValidProperty(query, "result", "string") &&
+      hasValidProperty(query, "responseTime", "number") &&
       hasValidProperty(query, "storeFunction", "string") &&
       hasValidProperty(query, "returnElements", "string") &&
       hasValidProperty(query, "optionsIn", "string") &&

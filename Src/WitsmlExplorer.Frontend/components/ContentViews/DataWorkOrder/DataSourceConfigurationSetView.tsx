@@ -1,0 +1,253 @@
+import {
+  ContentTable,
+  ContentTableColumn,
+  ContentTableRow,
+  ContentType
+} from "components/ContentViews/table";
+import formatDateString from "components/DateFormatter";
+import ConfigurationChangeReasonModal from "components/Modals/ConfigurationChangeReasonModal";
+import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
+import { StyledLink, StyledLinkButton } from "components/StyledComponents/Link";
+import { useConnectedServer } from "contexts/connectedServerContext";
+import OperationType from "contexts/operationType";
+import { useGetComponents } from "hooks/query/useGetComponents";
+import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
+import { useOperationState } from "hooks/useOperationState";
+import { ComponentType } from "models/componentType";
+import DataSourceConfiguration from "models/dataWorkOrder/dataSourceConfiguration";
+import { measureToString } from "models/measure";
+import { ObjectType } from "models/objectType";
+import { useNavigate, useParams } from "react-router-dom";
+import { ItemNotFound } from "routes/ItemNotFound";
+import { getDataSourceConfigurationViewPath } from "routes/utils/pathBuilder";
+import Icon from "../../../styles/Icons.tsx";
+import { Typography } from "../../StyledComponents/Typography.tsx";
+import { OperationStatusChip, SectionOrderStatusChip } from "./StatusChips";
+
+export default function DataSourceConfigurationSetView() {
+  const { wellUid, wellboreUid, objectUid, componentUid } = useParams();
+  const {
+    operationState: { colors, timeZone, dateTimeFormat },
+    dispatchOperation
+  } = useOperationState();
+  const { connectedServer } = useConnectedServer();
+  const {
+    components: dataSourceConfigurationSets,
+    isFetching,
+    isFetched
+  } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.DataSourceConfigurationSet
+  );
+  const navigate = useNavigate();
+  useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.DataWorkOrder);
+
+  const dataSourceConfigurationSet = dataSourceConfigurationSets?.find(
+    (set) => set.uid === componentUid
+  );
+  const dataSourceConfigurations =
+    dataSourceConfigurationSet?.dataSourceConfigurations ?? [];
+
+  const getConfigPath = (configId: string) =>
+    getDataSourceConfigurationViewPath(
+      connectedServer?.url,
+      wellUid,
+      wellboreUid,
+      objectUid,
+      componentUid,
+      configId
+    );
+
+  const onSelect = (row: ContentTableRow) => navigate(getConfigPath(row.id));
+
+  const onClickChangeReason = (
+    event: React.MouseEvent,
+    dataSourceConfiguration: DataSourceConfiguration
+  ) => {
+    event.stopPropagation();
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: (
+        <ConfigurationChangeReasonModal
+          dataSourceConfiguration={dataSourceConfiguration}
+        />
+      )
+    });
+  };
+
+  const dataSourceConfigurationRows = dataSourceConfigurations.map(
+    (dataSourceConfiguration) => {
+      return {
+        id: dataSourceConfiguration.uid,
+        uid: dataSourceConfiguration.uid,
+        versionNumber: dataSourceConfiguration.versionNumber,
+        name: (
+          <StyledLink
+            to={getConfigPath(dataSourceConfiguration.uid)}
+            colors={colors}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Icon name="gridLayers" size={16} />
+            {dataSourceConfiguration.name}
+          </StyledLink>
+        ),
+        numChannels:
+          dataSourceConfiguration.channelConfigurations.length + " Channels",
+        description: dataSourceConfiguration.description,
+        status: (
+          <SectionOrderStatusChip
+            status={dataSourceConfiguration.status}
+            $tableFriendly
+          />
+        ),
+        nominalHoleSize: measureToString(
+          dataSourceConfiguration.nominalHoleSize
+        ),
+        tubular: dataSourceConfiguration.tubular?.value,
+        depthStatus: (
+          <OperationStatusChip
+            status={dataSourceConfiguration.depthStatus}
+            $tableFriendly
+          />
+        ),
+        timeStatus: (
+          <OperationStatusChip
+            status={dataSourceConfiguration.timeStatus}
+            $tableFriendly
+          />
+        ),
+        dTimPlannedStart: formatDateString(
+          dataSourceConfiguration.dTimPlannedStart,
+          timeZone,
+          dateTimeFormat
+        ),
+        dTimPlannedStop: formatDateString(
+          dataSourceConfiguration.dTimPlannedStop,
+          timeZone,
+          dateTimeFormat
+        ),
+        mdPlannedStart: measureToString(dataSourceConfiguration.mdPlannedStart),
+        mdPlannedStop: measureToString(dataSourceConfiguration.mdPlannedStop),
+        dTimChangeDeadline: formatDateString(
+          dataSourceConfiguration.dTimChangeDeadline,
+          timeZone,
+          dateTimeFormat
+        ),
+        changeReason: dataSourceConfiguration.changeReason && (
+          <StyledLinkButton
+            colors={colors}
+            onClick={(event) =>
+              onClickChangeReason(event, dataSourceConfiguration)
+            }
+          >
+            See details
+          </StyledLinkButton>
+        ),
+        dataSourceConfiguration: dataSourceConfiguration
+      };
+    }
+  );
+
+  if (isFetched && !dataSourceConfigurationSets) {
+    return (
+      <ItemNotFound
+        itemType={ComponentType.DataSourceConfigurationSet}
+        isMultiple
+      />
+    );
+  }
+
+  return (
+    <>
+      <Typography colors={colors} $primary style={{ padding: "1rem 0 0.5rem" }}>
+        Data source configurations (Versions)
+      </Typography>
+      {isFetching && (
+        <ProgressSpinnerOverlay message="Fetching DataSourceConfigurationSets." />
+      )}
+      <ContentTable
+        viewId="dataSourceConfigurations"
+        columns={columns}
+        data={dataSourceConfigurationRows}
+        onSelect={onSelect}
+        showRefresh
+        downloadToCsvFileName="DataSourceConfigurations"
+      />
+    </>
+  );
+}
+
+const columns: ContentTableColumn[] = [
+  {
+    property: "versionNumber",
+    label: "versionNumber",
+    type: ContentType.String
+  },
+  {
+    property: "name",
+    label: "name",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.name
+  },
+  { property: "numChannels", label: "channels", type: ContentType.String },
+  { property: "uid", label: "uid", type: ContentType.String },
+  { property: "description", label: "description", type: ContentType.String },
+  {
+    property: "status",
+    label: "status",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.status
+  },
+  {
+    property: "nominalHoleSize",
+    label: "nominalHoleSize",
+    type: ContentType.Measure
+  },
+  { property: "tubular", label: "tubular", type: ContentType.String },
+  {
+    property: "depthStatus",
+    label: "depthStatus",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.depthStatus
+  },
+  {
+    property: "timeStatus",
+    label: "timeStatus",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.timeStatus
+  },
+  {
+    property: "dTimPlannedStart",
+    label: "dTimPlannedStart",
+    type: ContentType.DateTime
+  },
+  {
+    property: "dTimPlannedStop",
+    label: "dTimPlannedStop",
+    type: ContentType.DateTime
+  },
+  {
+    property: "mdPlannedStart",
+    label: "mdPlannedStart",
+    type: ContentType.Measure
+  },
+  {
+    property: "mdPlannedStop",
+    label: "mdPlannedStop",
+    type: ContentType.Measure
+  },
+  {
+    property: "dTimChangeDeadline",
+    label: "dTimChangeDeadline",
+    type: ContentType.DateTime
+  },
+  {
+    property: "changeReason",
+    label: "changeReason",
+    type: ContentType.Component,
+    exportValue: (row) => row.dataSourceConfiguration?.changeReason?.comments
+  }
+];

@@ -25,13 +25,14 @@ import {
 import { getSearchRegex } from "contexts/filter";
 import { DecimalPreference, UserTheme } from "contexts/operationStateReducer";
 import { useOperationState } from "hooks/useOperationState";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import Icon from "styles/Icons";
 import {
   STORAGE_CONTENTTABLE_ORDER_KEY,
   STORAGE_CONTENTTABLE_WIDTH_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
+import { Colors } from "../../../styles/Colors.tsx";
 
 declare module "@tanstack/react-table" {
   interface SortingFns {
@@ -39,6 +40,15 @@ declare module "@tanstack/react-table" {
     [componentSortingFn]: SortingFn<unknown>;
     [booleanSortingFn]: SortingFn<unknown>;
     [dateSortingFn]: SortingFn<unknown>;
+  }
+}
+
+declare module "@tanstack/react-table" {
+  // @ts-ignore
+  interface ColumnMeta {
+    type: ContentType;
+    headerColors?: Colors;
+    headerTooltip?: React.ReactNode;
   }
 }
 
@@ -62,10 +72,10 @@ export const useColumnDef = (
     let columnDef: ColumnDef<any, any>[] = columns.map((column, index) => {
       const isPrimaryNestedColumn = nested && index === 0;
       const width =
-        column.width ??
         savedWidths?.[column.property] ??
+        column.width ??
         calculateColumnWidth(
-          column.property,
+          column.label,
           isCompactMode,
           column.type,
           isPrimaryNestedColumn
@@ -75,7 +85,11 @@ export const useColumnDef = (
         accessorFn: (data) => data[column.property],
         header: column.label,
         size: width,
-        meta: { type: column.type },
+        meta: {
+          type: column.type,
+          headerColors: column.headerColors,
+          headerTooltip: column.headerTooltip
+        },
         sortingFn: getSortingFn(column),
         enableColumnFilter: column.type !== ContentType.Component,
         filterFn: getFilterFn(column),
@@ -91,10 +105,12 @@ export const useColumnDef = (
     );
 
     if (savedOrder) {
-      const sortedColumns = savedOrder.flatMap((label) => {
-        const foundColumn = columnDef.find((col) => col.id == label);
-        return foundColumn == null ? [] : foundColumn;
-      });
+      const sortedColumns: ColumnDef<any, any>[] = savedOrder.flatMap(
+        (label) => {
+          const foundColumn = columnDef.find((col) => col.id == label);
+          return foundColumn == null ? [] : [foundColumn];
+        }
+      );
       const columnsWithoutOrder = columnDef.filter(
         (col) => !savedOrder.includes(col.id)
       );
@@ -258,7 +274,7 @@ const getExpanderColumnDef = (isCompactMode: boolean): ColumnDef<any, any> => {
     ),
     cell: ({ row, table }) => {
       return row.getCanExpand() ? (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", margin: isCompactMode ? "-4px" : "0" }}>
           <IconButton
             onClick={(event) => {
               event.stopPropagation();

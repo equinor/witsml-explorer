@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 using Witsml;
 using Witsml.Data;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services;

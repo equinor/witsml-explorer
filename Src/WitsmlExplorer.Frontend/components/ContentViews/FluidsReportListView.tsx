@@ -32,7 +32,7 @@ export default function FluidsReportsListView() {
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
   const navigate = useNavigate();
-  const { objects: fluidsReports } = useGetObjects(
+  const { objects: fluidsReports, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -131,6 +131,7 @@ export default function FluidsReportsListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="FluidsReports"
+        responseTime={responseTime}
       />
     )
   );

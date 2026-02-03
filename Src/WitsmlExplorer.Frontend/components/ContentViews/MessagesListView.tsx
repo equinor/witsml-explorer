@@ -30,7 +30,7 @@ export default function MessagesListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: messages } = useGetObjects(
+  const { objects: messages, responseTime } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -125,6 +125,7 @@ export default function MessagesListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="Messages"
+        responseTime={responseTime}
       />
     )
   );

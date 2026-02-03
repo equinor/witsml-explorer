@@ -35,10 +35,12 @@ export default function WellboresListView() {
     isFetching: isFetchingWell,
     isFetched: isFetchedWell
   } = useGetWell(connectedServer, wellUid);
-  const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
-    connectedServer,
-    wellUid
-  );
+  const {
+    wellbores,
+    isFetching: isFetchingWellbores,
+    isFetched: isFetchedWellbores,
+    responseTime: responseTime
+  } = useGetWellbores(connectedServer, wellUid);
   const isFetching = isFetchingWell || isFetchingWellbores;
   const {
     dispatchOperation,
@@ -129,6 +131,10 @@ export default function WellboresListView() {
     return <ItemNotFound itemType={EntityType.Well} />;
   }
 
+  if (isFetchedWellbores && !wellbores?.length) {
+    return <ItemNotFound itemType={"Wellbores"} isMultiple />;
+  }
+
   return (
     <>
       {isFetching && <ProgressSpinnerOverlay message="Fetching Wellbores." />}
@@ -141,6 +147,7 @@ export default function WellboresListView() {
         downloadToCsvFileName="Wellbores"
         checkableRows
         showRefresh
+        responseTime={responseTime}
       />
     </>
   );

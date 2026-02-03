@@ -10,7 +10,10 @@ export const light: Colors = {
     textHighlight: tokens.colors.interactive.text_highlight.hex,
     dangerHover: tokens.colors.interactive.danger__hover.hex,
     dangerResting: tokens.colors.interactive.danger__resting.hex,
+    dangerText: tokens.colors.interactive.danger__text.hex,
     warningResting: tokens.colors.interactive.warning__resting.hex,
+    warningHover: tokens.colors.interactive.warning__hover.hex,
+    warningText: tokens.colors.interactive.warning__text.hex,
     disabledBorder: tokens.colors.interactive.disabled__border.hex,
     primaryHover: tokens.colors.interactive.primary__hover.hex,
     primaryResting: tokens.colors.interactive.primary__resting.hex,
@@ -27,6 +30,7 @@ export const light: Colors = {
   text: {
     staticIconsDefault: tokens.colors.text.static_icons__default.hex,
     staticIconsTertiary: tokens.colors.text.static_icons__tertiary.hex,
+    staticIconsPrimaryBlack: "#000000",
     staticCheckBoxDefault: tokens.colors.infographic.primary__moss_green_100,
     staticInactiveIndicator: "#DCDCDC",
     staticPropertyBarDefault: "#666666",
@@ -51,7 +55,10 @@ export const dark: Colors = {
     dangerHighlight: "#FF667019",
     dangerHover: "#FF949B",
     dangerResting: tokens.colors.interactive.danger__resting.hex,
+    dangerText: "#FF6670",
     warningResting: tokens.colors.interactive.warning__resting.hex,
+    warningText: "#FFC67A",
+    warningHover: "#FFDAA8",
     disabledBorder: "#3E4F5C",
     primaryHover: "#ADE2E6",
     primaryResting: "#97CACE",
@@ -67,6 +74,7 @@ export const dark: Colors = {
   text: {
     staticIconsDefault: "#FFFFFF",
     staticIconsTertiary: "#97CACE",
+    staticIconsPrimaryBlack: "#000000",
     staticCheckBoxDefault: "#AAAAAA",
     staticInactiveIndicator: "#6F6F6F",
     staticPropertyBarDefault: "#FFFFFF",
@@ -93,7 +101,10 @@ export interface Colors {
     textHighlight: string;
     dangerHover: string;
     dangerResting: string;
+    dangerText: string;
     warningResting: string;
+    warningHover: string;
+    warningText: string;
     disabledBorder: string;
     primaryHover: string;
     primaryResting: string;
@@ -108,6 +119,7 @@ export interface Colors {
   text: {
     staticIconsDefault: string;
     staticIconsTertiary: string;
+    staticIconsPrimaryBlack: string;
     staticCheckBoxDefault: string | { hex: string; hsla: string; rgba: string };
     staticInactiveIndicator: string;
     staticPropertyBarDefault: string;

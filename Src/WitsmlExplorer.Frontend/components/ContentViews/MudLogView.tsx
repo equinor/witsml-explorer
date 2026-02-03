@@ -46,7 +46,12 @@ export default function MudLogView() {
   const { dispatchOperation } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: mudLog, isFetched: isFetchedMudLog } = useGetObject(
+  const {
+    object: mudLog,
+    isFetching: isFetchingMudLog,
+    isFetched: isFetchedMudLog,
+    responseTime: responseTimeObject
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -54,7 +59,11 @@ export default function MudLogView() {
     objectUid
   );
 
-  const { components: geologyIntervals, isFetching } = useGetComponents(
+  const {
+    components: geologyIntervals,
+    isFetching: isFetchingGeologyIntervals,
+    responseTime: responseTimeComponents
+  } = useGetComponents(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -62,6 +71,11 @@ export default function MudLogView() {
     ComponentType.GeologyInterval,
     { placeholderData: [] }
   );
+
+  const isFetching = isFetchingMudLog || isFetchingGeologyIntervals;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
@@ -154,6 +168,7 @@ export default function MudLogView() {
         insetColumns={insetColumns}
         showRefresh
         downloadToCsvFileName={`MudLog_${mudLog?.name}`}
+        responseTime={responseTime}
       />
     </>
   );

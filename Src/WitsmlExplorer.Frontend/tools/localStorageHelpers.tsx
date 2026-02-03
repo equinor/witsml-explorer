@@ -19,6 +19,7 @@ export const STORAGE_KEEP_SERVER_CREDENTIALS = "-keepCredentials";
 export const STORAGE_CONTENTTABLE_WIDTH_KEY = "-widths";
 export const STORAGE_CONTENTTABLE_HIDDEN_KEY = "-hidden";
 export const STORAGE_CONTENTTABLE_ORDER_KEY = "-ordering";
+export const STORAGE_USER_ROLE_KEY = "userRole";
 
 export const getLocalStorageItem = <T,>(
   key: string,

@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 
 using WitsmlExplorer.Api.Models;
+using WitsmlExplorer.Api.Models.DataWorkOrder;
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Workers.Modify
@@ -65,6 +66,30 @@ namespace WitsmlExplorer.Api.Workers.Modify
         // Properties not used when converting to WITSML can safely be added here.
         private static readonly Dictionary<EntityType, HashSet<string>> AllowedPropertiesToChange = new Dictionary<EntityType, HashSet<string>>
         {
+            {
+                EntityType.Attachment, new HashSet<string>
+                {
+                    nameof(Attachment.Name),
+                    nameof(Attachment.FileName),
+                    nameof(Attachment.Description),
+                    nameof(Attachment.FileType),
+                    nameof(Attachment.Content),
+                    nameof(Attachment.CommonData)
+                }
+            },
+            {
+                EntityType.DataWorkOrder, new HashSet<string>
+                {
+                    nameof(DataWorkOrder.Name),
+                    nameof(DataWorkOrder.Field),
+                    nameof(DataWorkOrder.DataProvider),
+                    nameof(DataWorkOrder.DataConsumer),
+                    nameof(DataWorkOrder.Description),
+                    nameof(DataWorkOrder.DTimPlannedStart),
+                    nameof(DataWorkOrder.DTimPlannedStop),
+                    nameof(DataWorkOrder.CommonData)
+                }
+            },
             {
                 EntityType.BhaRun, new HashSet<string>
                 {
@@ -214,17 +239,6 @@ namespace WitsmlExplorer.Api.Workers.Modify
                     nameof(WbGeometry.CommonData)
                 }
             },
-            {
-                EntityType.Attachment, new HashSet<string>
-                {
-                    nameof(Attachment.Name),
-                    nameof(Attachment.FileName),
-                    nameof(Attachment.Description),
-                    nameof(Attachment.FileType),
-                    nameof(Attachment.Content),
-                    nameof(Attachment.CommonData)
-                }
-            },
         };
 
         public static void VerifyModificationProperties(ObjectOnWellbore obj, EntityType objectType, ILogger logger)
@@ -271,6 +285,9 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 case BhaRun bhaRun:
                     VerifyBhaRun(bhaRun);
                     break;
+                case DataWorkOrder dataWorkOrder:
+                    VerifyDataWorkOrder(dataWorkOrder);
+                    break;
                 case FluidsReport fluidsReport:
                     VerifyFluidsReport(fluidsReport);
                     break;
@@ -314,6 +331,17 @@ namespace WitsmlExplorer.Api.Workers.Modify
             VerifyMeasure(bhaRun.ActDogleg, nameof(bhaRun.ActDogleg));
             VerifyMeasure(bhaRun.ActDoglegMx, nameof(bhaRun.ActDoglegMx));
             VerifyAllowedValues(bhaRun.CommonData?.ItemState, _allowedItemStates, "CommonData.ItemState");
+        }
+
+        private static void VerifyDataWorkOrder(DataWorkOrder dataWorkOrder)
+        {
+            VerifyString(dataWorkOrder.Field, nameof(dataWorkOrder.Field));
+            VerifyString(dataWorkOrder.DataProvider, nameof(dataWorkOrder.DataProvider));
+            VerifyString(dataWorkOrder.DataConsumer, nameof(dataWorkOrder.DataConsumer));
+            VerifyString(dataWorkOrder.Description, nameof(dataWorkOrder.Description));
+            VerifyString(dataWorkOrder.DTimPlannedStart, nameof(dataWorkOrder.DTimPlannedStart));
+            VerifyString(dataWorkOrder.DTimPlannedStop, nameof(dataWorkOrder.DTimPlannedStop));
+            VerifyAllowedValues(dataWorkOrder.CommonData?.ItemState, _allowedItemStates, "CommonData.ItemState");
         }
 
         private static void VerifyFluidsReport(FluidsReport fluidsReport)

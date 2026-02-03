@@ -52,4 +52,9 @@ public record CountLogDataRowJob : Job
     {
         return LogReference.WellName;
     }
+
+    /// <summary>
+    /// Indicates, if the job can be cancelled
+    /// </summary>
+    public override bool IsCancelable => true;
 }

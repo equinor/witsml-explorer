@@ -1,5 +1,6 @@
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { getBhaRunProperties } from "components/Modals/PropertiesModal/Properties/BhaRunProperties";
+import { getDataWorkOrderProperties } from "components/Modals/PropertiesModal/Properties/DataWorkOrderProperties";
 import { getFormationMarkerProperties } from "components/Modals/PropertiesModal/Properties/FormationMarkerProperties";
 import { getLogObjectProperties } from "components/Modals/PropertiesModal/Properties/LogObjectProperties";
 import { getMessageProperties } from "components/Modals/PropertiesModal/Properties/MessageProperties";
@@ -26,6 +27,10 @@ export const getObjectOnWellboreProperties = <T extends ObjectType>(
       >[];
     case ObjectType.ChangeLog:
       return [];
+    case ObjectType.DataWorkOrder:
+      return getDataWorkOrderProperties(mode) as PropertiesModalProperty<
+        ObjectTypeToModel[T]
+      >[];
     case ObjectType.FluidsReport:
       return getFluidsReportProperties(mode) as PropertiesModalProperty<
         ObjectTypeToModel[T]

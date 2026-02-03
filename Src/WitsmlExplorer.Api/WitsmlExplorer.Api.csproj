@@ -15,9 +15,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.Azure.Cosmos" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
     <PackageReference Include="Microsoft.Identity.Web" />
     <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="NetCore.AutoRegisterDi" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Expressions" />
@@ -26,7 +28,9 @@
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.File" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="System.Formats.Asn1" />
     <PackageReference Include="System.Runtime.Caching" />
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Witsml\Witsml.csproj" />

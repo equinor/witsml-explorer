@@ -3,6 +3,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
+import { isUserRoleAdvanced } from "components/UserRoles.ts";
+import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 import {
   refreshObjectQuery,
   refreshObjectsQuery,
@@ -18,7 +20,6 @@ import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
 import { normaliseThemeForEds } from "../../../tools/themeHelpers.ts";
-import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 
 export interface PanelProps {
   checkableRows: boolean;
@@ -34,6 +35,7 @@ export interface PanelProps {
   downloadToCsvFileName?: string;
   disableFilters?: boolean;
   disableSearchParamsFilter?: boolean;
+  responseTime?: number;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -48,6 +50,7 @@ const Panel = (props: PanelProps) => {
     table,
     viewId,
     columns,
+    responseTime,
     expandableRows = false,
     downloadToCsvFileName = null,
     stickyLeftColumns,
@@ -55,7 +58,7 @@ const Panel = (props: PanelProps) => {
     disableSearchParamsFilter = false
   } = props;
   const {
-    operationState: { decimals, theme }
+    operationState: { decimals, theme, userRole }
   } = useOperationState();
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -123,7 +126,15 @@ const Panel = (props: PanelProps) => {
         row
           .getVisibleCells()
           .filter((cell) => !csvIgnoreColumns.includes(cell.column.id))
-          .map((cell) => cell.getValue()?.toString() || "")
+          .map((cell) => {
+            const originalColumn = columns?.find(
+              (col) => col.property === cell.column.id
+            );
+            if (originalColumn?.exportValue) {
+              return originalColumn.exportValue(row.original)?.toString() ?? "";
+            }
+            return cell.getValue()?.toString() || "";
+          })
           .map((value) => encloseCell(value))
           .join(exportOptions.separator)
       )
@@ -170,6 +181,9 @@ const Panel = (props: PanelProps) => {
           >
             <Icon name="download" />
           </Button>
+        )}
+        {responseTime != null && isUserRoleAdvanced(userRole) && (
+          <Typography>Response time: {responseTime} ms</Typography>
         )}
         {panelElements}
       </EdsProvider>

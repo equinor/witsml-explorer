@@ -1,43 +1,44 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Witsml.Data;
+
 using WitsmlExplorer.Api.Models;
 
 using Xunit;
-
-using WitsmlDatum = Witsml.Data.WellDatum;
-
 namespace WitsmlExplorer.Api.Tests.Models
 {
     public class WellDatumTests
     {
         [Theory]
-        [InlineData("name", "code", "elevation")]
-        [InlineData("\\\\\\", "øæå", "\"")]
-        [InlineData("", "", "")]
-        [InlineData(null, null, null)]
-        public void FromWitsmlDatum_CopiesCorrectly_WhenListAndDatumExists(string name, string code, string elevation)
+        [InlineData("uid", "name", "code", "elevation")]
+        [InlineData("\\\\\\", "\\\\\\", "øæå", "\"")]
+        [InlineData("", "", "", "")]
+        [InlineData(null, null, null, null)]
+        public void FromWitsmlDatum_CopiesCorrectly_WhenListAndDatumExists(string uid, string name, string code, string elevation)
         {
-            WitsmlDatum sourceWitsmlDatum = new()
+            WitsmlWellDatum sourceWitsmlDatum = new()
             {
+                Uid = uid,
                 Name = name,
                 Code = code,
-                Elevation = new Witsml.Data.Measures.WitsmlMeasureWithDatum { Value = elevation }
+                Elevation = new Witsml.Data.Measures.WitsmlMeasureWithDatum { Datum = elevation, Value = "1.0" }
             };
 
-            List<WitsmlDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
+            List<WitsmlWellDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
 
             WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
 
+            Assert.Equal(newWellDatum.Uid, sourceWitsmlDatum.Uid);
             Assert.Equal(newWellDatum.Name, sourceWitsmlDatum.Name);
             Assert.Equal(newWellDatum.Code, sourceWitsmlDatum.Code);
-            Assert.Equal(newWellDatum.Elevation, sourceWitsmlDatum.Elevation.Value);
+            Assert.Equal(newWellDatum.Elevation.Datum, sourceWitsmlDatum.Elevation.Datum);
         }
 
         [Fact]
         public void FromWitsmlDatum_ReturnsNullIfListIsEmpty()
         {
-            List<WitsmlDatum> sourceWitsmlDatumList = new();
+            List<WitsmlWellDatum> sourceWitsmlDatumList = new();
             WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
             Assert.Null(newWellDatum);
         }
@@ -45,7 +46,7 @@ namespace WitsmlExplorer.Api.Tests.Models
         [Fact]
         public void FromWitsmlDatum_ReturnsNullIfListIsNull()
         {
-            List<WitsmlDatum> sourceWitsmlDatumList = null;
+            List<WitsmlWellDatum> sourceWitsmlDatumList = null;
             WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
             Assert.Null(newWellDatum);
         }
@@ -53,8 +54,8 @@ namespace WitsmlExplorer.Api.Tests.Models
         [Fact]
         public void FromWitsmlDatum_ReturnsNullIfWellDatumIsNull()
         {
-            WitsmlDatum sourceWitsmlDatum = null;
-            List<WitsmlDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
+            WitsmlWellDatum sourceWitsmlDatum = null;
+            List<WitsmlWellDatum> sourceWitsmlDatumList = new() { sourceWitsmlDatum };
             WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
             Assert.Null(newWellDatum);
         }

@@ -6,9 +6,11 @@
 } from "@equinor/eds-core-react";
 import { Divider, Tooltip } from "@mui/material";
 import { Checkbox } from "components/StyledComponents/Checkbox";
+import { RoleLimitedAccess } from "components/UserRoles";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useCurveThreshold } from "contexts/curveThresholdContext";
 import { FilterContext, VisibilityStatus } from "contexts/filter";
+import { UserRole } from "contexts/operationStateReducer";
 import { useGetCapObjects } from "hooks/query/useGetCapObjects";
 import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
@@ -137,15 +139,17 @@ const FilterPanel = (): React.ReactElement => {
             label={"Only show growing logs"}
             colors={colors}
           />
-          <Checkbox
-            onChange={onChangeUidMapping}
-            checked={selectedFilter.uidMapping}
-            id="filter-uidMapping"
-            value={"Only show mapped wellbores"}
-            color={"primary"}
-            label={"Only show mapped wellbores"}
-            colors={colors}
-          />
+          <RoleLimitedAccess requiredRole={UserRole.Expert}>
+            <Checkbox
+              onChange={onChangeUidMapping}
+              checked={selectedFilter.uidMapping}
+              id="filter-uidMapping"
+              value={"Only show mapped wellbores"}
+              color={"primary"}
+              label={"Only show mapped wellbores"}
+              colors={colors}
+            />
+          </RoleLimitedAccess>
         </InnerContainer>
 
         <Divider />

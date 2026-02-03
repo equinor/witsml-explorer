@@ -37,6 +37,7 @@ namespace WitsmlExplorer.Api.Configuration
             AddRepository<Server, Guid>(services, configuration);
             AddRepository<LogCurvePriority, string>(services, configuration);
             AddRepository<UidMappingCollection, string>(services, configuration);
+            AddRepository<MnemonicsMapping, Guid>(services, configuration);
             AddRepository<AgentSettingsDocument, string>(services, configuration);
             services.AddSingleton<ICredentialsService, CredentialsService>();
             services.AddSingleton<IJobCache, JobCache>();
@@ -83,6 +84,9 @@ namespace WitsmlExplorer.Api.Configuration
 
             IDocumentRepository<UidMappingCollection, string> uidMappingCollectionRepository = app.ApplicationServices.GetService<IDocumentRepository<UidMappingCollection, string>>();
             uidMappingCollectionRepository?.InitClientAsync().GetAwaiter().GetResult();
+
+            IDocumentRepository<MnemonicsMapping, Guid> mnemonicsMappingRepository = app.ApplicationServices.GetService<IDocumentRepository<MnemonicsMapping, Guid>>();
+            mnemonicsMappingRepository?.InitClientAsync("/vendorName").GetAwaiter().GetResult();
 
             IDocumentRepository<AgentSettingsDocument, Guid> agentSettingsRepository = app.ApplicationServices.GetService<IDocumentRepository<AgentSettingsDocument, Guid>>();
             agentSettingsRepository?.InitClientAsync().GetAwaiter().GetResult();

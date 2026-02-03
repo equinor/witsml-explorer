@@ -164,6 +164,12 @@ export const PropertiesRenderer = <T,>({
               />
             );
           case PropertyType.Measure:
+            if (
+              prop.hideIfEmpty &&
+              !getNestedValue(object, `${prop.property}.value`)
+            ) {
+              return undefined;
+            }
             return (
               <Stack direction="row" key={prop.property}>
                 <TextField

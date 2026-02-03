@@ -6,6 +6,7 @@ export interface AdjustDepthIndexRangeProps {
   minValue: number;
   maxValue: number;
   isDescending?: boolean;
+  hideSetButtons?: boolean;
   onStartValueChanged: (value: number) => void;
   onEndValueChanged: (value: number) => void;
   onValidChange: (isValid: boolean) => void;
@@ -18,6 +19,7 @@ const AdjustDepthIndexRange = (
     minValue,
     maxValue,
     isDescending,
+    hideSetButtons,
     onStartValueChanged,
     onEndValueChanged,
     onValidChange
@@ -69,21 +71,22 @@ const AdjustDepthIndexRange = (
         aria-label="set depth range button group"
         style={{ margin: ".5rem" }}
       >
-        {setRangeButtonValues.map((buttonValue) => {
-          return (
-            totalDepthSpan > buttonValue && (
-              <Button
-                key={"last" + buttonValue}
-                onClick={() => {
-                  setStartIndex(maxValue - buttonValue);
-                  setEndIndex(maxValue);
-                }}
-              >
-                {"Last " + buttonValue}
-              </Button>
-            )
-          );
-        })}
+        {!hideSetButtons &&
+          setRangeButtonValues.map((buttonValue) => {
+            return (
+              totalDepthSpan > buttonValue && (
+                <Button
+                  key={"last" + buttonValue}
+                  onClick={() => {
+                    setStartIndex(maxValue - buttonValue);
+                    setEndIndex(maxValue);
+                  }}
+                >
+                  {"Last " + buttonValue}
+                </Button>
+              )
+            );
+          })}
         <Button
           key={"resetRangeValues"}
           onClick={() => {

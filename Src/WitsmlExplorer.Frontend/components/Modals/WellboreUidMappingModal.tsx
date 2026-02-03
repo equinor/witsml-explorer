@@ -288,6 +288,7 @@ const ContentLayout = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  height: 65vh;
 `;
 
 export default WellboreUidMappingModal;

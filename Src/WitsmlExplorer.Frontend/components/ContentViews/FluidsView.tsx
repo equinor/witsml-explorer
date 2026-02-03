@@ -39,7 +39,12 @@ export default function FluidsView() {
   } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: fluidsReport } = useGetObject(
+  const {
+    object: fluidsReport,
+    responseTime: responseTimeObject,
+    isFetching: isFetchingFluidsReport,
+    isFetched: isFetchedFluidsReport
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -49,8 +54,8 @@ export default function FluidsView() {
 
   const {
     components: fluids,
-    isFetching,
-    isFetched
+    isFetching: isFetchingFluids,
+    responseTime: responseTimeComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -59,6 +64,11 @@ export default function FluidsView() {
     ComponentType.Fluid,
     { placeholderData: [] }
   );
+
+  const isFetching = isFetchingFluidsReport || isFetchingFluids;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
@@ -274,7 +284,7 @@ export default function FluidsView() {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
-  if (isFetched && !fluidsReport) {
+  if (isFetchedFluidsReport && !fluidsReport) {
     return <ItemNotFound itemType={ObjectType.FluidsReport} />;
   }
 
@@ -292,6 +302,7 @@ export default function FluidsView() {
         insetColumns={insetColumns}
         showRefresh
         downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
+        responseTime={responseTime}
       />
     </>
   );

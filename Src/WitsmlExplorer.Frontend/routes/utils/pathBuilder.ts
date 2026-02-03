@@ -1,4 +1,11 @@
+import { ComponentType } from "models/componentType";
+import { ObjectType } from "models/objectType";
 import {
+  COMPONENT_GROUP_PARAM,
+  COMPONENT_UID_PARAM,
+  COMPONENT_VIEW_NAVIGATION_PATH,
+  DATA_SOURCE_CONFIGURATION_UID_PARAM,
+  DATA_SOURCE_CONFIGURATION_VIEW_NAVIGATION_PATH,
   FILTER_TYPE_PARAM,
   JOBS_VIEW_NAVIGATION_PATH,
   LOG_CURVE_VALUES_VIEW_NAVIGATION_PATH,
@@ -19,7 +26,8 @@ import {
   WELLBORE_UID_PARAM,
   WELLSBORES_VIEW_NAVIGATION_PATH,
   WELLS_VIEW_NAVIGATION_PATH,
-  WELL_UID_PARAM
+  WELL_UID_PARAM,
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
 } from "routes/routerConstants";
 
 export function getJobsViewPath(serverUrl: string) {
@@ -108,6 +116,28 @@ export function getObjectViewPath(
     .replace(OBJECT_GROUP_PARAM, objectGroup)
     .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid));
   return objectViewPath;
+}
+
+export function getComponentViewPath(
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  objectGroup: string,
+  objectUid: string,
+  componentGroup: string,
+  componentUid: string
+) {
+  const componentViewPath = COMPONENT_VIEW_NAVIGATION_PATH.replace(
+    SERVER_URL_PARAM,
+    encodeURIComponent(serverUrl)
+  )
+    .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+    .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
+    .replace(OBJECT_GROUP_PARAM, objectGroup)
+    .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid))
+    .replace(COMPONENT_GROUP_PARAM, componentGroup)
+    .replace(COMPONENT_UID_PARAM, encodeURIComponent(componentUid));
+  return componentViewPath;
 }
 
 export function getLogTypesViewPath(
@@ -220,4 +250,42 @@ export function getMultiLogCurveValuesViewPath(
       .replace(OBJECT_GROUP_PARAM, objectGroup)
       .replace(LOG_TYPE_PARAM, logType);
   return logCurveValuesViewPath;
+}
+
+export function getMultipleLogCurveSelectionViewPath(
+  serverUrl: string,
+  logType: string
+) {
+  const logCurveValuesViewPath =
+    MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH.replace(
+      SERVER_URL_PARAM,
+      encodeURIComponent(serverUrl)
+    ).replace(LOG_TYPE_PARAM, logType);
+  return logCurveValuesViewPath;
+}
+
+export function getDataSourceConfigurationViewPath(
+  serverUrl: string,
+  wellUid: string,
+  wellboreUid: string,
+  objectUid: string,
+  componentUid: string,
+  dataSourceConfigurationUid: string
+) {
+  const componentViewPath =
+    DATA_SOURCE_CONFIGURATION_VIEW_NAVIGATION_PATH.replace(
+      SERVER_URL_PARAM,
+      encodeURIComponent(serverUrl)
+    )
+      .replace(WELL_UID_PARAM, encodeURIComponent(wellUid))
+      .replace(WELLBORE_UID_PARAM, encodeURIComponent(wellboreUid))
+      .replace(OBJECT_GROUP_PARAM, ObjectType.DataWorkOrder)
+      .replace(OBJECT_UID_PARAM, encodeURIComponent(objectUid))
+      .replace(COMPONENT_GROUP_PARAM, ComponentType.DataSourceConfigurationSet)
+      .replace(COMPONENT_UID_PARAM, encodeURIComponent(componentUid))
+      .replace(
+        DATA_SOURCE_CONFIGURATION_UID_PARAM,
+        encodeURIComponent(dataSourceConfigurationUid)
+      );
+  return componentViewPath;
 }
