@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Install Dependencies
         run: yarn --network-timeout 100000
         working-directory: ./Src/WitsmlExplorer.Desktop
