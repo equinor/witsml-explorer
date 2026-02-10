@@ -52,6 +52,7 @@ const Panel = (props: PanelProps) => {
     viewId,
     columns,
     responseTime,
+    lastFetched,
     expandableRows = false,
     downloadToCsvFileName = null,
     stickyLeftColumns,
@@ -185,6 +186,9 @@ const Panel = (props: PanelProps) => {
         )}
         {responseTime != null && isUserRoleAdvanced(userRole) && (
           <Typography>Response time: {responseTime} ms</Typography>
+        )}
+        {lastFetched && (
+          <Typography>Last fetched: {lastFetched} ms</Typography>
         )}
         {panelElements}
       </EdsProvider>
