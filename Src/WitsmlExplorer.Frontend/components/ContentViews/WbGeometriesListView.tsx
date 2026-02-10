@@ -32,12 +32,15 @@ export default function WbGeometriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: wbGeometries, responseTime } = useGetObjects(
+  const { objects: wbGeometries, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.WbGeometry
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
@@ -134,6 +137,7 @@ export default function WbGeometriesListView() {
         showRefresh
         downloadToCsvFileName="WbGeometries"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

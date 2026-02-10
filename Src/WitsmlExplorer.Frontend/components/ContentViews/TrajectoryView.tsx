@@ -46,7 +46,8 @@ export default function TrajectoryView() {
     object: trajectory,
     isFetching: isFetchingTrajectory,
     isFetched: isFetchedTrajectory,
-    responseTime: responseTimeObject
+    responseTime: responseTimeObject,
+    dataUpdatedAt: dataUpdatedAtObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -58,7 +59,8 @@ export default function TrajectoryView() {
   const {
     components: trajectoryStations,
     isFetching: isFetchingTrajectoryStations,
-    responseTime: responseTimeComponents
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -72,6 +74,10 @@ export default function TrajectoryView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
@@ -154,6 +160,7 @@ export default function TrajectoryView() {
         showRefresh
         downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );

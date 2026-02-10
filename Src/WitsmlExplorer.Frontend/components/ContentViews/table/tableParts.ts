@@ -46,6 +46,7 @@ export interface ContentTableProps {
   showPanel?: boolean;
   showRefresh?: boolean;
   responseTime?: number;
+  lastFetched?: string; // Timestamp of when data was last fetched, formatted as time string
   stickyLeftColumns?: number; // how many columns should be sticky
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
   downloadToCsvFileName?: string;

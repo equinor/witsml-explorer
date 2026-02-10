@@ -26,12 +26,15 @@ export default function TubularsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: tubulars, responseTime } = useGetObjects(
+  const { objects: tubulars, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Tubular
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
@@ -111,6 +114,7 @@ export default function TubularsListView() {
         showRefresh
         downloadToCsvFileName="Tubulars"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

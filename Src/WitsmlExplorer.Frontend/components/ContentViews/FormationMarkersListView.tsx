@@ -31,12 +31,15 @@ export default function FormationMarkersListView() {
   const { dispatchOperation } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: formationMarkers, responseTime } = useGetObjects(
+  const { objects: formationMarkers, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.FormationMarker
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FormationMarker);
 
@@ -113,6 +116,7 @@ export default function FormationMarkersListView() {
         showRefresh
         downloadToCsvFileName="FormationMarkers"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

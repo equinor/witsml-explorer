@@ -40,12 +40,15 @@ export default function MudLogsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: mudLogs, responseTime } = useGetObjects(
+  const { objects: mudLogs, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.MudLog
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
@@ -146,6 +149,7 @@ export default function MudLogsListView() {
         showRefresh
         downloadToCsvFileName="MudLogs"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

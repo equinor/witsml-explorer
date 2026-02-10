@@ -58,7 +58,8 @@ export default function LogCurveInfoListView() {
     object: logObject,
     isFetching: isFetchingLog,
     isFetched: isFetchedLog,
-    responseTime: responseTimeObject
+    responseTime: responseTimeObject,
+    dataUpdatedAt: dataUpdatedAtObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -72,7 +73,8 @@ export default function LogCurveInfoListView() {
   const {
     components: logCurveInfoList,
     isFetching: isFetchingLogCurveInfo,
-    responseTime: responseTimeComponents
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -98,6 +100,10 @@ export default function LogCurveInfoListView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
   const allPrioritizedCurves = [
     ...prioritizedLocalCurves,
     ...prioritizedUniversalCurves
@@ -287,6 +293,7 @@ export default function LogCurveInfoListView() {
           showRefresh
           downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
           responseTime={responseTime}
+          lastFetched={lastFetched}
         />
       )}
     </>

@@ -29,12 +29,15 @@ export default function BhaRunsListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: bhaRuns, responseTime } = useGetObjects(
+  const { objects: bhaRuns, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.BhaRun
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.BhaRun);
 
@@ -131,6 +134,7 @@ export default function BhaRunsListView() {
         showRefresh
         downloadToCsvFileName="BhaRuns"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

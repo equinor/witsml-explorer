@@ -18,12 +18,15 @@ export default function ChangeLogsListView() {
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
 
-  const { objects: changeLogs, responseTime } = useGetObjects(
+  const { objects: changeLogs, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.ChangeLog
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.ChangeLog);
 
@@ -77,6 +80,7 @@ export default function ChangeLogsListView() {
         showRefresh
         downloadToCsvFileName="ChangeLogs"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

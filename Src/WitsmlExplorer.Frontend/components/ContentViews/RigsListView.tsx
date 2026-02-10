@@ -29,12 +29,15 @@ export default function RigsListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: rigs, responseTime } = useGetObjects(
+  const { objects: rigs, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Rig
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Rig);
 
@@ -158,6 +161,7 @@ export default function RigsListView() {
         showRefresh
         downloadToCsvFileName="Rigs"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

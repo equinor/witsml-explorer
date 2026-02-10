@@ -39,8 +39,12 @@ export default function WellboresListView() {
     wellbores,
     isFetching: isFetchingWellbores,
     isFetched: isFetchedWellbores,
-    responseTime: responseTime
+    responseTime: responseTime,
+    dataUpdatedAt
   } = useGetWellbores(connectedServer, wellUid);
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
   const isFetching = isFetchingWell || isFetchingWellbores;
   const {
     dispatchOperation,
@@ -148,6 +152,7 @@ export default function WellboresListView() {
         checkableRows
         showRefresh
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );

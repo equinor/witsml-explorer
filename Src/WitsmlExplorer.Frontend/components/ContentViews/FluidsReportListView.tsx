@@ -32,12 +32,15 @@ export default function FluidsReportsListView() {
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
   const navigate = useNavigate();
-  const { objects: fluidsReports, responseTime } = useGetObjects(
+  const { objects: fluidsReports, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.FluidsReport
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
@@ -132,6 +135,7 @@ export default function FluidsReportsListView() {
         showRefresh
         downloadToCsvFileName="FluidsReports"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

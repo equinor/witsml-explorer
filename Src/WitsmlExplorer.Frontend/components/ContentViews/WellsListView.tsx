@@ -28,10 +28,14 @@ export default function WellsListView() {
   const {
     wells,
     isFetching,
-    responseTime: responseTime
+    responseTime: responseTime,
+    dataUpdatedAt
   } = useGetWells(connectedServer, {
     placeholderData: []
   });
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
   const { servers } = useGetServers();
   const {
     dispatchOperation,
@@ -116,6 +120,7 @@ export default function WellsListView() {
           downloadToCsvFileName="Wells"
           showRefresh
           responseTime={responseTime}
+          lastFetched={lastFetched}
         />
       )}
     </>

@@ -59,8 +59,12 @@ export default function LogsListView() {
     objects: allLogs,
     isFetching: isFetchingLogs,
     responseTime: responseTime,
-    isFetched
+    isFetched,
+    dataUpdatedAt
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
   const isTimeIndexed = logType === RouterLogType.TIME;
   const logs = filterLogsByType(
     allLogs,
@@ -199,6 +203,7 @@ export default function LogsListView() {
             onSelect={onSelect}
             data={getTableData()}
             responseTime={responseTime}
+            lastFetched={lastFetched}
             onContextMenu={onContextMenu}
             onRowSelectionChange={(rows) =>
               setSelectedRows(rows as LogObjectRow[])

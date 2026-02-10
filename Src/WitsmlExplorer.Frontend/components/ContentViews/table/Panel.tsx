@@ -36,6 +36,7 @@ export interface PanelProps {
   disableFilters?: boolean;
   disableSearchParamsFilter?: boolean;
   responseTime?: number;
+  lastFetched?: string;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv

@@ -30,12 +30,15 @@ export default function MessagesListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: messages, responseTime } = useGetObjects(
+  const { objects: messages, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Message
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Message);
 
@@ -126,6 +129,7 @@ export default function MessagesListView() {
         showRefresh
         downloadToCsvFileName="Messages"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

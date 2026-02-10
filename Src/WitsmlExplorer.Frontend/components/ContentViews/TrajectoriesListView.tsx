@@ -27,12 +27,15 @@ export default function TrajectoriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: trajectories, responseTime } = useGetObjects(
+  const { objects: trajectories, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Trajectory
   );
+  const lastFetched = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
@@ -157,6 +160,7 @@ export default function TrajectoriesListView() {
         showRefresh
         downloadToCsvFileName="Trajectories"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );
