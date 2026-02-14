@@ -188,7 +188,7 @@ const Panel = (props: PanelProps) => {
           <Typography>Response time: {responseTime} ms</Typography>
         )}
         {lastFetched && (
-          <Typography>Last fetched: {lastFetched} ms</Typography>
+          <Typography>Last fetched: {lastFetched}</Typography>
         )}
         {panelElements}
       </EdsProvider>

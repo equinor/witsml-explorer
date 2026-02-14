@@ -7,7 +7,7 @@ import {
 import BhaRunContextMenu from "components/ContextMenus/BhaRunContextMenu";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -35,10 +35,7 @@ export default function BhaRunsListView() {
     wellboreUid,
     ObjectType.BhaRun
   );
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.BhaRun);
 
   const getTableData = () => {

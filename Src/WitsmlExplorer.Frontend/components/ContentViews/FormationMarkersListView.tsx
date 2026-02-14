@@ -7,7 +7,7 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FormationMarkerContextMenu from "components/ContextMenus/FormationMarkerContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -37,10 +37,7 @@ export default function FormationMarkersListView() {
     wellboreUid,
     ObjectType.FormationMarker
   );
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FormationMarker);
 
   const structToString = (struct: StratigraphicStruct) => {

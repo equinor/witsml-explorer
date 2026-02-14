@@ -8,6 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
 } from "components/ContextMenus/TubularComponentContextMenu";
+import {formatTimeWithOffset} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -36,7 +37,10 @@ export interface TubularComponentRow extends ContentTableRow {
 }
 
 export default function TubularView() {
-  const { dispatchOperation } = useOperationState();
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const {
@@ -72,10 +76,7 @@ export default function TubularView() {
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
   const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
   const onContextMenu = (

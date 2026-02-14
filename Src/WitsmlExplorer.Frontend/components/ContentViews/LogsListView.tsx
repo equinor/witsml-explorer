@@ -13,7 +13,7 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import {
   CommonPanelContainer,
@@ -62,9 +62,7 @@ export default function LogsListView() {
     isFetched,
     dataUpdatedAt
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const isTimeIndexed = logType === RouterLogType.TIME;
   const logs = filterLogsByType(
     allLogs,

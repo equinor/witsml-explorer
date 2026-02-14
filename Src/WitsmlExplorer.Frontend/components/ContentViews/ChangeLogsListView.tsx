@@ -3,7 +3,7 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
@@ -24,10 +24,7 @@ export default function ChangeLogsListView() {
     wellboreUid,
     ObjectType.ChangeLog
   );
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.ChangeLog);
 
   const getTableData = () => {

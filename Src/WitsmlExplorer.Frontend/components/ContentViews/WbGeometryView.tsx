@@ -8,6 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
 } from "components/ContextMenus/WbGeometrySectionContextMenu";
+import { formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -28,7 +29,10 @@ interface WbGeometrySectionRow extends ContentTableRow {
 }
 
 export default function WbGeometryView() {
-  const { dispatchOperation } = useOperationState();
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const {
@@ -64,10 +68,7 @@ export default function WbGeometryView() {
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
   const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const onContextMenu = (

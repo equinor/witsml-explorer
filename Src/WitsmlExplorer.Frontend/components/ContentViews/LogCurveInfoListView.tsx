@@ -4,6 +4,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
+import { formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { RoleLimitedAccess } from "components/UserRoles.ts";
@@ -101,9 +102,7 @@ export default function LogCurveInfoListView() {
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
   const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const allPrioritizedCurves = [
     ...prioritizedLocalCurves,
     ...prioritizedUniversalCurves

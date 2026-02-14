@@ -8,7 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import WellboreContextMenu, {
   WellboreContextMenuProps
 } from "components/ContextMenus/WellboreContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -42,14 +42,12 @@ export default function WellboresListView() {
     responseTime: responseTime,
     dataUpdatedAt
   } = useGetWellbores(connectedServer, wellUid);
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
   const isFetching = isFetchingWell || isFetchingWellbores;
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useOperationState();
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const navigate = useNavigate();
 
   useExpandSidebarNodes(wellUid);
