@@ -18,8 +18,11 @@ import {
 } from "components/ContentViews/table";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, { formatTimeWithOffset } from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
+import DownloadOptionsSelectionModal, {
+  DownloadOptionsSelectionModalProps
+} from "components/Modals/DownloadOptionsSelectionModal.tsx";
 import { ShowLogDataOnServerModal } from "components/Modals/ShowLogDataOnServerModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { Button } from "components/StyledComponents/Button";
@@ -61,9 +64,7 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
-import DownloadOptionsSelectionModal, {
-  DownloadOptionsSelectionModalProps
-} from "components/Modals/DownloadOptionsSelectionModal.tsx";
+
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -91,6 +92,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedRows, setSelectedRows] = useState<CurveValueRow[]>([]);
   const [showPlot, setShowPlot] = useState<boolean>(false);
+  const [lastFetchedAt, setLastFetchedAt] = useState<number>(0);
   const [autoRefresh, setAutoRefresh] = useState<boolean>(false);
   const [refreshDelay, setRefreshDelay] = useState<number>(
     DEFAULT_REFRESH_DELAY
@@ -424,6 +426,7 @@ export const CurveValuesView = (): React.ReactElement => {
       } else {
         setTableData(logDataRows);
       }
+      setLastFetchedAt(Date.now());
     }
   };
 
@@ -480,6 +483,11 @@ export const CurveValuesView = (): React.ReactElement => {
             <Typography style={{ minWidth: "max-content" }}>
               Show Plot
             </Typography>
+            {formatTimeWithOffset(lastFetchedAt, timeZone) && (
+              <Typography style={{ minWidth: "max-content", marginLeft: "16px" }}>
+                Last fetched: {formatTimeWithOffset(lastFetchedAt, timeZone)}
+              </Typography>
+            )}
           </EdsProvider>
           {log?.objectGrowing && (
             <>

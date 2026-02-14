@@ -47,6 +47,30 @@ function formatDateString(
 
 export default formatDateString;
 
+export function formatTimeWithOffset(
+  dateNumber: number,
+  timeZone: TimeZone
+): string | null {
+  if (!dateNumber) return null;
+
+  try {
+    const date = new Date(dateNumber);
+
+    let offset: string;
+    if (timeZone === TimeZone.Local) {
+      offset = format(date, "xxx");
+    } else if (timeZone === TimeZone.Raw) {
+      offset = "+00:00"; // We don't know the offset of the actual data, but we assume it's UTC.
+    } else {
+      offset = getOffsetFromTimeZone(timeZone);
+    }
+
+    return formatInTimeZone(date, offset, "HH:mm:ss xxx");
+  } catch {
+    return null;
+  }
+}
+
 export function getOffsetFromTimeZone(timeZone: TimeZone): string {
   if (timeZone == TimeZone.Local) {
     return format(new Date(), "xxx");

@@ -7,7 +7,7 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MudLogContextMenu from "components/ContextMenus/MudLogContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -40,13 +40,13 @@ export default function MudLogsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: mudLogs, responseTime } = useGetObjects(
+  const { objects: mudLogs, responseTime, dataUpdatedAt } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.MudLog
   );
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
   const onSelect = (mudLogRow: MudLogRow) => {
@@ -146,6 +146,7 @@ export default function MudLogsListView() {
         showRefresh
         downloadToCsvFileName="MudLogs"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );
