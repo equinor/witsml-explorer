@@ -22,6 +22,7 @@ import Icon from "styles/Icons";
 import { RouterLogType } from "../routes/routerConstants.ts";
 import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
 import { RoleLimitedAccess } from "./UserRoles.ts";
+import AlertInformation from "./AlertInformation.tsx";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -140,6 +141,7 @@ export default function TopRightCornerMenu() {
           {showLabels && "Multiple Log Selection"}
         </Button>
       </RoleLimitedAccess>
+      <AlertInformation></AlertInformation>
       <Button
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}
