@@ -8,7 +8,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "components/ContextMenus/FluidContextMenu";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -71,7 +73,10 @@ export default function FluidsView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
-  const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);

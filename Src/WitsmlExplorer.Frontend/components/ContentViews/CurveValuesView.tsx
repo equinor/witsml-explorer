@@ -18,7 +18,9 @@ import {
 } from "components/ContentViews/table";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MnemonicsContextMenu from "components/ContextMenus/MnemonicsContextMenu";
-import formatDateString, { formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import DownloadOptionsSelectionModal, {
   DownloadOptionsSelectionModalProps
@@ -64,7 +66,6 @@ import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
-
 
 const TIME_INDEX_START_OFFSET = SECONDS_IN_MINUTE * 20; // offset before log end index that defines the start index for streaming (in seconds).
 const DEPTH_INDEX_START_OFFSET = 20; // offset before log end index that defines the start index for streaming.
@@ -484,7 +485,9 @@ export const CurveValuesView = (): React.ReactElement => {
               Show Plot
             </Typography>
             {formatTimeWithOffset(lastFetchedAt, timeZone) && (
-              <Typography style={{ minWidth: "max-content", marginLeft: "16px" }}>
+              <Typography
+                style={{ minWidth: "max-content", marginLeft: "16px" }}
+              >
                 Last fetched: {formatTimeWithOffset(lastFetchedAt, timeZone)}
               </Typography>
             )}

@@ -9,7 +9,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import JobInfoContextMenu, {
   JobInfoContextMenuProps
 } from "components/ContextMenus/JobInfoContextMenu";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { Button } from "components/StyledComponents/Button";

@@ -9,7 +9,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import WellContextMenu, {
   WellContextMenuProps
 } from "components/ContextMenus/WellContextMenu";
-import formatDateString, { formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";

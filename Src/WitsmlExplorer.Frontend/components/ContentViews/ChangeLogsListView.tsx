@@ -3,7 +3,9 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
@@ -18,7 +20,11 @@ export default function ChangeLogsListView() {
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
 
-  const { objects: changeLogs, responseTime, dataUpdatedAt } = useGetObjects(
+  const {
+    objects: changeLogs,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

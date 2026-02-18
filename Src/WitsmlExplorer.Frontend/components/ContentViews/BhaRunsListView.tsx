@@ -7,7 +7,9 @@ import {
 import BhaRunContextMenu from "components/ContextMenus/BhaRunContextMenu";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -29,12 +31,11 @@ export default function BhaRunsListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: bhaRuns, responseTime, dataUpdatedAt } = useGetObjects(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.BhaRun
-  );
+  const {
+    objects: bhaRuns,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.BhaRun);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.BhaRun);
 

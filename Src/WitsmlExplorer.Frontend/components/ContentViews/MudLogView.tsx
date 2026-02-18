@@ -82,7 +82,10 @@ export default function MudLogView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
-  const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);

@@ -101,7 +101,10 @@ export default function LogCurveInfoListView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
-  const dataUpdatedAt = Math.max(dataUpdatedAtObject ?? 0, dataUpdatedAtComponents ?? 0);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const allPrioritizedCurves = [
     ...prioritizedLocalCurves,

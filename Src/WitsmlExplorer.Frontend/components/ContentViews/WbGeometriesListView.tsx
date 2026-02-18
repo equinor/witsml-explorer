@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import WbGeometryObjectContextMenu from "components/ContextMenus/WbGeometryContextMenu";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -32,7 +34,11 @@ export default function WbGeometriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: wbGeometries, responseTime, dataUpdatedAt } = useGetObjects(
+  const {
+    objects: wbGeometries,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

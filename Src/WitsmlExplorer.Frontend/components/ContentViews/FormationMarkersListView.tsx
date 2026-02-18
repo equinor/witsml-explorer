@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FormationMarkerContextMenu from "components/ContextMenus/FormationMarkerContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -31,7 +33,11 @@ export default function FormationMarkersListView() {
   const { dispatchOperation } = useOperationState();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: formationMarkers, responseTime, dataUpdatedAt } = useGetObjects(
+  const {
+    objects: formationMarkers,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

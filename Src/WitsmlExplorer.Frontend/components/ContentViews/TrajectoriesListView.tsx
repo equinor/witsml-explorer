@@ -6,7 +6,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -27,7 +29,11 @@ export default function TrajectoriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: trajectories, responseTime, dataUpdatedAt } = useGetObjects(
+  const {
+    objects: trajectories,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,

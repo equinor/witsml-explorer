@@ -13,7 +13,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import {
   CommonPanelContainer,

@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import RigContextMenu from "components/ContextMenus/RigContextMenu";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -29,12 +31,11 @@ export default function RigsListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: rigs, responseTime, dataUpdatedAt } = useGetObjects(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.Rig
-  );
+  const {
+    objects: rigs,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Rig);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Rig);
 
