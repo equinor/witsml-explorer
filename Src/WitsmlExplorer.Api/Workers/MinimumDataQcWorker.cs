@@ -135,7 +135,13 @@ namespace WitsmlExplorer.Api.Workers
                 {
                     if (logDataRows.Any(x => x.Length < logColumns.Count))
                     {
-                        throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in data row.", (int)HttpStatusCode.InternalServerError);
+                        var badRow = logDataRows.FirstOrDefault(x => x.Length < logColumns.Count);
+                        var expectedColumns = logColumns.Count;
+                        var actualColumns = badRow?.Length ?? 0;
+                        var sampleData = string.Join(",", badRow);
+                        throw new WitsmlResultParsingException(
+                            $"Unable to parse log data due to unexpected amount of columns. Expected {expectedColumns} columns but found {actualColumns}. Data row: {sampleData}",
+                            (int)HttpStatusCode.InternalServerError);
                     }
 
                     int mnemonicCurveIndex = logColumns.FirstOrDefault(x => x.Mnemonic == indexCurve).Index;
