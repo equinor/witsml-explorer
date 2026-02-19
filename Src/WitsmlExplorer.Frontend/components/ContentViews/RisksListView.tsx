@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import RiskObjectContextMenu from "components/ContextMenus/RiskContextMenu";
-import formatDateString, {formatTimeWithOffset } from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -30,12 +32,11 @@ export default function RisksListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: risks, responseTime, dataUpdatedAt } = useGetObjects(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.Risk
-  );
+  const {
+    objects: risks,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Risk);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Risk);
 
