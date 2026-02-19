@@ -105,9 +105,14 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
 
         if (logDataRows.Any(x => x.Length < logMnemonics.Count))
         {
-            throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in data row.", (int)HttpStatusCode.InternalServerError);
+            var badRow = logDataRows.FirstOrDefault(x => x.Length < logMnemonics.Count);
+            var expectedColumns = logMnemonics.Count;
+            var actualColumns = badRow?.Length ?? 0;
+            var sampleData = string.Join(",", badRow);
+            throw new WitsmlResultParsingException(
+                $"Unable to parse log data due to unexpected amount of columns. Expected {expectedColumns} columns but found {actualColumns}. Data row: {sampleData}",
+                (int)HttpStatusCode.InternalServerError);
         }
-
 
         int mnemonicCurveIndex = logMnemonics.FirstOrDefault(x => x.value == indexCurve)?.index ?? 0;
         var logCurveMinMaxIndexDictionary = witsmlLog.LogCurveInfo
