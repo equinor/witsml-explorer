@@ -26,7 +26,8 @@ import {
   SERVER_ROUTE_PATH,
   WELLSBORES_VIEW_ROUTE_PATH,
   WELLS_VIEW_ROUTE_PATH,
-  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH,
+  RELEASE_NOTES_NAVIGATION_PATH
 } from "routes/routerConstants";
 import { isDesktopApp } from "tools/desktopAppHelpers";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
@@ -50,6 +51,7 @@ import { ErrorPage } from "./ErrorPage";
 import { PageNotFound } from "./PageNotFound";
 import Root from "./Root";
 import MultiLogCurveSelectionView from "../components/ContentViews/MultiLogCurveSelection/MultiLogCurveSelectionView.tsx";
+import ReleaseNotes from "components/ContentViews/ReleaseNotes.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -142,6 +144,11 @@ const router = createRouter([
           {
             path: JOBS_VIEW_ROUTE_PATH,
             element: <JobsView />,
+            errorElement: <ErrorView />
+          },
+          {
+            path: RELEASE_NOTES_NAVIGATION_PATH,
+            element: <ReleaseNotes />,
             errorElement: <ErrorView />
           },
           {

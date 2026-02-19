@@ -27,7 +27,8 @@ import {
   WELLSBORES_VIEW_NAVIGATION_PATH,
   WELLS_VIEW_NAVIGATION_PATH,
   WELL_UID_PARAM,
-  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH,
+  RELEASE_NOTES_NAVIGATION_PATH
 } from "routes/routerConstants";
 
 export function getJobsViewPath(serverUrl: string) {
@@ -36,6 +37,14 @@ export function getJobsViewPath(serverUrl: string) {
     encodeURIComponent(serverUrl)
   );
   return jobsViewPath;
+}
+
+export function getReleaseNotesPath(serverUrl: string) {
+  const releaseNotesPath = RELEASE_NOTES_NAVIGATION_PATH.replace(
+    SERVER_URL_PARAM,
+    encodeURIComponent(serverUrl)
+  );
+  return releaseNotesPath;
 }
 
 export function getQueryViewPath(serverUrl: string) {

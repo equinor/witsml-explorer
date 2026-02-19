@@ -14,7 +14,8 @@ import { useNavigate } from "react-router-dom";
 import {
   getJobsViewPath,
   getMultipleLogCurveSelectionViewPath,
-  getQueryViewPath
+  getQueryViewPath,
+  getReleaseNotesPath
 } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
@@ -22,7 +23,6 @@ import Icon from "styles/Icons";
 import { RouterLogType } from "../routes/routerConstants.ts";
 import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
 import { RoleLimitedAccess } from "./UserRoles.ts";
-import AlertInformation from "./AlertInformation.tsx";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -81,6 +81,10 @@ export default function TopRightCornerMenu() {
     navigate(getJobsViewPath(connectedServer?.url));
   };
 
+  const openReleaseNotes = () => {
+    navigate(getReleaseNotesPath(connectedServer?.url));
+  };
+
   const openQueryView = () => {
     navigate(getQueryViewPath(connectedServer?.url));
   };
@@ -88,6 +92,13 @@ export default function TopRightCornerMenu() {
   const isConnected = !!connectedServer;
   return (
     <Layout>
+      <Button
+        variant={showLabels ? "ghost" : "ghost_icon"}
+        onClick={openReleaseNotes}
+      >
+        <Icon name="explore" />
+        {showLabels && "What is new?"}
+      </Button>
       {isConnected && (
         <Button
           variant={showLabels ? "ghost" : "ghost_icon"}
@@ -141,7 +152,7 @@ export default function TopRightCornerMenu() {
           {showLabels && "Multiple Log Selection"}
         </Button>
       </RoleLimitedAccess>
-      <AlertInformation></AlertInformation>
+
       <Button
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}
