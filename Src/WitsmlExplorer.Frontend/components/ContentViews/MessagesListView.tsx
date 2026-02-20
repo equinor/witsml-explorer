@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import MessageObjectContextMenu from "components/ContextMenus/MessageObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -30,13 +32,12 @@ export default function MessagesListView() {
   } = useOperationState();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: messages, responseTime } = useGetObjects(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.Message
-  );
-
+  const {
+    objects: messages,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Message);
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Message);
 
   const getTableData = () => {
@@ -126,6 +127,7 @@ export default function MessagesListView() {
         showRefresh
         downloadToCsvFileName="Messages"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

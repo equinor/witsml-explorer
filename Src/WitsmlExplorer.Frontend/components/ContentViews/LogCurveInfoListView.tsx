@@ -4,6 +4,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
   LogCurveInfoContextMenuProps
 } from "components/ContextMenus/LogCurveInfoContextMenu";
+import { formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { CommonPanelContainer } from "components/StyledComponents/Container";
 import { RoleLimitedAccess } from "components/UserRoles.ts";
@@ -58,7 +59,8 @@ export default function LogCurveInfoListView() {
     object: logObject,
     isFetching: isFetchingLog,
     isFetched: isFetchedLog,
-    responseTime: responseTimeObject
+    responseTime: responseTimeObject,
+    dataUpdatedAt: dataUpdatedAtObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -72,7 +74,8 @@ export default function LogCurveInfoListView() {
   const {
     components: logCurveInfoList,
     isFetching: isFetchingLogCurveInfo,
-    responseTime: responseTimeComponents
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -98,6 +101,11 @@ export default function LogCurveInfoListView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const allPrioritizedCurves = [
     ...prioritizedLocalCurves,
     ...prioritizedUniversalCurves
@@ -287,6 +295,7 @@ export default function LogCurveInfoListView() {
           showRefresh
           downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
           responseTime={responseTime}
+          lastFetched={lastFetched}
         />
       )}
     </>

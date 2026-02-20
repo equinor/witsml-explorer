@@ -3,7 +3,9 @@ import {
   ContentTableColumn,
   ContentType
 } from "components/ContentViews/table";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import { useGetObjects } from "hooks/query/useGetObjects";
 import { useExpandSidebarNodes } from "hooks/useExpandObjectGroupNodes";
@@ -18,13 +20,17 @@ export default function ChangeLogsListView() {
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
 
-  const { objects: changeLogs, responseTime } = useGetObjects(
+  const {
+    objects: changeLogs,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.ChangeLog
   );
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.ChangeLog);
 
   const getTableData = () => {
@@ -77,6 +83,7 @@ export default function ChangeLogsListView() {
         showRefresh
         downloadToCsvFileName="ChangeLogs"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

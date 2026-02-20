@@ -8,7 +8,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import TrajectoryStationContextMenu, {
   TrajectoryStationContextMenuProps
 } from "components/ContextMenus/TrajectoryStationContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -46,7 +48,8 @@ export default function TrajectoryView() {
     object: trajectory,
     isFetching: isFetchingTrajectory,
     isFetched: isFetchedTrajectory,
-    responseTime: responseTimeObject
+    responseTime: responseTimeObject,
+    dataUpdatedAt: dataUpdatedAtObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -58,7 +61,8 @@ export default function TrajectoryView() {
   const {
     components: trajectoryStations,
     isFetching: isFetchingTrajectoryStations,
-    responseTime: responseTimeComponents
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -72,6 +76,11 @@ export default function TrajectoryView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
@@ -154,6 +163,7 @@ export default function TrajectoryView() {
         showRefresh
         downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );

@@ -8,6 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import TubularComponentContextMenu, {
   TubularComponentContextMenuProps
 } from "components/ContextMenus/TubularComponentContextMenu";
+import { formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -36,14 +37,18 @@ export interface TubularComponentRow extends ContentTableRow {
 }
 
 export default function TubularView() {
-  const { dispatchOperation } = useOperationState();
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const {
     object: tubular,
     isFetching: isFetchingTubular,
     isFetched: isFetchedTubular,
-    responseTime: responseTimeObject
+    responseTime: responseTimeObject,
+    dataUpdatedAt: dataUpdatedAtObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -55,7 +60,8 @@ export default function TubularView() {
   const {
     components: tubularComponents,
     isFetching: isFetchingTubularComponents,
-    responseTime: responseTimeComponents
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -69,7 +75,11 @@ export default function TubularView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
-
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
   const onContextMenu = (
@@ -161,6 +171,7 @@ export default function TubularView() {
         showRefresh
         downloadToCsvFileName={`Tubular_${tubular?.name}`}
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );

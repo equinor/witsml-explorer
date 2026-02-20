@@ -8,7 +8,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "components/ContextMenus/FluidContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -43,7 +45,8 @@ export default function FluidsView() {
     object: fluidsReport,
     responseTime: responseTimeObject,
     isFetching: isFetchingFluidsReport,
-    isFetched: isFetchedFluidsReport
+    isFetched: isFetchedFluidsReport,
+    dataUpdatedAt: dataUpdatedAtObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -55,7 +58,8 @@ export default function FluidsView() {
   const {
     components: fluids,
     isFetching: isFetchingFluids,
-    responseTime: responseTimeComponents
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -69,6 +73,11 @@ export default function FluidsView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
@@ -303,6 +312,7 @@ export default function FluidsView() {
         showRefresh
         downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );
