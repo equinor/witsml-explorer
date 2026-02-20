@@ -92,7 +92,7 @@ namespace Witsml.Data.Curves
                 ? null
                 : indexType switch
                 {
-                    WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(logCurveInfo.MinIndex.Value, CultureInfo.InvariantCulture), logCurveInfo.MinIndex.Uom),
+                    WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(logCurveInfo.MinIndex.Value, CultureInfo.InvariantCulture), logCurveInfo.MinIndex.Uom ?? CommonConstants.DepthIndex.DefaultUnit),
                     WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => new DateTimeIndex(DateTime.Parse(logCurveInfo.MinDateTimeIndex, CultureInfo.InvariantCulture)),
                     _ => throw new Exception($"Invalid index type: '{indexType}'")
                 };
@@ -104,7 +104,7 @@ namespace Witsml.Data.Curves
                 ? null
                 : indexType switch
                 {
-                    WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(logCurveInfo.MaxIndex.Value, CultureInfo.InvariantCulture), logCurveInfo.MaxIndex.Uom),
+                    WitsmlLog.WITSML_INDEX_TYPE_MD => new DepthIndex(double.Parse(logCurveInfo.MaxIndex.Value, CultureInfo.InvariantCulture), logCurveInfo.MaxIndex.Uom ?? CommonConstants.DepthIndex.DefaultUnit),
                     WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME => new DateTimeIndex(DateTime.Parse(logCurveInfo.MaxDateTimeIndex, CultureInfo.InvariantCulture)),
                     _ => throw new Exception($"Invalid index type: '{indexType}'")
                 };
