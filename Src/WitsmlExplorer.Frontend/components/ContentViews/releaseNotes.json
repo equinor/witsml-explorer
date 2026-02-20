@@ -1,0 +1,12 @@
+[
+  {
+    "feature": "User Roles",
+    "description": "There are 3 predefined groups that can be changed in Settings. User can limit what is displayed in his browser. An Expert User can see everything, for beginner is suitable role Regular User.",
+    "releasedate": "2026-1-4"
+  },
+  {
+    "feature": "Multiple Log Selection",
+    "description": "A possibility to select logs from several Witsml server into one view.",
+    "releasedate": "2026-1-3"
+  }
+]
