@@ -8,13 +8,12 @@ import {
   SetModeAction,
   SetThemeAction,
   SetTimeZoneAction,
-  TimeZone,
-  UserTheme,
-  UserRole,
-  initOperationStateReducer,
   SetUserRoleAction,
   SetUserRoleToRegularUserAction,
-  SetLastAddedFeatureAction
+  TimeZone,
+  UserRole,
+  UserTheme,
+  initOperationStateReducer
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { enableDarkModeDebug } from "debugUtils/darkModeDebug";
@@ -29,7 +28,6 @@ import {
   STORAGE_TIMEZONE_KEY,
   STORAGE_USER_ROLE_KEY,
   STORAGE_USER_ROLE_SET_TO_REGULAR_USER_KEY,
-  STORAGE_LAST_ADDED_FEATURE_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
 
@@ -118,16 +116,6 @@ export const OperationStateProvider = ({
         const action: SetUserRoleToRegularUserAction = {
           type: OperationType.SetUserRoleToRegularUser,
           payload: storedUserRoleToRegularUser
-        };
-        dispatchOperation(action);
-      }
-      const storedLastAddedFeature = getLocalStorageItem<string>(
-        STORAGE_LAST_ADDED_FEATURE_KEY
-      );
-      if (storedLastAddedFeature) {
-        const action: SetLastAddedFeatureAction = {
-          type: OperationType.SetLastAddedFeature,
-          payload: storedLastAddedFeature
         };
         dispatchOperation(action);
       }

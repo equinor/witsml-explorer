@@ -10,7 +10,6 @@ import WellContextMenu, {
   WellContextMenuProps
 } from "components/ContextMenus/WellContextMenu";
 import formatDateString from "components/DateFormatter";
-import ReleaseNotesModal from "components/Modals/ReleaseNotesModal";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -99,13 +98,6 @@ export default function WellsListView() {
     });
   };
 
-  const openReleaseNotes = () => {
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <ReleaseNotesModal />
-    });
-  };
-
   return (
     <>
       {isFetching && (
@@ -126,7 +118,6 @@ export default function WellsListView() {
           responseTime={responseTime}
         />
       )}
-      {openReleaseNotes()};
     </>
   );
 }

@@ -13,8 +13,7 @@ enum OperationType {
   SetDecimal,
   SetHotKeysEnabled,
   SetUserRole,
-  SetUserRoleToRegularUser,
-  SetLastAddedFeature
+  SetUserRoleToRegularUser
 }
 
 export default OperationType;

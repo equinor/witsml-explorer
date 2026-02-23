@@ -109,11 +109,6 @@ export interface SetUserRoleToRegularUserAction extends PayloadAction {
   payload: boolean;
 }
 
-export interface SetLastAddedFeatureAction extends PayloadAction {
-  type: OperationType.SetLastAddedFeature;
-  payload: string;
-}
-
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
@@ -126,7 +121,6 @@ export interface OperationState {
   hotKeysEnabled: boolean;
   userRole: UserRole;
   userRoleToRegularUser: boolean;
-  lastAddedFeature: string;
 }
 
 export interface MousePosition {
@@ -161,8 +155,7 @@ export const initOperationStateReducer = (): [
     decimals: DecimalPreference.Raw,
     hotKeysEnabled: false,
     userRole: UserRole.Regular,
-    userRoleToRegularUser: false,
-    lastAddedFeature: ""
+    userRoleToRegularUser: false
   };
   return useReducer(reducer, initialState);
 };
@@ -197,8 +190,6 @@ export const reducer = (
         state,
         action as SetUserRoleToRegularUserAction
       );
-    case OperationType.SetLastAddedFeature:
-      return setLastAddedFeature(state, action as SetLastAddedFeatureAction);
     case OperationType.SetHotKeysEnabled:
       return setHotKeysEnabled(state, action as SetHotKeysEnabledAction);
     default:
@@ -306,15 +297,6 @@ const setUserRoleToRegularUser = (
     setUserRoleToRegularUser: payload
   };
 };
-const setLastAddedFeature = (
-  state: OperationState,
-  { payload }: SetLastAddedFeatureAction
-) => {
-  return {
-    ...state,
-    lastAddedFeature: payload
-  };
-};
 
 const setHotKeysEnabled = (
   state: OperationState,
@@ -338,7 +320,6 @@ export type OperationAction =
   | SetDecimalAction
   | SetUserRoleAction
   | SetUserRoleToRegularUserAction
-  | SetLastAddedFeatureAction
   | SetHotKeysEnabledAction;
 
 export type DispatchOperation = (action: OperationAction) => void;
