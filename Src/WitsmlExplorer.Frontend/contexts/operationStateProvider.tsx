@@ -9,7 +9,6 @@ import {
   SetThemeAction,
   SetTimeZoneAction,
   SetUserRoleAction,
-  SetUserRoleToRegularUserAction,
   TimeZone,
   UserRole,
   UserTheme,
@@ -27,7 +26,6 @@ import {
   STORAGE_THEME_KEY,
   STORAGE_TIMEZONE_KEY,
   STORAGE_USER_ROLE_KEY,
-  STORAGE_USER_ROLE_SET_TO_REGULAR_USER_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
 
@@ -106,16 +104,6 @@ export const OperationStateProvider = ({
         const action: SetUserRoleAction = {
           type: OperationType.SetUserRole,
           payload: storedUserRoles
-        };
-        dispatchOperation(action);
-      }
-      const storedUserRoleToRegularUser = getLocalStorageItem<boolean>(
-        STORAGE_USER_ROLE_SET_TO_REGULAR_USER_KEY
-      );
-      if (storedUserRoleToRegularUser) {
-        const action: SetUserRoleToRegularUserAction = {
-          type: OperationType.SetUserRoleToRegularUser,
-          payload: storedUserRoleToRegularUser
         };
         dispatchOperation(action);
       }

@@ -32,6 +32,9 @@ test("should open window and edit server list", async () => {
   const serverName = "Test Witsml Server 123";
   const window = await electronApp.firstWindow();
 
+  await window
+    .click("role=button[name=/ok/i]", { timeout: 15000 })
+    .catch((): any => undefined); // Close release notes popup if it appears, it's not what we want to test here.
   // act
   await window.click("role=button[name=/new server/i]");
   await window.fill(

@@ -12,8 +12,7 @@ enum OperationType {
   SetDateTimeFormat,
   SetDecimal,
   SetHotKeysEnabled,
-  SetUserRole,
-  SetUserRoleToRegularUser
+  SetUserRole
 }
 
 export default OperationType;
