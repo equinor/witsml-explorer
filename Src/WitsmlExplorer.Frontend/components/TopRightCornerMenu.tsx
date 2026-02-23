@@ -14,8 +14,7 @@ import { useNavigate } from "react-router-dom";
 import {
   getJobsViewPath,
   getMultipleLogCurveSelectionViewPath,
-  getQueryViewPath,
-  getReleaseNotesPath
+  getQueryViewPath
 } from "routes/utils/pathBuilder";
 import AuthorizationService from "services/authorizationService";
 import styled from "styled-components";
@@ -23,6 +22,7 @@ import Icon from "styles/Icons";
 import { RouterLogType } from "../routes/routerConstants.ts";
 import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
 import { RoleLimitedAccess } from "./UserRoles.ts";
+import ReleseNotesModal from "./Modals/ReleaseNotesModal.tsx";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -82,7 +82,10 @@ export default function TopRightCornerMenu() {
   };
 
   const openReleaseNotes = () => {
-    navigate(getReleaseNotesPath(connectedServer?.url));
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <ReleseNotesModal />
+    });
   };
 
   const openQueryView = () => {

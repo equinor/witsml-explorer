@@ -14,7 +14,6 @@ import {
   OBJECT_GROUPS_VIEW_NAVIGATION_PATH,
   OBJECT_VIEW_NAVIGATION_PATH,
   QUERY_VIEW_NAVIGATION_PATH,
-  RELEASE_NOTES_NAVIGATION_PATH,
   SEARCH_VIEW_NAVIGATION_PATH,
   WELLSBORES_VIEW_NAVIGATION_PATH,
   WELLS_VIEW_NAVIGATION_PATH
@@ -22,7 +21,6 @@ import {
 
 export function useGetActiveRoute() {
   const isJobsView = !!useMatch(JOBS_VIEW_NAVIGATION_PATH);
-  const isRelaseNotes = !!useMatch(RELEASE_NOTES_NAVIGATION_PATH);
   const isQueryView = !!useMatch(QUERY_VIEW_NAVIGATION_PATH);
   const isSearchView = !!useMatch(SEARCH_VIEW_NAVIGATION_PATH);
   const isWellsView = !!useMatch(WELLS_VIEW_NAVIGATION_PATH);
@@ -51,7 +49,6 @@ export function useGetActiveRoute() {
   );
   return {
     isJobsView,
-    isRelaseNotes,
     isQueryView,
     isSearchView,
     isWellsView,

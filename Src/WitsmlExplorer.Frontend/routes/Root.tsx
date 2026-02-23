@@ -20,6 +20,7 @@ import { authRequest, msalEnabled, msalInstance } from "msal/MsalAuthProvider";
 import { SnackbarProvider } from "notistack";
 import { isDesktopApp } from "tools/desktopAppHelpers";
 import CompactEdsProvider from "../contexts/CompactEdsProvider";
+import { ReleaseNotesHandler } from "components/ReleaseNotesHandler";
 
 export default function Root() {
   return (
@@ -47,6 +48,7 @@ export default function Root() {
                           <Snackbar />
                         </SnackbarProvider>
                         <PageLayout />
+                        <ReleaseNotesHandler />
                         <ContextMenuPresenter />
                         <ModalPresenter />
                       </QueryContextProvider>
