@@ -20,6 +20,9 @@ export const STORAGE_CONTENTTABLE_WIDTH_KEY = "-widths";
 export const STORAGE_CONTENTTABLE_HIDDEN_KEY = "-hidden";
 export const STORAGE_CONTENTTABLE_ORDER_KEY = "-ordering";
 export const STORAGE_USER_ROLE_KEY = "userRole";
+export const STORAGE_USER_ROLE_SET_TO_REGULAR_USER_KEY =
+  "userRoleToRegularUser";
+export const STORAGE_LAST_ADDED_FEATURE_KEY = "lastAddedFeature";
 
 export const getLocalStorageItem = <T,>(
   key: string,

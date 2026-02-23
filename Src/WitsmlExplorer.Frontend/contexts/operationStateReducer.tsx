@@ -104,6 +104,16 @@ export interface SetUserRoleAction extends PayloadAction {
   payload: UserRole;
 }
 
+export interface SetUserRoleToRegularUserAction extends PayloadAction {
+  type: OperationType.SetUserRoleToRegularUser;
+  payload: boolean;
+}
+
+export interface SetLastAddedFeatureAction extends PayloadAction {
+  type: OperationType.SetLastAddedFeature;
+  payload: string;
+}
+
 export interface OperationState {
   contextMenu: ContextMenu;
   progressIndicatorValue: number;
@@ -115,6 +125,8 @@ export interface OperationState {
   decimals: DecimalPreference;
   hotKeysEnabled: boolean;
   userRole: UserRole;
+  userRoleToRegularUser: boolean;
+  lastAddedFeature: string;
 }
 
 export interface MousePosition {
@@ -148,7 +160,9 @@ export const initOperationStateReducer = (): [
     dateTimeFormat: DateTimeFormat.Raw,
     decimals: DecimalPreference.Raw,
     hotKeysEnabled: false,
-    userRole: UserRole.Regular
+    userRole: UserRole.Regular,
+    userRoleToRegularUser: false,
+    lastAddedFeature: ""
   };
   return useReducer(reducer, initialState);
 };
@@ -178,6 +192,13 @@ export const reducer = (
       return setDecimal(state, action as SetDecimalAction);
     case OperationType.SetUserRole:
       return setUserRole(state, action as SetUserRoleAction);
+    case OperationType.SetUserRoleToRegularUser:
+      return setUserRoleToRegularUser(
+        state,
+        action as SetUserRoleToRegularUserAction
+      );
+    case OperationType.SetLastAddedFeature:
+      return setLastAddedFeature(state, action as SetLastAddedFeatureAction);
     case OperationType.SetHotKeysEnabled:
       return setHotKeysEnabled(state, action as SetHotKeysEnabledAction);
     default:
@@ -276,6 +297,25 @@ const setUserRole = (state: OperationState, { payload }: SetUserRoleAction) => {
   };
 };
 
+const setUserRoleToRegularUser = (
+  state: OperationState,
+  { payload }: SetUserRoleToRegularUserAction
+) => {
+  return {
+    ...state,
+    setUserRoleToRegularUser: payload
+  };
+};
+const setLastAddedFeature = (
+  state: OperationState,
+  { payload }: SetLastAddedFeatureAction
+) => {
+  return {
+    ...state,
+    lastAddedFeature: payload
+  };
+};
+
 const setHotKeysEnabled = (
   state: OperationState,
   { payload }: SetHotKeysEnabledAction
@@ -297,6 +337,8 @@ export type OperationAction =
   | SetDateTimeFormatAction
   | SetDecimalAction
   | SetUserRoleAction
+  | SetUserRoleToRegularUserAction
+  | SetLastAddedFeatureAction
   | SetHotKeysEnabledAction;
 
 export type DispatchOperation = (action: OperationAction) => void;

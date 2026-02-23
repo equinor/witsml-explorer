@@ -8,17 +8,16 @@ import jsonData from "./releaseNotes.json";
 import ModalDialog, { ModalContentLayout, ModalWidth } from "./ModalDialog";
 import OperationType from "contexts/operationType";
 
+export interface ReleaseNote {
+  feature: string | undefined;
+  description: string;
+  releasedate: string;
+}
 const ReleaseNotesModal = (): React.ReactElement => {
   const {
     operationState: { colors },
     dispatchOperation
   } = useOperationState();
-
-  interface ReleaseNote {
-    feature: string | undefined;
-    description: string;
-    releasedate: string;
-  }
 
   const CellStyle = {
     color: colors.interactive.primaryResting,
