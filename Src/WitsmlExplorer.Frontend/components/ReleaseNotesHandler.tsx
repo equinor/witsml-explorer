@@ -4,17 +4,15 @@ import { ReactElement, useEffect } from "react";
 import jsonData from "../components/Modals/releaseNotes.json";
 import ReleaseNotesModal, { ReleaseNote } from "./Modals/ReleaseNotesModal.tsx";
 
+import NotificationService from "services/notificationService.ts";
 import {
   getLocalStorageItem,
   setLocalStorageItem,
   STORAGE_LAST_VIEWED_FEATURE_KEY
 } from "tools/localStorageHelpers";
-import NotificationService from "services/notificationService.ts";
-import { useConnectedServer } from "contexts/connectedServerContext.tsx";
 
 export function ReleaseNotesHandler(): ReactElement {
   const { dispatchOperation } = useOperationState();
-  const { connectedServer } = useConnectedServer();
 
   const getLastViewedFeature = (): string => {
     const lastViewedFeature = getLocalStorageItem<string>(
@@ -35,11 +33,10 @@ export function ReleaseNotesHandler(): ReactElement {
     const lastFeature = jsonData.map((obj: ReleaseNote) => obj.feature)[0];
     const lastViewedFeature = getLastViewedFeature();
 
-    NotificationService.Instance.alertDispatcher.dispatch({
-      serverUrl: new URL(connectedServer.url),
+    NotificationService.Instance.snackbarDispatcher.dispatch({
+      serverUrl: null,
       message: "message",
-      isSuccess: false,
-      severity: "error"
+      isSuccess: false
     });
 
     if (lastFeature !== lastViewedFeature) {
