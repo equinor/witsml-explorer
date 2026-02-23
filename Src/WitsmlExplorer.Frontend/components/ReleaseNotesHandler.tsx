@@ -59,7 +59,7 @@ export function ReleaseNotesHandler(): ReactElement {
         NotificationService.Instance.snackbarDispatcher.dispatch({
           serverUrl: null,
           message:
-            "User has assigned an user role  with limited access - Regular User. You can change it in Options.",
+            "User has assigned an user role  with limited access - Regular User. You can change it in Settings.",
           isSuccess: true,
           severity: "warning"
         });
