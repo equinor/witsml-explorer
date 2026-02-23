@@ -36,7 +36,11 @@ export function Snackbar() {
 
           if (shouldNotify) {
             enqueueSnackbar(notification.message, {
-              variant: notification.isSuccess ? "success" : "error"
+              variant: notification.isSuccess
+                ? notification.severity == "warning"
+                  ? "warning"
+                  : "success"
+                : "error"
             });
           }
         }
