@@ -8,6 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import WbGeometrySectionContextMenu, {
   WbGeometrySectionContextMenuProps
 } from "components/ContextMenus/WbGeometrySectionContextMenu";
+import { formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -28,10 +29,19 @@ interface WbGeometrySectionRow extends ContentTableRow {
 }
 
 export default function WbGeometryView() {
-  const { dispatchOperation } = useOperationState();
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: wbGeometry, isFetched: isFetchedWbGeometry } = useGetObject(
+  const {
+    object: wbGeometry,
+    isFetching: isFetchingWbGeometry,
+    isFetched: isFetchedWbGeometry,
+    responseTime: responseTimeObject,
+    dataUpdatedAt: dataUpdatedAtObject
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -39,7 +49,12 @@ export default function WbGeometryView() {
     objectUid
   );
 
-  const { components: wbGeometrySections, isFetching } = useGetComponents(
+  const {
+    components: wbGeometrySections,
+    isFetching: isFetchingWbGeometrySections,
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
+  } = useGetComponents(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -48,6 +63,15 @@ export default function WbGeometryView() {
     { placeholderData: [] }
   );
 
+  const isFetching = isFetchingWbGeometry || isFetchingWbGeometrySections;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.WbGeometry);
 
   const onContextMenu = (
@@ -126,7 +150,7 @@ export default function WbGeometryView() {
 
   return (
     <>
-      {isFetching && <ProgressSpinnerOverlay message="Fetching Trajectory." />}
+      {isFetching && <ProgressSpinnerOverlay message="Fetching WbGeometry." />}
       <ContentTable
         viewId="wbGeometryView"
         columns={columns}
@@ -135,6 +159,8 @@ export default function WbGeometryView() {
         checkableRows
         showRefresh
         downloadToCsvFileName={`WbGeometry_${wbGeometry?.name}`}
+        responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );

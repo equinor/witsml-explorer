@@ -9,7 +9,9 @@ import {
   ObjectMenuItems
 } from "components/ContextMenus/ObjectMenuItems";
 import { openObjectOnWellboreProperties } from "components/Modals/PropertiesModal/openPropertiesHelpers";
+import { RoleLimitedAccess } from "components/UserRoles";
 import { useConnectedServer } from "contexts/connectedServerContext";
+import { UserRole } from "contexts/operationStateReducer";
 import { useGetServers } from "hooks/query/useGetServers";
 import { useOpenInQueryView } from "hooks/useOpenInQueryView";
 import { useOperationState } from "hooks/useOperationState";
@@ -31,11 +33,12 @@ const RigContextMenu = (props: ObjectContextMenuProps): React.ReactElement => {
   const extraMenuItems = (): React.ReactElement[] => {
     return [
       <Divider key={"divider"} />,
-      <BatchModifyMenuItem
-        key="batchModify"
-        checkedObjects={checkedObjects}
-        objectType={ObjectType.Rig}
-      />,
+      <RoleLimitedAccess requiredRole={UserRole.Advanced} key="batchModify">
+        <BatchModifyMenuItem
+          checkedObjects={checkedObjects}
+          objectType={ObjectType.Rig}
+        />
+      </RoleLimitedAccess>,
       <MenuItem
         key={"properties"}
         onClick={() =>

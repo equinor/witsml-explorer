@@ -8,7 +8,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidContextMenu, {
   FluidContextMenuProps
 } from "components/ContextMenus/FluidContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -39,7 +41,13 @@ export default function FluidsView() {
   } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: fluidsReport } = useGetObject(
+  const {
+    object: fluidsReport,
+    responseTime: responseTimeObject,
+    isFetching: isFetchingFluidsReport,
+    isFetched: isFetchedFluidsReport,
+    dataUpdatedAt: dataUpdatedAtObject
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -49,8 +57,9 @@ export default function FluidsView() {
 
   const {
     components: fluids,
-    isFetching,
-    isFetched
+    isFetching: isFetchingFluids,
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -59,6 +68,16 @@ export default function FluidsView() {
     ComponentType.Fluid,
     { placeholderData: [] }
   );
+
+  const isFetching = isFetchingFluidsReport || isFetchingFluids;
+  const responseTime = isFetching
+    ? 0
+    : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
@@ -274,7 +293,7 @@ export default function FluidsView() {
     { property: "vis600Rpm", label: "vis600Rpm", type: ContentType.String }
   ];
 
-  if (isFetched && !fluidsReport) {
+  if (isFetchedFluidsReport && !fluidsReport) {
     return <ItemNotFound itemType={ObjectType.FluidsReport} />;
   }
 
@@ -292,6 +311,8 @@ export default function FluidsView() {
         insetColumns={insetColumns}
         showRefresh
         downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
+        responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );

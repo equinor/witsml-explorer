@@ -7,11 +7,11 @@ import {
   StoreFunction
 } from "components/ContentViews/QueryViewUtils";
 import {
-  StyledIcon,
   menuItemText,
   onClickDeleteObjects,
   onClickRefreshObject,
-  onClickShowObjectOnServer
+  onClickShowObjectOnServer,
+  StyledIcon
 } from "components/ContextMenus/ContextMenuUtils";
 import { onClickCopyToServer } from "components/ContextMenus/CopyToServer";
 import {
@@ -20,7 +20,8 @@ import {
 } from "components/ContextMenus/CopyUtils";
 import NestedMenuItem from "components/ContextMenus/NestedMenuItem";
 import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboardReferences";
-import { DispatchOperation } from "contexts/operationStateReducer";
+import { RoleLimitedAccess } from "components/UserRoles.ts";
+import { DispatchOperation, UserRole } from "contexts/operationStateReducer";
 import { OpenInQueryView } from "hooks/useOpenInQueryView";
 import { IndexCurve } from "models/indexCurve";
 import LogObject from "models/logObject";
@@ -30,9 +31,9 @@ import { Server } from "models/server";
 import React from "react";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
+import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 import OperationType from "../../contexts/operationType";
 import DuplicateObjectModal from "../Modals/DuplicateObjectModal";
-import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
 
 export interface ObjectContextMenuProps {
   checkedObjects: ObjectOnWellbore[];
@@ -208,49 +209,50 @@ export const ObjectMenuItems = (
           </MenuItem>
         ))}
     </NestedMenuItem>,
-    <NestedMenuItem
-      key={"queryItems"}
-      label={"Query"}
-      icon="textField"
-      disabled={checkedObjects.length !== 1}
-    >
-      {[
-        <MenuItem
-          key={"openInQueryView"}
-          disabled={checkedObjects.length != 1}
-          onClick={() =>
-            openInQueryView({
-              templateObject: ObjectTypeToTemplateObject[objectType],
-              storeFunction: StoreFunction.GetFromStore,
-              wellUid: checkedObjects[0].wellUid,
-              wellboreUid: checkedObjects[0].wellboreUid,
-              objectUid: checkedObjects[0].uid
-            })
-          }
-        >
-          <StyledIcon
-            name="textField"
-            color={colors.interactive.primaryResting}
-          />
-          <Typography color={"primary"}>Open in query view</Typography>
-        </MenuItem>,
-        <MenuItem
-          key={"newObject"}
-          disabled={checkedObjects.length != 1}
-          onClick={() =>
-            openInQueryView({
-              templateObject: ObjectTypeToTemplateObject[objectType],
-              storeFunction: StoreFunction.AddToStore,
-              wellUid: checkedObjects[0].wellUid,
-              wellboreUid: checkedObjects[0].wellboreUid,
-              objectUid: uuid()
-            })
-          }
-        >
-          <StyledIcon name="add" color={colors.interactive.primaryResting} />
-          <Typography color={"primary"}>{`New ${objectType}`}</Typography>
-        </MenuItem>
-      ]}
-    </NestedMenuItem>
+    <RoleLimitedAccess requiredRole={UserRole.Advanced} key="queryItems">
+      <NestedMenuItem
+        label={"Query"}
+        icon="textField"
+        disabled={checkedObjects.length !== 1}
+      >
+        {[
+          <MenuItem
+            key={"openInQueryView"}
+            disabled={checkedObjects.length != 1}
+            onClick={() =>
+              openInQueryView({
+                templateObject: ObjectTypeToTemplateObject[objectType],
+                storeFunction: StoreFunction.GetFromStore,
+                wellUid: checkedObjects[0].wellUid,
+                wellboreUid: checkedObjects[0].wellboreUid,
+                objectUid: checkedObjects[0].uid
+              })
+            }
+          >
+            <StyledIcon
+              name="textField"
+              color={colors.interactive.primaryResting}
+            />
+            <Typography color={"primary"}>Open in query view</Typography>
+          </MenuItem>,
+          <MenuItem
+            key={"newObject"}
+            disabled={checkedObjects.length != 1}
+            onClick={() =>
+              openInQueryView({
+                templateObject: ObjectTypeToTemplateObject[objectType],
+                storeFunction: StoreFunction.AddToStore,
+                wellUid: checkedObjects[0].wellUid,
+                wellboreUid: checkedObjects[0].wellboreUid,
+                objectUid: uuid()
+              })
+            }
+          >
+            <StyledIcon name="add" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>{`New ${objectType}`}</Typography>
+          </MenuItem>
+        ]}
+      </NestedMenuItem>
+    </RoleLimitedAccess>
   ];
 };

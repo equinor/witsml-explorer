@@ -13,7 +13,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogObjectContextMenu from "components/ContextMenus/LogObjectContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import {
   CommonPanelContainer,
@@ -58,8 +60,11 @@ export default function LogsListView() {
   const {
     objects: allLogs,
     isFetching: isFetchingLogs,
-    isFetched
+    responseTime: responseTime,
+    isFetched,
+    dataUpdatedAt
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const isTimeIndexed = logType === RouterLogType.TIME;
   const logs = filterLogsByType(
     allLogs,
@@ -197,6 +202,8 @@ export default function LogsListView() {
             columns={columns}
             onSelect={onSelect}
             data={getTableData()}
+            responseTime={responseTime}
+            lastFetched={lastFetched}
             onContextMenu={onContextMenu}
             onRowSelectionChange={(rows) =>
               setSelectedRows(rows as LogObjectRow[])

@@ -10,7 +10,9 @@ import {
   SetTimeZoneAction,
   TimeZone,
   UserTheme,
-  initOperationStateReducer
+  UserRole,
+  initOperationStateReducer,
+  SetUserRoleAction
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { enableDarkModeDebug } from "debugUtils/darkModeDebug";
@@ -23,6 +25,7 @@ import {
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
   STORAGE_TIMEZONE_KEY,
+  STORAGE_USER_ROLE_KEY,
   getLocalStorageItem
 } from "tools/localStorageHelpers";
 
@@ -91,6 +94,16 @@ export const OperationStateProvider = ({
         const action: SetHotKeysEnabledAction = {
           type: OperationType.SetHotKeysEnabled,
           payload: storedHotKeysEnabled
+        };
+        dispatchOperation(action);
+      }
+      const storedUserRoles = getLocalStorageItem<UserRole>(
+        STORAGE_USER_ROLE_KEY
+      );
+      if (storedUserRoles) {
+        const action: SetUserRoleAction = {
+          type: OperationType.SetUserRole,
+          payload: storedUserRoles
         };
         dispatchOperation(action);
       }

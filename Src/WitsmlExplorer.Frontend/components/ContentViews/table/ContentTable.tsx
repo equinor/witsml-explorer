@@ -110,6 +110,8 @@ export const ContentTable = React.memo(
       showRefresh = false,
       stickyLeftColumns = 0,
       viewId,
+      responseTime,
+      lastFetched,
       downloadToCsvFileName = null,
       onRowSelectionChange,
       onFilteredRowSelectionChange,
@@ -421,6 +423,8 @@ export const ContentTable = React.memo(
             stickyLeftColumns={stickyLeftColumns}
             disableFilters={disableFilters || nested}
             disableSearchParamsFilter={disableSearchParamsFilter}
+            responseTime={responseTime}
+            lastFetched={lastFetched}
           />
         ) : null}
         <div

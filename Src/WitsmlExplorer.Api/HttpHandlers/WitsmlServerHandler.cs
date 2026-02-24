@@ -30,6 +30,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(Server))]
         public static async Task<IResult> CreateWitsmlServer(Server witsmlServer, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
         {
+            if (!ValidateUrl(witsmlServer))
+                return TypedResults.BadRequest("Not valid server URL.");
             Server inserted = await witsmlServerRepository.CreateDocumentAsync(witsmlServer);
             return TypedResults.Ok(inserted);
         }
@@ -37,8 +39,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
         [Produces(typeof(Server))]
         public static async Task<IResult> UpdateWitsmlServer(Guid witsmlServerId, Server witsmlServer, [FromServices] IDocumentRepository<Server, Guid> witsmlServerRepository)
         {
+
+            if (!ValidateUrl(witsmlServer))
+                return TypedResults.BadRequest("Not valid server URL.");
             Server updatedServer = await witsmlServerRepository.UpdateDocumentAsync(witsmlServerId, witsmlServer);
             return TypedResults.Ok(updatedServer);
+        }
+
+        private static bool ValidateUrl(Server witsmlServer)
+        {
+            var uri = witsmlServer.Url;
+            bool isValidUrl = uri?.IsAbsoluteUri == true
+                              && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+            return isValidUrl;
         }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]

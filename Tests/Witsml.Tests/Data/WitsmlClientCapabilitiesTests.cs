@@ -9,7 +9,7 @@ namespace Witsml.Tests.Data
         [Fact]
         public void ToXml_DefaultObjectWithRequiredProperties_ReturnsExpected()
         {
-            var expected = @"<capClients version=""1.4.1"" xmlns=""http://www.witsml.org/schemas/1series"">" +
+            var expected = @"<capClients version=""1.4.1"" xmlns=""http://www.witsml.org/api/141"">" +
                                   @"<capClient apiVers=""1.4.1"">" +
                                      "<schemaVersion>1.3.1.1,1.4.1.1</schemaVersion>" +
                                    "</capClient>" +
@@ -23,7 +23,7 @@ namespace Witsml.Tests.Data
         [Fact]
         public void ToXml_WithNameAndDescription_ReturnsExpected()
         {
-            var expected = @"<capClients version=""1.4.1"" xmlns=""http://www.witsml.org/schemas/1series"">" +
+            var expected = @"<capClients version=""1.4.1"" xmlns=""http://www.witsml.org/api/141"">" +
                                   @"<capClient apiVers=""1.4.1"">" +
                                      "<schemaVersion>1.3.1.1,1.4.1.1</schemaVersion>" +
                                      "<description>Just a test</description>" +
@@ -43,7 +43,7 @@ namespace Witsml.Tests.Data
         [Fact]
         public void ToXml_WithContactInformation_ReturnsExpected()
         {
-            var expected = @"<capClients version=""1.4.1"" xmlns=""http://www.witsml.org/schemas/1series"">" +
+            var expected = @"<capClients version=""1.4.1"" xmlns=""http://www.witsml.org/api/141"">" +
                                   @"<capClient apiVers=""1.4.1"">" +
                                      "<schemaVersion>1.3.1.1,1.4.1.1</schemaVersion>" +
                                      "<contact>" +

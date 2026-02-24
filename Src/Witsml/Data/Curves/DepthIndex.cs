@@ -41,7 +41,7 @@ namespace Witsml.Data.Curves
         private Index Subtract(Index that)
         {
             DepthIndex thatIndex = GetDepthFromIndex(that);
-            return HasSameUnitAs(thatIndex) ? new DepthIndex(Value - thatIndex.Value, Uom) : throw new ArgumentException("Cannot subtract depths with different types");
+            return HasSameUnitAs(thatIndex) ? new DepthIndex(Value - thatIndex.Value, Uom) : throw new ArgumentException($"Cannot subtract depths with different unit types: {Value} {Uom} - {thatIndex.Value} {thatIndex.Uom}");
         }
 
         public override int CompareTo(Index that)
@@ -49,7 +49,7 @@ namespace Witsml.Data.Curves
             DepthIndex thatDepthIndex = GetDepthFromIndex(that);
             if (!HasSameUnitAs(thatDepthIndex))
             {
-                throw new ArgumentException("Cannot compare depths with different unit types");
+                throw new ArgumentException($"Cannot compare depths with different unit types: {Value} {Uom} vs {thatDepthIndex.Value} {thatDepthIndex.Uom}");
             }
             var isEqual = Math.Abs(Value - thatDepthIndex.Value) < CommonConstants.DepthIndex.Epsilon;
             return isEqual ? 0 : Value.CompareTo(thatDepthIndex.Value);
@@ -115,7 +115,7 @@ namespace Witsml.Data.Curves
         {
             if (!index1.HasSameUnitAs(index2))
             {
-                throw new ArgumentException("Cannot subtract depths with different types");
+                throw new ArgumentException($"Cannot subtract depths with different unit types: {index1.Value} {index1.Uom} - {index2.Value} {index2.Uom}");
             }
 
             return new DepthIndex(index1.Value - index2.Value, index1.Uom);

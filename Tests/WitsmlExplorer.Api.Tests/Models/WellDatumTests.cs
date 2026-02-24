@@ -11,14 +11,15 @@ namespace WitsmlExplorer.Api.Tests.Models
     public class WellDatumTests
     {
         [Theory]
-        [InlineData("name", "code", "elevation")]
-        [InlineData("\\\\\\", "øæå", "\"")]
-        [InlineData("", "", "")]
-        [InlineData(null, null, null)]
-        public void FromWitsmlDatum_CopiesCorrectly_WhenListAndDatumExists(string name, string code, string elevation)
+        [InlineData("uid", "name", "code", "elevation")]
+        [InlineData("\\\\\\", "\\\\\\", "øæå", "\"")]
+        [InlineData("", "", "", "")]
+        [InlineData(null, null, null, null)]
+        public void FromWitsmlDatum_CopiesCorrectly_WhenListAndDatumExists(string uid, string name, string code, string elevation)
         {
             WitsmlWellDatum sourceWitsmlDatum = new()
             {
+                Uid = uid,
                 Name = name,
                 Code = code,
                 Elevation = new Witsml.Data.Measures.WitsmlMeasureWithDatum { Datum = elevation, Value = "1.0" }
@@ -28,6 +29,7 @@ namespace WitsmlExplorer.Api.Tests.Models
 
             WellDatum newWellDatum = WellDatum.FromWitsmlWellDatum(sourceWitsmlDatumList).FirstOrDefault();
 
+            Assert.Equal(newWellDatum.Uid, sourceWitsmlDatum.Uid);
             Assert.Equal(newWellDatum.Name, sourceWitsmlDatum.Name);
             Assert.Equal(newWellDatum.Code, sourceWitsmlDatum.Code);
             Assert.Equal(newWellDatum.Elevation.Datum, sourceWitsmlDatum.Elevation.Datum);

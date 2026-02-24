@@ -8,6 +8,11 @@ import { Server } from "../../models/server";
 import ComponentService from "../../services/componentService";
 import { QUERY_KEY_COMPONENTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
+import {
+  TimedResponse,
+  withQueryTiming,
+  wrapPlaceholderData
+} from "./queryTiming";
 
 export const getComponentsQueryKey = (
   serverUrl: string,
@@ -42,17 +47,20 @@ export const componentsQuery = <T extends ComponentType>(
     objectUid,
     componentType
   ),
-  queryFn: async () => {
-    const components = await ComponentService.getComponents<T>(
-      wellUid,
-      wellboreUid,
-      objectUid,
-      componentType,
-      server
-    );
-    return components;
-  },
+
+  queryFn: () =>
+    withQueryTiming(() => {
+      const components = ComponentService.getComponents<T>(
+        wellUid,
+        wellboreUid,
+        objectUid,
+        componentType,
+        server
+      );
+      return components;
+    }),
   ...options,
+  placeholderData: wrapPlaceholderData(options?.placeholderData),
   gcTime: 0,
   enabled:
     !!server &&
@@ -64,10 +72,11 @@ export const componentsQuery = <T extends ComponentType>(
 });
 
 type ObjectComponentsQueryResult<T extends ComponentType> = Omit<
-  QueryObserverResult<ComponentTypeToModel[T][], unknown>,
+  QueryObserverResult<TimedResponse<ComponentTypeToModel[T][]>, unknown>,
   "data"
 > & {
   components: ComponentTypeToModel[T][];
+  responseTime: number;
 };
 
 export const useGetComponents = <T extends ComponentType>(
@@ -78,7 +87,7 @@ export const useGetComponents = <T extends ComponentType>(
   componentType: T,
   options?: QueryOptions
 ): ObjectComponentsQueryResult<T> => {
-  const { data, ...state } = useQuery<ComponentTypeToModel[T][]>(
+  const { data, ...state } = useQuery<TimedResponse<ComponentTypeToModel[T][]>>(
     componentsQuery<T>(
       server,
       wellUid,
@@ -88,5 +97,5 @@ export const useGetComponents = <T extends ComponentType>(
       options
     )
   );
-  return { components: data, ...state };
+  return { components: data?.data, responseTime: data?.responseTime, ...state };
 };

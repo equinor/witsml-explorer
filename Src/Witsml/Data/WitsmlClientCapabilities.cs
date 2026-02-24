@@ -4,7 +4,7 @@ using Witsml.Xml;
 
 namespace Witsml.Data
 {
-    [XmlRoot("capClients", Namespace = "http://www.witsml.org/schemas/1series")]
+    [XmlRoot("capClients", Namespace = "http://www.witsml.org/api/141")]
     public class WitsmlClientCapabilitiesRoot
     {
         [XmlAttribute("version")]

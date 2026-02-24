@@ -9,7 +9,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import JobInfoContextMenu, {
   JobInfoContextMenuProps
 } from "components/ContextMenus/JobInfoContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { ReportModal } from "components/Modals/ReportModal";
 import { Button } from "components/StyledComponents/Button";
@@ -45,10 +47,7 @@ export const JobsView = (): React.ReactElement => {
   const { jobInfos, isFetching, dataUpdatedAt } = useGetJobInfo(showAll, {
     placeholderData: []
   });
-  const lastFetched = dataUpdatedAt
-    ? new Date(dataUpdatedAt).toLocaleTimeString()
-    : "";
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const [cancellingJobs, setCancellingJobs] = useState<string[]>([]);
 
   const onContextMenu = (

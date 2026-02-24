@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
+import { isUserRoleAdvanced } from "components/UserRoles.ts";
 import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 import {
   refreshObjectQuery,
@@ -34,6 +35,8 @@ export interface PanelProps {
   downloadToCsvFileName?: string;
   disableFilters?: boolean;
   disableSearchParamsFilter?: boolean;
+  responseTime?: number;
+  lastFetched?: string;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -48,6 +51,8 @@ const Panel = (props: PanelProps) => {
     table,
     viewId,
     columns,
+    responseTime,
+    lastFetched,
     expandableRows = false,
     downloadToCsvFileName = null,
     stickyLeftColumns,
@@ -55,7 +60,7 @@ const Panel = (props: PanelProps) => {
     disableSearchParamsFilter = false
   } = props;
   const {
-    operationState: { decimals, theme }
+    operationState: { decimals, theme, userRole }
   } = useOperationState();
   const { exportData, exportOptions } = useExport();
   const abortRefreshControllerRef = React.useRef<AbortController>();
@@ -179,6 +184,10 @@ const Panel = (props: PanelProps) => {
             <Icon name="download" />
           </Button>
         )}
+        {responseTime != null && isUserRoleAdvanced(userRole) && (
+          <Typography>Response time: {responseTime} ms</Typography>
+        )}
+        {lastFetched && <Typography>Last fetched: {lastFetched}</Typography>}
         {panelElements}
       </EdsProvider>
     </PanelContainer>

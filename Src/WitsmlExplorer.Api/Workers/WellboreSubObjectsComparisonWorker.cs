@@ -130,8 +130,8 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
             ?.Functions
             .Where(x => x.Name == _witsmlFunctionName)
             .Select(x => x.DataObjects);
-        var supportedObjectTypesOnSource = serverCapabilitiesOnSource.SelectMany(s => s.Select(ss => ss.Name.ToLower()));
-        var supportedObjectTypesOnTarget = serverCapabilitiesOnTarget.SelectMany(s => s.Select(ss => ss.Name.ToLower()));
+        var supportedObjectTypesOnSource = (serverCapabilitiesOnSource ?? Array.Empty<List<WitsmlFunctionDataObject>>()).SelectMany(s => s.Select(ss => ss.Name.ToLower()));
+        var supportedObjectTypesOnTarget = (serverCapabilitiesOnTarget ?? Array.Empty<List<WitsmlFunctionDataObject>>()).SelectMany(s => s.Select(ss => ss.Name.ToLower()));
         var result =
             supportedObjectTypesOnSource.Intersect(
                 supportedObjectTypesOnTarget);
@@ -171,43 +171,18 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                 .ToList();
             var targetLog = targetLogs.Logs
                 .FirstOrDefault(x => x.Uid == witsmlLog.Uid);
+
             if (job.CountLogsData)
             {
-                if (targetLog != null)
-                {
-                    if (job.CheckTimeBasedLogsData && witsmlLog.IndexType ==
-                        WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME ||
-                        job.CheckDepthBasedLogsData && witsmlLog.IndexType ==
-                        WitsmlLog.WITSML_INDEX_TYPE_MD)
-                    {
-
-                        IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
-                        {
-                            var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress * 0.9 / totalObjects); // Scale to 90% of total progress for this log
-                            progressReporter.Report(progress);
-                        });
-
-                        var countLogsData = await CountLogsData(witsmlLog,
-                            targetLog, subJobProgressReporter, cancellationToken);
-                        resultList.AddRange(countLogsData);
-                    }
-                }
+                await CountLogsDataForComparison(job, progressReporter,
+                    cancellationToken, targetLog, witsmlLog, currentIndex,
+                    totalObjects, resultList);
             }
 
             if (job.CheckLogsData)
             {
-                if (job.CheckTimeBasedLogsData && witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME || job.CheckDepthBasedLogsData && witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
-                {
-                    IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
-                    {
-                        var progress = ((double)currentIndex / totalObjects) + ((double)subJobProgress * 0.9 / totalObjects); // Scale to 90% of total progress for this log
-                        progressReporter.Report(progress);
-                    });
-                    var checkLogsData = await ChecksLogsData(witsmlLog, targetLog, subJobProgressReporter, cancellationToken);
-                    resultList.AddRange(checkLogsData);
-                }
+                await CheckLogsDataForComparison(job, progressReporter, cancellationToken, witsmlLog, currentIndex, totalObjects, targetLog, resultList);
             }
-
             var currentLogCurveInfoIndex = 0;
             var totalLogCurveInfoElements = sameLogCurves.Count;
             foreach (var logCurveInfo in sameLogCurves)
@@ -267,13 +242,54 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
                     resultList.Add(result);
                 }
                 var subProgress = (double)currentLogCurveInfoIndex / totalLogCurveInfoElements * 0.1 + 0.9; // Scale to last 10% of total progress for this log
-                var progress = ((double)currentIndex / totalObjects) + ((double)subProgress / totalObjects);
+                var progress = ((double)currentIndex / totalObjects) + (subProgress / totalObjects);
                 progressReporter.Report(progress);
                 currentLogCurveInfoIndex++;
             }
             currentIndex++;
         }
         return resultList;
+    }
+
+    private async Task CheckLogsDataForComparison(WellboreSubObjectsComparisonJob job, IProgress<double> progressReporter,
+        CancellationToken? cancellationToken, WitsmlLog witsmlLog, int currentIndex, int totalObjects, WitsmlLog targetLog,
+        List<WellboreSubObjectsComparisonItem> resultList)
+    {
+        if (job.CheckTimeBasedLogsData && witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME || job.CheckDepthBasedLogsData && witsmlLog.IndexType == WitsmlLog.WITSML_INDEX_TYPE_MD)
+        {
+            IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
+            {
+                var progress = ((double)currentIndex / totalObjects) + (subJobProgress * 0.9 / totalObjects); // Scale to 90% of total progress for this log
+                progressReporter.Report(progress);
+            });
+            var checkLogsData = await ChecksLogsData(witsmlLog, targetLog, subJobProgressReporter, cancellationToken);
+            resultList.AddRange(checkLogsData);
+        }
+    }
+
+    private async Task CountLogsDataForComparison(WellboreSubObjectsComparisonJob job, IProgress<double> progressReporter,
+        CancellationToken? cancellationToken, WitsmlLog targetLog, WitsmlLog witsmlLog, int currentIndex, int totalObjects,
+        List<WellboreSubObjectsComparisonItem> resultList)
+    {
+        if (targetLog != null)
+        {
+            if (job.CheckTimeBasedLogsData && witsmlLog.IndexType ==
+                WitsmlLog.WITSML_INDEX_TYPE_DATE_TIME ||
+                job.CheckDepthBasedLogsData && witsmlLog.IndexType ==
+                WitsmlLog.WITSML_INDEX_TYPE_MD)
+            {
+
+                IProgress<double> subJobProgressReporter = new Progress<double>(subJobProgress =>
+                {
+                    var progress = ((double)currentIndex / totalObjects) + (subJobProgress * 0.9 / totalObjects); // Scale to 90% of total progress for this log
+                    progressReporter.Report(progress);
+                });
+
+                var countLogsData = await CountLogsData(witsmlLog,
+                    targetLog, subJobProgressReporter, cancellationToken);
+                resultList.AddRange(countLogsData);
+            }
+        }
     }
 
     private async Task<List<WellboreSubObjectsComparisonItem>> CountLogsData(WitsmlLog sourceLog, WitsmlLog targetLog, IProgress<double> progressReporter, CancellationToken? cancellationToken)

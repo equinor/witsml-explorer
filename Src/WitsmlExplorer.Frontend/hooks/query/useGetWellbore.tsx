@@ -6,7 +6,7 @@ import { useGetWellbores } from "./useGetWellbores";
 
 type WellboreQueryResult = Omit<
   QueryObserverResult<Wellbore, unknown>,
-  "data" | "refetch"
+  "data" | "refetch" | "promise"
 > & {
   wellbore: Wellbore;
 };

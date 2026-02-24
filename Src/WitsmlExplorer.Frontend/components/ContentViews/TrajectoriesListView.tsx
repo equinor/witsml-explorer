@@ -6,7 +6,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TrajectoryContextMenu from "components/ContextMenus/TrajectoryContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -27,13 +29,17 @@ export default function TrajectoriesListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: trajectories } = useGetObjects(
+  const {
+    objects: trajectories,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.Trajectory
   );
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Trajectory);
 
   const onContextMenu = (
@@ -156,6 +162,8 @@ export default function TrajectoriesListView() {
         checkableRows
         showRefresh
         downloadToCsvFileName="Trajectories"
+        responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

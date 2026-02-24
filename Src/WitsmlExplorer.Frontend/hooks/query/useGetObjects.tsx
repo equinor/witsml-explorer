@@ -4,6 +4,11 @@ import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
+import {
+  TimedResponse,
+  withQueryTiming,
+  wrapPlaceholderData
+} from "./queryTiming";
 
 export const getObjectsQueryKey = (
   serverUrl: string,
@@ -28,16 +33,17 @@ export const objectsQuery = <T extends ObjectType>(
   options?: QueryOptions
 ) => ({
   queryKey: getObjectsQueryKey(server?.url, wellUid, wellboreUid, objectType),
-  queryFn: async () => {
-    const objects = await ObjectService.getObjects<T>(
-      wellUid,
-      wellboreUid,
-      objectType,
-      null,
-      server
-    );
-    return objects;
-  },
+  queryFn: () =>
+    withQueryTiming(() =>
+      ObjectService.getObjects<T>(
+        wellUid,
+        wellboreUid,
+        objectType,
+        null,
+        server
+      )
+    ),
+  placeholderData: wrapPlaceholderData(options?.placeholderData),
   ...options,
   enabled:
     !!server &&
@@ -48,10 +54,11 @@ export const objectsQuery = <T extends ObjectType>(
 });
 
 type ObjectsQueryResult<T extends ObjectType> = Omit<
-  QueryObserverResult<ObjectTypeToModel[T][], unknown>,
+  QueryObserverResult<TimedResponse<ObjectTypeToModel[T][]>, unknown>,
   "data"
 > & {
   objects: ObjectTypeToModel[T][];
+  responseTime: number;
 };
 
 export const useGetObjects = <T extends ObjectType>(
@@ -61,8 +68,12 @@ export const useGetObjects = <T extends ObjectType>(
   objectType: T,
   options?: QueryOptions
 ): ObjectsQueryResult<T> => {
-  const { data, ...state } = useQuery<ObjectTypeToModel[T][]>(
+  const { data, ...state } = useQuery<TimedResponse<ObjectTypeToModel[T][]>>(
     objectsQuery<T>(server, wellUid, wellboreUid, objectType, options)
   );
-  return { objects: data, ...state };
+  return {
+    objects: data?.data as ObjectTypeToModel[T][],
+    responseTime: data?.responseTime,
+    ...state
+  };
 };
