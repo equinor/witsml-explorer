@@ -8,6 +8,7 @@ import Nav from "components/Nav";
 import PropertiesPanel from "components/PropertiesPanel";
 import Sidebar from "components/Sidebar/Sidebar";
 import { Button } from "components/StyledComponents/Button";
+import OperationType from "contexts/operationType";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
 import { useOperationState } from "hooks/useOperationState";
 import { msalEnabled } from "msal/MsalAuthProvider";
@@ -22,6 +23,7 @@ import {
 import styled from "styled-components";
 import { Colors } from "styles/Colors";
 import { isDesktopApp } from "tools/desktopAppHelpers";
+import ReleseNotesModal from "./Modals/ReleaseNotesModal.tsx";
 
 const PageLayout = (): ReactElement => {
   const sidebarRef = useRef(null);
@@ -31,7 +33,7 @@ const PageLayout = (): ReactElement => {
   const [sidebarWidth, setSidebarWidth] = useState(316);
   const { width: documentWidth, height: documentHeight } =
     useDocumentDimensions();
-  const { operationState } = useOperationState();
+  const { operationState, dispatchOperation } = useOperationState();
   const { colors } = operationState;
 
   const startResizing = useCallback(() => {
@@ -62,6 +64,15 @@ const PageLayout = (): ReactElement => {
     },
     [isResizing]
   );
+
+  const openReleaseNotes = () => {
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <ReleseNotesModal />
+    });
+  };
+
+  const showLabels = documentWidth > 1180;
 
   useEffect(() => {
     window.addEventListener("mousemove", resize);
@@ -131,6 +142,13 @@ const PageLayout = (): ReactElement => {
               <PropertiesPanel />
             </Properties>
             {isDesktopApp() ? <DesktopVersion /> : <WebVersion />}
+            <Button
+              variant={showLabels ? "ghost" : "ghost_icon"}
+              onClick={openReleaseNotes}
+            >
+              <Icon name="explore" />
+              {"What is new?"}
+            </Button>
           </PropertyBar>
         </MainLayout>
       </div>

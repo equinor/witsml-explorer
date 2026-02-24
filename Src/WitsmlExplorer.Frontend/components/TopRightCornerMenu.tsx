@@ -22,7 +22,6 @@ import Icon from "styles/Icons";
 import { RouterLogType } from "../routes/routerConstants.ts";
 import WellboreUidMappingOverviewModal from "./Modals/WellboreUidMappingOverviewModal.tsx";
 import { RoleLimitedAccess } from "./UserRoles.ts";
-import ReleseNotesModal from "./Modals/ReleaseNotesModal.tsx";
 
 export default function TopRightCornerMenu() {
   const { dispatchOperation } = useOperationState();
@@ -81,13 +80,6 @@ export default function TopRightCornerMenu() {
     navigate(getJobsViewPath(connectedServer?.url));
   };
 
-  const openReleaseNotes = () => {
-    dispatchOperation({
-      type: OperationType.DisplayModal,
-      payload: <ReleseNotesModal />
-    });
-  };
-
   const openQueryView = () => {
     navigate(getQueryViewPath(connectedServer?.url));
   };
@@ -95,13 +87,6 @@ export default function TopRightCornerMenu() {
   const isConnected = !!connectedServer;
   return (
     <Layout>
-      <Button
-        variant={showLabels ? "ghost" : "ghost_icon"}
-        onClick={openReleaseNotes}
-      >
-        <Icon name="explore" />
-        {showLabels && "What is new?"}
-      </Button>
       {isConnected && (
         <Button
           variant={showLabels ? "ghost" : "ghost_icon"}
