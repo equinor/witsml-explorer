@@ -29,6 +29,11 @@ const ReleaseNotesModal = (): React.ReactElement => {
     background: colors.ui.backgroundLight
   };
 
+  const CellHeaderStyleDate = {
+    ...CellHeaderStyle,
+    width: "100px"
+  };
+
   return (
     <ModalDialog
       heading={"Release Notes"}
@@ -44,7 +49,9 @@ const ReleaseNotesModal = (): React.ReactElement => {
               <Table.Row>
                 <Table.Cell style={CellHeaderStyle}>Feature</Table.Cell>
                 <Table.Cell style={CellHeaderStyle}>Description</Table.Cell>
-                <Table.Cell style={CellHeaderStyle}>Release Date</Table.Cell>
+                <Table.Cell style={CellHeaderStyleDate}>
+                  Release Date
+                </Table.Cell>
               </Table.Row>
             </Table.Head>
             <StyledTableBody colors={colors}>

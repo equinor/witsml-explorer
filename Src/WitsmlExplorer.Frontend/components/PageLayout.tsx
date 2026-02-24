@@ -147,7 +147,7 @@ const PageLayout = (): ReactElement => {
               onClick={openReleaseNotes}
             >
               <Icon name="explore" />
-              {"What is new?"}
+              {"What's New"}
             </Button>
           </PropertyBar>
         </MainLayout>

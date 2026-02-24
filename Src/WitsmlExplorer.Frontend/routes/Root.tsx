@@ -21,6 +21,7 @@ import { SnackbarProvider } from "notistack";
 import { isDesktopApp } from "tools/desktopAppHelpers";
 import CompactEdsProvider from "../contexts/CompactEdsProvider";
 import { ReleaseNotesHandler } from "components/ReleaseNotesHandler";
+import { UserGroupWarningHandler } from "components/UserGroupWarningHandler";
 
 export default function Root() {
   return (
@@ -49,6 +50,7 @@ export default function Root() {
                         </SnackbarProvider>
                         <PageLayout />
                         <ReleaseNotesHandler />
+                        <UserGroupWarningHandler />
                         <ContextMenuPresenter />
                         <ModalPresenter />
                       </QueryContextProvider>

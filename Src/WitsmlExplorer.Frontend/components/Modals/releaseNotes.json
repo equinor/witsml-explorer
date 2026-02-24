@@ -1,12 +1,12 @@
 [
   {
     "feature": "User Roles",
-    "description": "There are 3 predefined groups that can be changed in Settings. User can limit what is displayed in his browser. An Expert User can see everything, for beginner is suitable role Regular User.",
-    "releasedate": "2026-1-4"
+    "description": "User roles (configurable in Settings): regular, advanced, and expert. Expert provides full access, while regular offers a simpler view for beginners.",
+    "releasedate": "2026-01-04"
   },
   {
-    "feature": "Multiple Log Selection",
-    "description": "A possibility to select logs from several Witsml server into one view.",
-    "releasedate": "2026-1-3"
+    "feature": "Multi Log Selection",
+    "description": "You can now select logs from multiple WITSML servers and display them together in a single view.",
+    "releasedate": "2026-01-03"
   }
 ]
