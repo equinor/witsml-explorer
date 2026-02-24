@@ -14,7 +14,7 @@ import { Typography } from "@equinor/eds-core-react";
 import { getNameOccurrenceSuffix } from "../../../tools/logSameNamesHelper.tsx";
 import formatDateString from "../../DateFormatter.ts";
 import { LogObjectRow } from "../../ContentViews/LogsListView.tsx";
-import { useGetMultipleObjects } from "../../../hooks/query/useGetObjects.tsx";
+import { useGetObjects } from "../../../hooks/query/useGetObjects.tsx";
 import { ObjectType } from "../../../models/objectType.ts";
 import {
   GetMultiLogWizardStepModalAction,
@@ -25,46 +25,29 @@ import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "../../Constants.tsx";
 export interface SelectLogsStepModalProps {
   targetServer: Server;
   indexType: WITSML_INDEX_TYPE;
-  wellbores: Wellbore[];
+  wellbore: Wellbore;
   onWizardFinish: (result?: MultiLogWizardResult) => void;
 }
 
 const SelectLogsStepModal = (
   props: SelectLogsStepModalProps
 ): React.ReactElement => {
-  const { targetServer, indexType, wellbores, onWizardFinish } = props;
+  const { targetServer, indexType, wellbore, onWizardFinish } = props;
   const isDepthIndex = indexType == WITSML_INDEX_TYPE_MD;
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useOperationState();
 
-  const allLogs = useGetMultipleObjects(
-    wellbores.map((wb) => {
-      return { server: targetServer, wellId: wb.wellUid, wellboreId: wb.uid };
-    }),
+  const allLogs = useGetObjects(
+    targetServer,
+    wellbore.wellUid,
+    wellbore.uid,
     ObjectType.Log
   );
 
   const isFetching = useMemo(() => {
-    return (
-      !!allLogs && allLogs.length > 0 && allLogs.some((al) => al.isFetching)
-    );
-  }, [allLogs]);
-
-  // const logs = allLogs?.filter(l => l.indexType === logType) ?? [];
-  const logs = useMemo(() => {
-    if (
-      !!allLogs &&
-      allLogs.length > 0 &&
-      !allLogs.some((al) => al.isFetching)
-    ) {
-      return allLogs.flatMap((al) =>
-        al.objects.filter((o) => o.indexType === indexType)
-      );
-    } else {
-      return [];
-    }
+    return allLogs?.isFetching ?? false;
   }, [allLogs]);
 
   const [selectedRows, setSelectedRows] = useState([]);
@@ -73,7 +56,7 @@ const SelectLogsStepModal = (
     const action = GetMultiLogWizardStepModalAction(
       {
         targetServer: targetServer,
-        wellbores: wellbores,
+        wellbore: wellbore,
         indexType: indexType,
         logObjects: selectedRows
       },
@@ -89,20 +72,6 @@ const SelectLogsStepModal = (
   };
 
   const columns: ContentTableColumn[] = [
-    ...(wellbores.length > 1
-      ? [
-          {
-            property: "wellName",
-            label: "Well Name",
-            type: ContentType.String
-          },
-          {
-            property: "wellboreName",
-            label: "Wellbore Name",
-            type: ContentType.String
-          }
-        ]
-      : []),
     { property: "name", label: "Name", type: ContentType.String },
     {
       property: "startIndex",
@@ -136,33 +105,39 @@ const SelectLogsStepModal = (
   ];
 
   const getTableData = (): LogObjectRow[] => {
-    const result = logs.map((log) => {
-      return {
-        ...log,
-        id: log.uid,
+    if (!allLogs?.objects || allLogs.objects.length === 0) {
+      return [];
+    }
 
-        wellName: log.wellName,
-        wellboreName: log.wellboreName,
-        name: log.name + getNameOccurrenceSuffix(logs, log),
-        startIndex: isDepthIndex
-          ? log.startIndex
-          : formatDateString(log.startIndex, timeZone, dateTimeFormat),
-        endIndex: isDepthIndex
-          ? log.endIndex
-          : formatDateString(log.endIndex, timeZone, dateTimeFormat),
-        dTimCreation: formatDateString(
-          log.commonData.dTimCreation,
-          timeZone,
-          dateTimeFormat
-        ),
-        dTimLastChange: formatDateString(
-          log.commonData.dTimLastChange,
-          timeZone,
-          dateTimeFormat
-        ),
-        logObject: log
-      };
-    });
+    const result = allLogs.objects
+      .filter((o) => o.indexType === indexType)
+      .map((log) => {
+        return {
+          ...log,
+          id: log.uid,
+
+          wellName: log.wellName,
+          wellboreName: log.wellboreName,
+          name: log.name + getNameOccurrenceSuffix(allLogs.objects, log),
+          startIndex: isDepthIndex
+            ? log.startIndex
+            : formatDateString(log.startIndex, timeZone, dateTimeFormat),
+          endIndex: isDepthIndex
+            ? log.endIndex
+            : formatDateString(log.endIndex, timeZone, dateTimeFormat),
+          dTimCreation: formatDateString(
+            log.commonData.dTimCreation,
+            timeZone,
+            dateTimeFormat
+          ),
+          dTimLastChange: formatDateString(
+            log.commonData.dTimLastChange,
+            timeZone,
+            dateTimeFormat
+          ),
+          logObject: log
+        };
+      });
     return result.sort((a, b) => a.name.localeCompare(b.name));
   };
 

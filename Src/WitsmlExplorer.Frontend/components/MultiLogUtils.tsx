@@ -40,7 +40,7 @@ export interface MultiLogWizardParams {
   targetServer?: Server;
   indexType?: WITSML_INDEX_TYPE;
   well?: Well;
-  wellbores?: Wellbore[];
+  wellbore?: Wellbore;
   logObjects?: LogObject[];
 }
 
@@ -62,14 +62,13 @@ export function GetMultiLogWizardStepModalAction(
     !!params &&
     !!params.indexType &&
     !!params.targetServer &&
-    !!params.wellbores &&
-    params.wellbores.length > 0
+    !!params.wellbore
   ) {
     if (!!params.logObjects && params.logObjects.length > 0) {
       const props = {
         indexType: params.indexType,
         targetServer: params.targetServer,
-        wellbores: params.wellbores,
+        wellbore: params.wellbore,
         logObjects: params.logObjects,
         onWizardFinish
       } as SelectCurvesStepModalProps;
@@ -81,7 +80,7 @@ export function GetMultiLogWizardStepModalAction(
       const props = {
         indexType: params.indexType,
         targetServer: params.targetServer,
-        wellbores: params.wellbores,
+        wellbore: params.wellbore,
         onWizardFinish
       } as SelectLogsStepModalProps;
       return {
@@ -94,7 +93,7 @@ export function GetMultiLogWizardStepModalAction(
       indexType: params.indexType,
       targetServer: params.targetServer,
       well: params.well,
-      preselectedWellbores: params.wellbores,
+      preselectedWellbore: params.wellbore,
       onWizardFinish
     } as SelectWellboreStepModalProps;
     return {

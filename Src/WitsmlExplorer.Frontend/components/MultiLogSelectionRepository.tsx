@@ -99,6 +99,7 @@ export default class MultiLogSelectionRepository {
               ci.serverId == v.serverId &&
               ci.wellId == v.wellId &&
               ci.wellboreId == v.wellboreId &&
+              ci.logUid == v.logUid &&
               ci.mnemonic == v.mnemonic
           )
       );

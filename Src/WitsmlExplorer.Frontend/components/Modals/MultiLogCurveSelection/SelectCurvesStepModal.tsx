@@ -14,7 +14,7 @@ import {
 import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
 import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
 import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
-import { useGetMultipleLocalPrioritizedCurves } from "../../../hooks/query/useGetLocalPrioritizedCurves.tsx";
+import { useGetLocalPrioritizedCurves } from "../../../hooks/query/useGetLocalPrioritizedCurves.tsx";
 import { useGetUniversalPrioritizedCurves } from "../../../hooks/query/useGetUniversalPrioritizedCurves.tsx";
 import {
   MultiLogSelectionCurveInfo,
@@ -30,7 +30,7 @@ import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 export interface SelectCurvesStepModalProps {
   targetServer: Server;
   indexType: WITSML_INDEX_TYPE;
-  wellbores: Wellbore[];
+  wellbore: Wellbore;
   logObjects: LogObject[];
   onWizardFinish: (result?: MultiLogWizardResult) => void;
 }
@@ -38,17 +38,16 @@ export interface SelectCurvesStepModalProps {
 const SelectCurvesStepModal = (
   props: SelectCurvesStepModalProps
 ): React.ReactElement => {
-  const { targetServer, indexType, wellbores, logObjects, onWizardFinish } =
+  const { targetServer, indexType, wellbore, logObjects, onWizardFinish } =
     props;
   const {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat, theme }
   } = useOperationState();
   const { curveThreshold } = useCurveThreshold();
-  const allLocalPrioritizedCurves = useGetMultipleLocalPrioritizedCurves(
-    wellbores.map((wb) => {
-      return { wellUid: wb.wellUid, wellboreUid: wb.uid };
-    })
+  const allLocalPrioritizedCurves = useGetLocalPrioritizedCurves(
+    wellbore.wellUid,
+    wellbore.uid
   );
   const {
     universalPrioritizedCurves,
@@ -67,11 +66,7 @@ const SelectCurvesStepModal = (
   const [isFetchingLogs, setIsFetchingLogs] = useState<boolean>(true);
 
   const isFetchingLocalPrioritizedCurves: boolean = useMemo(() => {
-    return (
-      !!allLocalPrioritizedCurves &&
-      allLocalPrioritizedCurves.length > 0 &&
-      allLocalPrioritizedCurves.some((al) => al.isFetching)
-    );
+    return allLocalPrioritizedCurves?.isFetching ?? false;
   }, [allLocalPrioritizedCurves]);
 
   const allPrioritizedCurves: string[] = useMemo(() => {
@@ -84,12 +79,8 @@ const SelectCurvesStepModal = (
       result.push(...universalPrioritizedCurves);
     }
 
-    if (
-      !isFetchingLocalPrioritizedCurves &&
-      !!allLocalPrioritizedCurves &&
-      allLocalPrioritizedCurves.length > 0
-    ) {
-      result.push(...allLocalPrioritizedCurves.flatMap((ac) => ac.objects));
+    if (!isFetchingLocalPrioritizedCurves && !!allLocalPrioritizedCurves) {
+      result.push(...allLocalPrioritizedCurves.localPrioritizedCurves);
     }
     return result;
   }, [isFetchingLocalPrioritizedCurves, isFetchingUniversalPrioritizedCurves]);
@@ -104,42 +95,33 @@ const SelectCurvesStepModal = (
 
   useEffect(() => {
     const getMnemonics = async () => {
-      let fetchingCount = wellbores.length;
       let allMnemonics: MultiLogCurveInfo[] = [];
-      for (const wellbore of wellbores) {
-        const logs = logObjects.filter(
-          (lo) =>
-            lo.wellboreUid == wellbore.uid && lo.wellUid == wellbore.wellUid
+      const logs = logObjects.filter(
+        (lo) => lo.wellboreUid == wellbore.uid && lo.wellUid == wellbore.wellUid
+      );
+
+      if (!!logs && logs.length > 0) {
+        const mnemonics = await LogObjectService.getMultiLogsCurveInfo(
+          wellbore.wellUid,
+          wellbore.uid,
+          logs.map((l) => l.uid),
+          new AbortController().signal,
+          targetServer
         );
 
-        if (!!logs && logs.length > 0) {
-          const mnemonics = await LogObjectService.getMultiLogsCurveInfo(
-            wellbore.wellUid,
-            wellbore.uid,
-            logs.map((l) => l.uid),
-            new AbortController().signal,
-            targetServer
+        if (mnemonics?.length > 0) {
+          const filteredMnemonics = mnemonics.filter(
+            (m) =>
+              m.mnemonic.toLowerCase() !==
+              logs.find((l) => l.uid == m.logUid).indexCurve.toLowerCase()
           );
-
-          if (mnemonics?.length > 0) {
-            const filteredMnemonics = mnemonics.filter(
-              (m) =>
-                m.mnemonic.toLowerCase() !==
-                logs.find((l) => l.uid == m.logUid).indexCurve.toLowerCase()
-            );
-            if (filteredMnemonics?.length > 0) {
-              allMnemonics = allMnemonics.concat(...filteredMnemonics);
-            }
+          if (filteredMnemonics?.length > 0) {
+            allMnemonics = allMnemonics.concat(...filteredMnemonics);
           }
-
-          fetchingCount--;
-          if (fetchingCount < 1) {
-            setLogCurveInfoList(allMnemonics);
-            setIsFetchingLogs(false);
-          }
-        } else {
-          fetchingCount--;
         }
+
+        setLogCurveInfoList(allMnemonics);
+        setIsFetchingLogs(false);
       }
     };
     getMnemonics();

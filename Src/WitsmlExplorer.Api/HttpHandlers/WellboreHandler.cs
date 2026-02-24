@@ -22,5 +22,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             return TypedResults.Ok(await wellboreService.GetWellbore(wellUid, wellboreUid));
         }
+
+        [Produces(typeof(Wellbore))]
+        public static async Task<IResult> GetWellboreByName(string wellboreName, IWellboreService wellboreService)
+        {
+            return TypedResults.Ok(await wellboreService.GetWellboreByName(wellboreName));
+        }
     }
 }

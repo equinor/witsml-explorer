@@ -31,6 +31,27 @@ namespace WitsmlExplorer.Api.Query
                 }.AsItemInList()
             };
         }
+        public static WitsmlWellbores GetWitsmlWellboreByName(string wellboreName)
+        {
+            return new WitsmlWellbores
+            {
+                Wellbores = new WitsmlWellbore
+                {
+                    Uid = "",
+                    UidWell = "",
+                    Name = wellboreName,
+                    NameWell = "",
+                    TypeWellbore = "",
+                    StatusWellbore = "",
+                    IsActive = "",
+                    CommonData = new WitsmlCommonData()
+                    {
+                        DTimCreation = "",
+                        DTimLastChange = ""
+                    }
+                }.AsItemInList()
+            };
+        }
 
         public static WitsmlWellbores GetWitsmlWellboreByUid(string wellUid, string wellboreUid)
         {

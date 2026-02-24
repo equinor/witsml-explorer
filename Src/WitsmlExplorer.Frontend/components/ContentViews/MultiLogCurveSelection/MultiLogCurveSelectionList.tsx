@@ -34,6 +34,7 @@ interface MultiLogCurveSelectionListProps {
   indexType: WITSML_INDEX_TYPE;
   onIndexTypeChange: (indexType: WITSML_INDEX_TYPE) => void;
   onAdd: () => void;
+  onLoadGlobalMnemonics: (selectedRows: LogCurveInfoRow[]) => void;
   onRemoveAll: () => void;
   onRefresh: () => void;
   onRemoveSelected: (selectedRows: LogCurveInfoRow[]) => void;
@@ -50,6 +51,7 @@ const MultiLogCurveSelectionList = (
     indexType,
     onIndexTypeChange,
     onAdd,
+    onLoadGlobalMnemonics,
     onRemoveAll,
     onRefresh,
     onRemoveSelected,
@@ -224,6 +226,15 @@ const MultiLogCurveSelectionList = (
         }
         colors={colors}
       />
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="loadGlobalMnemonicsPanel">
+      <Button
+        disabled={selectedRows?.length < 1}
+        onClick={() => onLoadGlobalMnemonics(selectedRows)}
+      >
+        <Icon name="addCircleOutlined" />
+        Load Global Mnemonics
+      </Button>
     </CommonPanelContainer>,
     <CommonPanelContainer key="addPanel">
       <Button onClick={onAdd}>

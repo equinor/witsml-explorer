@@ -33,6 +33,7 @@ namespace WitsmlExplorer.Api
             app.MapGet("/objects/{objectType}/{objectProperty}/{objectPropertyValue}", ObjectHandler.GetObjectsWithParamByType, useOAuth2);
 
             app.MapGet("/wellbores", WellboreHandler.GetWellbores, useOAuth2);
+            app.MapGet("/wellbores/name/{wellboreName}", WellboreHandler.GetWellboreByName, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores", WellboreHandler.GetWellbores, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}", WellboreHandler.GetWellbore, useOAuth2);
             app.MapGet("/wells/{wellUid}/wellbores/{wellboreUid}/idonly/{objectType}", ObjectHandler.GetObjectsIdOnly, useOAuth2);
@@ -52,6 +53,8 @@ namespace WitsmlExplorer.Api
             app.MapPost("/uidmapping/deletemapping/", UidMappingHandler.DeleteUidMapping, useOAuth2);
             app.MapDelete("/uidmapping/deletemappings/well/{wellUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);
             app.MapDelete("/uidmapping/deletemappings/well/{wellUid}/wellbore/{wellboreUid}", UidMappingHandler.DeleteUidMappings, useOAuth2);
+
+            app.MapPost("/mnemonicmappings/", MnemonicsMappingHandler.GetMnemonicMappings, useOAuth2);
 
             app.MapGet("/agent-settings", AgentSettingsHandler.GetAgentSettings, useOAuth2);
             app.MapPost("/agent-settings", AgentSettingsHandler.CreateAgentSettings, useOAuth2);
