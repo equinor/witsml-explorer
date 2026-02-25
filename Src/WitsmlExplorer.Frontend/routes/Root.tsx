@@ -7,7 +7,9 @@ import { HotKeyHandler } from "components/HotKeyHandler";
 import ModalPresenter from "components/Modals/ModalPresenter";
 import PageLayout from "components/PageLayout";
 import RefreshHandler from "components/RefreshHandler";
+import { ReleaseNotesHandler } from "components/ReleaseNotesHandler";
 import { Snackbar } from "components/Snackbar";
+import { UserGroupWarningHandler } from "components/UserGroupWarningHandler";
 import { MuiThemeProvider } from "contexts/MuiThemeProvider";
 import { ConnectedServerProvider } from "contexts/connectedServerContext";
 import { CurveThresholdProvider } from "contexts/curveThresholdContext";
@@ -20,8 +22,6 @@ import { authRequest, msalEnabled, msalInstance } from "msal/MsalAuthProvider";
 import { SnackbarProvider } from "notistack";
 import { isDesktopApp } from "tools/desktopAppHelpers";
 import CompactEdsProvider from "../contexts/CompactEdsProvider";
-import { ReleaseNotesHandler } from "components/ReleaseNotesHandler";
-import { UserGroupWarningHandler } from "components/UserGroupWarningHandler";
 
 export default function Root() {
   return (
@@ -45,7 +45,7 @@ export default function Root() {
                         {isDesktopApp() && <DesktopAppEventHandler />}
                         <HotKeyHandler />
                         <RefreshHandler />
-                        <SnackbarProvider>
+                        <SnackbarProvider autoHideDuration={7500}>
                           <Snackbar />
                         </SnackbarProvider>
                         <PageLayout />
