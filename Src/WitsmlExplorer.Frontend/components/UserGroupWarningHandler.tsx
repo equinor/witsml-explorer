@@ -11,7 +11,8 @@ import {
 
 export function UserGroupWarningHandler(): ReactElement {
   const {
-    operationState: { userRole }
+    operationState: { userRole },
+    isOperationStateHydrated
   } = useOperationState();
 
   const getShowUserGroupWarning = (): boolean => {
@@ -31,11 +32,13 @@ export function UserGroupWarningHandler(): ReactElement {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      const showUserWarning = getShowUserGroupWarning();
+    if (!isOperationStateHydrated) return;
 
-      if (userRole == UserRole.Regular && showUserWarning) {
-        setShowUserGroupWarning(false);
+    const showUserWarning = getShowUserGroupWarning();
+
+    if (userRole == UserRole.Regular && showUserWarning) {
+      setShowUserGroupWarning(false);
+      setTimeout(() => {
         NotificationService.Instance.snackbarDispatcher.dispatch({
           serverUrl: null,
           message:
@@ -43,9 +46,9 @@ export function UserGroupWarningHandler(): ReactElement {
           isSuccess: true,
           severity: "warning"
         });
-      }
-    }, 500);
-  }, []);
+      }, 500);
+    }
+  }, [isOperationStateHydrated, userRole]);
 
   return null;
 }
