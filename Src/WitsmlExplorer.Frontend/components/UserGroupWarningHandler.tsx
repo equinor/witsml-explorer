@@ -31,18 +31,20 @@ export function UserGroupWarningHandler(): ReactElement {
   };
 
   useEffect(() => {
-    const showUserWarning = getShowUserGroupWarning();
+    setTimeout(() => {
+      const showUserWarning = getShowUserGroupWarning();
 
-    if (userRole == UserRole.Regular && showUserWarning) {
-      setShowUserGroupWarning(false);
-      NotificationService.Instance.snackbarDispatcher.dispatch({
-        serverUrl: null,
-        message:
-          "Your account is currently set to the Regular User role, which has limited access. You can change this in Settings.",
-        isSuccess: true,
-        severity: "warning"
-      });
-    }
+      if (userRole == UserRole.Regular && showUserWarning) {
+        setShowUserGroupWarning(false);
+        NotificationService.Instance.snackbarDispatcher.dispatch({
+          serverUrl: null,
+          message:
+            "Your account is currently set to the Regular User role, which has limited access. You can change this in Settings.",
+          isSuccess: true,
+          severity: "warning"
+        });
+      }
+    }, 500);
   }, []);
 
   return null;
