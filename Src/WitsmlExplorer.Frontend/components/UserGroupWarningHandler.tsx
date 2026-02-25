@@ -1,48 +1,47 @@
 import { useOperationState } from "hooks/useOperationState";
 import { ReactElement, useEffect } from "react";
 
+import { UserRole } from "contexts/operationStateReducer.tsx";
 import NotificationService from "services/notificationService.ts";
 import {
   getLocalStorageItem,
   setLocalStorageItem,
-  STORAGE_VIEW_USER_GROUP_WARNING_KEY
+  STORAGE_SHOW_USER_GROUP_WARNING_KEY
 } from "tools/localStorageHelpers";
-import { UserRole } from "contexts/operationStateReducer.tsx";
 
 export function UserGroupWarningHandler(): ReactElement {
   const {
     operationState: { userRole }
   } = useOperationState();
 
-  const getUserGroupWarning = (): boolean => {
-    const userGroupWarning = getLocalStorageItem<boolean>(
-      STORAGE_VIEW_USER_GROUP_WARNING_KEY,
-      { defaultValue: false }
+  const getShowUserGroupWarning = (): boolean => {
+    const showUserGroupWarning = getLocalStorageItem<boolean>(
+      STORAGE_SHOW_USER_GROUP_WARNING_KEY,
+      { defaultValue: true, useSessionStorage: true }
     );
-    return userGroupWarning;
+    return showUserGroupWarning;
   };
 
-  const setUserGroupWarning = (userGroupWarning: boolean) => {
+  const setShowUserGroupWarning = (showUserGroupWarning: boolean) => {
     setLocalStorageItem<boolean>(
-      STORAGE_VIEW_USER_GROUP_WARNING_KEY,
-      userGroupWarning
+      STORAGE_SHOW_USER_GROUP_WARNING_KEY,
+      showUserGroupWarning,
+      { useSessionStorage: true }
     );
   };
 
   useEffect(() => {
-    const showUserWarning = getUserGroupWarning();
+    const showUserWarning = getShowUserGroupWarning();
 
-    if (userRole == UserRole.Regular) {
-      if (showUserWarning) {
-        NotificationService.Instance.snackbarDispatcher.dispatch({
-          serverUrl: null,
-          message:
-            "User has assigned an user role  with limited access - Regular User. You can change it in Settings.",
-          isSuccess: true,
-          severity: "warning"
-        });
-        setUserGroupWarning(false);
-      } else setUserGroupWarning(true);
+    if (userRole == UserRole.Regular && showUserWarning) {
+      setShowUserGroupWarning(false);
+      NotificationService.Instance.snackbarDispatcher.dispatch({
+        serverUrl: null,
+        message:
+          "Your account is currently set to the Regular User role, which has limited access. You can change this in Settings.",
+        isSuccess: true,
+        severity: "warning"
+      });
     }
   }, []);
 
