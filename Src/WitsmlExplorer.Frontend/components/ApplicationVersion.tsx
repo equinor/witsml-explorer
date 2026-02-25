@@ -109,7 +109,7 @@ function DesktopUpdateStatus() {
       <>
         <Icon
           name="newAlert"
-          size={24}
+          size={18}
           color={colors.interactive.warningResting}
         />
         <Typography
@@ -156,7 +156,7 @@ function DesktopUpdateStatus() {
       <>
         <Icon
           name="newAlert"
-          size={24}
+          size={18}
           color={colors.interactive.warningResting}
         />
         <Typography
@@ -192,7 +192,7 @@ function DesktopUpdateStatus() {
       <>
         <Icon
           name="newAlert"
-          size={24}
+          size={18}
           color={colors.interactive.warningResting}
         />
         <Typography
@@ -213,5 +213,5 @@ const DesktopVersionContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 2px;
 `;
