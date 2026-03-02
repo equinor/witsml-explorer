@@ -70,6 +70,7 @@ const GlobalMnemonicsLoadingModal = (
     const multiLogSelectionCurveInfos: MultiLogSelectionCurveInfo[] = [];
 
     setIsFetchingMetadata(true);
+
     for (const row of selectedRows) {
       for (const mnemonicToLoad of mnemonicsToLoad) {
         const server = row.server;
@@ -120,13 +121,13 @@ const GlobalMnemonicsLoadingModal = (
               targetWellbore.uid,
               ObjectType.Log,
               null,
-              row.server
+              server
             );
 
             for (const log of logs) {
               for (const mnemonicMapping of mnemonicsMappings.mappings) {
                 multiLogSelectionCurveInfos.push({
-                  serverId: row.server.id,
+                  serverId: server.id,
                   wellId: targetWellbore.wellUid,
                   wellboreId: targetWellbore.uid,
                   logUid: log.uid,

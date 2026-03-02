@@ -29,10 +29,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
             {
                 return TypedResults.Ok(result);
             }
-            else
-            {
-                return TypedResults.NotFound();
-            }
+
+            return TypedResults.NotFound();
         }
 
         private static bool ValidateQuery(MnemonicsMappingsQuery query)

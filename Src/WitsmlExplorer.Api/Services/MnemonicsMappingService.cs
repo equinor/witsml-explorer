@@ -54,11 +54,13 @@ namespace WitsmlExplorer.Api.Services
                 {
                     result = ExtractMnemonicsMappingsQueryResult(globalMappings);
                 }
+                else
+                {
+                    var globalMnemonics = globalMappings.Select(gm => gm.GlobalMnemonicName);
+                    var vendorMappings = await _mappingRepository.GetDocumentsAsync(d => globalMnemonics.Any(gm => gm.Equals(d.GlobalMnemonicName, StringComparison.OrdinalIgnoreCase)));
 
-                var globalMnemonics = globalMappings.Select(gm => gm.GlobalMnemonicName);
-                var vendorMappings = await _mappingRepository.GetDocumentsAsync(d => globalMnemonics.Any(gm => gm.Equals(d.GlobalMnemonicName, StringComparison.OrdinalIgnoreCase)));
-
-                result = ExtractMnemonicsMappingsQueryResult(vendorMappings);
+                    result = ExtractMnemonicsMappingsQueryResult(vendorMappings);
+                }
             }
 
             return result;
