@@ -38,6 +38,7 @@ import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
 import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
 import { useParams } from "react-router-dom";
 import { RouterLogType } from "../../../routes/routerConstants.ts";
+import GlobalMnemonicsLoadingModal from "../../Modals/MultiLogCurveSelection/GlobalMnemonicsLoadingModal.tsx";
 
 export default function MultiLogCurveSelectionView() {
   const { dispatchOperation } = useOperationState();
@@ -258,6 +259,26 @@ export default function MultiLogCurveSelectionView() {
     dispatchOperation(action);
   };
 
+  const onLoadGlobalMnemonics = (selectedRows: LogCurveInfoRow[]) => {
+    const mnemonicsToLoad: { wellboreName: string; mnemonicName: string }[] =
+      selectedRows.map((row: LogCurveInfoRow) => {
+        return {
+          wellboreName: row.wellboreName,
+          mnemonicName: row.mnemonic
+        };
+      });
+
+    const modalProps = {
+      indexType: indexTypeValue,
+      mnemonicsToLoad: mnemonicsToLoad
+    };
+
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <GlobalMnemonicsLoadingModal {...modalProps} />
+    });
+  };
+
   const onRemoveAll = () => {
     const confirmation = (
       <ConfirmModal
@@ -378,6 +399,7 @@ export default function MultiLogCurveSelectionView() {
           indexType={indexTypeValue}
           onIndexTypeChange={onIndexTypeChange}
           onAdd={onAdd}
+          onLoadGlobalMnemonics={onLoadGlobalMnemonics}
           onRemoveAll={onRemoveAll}
           onRefresh={onRefresh}
           onRemoveSelected={onRemoveSelected}

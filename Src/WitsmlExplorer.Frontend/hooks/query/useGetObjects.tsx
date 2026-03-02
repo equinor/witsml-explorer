@@ -1,8 +1,4 @@
-import {
-  QueryObserverResult,
-  useQueries,
-  useQuery
-} from "@tanstack/react-query";
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { ObjectType, ObjectTypeToModel } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
@@ -56,23 +52,6 @@ export const objectsQuery = <T extends ObjectType>(
     !!objectType &&
     !(options?.enabled === false)
 });
-
-export const useGetMultipleObjects = <T extends ObjectType>(
-  wellComplexIds: { server: Server; wellId: string; wellboreId: string }[],
-  objectType: T
-): { objects: ObjectTypeToModel[T][]; isFetching: boolean }[] => {
-  const result = useQueries({
-    queries: wellComplexIds?.map(({ server, wellId, wellboreId }) =>
-      objectsQuery<T>(server, wellId, wellboreId, objectType)
-    )
-  });
-  return result.map((r) => {
-    return {
-      objects: r.data?.data as ObjectTypeToModel[T][],
-      isFetching: r.isFetching
-    };
-  });
-};
 
 type ObjectsQueryResult<T extends ObjectType> = Omit<
   QueryObserverResult<TimedResponse<ObjectTypeToModel[T][]>, unknown>,

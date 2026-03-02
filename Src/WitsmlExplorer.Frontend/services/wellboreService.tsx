@@ -42,4 +42,22 @@ export default class WellboreService {
       throwError(response.status, message);
     }
   }
+
+  public static async getWellboreByName(
+    wellboreName: string,
+    abortSignal?: AbortSignal,
+    server?: Server
+  ): Promise<Wellbore> {
+    const response = await ApiClient.get(
+      `/api/wellbores/name/${encodeURIComponent(wellboreName)}`,
+      abortSignal,
+      server
+    );
+    if (response.ok) {
+      return response.json().catch(() => null);
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      throwError(response.status, message);
+    }
+  }
 }
