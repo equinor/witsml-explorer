@@ -1,7 +1,7 @@
 import UserCredentialsModal from "components/Modals/UserCredentialsModal";
 import OperationType from "contexts/operationType";
 import { Dispatch, ReactElement, useReducer } from "react";
-import { Colors, light } from "styles/Colors";
+import { Colors, dark } from "styles/Colors";
 
 export enum UserTheme {
   Compact = "compact",
@@ -132,7 +132,7 @@ export const EMPTY_CONTEXT_MENU: ContextMenu = {
   position: { mouseX: null, mouseY: null }
 };
 
-const Light: Colors = light;
+const Dark: Colors = dark;
 
 export const initOperationStateReducer = (): [
   OperationState,
@@ -142,9 +142,9 @@ export const initOperationStateReducer = (): [
     contextMenu: EMPTY_CONTEXT_MENU,
     progressIndicatorValue: 0,
     modals: [],
-    theme: UserTheme.SemiCompact,
+    theme: UserTheme.Compact,
     timeZone: TimeZone.Raw,
-    colors: Light,
+    colors: Dark,
     dateTimeFormat: DateTimeFormat.Raw,
     decimals: DecimalPreference.Raw,
     hotKeysEnabled: false,
