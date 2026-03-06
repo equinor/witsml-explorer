@@ -133,27 +133,29 @@ namespace WitsmlExplorer.Api.Workers.Modify
                 originalLogCurveInfo.Mnemonic = job.LogCurveInfo.Mnemonic;
                 originalLogCurveInfo.Uid = job.LogCurveInfo.Mnemonic;
             }
-
-            if (originalLogCurveInfo.SensorOffset == null && !string.IsNullOrEmpty(job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo.InvariantCulture)))
+            if (job.LogCurveInfo.SensorOffset != null)
             {
-                originalLogCurveInfo.SensorOffset = new WitsmlLengthMeasure()
+                if (originalLogCurveInfo.SensorOffset == null && !string.IsNullOrEmpty(job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo.InvariantCulture)))
                 {
-                    Value =
-                        job.LogCurveInfo.SensorOffset.Value.ToString(
-                            CultureInfo.InvariantCulture),
-                    Uom = job.LogCurveInfo.SensorOffset.Uom
-                };
-            }
-            else if (originalLogCurveInfo.SensorOffset!.Value !=
-                     job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo
-                         .InvariantCulture) || originalLogCurveInfo.SensorOffset!.Uom !=
-                     job.LogCurveInfo.SensorOffset.Uom)
-            {
-                originalLogCurveInfo.SensorOffset.Value =
-                    job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo
-                        .InvariantCulture);
-                originalLogCurveInfo.SensorOffset.Uom =
-                    job.LogCurveInfo.SensorOffset.Uom;
+                    originalLogCurveInfo.SensorOffset = new WitsmlLengthMeasure()
+                    {
+                        Value =
+                            job.LogCurveInfo.SensorOffset.Value.ToString(
+                                CultureInfo.InvariantCulture),
+                        Uom = job.LogCurveInfo.SensorOffset.Uom
+                    };
+                }
+                else if (originalLogCurveInfo.SensorOffset!.Value !=
+                         job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo
+                             .InvariantCulture) || originalLogCurveInfo.SensorOffset!.Uom !=
+                         job.LogCurveInfo.SensorOffset.Uom)
+                {
+                    originalLogCurveInfo.SensorOffset.Value =
+                        job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo
+                            .InvariantCulture);
+                    originalLogCurveInfo.SensorOffset.Uom =
+                        job.LogCurveInfo.SensorOffset.Uom;
+                }
             }
 
             originalLogCurveInfo.Unit = job.LogCurveInfo.Unit;
