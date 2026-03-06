@@ -140,6 +140,7 @@ export default function TopRightCornerMenu() {
           {showLabels && "Multiple Log Selection"}
         </Button>
       </RoleLimitedAccess>
+
       <Button
         variant={showLabels ? "ghost" : "ghost_icon"}
         onClick={openSettingsMenu}

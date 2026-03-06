@@ -7,7 +7,9 @@ import { HotKeyHandler } from "components/HotKeyHandler";
 import ModalPresenter from "components/Modals/ModalPresenter";
 import PageLayout from "components/PageLayout";
 import RefreshHandler from "components/RefreshHandler";
+import { ReleaseNotesHandler } from "components/ReleaseNotesHandler";
 import { Snackbar } from "components/Snackbar";
+import { UserGroupWarningHandler } from "components/UserGroupWarningHandler";
 import { MuiThemeProvider } from "contexts/MuiThemeProvider";
 import { ConnectedServerProvider } from "contexts/connectedServerContext";
 import { CurveThresholdProvider } from "contexts/curveThresholdContext";
@@ -43,10 +45,12 @@ export default function Root() {
                         {isDesktopApp() && <DesktopAppEventHandler />}
                         <HotKeyHandler />
                         <RefreshHandler />
-                        <SnackbarProvider>
+                        <SnackbarProvider autoHideDuration={7500}>
                           <Snackbar />
                         </SnackbarProvider>
                         <PageLayout />
+                        <ReleaseNotesHandler />
+                        <UserGroupWarningHandler />
                         <ContextMenuPresenter />
                         <ModalPresenter />
                       </QueryContextProvider>

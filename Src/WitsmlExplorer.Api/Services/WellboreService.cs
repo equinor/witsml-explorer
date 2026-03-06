@@ -15,6 +15,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IWellboreService
     {
         Task<Wellbore> GetWellbore(string wellUid, string wellboreUid);
+        Task<Wellbore> GetWellboreByName(string wellboreName);
         Task<IList<Wellbore>> GetWellbores(string wellUid = "");
     }
 
@@ -31,6 +32,20 @@ namespace WitsmlExplorer.Api.Services
             return witsmlWellbore == null
                 ? null
                 : FromWitsml(witsmlWellbore);
+        }
+
+        public async Task<Wellbore> GetWellboreByName(string wellboreName)
+        {
+            return await MeasurementHelper.MeasureExecutionTimeAsync(async (timeMeasurer) =>
+            {
+                WitsmlWellbores query = WellboreQueries.GetWitsmlWellboreByName(wellboreName);
+                WitsmlWellbores result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+                Wellbore wellbore = result.Wellbores
+                    .Select(FromWitsml)
+                    .OrderBy(wellbore => wellbore.Name).FirstOrDefault();
+                timeMeasurer.LogMessage = executionTime => $"Fetched wellbore {wellbore.Name} in {executionTime} ms.";
+                return wellbore;
+            });
         }
 
         public async Task<IList<Wellbore>> GetWellbores(string wellUid = "")

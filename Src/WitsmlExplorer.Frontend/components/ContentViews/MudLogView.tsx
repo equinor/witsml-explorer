@@ -8,6 +8,7 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import GeologyIntervalContextMenu, {
   GeologyIntervalContextMenuProps
 } from "components/ContextMenus/GeologyIntervalContextMenu";
+import { formatTimeWithOffset } from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -43,14 +44,18 @@ export interface GeologyIntervalRow extends ContentTableRow {
 }
 
 export default function MudLogView() {
-  const { dispatchOperation } = useOperationState();
+  const {
+    dispatchOperation,
+    operationState: { timeZone }
+  } = useOperationState();
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const {
     object: mudLog,
     isFetching: isFetchingMudLog,
     isFetched: isFetchedMudLog,
-    responseTime: responseTimeObject
+    responseTime: responseTimeObject,
+    dataUpdatedAt: dataUpdatedAtObject
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -62,7 +67,8 @@ export default function MudLogView() {
   const {
     components: geologyIntervals,
     isFetching: isFetchingGeologyIntervals,
-    responseTime: responseTimeComponents
+    responseTime: responseTimeComponents,
+    dataUpdatedAt: dataUpdatedAtComponents
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -76,6 +82,11 @@ export default function MudLogView() {
   const responseTime = isFetching
     ? 0
     : Math.max(responseTimeObject, responseTimeComponents);
+  const dataUpdatedAt = Math.max(
+    dataUpdatedAtObject ?? 0,
+    dataUpdatedAtComponents ?? 0
+  );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
 
@@ -169,6 +180,7 @@ export default function MudLogView() {
         showRefresh
         downloadToCsvFileName={`MudLog_${mudLog?.name}`}
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     </>
   );

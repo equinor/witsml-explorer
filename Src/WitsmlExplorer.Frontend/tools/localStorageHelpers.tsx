@@ -20,34 +20,40 @@ export const STORAGE_CONTENTTABLE_WIDTH_KEY = "-widths";
 export const STORAGE_CONTENTTABLE_HIDDEN_KEY = "-hidden";
 export const STORAGE_CONTENTTABLE_ORDER_KEY = "-ordering";
 export const STORAGE_USER_ROLE_KEY = "userRole";
+export const STORAGE_LAST_VIEWED_FEATURE_KEY = "lastViewedFeature";
+export const STORAGE_SHOW_USER_GROUP_WARNING_KEY = "showUserGroupWarning";
 
 export const getLocalStorageItem = <T,>(
   key: string,
   options?: StorageOptions<T>
 ): T | null => {
-  const { defaultValue, valueVerifier } = options || {};
+  const { defaultValue, valueVerifier, useSessionStorage } = options || {};
+  const storageName = getStorageName(useSessionStorage);
   try {
     if (typeof window !== "undefined" && key) {
-      const item = localStorage.getItem(key);
+      const item = getStorage(useSessionStorage).getItem(key);
       const parsedItem = item ? JSON.parse(item) : null;
       if (valueVerifier) {
-        return valueVerifier(parsedItem) ? parsedItem : defaultValue || null;
+        return valueVerifier(parsedItem) ? parsedItem : defaultValue ?? null;
       }
-      return parsedItem || defaultValue || null;
+      return parsedItem ?? defaultValue ?? null;
     }
   } catch (error) {
     if (error instanceof SyntaxError) {
       console.warn(
-        `Error parsing localStorage item for key “${key}”. Removing the item from localStorage as the type might have changed.`,
+        `Error parsing ${storageName} item for key “${key}”. Removing the item from ${storageName} as the type might have changed.`,
         error
       );
-      removeLocalStorageItem(key);
+      removeLocalStorageItem(key, options);
     } else {
       // disregard unavailable local storage
-      console.warn(`Error getting localStorage item for key “${key}”:`, error);
+      console.warn(
+        `Error getting ${storageName} item for key “${key}”:`,
+        error
+      );
     }
   }
-  return defaultValue || null;
+  return defaultValue ?? null;
 };
 
 export const setLocalStorageItem = <T,>(
@@ -55,28 +61,37 @@ export const setLocalStorageItem = <T,>(
   value: T,
   options?: StorageOptions<T>
 ): void => {
-  const { storageTransformer } = options || {};
+  const { storageTransformer, useSessionStorage } = options || {};
+  const storageName = getStorageName(useSessionStorage);
   try {
     if (typeof window !== "undefined" && key) {
       const transformedValue = storageTransformer
         ? storageTransformer(value)
         : value;
-      localStorage.setItem(key, JSON.stringify(transformedValue));
+      getStorage(useSessionStorage).setItem(
+        key,
+        JSON.stringify(transformedValue)
+      );
     }
   } catch (error) {
     // disregard unavailable local storage
-    console.warn(`Error setting localStorage item for key “${key}”:`, error);
+    console.warn(`Error setting ${storageName} item for key “${key}”:`, error);
   }
 };
 
-export const removeLocalStorageItem = (key: string): void => {
+export const removeLocalStorageItem = <T,>(
+  key: string,
+  options?: StorageOptions<T>
+): void => {
+  const { useSessionStorage } = options || {};
+  const storageName = getStorageName(useSessionStorage);
   try {
     if (typeof window !== "undefined" && key) {
-      localStorage.removeItem(key);
+      getStorage(useSessionStorage).removeItem(key);
     }
   } catch (error) {
     // disregard unavailable local storage
-    console.warn(`Error removing localStorage key “${key}”:`, error);
+    console.warn(`Error removing ${storageName} key “${key}”:`, error);
   }
 };
 
@@ -93,4 +108,13 @@ export interface StorageOptions<T> {
   delay?: number;
   valueVerifier?: (value: T) => boolean;
   storageTransformer?: (value: T) => T;
+  useSessionStorage?: boolean;
 }
+
+const getStorage = (useSessionStorage?: boolean): Storage => {
+  return useSessionStorage ? sessionStorage : localStorage;
+};
+
+const getStorageName = (useSessionStorage?: boolean): string => {
+  return useSessionStorage ? "sessionStorage" : "localStorage";
+};

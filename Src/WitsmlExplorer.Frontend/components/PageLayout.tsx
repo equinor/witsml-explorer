@@ -6,6 +6,7 @@ import ContentView from "components/ContentView";
 import { preventContextMenuPropagation } from "components/ContextMenus/ContextMenu";
 import Nav from "components/Nav";
 import PropertiesPanel from "components/PropertiesPanel";
+import ReleaseNotesButton from "components/ReleaseNotesButton";
 import Sidebar from "components/Sidebar/Sidebar";
 import { Button } from "components/StyledComponents/Button";
 import useDocumentDimensions from "hooks/useDocumentDimensions";
@@ -130,6 +131,7 @@ const PageLayout = (): ReactElement => {
             <Properties>
               <PropertiesPanel />
             </Properties>
+            <ReleaseNotesButton />
             {isDesktopApp() ? <DesktopVersion /> : <WebVersion />}
           </PropertyBar>
         </MainLayout>
@@ -199,7 +201,7 @@ const ContentViewLayout = styled.div`
 const PropertyBar = styled.div<{ colors: Colors }>`
   grid-area: footer;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
 
   height: var(--properties-bar-height);
   background-color: ${(props) => props.colors.ui.backgroundLight};

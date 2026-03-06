@@ -1,0 +1,27 @@
+[
+  {
+    "feature": "User Roles",
+    "description": "User roles (configurable in Settings): regular, advanced, and expert. Expert provides full access, while regular offers a simpler view for beginners.",
+    "releasedate": "2026-01-28"
+  },
+  {
+    "feature": "DWO Support",
+    "description": "Added support for Data Work Order 1.0 (DWO), allowing you to browse and manage DWO objects in the application. Shown only when the connected WITSML server supports DWO.",
+    "releasedate": "2026-10-20"
+  },
+  {
+    "feature": "Multi Log Selection",
+    "description": "You can now select logs from multiple WITSML servers and display them together in a single view.",
+    "releasedate": "2025-10-14"
+  },
+  {
+    "feature": "Deep Wellbore Comparison",
+    "description": "Compare two wellbores, including all sub-objects.",
+    "releasedate": "2025-09-03"
+  },
+  {
+    "feature": "Wellbore Copying",
+    "description": "Copy wellbores with user-selected sub-objects between different WITSML servers.",
+    "releasedate": "2025-05-05"
+  }
+]

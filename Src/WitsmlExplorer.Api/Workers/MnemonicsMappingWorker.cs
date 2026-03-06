@@ -38,7 +38,7 @@ namespace WitsmlExplorer.Api.Workers
             var newMappings = job.Mappings
                 .Skip(1)
                 .Where(m => m.Count == 2 && !m[0].IsNullOrEmpty() && !m[1].IsNullOrEmpty())
-                .GroupBy(i => i[0]);
+                .GroupBy(i => i[1]);
 
             if (cancellationToken is { IsCancellationRequested: true })
             {
@@ -84,7 +84,7 @@ namespace WitsmlExplorer.Api.Workers
                 {
                     VendorName = vendorName,
                     GlobalMnemonicName = g.Key,
-                    VendorMnemonicNames = g.Select(i => i[1]).Distinct().ToList()
+                    VendorMnemonicNames = g.Select(i => i[0]).Distinct().ToList()
                 }).ToList());
         }
 
@@ -99,7 +99,7 @@ namespace WitsmlExplorer.Api.Workers
 
                 if (foundMapping != null)
                 {
-                    var newVendorMnemonicNames = mapping.Select(i => i[1])
+                    var newVendorMnemonicNames = mapping.Select(i => i[0])
                         .Concat(foundMapping.VendorMnemonicNames)
                         .Distinct()
                         .ToList();
@@ -117,7 +117,7 @@ namespace WitsmlExplorer.Api.Workers
                     {
                         VendorName = vendorName,
                         GlobalMnemonicName = mapping.Key,
-                        VendorMnemonicNames = mapping.Select(i => i[1]).Distinct().ToList()
+                        VendorMnemonicNames = mapping.Select(i => i[0]).Distinct().ToList()
                     });
                 }
 

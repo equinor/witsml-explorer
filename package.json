@@ -21,6 +21,10 @@
       "**electron**"
     ]
   },
+  "resolutions": {
+    "**/@electron/universal/minimatch": "9.0.6",
+    "**/cacache/glob/minimatch": "9.0.6"
+  },
   "scripts": {
     "dotnet-format": "dotnet tool run dotnet-format --check",
     "dotnet-format:fix": "dotnet tool run dotnet-format",

@@ -8,15 +8,15 @@ import {
   SetModeAction,
   SetThemeAction,
   SetTimeZoneAction,
+  SetUserRoleAction,
   TimeZone,
-  UserTheme,
   UserRole,
-  initOperationStateReducer,
-  SetUserRoleAction
+  UserTheme,
+  initOperationStateReducer
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { enableDarkModeDebug } from "debugUtils/darkModeDebug";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { dark, light } from "styles/Colors";
 import {
   STORAGE_DATETIMEFORMAT_KEY,
@@ -37,6 +37,8 @@ export const OperationStateProvider = ({
   children
 }: OperationStateProviderProps) => {
   const [operationState, dispatchOperation] = initOperationStateReducer();
+  const [isOperationStateHydrated, setIsOperationStateHydrated] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (typeof localStorage != "undefined") {
@@ -108,13 +110,22 @@ export const OperationStateProvider = ({
         dispatchOperation(action);
       }
     }
+
+    setIsOperationStateHydrated(true);
+
     if (import.meta.env.VITE_DARK_MODE_DEBUG) {
       return enableDarkModeDebug(dispatchOperation);
     }
   }, []);
 
   return (
-    <OperationContext.Provider value={{ operationState, dispatchOperation }}>
+    <OperationContext.Provider
+      value={{
+        operationState,
+        dispatchOperation,
+        isOperationStateHydrated
+      }}
+    >
       {children}
     </OperationContext.Provider>
   );

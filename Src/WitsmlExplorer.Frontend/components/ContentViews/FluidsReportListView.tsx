@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import FluidsReportContextMenu from "components/ContextMenus/FluidsReportContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -32,13 +34,17 @@ export default function FluidsReportsListView() {
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
   const navigate = useNavigate();
-  const { objects: fluidsReports, responseTime } = useGetObjects(
+  const {
+    objects: fluidsReports,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.FluidsReport
   );
-
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.FluidsReport);
 
   const getTableData = () => {
@@ -132,6 +138,7 @@ export default function FluidsReportsListView() {
         showRefresh
         downloadToCsvFileName="FluidsReports"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

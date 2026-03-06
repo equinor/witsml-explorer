@@ -1,31 +1,31 @@
-import React, { CSSProperties, useEffect, useMemo, useState } from "react";
-import { ProgressSpinnerOverlay } from "../../ProgressSpinner.tsx";
-import { ContentTable, ContentTableColumn, ContentType } from "../table";
-import {
-  LogCurveInfoRow,
-  getTableData
-} from "../LogCurveInfoListViewUtils.tsx";
-import { useOperationState } from "../../../hooks/useOperationState.tsx";
-import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
-import LogObject from "../../../models/logObject.tsx";
-import LogObjectService from "../../../services/logObjectService.tsx";
-import LogCurveInfo from "../../../models/logCurveInfo.ts";
-import {
-  MultiLogCurveInfoViewData,
-  MultiLogMetadata,
-  MultiLogSelectionCurveInfo
-} from "../../MultiLogUtils.tsx";
-import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
-import { Button } from "../../StyledComponents/Button.tsx";
-import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
-import styled from "styled-components";
 import { Autocomplete, Icon } from "@equinor/eds-core-react";
+import React, { CSSProperties, useEffect, useMemo, useState } from "react";
+import styled from "styled-components";
+import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
+import { useOperationState } from "../../../hooks/useOperationState.tsx";
+import LogCurveInfo from "../../../models/logCurveInfo.ts";
+import LogObject from "../../../models/logObject.tsx";
+import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
+import LogObjectService from "../../../services/logObjectService.tsx";
+import { Colors } from "../../../styles/Colors.tsx";
 import {
   WITSML_INDEX_TYPE,
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
 } from "../../Constants.tsx";
-import { Colors } from "../../../styles/Colors.tsx";
+import {
+  MultiLogCurveInfoViewData,
+  MultiLogMetadata,
+  MultiLogSelectionCurveInfo
+} from "../../MultiLogUtils.tsx";
+import { ProgressSpinnerOverlay } from "../../ProgressSpinner.tsx";
+import { Button } from "../../StyledComponents/Button.tsx";
+import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
+import {
+  LogCurveInfoRow,
+  getTableData
+} from "../LogCurveInfoListViewUtils.tsx";
+import { ContentTable, ContentTableColumn, ContentType } from "../table";
 
 interface MultiLogCurveSelectionListProps {
   multiLogSelectionCurveInfos: MultiLogSelectionCurveInfo[];
@@ -34,6 +34,7 @@ interface MultiLogCurveSelectionListProps {
   indexType: WITSML_INDEX_TYPE;
   onIndexTypeChange: (indexType: WITSML_INDEX_TYPE) => void;
   onAdd: () => void;
+  onLoadGlobalMnemonics: (selectedRows: LogCurveInfoRow[]) => void;
   onRemoveAll: () => void;
   onRefresh: () => void;
   onRemoveSelected: (selectedRows: LogCurveInfoRow[]) => void;
@@ -50,6 +51,7 @@ const MultiLogCurveSelectionList = (
     indexType,
     onIndexTypeChange,
     onAdd,
+    onLoadGlobalMnemonics,
     onRemoveAll,
     onRefresh,
     onRemoveSelected,
@@ -111,14 +113,12 @@ const MultiLogCurveSelectionList = (
           );
 
           if (!!logs && logs.length > 0) {
-            const mnemonics = multiLogSelectionCurveInfos
-              .filter(
-                (i) =>
-                  i.wellboreId == logInfo.wellboreId &&
-                  i.wellId == logInfo.wellId &&
-                  i.serverId == logInfo.server.id
-              )
-              .map((i) => i.mnemonic);
+            const selectedCurves = multiLogSelectionCurveInfos.filter(
+              (i) =>
+                i.wellboreId == logInfo.wellboreId &&
+                i.wellId == logInfo.wellId &&
+                i.serverId == logInfo.server.id
+            );
 
             const mlcis = await LogObjectService.getMultiLogsCurveInfo(
               logInfo.wellId,
@@ -130,8 +130,10 @@ const MultiLogCurveSelectionList = (
 
             for (const mlci of mlcis) {
               if (
-                mnemonics.some(
-                  (m) => m.toLowerCase() === mlci.mnemonic.toLowerCase()
+                selectedCurves.some(
+                  (sc) =>
+                    sc.logUid.toLowerCase() === mlci.logUid.toLowerCase() &&
+                    sc.mnemonic.toLowerCase() === mlci.mnemonic.toLowerCase()
                 )
               ) {
                 logCurveInfos.push({
@@ -224,6 +226,15 @@ const MultiLogCurveSelectionList = (
         }
         colors={colors}
       />
+    </CommonPanelContainer>,
+    <CommonPanelContainer key="loadGlobalMnemonicsPanel">
+      <Button
+        disabled={selectedRows?.length < 1}
+        onClick={() => onLoadGlobalMnemonics(selectedRows)}
+      >
+        <Icon name="addCircleOutlined" />
+        Load Global Mnemonics
+      </Button>
     </CommonPanelContainer>,
     <CommonPanelContainer key="addPanel">
       <Button onClick={onAdd}>

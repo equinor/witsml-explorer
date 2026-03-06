@@ -18,14 +18,29 @@ export function Snackbar() {
           const notificationSourceServerUrl = notification.sourceServerUrl
             ?.toString()
             .toLowerCase();
-          const shouldNotify =
-            connectedServerUrl &&
-            (notificationServerUrl === null ||
+          const hasConnectedServer = connectedServerUrl != null;
+          const notificationHasNoServer = notificationServerUrl == null;
+
+          const noConnectedServerAndNoNotificationServer =
+            !hasConnectedServer && notificationHasNoServer;
+
+          const connectedServerMatchesNotificationServer =
+            hasConnectedServer &&
+            (notificationHasNoServer ||
               connectedServerUrl === notificationServerUrl ||
               connectedServerUrl === notificationSourceServerUrl);
+
+          const shouldNotify =
+            noConnectedServerAndNoNotificationServer ||
+            connectedServerMatchesNotificationServer;
+
           if (shouldNotify) {
             enqueueSnackbar(notification.message, {
-              variant: notification.isSuccess ? "success" : "error"
+              variant: notification.isSuccess
+                ? notification.severity == "warning"
+                  ? "warning"
+                  : "success"
+                : "error"
             });
           }
         }

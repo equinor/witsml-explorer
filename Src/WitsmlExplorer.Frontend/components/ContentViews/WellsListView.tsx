@@ -9,7 +9,9 @@ import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import WellContextMenu, {
   WellContextMenuProps
 } from "components/ContextMenus/WellContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { ProgressSpinnerOverlay } from "components/ProgressSpinner";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
@@ -28,7 +30,8 @@ export default function WellsListView() {
   const {
     wells,
     isFetching,
-    responseTime: responseTime
+    responseTime: responseTime,
+    dataUpdatedAt
   } = useGetWells(connectedServer, {
     placeholderData: []
   });
@@ -37,6 +40,7 @@ export default function WellsListView() {
     dispatchOperation,
     operationState: { timeZone, dateTimeFormat }
   } = useOperationState();
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   const navigate = useNavigate();
 
   const columns: ContentTableColumn[] = [
@@ -116,6 +120,7 @@ export default function WellsListView() {
           downloadToCsvFileName="Wells"
           showRefresh
           responseTime={responseTime}
+          lastFetched={lastFetched}
         />
       )}
     </>

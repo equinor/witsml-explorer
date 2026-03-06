@@ -48,20 +48,15 @@ export interface SelectWellboreStepModalProps {
   targetServer?: Server;
   indexType: WITSML_INDEX_TYPE;
   well?: Well;
-  preselectedWellbores?: Wellbore[];
+  preselectedWellbore?: Wellbore;
   onWizardFinish: (result?: MultiLogWizardResult) => void;
 }
 
 const SelectWellboreStepModal = (
   props: SelectWellboreStepModalProps
 ): React.ReactElement => {
-  const {
-    targetServer,
-    indexType,
-    well,
-    preselectedWellbores,
-    onWizardFinish
-  } = props;
+  const { targetServer, indexType, well, preselectedWellbore, onWizardFinish } =
+    props;
   const {
     dispatchOperation,
     operationState: { colors }
@@ -88,11 +83,7 @@ const SelectWellboreStepModal = (
   );
   const [wellboreFilterValue, setWellboreFilterValue] = useState<string>("");
   const [expandedWellTreeItems, setExpandedWellTreeItems] = useState<string[]>(
-    preselectedWellbores?.length > 0
-      ? preselectedWellbores.map((wb) => calculateWellNodeId(wb.wellUid))
-      : well
-      ? [calculateWellNodeId(well.uid)]
-      : []
+    preselectedWellbore ? [calculateWellNodeId(well.uid)] : []
   );
   const [selectedWellbores, setSelectedWellbores] = useState<Wellbore[]>([]);
 
@@ -179,17 +170,15 @@ const SelectWellboreStepModal = (
         let filteredWellboreTreeItems: WellboreTreeItem[] = [];
 
         if (!wellboreFilterValue || wellboreFilterValue.length == 0) {
-          if (!!preselectedWellbores && preselectedWellbores.length > 0) {
-            filteredWellboreTreeItems = wellItem.children.filter((wb) =>
-              preselectedWellbores.some(
-                (pwb) =>
-                  wb.name
-                    .toLocaleLowerCase()
-                    .includes(pwb.name.toLocaleLowerCase()) ||
-                  wb.id
-                    .toLocaleLowerCase()
-                    .includes(pwb.name.toLocaleLowerCase())
-              )
+          if (preselectedWellbore) {
+            filteredWellboreTreeItems = wellItem.children.filter(
+              (wb) =>
+                wb.name
+                  .toLocaleLowerCase()
+                  .includes(preselectedWellbore.name.toLocaleLowerCase()) ||
+                wb.id
+                  .toLocaleLowerCase()
+                  .includes(preselectedWellbore.name.toLocaleLowerCase())
             );
           } else if (
             !targetServer ||
@@ -249,7 +238,7 @@ const SelectWellboreStepModal = (
     const action = GetMultiLogWizardStepModalAction(
       {
         targetServer: targetServerValue,
-        wellbores: selectedWellbores,
+        wellbore: selectedWellbores[0],
         indexType: indexTypeValue
       },
       onWizardFinish

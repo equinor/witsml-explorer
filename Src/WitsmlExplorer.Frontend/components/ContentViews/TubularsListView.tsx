@@ -6,7 +6,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
 import TubularContextMenu from "components/ContextMenus/TubularContextMenu";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -26,13 +28,12 @@ export default function TubularsListView() {
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
   const { wellUid, wellboreUid } = useParams();
-  const { objects: tubulars, responseTime } = useGetObjects(
-    connectedServer,
-    wellUid,
-    wellboreUid,
-    ObjectType.Tubular
-  );
-
+  const {
+    objects: tubulars,
+    responseTime,
+    dataUpdatedAt
+  } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Tubular);
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
 
   const onContextMenu = (
@@ -111,6 +112,7 @@ export default function TubularsListView() {
         showRefresh
         downloadToCsvFileName="Tubulars"
         responseTime={responseTime}
+        lastFetched={lastFetched}
       />
     )
   );

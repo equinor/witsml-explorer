@@ -211,6 +211,7 @@ namespace WitsmlExplorer.Api.Services
                 Data = GetDataDictionary(witsmlLog.LogData)
             };
         }
+
         public async Task<LogData> GetMultiLogData(string wellUid, string wellboreUid, string startIndex, string endIndex, bool startIndexIsInclusive, Dictionary<string, List<string>> logMnemonics)
         {
             var logUids = logMnemonics.Keys.ToArray();
@@ -392,7 +393,7 @@ namespace WitsmlExplorer.Api.Services
                 var keyValuePairs = valueRow.Split(CommonConstants.DataSeparator).Select((value, index) => new { index, value }).ToList();
                 if (keyValuePairs.Count > mnemonics.Length)
                 {
-                    throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count}.", (int)HttpStatusCode.InternalServerError);
+                    throw new WitsmlResultParsingException($"Unable to parse log data due to unexpected amount of commas in row {result.Count + 1}. Expected {mnemonics.Length} got {keyValuePairs.Count}. Data row: {valueRow}", (int)HttpStatusCode.InternalServerError);
                 }
 
                 var data = keyValuePairs.Where(keyValuePair => !string.IsNullOrEmpty(keyValuePair.value)).ToDictionary(keyValuePair => mnemonics[keyValuePair.index], keyValuePair => new LogDataValue(keyValuePair.value));
