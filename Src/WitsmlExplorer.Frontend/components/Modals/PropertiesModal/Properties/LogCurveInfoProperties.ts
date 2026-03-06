@@ -31,6 +31,10 @@ export const getLogCurveInfoProperties = (
     helperText: getMaxLengthHelperText("unit", MaxLength.UomEnum)
   },
   {
+    property: "sensorOffset",
+    propertyType: PropertyType.Measure
+  },
+  {
     property: "curveDescription",
     propertyType: PropertyType.String,
     validator: (value: string) => validText(value, 1, MaxLength.Description),
