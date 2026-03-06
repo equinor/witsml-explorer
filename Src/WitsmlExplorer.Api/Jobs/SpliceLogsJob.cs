@@ -31,6 +31,6 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
     }
 }

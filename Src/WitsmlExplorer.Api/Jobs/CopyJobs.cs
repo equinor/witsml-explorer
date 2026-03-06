@@ -7,7 +7,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
     }
 
     public record CopyObjectsJob : ICopyJob<ObjectReferences, WellboreReference>
@@ -15,7 +15,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
 
         /// <summary>
         /// Target object Uid - only for log duplication purposes
@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
 
         public override string Description()
         {
@@ -51,7 +51,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
     }
 
     public record
@@ -60,7 +60,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
     }
 
     public record
@@ -82,7 +82,11 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
+        /// <summary>
+        /// Indicates, if the job is slow
+        /// </summary>
+        protected override bool IsSlowJob => true;
     }
 
     public record CopyWithParentJob : ICopyJob<ObjectReferences, WellboreReference>
@@ -103,6 +107,6 @@ namespace WitsmlExplorer.Api.Jobs
         /// <summary>
         /// Indicates, if the job can be cancelled
         /// </summary>
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
     }
 }

@@ -14,7 +14,7 @@ namespace WitsmlExplorer.Api.Jobs
         public double? Density { get; init; }
         public double? DepthGap { get; init; }
         public long? TimeGap { get; init; }
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
 
         public override string Description()
         {

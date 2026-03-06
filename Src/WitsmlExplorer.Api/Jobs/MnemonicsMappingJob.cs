@@ -9,7 +9,7 @@ namespace WitsmlExplorer.Api.Jobs
         public string VendorName { get; init; }
         public bool Overwrite { get; init; }
         public IList<IList<string>> Mappings { get; init; }
-        public override bool IsCancelable => true;
+        protected override bool IsCancelable => true;
         public override string Description()
         {
             return $"Mnemonics Mapping " +
