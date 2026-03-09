@@ -67,6 +67,26 @@ export default function QueryDataGrid() {
         type: ContentType.Component
       },
       {
+        property: "required",
+        label: "required",
+        type: ContentType.String
+      },
+      {
+        property: "baseType",
+        label: "base type",
+        type: ContentType.String
+      },
+      {
+        property: "witsmlType",
+        label: "witsml type",
+        type: ContentType.String
+      },
+      {
+        property: "maxLength",
+        label: "max length",
+        type: ContentType.String
+      },
+      {
         property: "documentation",
         label: "documentation",
         type: ContentType.String
@@ -204,6 +224,10 @@ export default function QueryDataGrid() {
 
 interface QueryGridDataRow extends ContentTableRow {
   name: string;
+  required?: boolean;
+  baseType?: string;
+  witsmlType?: string;
+  maxLength?: number;
   documentation: string;
   value: any;
   isAttribute?: boolean;
@@ -223,8 +247,17 @@ const mergeTemplateWithQuery = (
     parentId: string = "",
     index: number | null = null
   ): QueryGridDataRow => {
-    const { name, documentation, isContainer, isAttribute, properties } =
-      templateNode;
+    const {
+      name,
+      documentation,
+      isContainer,
+      isAttribute,
+      properties,
+      required,
+      baseType,
+      witsmlType,
+      maxLength
+    } = templateNode;
 
     const uniqueId =
       (parentId ? `${parentId}--` : "") +
@@ -257,6 +290,10 @@ const mergeTemplateWithQuery = (
     return {
       id: uniqueId,
       name,
+      required,
+      baseType,
+      witsmlType,
+      maxLength,
       documentation,
       value,
       isAttribute,
