@@ -348,8 +348,7 @@ const MultiLogCurveSelectionList = (
               dateTimeFormat,
               curveThreshold,
               isDepthIndex,
-              null,
-              true
+              null
             )}
             checkableRows={true}
             stickyLeftColumns={2}

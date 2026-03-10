@@ -12,6 +12,7 @@ import { measureToString } from "models/measure";
 import MultiLogCurveInfo from "models/multilogCurveInfo";
 import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 import BaseReport from "../../models/reports/BaseReport.tsx";
+import { MultiLogCurveInfoViewData } from "../MultiLogUtils.tsx";
 
 export interface LogCurveInfoRow extends ContentTableRow {
   uid: string;
@@ -135,8 +136,7 @@ export const getTableData = (
   dateTimeFormat: DateTimeFormat,
   curveThreshold: CurveThreshold,
   isDepthIndex: boolean,
-  logUid: string = null,
-  extendLogCurveInfoObject: boolean = false
+  logUid: string = null
 ) => {
   if (!logCurveInfoList) return [];
 
@@ -224,7 +224,7 @@ export const getTableData = (
         qcInfo,
         qcTimestamp,
         logCurveInfo,
-        ...(extendLogCurveInfoObject ? logCurveInfo : undefined)
+        serverName: (logCurveInfo as MultiLogCurveInfoViewData).serverName
       };
     })
     .sort((curve, curve2) => {
