@@ -135,27 +135,13 @@ namespace WitsmlExplorer.Api.Workers.Modify
             }
             if (job.LogCurveInfo.SensorOffset != null)
             {
-                if (originalLogCurveInfo.SensorOffset == null && !string.IsNullOrEmpty(job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo.InvariantCulture)))
+                originalLogCurveInfo.SensorOffset = new WitsmlLengthMeasure()
                 {
-                    originalLogCurveInfo.SensorOffset = new WitsmlLengthMeasure()
-                    {
-                        Value =
-                            job.LogCurveInfo.SensorOffset.Value.ToString(
-                                CultureInfo.InvariantCulture),
-                        Uom = job.LogCurveInfo.SensorOffset.Uom
-                    };
-                }
-                else if (originalLogCurveInfo.SensorOffset!.Value !=
-                         job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo
-                             .InvariantCulture) || originalLogCurveInfo.SensorOffset!.Uom !=
-                         job.LogCurveInfo.SensorOffset.Uom)
-                {
-                    originalLogCurveInfo.SensorOffset.Value =
-                        job.LogCurveInfo.SensorOffset.Value.ToString(CultureInfo
-                            .InvariantCulture);
-                    originalLogCurveInfo.SensorOffset.Uom =
-                        job.LogCurveInfo.SensorOffset.Uom;
-                }
+                    Value =
+                        job.LogCurveInfo.SensorOffset.Value.ToString(
+                            CultureInfo.InvariantCulture),
+                    Uom = job.LogCurveInfo.SensorOffset.Uom
+                };
             }
 
             originalLogCurveInfo.Unit = job.LogCurveInfo.Unit;

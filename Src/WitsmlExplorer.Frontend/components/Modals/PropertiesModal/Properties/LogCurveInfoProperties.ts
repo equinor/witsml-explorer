@@ -1,6 +1,13 @@
-import { PropertiesModalMode, validText } from "components/Modals/ModalParts";
+import {
+  PropertiesModalMode,
+  validMeasure,
+  validText
+} from "components/Modals/ModalParts";
 import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
-import { getMaxLengthHelperText } from "components/Modals/PropertiesModal/ValidationHelpers";
+import {
+  getMaxLengthHelperText,
+  getMeasureHelperText
+} from "components/Modals/PropertiesModal/ValidationHelpers";
 import { PropertiesModalProperty } from "components/Modals/PropertiesModal/propertiesModalProperty";
 import AxisDefinition from "models/AxisDefinition";
 import LogCurveInfo from "models/logCurveInfo";
@@ -32,7 +39,9 @@ export const getLogCurveInfoProperties = (
   },
   {
     property: "sensorOffset",
-    propertyType: PropertyType.Measure
+    propertyType: PropertyType.Measure,
+    validator: validMeasure,
+    helperText: getMeasureHelperText("sensorOffset")
   },
   {
     property: "curveDescription",
