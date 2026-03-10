@@ -1,5 +1,6 @@
 import { DataGridProperty } from "templates/dataGrid/DataGridProperty";
 import { dataGridCommonData } from "templates/dataGrid/objects/common/DataGridCommonData";
+import { dataGridCommonTime } from "templates/dataGrid/objects/common/DataGridCommonTime";
 import { dataGridCustomData } from "templates/dataGrid/objects/common/DataGridCustomData";
 import { dataGridExtensionNameValue } from "templates/dataGrid/objects/common/DataGridExtensionNameValue";
 import { dataGridGeologyIntervalProperties } from "templates/dataGrid/objects/common/properties/DataGridGeologyIntervalProperties";
@@ -156,11 +157,7 @@ export const dataGridMudLog: DataGridProperty = {
               documentation:
                 "A textual parameter value. This value is typically annotation on the log.All spaces, tabs, line feeds and carriage returns are retained in the string. Characters representing line breaks should be replaced by a line feed or carriage return."
             },
-            {
-              name: "commonTime",
-              documentation:
-                "A container element for creation and last-change DateTime information."
-            },
+            dataGridCommonTime,
             dataGridExtensionNameValue
           ]
         },
