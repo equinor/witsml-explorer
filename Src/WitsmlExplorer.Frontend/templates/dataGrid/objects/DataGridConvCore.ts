@@ -105,7 +105,7 @@ export const dataGridConvCore: DataGridProperty = {
         {
           name: "lenBarrel",
           documentation: "Length of core barrel.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "coreBitType",
@@ -114,32 +114,32 @@ export const dataGridConvCore: DataGridProperty = {
         {
           name: "diaBit",
           documentation: "Core bit outer diameter.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "diaCore",
           documentation: "Core cut diameter.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "lenCored",
           documentation: "Cored interval length.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "lenRecovered",
           documentation: "Length of core recovered.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "recoverPc",
           documentation: "Calculate recovery (commonly in percent).",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "inclHole",
           documentation: "Wellbore inclination over cored interval.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "coreOrientation",

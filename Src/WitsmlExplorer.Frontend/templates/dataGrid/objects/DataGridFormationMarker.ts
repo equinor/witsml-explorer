@@ -82,17 +82,17 @@ export const dataGridFormationMarker: DataGridProperty = {
         {
           name: "thicknessBed",
           documentation: "Vertical thickness.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "thicknessApparent",
           documentation: "Formation exposed along the wellbore.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "thicknessPerpen",
           documentation: "True Stratigraphic thickness.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "mdLogSample",
@@ -107,12 +107,12 @@ export const dataGridFormationMarker: DataGridProperty = {
         {
           name: "dip",
           documentation: "Angle of dip with respect to horizontal.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "dipDirection",
           documentation: "Interpreted downdip direction.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "lithostratigraphic",

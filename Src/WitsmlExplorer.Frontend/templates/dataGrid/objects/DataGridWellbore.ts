@@ -157,7 +157,7 @@ export const dataGridWellbore: DataGridProperty = {
         {
           name: "dayTarget",
           documentation: "Target days for drilling wellbore.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         dataGridCommonData,
         dataGridCustomData

@@ -54,7 +54,7 @@ export const dataGridShakerProperties: DataGridProperty[] = [
     name: "capFlow",
     documentation:
       "Maximum pump rate at which the unit will efficiently operate.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "owner",
@@ -63,7 +63,7 @@ export const dataGridShakerProperties: DataGridProperty[] = [
   {
     name: "sizeMeshMn",
     documentation: "Minimum mesh size.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "nameTag",

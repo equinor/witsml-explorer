@@ -105,7 +105,7 @@ export const dataGridWell: DataGridProperty = {
         {
           name: "pcInterest",
           documentation: "Interest for Operator. Commonly in percent.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "numAPI",
@@ -159,7 +159,7 @@ export const dataGridWell: DataGridProperty = {
         {
           name: "waterDepth",
           documentation: "Depth of water (not land rigs).",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "wellLocation",

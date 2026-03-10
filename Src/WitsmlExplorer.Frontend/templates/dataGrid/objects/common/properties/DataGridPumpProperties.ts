@@ -44,12 +44,12 @@ export const dataGridPumpProperties: DataGridProperty[] = [
   {
     name: "odRod",
     documentation: "Rod outer diameter.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idLiner",
     documentation: "Inner diameter of the pump liner. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "pumpAction",
@@ -58,47 +58,47 @@ export const dataGridPumpProperties: DataGridProperty[] = [
   {
     name: "eff",
     documentation: "Efficiency of the pump. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenStroke",
     documentation: "Stroke length. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "presMx",
     documentation: "Maximum pump pressure.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "powHydMx",
     documentation: "Maximum hydraulics horsepower.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "spmMx",
     documentation: "Maximum Speed.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "displacement",
     documentation: " Pump displacement.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "presDamp",
     documentation: "Pulsation dampener pressure.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "volDamp",
     documentation: "Pulsation dampener volume.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "powMechMx",
     documentation: "Maximum mechanical power.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "nameTag",

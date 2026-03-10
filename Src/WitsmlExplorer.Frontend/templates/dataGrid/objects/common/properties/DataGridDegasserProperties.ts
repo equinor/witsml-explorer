@@ -36,69 +36,69 @@ export const dataGridDegasserProperties: DataGridProperty[] = [
   {
     name: "height",
     documentation: "Height of separator.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "len",
     documentation: "Length of separator.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "id",
     documentation: "Internal diameter of object.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "capFlow",
     documentation:
       "Maximum pump rate at which the unit will efficiently operate.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "areaSeparatorFlow",
     documentation: "Flow area of separator.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "htMudSeal",
     documentation:
       "Depth of trip-tank fluid level to provide back pressure against separator flow.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idInlet",
     documentation: "Internal diameter of inlet line.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idVentLine",
     documentation: "Internal diameter of vent line.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenVentLine",
     documentation: "Length of vent line.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "capGasSep",
     documentation: "Safe gas separating capacity.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "capBlowdown",
     documentation: "Gas vent rate at which the vent line pressur",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "presRating",
     documentation: "Pressure rating of the item.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "tempRating",
     documentation: "Temperature rating of separator.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "nameTag",

@@ -16,72 +16,72 @@ export const dataGridChannelRequirementProperties: DataGridProperty[] = [
   {
     name: "minInterval",
     documentation: "Minimum expected time interval between data points.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "maxInterval",
     documentation: "Maximum allowable time interval between data points.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "minPrecision",
     documentation:
       "Specifies the minimum number of significant digits that should be preserved in curve values. This ensures sufficient numeric detail relative to the unit of measure.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "maxPrecision",
     documentation:
       "Specifies the maximum number of significant digits that should be preserved in curve values. This limits unnecessary precision while retaining adequate detail for the unit of measure.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "minValue",
     documentation:
       "Minimum data value relative to the purpose and the defined unit for the channel.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "maxValue",
     documentation:
       "Maximum data value relative to the purpose and the defined unit for the channel.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "minStep",
     documentation:
       "Specifies the minimum step size for the channel's data index.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "maxStep",
     documentation:
       "Specifies the maximum step size for the channel's data index.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "minDelta",
     documentation:
       "Minimum expected rate of change between the values in consecutive indexes.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "maxDelta",
     documentation:
       "Maximum allowable rate of change between the values in consecutive indexes.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "latency",
     documentation:
       "Indicates the maximum acceptable delay in data delivery for the channel expressed in seconds.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "mdThreshold",
     documentation:
       "Maximum allowable delta between the row index and the min or max index for the log subject to index direction and expressed in the index unit.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dynamicMdThreshold",

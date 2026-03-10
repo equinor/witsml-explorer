@@ -100,36 +100,36 @@ export const dataGridTrajectory: DataGridProperty = {
           name: "magDeclUsed",
           documentation:
             "Magnetic declination used to correct a Magnetic North referenced azimuth to a True North azimuth. Magnetic declination angles are measured positive clockwise from True North to Magnetic North (or negative in the anti-clockwise direction). To convert a Magnetic azimuth to a True North azimuth, the magnetic declination should be added. Starting value if stations have individual values. ",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "gridCorUsed",
           documentation:
             "DEPRECATED - use gridConUsed. Grid correction used to correct a survey. Starting value if stations have individual values.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "gridConUsed",
           documentation:
             "Magnetic declination used to correct a Magnetic North referenced azimuth to a True North azimuth. Magnetic declination angles are measured positive clockwise from True North to Magnetic North (or negative in the anti-clockwise direction). To convert a Magnetic azimuth to a True North azimuth, the magnetic declination should be added. Starting value if stations have individual values.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "aziVertSect",
           documentation: "Azimuth used for vertical section plot/computations.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "dispNsVertSectOrig",
           documentation:
             "Origin north-south used for vertical section plot/computations.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "dispEwVertSectOrig",
           documentation:
             "Origin east-west used for vertical section plot/computations.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "definitive",

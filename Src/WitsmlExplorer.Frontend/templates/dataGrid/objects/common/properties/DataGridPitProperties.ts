@@ -24,7 +24,7 @@ export const dataGridPitProperties: DataGridProperty[] = [
   {
     name: "capMx",
     documentation: "Maximum pit capacity.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "owner",

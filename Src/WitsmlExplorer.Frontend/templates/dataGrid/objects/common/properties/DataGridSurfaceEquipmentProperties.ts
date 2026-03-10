@@ -9,7 +9,7 @@ export const dataGridSurfaceEquipment: DataGridProperty[] = [
   {
     name: "presRating",
     documentation: "Pressure rating of the item.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "typeSurfEquip",
@@ -58,67 +58,67 @@ export const dataGridSurfaceEquipment: DataGridProperty[] = [
   {
     name: "idStandpipe",
     documentation: "Inner diameter of standpipe.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenStandpipe",
     documentation: "Length of standpipe.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idHose",
     documentation: "Inner diameter of kelly hose.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenHose",
     documentation: "Length of kelly hose.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idSwivel",
     documentation: "Inner diameter of swivel.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenSwivel",
     documentation: "Length of swivel.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idKelly",
     documentation: "Inner diameter of kelly hose.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenKelly",
     documentation: "Length of kelly.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idSurfaceIron",
     documentation: "Inner diameter of surface iron.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenSurfaceIron",
     documentation: "Length of surface iron.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "htSurfaceIron",
     documentation: "Height of surface iron.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idDischargeLine",
     documentation: "Coiled tubing - Inner diameter of pump discharge line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenDischargeLine",
     documentation: "Coiled tubing - Length of pump discharge line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "ctWrapType",
@@ -128,25 +128,25 @@ export const dataGridSurfaceEquipment: DataGridProperty[] = [
     name: "odReel",
     documentation:
       "Coiled tubing - Specifies the OD of the coiled tubing reel.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "odCore",
     documentation:
       "Coiled tubing - Outer diameter of the reel core that the coiled tubing is wrapped around.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "widReelWrap",
     documentation:
       "Coiled tubing - Width of the reel core. This is the inside dimension.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenReel",
     documentation:
       "Coiled tubing - Length of the coiled tubing remaining on the reel.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "injStkUp",
@@ -157,7 +157,7 @@ export const dataGridSurfaceEquipment: DataGridProperty[] = [
     name: "htInjStk",
     documentation:
       "Coiled tubing -The length of tubing from the end of the coil reel to the rotary kelly bushing. Basically we define what is in the hole and on the reel. This measurement takes into account the 20 or so feet of tubing that is being straightened and shoved through the injector head.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "umbInside",
@@ -167,28 +167,28 @@ export const dataGridSurfaceEquipment: DataGridProperty[] = [
   {
     name: "odUmbilical",
     documentation: "Coiled tubing - Outer diameter of the umbilical.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenUmbilical",
     documentation: "Coiled tubing - Length of the umbilical.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idTopStk",
     documentation: "Top drive - Inner diameter of top stack.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "htTopStk",
     documentation:
       "Top drive - The distance that the mud travels from the end of the standpipe hose to the drill pipe connection at the bottom of the top drive. We are measuring the distance that the mud will flow through the top drive.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "htFlange",
     documentation:
       "Height of flange. If you select Top Drive Stackup Height, Swivel and Kelly are disabled so that you can specify the top-drive rotary system.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   }
 ];

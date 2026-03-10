@@ -19,18 +19,18 @@ export const dataGridBitRecordProperties: DataGridProperty[] = [
   {
     name: "diaBit",
     documentation: "Diameter of drilled hole.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "diaPassThru",
     documentation:
       "Minimum hole or tubing which bit will pass through (for bi-center bits).",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "diaPilot",
     documentation: "Diameter of pilot bit (for bi-center bits).",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "manufacturer",

@@ -48,64 +48,64 @@ export const dataGridTrajectoryStationProperties: DataGridProperty[] = [
   {
     name: "incl",
     documentation: "Hole inclination, measured from vertical. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "azi",
     documentation: "Hole azimuth. Corrected to wells azimuth reference. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "mtf",
     documentation: "Toolface angle (magnetic). ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "gtf",
     documentation: "Toolface angle (gravity). ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dispNs",
     documentation:
       "North-south offset, positive to the North. This is relative to wellLocation with a North axis orientation of aziRef. If a displacement with respect to a different point is desired then define a localCRS and specify local coordinates in location.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dispEw",
     documentation:
       "East-west offset, positive to the East. This is relative to wellLocation with a North axis orientation of aziRef. If a displacement with respect to a different point is desired then define a localCRS and specify local coordinates in location. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "vertSect",
     documentation: "Distance along vertical section azimuth plane. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dls",
     documentation: "Dogleg severity. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "rateTurn",
     documentation: "Turn rate, radius of curvature computation. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "rateBuild",
     documentation: "Build Rate, radius of curvature computation. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "mdDelta",
     documentation: "Delta measured depth from previous station. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "tvdDelta",
     documentation: "Delta true vertical depth from previous station. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "modelToolError",
@@ -121,17 +121,17 @@ export const dataGridTrajectoryStationProperties: DataGridProperty[] = [
   {
     name: "gravTotalUncert",
     documentation: "Survey tool gravity uncertainty. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dipAngleUncert",
     documentation: "Survey tool dip uncertainty. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "magTotalUncert",
     documentation: "Survey tool magnetic uncertainty. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "gravAccelCorUsed",
@@ -186,17 +186,17 @@ export const dataGridTrajectoryStationProperties: DataGridProperty[] = [
   {
     name: "gravTotalFieldReference",
     documentation: "Gravitational field theoretical/reference value. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "magTotalFieldReference",
     documentation: "Geomagnetic field theoretical/reference value. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "magDipAngleReference",
     documentation: "Magnetic dip angle theoretical/reference value. ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "magModelUsed",
@@ -223,37 +223,37 @@ export const dataGridTrajectoryStationProperties: DataGridProperty[] = [
         name: "gravAxialRaw",
         documentation:
           "Uncorrected gravitational field strength measured in axial direction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gravTran1Raw",
         documentation:
           "Uncorrected gravitational field strength measured in transverse direction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gravTran2Raw",
         documentation:
           "Uncorrected gravitational field strength measured in transverse direction, approximately normal to tran1.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magAxialRaw",
         documentation:
           "Uncorrected magnetic field strength measured in axial direction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magTran1Raw",
         documentation:
           "Uncorrected magnetic field strength measured in transverse direction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magTran2Raw",
         documentation:
           "Uncorrected magnetic field strength measured in transverse direction, approximately normal to tran1.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       }
     ]
   },
@@ -265,85 +265,85 @@ export const dataGridTrajectoryStationProperties: DataGridProperty[] = [
       {
         name: "gravAxialAccelCor",
         documentation: "Calculated gravitational field strength correction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gravTran1AccelCor",
         documentation:
           "The correction applied to a cross-axial (direction 1) component of the Earths gravitational field.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gravTran2AccelCor",
         documentation:
           "The correction applied to a cross-axial (direction 2) component of the Earths gravitational field.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magAxialDrlstrCor",
         documentation: "Axial magnetic drillstring correction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magTran1DrlstrCor",
         documentation: "Cross-axial magnetic correction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magTran2DrlstrCor",
         documentation: "Cross-axial magnetic correction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magTran1MSACor",
         documentation:
           "Cross-axial (direction 1) magnetic correction due to multi-station analysis process.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magTran2MSACor",
         documentation:
           "Cross-axial (direction 2) magnetic correction due to multi-station analysis process.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magAxialMSACor",
         documentation:
           "Axial magnetic correction due to multi-station analysis process.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "sagIncCor",
         documentation: "Calculated sag correction to inclination.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "sagAziCor",
         documentation: "Calculated cosag correction to azimuth.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "stnMagDeclUsed",
         documentation:
           "Magnetic declination used to correct a Magnetic North referenced azimuth to a True North azimuth.  Magnetic declination angles are measured positive clockwise from True North to Magnetic North (or negative in the anti-clockwise direction). To convert a Magnetic azimuth to a True North azimuth, the magnetic declination should be added.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "stnGridCorUsed",
         documentation:
           "DEPRECATED - use stnGridConUsed. Grid Correction (Meridian convergence). The angle between True North and Grid North. Grid Correction is positive when True North is west of Grid North. The correction is added to the raw observation, thus yielding a reduced or corrected observation that can go into the subsequent calculations.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "stnGridConUsed",
         documentation:
           "Magnetic declination used to correct a Magnetic North referenced azimuth to a True North azimuth.  Magnetic declination angles are measured positive clockwise from True North to Magnetic North (or negative in the anti-clockwise direction). To convert a Magnetic azimuth to a True North azimuth, the magnetic declination should be added.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "dirSensorOffset",
         documentation: "Offset relative to bit.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       }
     ]
   },
@@ -356,18 +356,18 @@ export const dataGridTrajectoryStationProperties: DataGridProperty[] = [
         name: "magTotalFieldCalc",
         documentation:
           "Calculated total intensity of the geomagnetic field as sum of BGGM, IFR and local field.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "magDipAngleCalc",
         documentation:
           "Calculated magnetic dip (inclination), the angle between the horizontal and the geomagnetic field (positive down, res .001).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gravTotalFieldCalc",
         documentation: "Calculated total gravitational field.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       }
     ]
   },
@@ -379,48 +379,48 @@ export const dataGridTrajectoryStationProperties: DataGridProperty[] = [
       {
         name: "varianceNN",
         documentation: "Covariance north north.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "varianceNE",
         documentation: "Crossvariance north east.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "varianceNVert",
         documentation: "Crossvariance north vertical.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "varianceEE",
         documentation: "Covariance east east.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "varianceEVert",
         documentation: "Crossvariance east vertical.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "varianceVertVert",
         documentation: "Covariance vertical vertical.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "biasN",
         documentation: "Bias north.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "biasE",
         documentation: "Bias east.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "biasVert",
         documentation:
           "Bias vertical. The coordinate system is set up in a right-handed configuration which makes the vertical direction increasing (i.e., positive) downwards.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       }
     ]
   },

@@ -47,49 +47,49 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
   {
     name: "ropAv",
     documentation: "Average rate of penetration through Interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "ropMn",
     documentation: "Minimum rate of penetration through Interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "ropMx",
     documentation: "Maximum rate of penetration through Interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "wobAv",
     documentation: "Surface weight on bit - average through interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "tqAv",
     documentation: "Average torque through interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "currentAv",
     documentation:
       "Average current through interval. This is the raw measurement from which the average torque could be calculated.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "rpmAv",
     documentation: "Average turn rate through interval (commonly in rpm).",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "wtMudAv",
     documentation: "Average mud density in through interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "ecdTdAv",
     documentation:
       "Average effective circulating density at TD through Interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dxcAv",
@@ -120,7 +120,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
         name: "lithPc",
         documentation:
           'The lithology represents the portion of the sampled interval this lithology type relates to.The total of the lithologies within an interval should add up to 100 percent.If LithologySource in cs-geology is "interpreted" only 100% is allowed.If "core" or "cuttings" then recommended useage is the creating application uses blocks of 10%. i.e. 10, 20, 30, 40, 50, 60, 70, 80, 90, 100.Ideally the input application should enforce a total of 100% for every defined depth interval.If the total for a depth interval does not add up to 100%, the "undifferentiated" code should be used to fill out to 100%.',
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "description",
@@ -205,7 +205,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
         name: "densShale",
         documentation:
           "DEPRECATED. This entry for shale density should not be used. Shale densities should be entered in the Shale Density in cs_geologyInterval.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "qualifier",
@@ -239,7 +239,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
             name: "abundance",
             documentation:
               'The relative abundance of the qualifier estimated based on a "visual area" basis by inspecting the cuttings spread out on the shaker table prior to washing, or in the sample tray after washing. This represents the upper bound of the observed range, and is in the following increments at the upper bound. 1 = less than or equal to 1%, 2 = greater than or equal to 1 and less than 2%, 5 = greater than or equal to 2 and less than 5% and then in 5% increments, 10 (=5-10%), 15 (=10-15%) up to 100(=95-100%). The end user can then elect to either display the %, or map then to an operator specific term or coding, i.e. 1 less then or equal to 1%=Rare Trace, or occasional, or very sparse etc., depending on the the end users\' terminology.) ',
-            properties: dataGridUomProperties
+            properties: dataGridUomProperties()
           },
           {
             name: "abundanceCode",
@@ -276,7 +276,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
       {
         name: "stainPc",
         documentation: "Visible Stain (commonly in percent).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "natFlorColor",
@@ -285,7 +285,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
       {
         name: "natFlorPc",
         documentation: "Natural fluorescence (commonly in percent).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "natFlorLevel",
@@ -376,12 +376,12 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
       {
         name: "wtMudIn",
         documentation: "Mud density in (active pits).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "wtMudOut",
         documentation: "Mud density out (flowline).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "chromType",
@@ -390,7 +390,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
       {
         name: "eTimChromCycle",
         documentation: "Chromatograph cycle time. Commonly in seconds.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "chromIntRpt",
@@ -400,187 +400,187 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
       {
         name: "methAv",
         documentation: "Methane (C1) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "methMn",
         documentation: "Methane (C1) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "methMx",
         documentation: "Methane (C1) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ethAv",
         documentation: "Ethane (C2) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ethMn",
         documentation: "Ethane (C2) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ethMx",
         documentation: "Ethane (C2) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "propAv",
         documentation: "Propane (C3) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "propMn",
         documentation: "Propane (C3) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "propMx",
         documentation: "Propane (C3) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ibutAv",
         documentation: "iso-Butane (iC4) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ibutMn",
         documentation: "iso-Butane (iC4) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ibutMx",
         documentation: "iso-Butane (iC4) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "nbutAv",
         documentation: "nor-Butane (nC4) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "nbutMn",
         documentation: "nor-Butane (nC4) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "nbutMx",
         documentation: "nor-Butane (nC4) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ipentAv",
         documentation: "iso-Pentane (iC5) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ipentMn",
         documentation: "iso-Pentane (iC5) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ipentMx",
         documentation: "iso-Pentane (iC5) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "npentAv",
         documentation: "nor-Pentane (nC5) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "npentMn",
         documentation: "nor-Pentane (nC5) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "npentMx",
         documentation: "nor-Pentane (nC5) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "epentAv",
         documentation: "neo-Pentane (eC5) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "epentMn",
         documentation: "neo-Pentane (eC5) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "epentMx",
         documentation: "neo-Pentane (eC5) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ihexAv",
         documentation: "iso-Hexane (iC6) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ihexMn",
         documentation: "iso-Hexane (iC6) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ihexMx",
         documentation: "iso-Hexane (iC6) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "nhexAv",
         documentation: "nor-Hexane (nC6) ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "nhexMn",
         documentation: "nor-Hexane (nC6) ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "nhexMx",
         documentation: "nor-Hexane (nC6) ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "co2Av",
         documentation: "Carbon Dioxide ppm (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "co2Mn",
         documentation: "Carbon Dioxide ppm (minimum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "co2Mx",
         documentation: "Carbon Dioxide ppm (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "h2sAv",
         documentation: "Hydrogen Sulfide (average) ppm.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "h2sMn",
         documentation: "Hydrogen Sulfide (minimum) ppm.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "h2sMx",
         documentation: "Hydrogen Sulfide (maximum) ppm.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "acetylene",
         documentation: "Acetylene.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       }
     ]
   },
@@ -592,12 +592,12 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
       {
         name: "gasAv",
         documentation: "Average total gas.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gasPeak",
         documentation: "Peak gas reading.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gasPeakType",
@@ -606,60 +606,60 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
       {
         name: "gasBackgnd",
         documentation: "Background gas reading.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gasConAv",
         documentation: "Connection gas (average).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gasConMx",
         documentation: "Connection gas (maximum).",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gasTrip",
         documentation: "Trip gas last reading.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       }
     ]
   },
   {
     name: "densBulk",
     documentation: "Sample bulk density for the interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "densShale",
     documentation: "Shale density for the interval.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "calcite",
     documentation: "Calcimetry calcite percentage.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dolomite",
     documentation: "Calcimetry dolomite percentage.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "cec",
     documentation: "Cuttings cationic exchange capacity.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "qft",
     documentation:
       "Fluorescence as measured using a device licensed for the Quantitative Fluorescence Technique.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "calcStab",
     documentation: "Calcimetry stabilized percentage.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "nameFormation",
@@ -682,17 +682,17 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
   {
     name: "sizeMn",
     documentation: "Minimum size.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "sizeMx",
     documentation: "Maximum size.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenPlug",
     documentation: "Plug length.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "description",

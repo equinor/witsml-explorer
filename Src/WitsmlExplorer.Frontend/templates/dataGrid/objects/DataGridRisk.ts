@@ -125,7 +125,7 @@ export const dataGridRisk: DataGridProperty = {
         {
           name: "diaHole",
           documentation: "Hole diameter.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "severityLevel",

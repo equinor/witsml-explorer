@@ -131,25 +131,25 @@ export const dataGridMudLog: DataGridProperty = {
               name: "force",
               documentation:
                 "A force value (e.g., hookload) that represents the parameter.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "concentration",
               documentation:
                 "A concentration value that represents the parameter.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "equivalentMudWeight",
               documentation:
                 "A equivalent mud weight value that represents the parameter. This commonly used for pressure gradient parameters and pressure parameters.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "pressureGradient",
               documentation:
                 "A pressure gradient value that represents the parameter.	This is sometimes specified instead of an equivalent mud weight.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "text",

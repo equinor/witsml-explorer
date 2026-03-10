@@ -42,7 +42,7 @@ export const dataGridChannelConfigurationProperties: DataGridProperty[] = [
     name: "sensorOffset",
     documentation:
       "The planned consistent distance from the downhole equipment vertical reference (the drill bit, for MWD logs; the tool zero reference for wireline logs) at which the channel values are measured or calculated. This is typically, but not always, the distance from the bit to the sensor. This element is only informative (channel values are presented at actual depth, not requiring subtraction of an offset).",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "criticality",

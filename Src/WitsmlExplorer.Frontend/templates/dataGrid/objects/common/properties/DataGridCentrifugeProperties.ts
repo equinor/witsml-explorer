@@ -33,7 +33,7 @@ export const dataGridCentrifugeProperties: DataGridProperty[] = [
     name: "capFlow",
     documentation:
       "Maximum pump rate at which the unit will efficiently operate.  ",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "owner",

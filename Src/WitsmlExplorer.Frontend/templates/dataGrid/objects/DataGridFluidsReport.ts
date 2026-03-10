@@ -116,7 +116,7 @@ export const dataGridFluidsReport: DataGridProperty = {
               name: "presBopRating",
               documentation:
                 "Maximum pressure rating of the blow out preventer.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "mudClass",
@@ -125,126 +125,126 @@ export const dataGridFluidsReport: DataGridProperty = {
             {
               name: "density",
               documentation: "Fluid density.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "visFunnel",
               documentation: "Funnel viscosity in seconds.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "tempVis",
               documentation: "Funnel viscosity temperature.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "pv",
               documentation: "Plastic viscosity.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "yp",
               documentation:
                 "Yield point (Bingham and Herschel Bulkley models).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "gel10Sec",
               documentation: "10 second gels.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "gel10Min",
               documentation: "10 minute gels.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "gel30Min",
               documentation: "30 minute gels.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "filterCakeLtlp",
               documentation:
                 "Filter cake thickness at low (normal) temperature and pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "filtrateLtlp",
               documentation:
                 "API water loss (low temperature and pressure mud filtrate measurement) (volume per 30min).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "tempHthp",
               documentation:
                 "High temperature high pressure (HTHP) temperature.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presHthp",
               documentation: "High temperature high pressure (HTHP) pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "filtrateHthp",
               documentation:
                 "High temperature high pressure (HTHP) filtrate (volume per 30min).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "filterCakeHthp",
               documentation:
                 "High temperature high pressure (HTHP) Filter cake thickness.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "solidsPc",
               documentation:
                 "Solids percentage from retort (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "waterPc",
               documentation: "Water content (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "oilPc",
               documentation: "Oil content from retort (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "sandPc",
               documentation: "Sand content (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "solidsLowGravPc",
               documentation: "Low gravity solids (%).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "solidsCalcPc",
               documentation:
                 "Solids content (calculated) (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "baritePc",
               documentation: "Barite content (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "lcm",
               documentation: "Lost circulation material.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "mbt",
               documentation:
                 "Cation exchange capacity (CEC) of the mud sample as measured by methylene blue titration (MBT).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "ph",
@@ -253,54 +253,54 @@ export const dataGridFluidsReport: DataGridProperty = {
             {
               name: "tempPh",
               documentation: "Mud pH measurement temperature.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "pm",
               documentation: "Phenolphthalein alkalinity of whole mud.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "pmFiltrate",
               documentation: "Phenolphthalein alkalinity of mud filtrate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "mf",
               documentation: "Methyl orange alkalinity of filtrate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "alkalinityP1",
               documentation:
                 "Mud alkalinity P1 from alternate alkalinity method (volume in ml o",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "alkalinityP2",
               documentation:
                 "Mud alkalinity P2 from alternate alkalinity method (volume in ml o",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "chloride",
               documentation: "Chloride content.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "calcium",
               documentation: "Calcium content.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "magnesium",
               documentation: "Magnesium content.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "potassium",
               documentation: "Potassium content.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "rheometer",
@@ -317,12 +317,12 @@ export const dataGridFluidsReport: DataGridProperty = {
                 {
                   name: "tempRheom",
                   documentation: "Rheometer temperature.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "presRheom",
                   documentation: "Rheometer pressure.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "vis3Rpm",
@@ -354,23 +354,23 @@ export const dataGridFluidsReport: DataGridProperty = {
             {
               name: "brinePc",
               documentation: "Brine content (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "lime",
               documentation: "Lime content.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "electStab",
               documentation:
                 "Measurement of the emulsion stability and oil-wetting capability in oil-based muds.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "calciumChloride",
               documentation: "Calcium chloride content.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "company",
@@ -387,12 +387,12 @@ export const dataGridFluidsReport: DataGridProperty = {
             {
               name: "solidsHiGravPc",
               documentation: "Solids high gravity (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "polymer",
               documentation: "Polymers present in mud system.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "polyType",
@@ -402,22 +402,22 @@ export const dataGridFluidsReport: DataGridProperty = {
               name: "solCorPc",
               documentation:
                 "Solids corrected for Chloride content (commonly in percent).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "oilCtg",
               documentation: "Oil on Cuttings.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "hardnessCa",
               documentation: "Total calcium hardness.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "sulfide",
               documentation: "Sulfide content.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "comments",

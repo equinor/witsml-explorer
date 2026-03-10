@@ -41,77 +41,77 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
       {
         name: "stdParallel1",
         documentation: "DEPRECATED. Latitude of first standard parallel.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "stdParallel2",
         documentation:
           "DEPRECATED. Latitude of second standard parallel, if used.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "centralMeridian",
         documentation:
           "DEPRECATED. Longitude of the Y axis of the resulting map.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "originLatitude",
         documentation:
           "DEPRECATED. Latitude at which the X axis intersects the central meridian.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "originLongitude",
         documentation: "DEPRECATED. Longitude of the central meridian.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "latitude1",
         documentation:
           "DEPRECATED. Latitude of the first point if the two-point specification of the central line is used.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "longitude1",
         documentation:
           "DEPRECATED. Longitude of the first point if the two-point specification of the central line is used.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "latitude2",
         documentation:
           "DEPRECATED. Latitude of the second point if the two-point specification of the central line is used.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "longitude2",
         documentation:
           "DEPRECATED. Longitude of the second point if the two-point specification of the central line is used.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "latitudeForScale",
         documentation:
           "DEPRECATED. Latitude of a point for which the scale factor is specified exactly. Default to origin.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "longitudeForScale",
         documentation:
           "DEPRECATED. Longitude of a point for which the scale factor is specified exactly. Default to origin.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "trueScaleLatitude",
         documentation:
           "DEPRECATED. Latitude at which the scale on the map is exact. If none is provided, scale is assumed to be exact at the equator.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "spheroidRadius",
         documentation: "DEPRECATED. Spheroid radius.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "scaleFactor",
@@ -126,7 +126,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         name: "perspectiveHeight",
         documentation:
           "DEPRECATED. Height above the surface origin location from which the perspective is taken.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "zone",
@@ -140,18 +140,18 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
       {
         name: "falseEasting",
         documentation: "DEPRECATED. Artificial value added to the X axis.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "falseNorthing",
         documentation: "DEPRECATED. Artificial value added to the Y axis.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "bearing",
         documentation:
           "DEPRECATED. Bearing angle of the great circle with respect to north at the central point.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "hemisphere",
@@ -193,37 +193,37 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         name: "xTranslation",
         documentation:
           "DEPRECATED. Ellipsoid translation (3). Units are meters by convention.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "yTranslation",
         documentation:
           "DEPRECATED. Ellipsoid translation (3). Units are meters by convention.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "zTranslation",
         documentation:
           "DEPRECATED. Ellipsoid translation (3). Units are meters by convention.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "xRotation",
         documentation:
           "DEPRECATED. Ellipsoid rotation (3). Seconds of arc by convention.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "yRotation",
         documentation:
           "DEPRECATED. Ellipsoid rotation (3). Seconds of arc by convention.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "zRotation",
         documentation:
           "DEPRECATED. Ellipsoid rotation (3). Seconds of arc by convention.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "scaleFactor",
@@ -238,7 +238,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         name: "ellipsoidSemiMajorAxis",
         documentation:
           "DEPRECATED. Ellipsoid semi-major axis size. Implied if geodeticDatumCode or ellipsoidCode specified.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "ellipsoidInverseFlattening",
@@ -302,13 +302,13 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         name: "magneticDeclination",
         documentation:
           "The angle between magnetic north and true north. The angle is measured positive clockwise from true north to magnetic north. This value SHOULD be given if the yAxisAzimuth is measured from the magnetic north direction.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "gridConvergence",
         documentation:
           "The angle between true north and the northing axis or the projection grid being used. The angle is measured at the point in question, and is measured from true north to grid north, positive clockwise.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "yAxisDescription",

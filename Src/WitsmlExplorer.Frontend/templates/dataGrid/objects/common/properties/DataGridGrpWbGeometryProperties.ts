@@ -17,12 +17,12 @@ export const dataGridGrpWbGeometryProperties: DataGridProperty[] = [
   {
     name: "gapAir",
     documentation: "Air gap.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "depthWaterMean",
     documentation: "Water depth.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "wbGeometrySection",
@@ -62,17 +62,17 @@ export const dataGridGrpWbGeometryProperties: DataGridProperty[] = [
       {
         name: "idSection",
         documentation: "Inner diameter.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "odSection",
         documentation: "Outer diameter - Only for casings and risers.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "wtPerLen",
         documentation: "Weight per unit length for casing sections.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "grade",
@@ -86,7 +86,7 @@ export const dataGridGrpWbGeometryProperties: DataGridProperty[] = [
       {
         name: "diaDrift",
         documentation: "Maximum diameter that can pass through.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "factFric",

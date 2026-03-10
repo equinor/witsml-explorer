@@ -31,7 +31,7 @@ export const dataGridDataSourceConfigurationProperties: DataGridProperty[] = [
     name: "nominalHoleSize",
     documentation:
       "The nominal hole size associated with this data source configuration.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "tubular",
@@ -68,13 +68,13 @@ export const dataGridDataSourceConfigurationProperties: DataGridProperty[] = [
     name: "mDPlannedStart",
     documentation:
       "The anticipated depth at which data delivery for this configuration is expected to begin.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "mDPlannedStop",
     documentation:
       "The anticipated depth at which data delivery for this configuration is expected to end.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "dTimChangeDeadline",

@@ -102,7 +102,7 @@ export const dataGridCementJob: DataGridProperty = {
           name: "mdWater",
           documentation:
             "Water depth if offshore. The distance from mean sea level to water bottom.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "returnsToSeabed",
@@ -117,7 +117,7 @@ export const dataGridCementJob: DataGridProperty = {
         {
           name: "woc",
           documentation: "Duration for waiting on cement to set.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "mdPlugTop",
@@ -202,47 +202,47 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "volExcess",
               documentation: "Excess volume.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowrateDisplaceAv",
               documentation: "Average displacement rate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowrateDisplaceMx",
               documentation: "Maximum displacement rate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presDisplace",
               documentation: "Final displacement pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "volReturns",
               documentation: "Volume of returns.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "eTimMudCirculation",
               documentation: "Mud circulation elapsed time before the job.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowrateMudCirc",
               documentation: "Rate mud circulated during stage.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presMudCirc",
               documentation: "Mud circulation pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowrateEnd",
               documentation: "Final displacement pump rate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "cementingFluid",
@@ -289,22 +289,22 @@ export const dataGridCementJob: DataGridProperty = {
                 {
                   name: "volWater",
                   documentation: "Water volume.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volCement",
                   documentation: "Volume of cement.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "ratioMixWater",
                   documentation: "Mix Water Ratio.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volFluid",
                   documentation: "Fluid/Slurry Volume.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "cementPumpSchedule",
@@ -315,18 +315,18 @@ export const dataGridCementJob: DataGridProperty = {
                       name: "eTimPump",
                       documentation:
                         "(Elapsed time period during the fluid is pumped.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "ratePump",
                       documentation:
                         "Rate fluid is pumped. 0 means it is a pause.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "volPump",
                       documentation: "Volume pumped = eTimPump * ratePump.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "strokePump",
@@ -337,13 +337,13 @@ export const dataGridCementJob: DataGridProperty = {
                       name: "presBack",
                       documentation:
                         "Back pressure applied during pumping stage.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "eTimShutdown",
                       documentation:
                         "If shutdown event, the elapsed time duration.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "comments",
@@ -354,32 +354,32 @@ export const dataGridCementJob: DataGridProperty = {
                 {
                   name: "excessPc",
                   documentation: "Excess Percent.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volYield",
                   documentation: "Slurry Yield.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "density",
                   documentation: "Fluid density.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "solidVolumeFraction",
                   documentation: "Equals 1 - Porosity.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volPumped",
                   documentation: "Volume Pumped.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volOther",
                   documentation: "Other Volume.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "fluidRheologicalModel",
@@ -389,53 +389,53 @@ export const dataGridCementJob: DataGridProperty = {
                   name: "vis",
                   documentation:
                     "Viscosity (Newtonian) or Plastic Viscosity if Bingham.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "yp",
                   documentation:
                     "Yield point (Bingham and Herschel Bulkley models).",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "n",
                   documentation: "Power Law index (Power Law and HB).",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "k",
                   documentation: "Consistency index (Power Law and HB).",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "gel10SecReading",
                   documentation: "Gel reading after 10 seconds.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "gel10SecStrength",
                   documentation: "Gel strength after 10 seconds.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "gel1MinReading",
                   documentation: "Gel reading after 1 minute.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "gel1MinStrength",
                   documentation: "Gel strength after 1 minute.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "gel10MinReading",
                   documentation: "Gel reading after 10 minutes.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "gel10MinStrength",
                   documentation: "Gel strength after 10 minutes.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "typeBaseFluid",
@@ -445,7 +445,7 @@ export const dataGridCementJob: DataGridProperty = {
                 {
                   name: "densBaseFluid",
                   documentation: "Density of base fluid.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "dryBlendName",
@@ -459,17 +459,17 @@ export const dataGridCementJob: DataGridProperty = {
                   name: "massDryBlend",
                   documentation:
                     "Mass of dry blend: the blend is made of different solid additives: the volume is not constant.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "densDryBlend",
                   documentation: "Density of Dry blend.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "massSackDryBlend",
                   documentation: "Weight of a sack of dry blend.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "cementAdditive",
@@ -499,7 +499,7 @@ export const dataGridCementJob: DataGridProperty = {
                     {
                       name: "densAdd",
                       documentation: "Additive density.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "typeConc",
@@ -510,24 +510,24 @@ export const dataGridCementJob: DataGridProperty = {
                       name: "concentration",
                       documentation:
                         "Concentration Amount: unit type depends of typeConc.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "wtSack",
                       documentation:
                         "Concentration in terms of weight per sack.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "volSack",
                       documentation:
                         "Concentration in terms of volume per sack.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     {
                       name: "additive",
                       documentation: "Additive Amount.",
-                      properties: dataGridUomProperties
+                      properties: dataGridUomProperties()
                     },
                     dataGridExtensionNameValue
                   ]
@@ -544,137 +544,137 @@ export const dataGridCementJob: DataGridProperty = {
                 {
                   name: "volGasFoam",
                   documentation: "Volume of gas used for foam job.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "ratioConstGasMethodAv",
                   documentation: "Constant gas ratio method ratio  ",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "densConstGasMethod",
                   documentation: "Constant gas ratio method average density.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "ratioConstGasMethodStart",
                   documentation:
                     "Constant gas ratio method initial method ratio.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "ratioConstGasMethodEnd",
                   documentation:
                     "Constant gas ratio method final method ratio.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "densConstGasFoam",
                   documentation: "Constant gas ratio method average density.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "eTimThickening",
                   documentation: "Test thickening time.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "tempThickening",
                   documentation: "Test thickening temperature.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "presTestThickening",
                   documentation: "Test thickening pressure.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "consTestThickening",
                   documentation:
                     "Test thickening consistency/slurry viscosity - Bearden Consistency (Bc) 0 to 100.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "pcFreeWater",
                   documentation: "Test free water na: = mL/250ML.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "tempFreeWater",
                   documentation: "Test free water temperature.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volTestFluidLoss",
                   documentation: "Test fluid loss.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "tempFluidLoss",
                   documentation: "Test fluid loss temperature.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "presTestFluidLoss",
                   documentation: "Test Fluid loss pressure.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "timeFluidLoss",
                   documentation:
                     "Test Fluid loss: dehydrating test period, used to compute the API Fluid Loss.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volAPIFluidLoss",
                   documentation:
                     "API Fluid Loss = 2 * volTestFluidLoss * SQRT(30/timefluidloss).",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "eTimComprStren1",
                   documentation: "Compressive strength time 1.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "eTimComprStren2",
                   documentation: "Compressive strength time 2.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "presComprStren1",
                   documentation: "Compressive strength pressure 1.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "presComprStren2",
                   documentation: "Compressive strength pressure 2.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "tempComprStren1",
                   documentation: "Compressive strength temperature 1.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "tempComprStren2",
                   documentation: "Compressive strength temperature 2.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "densAtPres",
                   documentation: "Slurry density at pressure.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volReserved",
                   documentation: "Volume reserved.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 },
                 {
                   name: "volTotSlurry",
                   documentation: "Total Slurry Volume.",
-                  properties: dataGridUomProperties
+                  properties: dataGridUomProperties()
                 }
               ]
             },
@@ -712,13 +712,13 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "volCsgIn",
               documentation: "Total volume inside casing.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "volCsgOut",
               documentation:
                 "Total volume outside casing for this stage placement.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "tailPipeUsed",
@@ -728,7 +728,7 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "diaTailPipe",
               documentation: "Tail pipe size (diameter).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "tailPipePerf",
@@ -739,58 +739,58 @@ export const dataGridCementJob: DataGridProperty = {
               name: "presTbgStart",
               documentation:
                 "Tubing pressure at start of job (not coiled tubing).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presTbgEnd",
               documentation: "Tubing pressure at end of job.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presCsgStart",
               documentation: "Casing pressure at start of job.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presCsgEnd",
               documentation: "Casing pressure at end of job.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presBackPressure",
               documentation:
                 "Constant back pressure applied while pumping the job (can be supersede by a back pressure per pumping stage)  ",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presCoilTbgStart",
               documentation: "Pressure CTU start.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presCoilTbgEnd",
               documentation: "Pressure CTU end  ",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presBreakDown",
               documentation: "Breakdown pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowrateBreakDown",
               documentation: "Breakdown rate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presSqueezeAv",
               documentation: "Squeeze pressure average.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presSqueezeEnd",
               documentation: "Squeeze pressure final.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presSqueezeHeld",
@@ -800,32 +800,32 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "presSqueeze",
               documentation: "Squeeze pressure left on pipe.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "eTimPresHeld",
               documentation: "Time pressure held.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowrateSqueezeAv",
               documentation: "Squeeze job average rate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowrateSqueezeMx",
               documentation: "Squeeze job maximum rate.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowratePumpStart",
               documentation: "Pump rate at start of job.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "flowratePumpEnd",
               documentation: "Pump rate at end of job.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "pillBelowPlug",
@@ -845,7 +845,7 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "volCircPrior",
               documentation: "Circulate prior to start of job.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "typeOriginalMud",
@@ -854,43 +854,43 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "wtMud",
               documentation: "Mud density.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "visFunnelMud",
               documentation:
                 "Funnel viscosity in seconds (in hole at start of job).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "pvMud",
               documentation: "Plastic viscosity (in hole at start of job).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "ypMud",
               documentation: "Yield point (in hole at start of job).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "gel10Sec",
               documentation: "Gels-10Sec (in hole at start of job).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "gel10Min",
               documentation: "Gels-10Min (in hole at start of job).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "tempBHCT",
               documentation: "Bottom hole circulating temperature.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "tempBHST",
               documentation: "Bottom hole temperature static.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "volExcessMethod",
@@ -932,17 +932,17 @@ export const dataGridCementJob: DataGridProperty = {
               name: "presPriorBump",
               documentation:
                 "Pressure prior to bumping plug / pressure at end of displacement  ",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presBump",
               documentation: "Pressure plug bumped.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "presHeld",
               documentation: "Pressure held to.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "floatHeld",
@@ -952,7 +952,7 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "volMudLost",
               documentation: "Total mud lost.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "fluidDisplace",
@@ -961,12 +961,12 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "densDisplaceFluid",
               documentation: "Density of displacement fluid.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "volDisplaceFluid",
               documentation: "Volume of displacement fluid.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             dataGridExtensionNameValue
           ]
@@ -978,12 +978,12 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "presTest",
               documentation: "Test pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "eTimTest",
               documentation: "Elapsed tome to perform the test.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "cementShoeCollar",
@@ -1013,7 +1013,7 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "cblPres",
               documentation: "Cement bond Log under pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "tempSurvey",
@@ -1023,13 +1023,13 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "eTimCementLog",
               documentation: "Hours before logging run after cement run.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "formPit",
               documentation:
                 "PIT/LOT formation breakdown gradient or absolute pressure.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "toolCompanyPit",
@@ -1038,7 +1038,7 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "eTimPitStart",
               documentation: "Hours between end of cement job-start of PIT.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "mdCementTop",
@@ -1075,17 +1075,17 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "linerTop",
               documentation: "The distance to the top of the liner.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "linerLap",
               documentation: "Liner overlap length.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "eTimBeforeTest",
               documentation: "Hours before liner top test.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "testNegativeTool",
@@ -1094,7 +1094,7 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "testNegativeEmw",
               documentation: "Equivalent mud weight. Negative Test?  ",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "testPositiveTool",
@@ -1104,7 +1104,7 @@ export const dataGridCementJob: DataGridProperty = {
               name: "testPositiveEmw",
               documentation:
                 "Equivalent mud weight. Positive Test or absolute pressure .",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "cementFoundOnTool",
@@ -1171,22 +1171,22 @@ export const dataGridCementJob: DataGridProperty = {
         {
           name: "rpmPipe",
           documentation: "Pipe rotation rate (commonly in rpm).",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "tqInitPipeRot",
           documentation: "Pipe rotation initial torque.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "tqPipeAv",
           documentation: "Pipe rotation average torque.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "tqPipeMx",
           documentation: "Pipe rotation maximum torque.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "dTimRecipStart",
@@ -1199,22 +1199,22 @@ export const dataGridCementJob: DataGridProperty = {
         {
           name: "overPull",
           documentation: "String up weight during reciprocation.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "slackOff",
           documentation: "String down weight during reciprocation.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "rpmPipeRecip",
           documentation: "Pipe reciprocation RPM.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "lenPipeRecipStroke",
           documentation: "Pipe reciprocation stroke length.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "coilTubing",

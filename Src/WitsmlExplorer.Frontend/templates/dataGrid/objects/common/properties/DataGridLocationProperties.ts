@@ -18,60 +18,60 @@ export const dataGridLocationProperties: DataGridProperty[] = [
   {
     name: "latitude",
     documentation: "The latitude with north being positive.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "longitude",
     documentation: "The longitude with east being positive.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "easting",
     documentation:
       "The projected coordinate with east being positive. This is the most common type of projected coordinates. UTM coordinates are expressed in Easting and Northing.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "northing",
     documentation:
       "The projected coordinate with north being positive. This is the most common type of projected coordinates. UTM coordinates are expressed in Easting and Northing.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "westing",
     documentation:
       "The projected coordinate with west being positive. The positive directions are reversed from the usual Easting and Northing values. These values are generally located in the southern hemisphere, most notably in South Africa and Australia.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "southing",
     documentation:
       "The projected coordinate with south being positive. The positive directions are reversed from the usual Easting and Northing values. These values are generally located in the southern hemisphere, most notably in South Africa and Australia.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "projectedX",
     documentation:
       "The projected X coordinate with the positive direction unknown. ProjectedX and ProjectedY are used when it is not known what the meaning of the coordinates is. If the meaning is known, the Easting/Northing or Westing/Southing should be used. Use of this pair implies a lack of knowledge on the part of the sender.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "projectedY",
     documentation:
       "The projected Y coordinate with the positive direction unknown. ProjectedX and ProjectedY are used when it is not known what the meaning of the coordinates is. If the meaning is known, the Easting/Northing or Westing/Southing should be used. Use of this pair implies a lack of knowledge on the part of the sender.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "localX",
     documentation:
       "The local (engineering) X coordinate. The CRS will define the orientation of the axis.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "localY",
     documentation:
       "The local (engineering) Y coordinate. The CRS will define the orientation of the axis.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "original",

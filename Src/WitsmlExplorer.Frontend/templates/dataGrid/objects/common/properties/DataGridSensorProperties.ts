@@ -17,7 +17,7 @@ export const dataGridSensorProperties: DataGridProperty[] = [
   {
     name: "offsetBot",
     documentation: "Offset from bottom of measurement while drilling tool.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "comments",

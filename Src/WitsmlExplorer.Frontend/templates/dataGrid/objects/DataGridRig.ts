@@ -110,12 +110,12 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "ratingDrillDepth",
           documentation: "Maximum hole depth rating for the rig.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "ratingWaterDepth",
           documentation: "Working water depth capability of rig.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "isOffshore",
@@ -126,7 +126,7 @@ export const dataGridRig: DataGridProperty = {
           name: "airGap",
           documentation:
             "Air gap from Rig Floor to ground or mean sea level depending on location.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "dTimStartOp",
@@ -204,32 +204,32 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "ratingDerrick",
           documentation: "Maximum support load applied to derrick structure.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "htDerrick",
           documentation: "Height of derrick.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "ratingHkld",
           documentation: "Maximum hookload rating.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "capWindDerrick",
           documentation: "Derrick wind capacity.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "wtBlock",
           documentation: "Block weight.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "ratingBlock",
           documentation: "Weight rating of the travelling block.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "numBlockLines",
@@ -242,12 +242,12 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "ratingHook",
           documentation: "Weight rating of the hook.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "sizeDrillLine",
           documentation: "Drill line diameter.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "typeDrawWorks",
@@ -256,12 +256,12 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "powerDrawWorks",
           documentation: "Draw works horse power.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "ratingDrawWorks",
           documentation: "Weight rating of the drawworks.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "motorDrawWorks",
@@ -278,7 +278,7 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "ratingSwivel",
           documentation: "Maximum swivel rating.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "rotSystem",
@@ -291,17 +291,17 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "ratingTqRotSys",
           documentation: "Work string rotational torque rating.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "rotSizeOpening",
           documentation: "Rotary size opening.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "ratingRotSystem",
           documentation: "Work string rotational torque rating.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "scrSystem",
@@ -314,32 +314,32 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "capBulkMud",
           documentation: "Bulk/dry mud storage capacity.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "capLiquidMud",
           documentation: "Liquid mud storage capacity.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "capDrillWater",
           documentation: "Drill water capacity.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "capPotableWater",
           documentation: "Potable water capacity.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "capFuel",
           documentation: "Fuel capacity.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "capBulkCement",
           documentation: "Capacity of bulk cement.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "mainEngine",
@@ -385,13 +385,13 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "varDeckLdMx",
           documentation: "Variable deck load maximum (offshore rigs only).",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "vdlStorm",
           documentation:
             "Variable deck load storm rating (offshore rigs only).",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "numThrusters",
@@ -405,27 +405,27 @@ export const dataGridRig: DataGridProperty = {
         {
           name: "motionCompensationMn",
           documentation: "Minimum motion compensation.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "motionCompensationMx",
           documentation: "Maximum motion compensation.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "strokeMotionCompensation",
           documentation: "Length of motion compensation provided by equipment.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "riserAngleLimit",
           documentation: "Riser angle limit.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "heaveMx",
           documentation: "Maximum allowable heave.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "gantry",

@@ -35,17 +35,17 @@ export const dataGridBopProperties: DataGridProperty[] = [
   {
     name: "sizeConnectionBop",
     documentation: "Size of connection to Blow Out Preventer.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "presBopRating",
     documentation: "Maximum Pressure rating of Blow Out Preventer.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "sizeBopSys",
     documentation: "Maximum tubulars passable through Blow Out Preventer.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "rotBop",
@@ -55,62 +55,62 @@ export const dataGridBopProperties: DataGridProperty[] = [
   {
     name: "idBoosterLine",
     documentation: "Inner diameter of Booster Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "odBoosterLine",
     documentation: "Outer diameter of Booster Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenBoosterLine",
     documentation: "Length of Booster Line along riser.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idSurfLine",
     documentation: "Inner diameter of Surface Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "odSurfLine",
     documentation: "Outer diameter of Surface Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenSurfLine",
     documentation: "Length of Choke Line along riser.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idChkLine",
     documentation: "Inner diameter of Choke Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "odChkLine",
     documentation: "Outer diameter of Choke Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenChkLine",
     documentation: "Length of Choke Line along riser.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "idKillLine",
     documentation: "Inner diameter of Kill Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "odKillLine",
     documentation: "Outer diameter of Kill Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "lenKillLine",
     documentation: "Length of Kill Line.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "bopComponent",
@@ -136,22 +136,22 @@ export const dataGridBopProperties: DataGridProperty[] = [
       {
         name: "idPassThru",
         documentation: "Inner diameter that tubulars can pass thru.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "presWork",
         documentation: "Working rating pressure of the component.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "diaCloseMn",
         documentation: "Minimum diameter of component it will seal.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "diaCloseMx",
         documentation: "Maximum diameter of component it will seal.",
-        properties: dataGridUomProperties
+        properties: dataGridUomProperties()
       },
       {
         name: "nomenclature",
@@ -173,12 +173,12 @@ export const dataGridBopProperties: DataGridProperty[] = [
   {
     name: "diaDiverter",
     documentation: "Diameter of diverter.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "presWorkDiverter",
     documentation: "Working rating pressure of the component.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "accumulator",
@@ -187,22 +187,22 @@ export const dataGridBopProperties: DataGridProperty[] = [
   {
     name: "capAccFluid",
     documentation: "Accumulator fluid capacity.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "presAccPreCharge",
     documentation: "Accumulator pre-charge pressure.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "volAccPreCharge",
     documentation: "Accumulator pre-charge volume",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "presAccOpRating",
     documentation: "Accumulator operating pressure rating.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   },
   {
     name: "typeControlManifold",
@@ -219,6 +219,6 @@ export const dataGridBopProperties: DataGridProperty[] = [
   {
     name: "presChokeManifold",
     documentation: "Choke manifold pressure.",
-    properties: dataGridUomProperties
+    properties: dataGridUomProperties()
   }
 ];

@@ -117,13 +117,13 @@ export const dataGridLog: DataGridProperty = {
           name: "startIndex",
           documentation:
             'When the log header defines the direction as "Increasing", the startIndex is the starting (minimum) index value at which the first non-null data point is located. When the log header defines the direction as "Decreasing", the startIndex is the starting (maximum) index value at which the first non-null data point is located. Either a quantity index set (start and end) or a date time index set must be given. If both sets are given then "indexType" and "indexCurve" must represent an elapsed time from "startDateTimeIndex". This is an API "structural-range" query parameter for growing objects. See the relevant API specification for the query behavior related to this element.',
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "endIndex",
           documentation:
             'When the log header defines the direction as "Increasing", the endIndex is the ending (maximum) index value at which the last non-null data point is located. When the log header defines the direction as Decreasing, the endIndex is the ending (minimum) index value at which the last non-null data point is located. This is an API "structural-range" query parameter for growing objects. See the relevant API specification for the query behavior related to this element.',
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties()
         },
         {
           name: "stepIncrement",
@@ -266,13 +266,13 @@ export const dataGridLog: DataGridProperty = {
               name: "minIndex",
               documentation:
                 'The minimum index value of any valid data point in the curve. Null values are excluded from this determination. The value is the same regardless of the direction of the curve. This is an API "column-range" query parameter for growing objects. See the relevant API specification for the query behavior related to this element.',
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "maxIndex",
               documentation:
                 'The maximum index value of any valid data point in the curve. Null values are excluded from this determination. The value is the same regardless of the direction of the curve. This is an API "column-range" query parameter for growing objects. See the relevant API specification for the query behavior related to this element.',
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "minDateTimeIndex",
@@ -292,7 +292,7 @@ export const dataGridLog: DataGridProperty = {
               name: "sensorOffset",
               documentation:
                 "Offset of sensor from a downhole equipment vertical reference (the drill bit, for MWD logs; the tool zero reference for wireline logs). This element is only informative (log values are presented at actual depth, not requiring subtraction of an offset).",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "dataSource",
@@ -302,7 +302,7 @@ export const dataGridLog: DataGridProperty = {
               name: "densData",
               documentation:
                 "Data density of sample in samples per length unit.",
-              properties: dataGridUomProperties
+              properties: dataGridUomProperties()
             },
             {
               name: "traceState",
