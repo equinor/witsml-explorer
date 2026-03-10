@@ -360,7 +360,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
             baseType: "string",
             witsmlType: "uidString",
             maxLength: 64,
-            documentation: "",
+            documentation: "Unique identifier for the lithology qualifier.",
             isAttribute: true
           },
           {
@@ -412,6 +412,7 @@ export const dataGridGeologyIntervalProperties: DataGridProperty[] = [
             required: false,
             baseType: "string",
             witsmlType: "descriptionString",
+            maxLength: 256,
             documentation: "A textual description of the qualifier."
           },
           dataGridExtensionNameValue

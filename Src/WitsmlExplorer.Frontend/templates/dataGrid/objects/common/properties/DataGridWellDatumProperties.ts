@@ -33,6 +33,7 @@ export const dataGridWellDatumProperties: DataGridProperty[] = [
     required: false,
     baseType: "string",
     witsmlType: "elevCodeEnum",
+    maxLength: 50,
     documentation:
       "The code value that represents the type of reference datum. This may represent a point on a device (e.g., kelly bushing) or it may represent a vertical reference datum (e.g., mean sea level)."
   },
@@ -60,6 +61,7 @@ export const dataGridWellDatumProperties: DataGridProperty[] = [
     required: false,
     baseType: "string",
     witsmlType: "kindString",
+    maxLength: 50,
     documentation:
       "Since various activities may use different points as measurement datums, it is useful to characterize the point based on its usage. A well reference datum may have more than one such characterization. For example, it may be the datum used by the driller and logger for measuring their depths. Example usage values would be 'permanent','driller', 'logger' 'WRP' (well reference point) and 'SRP' (site reference point).",
     isMultiple: true

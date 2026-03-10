@@ -15,6 +15,7 @@ export const dataGridFootageNorthSouth: DataGridProperty[] = [
     required: true,
     baseType: "string",
     witsmlType: "northOrSouth",
+    maxLength: 50,
     documentation:
       "Specifies the reference line that is the origin of the distance.",
     isAttribute: true
@@ -36,6 +37,7 @@ export const dataGridFootageEastWest: DataGridProperty[] = [
     required: true,
     baseType: "string",
     witsmlType: "eastOrWest",
+    maxLength: 50,
     documentation:
       "Specifies the reference line that is the origin of the distance.",
     isAttribute: true

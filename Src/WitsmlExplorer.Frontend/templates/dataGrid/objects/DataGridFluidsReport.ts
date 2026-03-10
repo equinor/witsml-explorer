@@ -184,7 +184,7 @@ export const dataGridFluidsReport: DataGridProperty = {
               name: "mudClass",
               required: false,
               baseType: "string",
-              witsmlType: "MudClass",
+              witsmlType: "mudClass",
               maxLength: 50,
               documentation: "The class of the drilling fluid."
             },

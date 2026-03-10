@@ -104,6 +104,7 @@ export const dataGridWellbore: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellStatus",
+          maxLength: 50,
           documentation: "POSC wellbore status."
         },
         {
@@ -119,6 +120,7 @@ export const dataGridWellbore: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellPurpose",
+          maxLength: 50,
           documentation: "POSC wellbore purpose."
         },
         {
@@ -126,6 +128,7 @@ export const dataGridWellbore: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellboreType",
+          maxLength: 50,
           documentation: "Type of wellbore."
         },
         {
@@ -133,6 +136,7 @@ export const dataGridWellbore: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellboreShape",
+          maxLength: 50,
           documentation: "POSC wellbore trajectory shape."
         },
         {

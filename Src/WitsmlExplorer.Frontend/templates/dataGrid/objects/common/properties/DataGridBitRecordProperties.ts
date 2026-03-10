@@ -67,6 +67,9 @@ export const dataGridBitRecordProperties: DataGridProperty[] = [
   },
   {
     name: "cost",
+    required: false,
+    baseType: "double",
+    witsmlType: "cost",
     documentation: "Bit cost in local currency.",
     properties: dataGridCostProperties
   },

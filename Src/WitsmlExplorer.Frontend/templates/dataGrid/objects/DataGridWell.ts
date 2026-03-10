@@ -145,6 +145,7 @@ export const dataGridWell: DataGridProperty = {
           required: true,
           baseType: "string",
           witsmlType: "timeZone",
+          maxLength: 6,
           documentation:
             "The time zone in which well is located. It is the deviation in hours and minutes from UTC. This should be the normal time zone at the well and not a seasonally adjusted value such as daylight savings time."
         },
@@ -185,6 +186,7 @@ export const dataGridWell: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellStatus",
+          maxLength: 50,
           documentation: "POSC Well status."
         },
         {
@@ -192,6 +194,7 @@ export const dataGridWell: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellPurpose",
+          maxLength: 50,
           documentation: "POSC well purpose."
         },
         {
@@ -199,6 +202,7 @@ export const dataGridWell: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellFluid",
+          maxLength: 50,
           documentation:
             "POSC well fluid. The type of fluid being produced from or injected into a well facility."
         },
@@ -207,6 +211,7 @@ export const dataGridWell: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "wellDirection",
+          maxLength: 50,
           documentation:
             "POSC well direction. The direction of flow of the fluids in a well facility (generally, injected or produced, or some combination)."
         },
@@ -282,6 +287,7 @@ export const dataGridWell: DataGridProperty = {
               required: false,
               baseType: "string",
               witsmlType: "principalMeridian",
+              maxLength: 50,
               documentation: "Principal meridian for this location."
             },
             {
@@ -296,6 +302,7 @@ export const dataGridWell: DataGridProperty = {
               required: false,
               baseType: "string",
               witsmlType: "eastOrWest",
+              maxLength: 50,
               documentation: "Range direction."
             },
             {
@@ -310,6 +317,7 @@ export const dataGridWell: DataGridProperty = {
               required: false,
               baseType: "string",
               witsmlType: "northOrSouth",
+              maxLength: 50,
               documentation: "Township direction."
             },
             {
@@ -317,6 +325,7 @@ export const dataGridWell: DataGridProperty = {
               required: false,
               baseType: "string",
               witsmlType: "sectionNumber",
+              maxLength: 50,
               documentation: "Section number."
             },
             {
@@ -387,6 +396,7 @@ export const dataGridWell: DataGridProperty = {
               required: false,
               baseType: "string",
               witsmlType: "kindString",
+              maxLength: 50,
               documentation:
                 "The kind of point. For example, 'well reference point', 'platform reference point', 'sea surface', 'sea bottom'."
             },

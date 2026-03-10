@@ -66,6 +66,7 @@ export const dataGridCommonData: DataGridProperty = {
       required: false,
       baseType: "string",
       witsmlType: "timestampedTimeZone",
+      maxLength: 6,
       documentation:
         "The local time zone of the original acquisition date-time values. It is the deviation in hours and minutes from UTC. The first occurrence should be the actual local time zone at the start of acquisition and may represent a seasonally adjusted value such as daylight savings. The dTim attribute must be populated in the second and subsequent occurrences if the local time zone changes during acquisition. This knowledge is required because the original time zone in a dateTime value may be lost when software converts to a different time zone.",
       properties: [

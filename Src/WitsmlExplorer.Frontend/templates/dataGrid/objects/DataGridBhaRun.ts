@@ -148,7 +148,7 @@ export const dataGridBhaRun: DataGridProperty = {
           name: "statusBha",
           required: false,
           baseType: "string",
-          witsmlType: "BhaStatus",
+          witsmlType: "bhaStatus",
           maxLength: 50,
           documentation: "Bottom hole assembly status."
         },
@@ -642,7 +642,7 @@ export const dataGridBhaRun: DataGridProperty = {
               name: "mudClass",
               required: false,
               baseType: "string",
-              witsmlType: "MudClass",
+              witsmlType: "mudClass",
               maxLength: 50,
               documentation: "The class of the drilling fluid."
             },
@@ -650,7 +650,7 @@ export const dataGridBhaRun: DataGridProperty = {
               name: "mudSubClass",
               required: false,
               baseType: "string",
-              witsmlType: "MudSubClass",
+              witsmlType: "mudSubClass",
               maxLength: 50,
               documentation: "Mud Subtype at event occurrence."
             },

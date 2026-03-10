@@ -197,7 +197,6 @@ export const dataGridAttachment: DataGridProperty = {
         {
           name: "content",
           required: true,
-          baseType: "string",
           witsmlType: "base64Binary",
           documentation: "The actual attachment content."
         },

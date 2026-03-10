@@ -116,7 +116,6 @@ export const dataGridCementJob: DataGridProperty = {
         },
         {
           name: "holeConfig",
-          baseType: "string",
           required: false,
           witsmlType: "cs_wbGeometry",
           documentation: "Wellbore Geometry of annulus.",
@@ -395,7 +394,6 @@ export const dataGridCementJob: DataGridProperty = {
             {
               name: "cementingFluid",
               required: false,
-              baseType: "string",
               witsmlType: "cs_cementingFluid",
               documentation:
                 "Displaced Mud, washes and spacers, cements, displacement mud.",
@@ -501,7 +499,6 @@ export const dataGridCementJob: DataGridProperty = {
                 {
                   name: "cementPumpSchedule",
                   required: false,
-                  baseType: "string",
                   witsmlType: "cs_cementPumpSchedule",
                   documentation: "Set of (Time / Rate / Back Pressure).",
                   isContainer: true,
@@ -767,7 +764,6 @@ export const dataGridCementJob: DataGridProperty = {
                 {
                   name: "cementAdditive",
                   required: false,
-                  baseType: "string",
                   witsmlType: "cs_cementAdditive",
                   documentation:
                     "Additives can be added in slurry but also in spacers, washes, mud.",
@@ -1579,7 +1575,6 @@ export const dataGridCementJob: DataGridProperty = {
         },
         {
           name: "cementTest",
-          baseType: "string",
           required: false,
           witsmlType: "cs_cementTest",
           documentation: "Test results post-job.",

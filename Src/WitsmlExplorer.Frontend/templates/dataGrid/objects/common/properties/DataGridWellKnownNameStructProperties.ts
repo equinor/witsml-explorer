@@ -15,6 +15,7 @@ export const dataGridWellKnownNameStructProperties: DataGridProperty[] = [
     required: false,
     baseType: "string",
     witsmlType: "kindString",
+    maxLength: 50,
     documentation: "A unique (short) code associated with the name.",
     isAttribute: true
   }

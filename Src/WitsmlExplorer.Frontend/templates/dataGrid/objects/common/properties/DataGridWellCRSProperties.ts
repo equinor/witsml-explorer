@@ -46,6 +46,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         required: false,
         baseType: "string",
         witsmlType: "projection",
+        maxLength: 50,
         documentation: "DEPRECATED. A code to identify the type of projection."
       },
       {
@@ -184,6 +185,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         required: false,
         baseType: "string",
         witsmlType: "projectionVariantsObliqueMercator",
+        maxLength: 50,
         documentation:
           "DEPRECATED. Projection method variant - establishes minor variations of the projection. Geoshare proposal."
       },
@@ -210,6 +212,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         required: false,
         baseType: "string",
         witsmlType: "nadTypes",
+        maxLength: 50,
         documentation: "DEPRECATED. North American Datum type."
       },
       {
@@ -242,6 +245,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         required: false,
         baseType: "string",
         witsmlType: "hemispheres",
+        maxLength: 50,
         documentation:
           "DEPRECATED. Is the projection in the northern hemisphere or the southern hemisphere."
       },
@@ -287,6 +291,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         required: false,
         baseType: "string",
         witsmlType: "geodeticDatum",
+        maxLength: 50,
         documentation:
           "DEPRECATED. Geodetic datum code. This defines a system in the Geoshare naming system and should probably not be used with CRSName."
       },
@@ -356,6 +361,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
         required: false,
         baseType: "string",
         witsmlType: "ellipsoid",
+        maxLength: 50,
         documentation:
           "DEPRECATED. Ellipsoid code (spheroid) defining geographic or planar coordinates. Implied if geodeticDatumCode is specified (and is not user defined)."
       },
@@ -454,6 +460,7 @@ export const dataGridWellCRSProperties: DataGridProperty[] = [
             required: false,
             baseType: "string",
             witsmlType: "aziRef",
+            maxLength: 50,
             documentation:
               "Specifies the direction to be considered North for the y axis.",
             isAttribute: true

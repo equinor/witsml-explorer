@@ -176,8 +176,8 @@ export const dataGridFormationMarker: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "lithostratigraphyStruct",
+          maxLength: 64,
           documentation: "Lithostratigraphic classification.",
-          isContainer: true,
           properties: dataGridLithostratigraphyStructProperties
         },
         {
@@ -185,8 +185,8 @@ export const dataGridFormationMarker: DataGridProperty = {
           required: false,
           baseType: "string",
           witsmlType: "chronostratigraphyStruct",
+          maxLength: 64,
           documentation: "Chronostratigraphic classification.",
-          isContainer: true,
           properties: dataGridChronostratigraphyStructProperties
         },
         {
