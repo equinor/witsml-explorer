@@ -4,11 +4,19 @@ import { dataGridRefNameStringProperties } from "templates/dataGrid/objects/comm
 export const dataGridRefWellWellboreProperties: DataGridProperty[] = [
   {
     name: "wellboreReference",
+    required: true,
+    baseType: "string",
+    witsmlType: "refNameString",
+    maxLength: 64,
     documentation: "A pointer the wellbore with which there is a relationship.",
     properties: dataGridRefNameStringProperties
   },
   {
     name: "wellParent",
+    required: false,
+    baseType: "string",
+    witsmlType: "refNameString",
+    maxLength: 64,
     documentation:
       "A pointer to the well that contains the wellboreReference. This is not needed unless the referenced wellbore is outside the context of a common parent well.",
     properties: dataGridRefNameStringProperties

@@ -30,107 +30,180 @@ export const dataGridFormationMarker: DataGridProperty = {
       properties: [
         {
           name: "uidWell",
+          required: false,
+          baseType: "string",
+          witsmlType: "uidParentString",
+          maxLength: 64,
           documentation:
             "Unique identifier for the well. This uniquely represents the well referenced by the (possibly non-unique) nameWell.",
           isAttribute: true
         },
         {
           name: "uidWellbore",
+          required: false,
+          baseType: "string",
+          witsmlType: "uidParentString",
+          maxLength: 64,
           documentation:
             "Unique identifier for the wellbore. This uniquely represents the wellbore referenced by the (possibly non-unique) nameWellbore.",
           isAttribute: true
         },
         {
           name: "uid",
+          required: false,
+          baseType: "string",
+          witsmlType: "uidString",
+          maxLength: 64,
           documentation: "Unique identifier for the formation marker.",
           isAttribute: true
         },
         {
           name: "nameWell",
+          required: true,
+          baseType: "string",
+          witsmlType: "nameString",
+          maxLength: 64,
           documentation:
             "Human recognizable context for the well that contains the wellbore."
         },
         {
           name: "nameWellbore",
+          required: true,
+          baseType: "string",
+          witsmlType: "nameString",
+          maxLength: 64,
           documentation:
             "Human recognizable context for the wellbore that contains the formation marker."
         },
         {
           name: "name",
+          required: true,
+          baseType: "string",
+          witsmlType: "nameString",
+          maxLength: 64,
           documentation: "Human recognizable context for the formation marker."
         },
         {
           name: "mdPrognosed",
+          required: false,
+          baseType: "double",
+          witsmlType: "measuredDepthCoord",
           documentation: "Prognosed measured depth.",
           properties: dataGridMeasuredDepthCoordProperties
         },
         {
           name: "tvdPrognosed",
+          required: false,
+          baseType: "double",
+          witsmlType: "wellVerticalDepthCoord",
           documentation: "Prognosed true vertical depth.",
           properties: dataGridWellVerticalDepthCoordProperties
         },
         {
           name: "mdTopSample",
+          required: true,
+          baseType: "double",
+          witsmlType: "measuredDepthCoord",
           documentation: "Sampled measured depth at top of marker.",
           properties: dataGridMeasuredDepthCoordProperties
         },
         {
           name: "tvdTopSample",
+          required: false,
+          baseType: "double",
+          witsmlType: "wellVerticalDepthCoord",
           documentation: "Sampled true vertical depth at top of marker.",
           properties: dataGridWellVerticalDepthCoordProperties
         },
         {
           name: "thicknessBed",
+          required: false,
+          baseType: "double",
+          witsmlType: "lengthMeasure",
           documentation: "Vertical thickness.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties("lengthUom")
         },
         {
           name: "thicknessApparent",
+          required: false,
+          baseType: "double",
+          witsmlType: "lengthMeasure",
           documentation: "Formation exposed along the wellbore.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties("lengthUom")
         },
         {
           name: "thicknessPerpen",
+          required: false,
+          baseType: "double",
+          witsmlType: "lengthMeasure",
           documentation: "True Stratigraphic thickness.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties("lengthUom")
         },
         {
           name: "mdLogSample",
+          required: false,
+          baseType: "double",
+          witsmlType: "measuredDepthCoord",
           documentation: "Logged measured depth at top of marker.",
           properties: dataGridMeasuredDepthCoordProperties
         },
         {
           name: "tvdLogSample",
+          required: false,
+          baseType: "double",
+          witsmlType: "wellVerticalDepthCoord",
           documentation: "Logged true vertical depth at top of marker.",
           properties: dataGridWellVerticalDepthCoordProperties
         },
         {
           name: "dip",
+          required: false,
+          baseType: "double",
+          witsmlType: "planeAngleMeasure",
           documentation: "Angle of dip with respect to horizontal.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties("planeAngleUom")
         },
         {
           name: "dipDirection",
+          required: false,
+          baseType: "double",
+          witsmlType: "planeAngleMeasure",
           documentation: "Interpreted downdip direction.",
-          properties: dataGridUomProperties
+          properties: dataGridUomProperties("planeAngleUom")
         },
         {
           name: "lithostratigraphic",
+          required: false,
+          baseType: "string",
+          witsmlType: "lithostratigraphyStruct",
+          maxLength: 64,
           documentation: "Lithostratigraphic classification.",
           properties: dataGridLithostratigraphyStructProperties
         },
         {
           name: "chronostratigraphic",
+          required: false,
+          baseType: "string",
+          witsmlType: "chronostratigraphyStruct",
+          maxLength: 64,
           documentation: "Chronostratigraphic classification.",
           properties: dataGridChronostratigraphyStructProperties
         },
         {
           name: "nameFormation",
+          required: false,
+          baseType: "string",
+          witsmlType: "nameString",
+          maxLength: 64,
           documentation:
             "DEPRECATED. Formerly defined as name of formation penetrated, now deprecated to be replaced by lithostratigraphic with kind=formation."
         },
         {
           name: "description",
+          required: false,
+          baseType: "string",
+          witsmlType: "commentString",
+          maxLength: 4000,
           documentation: "Description of item and details."
         },
         dataGridCommonData,

@@ -4,11 +4,19 @@ import { dataGridRefNameStringProperties } from "templates/dataGrid/objects/comm
 export const dataGridRefWellboreTrajectoryProperties: DataGridProperty[] = [
   {
     name: "trajectoryReference",
+    required: true,
+    baseType: "string",
+    witsmlType: "refNameString",
+    maxLength: 64,
     documentation: "A pointer to the trajectory within the wellbore.",
     properties: dataGridRefNameStringProperties
   },
   {
     name: "wellboreParent",
+    required: false,
+    baseType: "string",
+    witsmlType: "refNameString",
+    maxLength: 64,
     documentation:
       "A pointer to the wellbore that contains the trajectoryReference. This is not needed unless the trajectory is outside the context of a common parent wellbore.",
     properties: dataGridRefNameStringProperties
