@@ -195,7 +195,7 @@ export default function QueryDataGrid() {
   }, [data]);
 
   return tableData?.length > 0 ? (
-    <div style={{ height: "0", minHeight: "100%" }}>
+    <div style={{ height: "0", minHeight: "100%", minWidth: "500px" }}>
       <ContentTable
         key={tabId}
         viewId="queryDataGrid"

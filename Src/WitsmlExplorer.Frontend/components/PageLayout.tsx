@@ -35,9 +35,14 @@ const PageLayout = (): ReactElement => {
   const { operationState } = useOperationState();
   const { colors } = operationState;
 
-  const startResizing = useCallback(() => {
-    setIsResizing(true);
-  }, []);
+  const startResizing = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.stopPropagation();
+      event.preventDefault();
+      setIsResizing(true);
+    },
+    []
+  );
 
   const stopResizing = useCallback(() => {
     setIsResizing(false);
