@@ -3,7 +3,13 @@ import { QueryEditor } from "components/QueryEditor";
 import { getTag } from "components/QueryEditorUtils";
 import { QueryActionType, QueryContext } from "contexts/queryContext";
 import { useOperationState } from "hooks/useOperationState";
-import React, { useContext, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 
@@ -12,7 +18,10 @@ import QueryDataGrid from "components/ContentViews/QueryDataGrid";
 import { QueryEditorTypes } from "components/ContentViews/QueryView/components/QueryOptions/QueryOptions";
 import ResultMeta from "components/ContentViews/QueryView/components/ResultMeta";
 import { StyledTab } from "components/StyledComponents/StyledTab";
+import { Colors } from "styles/Colors";
 import QueryOptions from "./components/QueryOptions";
+
+const MIN_LEFT_PANEL_WIDTH = 500;
 
 const QueryView = (): React.ReactElement => {
   const {
@@ -25,6 +34,9 @@ const QueryView = (): React.ReactElement => {
   const [editorType, setEditorType] = useState<QueryEditorTypes>(
     QueryEditorTypes.AceEditor
   );
+  const leftPaneRef = useRef<HTMLDivElement | null>(null);
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [resizeWidth, setResizeWidth] = useState<number | null>(null);
 
   const { query, result } = queries[tabIndex];
 
@@ -50,6 +62,48 @@ const QueryView = (): React.ReactElement => {
       getTag(query.split("\n")?.[0]) ?? (query.split("\n")?.[0] || "Empty")
     );
   };
+
+  const startResizing = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      setIsResizing(true);
+      event.preventDefault();
+      event.stopPropagation();
+      setResizeWidth(
+        leftPaneRef.current?.getBoundingClientRect().width ??
+          MIN_LEFT_PANEL_WIDTH
+      );
+    },
+    []
+  );
+
+  const stopResizing = useCallback(() => {
+    setIsResizing(false);
+  }, []);
+
+  const resize = useCallback(
+    (event: MouseEvent) => {
+      if (isResizing) {
+        event.stopPropagation();
+        event.preventDefault();
+        setResizeWidth((previousWidth) =>
+          Math.max(
+            (previousWidth ?? MIN_LEFT_PANEL_WIDTH) + event.movementX,
+            MIN_LEFT_PANEL_WIDTH
+          )
+        );
+      }
+    },
+    [isResizing]
+  );
+
+  useEffect(() => {
+    window.addEventListener("mousemove", resize);
+    window.addEventListener("mouseup", stopResizing);
+    return () => {
+      window.removeEventListener("mousemove", resize);
+      window.removeEventListener("mouseup", stopResizing);
+    };
+  }, [resize, stopResizing]);
 
   return (
     <Layout>
@@ -78,12 +132,15 @@ const QueryView = (): React.ReactElement => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns: resizeWidth
+            ? `${resizeWidth}px auto 1fr`
+            : "1fr auto 1fr",
           height: "100%",
           padding: "1rem 0rem"
         }}
       >
         <Box
+          ref={leftPaneRef}
           display="grid"
           gridTemplateRows="auto 1fr auto"
           gap="0.5rem"
@@ -105,6 +162,7 @@ const QueryView = (): React.ReactElement => {
             />
           )}
         </Box>
+        <ResizeDivider onMouseDown={startResizing} colors={colors} />
         <Box
           display="grid"
           gridTemplateRows="auto 1fr"
@@ -133,6 +191,21 @@ const StyledClearIcon = styled(Icon)`
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ResizeDivider = styled.div<{ colors: Colors }>`
+  justify-self: flex-end;
+  cursor: col-resize;
+  resize: horizontal;
+  width: 0.2rem;
+  margin: 0 0.3rem 0 0.3rem;
+  background: ${(props) => props.colors.interactive.sidebarDivider};
+  border-radius: 5px;
+  &:hover {
+    background: ${(props) => props.colors.interactive.sidebarDivider};
+    width: 0.4rem;
+    margin: 0 0.2rem 0 0.2rem;
   }
 `;
 

@@ -26,33 +26,57 @@ export const dataGridWbGeometry: DataGridProperty = {
       properties: [
         {
           name: "uidWell",
+          required: false,
+          baseType: "string",
+          witsmlType: "uidParentString",
+          maxLength: 64,
           documentation:
             "Unique identifier for the well. This uniquely represents the well referenced by the (possibly non-unique) nameWell.",
           isAttribute: true
         },
         {
           name: "uidWellbore",
+          required: false,
+          baseType: "string",
+          witsmlType: "uidParentString",
+          maxLength: 64,
           documentation:
             "Unique identifier for the wellbore. This uniquely represents the wellbore referenced by the (possibly non-unique) nameWellbore.",
           isAttribute: true
         },
         {
           name: "uid",
+          required: false,
+          baseType: "string",
+          witsmlType: "uidString",
+          maxLength: 64,
           documentation: "Unique identifier for the wellbore geometry.",
           isAttribute: true
         },
         {
           name: "nameWell",
+          required: true,
+          baseType: "string",
+          witsmlType: "nameString",
+          maxLength: 64,
           documentation:
             "Human recognizable context for the well that contains the wellbore."
         },
         {
           name: "nameWellbore",
+          required: true,
+          baseType: "string",
+          witsmlType: "nameString",
+          maxLength: 64,
           documentation:
             "Human recognizable context for the wellbore that contains the wellbore geometry."
         },
         {
           name: "name",
+          required: true,
+          baseType: "string",
+          witsmlType: "nameString",
+          maxLength: 64,
           documentation: "Human recognizable context for the wellbore geometry."
         },
         ...dataGridGrpWbGeometryProperties,

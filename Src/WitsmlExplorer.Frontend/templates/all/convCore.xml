@@ -191,7 +191,10 @@
       <cleaningMethod />
       <dryingMethod />
       <comments />
-      <commonTime />
+      <commonTime>
+        <dTimCreation />
+        <dTimLastChange />
+      </commonTime>
       <extensionNameValue uid="">
         <name />
         <value uom="" />

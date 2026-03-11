@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Data.Measures;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
@@ -130,6 +132,16 @@ namespace WitsmlExplorer.Api.Workers.Modify
             {
                 originalLogCurveInfo.Mnemonic = job.LogCurveInfo.Mnemonic;
                 originalLogCurveInfo.Uid = job.LogCurveInfo.Mnemonic;
+            }
+            if (job.LogCurveInfo.SensorOffset != null)
+            {
+                originalLogCurveInfo.SensorOffset = new WitsmlLengthMeasure()
+                {
+                    Value =
+                        job.LogCurveInfo.SensorOffset.Value.ToString(
+                            CultureInfo.InvariantCulture),
+                    Uom = job.LogCurveInfo.SensorOffset.Uom
+                };
             }
 
             originalLogCurveInfo.Unit = job.LogCurveInfo.Unit;
