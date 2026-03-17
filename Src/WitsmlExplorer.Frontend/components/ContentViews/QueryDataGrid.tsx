@@ -192,8 +192,20 @@ export default function QueryDataGrid() {
           />
         ),
         documentation: (
-          <Tooltip title={row.documentation} placement="top" arrow>
-            <Typography noWrap>{row.documentation}</Typography>
+          <Tooltip
+            title={
+              <span
+                onClick={(e: MouseEvent<HTMLSpanElement>) =>
+                  e.stopPropagation()
+                }
+              >
+                {row.documentation}
+              </span>
+            }
+            placement="left"
+            arrow
+          >
+            <span>{row.documentation}</span>
           </Tooltip>
         ),
         children: row.children ? getTableData(row.children) : undefined
