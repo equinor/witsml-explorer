@@ -1,4 +1,5 @@
 import { TextField, Typography } from "@equinor/eds-core-react";
+import { Tooltip } from "@mui/material";
 import { ExpandedState, RowSelectionState } from "@tanstack/react-table";
 import {
   formatXml,
@@ -89,7 +90,7 @@ export default function QueryDataGrid() {
       {
         property: "documentation",
         label: "documentation",
-        type: ContentType.String
+        type: ContentType.Component
       }
     ],
     []
@@ -112,8 +113,11 @@ export default function QueryDataGrid() {
           });
         }
       } else {
-        node.presentInQuery = false;
-        node.value = null;
+        if (parentRows.length > 0) {
+          // Don't allow deselecting the top level row
+          node.presentInQuery = false;
+          node.value = null;
+        }
       }
 
       if (node.children && node.children.length > 0) {
@@ -172,7 +176,7 @@ export default function QueryDataGrid() {
   );
 
   const tableData = useMemo(() => {
-    const getTableData = (dataRows: QueryGridDataRow[]): QueryGridDataRow[] => {
+    const getTableData = (dataRows: QueryGridDataRow[]): ContentTableRow[] => {
       return dataRows.map((row) => ({
         ...row,
         value: (
@@ -186,6 +190,23 @@ export default function QueryDataGrid() {
             onClick={(e: MouseEvent<HTMLInputElement>) => e.stopPropagation()}
             disabled={row.isContainer}
           />
+        ),
+        documentation: (
+          <Tooltip
+            title={
+              <span
+                onClick={(e: MouseEvent<HTMLSpanElement>) =>
+                  e.stopPropagation()
+                }
+              >
+                {row.documentation}
+              </span>
+            }
+            placement="left"
+            arrow
+          >
+            <span>{row.documentation}</span>
+          </Tooltip>
         ),
         children: row.children ? getTableData(row.children) : undefined
       }));
