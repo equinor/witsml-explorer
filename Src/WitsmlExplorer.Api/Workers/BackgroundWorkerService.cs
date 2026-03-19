@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace WitsmlExplorer.Api.Workers
     {
         private readonly IJobQueue _jobQueue;
         private readonly IHubContext<NotificationsHub> _hubContext;
-        private const int NumberOfThreadsToUse = 2;
+        private const int NumberOfRegularThreadsToUse = 2;
 
         public BackgroundWorkerService(IJobQueue jobQueue, IHubContext<NotificationsHub> hubContext)
         {
@@ -33,45 +34,53 @@ namespace WitsmlExplorer.Api.Workers
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             List<Task> backgroundWorkers = new();
-            for (int i = 0; i < NumberOfThreadsToUse; i++)
+            for (int i = 0; i < NumberOfRegularThreadsToUse; i++)
             {
-                backgroundWorkers.Add(BackgroundProcessing(stoppingToken));
+                backgroundWorkers.Add(BackgroundProcessing(stoppingToken, isSlowLane: false));
             }
 
-            await Task.WhenAny(backgroundWorkers);
+            // Slow jobs run in a dedicated single lane so at most one slow job executes at a time.
+            backgroundWorkers.Add(BackgroundProcessing(stoppingToken, isSlowLane: true));
+
+            await Task.WhenAll(backgroundWorkers);
         }
 
-        private async Task BackgroundProcessing(CancellationToken cancellationToken)
+        private async Task BackgroundProcessing(CancellationToken cancellationToken, bool isSlowLane)
         {
-            Log.Information("Background processing thread is started");
+            Log.Information("Background processing {lane} thread is started", isSlowLane ? "slow" : "regular");
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                Task<(WorkerResult, RefreshAction)> job = _jobQueue.Dequeue();
+                QueuedJob job = isSlowLane ? _jobQueue.DequeueSlow() : _jobQueue.DequeueRegular();
                 if (job == null)
                 {
                     await Task.Delay(500, cancellationToken);
                     continue;
                 }
-                if (!job.IsCompleted)
+
+                try
                 {
-                    _jobQueue.Enqueue(job);
-                    await Task.Delay(100, cancellationToken);
-                    continue;
+                    (WorkerResult result, RefreshAction refreshAction) = await job.Run();
+
+                    if (_hubContext == null)
+                    {
+                        continue;
+                    }
+
+                    await _hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result }, cancellationToken);
+
+                    if (refreshAction != null)
+                    {
+                        await _hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction }, cancellationToken);
+                    }
                 }
-
-                (WorkerResult result, RefreshAction refreshAction) = await job;
-
-                if (_hubContext == null)
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
-                    continue;
+                    throw;
                 }
-
-                await _hubContext.Clients.All.SendCoreAsync("jobFinished", new object[] { result }, cancellationToken);
-
-                if (refreshAction != null)
+                catch (System.Exception ex)
                 {
-                    await _hubContext.Clients.All.SendCoreAsync("refresh", new object[] { refreshAction }, cancellationToken);
+                    Log.Error(ex, "Unexpected exception while executing queued {lane} job", isSlowLane ? "slow" : "regular");
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Jobs
         {
             Id = Guid.NewGuid().ToString();
             StartTime = DateTime.Now;
-            Status = JobStatus.Started;
+            Status = JobStatus.Queued;
             Progress = 0.0;
             CancellationTokenSource = new CancellationTokenSource();
         }
@@ -53,6 +53,8 @@ namespace WitsmlExplorer.Api.Jobs
         public BaseReport Report { get; set; }
 
         public bool IsCancelable { get; internal set; } = false;
+
+        public bool IsSlowJob { get; internal set; } = false;
 
         [JsonIgnore]
         public CancellationTokenSource CancellationTokenSource { get; private set; }
@@ -97,7 +99,8 @@ namespace WitsmlExplorer.Api.Jobs
         Started,
         Finished,
         Failed,
-        Cancelled
+        Cancelled,
+        Queued
     }
 
     public enum ReportType

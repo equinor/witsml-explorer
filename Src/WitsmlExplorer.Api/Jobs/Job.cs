@@ -10,7 +10,8 @@ namespace WitsmlExplorer.Api.Jobs
         public abstract string GetWellName();
         public abstract string GetWellboreName();
         public abstract string GetObjectName();
-        public virtual bool IsCancelable { get; } = false;
+        protected virtual bool IsCancelable { get; } = false;
+        protected virtual bool IsSlowJob { get; } = false;
         public IProgress<double> ProgressReporter { get; set; }
 
         public JobInfo JobInfo
@@ -25,6 +26,7 @@ namespace WitsmlExplorer.Api.Jobs
                 _jobInfo.WellboreName = GetWellboreName();
                 _jobInfo.WellName = GetWellName();
                 _jobInfo.IsCancelable = IsCancelable;
+                _jobInfo.IsSlowJob = IsSlowJob;
             }
         }
 

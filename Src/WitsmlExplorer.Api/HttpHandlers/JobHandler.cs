@@ -99,6 +99,11 @@ namespace WitsmlExplorer.Api.HttpHandlers
             if (job != null && job.IsCancelable)
             {
                 job.CancellationTokenSource.Cancel();
+                if (job.Status == JobStatus.Queued)
+                {
+                    job.Status = JobStatus.Cancelled;
+                    job.FailedReason = "The job was cancelled before it started.";
+                }
                 return TypedResults.Ok();
             }
             return TypedResults.NotFound();

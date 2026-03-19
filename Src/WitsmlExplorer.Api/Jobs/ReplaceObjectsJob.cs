@@ -1,3 +1,5 @@
+using WitsmlExplorer.Api.Models;
+
 namespace WitsmlExplorer.Api.Jobs
 {
     public record ReplaceObjectsJob : Job
@@ -24,5 +26,7 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return CopyJob.GetWellName();
         }
+
+        protected override bool IsSlowJob => CopyJob.Source?.ObjectType == EntityType.Log;
     }
 }

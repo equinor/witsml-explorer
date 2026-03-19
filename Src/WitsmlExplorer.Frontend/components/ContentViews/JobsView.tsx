@@ -158,6 +158,11 @@ export const JobsView = (): React.ReactElement => {
     () =>
       jobInfos
         .map((jobInfo) => {
+          const canCancel =
+            jobInfo.isCancelable === true &&
+            !cancellingJobs.includes(jobInfo.id) &&
+            (jobInfo.status === JobStatus.Started ||
+              jobInfo.status === JobStatus.Queued);
           return {
             ...jobInfo,
             failedReason: jobInfo.failedReason,
@@ -165,19 +170,16 @@ export const JobsView = (): React.ReactElement => {
             wellboreName: jobInfo.wellboreName,
             objectName: jobInfo.objectName,
             status: getJobStatus(jobInfo, cancellingJobs),
-            cancel:
-              jobInfo.isCancelable === true &&
-              jobInfo.status === JobStatus.Started &&
-              !cancellingJobs.includes(jobInfo.id) ? (
-                <Button
-                  key="cancelJob"
-                  color="danger"
-                  variant="table_icon"
-                  onClick={() => onClickCancel(jobInfo.id)}
-                >
-                  <Icon name="clear" size={18} />
-                </Button>
-              ) : null,
+            cancel: canCancel ? (
+              <Button
+                key="cancelJob"
+                color="danger"
+                variant="table_icon"
+                onClick={() => onClickCancel(jobInfo.id)}
+              >
+                <Icon name="clear" size={18} />
+              </Button>
+            ) : null,
             startTime: formatDateString(
               jobInfo.startTime,
               timeZone,

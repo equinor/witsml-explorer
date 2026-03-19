@@ -95,11 +95,19 @@ namespace WitsmlExplorer.Api.Workers
             return maxBatchSize;
         }
 
-        public async Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null)
+        public async Task<Job> CreateJob(Stream jobStream)
         {
-            T job = await jobStream.Deserialize<T>();
-            Task<(WorkerResult, RefreshAction)> task = ExecuteBase(job, cancellationToken);
-            return (task, job);
+            return await jobStream.Deserialize<T>();
+        }
+
+        public Task<(WorkerResult, RefreshAction)> ExecuteJob(Job job, CancellationToken? cancellationToken = null)
+        {
+            if (job is not T typedJob)
+            {
+                throw new InvalidOperationException($"Expected job of type {typeof(T).Name}, got {job.GetType().Name}");
+            }
+
+            return ExecuteBase(typedJob, cancellationToken);
         }
 
         private async Task<(WorkerResult, RefreshAction)> ExecuteBase(T job, CancellationToken? cancellationToken = null)
