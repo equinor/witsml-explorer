@@ -57,6 +57,4 @@ public record CountLogDataRowJob : Job
     /// Indicates, if the job can be cancelled
     /// </summary>
     protected override bool IsCancelable => true;
-
-    protected override bool IsSlowJob => true;
 }

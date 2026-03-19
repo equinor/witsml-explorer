@@ -1,4 +1,5 @@
 using WitsmlExplorer.Api.Jobs.Common;
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.Jobs
 {
@@ -8,6 +9,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// Indicates, if the job can be cancelled
         /// </summary>
         protected override bool IsCancelable => true;
+        protected override bool IsSlowJob => Source?.ComponentType == ComponentType.Mnemonic;
     }
 
     public record CopyObjectsJob : ICopyJob<ObjectReferences, WellboreReference>
@@ -26,6 +28,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// Target object name - only for log duplication purposes
         /// </summary>
         public string TargetObjectName { get; init; }
+        protected override bool IsSlowJob => Source?.ObjectType == EntityType.Log;
 
     }
 
@@ -37,6 +40,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// Indicates, if the job can be cancelled
         /// </summary>
         protected override bool IsCancelable => true;
+        protected override bool IsSlowJob => true;
 
         public override string Description()
         {
@@ -108,5 +112,6 @@ namespace WitsmlExplorer.Api.Jobs
         /// Indicates, if the job can be cancelled
         /// </summary>
         protected override bool IsCancelable => true;
+        protected override bool IsSlowJob => Source?.ObjectType == EntityType.Log;
     }
 }

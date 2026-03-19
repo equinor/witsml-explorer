@@ -13,7 +13,7 @@ namespace WitsmlExplorer.Api.Jobs
         {
             Id = Guid.NewGuid().ToString();
             StartTime = DateTime.Now;
-            Status = IsSlowJob ? JobStatus.Queued : JobStatus.Started;
+            Status = JobStatus.Queued;
             Progress = 0.0;
             CancellationTokenSource = new CancellationTokenSource();
         }

@@ -1,3 +1,5 @@
+using WitsmlExplorer.Api.Models;
+
 namespace WitsmlExplorer.Api.Jobs
 {
     public record ReplaceComponentsJob : Job
@@ -29,5 +31,7 @@ namespace WitsmlExplorer.Api.Jobs
         /// Indicates, if the job can be cancelled
         /// </summary>
         protected override bool IsCancelable => true;
+
+        protected override bool IsSlowJob => CopyJob.Source?.ComponentType == ComponentType.Mnemonic;
     }
 }

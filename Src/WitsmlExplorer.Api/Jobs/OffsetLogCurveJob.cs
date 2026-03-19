@@ -33,5 +33,7 @@ namespace WitsmlExplorer.Api.Jobs
         {
             return LogCurveInfoReferences.GetWellName();
         }
+
+        protected override bool IsSlowJob => true;
     }
 }

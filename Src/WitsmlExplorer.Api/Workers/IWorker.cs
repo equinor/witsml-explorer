@@ -10,6 +10,7 @@ namespace WitsmlExplorer.Api.Workers
     public interface IWorker
     {
         JobType JobType { get; }
-        Task<(Task<(WorkerResult, RefreshAction)>, Job)> SetupWorker(Stream jobStream, CancellationToken? cancellationToken = null);
+        Task<Job> CreateJob(Stream jobStream);
+        Task<(WorkerResult, RefreshAction)> ExecuteJob(Job job, CancellationToken? cancellationToken = null);
     }
 }
