@@ -23,7 +23,10 @@ export enum TimeZone {
   Houston = "America/Chicago",
   Malaysia = "Asia/Kuala_Lumpur",
   Amsterdam = "Europe/Amsterdam",
-  Oman = "Asia/Muscat"
+  Oman = "Asia/Muscat",
+  Cairo = "Africa/Cairo",
+  Windhoek = "Africa/Windhoek",
+  Lagos = "Africa/Lagos"
 }
 
 export enum UserRole {

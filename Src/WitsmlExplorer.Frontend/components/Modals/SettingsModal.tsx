@@ -45,10 +45,15 @@ const timeZoneLabels: Record<TimeZone, string> = {
     TimeZone.Brasilia
   )} Brazil/Brasilia`,
   [TimeZone.London]: `${getOffsetFromTimeZone(TimeZone.London)} Europe/London`,
+  [TimeZone.Lagos]: `${getOffsetFromTimeZone(TimeZone.Lagos)} Nigeria/Lagos`,
   [TimeZone.Berlin]: `${getOffsetFromTimeZone(TimeZone.Berlin)} Europe/Berlin`,
   [TimeZone.Amsterdam]: `${getOffsetFromTimeZone(
     TimeZone.Amsterdam
   )} Europe/Amsterdam`,
+  [TimeZone.Cairo]: `${getOffsetFromTimeZone(TimeZone.Cairo)} Egypt/Cairo`,
+  [TimeZone.Windhoek]: `${getOffsetFromTimeZone(
+    TimeZone.Windhoek
+  )} Namibia/Windhoek`,
   [TimeZone.Oman]: `${getOffsetFromTimeZone(TimeZone.Oman)} Oman/Muscat`,
   [TimeZone.NewDelhi]: `${getOffsetFromTimeZone(
     TimeZone.NewDelhi
