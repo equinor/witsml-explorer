@@ -22,6 +22,7 @@
     <PackageVersion Include="Moq" Version="4.20.70" />
     <PackageVersion Include="NetCore.AutoRegisterDi" Version="2.2.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="OpenTelemetry.Api" Version="1.15.3" />
     <PackageVersion Include="Serilog" Version="3.1.1" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.1" />
     <PackageVersion Include="Serilog.Expressions" Version="4.0.0" />
