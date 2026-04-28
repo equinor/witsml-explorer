@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
@@ -8,6 +9,7 @@ using Avro.IO;
 using Avro.Specific;
 
 using Energistics.Datatypes;
+using Energistics.Datatypes.Object;
 
 namespace Witsml.ETP;
 
@@ -21,6 +23,7 @@ namespace Witsml.ETP;
 public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandlerContext
 {
     private readonly CoreProtocolHandler _coreProtocolHandler;
+    private readonly DiscoveryProtocolHandler _discoveryProtocolHandler;
     private EtpServerCapabilities _serverCapabilities;
     private long _messageId;
 
@@ -28,6 +31,7 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     {
         var options = sessionOptions ?? throw new ArgumentNullException(nameof(sessionOptions));
         _coreProtocolHandler = new CoreProtocolHandler(this, options);
+        _discoveryProtocolHandler = new DiscoveryProtocolHandler(this);
     }
 
     public static async Task<EtpClient> ConnectAsync(EtpSessionOptions sessionOptions, Func<ClientWebSocket> webSocketFactory = null, CancellationToken cancellationToken = default)
@@ -75,7 +79,17 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         var headerReader = new SpecificReader<MessageHeader>(MessageHeader._SCHEMA, MessageHeader._SCHEMA);
         var header = headerReader.Read(new MessageHeader(), decoder);
 
-        await _coreProtocolHandler.TryHandleAsync(header.protocol, header.messageType, decoder, cancellationToken);
+        switch (header.protocol)
+        {
+            case CoreProtocolHandler.ProtocolId:
+                await _coreProtocolHandler.TryHandleAsync(header.messageType, decoder, cancellationToken);
+                break;
+            case DiscoveryProtocolHandler.ProtocolId:
+                _discoveryProtocolHandler.TryHandle(header.messageType, header.correlationId, header.messageFlags, decoder);
+                break;
+            default:
+                break;
+        }
     }
 
     bool ICoreProtocolHandlerContext.IsTransportOpen => IsTransportOpen;
@@ -86,21 +100,23 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     Task ICoreProtocolHandlerContext.CloseTransportAsync(string reason, CancellationToken cancellationToken) =>
         CloseTransportAsync(reason, cancellationToken);
 
-    Task IProtocolHandlerContext.SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken) => SendEtpMessageAsync(protocol, messageType, body, cancellationToken);
+    Task IProtocolHandlerContext.SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken, long? messageId) => SendEtpMessageAsync(protocol, messageType, body, cancellationToken, messageId);
+    long IProtocolHandlerContext.ReserveMessageId() => ReserveMessageId();
 
-    private async Task SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken) where TBody : ISpecificRecord
+    private async Task SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken, long? messageId = null) where TBody : ISpecificRecord
     {
+        var resolvedMessageId = messageId ?? ReserveMessageId();
+
         if (_coreProtocolHandler.IsSessionClosed)
         {
             throw new InvalidOperationException("The ETP session has been permanently closed. Create a new EtpClient instance.");
         }
 
-        var nextId = Interlocked.Increment(ref _messageId);
         var header = new MessageHeader
         {
             protocol = protocol,
             messageType = messageType,
-            messageId = nextId,
+            messageId = resolvedMessageId,
             correlationId = 0,
             messageFlags = 0
         };
@@ -116,4 +132,12 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
 
         await SendMessageAsync(stream.ToArray(), WebSocketMessageType.Binary, cancellationToken);
     }
+
+    private long ReserveMessageId()
+    {
+        return Interlocked.Increment(ref _messageId);
+    }
+
+    public Task<IList<Resource>> GetResourcesAsync(string uri, CancellationToken cancellationToken) =>
+        _discoveryProtocolHandler.GetResourcesAsync(uri, cancellationToken);
 }

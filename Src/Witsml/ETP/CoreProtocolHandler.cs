@@ -120,13 +120,8 @@ internal sealed class CoreProtocolHandler
         }
     }
 
-    public async Task TryHandleAsync(int protocolId, int messageType, BinaryDecoder decoder, CancellationToken cancellationToken)
+    public async Task TryHandleAsync(int messageType, BinaryDecoder decoder, CancellationToken cancellationToken)
     {
-        if (protocolId != ProtocolId)
-        {
-            return;
-        }
-
         if (messageType == OpenSessionMessageType)
         {
             await HandleOpenSessionAsync(decoder, cancellationToken);
