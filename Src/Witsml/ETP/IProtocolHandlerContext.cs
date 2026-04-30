@@ -10,5 +10,6 @@ namespace Witsml.ETP;
 /// </summary>
 internal interface IProtocolHandlerContext
 {
-    Task SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken) where TBody : ISpecificRecord;
+    Task SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken, long? messageId = null) where TBody : ISpecificRecord;
+    long ReserveMessageId();
 }
