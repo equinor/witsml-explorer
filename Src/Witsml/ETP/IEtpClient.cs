@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 using Energistics.Datatypes.Object;
 
+using Witsml.Data;
+
 namespace Witsml.ETP;
 
 public interface IEtpClient : IAsyncDisposable
@@ -18,4 +20,11 @@ public interface IEtpClient : IAsyncDisposable
 
     // Protocol 3 (Discovery)
     Task<IList<Resource>> GetResourcesAsync(string uri, CancellationToken cancellationToken);
+
+    // Protocol 4 (Store)
+    Task<DataObject> GetObjectAsync(string uri, CancellationToken cancellationToken);
+    Task<T> GetObjectAsWitsmlAsync<T>(string uri, CancellationToken cancellationToken) where T : IWitsmlObjectList, new();
+    Task PutObjectAsync(DataObject dataObject, CancellationToken cancellationToken);
+    Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlObjectList;
+    Task DeleteObjectAsync(string uri, CancellationToken cancellationToken);
 };
