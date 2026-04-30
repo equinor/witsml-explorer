@@ -11,6 +11,8 @@ using Avro.Specific;
 using Energistics.Datatypes;
 using Energistics.Datatypes.Object;
 
+using Witsml.Data;
+
 namespace Witsml.ETP;
 
 /// <summary>
@@ -24,6 +26,7 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
 {
     private readonly CoreProtocolHandler _coreProtocolHandler;
     private readonly DiscoveryProtocolHandler _discoveryProtocolHandler;
+    private readonly StoreProtocolHandler _storeProtocolHandler;
     private EtpServerCapabilities _serverCapabilities;
     private long _messageId;
 
@@ -32,6 +35,7 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         var options = sessionOptions ?? throw new ArgumentNullException(nameof(sessionOptions));
         _coreProtocolHandler = new CoreProtocolHandler(this, options);
         _discoveryProtocolHandler = new DiscoveryProtocolHandler(this);
+        _storeProtocolHandler = new StoreProtocolHandler(this);
     }
 
     public static async Task<EtpClient> ConnectAsync(EtpSessionOptions sessionOptions, Func<ClientWebSocket> webSocketFactory = null, CancellationToken cancellationToken = default)
@@ -87,6 +91,9 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
             case DiscoveryProtocolHandler.ProtocolId:
                 _discoveryProtocolHandler.TryHandle(header.messageType, header.correlationId, header.messageFlags, decoder);
                 break;
+            case StoreProtocolHandler.ProtocolId:
+                _storeProtocolHandler.TryHandle(header.messageType, header.correlationId, header.messageFlags, decoder);
+                break;
             default:
                 break;
         }
@@ -140,4 +147,19 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
 
     public Task<IList<Resource>> GetResourcesAsync(string uri, CancellationToken cancellationToken) =>
         _discoveryProtocolHandler.GetResourcesAsync(uri, cancellationToken);
+
+    public Task<DataObject> GetObjectAsync(string uri, CancellationToken cancellationToken) =>
+        _storeProtocolHandler.GetObjectAsync(uri, cancellationToken);
+
+    public Task<T> GetObjectAsWitsmlAsync<T>(string uri, CancellationToken cancellationToken) where T : IWitsmlObjectList, new() =>
+        _storeProtocolHandler.GetObjectAsWitsmlAsync<T>(uri, cancellationToken);
+
+    public Task PutObjectAsync(DataObject dataObject, CancellationToken cancellationToken) =>
+        _storeProtocolHandler.PutObjectAsync(dataObject, cancellationToken);
+
+    public Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlObjectList =>
+        _storeProtocolHandler.PutObjectAsWitsmlAsync(uri, contentType, witsmlObject, cancellationToken);
+
+    public Task DeleteObjectAsync(string uri, CancellationToken cancellationToken) =>
+        _storeProtocolHandler.DeleteObjectAsync(uri, cancellationToken);
 }
