@@ -32,6 +32,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
         {
             if (!ValidateUrl(witsmlServer))
                 return TypedResults.BadRequest("Not valid server URL.");
+            if (!ValidateEtpUrl(witsmlServer))
+                return TypedResults.BadRequest("Not valid ETP server URL. ETP URL must be a secure WebSocket (wss://).");
             Server inserted = await witsmlServerRepository.CreateDocumentAsync(witsmlServer);
             return TypedResults.Ok(inserted);
         }
@@ -42,6 +44,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
             if (!ValidateUrl(witsmlServer))
                 return TypedResults.BadRequest("Not valid server URL.");
+            if (!ValidateEtpUrl(witsmlServer))
+                return TypedResults.BadRequest("Not valid ETP server URL. ETP URL must be a secure WebSocket (wss://).");
             Server updatedServer = await witsmlServerRepository.UpdateDocumentAsync(witsmlServerId, witsmlServer);
             return TypedResults.Ok(updatedServer);
         }
@@ -51,6 +55,18 @@ namespace WitsmlExplorer.Api.HttpHandlers
             var uri = witsmlServer.Url;
             bool isValidUrl = uri?.IsAbsoluteUri == true
                               && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+            return isValidUrl;
+        }
+
+        private static bool ValidateEtpUrl(Server witsmlServer)
+        {
+            var uri = witsmlServer.EtpUrl;
+
+            if (uri == null)
+                return true; // EtpUrl is optional.
+
+            bool isValidUrl = uri?.IsAbsoluteUri == true
+                              && uri.Scheme == Uri.UriSchemeWss;
             return isValidUrl;
         }
 

@@ -17,6 +17,8 @@ namespace WitsmlExplorer.Api.Models
         public string Name { get; init; }
         [JsonPropertyName("url")]
         public Uri Url { get; init; }
+        [JsonPropertyName("etpUrl")]
+        public Uri EtpUrl { get; init; }
         [JsonPropertyName("description")]
         public string Description { get; init; }
         [JsonPropertyName("roles")]
