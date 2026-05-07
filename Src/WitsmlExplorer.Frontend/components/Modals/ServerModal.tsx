@@ -50,6 +50,7 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
   const [server, setServer] = useState<Server>(props.server);
   const [connectionVerified, setConnectionVerified] = useState<boolean>(false);
   const [displayUrlError, setDisplayUrlError] = useState<boolean>(false);
+  const [displayEtpUrlError, setDisplayEtpUrlError] = useState<boolean>(false);
   const [displayNameError, setDisplayServerNameError] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -131,10 +132,15 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
     setDisplayUrlError(!isUrlValid(server.url));
   };
 
+  const runEtpUrlValidation = () => {
+    setDisplayEtpUrlError(!isEtpUrlValid(server.etpUrl));
+  };
+
   const validateForm = () => {
     return (
       server.name.length !== 0 &&
       isUrlValid(server.url) &&
+      isEtpUrlValid(server.etpUrl) &&
       !isNaN(server.depthLogDecimals)
     );
   };
@@ -145,6 +151,14 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
       runUrlValidation();
     }
     setServer({ ...server, url: e.target.value });
+  };
+
+  const onChangeEtpUrl = (e: ChangeEvent<HTMLInputElement>) => {
+    setConnectionVerified(false);
+    if (displayEtpUrlError) {
+      runEtpUrlValidation();
+    }
+    setServer({ ...server, etpUrl: e.target.value || null });
   };
 
   const onChangeName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -169,6 +183,20 @@ const ServerModal = (props: ServerModalProps): React.ReactElement => {
               onChange={onChangeUrl}
               onBlur={runUrlValidation}
               required
+              disabled={props.editDisabled}
+            />
+            <Label label="ETP URL" style={labelStyle} htmlFor="etpUrl" />
+            <TextField
+              id="etpUrl"
+              defaultValue={server.etpUrl}
+              variant={displayEtpUrlError ? "error" : null}
+              helperText={
+                displayEtpUrlError
+                  ? "Not a valid ETP server URL. ETP URL must be a secure WebSocket (wss://)."
+                  : ""
+              }
+              onChange={onChangeEtpUrl}
+              onBlur={runEtpUrlValidation}
               disabled={props.editDisabled}
             />
             <Label
@@ -385,6 +413,16 @@ const isUrlValid = (url: string) => {
   try {
     new URL(url);
     return true;
+  } catch {
+    return false;
+  }
+};
+
+const isEtpUrlValid = (url: string) => {
+  if (url === null || url === undefined) return true; // ETP url is optional
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === "wss:";
   } catch {
     return false;
   }
