@@ -9,6 +9,7 @@ namespace WitsmlExplorer.Api.Models
         {
             Name = server.Name;
             Url = server.Url;
+            EtpUrl = server.EtpUrl;
             Description = server.Description;
             Roles = server.Roles;
             CredentialIds = server.CredentialIds;
