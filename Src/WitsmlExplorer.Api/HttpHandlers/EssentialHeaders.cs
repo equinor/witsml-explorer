@@ -1,4 +1,8 @@
+using System;
+
 using Microsoft.AspNetCore.Http;
+
+using WitsmlExplorer.Api.Models;
 
 namespace WitsmlExplorer.Api.HttpHandlers
 {
@@ -11,6 +15,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public string SourceServer { get; }
         public string TargetUsername { get; }
         public string SourceUsername { get; }
+        public WitsmlProtocol WitsmlProtocol { get; }
         public string GetCookieValue();
         public string GetBearerToken();
 
@@ -24,7 +29,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static readonly string WitsmlSourceServer = "WitsmlSourceServer";
         public static readonly string WitsmlTargetUsername = "WitsmlTargetUsername";
         public static readonly string WitsmlSourceUsername = "WitsmlSourceUsername";
-
+        public static readonly string WitsmlProtocolHeader = "WitsmlProtocol";
         public EssentialHeaders() { }
         public EssentialHeaders(HttpRequest httpRequest)
         {
@@ -36,6 +41,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
             TargetUsername = httpRequest?.Headers[WitsmlTargetUsername];
             SourceUsername = httpRequest?.Headers[WitsmlSourceUsername];
             WitsmlExplorerCookie = httpRequest?.Cookies[CookieName];
+            var protocolString = httpRequest?.Headers[WitsmlProtocolHeader];
+            WitsmlProtocol = Enum.TryParse<WitsmlProtocol>(protocolString, out var protocol)
+                                ? protocol
+                                : WitsmlProtocol.Auto;
         }
         public string Authorization { get; init; }
         public string WitsmlAuth { get; init; }
@@ -43,6 +52,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public string SourceServer { get; init; }
         public string TargetUsername { get; init; }
         public string SourceUsername { get; init; }
+        public WitsmlProtocol WitsmlProtocol { get; init; }
         private string WitsmlExplorerCookie { get; init; }
 
 
