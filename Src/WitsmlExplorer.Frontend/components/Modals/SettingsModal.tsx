@@ -12,10 +12,13 @@ import {
   UserTheme
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { useLocalStorageState } from "hooks/useLocalStorageState";
 import { useOperationState } from "hooks/useOperationState";
 import { getAccountInfo, msalEnabled, signOut } from "msal/MsalAuthProvider";
 import React, { ChangeEvent, CSSProperties, FC, useState } from "react";
-import AuthorizationService from "services/authorizationService";
+import AuthorizationService, {
+  WitsmlProtocol
+} from "services/authorizationService";
 import styled from "styled-components";
 import { dark, light } from "styles/Colors";
 import Icon from "styles/Icons";
@@ -27,7 +30,8 @@ import {
   STORAGE_MODE_KEY,
   STORAGE_THEME_KEY,
   STORAGE_TIMEZONE_KEY,
-  STORAGE_USER_ROLE_KEY
+  STORAGE_USER_ROLE_KEY,
+  STORAGE_WITSML_PROTOCOL_KEY
 } from "tools/localStorageHelpers";
 
 const iconSizes: { [key in UserTheme]: 24 | 32 | 16 | 18 | 40 } = {
@@ -83,6 +87,11 @@ const SettingsModal = (): React.ReactElement => {
         : DecimalPreference.Decimal;
     });
   const [decimalError, setDecimalError] = useState<boolean>(false);
+  const [witsmlProtocol, setWitsmlProtocol] =
+    useLocalStorageState<WitsmlProtocol>(STORAGE_WITSML_PROTOCOL_KEY, {
+      defaultValue: WitsmlProtocol.Auto,
+      valueVerifier: (value) => Object.values(WitsmlProtocol).includes(value)
+    });
 
   const onChangeTheme = (event: any) => {
     const selectedTheme = event.target.value;
@@ -110,6 +119,12 @@ const SettingsModal = (): React.ReactElement => {
       type: OperationType.SetDateTimeFormat,
       payload: selectedDateTimeFormat
     });
+  };
+
+  const onChangeWitsmlProtocol = (event: any) => {
+    const selectedProtocol = event.target.value;
+    setWitsmlProtocol(selectedProtocol);
+    AuthorizationService.setWitsmlProtocol(selectedProtocol);
   };
 
   const onChangeTimeZone = (event: any) => {
@@ -239,7 +254,7 @@ const SettingsModal = (): React.ReactElement => {
           <HorizontalLayout>
             <RowIcon name="accessible" />
             <StyledNativeSelect
-              id={"native-select-mode"}
+              id={"native-select-userRole"}
               label={"User Role"}
               onChange={onChangeUserRole}
               defaultValue={userRole}
@@ -248,6 +263,20 @@ const SettingsModal = (): React.ReactElement => {
               <option value={UserRole.Regular}>Regular User</option>
               <option value={UserRole.Advanced}>Advanced User</option>
               <option value={UserRole.Expert}>Expert User</option>
+            </StyledNativeSelect>
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <RowIcon name="cable" />
+            <StyledNativeSelect
+              id={"native-select-witsmlProtocol"}
+              label={"Protocol"}
+              onChange={onChangeWitsmlProtocol}
+              defaultValue={witsmlProtocol}
+              colors={colors}
+            >
+              <option value={WitsmlProtocol.Auto}>Auto</option>
+              <option value={WitsmlProtocol.Soap}>Soap</option>
+              <option value={WitsmlProtocol.Etp}>Etp</option>
             </StyledNativeSelect>
           </HorizontalLayout>
           <HorizontalLayout>

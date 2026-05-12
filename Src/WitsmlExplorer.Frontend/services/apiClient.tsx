@@ -18,7 +18,8 @@ export class ApiClient {
       "WitsmlTargetServer": ApiClient.getServerHeader(targetServer),
       "WitsmlSourceServer": ApiClient.getServerHeader(sourceServer),
       "WitsmlTargetUsername": ApiClient.getUsernameHeader(targetServer),
-      "WitsmlSourceUsername": ApiClient.getUsernameHeader(sourceServer)
+      "WitsmlSourceUsername": ApiClient.getUsernameHeader(sourceServer),
+      "WitsmlProtocol": AuthorizationService.witsmlProtocol
     };
   }
 

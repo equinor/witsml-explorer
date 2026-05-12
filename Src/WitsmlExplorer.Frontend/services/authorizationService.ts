@@ -5,6 +5,7 @@ import { AuthorizationClient } from "services/authorizationClient";
 import { SimpleEventDispatcher } from "ste-simple-events";
 import {
   STORAGE_KEEP_SERVER_CREDENTIALS,
+  STORAGE_WITSML_PROTOCOL_KEY,
   getLocalStorageItem,
   removeLocalStorageItem,
   setLocalStorageItem
@@ -32,6 +33,12 @@ export interface ConnectionInformation {
   userName: string;
 }
 
+export enum WitsmlProtocol {
+  Auto = "Auto",
+  Soap = "Soap",
+  Etp = "Etp"
+}
+
 class AuthorizationService {
   private static _instance: AuthorizationService;
   private _onAuthorizationChange =
@@ -39,6 +46,13 @@ class AuthorizationService {
   private server?: Server;
   private _sourceServer?: Server;
   private serversAwaitingAuthorization: Server[] = [];
+  private _witsmlProtocol: WitsmlProtocol = getLocalStorageItem<WitsmlProtocol>(
+    STORAGE_WITSML_PROTOCOL_KEY,
+    {
+      defaultValue: WitsmlProtocol.Auto,
+      valueVerifier: (value) => Object.values(WitsmlProtocol).includes(value)
+    }
+  );
 
   public awaitServerAuthorization(server: Server) {
     this.serversAwaitingAuthorization.push(server);
@@ -59,6 +73,14 @@ class AuthorizationService {
         (waitingServer) => waitingServer.id == server.id
       ) != undefined
     );
+  }
+
+  public setWitsmlProtocol(protocol: WitsmlProtocol) {
+    this._witsmlProtocol = protocol;
+  }
+
+  public get witsmlProtocol(): WitsmlProtocol {
+    return this._witsmlProtocol;
   }
 
   public setSelectedServer(server: Server) {

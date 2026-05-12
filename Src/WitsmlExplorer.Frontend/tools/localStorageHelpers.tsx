@@ -22,6 +22,7 @@ export const STORAGE_CONTENTTABLE_ORDER_KEY = "-ordering";
 export const STORAGE_USER_ROLE_KEY = "userRole";
 export const STORAGE_LAST_VIEWED_FEATURE_KEY = "lastViewedFeature";
 export const STORAGE_SHOW_USER_GROUP_WARNING_KEY = "showUserGroupWarning";
+export const STORAGE_WITSML_PROTOCOL_KEY = "witsmlProtocol";
 
 export const getLocalStorageItem = <T,>(
   key: string,
