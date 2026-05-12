@@ -12,6 +12,7 @@ import {
   EMPTY_CONTEXT_MENU,
   OperationState,
   TimeZone,
+  UserRole,
   UserTheme,
   reducer as operationReducer
 } from "contexts/operationStateReducer";
@@ -82,6 +83,7 @@ export function renderWithContexts(
         decimals: DecimalPreference.Raw,
         colors: light,
         hotKeysEnabled: false,
+        userRole: UserRole.Expert,
         ...initialOperationState
       }
     );
@@ -91,7 +93,11 @@ export function renderWithContexts(
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
           <OperationContext.Provider
-            value={{ operationState, dispatchOperation }}
+            value={{
+              operationState,
+              dispatchOperation,
+              isOperationStateHydrated: true
+            }}
           >
             <LoggedInUsernamesProvider>
               <ConnectedServerProvider
@@ -155,6 +161,7 @@ export function getServer(overrides?: Partial<Server>): Server {
     name: "serverName",
     description: "serverDescription",
     url: "serverUrl",
+    etpUrl: "etpUrl",
     roles: [],
     credentialIds: [],
     depthLogDecimals: 0,

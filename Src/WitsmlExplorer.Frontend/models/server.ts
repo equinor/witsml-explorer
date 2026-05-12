@@ -3,6 +3,7 @@ export interface Server {
   name: string;
   description: string;
   url: string;
+  etpUrl?: string;
   roles: string[];
   credentialIds: string[];
   currentUsername?: string;
@@ -17,6 +18,7 @@ export function emptyServer(): Server {
     name: "",
     description: "",
     url: "",
+    etpUrl: undefined,
     roles: [],
     credentialIds: [],
     currentUsername: undefined,
