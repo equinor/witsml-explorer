@@ -8,7 +8,6 @@ public sealed record EtpSessionOptions
     Uri Endpoint,
     string AppName,
     string AppVersion,
-    string ClientInstanceId,
     EtpBasicAuthCredentials BasicAuth,
     IReadOnlyList<RequestedProtocol> RequestedProtocols,
     IReadOnlyDictionary<string, string> HttpHeaders = null

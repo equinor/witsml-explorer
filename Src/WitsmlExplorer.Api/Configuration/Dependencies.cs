@@ -12,6 +12,7 @@ using Serilog;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Services.ETP;
 using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Copy;
 
@@ -46,6 +47,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
             services.AddSingleton<IJobProgressService, JobProgressService>();
+            services.AddSingleton<IEtpSessionManager, EtpSessionManager>();
             services.AddScoped<IUidMappingService, UidMappingService>();
             services.AddScoped<IMnemonicsMappingService, MnemonicsMappingService>();
         }
