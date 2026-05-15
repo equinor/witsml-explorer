@@ -13,6 +13,9 @@ public interface IEtpClient : IAsyncDisposable
 {
     bool IsSessionOpen { get; }
     Guid? SessionId { get; }
+    TimeSpan ClientIdleTime { get; }
+    TimeSpan ServerIdleTime { get; }
+    TimeSpan IdleTime => ClientIdleTime < ServerIdleTime ? ClientIdleTime : ServerIdleTime;
 
     // Protocol 0 (Core)
     Task CloseSessionAsync(string reason, CancellationToken cancellationToken);

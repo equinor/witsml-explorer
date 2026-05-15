@@ -29,6 +29,8 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     private readonly StoreProtocolHandler _storeProtocolHandler;
     private EtpServerCapabilities _serverCapabilities;
     private long _messageId;
+    private DateTime _lastMessageSentUtc;
+    private DateTime _lastMessageReceivedUtc;
 
     private EtpClient(EtpSessionOptions sessionOptions, Func<ClientWebSocket> webSocketFactory) : base(webSocketFactory)
     {
@@ -49,6 +51,10 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     public bool IsSessionOpen => _coreProtocolHandler.IsSessionOpen;
 
     public Guid? SessionId => _coreProtocolHandler.SessionId;
+
+    public TimeSpan ClientIdleTime => DateTime.UtcNow - _lastMessageSentUtc;
+
+    public TimeSpan ServerIdleTime => DateTime.UtcNow - _lastMessageReceivedUtc;
 
     public Task CloseSessionAsync(string reason = "Closure requested by client", CancellationToken cancellationToken = default) =>
         _coreProtocolHandler.CloseSessionAsync(reason, cancellationToken);
@@ -76,6 +82,8 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         {
             return;
         }
+
+        _lastMessageReceivedUtc = DateTime.UtcNow;
 
         using var stream = new MemoryStream(payload.ToArray(), writable: false);
         var decoder = new BinaryDecoder(stream);
@@ -138,6 +146,7 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         bodyWriter.Write(body, encoder);
 
         await SendMessageAsync(stream.ToArray(), WebSocketMessageType.Binary, cancellationToken);
+        _lastMessageSentUtc = DateTime.UtcNow;
     }
 
     private long ReserveMessageId()

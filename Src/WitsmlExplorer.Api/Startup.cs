@@ -25,6 +25,7 @@ using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.HttpHandlers;
 using WitsmlExplorer.Api.Middleware;
 using WitsmlExplorer.Api.Services;
+using WitsmlExplorer.Api.Services.ETP;
 using WitsmlExplorer.Api.Swagger;
 using WitsmlExplorer.Api.Workers;
 using WitsmlExplorer.Api.Workers.Copy;
@@ -45,6 +46,7 @@ namespace WitsmlExplorer.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<WitsmlClientCapabilities>(Configuration.GetSection("Witsml:ClientCapabilities"));
+            services.Configure<SessionManagerOptions>(Configuration.GetSection("Etp"));
             string allowedOrigin = Configuration["AllowedOrigin"];
             if (string.IsNullOrEmpty(allowedOrigin) || !allowedOrigin.StartsWith("http"))
             {
@@ -69,6 +71,7 @@ namespace WitsmlExplorer.Api
             services.AddDataProtection();
             services.ConfigureDependencies(Configuration);
             services.AddHostedService<BackgroundWorkerService>();
+            services.AddHostedService<EtpSessionCleanupWorker>();
             services.AddScoped<ICopyLogDataWorker, CopyLogDataWorker>();
             services.AddEndpointsApiExplorer();
             services.ConfigureSwaggerGen(Configuration);
