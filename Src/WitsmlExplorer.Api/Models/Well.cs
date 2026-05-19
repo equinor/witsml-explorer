@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+using Witsml.Data;
+
 using WitsmlExplorer.Api.Models.Measure;
 
 namespace WitsmlExplorer.Api.Models
@@ -23,5 +25,29 @@ namespace WitsmlExplorer.Api.Models
         public List<WellDatum> WellDatum { get; init; }
         public List<Location> WellLocation { get; init; }
         public List<ReferencePoint> ReferencePoint { get; init; }
-    }
+
+        public static Well FromWitsml(WitsmlWell witsmlWell)
+        {
+            if (witsmlWell == null) return null;
+            return new Well
+            {
+                Uid = witsmlWell.Uid,
+                Name = witsmlWell.Name,
+                Field = witsmlWell.Field,
+                Operator = witsmlWell.Operator,
+                NumLicense = witsmlWell.NumLicense,
+                TimeZone = witsmlWell.TimeZone,
+                DateTimeCreation = witsmlWell.CommonData?.DTimCreation,
+                DateTimeLastChange = witsmlWell.CommonData?.DTimLastChange,
+                ItemState = witsmlWell.CommonData?.ItemState,
+                StatusWell = witsmlWell.StatusWell,
+                PurposeWell = witsmlWell.PurposeWell,
+                Country = witsmlWell.Country,
+                WaterDepth = LengthMeasure.FromWitsml(witsmlWell.WaterDepth),
+                WellDatum = Models.WellDatum.FromWitsmlWellDatum(witsmlWell.WellDatum),
+                WellLocation = Location.FromWitsmlLocation(witsmlWell.WellLocation),
+                ReferencePoint = Models.ReferencePoint.FromWitsmlReferencePoint(witsmlWell.ReferencePoint)
+            };
+        }
+    };
 }
