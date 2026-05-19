@@ -13,11 +13,13 @@ namespace WitsmlExplorer.Api.Services
     {
         public void RemoveCachedCredentials(string cacheId);
         public void VerifyUserIsLoggedIn(IEssentialHeaders eh, ServerType serverType);
-        public Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri serverUrl);
+        public Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri soapServerUrl);
         public string GetClaimFromToken(string token, string claim);
-        public Task VerifyCredentials(ServerCredentials credentials);
+        public Task VerifySoapCredentials(ServerCredentials soapCredentials);
+        public Task VerifyEtpCredentials(ServerCredentials etpCredentials);
         public Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext);
-        public ServerCredentials GetCredentials(IEssentialHeaders eh, string server, string username);
+        public ServerCredentials GetSoapCredentials(IEssentialHeaders eh, string soapServer, string username);
+        public Task<ServerCredentials> GetEtpCredentials(IEssentialHeaders eh, string etpServer, string username);
         public string GetCacheId(IEssentialHeaders eh);
     }
 }

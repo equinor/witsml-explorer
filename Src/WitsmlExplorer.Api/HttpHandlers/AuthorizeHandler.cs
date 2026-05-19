@@ -65,14 +65,27 @@ namespace WitsmlExplorer.Api.HttpHandlers
         public static async Task<IResult> VerifyUserIsLoggedIn(ConnectionInformation connectionInfo, HttpContext httpContext, [FromServices] ICredentialsService credentialsService)
         {
             EssentialHeaders eh = new(httpContext?.Request);
-            var creds = credentialsService.GetCredentials(eh, connectionInfo.ServerUrl.ToString(), connectionInfo.UserName);
-            if (creds == null)
-            {
-                return TypedResults.Unauthorized();
-            }
+
             try
             {
-                await credentialsService.VerifyCredentials(creds);
+                if (eh.WitsmlProtocol == WitsmlProtocol.Etp)
+                {
+                    ServerCredentials etpCredentials = await credentialsService.GetEtpCredentials(eh, connectionInfo.ServerUrl.ToString(), connectionInfo.UserName);
+                    if (etpCredentials == null)
+                    {
+                        return TypedResults.Unauthorized();
+                    }
+                    await credentialsService.VerifyEtpCredentials(etpCredentials);
+                }
+                else
+                {
+                    ServerCredentials soapCredentials = credentialsService.GetSoapCredentials(eh, connectionInfo.ServerUrl.ToString(), connectionInfo.UserName);
+                    if (soapCredentials == null)
+                    {
+                        return TypedResults.Unauthorized();
+                    }
+                    await credentialsService.VerifySoapCredentials(soapCredentials);
+                }
             }
             catch (Exception)
             {

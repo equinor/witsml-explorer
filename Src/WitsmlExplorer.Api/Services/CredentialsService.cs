@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.ETP;
 using Witsml.Extensions;
 
 using WitsmlExplorer.Api.Configuration;
@@ -24,7 +25,13 @@ using WitsmlExplorer.Api.Repositories;
 
 namespace WitsmlExplorer.Api.Services
 {
-
+    /// <summary>
+    /// Manages credential verification and caching for WITSML server connections supporting both SOAP and ETP protocols.
+    /// 
+    /// Credentials are cached primarily by SOAP server URL. When ETP protocol is required, the service looks up
+    /// the SOAP URL in the server database to retrieve the corresponding ETP endpoint URL, then converts the
+    /// cached SOAP credentials for use with ETP authentication.
+    /// </summary>
     // ReSharper disable once UnusedMember.Global
     public class CredentialsService : ICredentialsService
     {
@@ -59,42 +66,70 @@ namespace WitsmlExplorer.Api.Services
             _enableHttp = StringHelpers.ToBoolean(configuration[ConfigConstants.EnableHttp]);
         }
 
-        public async Task VerifyCredentials(ServerCredentials creds)
+        public async Task VerifySoapCredentials(ServerCredentials soapCredentials)
         {
             var witsmlClient = new WitsmlClient(options =>
             {
-                options.Hostname = creds.Host.ToString();
-                options.Credentials = new WitsmlCredentials(creds.UserId, creds.Password);
+                options.Hostname = soapCredentials.Host.ToString();
+                options.Credentials = new WitsmlCredentials(soapCredentials.UserId, soapCredentials.Password);
                 options.ClientCapabilities = _clientCapabilities;
                 options.EnableHttp = _enableHttp;
             });
             await witsmlClient.TestConnectionAsync();
         }
 
+        public async Task VerifyEtpCredentials(ServerCredentials etpCredentials)
+        {
+            if (etpCredentials?.Host == null)
+            {
+                throw new ArgumentException("ETP host URL is required for ETP credential verification");
+            }
+
+            var sessionOptions = new EtpSessionOptions(
+                Endpoint: etpCredentials.Host,
+                AppName: "Witsml Explorer",
+                AppVersion: "1.0",
+                BasicAuth: new EtpBasicAuthCredentials(etpCredentials.UserId, etpCredentials.Password),
+                RequestedProtocols: null
+            );
+
+            await using var etpClient = await EtpClient.ConnectAsync(sessionOptions);
+            await etpClient.CloseSessionAsync();
+        }
+
         public async Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext)
         {
-            ServerCredentials creds = HttpRequestExtensions.ParseServerHttpHeader(eh.WitsmlAuth, Decrypt);
-            if (creds.IsNullOrEmpty())
+            ServerCredentials soapCredentials = HttpRequestExtensions.ParseServerHttpHeader(eh.WitsmlAuth, Decrypt);
+            if (soapCredentials.IsNullOrEmpty())
             {
                 return false;
             }
+
             string cacheId = GetCacheId(eh);
             if (!_useOAuth2 && (string.IsNullOrEmpty(cacheId) || _credentialsCache.GetItem(cacheId) == null))
             {
                 cacheId = httpContext.CreateWitsmlExplorerCookie(_isDesktopApp);
             }
 
-            await VerifyCredentials(creds);
+            if (eh.WitsmlProtocol == WitsmlProtocol.Etp)
+            {
+                ServerCredentials etpCredentials = await GetEtpCredentialsFromSoapCredentials(soapCredentials);
+                await VerifyEtpCredentials(etpCredentials);
+            }
+            else
+            {
+                await VerifySoapCredentials(soapCredentials);
+            }
 
             double ttl = keep ? 24.0 : 1.0; // hours
-            CacheCredentials(cacheId, creds, ttl);
+            CacheCredentials(cacheId, soapCredentials, ttl);
             return true;
         }
 
-        private async Task<bool> UserHasRoleForHost(string[] roles, Uri host)
+        private async Task<bool> UserHasRoleForHost(string[] roles, Uri soapServerUrl)
         {
             ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
-            bool validRole = allServers.Where(n => n.Url.EqualsIgnoreCase(host)).Any(n => n.Roles != null && n.Roles.Intersect(roles).Any());
+            bool validRole = allServers.Where(n => n.Url.EqualsIgnoreCase(soapServerUrl)).Any(n => n.Roles != null && n.Roles.Intersect(roles).Any());
             return validRole;
         }
 
@@ -125,31 +160,31 @@ namespace WitsmlExplorer.Api.Services
             _credentialsCache.Clear();
         }
 
-        public void CacheCredentials(string cacheId, ServerCredentials credentials, double ttl, Func<string, string> delEncrypt = null)
+        public void CacheCredentials(string cacheId, ServerCredentials soapCredentials, double ttl, Func<string, string> delEncrypt = null)
         {
             delEncrypt ??= Encrypt;
-            string encryptedPassword = delEncrypt(credentials.Password);
-            _credentialsCache.SetItem(cacheId, credentials.Host, encryptedPassword, ttl, credentials.UserId);
+            string encryptedPassword = delEncrypt(soapCredentials.Password);
+            _credentialsCache.SetItem(cacheId, soapCredentials.Host, encryptedPassword, ttl, soapCredentials.UserId);
         }
 
-        private async Task<List<ServerCredentials>> GetSystemCredentialsByToken(string token, Uri server)
+        private async Task<List<ServerCredentials>> GetSystemCredentialsByToken(string token, Uri soapServerUrl)
         {
             List<ServerCredentials> results = new List<ServerCredentials>();
             JwtSecurityTokenHandler handler = new();
             JwtSecurityToken jwt = handler.ReadJwtToken(token);
             string[] userRoles = jwt.Claims.Where(n => n.Type == "roles").Select(n => n.Value).ToArray();
             _logger.LogDebug("User roles in JWT: {roles}", string.Join(",", userRoles));
-            if (await UserHasRoleForHost(userRoles, server))
+            if (await UserHasRoleForHost(userRoles, soapServerUrl))
             {
                 ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
                 List<string> credentialIds = allServers
-                    .Where(n => n.Url.EqualsIgnoreCase(server) && !n.CredentialIds.IsNullOrEmpty())
+                    .Where(n => n.Url.EqualsIgnoreCase(soapServerUrl) && !n.CredentialIds.IsNullOrEmpty())
                     ?.SelectMany(n => n.CredentialIds)
                     ?.ToList()
                     ?? new List<string>();
-                _logger.LogDebug("Matching on {credentialIdOrHost} for server {server}", credentialIds.Count == 0 ? "host" : $"credentialIds {string.Join(", ", credentialIds)}", SanitizeForLog(server));
+                _logger.LogDebug("Matching on {credentialIdOrHost} for server {server}", credentialIds.Count == 0 ? "host" : $"credentialIds {string.Join(", ", credentialIds)}", SanitizeForLog(soapServerUrl));
                 var matchingCredentials = credentialIds.IsNullOrEmpty()
-                    ? _witsmlServerCredentials.WitsmlCreds.Where(n => n.Host.EqualsIgnoreCase(server))
+                    ? _witsmlServerCredentials.WitsmlCreds.Where(n => n.Host.EqualsIgnoreCase(soapServerUrl))
                     : _witsmlServerCredentials.WitsmlCreds.Where(n => credentialIds.Contains(n.CredentialId, StringComparer.InvariantCultureIgnoreCase));
 
                 foreach (var credential in matchingCredentials)
@@ -173,9 +208,9 @@ namespace WitsmlExplorer.Api.Services
 
         public void VerifyUserIsLoggedIn(IEssentialHeaders eh, ServerType serverType)
         {
-            string server = serverType == ServerType.Target ? eh.TargetServer : eh.SourceServer;
+            string soapServer = serverType == ServerType.Target ? eh.TargetServer : eh.SourceServer;
             string username = serverType == ServerType.Target ? eh.TargetUsername : eh.SourceUsername;
-            ServerCredentials creds = GetCredentials(eh, server, username);
+            ServerCredentials creds = GetSoapCredentials(eh, soapServer, username);
             if (creds == null || creds.IsNullOrEmpty())
             {
                 string serverTypeName = serverType == ServerType.Target ? "target" : "source";
@@ -183,13 +218,13 @@ namespace WitsmlExplorer.Api.Services
             }
         }
 
-        public async Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri serverUrl)
+        public async Task<string[]> GetLoggedInUsernames(IEssentialHeaders eh, Uri soapServerUrl)
         {
-            Dictionary<string, string> credentials = _credentialsCache.GetItem(GetCacheId(eh), serverUrl);
+            Dictionary<string, string> credentials = _credentialsCache.GetItem(GetCacheId(eh), soapServerUrl);
             List<string> usernames = credentials == null ? new() : credentials.Keys.ToList();
             if (_useOAuth2)
             {
-                List<ServerCredentials> systemCredentials = await GetSystemCredentialsByToken(eh.GetBearerToken(), serverUrl);
+                List<ServerCredentials> systemCredentials = await GetSystemCredentialsByToken(eh.GetBearerToken(), soapServerUrl);
                 foreach (var systemCredential in systemCredentials)
                 {
                     if (!systemCredential.IsNullOrEmpty() && !usernames.Contains(systemCredential.UserId))
@@ -198,14 +233,14 @@ namespace WitsmlExplorer.Api.Services
                     }
                 }
             }
-            _logger.LogDebug("Logged in usernames for server {server}: {usernames}", serverUrl, string.Join(",", usernames));
+            _logger.LogDebug("Logged in usernames for server {server}: {usernames}", soapServerUrl, string.Join(",", usernames));
             return usernames.ToArray();
         }
 
-        private ServerCredentials GetCredentialsFromCache(IEssentialHeaders eh, string serverUrl, string username, Func<string, string> delDecrypt = null)
+        private ServerCredentials GetCredentialsFromCache(IEssentialHeaders eh, string soapServerUrl, string username, Func<string, string> delDecrypt = null)
         {
             delDecrypt ??= Decrypt;
-            Dictionary<string, string> credentials = _credentialsCache.GetItem(GetCacheId(eh), new Uri(serverUrl));
+            Dictionary<string, string> credentials = _credentialsCache.GetItem(GetCacheId(eh), new Uri(soapServerUrl));
             if (credentials == null || !credentials.ContainsKey(username))
             {
                 return null;
@@ -214,18 +249,18 @@ namespace WitsmlExplorer.Api.Services
 
             return new ServerCredentials()
             {
-                Host = new Uri(serverUrl),
+                Host = new Uri(soapServerUrl),
                 UserId = username,
                 Password = password
             };
         }
 
-        public ServerCredentials GetCredentials(IEssentialHeaders eh, string server, string username)
+        public ServerCredentials GetSoapCredentials(IEssentialHeaders eh, string soapServer, string username)
         {
-            ServerCredentials creds = GetCredentialsFromCache(eh, server, username);
+            ServerCredentials creds = GetCredentialsFromCache(eh, soapServer, username);
             if (creds == null && _useOAuth2)
             {
-                List<ServerCredentials> credsList = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(server)).Result;
+                List<ServerCredentials> credsList = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(soapServer)).Result;
                 creds = credsList.FirstOrDefault(c => string.Equals(c.UserId, username, StringComparison.Ordinal));
                 if (creds == null || creds.IsNullOrEmpty())
                 {
@@ -235,10 +270,42 @@ namespace WitsmlExplorer.Api.Services
             return creds;
         }
 
+        public async Task<ServerCredentials> GetEtpCredentials(IEssentialHeaders eh, string soapServer, string username)
+        {
+            ServerCredentials soapCredentials = GetSoapCredentials(eh, soapServer, username);
+            ServerCredentials etpCredentials = await GetEtpCredentialsFromSoapCredentials(soapCredentials);
+            return etpCredentials;
+        }
+
         public string GetCacheId(IEssentialHeaders eh)
         {
             return _useOAuth2 ? GetClaimFromToken(eh.GetBearerToken(), SUBJECT) : eh.GetCookieValue();
         }
+
+        private async Task<ServerCredentials> GetEtpCredentialsFromSoapCredentials(ServerCredentials soapCredentials)
+        {
+            if (soapCredentials == null || soapCredentials.Host == null)
+            {
+                return null;
+            }
+
+            ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
+            Server matchingServer = allServers.FirstOrDefault(s => s.Url.EqualsIgnoreCase(soapCredentials.Host));
+
+            if (matchingServer?.EtpUrl == null)
+            {
+                return null;
+            }
+
+            return new ServerCredentials
+            {
+                Host = matchingServer.EtpUrl,
+                UserId = soapCredentials.UserId,
+                Password = soapCredentials.Password,
+                CredentialId = soapCredentials.CredentialId
+            };
+        }
+
         /// <summary>
         /// Sanitizes user provided Uri for logging to avoid log-forging attacks.
         /// Removes carriage returns and newlines.
