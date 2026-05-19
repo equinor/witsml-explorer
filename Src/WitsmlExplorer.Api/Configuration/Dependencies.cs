@@ -45,6 +45,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddSingleton<IJobQueue, JobQueue>();
             services.AddSingleton<IWitsmlSystemCredentials, WitsmlSystemCredentials>();
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
+            services.AddScoped<IEtpClientProvider, EtpClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
             services.AddSingleton<IJobProgressService, JobProgressService>();
             services.AddSingleton<IEtpSessionManager, EtpSessionManager>();
