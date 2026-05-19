@@ -68,6 +68,7 @@ namespace WitsmlExplorer.Api.Tests.Services
                 {
                     Name = "Test Server",
                     Url = new Uri("http://some.url.com"),
+                    EtpUrl = new Uri("wss://some.etp.url.com"),
                     Description = "Testserver for SystemCreds testing",
                     Roles = new List<string>() {"validrole","developer"}
                 },
@@ -123,8 +124,9 @@ namespace WitsmlExplorer.Api.Tests.Services
             string server = "http://some.url.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
+            ServerCredentials creds = _oauthCredentialsService.GetSoapCredentials(eh, server, "systemuser");
             Assert.True(creds.UserId == "systemuser" && creds.Password == "systempassword");
+            Assert.Equal(new Uri(server), creds.Host);
             _oauthCredentialsService.RemoveAllCachedCredentials();
         }
 
@@ -186,7 +188,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             string server = "http://some.invalidurl.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
+            ServerCredentials creds = _oauthCredentialsService.GetSoapCredentials(eh, server, "systemuser");
             Assert.Null(creds);
             _oauthCredentialsService.RemoveAllCachedCredentials();
         }
@@ -197,7 +199,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             string server = "http://url3.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
+            ServerCredentials creds = _oauthCredentialsService.GetSoapCredentials(eh, server, "systemuser");
             Assert.Null(creds);
             _oauthCredentialsService.RemoveAllCachedCredentials();
         }
@@ -208,7 +210,7 @@ namespace WitsmlExplorer.Api.Tests.Services
             string server = "http://some.url.com";
             EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "invalidrole" }, false, "tokenuser@arpa.net");
 
-            ServerCredentials creds = _oauthCredentialsService.GetCredentials(eh, server, "systemuser");
+            ServerCredentials creds = _oauthCredentialsService.GetSoapCredentials(eh, server, "systemuser");
             Assert.Null(creds);
             _oauthCredentialsService.RemoveAllCachedCredentials();
         }
@@ -227,8 +229,95 @@ namespace WitsmlExplorer.Api.Tests.Services
             headersMock.SetupGet(x => x.TargetServer).Returns(sc.Host.ToString());
 
             _basicCredentialsService.CacheCredentials(cacheId, sc, 1.0, n => n);
-            ServerCredentials fromCache = _basicCredentialsService.GetCredentials(headersMock.Object, headersMock.Object.TargetServer, userId);
+            ServerCredentials fromCache = _basicCredentialsService.GetSoapCredentials(headersMock.Object, headersMock.Object.TargetServer, userId);
             Assert.Equal(sc, fromCache);
+            _basicCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
+        public async Task GetEtpCredentials_CredentialsInSoapCache_ReturnEtpCredentials()
+        {
+            string userId = "username";
+            string cacheId = Guid.NewGuid().ToString();
+            string soapServer = "http://some.url.com";
+            ServerCredentials soapCredentials = new()
+            {
+                UserId = userId,
+                Password = "dummypassword",
+                Host = new Uri(soapServer)
+            };
+
+            Mock<IEssentialHeaders> headersMock = new();
+            headersMock.Setup(x => x.GetCookieValue()).Returns(cacheId);
+
+            _basicCredentialsService.CacheCredentials(cacheId, soapCredentials, 1.0, n => n);
+            ServerCredentials etpCredentials = await _basicCredentialsService.GetEtpCredentials(headersMock.Object, soapServer, userId);
+
+            Assert.NotNull(etpCredentials);
+            Assert.Equal(new Uri("wss://some.etp.url.com"), etpCredentials.Host);
+            Assert.Equal(soapCredentials.UserId, etpCredentials.UserId);
+            Assert.Equal(soapCredentials.Password, etpCredentials.Password);
+            _basicCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
+        public async Task GetEtpCredentials_ValidTokenAndRoles_ReturnSystemEtpCredentials()
+        {
+            string soapServer = "http://some.url.com";
+            EssentialHeaders eh = CreateEhWithAuthorization(new string[] { "validrole" }, false, "tokenuser@arpa.net");
+
+            ServerCredentials etpCredentials = await _oauthCredentialsService.GetEtpCredentials(eh, soapServer, "systemuser");
+
+            Assert.NotNull(etpCredentials);
+            Assert.Equal(new Uri("wss://some.etp.url.com"), etpCredentials.Host);
+            Assert.Equal("systemuser", etpCredentials.UserId);
+            Assert.Equal("systempassword", etpCredentials.Password);
+            _oauthCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
+        public async Task GetEtpCredentials_ServerWithoutEtpUrl_ReturnNull()
+        {
+            string userId = "username";
+            string cacheId = Guid.NewGuid().ToString();
+            string soapServer = "http://some.url.without.its.own.keyvault.secret.com";
+            ServerCredentials soapCredentials = new()
+            {
+                UserId = userId,
+                Password = "dummypassword",
+                Host = new Uri(soapServer)
+            };
+
+            Mock<IEssentialHeaders> headersMock = new();
+            headersMock.Setup(x => x.GetCookieValue()).Returns(cacheId);
+
+            _basicCredentialsService.CacheCredentials(cacheId, soapCredentials, 1.0, n => n);
+            ServerCredentials etpCredentials = await _basicCredentialsService.GetEtpCredentials(headersMock.Object, soapServer, userId);
+
+            Assert.Null(etpCredentials);
+            _basicCredentialsService.RemoveAllCachedCredentials();
+        }
+
+        [Fact]
+        public async Task GetEtpCredentials_UnknownSoapServer_ReturnNull()
+        {
+            string userId = "username";
+            string cacheId = Guid.NewGuid().ToString();
+            string soapServer = "http://unknown.url.com";
+            ServerCredentials soapCredentials = new()
+            {
+                UserId = userId,
+                Password = "dummypassword",
+                Host = new Uri(soapServer)
+            };
+
+            Mock<IEssentialHeaders> headersMock = new();
+            headersMock.Setup(x => x.GetCookieValue()).Returns(cacheId);
+
+            _basicCredentialsService.CacheCredentials(cacheId, soapCredentials, 1.0, n => n);
+            ServerCredentials etpCredentials = await _basicCredentialsService.GetEtpCredentials(headersMock.Object, soapServer, userId);
+
+            Assert.Null(etpCredentials);
             _basicCredentialsService.RemoveAllCachedCredentials();
         }
 

@@ -74,7 +74,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlClient == null)
             {
-                _targetCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
+                _targetCreds = _credentialsService.GetSoapCredentials(_httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
                 _witsmlClient = (_targetCreds != null && !_targetCreds.IsNullOrEmpty())
                     ? new WitsmlClient(options =>
                     {
@@ -94,7 +94,7 @@ namespace WitsmlExplorer.Api.Services
         {
             if (_witsmlSourceClient == null)
             {
-                _sourceCreds = _credentialsService.GetCredentials(_httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
+                _sourceCreds = _credentialsService.GetSoapCredentials(_httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
                 _witsmlSourceClient = (_sourceCreds != null && !_sourceCreds.IsNullOrEmpty())
                     ? new WitsmlClient(options =>
                     {
