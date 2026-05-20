@@ -73,7 +73,7 @@ internal sealed class StoreProtocolHandler
         }
     }
 
-    public async Task<T> GetObjectAsWitsmlAsync<T>(string uri, CancellationToken cancellationToken) where T : IWitsmlObjectList, new()
+    public async Task<T> GetObjectAsWitsmlAsync<T>(string uri, CancellationToken cancellationToken) where T : IWitsmlQueryType, new()
     {
         var dataObject = await GetObjectAsync(uri, cancellationToken);
         if (dataObject?.data == null || dataObject.data.Length == 0)
@@ -86,7 +86,7 @@ internal sealed class StoreProtocolHandler
         return XmlHelper.Deserialize(xml, new T());
     }
 
-    public Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlObjectList
+    public Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlQueryType
     {
         if (string.IsNullOrWhiteSpace(uri))
         {
@@ -103,7 +103,19 @@ internal sealed class StoreProtocolHandler
         var xml = XmlHelper.Serialize(witsmlObject);
         var data = Encoding.UTF8.GetBytes(xml);
 
-        var name = witsmlObject.Objects.FirstOrDefault()?.Name;
+        string name = null;
+        if (witsmlObject is IWitsmlObjectList list)
+        {
+            name = list.Objects?.FirstOrDefault()?.Name;
+        }
+        else if (witsmlObject is WitsmlWells wells)
+        {
+            name = wells.Wells?.FirstOrDefault()?.Name;
+        }
+        else if (witsmlObject is WitsmlWellbores wellbores)
+        {
+            name = wellbores.Wellbores?.FirstOrDefault()?.Name;
+        }
 
         var dataObject = new DataObject
         {

@@ -26,8 +26,8 @@ public interface IEtpClient : IAsyncDisposable
 
     // Protocol 4 (Store)
     Task<DataObject> GetObjectAsync(string uri, CancellationToken cancellationToken);
-    Task<T> GetObjectAsWitsmlAsync<T>(string uri, CancellationToken cancellationToken) where T : IWitsmlObjectList, new();
+    Task<T> GetObjectAsWitsmlAsync<T>(string uri, CancellationToken cancellationToken) where T : IWitsmlQueryType, new();
     Task PutObjectAsync(DataObject dataObject, CancellationToken cancellationToken);
-    Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlObjectList;
+    Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlQueryType;
     Task DeleteObjectAsync(string uri, CancellationToken cancellationToken);
 };

@@ -117,27 +117,7 @@ namespace WitsmlExplorer.Api.Services
             {
                 WitsmlWells witsmlWells = string.IsNullOrEmpty(wellUid) ? WellQueries.GetAllWitsmlWells() : WellQueries.GetWitsmlWellByUid(wellUid);
                 WitsmlWells result = await _witsmlClient.GetFromStoreAsync(witsmlWells, new OptionsIn(ReturnElements.Requested));
-                List<Well> wells = result.Wells
-                    .Select(well => new Well
-                    {
-                        Uid = well.Uid,
-                        Name = well.Name,
-                        Field = well.Field,
-                        Operator = well.Operator,
-                        NumLicense = well.NumLicense,
-                        TimeZone = well.TimeZone,
-                        DateTimeCreation = well.CommonData?.DTimCreation,
-                        DateTimeLastChange = well.CommonData?.DTimLastChange,
-                        ItemState = well.CommonData?.ItemState,
-                        StatusWell = well.StatusWell,
-                        PurposeWell = well.PurposeWell,
-                        Country = well.Country,
-                        WaterDepth = LengthMeasure.FromWitsml(well.WaterDepth),
-                        WellDatum = WellDatum.FromWitsmlWellDatum(well.WellDatum),
-                        WellLocation = Location.FromWitsmlLocation(well.WellLocation),
-                        ReferencePoint = ReferencePoint.FromWitsmlReferencePoint(well.ReferencePoint)
-                    }
-                    ).ToList();
+                List<Well> wells = result.Wells.Select(Well.FromWitsml).ToList();
                 timeMeasurer.LogMessage = executionTime => $"Fetched {wells.Count} wells in {executionTime} ms.";
                 return wells;
             });
