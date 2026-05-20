@@ -19,8 +19,8 @@ namespace WitsmlExplorer.Api.Services.ETP
                 throw new ArgumentException("wellUid must be provided.");
 
             return string.IsNullOrWhiteSpace(wellboreUid)
-                ? $"{UriPrefix}/wellbore"
-                : $"{UriPrefix}/wellbore({wellboreUid})";
+                ? $"{UriPrefix}/well({wellUid})/wellbore"
+                : $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})";
         }
 
         public static string CreateObjectUri(string wellUid, string wellboreUid, string objectType, string objectUid = null)
