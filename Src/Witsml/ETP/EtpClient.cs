@@ -160,6 +160,9 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     public Task<DataObject> GetObjectAsync(string uri, CancellationToken cancellationToken) =>
         _storeProtocolHandler.GetObjectAsync(uri, cancellationToken);
 
+    public Task<IWitsmlObjectList> GetObjectAsWitsmlAsync(string uri, CancellationToken cancellationToken) =>
+        _storeProtocolHandler.GetObjectAsWitsmlAsync(uri, cancellationToken);
+
     public Task<T> GetObjectAsWitsmlAsync<T>(string uri, CancellationToken cancellationToken) where T : IWitsmlQueryType, new() =>
         _storeProtocolHandler.GetObjectAsWitsmlAsync<T>(uri, cancellationToken);
 

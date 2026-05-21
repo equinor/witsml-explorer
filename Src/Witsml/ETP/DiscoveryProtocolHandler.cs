@@ -37,7 +37,7 @@ internal sealed class DiscoveryProtocolHandler
         var pendingRequest = new PendingGetResourcesRequest();
         if (!_pendingGetResourcesByRequestId.TryAdd(requestMessageId, pendingRequest))
         {
-            throw new InvalidOperationException("Failed to register pending GetResources request.");
+            throw new InvalidOperationException($"Failed to register pending GetResources request for uri '{uri}'.");
         }
 
         using var cancellationRegistration = cancellationToken.Register(() => pendingRequest.Completion.TrySetCanceled(cancellationToken));
@@ -52,7 +52,7 @@ internal sealed class DiscoveryProtocolHandler
             var completedTask = await Task.WhenAny(pendingRequest.Completion.Task, timeoutTask);
             if (completedTask == timeoutTask)
             {
-                pendingRequest.Completion.TrySetException(new TimeoutException("Timed out waiting for GetResourcesResponse."));
+                pendingRequest.Completion.TrySetException(new TimeoutException($"Timed out waiting for GetResourcesResponse for uri '{uri}'."));
             }
 
             return await pendingRequest.Completion.Task;
@@ -76,9 +76,30 @@ internal sealed class DiscoveryProtocolHandler
             return;
         }
 
-        if (messageType == EtpMessageHelpers.AcknowledgeMessageType && EtpMessageHelpers.HasMessageFlag(messageFlags, EtpMessageHelpers.NoDataMessageFlag))
+        if (messageType == EtpMessageHelpers.AcknowledgeMessageType)
         {
-            pendingRequest.Completion.TrySetResult(new List<Resource>());
+            if (EtpMessageHelpers.HasMessageFlag(messageFlags, EtpMessageHelpers.NoDataMessageFlag))
+            {
+                pendingRequest.Completion.TrySetResult(new List<Resource>());
+                return;
+            }
+
+            // We would normally expect the NoDataMessageFlag for empty responses. 
+            // However, if the server does not set this flag correctly and sends an empty response with a final ack, we should still complete the request instead of leaving it hanging until timeout.
+            var isFinalAck = EtpMessageHelpers.HasMessageFlag(messageFlags, EtpMessageHelpers.FinalPartMessageFlag);
+            if (!isFinalAck)
+            {
+                return;
+            }
+
+            List<Resource> ackResult;
+            lock (pendingRequest)
+            {
+                // The list is likely empty, but we return it just in case the server sends a final ack instead of a final GetResourcesResponse.
+                ackResult = new List<Resource>(pendingRequest.Resources);
+            }
+
+            pendingRequest.Completion.TrySetResult(ackResult);
             return;
         }
 

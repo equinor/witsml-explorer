@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,10 @@ using Energistics.Datatypes.Object;
 using Energistics.Protocol.Store;
 
 using Witsml.Data;
+using Witsml.Data.DataWorkOrder;
+using Witsml.Data.MudLog;
+using Witsml.Data.Rig;
+using Witsml.Data.Tubular;
 using Witsml.Xml;
 
 namespace Witsml.ETP;
@@ -26,6 +31,8 @@ internal sealed class StoreProtocolHandler
     internal const int PutObjectMessageType = 2;
     internal const int DeleteObjectMessageType = 3;
     internal const int GetObjectResponseMessageType = 4;
+
+    private static readonly Regex ContentTypeTypeRegex = new(@"(?:^|;)type=(?<type>[^;]+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     private readonly IProtocolHandlerContext _clientContext;
     private readonly ConcurrentDictionary<long, PendingGetObjectRequest> _pendingGetObjectByRequestId = new();
@@ -83,7 +90,63 @@ internal sealed class StoreProtocolHandler
 
         var xmlBytes = GetDecodedPayloadBytes(dataObject.data, dataObject.contentEncoding);
         var xml = Encoding.UTF8.GetString(xmlBytes);
+
         return XmlHelper.Deserialize(xml, new T());
+    }
+
+    public async Task<IWitsmlObjectList> GetObjectAsWitsmlAsync(string uri, CancellationToken cancellationToken)
+    {
+        var dataObject = await GetObjectAsync(uri, cancellationToken);
+        if (dataObject?.data == null || dataObject.data.Length == 0)
+        {
+            throw new InvalidOperationException("Store.GetObject returned an empty payload.");
+        }
+
+        var xmlBytes = GetDecodedPayloadBytes(dataObject.data, dataObject.contentEncoding);
+        var xml = Encoding.UTF8.GetString(xmlBytes);
+
+        var template = ToObjectList(dataObject.resource?.contentType);
+        return XmlHelper.Deserialize(xml, template);
+    }
+
+    private static IWitsmlObjectList ToObjectList(string contentType)
+    {
+        var objectType = ExtractObjectTypeFromContentType(contentType);
+
+        return objectType.ToLowerInvariant() switch
+        {
+            "log" => new WitsmlLogs(),
+            "mudlog" => new WitsmlMudLogs(),
+            "trajectory" => new WitsmlTrajectories(),
+            "attachment" => new WitsmlAttachments(),
+            "bharun" => new WitsmlBhaRuns(),
+            "fluidsreport" => new WitsmlFluidsReports(),
+            "formationmarker" => new WitsmlFormationMarkers(),
+            "message" => new WitsmlMessages(),
+            "rig" => new WitsmlRigs(),
+            "risk" => new WitsmlRisks(),
+            "tubular" => new WitsmlTubulars(),
+            "wbgeometry" => new WitsmlWbGeometrys(),
+            "dataworkorder" => new WitsmlDataWorkOrders(),
+            _ => throw new InvalidOperationException($"No IWitsmlObjectList mapping for contentType type '{objectType}'.")
+        };
+    }
+
+    private static string ExtractObjectTypeFromContentType(string contentType)
+    {
+        if (string.IsNullOrWhiteSpace(contentType))
+        {
+            throw new InvalidOperationException("Store.GetObject contentType is missing.");
+        }
+
+        var match = ContentTypeTypeRegex.Match(contentType);
+        if (!match.Success)
+        {
+            throw new InvalidOperationException($"Could not infer WITSML object type from contentType '{contentType}'. Missing 'type='.");
+        }
+
+        var objectType = match.Groups["type"].Value.Trim();
+        return objectType;
     }
 
     public Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlQueryType

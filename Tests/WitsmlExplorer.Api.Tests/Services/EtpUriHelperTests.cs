@@ -1,3 +1,4 @@
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Services.ETP;
 
 using Xunit;
@@ -51,7 +52,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             string uri = "eml://witsml14/well(well-123)/wellbore(wb-123)/log(log-123)";
 
-            string uid = EtpUriHelper.GetObjectUid(uri, "log");
+            string uid = EtpUriHelper.GetObjectUid(uri, EntityType.Log);
 
             Assert.Equal("log-123", uid);
         }
@@ -61,29 +62,9 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             string uri = "eml://witsml14/well(well-123)/wellbore(wb-123)";
 
-            string uid = EtpUriHelper.GetObjectUid(uri, "log");
+            string uid = EtpUriHelper.GetObjectUid(uri, EntityType.Log);
 
             Assert.Null(uid);
-        }
-
-        [Fact]
-        public void GetObjectUid_EmptyObjectType_ReturnsNull()
-        {
-            string uri = "eml://witsml14/well(well-123)/wellbore(wb-123)/log(log-123)";
-
-            string uid = EtpUriHelper.GetObjectUid(uri, null);
-
-            Assert.Null(uid);
-        }
-
-        [Fact]
-        public void GetObjectUid_CaseInsensitiveObjectType_ReturnsUid()
-        {
-            string uri = "eml://witsml14/well(well-123)/wellbore(wb-123)/log(log-123)";
-
-            string uid = EtpUriHelper.GetObjectUid(uri, "LOG");
-
-            Assert.Equal("log-123", uid);
         }
 
         [Fact]
@@ -91,7 +72,7 @@ namespace WitsmlExplorer.Api.Tests.Services
         {
             string uri = "eml://wITSML14/WeLL(well-123)/WEllBORE(wb-123)/LOg(log-123)";
 
-            string uid = EtpUriHelper.GetObjectUid(uri, "LOG");
+            string uid = EtpUriHelper.GetObjectUid(uri, EntityType.Log);
 
             Assert.Equal("log-123", uid);
         }
