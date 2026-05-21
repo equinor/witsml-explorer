@@ -1,5 +1,7 @@
 using System;
 
+using WitsmlExplorer.Api.Models;
+
 namespace WitsmlExplorer.Api.Services.ETP
 {
     public static class EtpUriHelper
@@ -23,50 +25,48 @@ namespace WitsmlExplorer.Api.Services.ETP
                 : $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})";
         }
 
-        public static string CreateObjectUri(string wellUid, string wellboreUid, string objectType, string objectUid = null)
+        public static string CreateObjectUri(string wellUid, string wellboreUid, EntityType objectType, string objectUid = null)
         {
             if (string.IsNullOrWhiteSpace(wellUid))
                 throw new ArgumentException("wellUid must be provided.");
             if (string.IsNullOrWhiteSpace(wellboreUid))
                 throw new ArgumentException("wellboreUid must be provided.");
-            if (string.IsNullOrWhiteSpace(objectType))
-                throw new ArgumentException("objectType must be provided.");
 
             return string.IsNullOrWhiteSpace(objectUid)
-                ? $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})/{objectType}"
-                : $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})/{objectType}({objectUid})";
+                ? $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})/{objectType.ToString().ToLower()}"
+                : $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})/{objectType.ToString().ToLower()}({objectUid})";
         }
 
         public static string GetWellUid(string uri)
         {
-            return GetUidForObjectType(uri, "well");
+            return GetUidForObjectType(uri, EntityType.Well);
         }
 
         public static string GetWellboreUid(string uri)
         {
-            return GetUidForObjectType(uri, "wellbore");
+            return GetUidForObjectType(uri, EntityType.Wellbore);
         }
 
-        public static string GetObjectUid(string uri, string objectType)
+        public static string GetObjectUid(string uri, EntityType objectType)
         {
             return GetUidForObjectType(uri, objectType);
         }
 
-        private static string GetUidForObjectType(string uri, string objectType)
+        private static string GetUidForObjectType(string uri, EntityType objectType)
         {
-            if (string.IsNullOrWhiteSpace(uri) || string.IsNullOrWhiteSpace(objectType))
+            if (string.IsNullOrWhiteSpace(uri))
             {
                 return null;
             }
 
-            string marker = objectType + "(";
+            string marker = objectType.ToString() + "(";
             int markerStart = uri.LastIndexOf(marker, StringComparison.OrdinalIgnoreCase);
             if (markerStart < 0)
             {
                 return null;
             }
 
-            int openIdx = markerStart + objectType.Length;
+            int openIdx = markerStart + objectType.ToString().Length;
             int closeIdx = uri.IndexOf(')', openIdx + 1);
             if (closeIdx <= openIdx)
             {
