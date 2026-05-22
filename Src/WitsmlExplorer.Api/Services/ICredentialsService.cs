@@ -20,6 +20,7 @@ namespace WitsmlExplorer.Api.Services
         public Task<bool> VerifyAndCacheCredentials(IEssentialHeaders eh, bool keep, HttpContext httpContext);
         public ServerCredentials GetSoapCredentials(IEssentialHeaders eh, string soapServer, string username);
         public Task<ServerCredentials> GetEtpCredentials(IEssentialHeaders eh, string etpServer, string username);
+        public Task<bool> IsEtpEndpointConfigured(Uri soapServerUrl);
         public string GetCacheId(IEssentialHeaders eh);
     }
 }
