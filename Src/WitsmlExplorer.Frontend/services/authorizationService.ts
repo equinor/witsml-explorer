@@ -155,7 +155,8 @@ class AuthorizationService {
     const response = await AuthorizationClient.get(
       `/api/credentials/authorize?keep=` + keep,
       abortSignal,
-      credentials
+      credentials,
+      this._witsmlProtocol
     );
     if (!response.ok) {
       const { message }: ErrorDetails = await response.json();
