@@ -1,17 +1,22 @@
 import { Buffer } from "buffer";
 import { ApiClient } from "services/apiClient";
 
-import { BasicServerCredentials } from "services/authorizationService";
+import {
+  BasicServerCredentials,
+  WitsmlProtocol
+} from "services/authorizationService";
 
 export class AuthorizationClient {
   private static async getHeaders(
-    credentials: BasicServerCredentials[]
+    credentials: BasicServerCredentials,
+    witsmlProtocol: WitsmlProtocol
   ): Promise<HeadersInit> {
     const authorizationHeader = await ApiClient.getAuthorizationHeader();
     return {
       "Content-Type": "application/json",
       ...(authorizationHeader ? { Authorization: authorizationHeader } : {}),
-      "WitsmlAuth": this.getServerHeader(credentials[0])
+      "WitsmlAuth": this.getServerHeader(credentials),
+      "WitsmlProtocol": witsmlProtocol
     };
   }
 
@@ -33,11 +38,15 @@ export class AuthorizationClient {
   public static async get(
     pathName: string,
     abortSignal: AbortSignal | null = null,
-    targetCredentials: BasicServerCredentials
+    targetCredentials: BasicServerCredentials,
+    witsmlProtocol: WitsmlProtocol
   ): Promise<Response> {
     const requestInit: RequestInit = {
       signal: abortSignal,
-      headers: await AuthorizationClient.getHeaders([targetCredentials]),
+      headers: await AuthorizationClient.getHeaders(
+        targetCredentials,
+        witsmlProtocol
+      ),
       credentials: "include"
     };
 

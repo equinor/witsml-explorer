@@ -90,7 +90,7 @@ namespace WitsmlExplorer.Api.Services
                 AppName: "Witsml Explorer",
                 AppVersion: "1.0",
                 BasicAuth: new EtpBasicAuthCredentials(etpCredentials.UserId, etpCredentials.Password),
-                RequestedProtocols: null
+                RequestedProtocols: new List<RequestedProtocol> { RequestedProtocol.Discovery }
             );
 
             await using var etpClient = await EtpClient.ConnectAsync(sessionOptions);
@@ -111,7 +111,7 @@ namespace WitsmlExplorer.Api.Services
                 cacheId = httpContext.CreateWitsmlExplorerCookie(_isDesktopApp);
             }
 
-            if (eh.WitsmlProtocol == WitsmlProtocol.Etp)
+            if (eh.WitsmlProtocol == WitsmlProtocol.Etp && (await IsEtpEndpointConfigured(soapCredentials.Host)))
             {
                 ServerCredentials etpCredentials = await GetEtpCredentialsFromSoapCredentials(soapCredentials);
                 await VerifyEtpCredentials(etpCredentials);
