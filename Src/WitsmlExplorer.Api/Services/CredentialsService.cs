@@ -277,6 +277,15 @@ namespace WitsmlExplorer.Api.Services
             return etpCredentials;
         }
 
+        public async Task<bool> IsEtpEndpointConfigured(Uri soapServerUrl)
+        {
+            if (soapServerUrl == null) return false;
+
+            ICollection<Server> allServers = await _witsmlServerRepository.GetDocumentsAsync();
+            Server matchingServer = allServers.FirstOrDefault(s => s.Url.EqualsIgnoreCase(soapServerUrl));
+            return matchingServer?.EtpUrl != null;
+        }
+
         public string GetCacheId(IEssentialHeaders eh)
         {
             return _useOAuth2 ? GetClaimFromToken(eh.GetBearerToken(), SUBJECT) : eh.GetCookieValue();

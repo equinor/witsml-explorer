@@ -12,7 +12,7 @@ namespace WitsmlExplorer.Api.Services.ETP
 {
     public interface IEtpObjectService
     {
-        Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType, CancellationToken? cancellationToken);
+        Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType, CancellationToken? cancellationToken);
         Task<ObjectOnWellbore> GetObjectIdOnly(string wellUid, string wellboreUid, string objectUid, EntityType objectType, CancellationToken? cancellationToken);
         Task<Dictionary<EntityType, int>> GetExpandableObjectsCount(string wellUid, string wellboreUid, CancellationToken? cancellationToken);
     }
@@ -27,7 +27,7 @@ namespace WitsmlExplorer.Api.Services.ETP
             _logger = logger;
         }
 
-        public async Task<IEnumerable<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType, CancellationToken? cancellationToken = null)
+        public async Task<ICollection<ObjectOnWellbore>> GetObjectsIdOnly(string wellUid, string wellboreUid, EntityType objectType, CancellationToken? cancellationToken = null)
         {
             if (EntityTypeHelper.ToObjectOnWellbore(objectType) == null)
             {

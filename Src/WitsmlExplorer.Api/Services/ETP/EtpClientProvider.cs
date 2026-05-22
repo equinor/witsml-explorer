@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Witsml.ETP;
 
 using WitsmlExplorer.Api.HttpHandlers;
+using WitsmlExplorer.Api.Middleware;
 
 namespace WitsmlExplorer.Api.Services.ETP
 {
@@ -28,7 +29,11 @@ namespace WitsmlExplorer.Api.Services.ETP
         }
         public async Task<IEtpClient> GetClient(CancellationToken cancellationToken)
         {
+            await ThrowIfNoEtpEndpointIsConfigured(_httpHeaders.TargetServer);
+
             var targetCreds = await _credentialsService.GetEtpCredentials(_httpHeaders, _httpHeaders.TargetServer, _httpHeaders.TargetUsername);
+            if (targetCreds == null) return null;
+
             var sessionKey = new SessionKey
             {
                 UserId = _credentialsService.GetCacheId(_httpHeaders),
@@ -46,7 +51,11 @@ namespace WitsmlExplorer.Api.Services.ETP
 
         public async Task<IEtpClient> GetSourceClient(CancellationToken cancellationToken)
         {
+            await ThrowIfNoEtpEndpointIsConfigured(_httpHeaders.SourceServer);
+
             var sourceCreds = await _credentialsService.GetEtpCredentials(_httpHeaders, _httpHeaders.SourceServer, _httpHeaders.SourceUsername);
+            if (sourceCreds == null) return null;
+
             var sessionKey = new SessionKey
             {
                 UserId = _credentialsService.GetCacheId(_httpHeaders),
@@ -60,6 +69,13 @@ namespace WitsmlExplorer.Api.Services.ETP
                 ServerUri = sourceCreds.Host
             };
             return await _sessionManager.GetOrCreateSessionAsync(sessionKey, sessionOptions, cancellationToken);
+        }
+
+        private async Task ThrowIfNoEtpEndpointIsConfigured(string soapServer)
+        {
+            var isEtpEndpointConfigured = await _credentialsService.IsEtpEndpointConfigured(new Uri(soapServer));
+            if (!isEtpEndpointConfigured)
+                throw new EtpEndpointNotConfiguredException($"No ETP endpoint is configured for server '{soapServer}'.");
         }
     }
 }
