@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -50,7 +49,7 @@ namespace WitsmlExplorer.Api.Services.ETP
             {
                 Uid = EtpUriHelper.GetWellUid(resource.uri),
                 Name = resource.name,
-                DateTimeLastChange = DateTimeOffset.FromUnixTimeMilliseconds(resource.lastChanged / 1000).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ssZ")
+                DateTimeLastChange = ToUtcDateTimeLastChange(resource.lastChanged)
             };
         }
     }

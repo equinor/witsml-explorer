@@ -59,7 +59,11 @@ namespace WitsmlExplorer.Api.Services.ETP
                 Uid = EtpUriHelper.GetObjectUid(resource.uri, EntityType.FluidsReport),
                 Name = resource.name,
                 WellboreUid = EtpUriHelper.GetWellboreUid(resource.uri),
-                WellUid = EtpUriHelper.GetWellUid(resource.uri)
+                WellUid = EtpUriHelper.GetWellUid(resource.uri),
+                CommonData = new CommonData
+                {
+                    DTimLastChange = ToUtcDateTimeLastChange(resource.lastChanged)
+                }
             };
         }
     }
