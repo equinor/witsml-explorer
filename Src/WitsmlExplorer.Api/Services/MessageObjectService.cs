@@ -7,7 +7,6 @@ using Witsml.Helpers;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
@@ -29,7 +28,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlMessages witsmlMessage = MessageQueries.GetMessageById(wellUid, wellboreUid, msgUid);
             WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.All));
             WitsmlMessage messageObject = result.Messages.FirstOrDefault();
-            return FromWitsml(messageObject);
+            return MessageObject.FromWitsml(messageObject);
         }
 
         public async Task<ICollection<MessageObject>> GetMessageObjects(string wellUid, string wellboreUid)
@@ -39,35 +38,11 @@ namespace WitsmlExplorer.Api.Services
                 WitsmlMessages witsmlMessage = MessageQueries.GetMessageByWellbore(wellUid, wellboreUid);
                 WitsmlMessages result = await _witsmlClient.GetFromStoreAsync(witsmlMessage, new OptionsIn(ReturnElements.Requested));
                 List<MessageObject> messageObjects = result.Messages
-                    .Select(FromWitsml).OrderBy((m) => m.DTim).ToList();
+                    .Select(MessageObject.FromWitsml).OrderBy((m) => m.DTim).ToList();
                 timeMeasurer.LogMessage = executionTime =>
                     $"Fetched {messageObjects.Count} messageObjects from {messageObjects.FirstOrDefault()?.WellboreName} in {executionTime}ms.";
                 return messageObjects;
             });
-        }
-
-        private static MessageObject FromWitsml(WitsmlMessage message)
-        {
-            return message == null ? null : new MessageObject
-            {
-                WellboreUid = message.UidWellbore,
-                WellboreName = message.NameWellbore,
-                WellUid = message.UidWell,
-                WellName = message.NameWell,
-                Uid = message.Uid,
-                Name = message.Name,
-                Md = MeasureWithDatum.FromWitsml(message.Md),
-                MessageText = message.MessageText,
-                TypeMessage = message.TypeMessage,
-                DTim = message.DTim,
-                CommonData = new()
-                {
-                    SourceName = message.CommonData.SourceName,
-                    Comments = message.CommonData.Comments,
-                    DTimCreation = message.CommonData.DTimCreation,
-                    DTimLastChange = message.CommonData.DTimLastChange
-                }
-            };
         }
     }
 }

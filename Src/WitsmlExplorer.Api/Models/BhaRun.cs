@@ -49,5 +49,45 @@ namespace WitsmlExplorer.Api.Models
                 CommonData = CommonData?.ToWitsml()
             }.AsItemInWitsmlList();
         }
+
+        public static BhaRun FromWitsml(WitsmlBhaRun bhaRun)
+        {
+            return bhaRun == null ? null : new BhaRun
+            {
+                Uid = bhaRun.Uid,
+                Name = bhaRun.Name,
+                WellUid = bhaRun.UidWell,
+                WellName = bhaRun.NameWell,
+                WellboreName = bhaRun.NameWellbore,
+                WellboreUid = bhaRun.UidWellbore,
+                NumStringRun = bhaRun.NumStringRun,
+                Tubular = (bhaRun.Tubular == null) ? null : new RefNameString
+                {
+                    UidRef = bhaRun.Tubular.UidRef,
+                    Value = bhaRun.Tubular.Value
+                },
+                StatusBha = bhaRun.StatusBha ?? null,
+                NumBitRun = bhaRun.NumBitRun,
+                ReasonTrip = bhaRun.ReasonTrip,
+                ObjectiveBha = bhaRun.ObjectiveBha,
+                PlanDogleg = (bhaRun.PlanDogleg == null) ? null : new LengthMeasure { Uom = bhaRun.PlanDogleg.Uom, Value = StringHelpers.ToDecimal(bhaRun.PlanDogleg.Value) },
+                ActDogleg = (bhaRun.ActDogleg == null) ? null : new LengthMeasure { Uom = bhaRun.ActDogleg.Uom, Value = StringHelpers.ToDecimal(bhaRun.ActDogleg.Value) },
+                ActDoglegMx = (bhaRun.ActDoglegMx == null) ? null : new LengthMeasure { Uom = bhaRun.ActDoglegMx.Uom, Value = StringHelpers.ToDecimal(bhaRun.ActDoglegMx.Value) },
+                DTimStart = bhaRun.DTimStart,
+                DTimStop = bhaRun.DTimStop,
+                DTimStartDrilling = bhaRun.DTimStartDrilling,
+                DTimStopDrilling = bhaRun.DTimStopDrilling,
+                CommonData = new CommonData()
+                {
+                    ItemState = bhaRun.CommonData?.ItemState,
+                    SourceName = bhaRun.CommonData?.SourceName,
+                    DTimLastChange = bhaRun.CommonData?.DTimLastChange,
+                    DTimCreation = bhaRun.CommonData?.DTimCreation,
+                    ServiceCategory = bhaRun.CommonData?.ServiceCategory,
+                    Comments = bhaRun.CommonData?.Comments,
+                    DefaultDatum = bhaRun.CommonData?.DefaultDatum,
+                }
+            };
+        }
     }
 }

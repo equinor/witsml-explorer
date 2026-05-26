@@ -29,11 +29,10 @@ namespace WitsmlExplorer.Api.Services
         private readonly WitsmlClientCapabilities _clientCapabilities;
         private readonly EssentialHeaders _httpHeaders;
         private readonly ICredentialsService _credentialsService;
-        private readonly ILogger<WitsmlClientProvider> _logger;
         private readonly bool _logQueries;
         private readonly bool _enableHttp;
 
-        public WitsmlClientProvider(ILogger<WitsmlClientProvider> logger, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
+        public WitsmlClientProvider(IConfiguration configuration, IHttpContextAccessor httpContextAccessor, ICredentialsService credentialsService, IOptions<WitsmlClientCapabilities> witsmlClientCapabilities)
         {
             if (httpContextAccessor.HttpContext?.Request.Headers[EssentialHeaders.WitsmlTargetServer].Count == 0)
             {
@@ -42,10 +41,8 @@ namespace WitsmlExplorer.Api.Services
             _clientCapabilities = witsmlClientCapabilities?.Value ?? throw new ArgumentException("WitsmlClientCapabilities missing");
             _httpHeaders = new EssentialHeaders(httpContextAccessor?.HttpContext?.Request);
             _credentialsService = credentialsService ?? throw new ArgumentException("CredentialsService missing");
-            _logger = logger ?? throw new ArgumentException("Logger missing");
             _logQueries = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
             _enableHttp = StringHelpers.ToBoolean(configuration[ConfigConstants.EnableHttp]);
-            _logger.LogDebug("WitsmlClientProvider initialised");
         }
 
         internal WitsmlClientProvider(IConfiguration configuration)

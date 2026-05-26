@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,11 @@ namespace WitsmlExplorer.Api.Services.ETP
         protected async Task<IEtpClient> GetEtpClient(CancellationToken? cancellationToken = null)
         {
             return await _etpClientProvider.GetClient(cancellationToken ?? CancellationToken.None) ?? throw new WitsmlClientProviderException($"No ETP access", (int)HttpStatusCode.Unauthorized, ServerType.Target);
+        }
+
+        protected static string ToUtcDateTimeLastChange(long resourceLastChanged)
+        {
+            return DateTimeOffset.FromUnixTimeMilliseconds(resourceLastChanged / 1000).UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ssZ");
         }
     }
 }

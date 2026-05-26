@@ -50,5 +50,38 @@ namespace WitsmlExplorer.Api.Models
                 CommonData = CommonData?.ToWitsml()
             }.AsItemInWitsmlList();
         }
+
+        public static FormationMarker FromWitsml(WitsmlFormationMarker formationMarker)
+        {
+            return formationMarker == null ? null : new FormationMarker
+            {
+                Uid = formationMarker.Uid,
+                Name = formationMarker.Name,
+                WellUid = formationMarker.UidWell,
+                WellName = formationMarker.NameWell,
+                WellboreName = formationMarker.NameWellbore,
+                WellboreUid = formationMarker.UidWellbore,
+                MdPrognosed = MeasureWithDatum.FromWitsml(formationMarker.MdPrognosed),
+                TvdPrognosed = MeasureWithDatum.FromWitsml(formationMarker.TvdPrognosed),
+                MdTopSample = MeasureWithDatum.FromWitsml(formationMarker.MdTopSample),
+                TvdTopSample = MeasureWithDatum.FromWitsml(formationMarker.TvdTopSample),
+                ThicknessBed = LengthMeasure.FromWitsml(formationMarker.ThicknessBed),
+                ThicknessApparent = LengthMeasure.FromWitsml(formationMarker.ThicknessApparent),
+                ThicknessPerpen = LengthMeasure.FromWitsml(formationMarker.ThicknessPerpen),
+                MdLogSample = MeasureWithDatum.FromWitsml(formationMarker.MdLogSample),
+                TvdLogSample = MeasureWithDatum.FromWitsml(formationMarker.TvdLogSample),
+                Dip = LengthMeasure.FromWitsml(formationMarker.Dip),
+                DipDirection = LengthMeasure.FromWitsml(formationMarker.DipDirection),
+                Lithostratigraphic = StratigraphicStruct.FromWitsml(formationMarker.Lithostratigraphic),
+                Chronostratigraphic = StratigraphicStruct.FromWitsml(formationMarker.Chronostratigraphic),
+                Description = formationMarker.Description,
+                CommonData = new CommonData
+                {
+                    DTimCreation = formationMarker.CommonData?.DTimCreation,
+                    DTimLastChange = formationMarker.CommonData?.DTimLastChange,
+                    ItemState = formationMarker.CommonData?.ItemState
+                }
+            };
+        }
     }
 }
