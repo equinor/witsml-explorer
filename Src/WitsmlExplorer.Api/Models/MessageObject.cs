@@ -31,5 +31,29 @@ namespace WitsmlExplorer.Api.Models
                 CommonData = CommonData?.ToWitsml()
             }.AsItemInWitsmlList();
         }
+
+        public static MessageObject FromWitsml(WitsmlMessage message)
+        {
+            return message == null ? null : new MessageObject
+            {
+                WellboreUid = message.UidWellbore,
+                WellboreName = message.NameWellbore,
+                WellUid = message.UidWell,
+                WellName = message.NameWell,
+                Uid = message.Uid,
+                Name = message.Name,
+                Md = MeasureWithDatum.FromWitsml(message.Md),
+                MessageText = message.MessageText,
+                TypeMessage = message.TypeMessage,
+                DTim = message.DTim,
+                CommonData = new()
+                {
+                    SourceName = message.CommonData?.SourceName,
+                    Comments = message.CommonData?.Comments,
+                    DTimCreation = message.CommonData?.DTimCreation,
+                    DTimLastChange = message.CommonData?.DTimLastChange
+                }
+            };
+        }
     }
 }
