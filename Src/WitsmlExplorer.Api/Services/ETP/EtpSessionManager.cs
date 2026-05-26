@@ -15,6 +15,7 @@ namespace WitsmlExplorer.Api.Services.ETP;
 public class EtpSessionManager : IEtpSessionManager, IAsyncDisposable
 {
     private readonly ConcurrentDictionary<SessionKey, IEtpClient> _sessions = new();
+    private readonly SemaphoreSlim _sessionCreationLock = new(1, 1);
     private readonly SessionManagerOptions _options;
     private readonly ILogger<EtpSessionManager> _logger;
     private readonly Func<EtpSessionOptions, CancellationToken, Task<IEtpClient>> _clientFactory;
@@ -45,38 +46,46 @@ public class EtpSessionManager : IEtpSessionManager, IAsyncDisposable
             return existingClient;
         }
 
-        var etpSessionOptions = new EtpSessionOptions(
-            options.ServerUri,
-            _options.AppName,
-            _options.AppVersion,
-            new EtpBasicAuthCredentials(options.Username, options.Password),
-            new List<RequestedProtocol> { RequestedProtocol.Discovery, RequestedProtocol.Store }
-        );
-
-        IEtpClient client;
+        // Multiple requests are often made at the same time, so we need to ensure that only one session is created at a time.
+        await _sessionCreationLock.WaitAsync(cancellationToken);
 
         try
         {
-            _logger.LogInformation("Creating new ETP session for server {ServerUri}", sessionKey.ServerUri);
-            client = await _clientFactory(etpSessionOptions, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to create ETP session for server {ServerUri}", sessionKey.ServerUri);
-            throw;
-        }
-
-        if (!_sessions.TryAdd(sessionKey, client))
-        {
-            await client.DisposeAsync(); // Dispose the newly created client if we failed to add it to the dictionary
-            if (_sessions.TryGetValue(sessionKey, out var concurrentClient)) // Try to get the existing client again in case it was just added by another thread
+            if (_sessions.TryGetValue(sessionKey, out existingClient))
             {
-                return concurrentClient;
+                _logger.LogInformation("Reusing existing ETP session for server {ServerUri} after waiting for session creation lock", sessionKey.ServerUri);
+                return existingClient;
             }
-            throw new InvalidOperationException($"Failed to add ETP session for server {sessionKey.ServerUri}");
-        }
 
-        return client;
+            var etpSessionOptions = new EtpSessionOptions(
+                options.ServerUri,
+                _options.AppName,
+                _options.AppVersion,
+                new EtpBasicAuthCredentials(options.Username, options.Password),
+                new List<RequestedProtocol> { RequestedProtocol.Discovery, RequestedProtocol.Store }
+            );
+
+            IEtpClient client;
+
+            try
+            {
+                _logger.LogInformation("Creating new ETP session for server {ServerUri}", sessionKey.ServerUri);
+                client = await _clientFactory(etpSessionOptions, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create ETP session for server {ServerUri}", sessionKey.ServerUri);
+                throw;
+            }
+
+            _sessions[sessionKey] = client;
+
+            return client;
+        }
+        finally
+        {
+            _sessionCreationLock.Release();
+        }
     }
 
     private static void ValidateSessionOptions(SessionKey sessionKey, SessionOptions options)
