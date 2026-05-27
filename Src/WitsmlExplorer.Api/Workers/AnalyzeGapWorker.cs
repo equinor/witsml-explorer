@@ -83,7 +83,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             foreach (string jobMnemonic in jobMnemonics)
             {
                 Index gapSize = isDepthLog
-                    ? new DepthIndex(job.GapSize)
+                    ? new DepthIndex(job.GapSize, ((DepthIndex)startIndexForGap).Uom)
                     : new TimeSpanIndex(job.TimeGapSize);
                 CreateNoDataReportItem(emptyGapReportItems, startIndexForGap,
                     endIndexForGap, gapSize, jobMnemonic, isLogIncreasing);
@@ -96,7 +96,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             foreach (string jobMnemonic in jobMnemonicsMinusLogMnemonics)
             {
                 Index gapSize = isDepthLog
-                    ? new DepthIndex(job.GapSize)
+                    ? new DepthIndex(job.GapSize, ((DepthIndex)startIndexForGap).Uom)
                     : new TimeSpanIndex(job.TimeGapSize);
                 CreateNoDataReportItem(gapReportItems, startIndexForGap,
                     endIndexForGap, gapSize, jobMnemonic, isLogIncreasing);
