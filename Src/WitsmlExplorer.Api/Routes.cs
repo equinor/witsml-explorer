@@ -101,6 +101,7 @@ namespace WitsmlExplorer.Api
             app.MapGet(routes[EntityType.Rig] + "/{rigUid}", RigHandler.GetRig, useOAuth2);
 
             app.MapGet(routes[EntityType.Risk], RiskHandler.GetRisks, useOAuth2);
+            app.MapGet(routes[EntityType.Risk] + "/{riskUid}", RiskHandler.GetRisk, useOAuth2);
 
             app.MapGet(routes[EntityType.Trajectory], TrajectoryHandler.GetTrajectories, useOAuth2);
             app.MapGet(routes[EntityType.Trajectory] + "/{trajectoryUid}", TrajectoryHandler.GetTrajectory, useOAuth2);

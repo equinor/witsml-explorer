@@ -65,5 +65,38 @@ namespace WitsmlExplorer.Api.Models
                 CommonData = CommonData?.ToWitsml()
             }.AsItemInWitsmlList();
         }
+
+        public static Risk FromWitsml(WitsmlRisk risk)
+        {
+            return risk == null ? null : new Risk
+            {
+                Name = risk.Name,
+                WellboreName = risk.NameWellbore,
+                WellboreUid = risk.UidWellbore,
+                WellName = risk.NameWell,
+                WellUid = risk.UidWell,
+                Uid = risk.Uid,
+                Type = risk.Type,
+                Category = risk.Category,
+                SubCategory = risk.SubCategory,
+                ExtendCategory = risk.ExtendCategory,
+                AffectedPersonnel = risk.AffectedPersonnel != null ? string.Join(", ", risk.AffectedPersonnel) : "",
+                DTimStart = risk.DTimStart,
+                DTimEnd = risk.DTimEnd,
+                MdBitStart = risk.MdBitStart == null ? null : new MeasureWithDatum { Uom = risk.MdBitStart.Uom, Value = StringHelpers.ToDouble(risk.MdBitStart.Value) },
+                MdBitEnd = risk.MdBitEnd == null ? null : new MeasureWithDatum { Uom = risk.MdBitEnd.Uom, Value = StringHelpers.ToDouble(risk.MdBitEnd.Value) },
+                SeverityLevel = risk.SeverityLevel,
+                ProbabilityLevel = risk.ProbabilityLevel,
+                Summary = risk.Summary,
+                Details = risk.Details,
+                CommonData = risk.CommonData == null ? null : new CommonData
+                {
+                    ItemState = risk.CommonData.ItemState,
+                    SourceName = risk.CommonData.SourceName,
+                    DTimLastChange = risk.CommonData.DTimLastChange,
+                    DTimCreation = risk.CommonData.DTimCreation,
+                }
+            };
+        }
     }
 }

@@ -41,30 +41,7 @@ namespace WitsmlExplorer.Api.Services
             WitsmlLogs witsmlLog = LogQueries.GetWitsmlLogsByWellbore(wellUid, wellboreUid);
             WitsmlLogs result = await _witsmlClient.GetFromStoreAsync(witsmlLog, new OptionsIn(ReturnElements.Requested));
 
-            return result.Logs.Select(log =>
-                new LogObject
-                {
-                    Uid = log.Uid,
-                    Name = log.Name,
-                    IndexType = log.IndexType,
-                    WellUid = log.UidWell,
-                    WellName = log.NameWell,
-                    WellboreUid = log.UidWellbore,
-                    WellboreName = log.NameWellbore,
-                    ObjectGrowing = StringHelpers.ToBoolean(log.ObjectGrowing),
-                    ServiceCompany = log.ServiceCompany,
-                    RunNumber = log.RunNumber,
-                    StartIndex = log.GetStartIndexAsString(),
-                    EndIndex = log.GetEndIndexAsString(),
-                    IndexCurve = log.IndexCurve.Value,
-                    Direction = LogObject.ConvertDirection(log),
-                    Mnemonics = log.LogCurveInfo.Count,
-                    CommonData = new CommonData()
-                    {
-                        DTimCreation = log.CommonData.DTimCreation,
-                        DTimLastChange = log.CommonData.DTimLastChange,
-                    }
-                }).OrderBy(log => log.Name).ToList();
+            return result.Logs.Select(LogObject.FromWitsml).OrderBy(log => log.Name).ToList();
         }
 
         public async Task<LogObject> GetLog(string wellUid, string wellboreUid, string logUid, CancellationToken? cancellationToken = null)
@@ -82,36 +59,7 @@ namespace WitsmlExplorer.Api.Services
                 return null;
             }
 
-            LogObject logObject = new()
-            {
-                Uid = witsmlLog.Uid,
-                Name = witsmlLog.Name,
-                IndexType = witsmlLog.IndexType,
-                WellUid = witsmlLog.UidWell,
-                WellName = witsmlLog.NameWell,
-                WellboreUid = witsmlLog.UidWellbore,
-                WellboreName = witsmlLog.NameWellbore,
-                IndexCurve = witsmlLog.IndexCurve.Value,
-                ObjectGrowing = StringHelpers.ToBoolean(witsmlLog.ObjectGrowing),
-                ServiceCompany = witsmlLog.ServiceCompany,
-                RunNumber = witsmlLog.RunNumber,
-                Direction = LogObject.ConvertDirection(witsmlLog),
-                Mnemonics = witsmlLog.LogCurveInfo.Count,
-                CommonData = new()
-                {
-                    DTimCreation = witsmlLog.CommonData.DTimCreation,
-                    DTimLastChange = witsmlLog.CommonData.DTimLastChange,
-                }
-            };
-            if (string.IsNullOrEmpty(witsmlLog.IndexType))
-            {
-                return logObject;
-            }
-
-            logObject.StartIndex = witsmlLog.GetStartIndexAsString();
-            logObject.EndIndex = witsmlLog.GetEndIndexAsString();
-
-            return logObject;
+            return LogObject.FromWitsml(witsmlLog);
         }
 
         private async Task<WitsmlLog> GetLogHeader(string wellUid, string wellboreUid, string logUid)
@@ -126,31 +74,7 @@ namespace WitsmlExplorer.Api.Services
         {
             WitsmlLog witsmlLog = await GetLogHeader(wellUid, wellboreUid, logUid);
 
-            return witsmlLog?.LogCurveInfo.Select(logCurveInfo =>
-                new LogCurveInfo
-                {
-                    Uid = logCurveInfo.Uid,
-                    Mnemonic = logCurveInfo.Mnemonic,
-                    ClassWitsml = logCurveInfo.ClassWitsml,
-                    MaxDateTimeIndex = logCurveInfo.MaxDateTimeIndex,
-                    MaxDepthIndex = logCurveInfo.MaxIndex?.Value,
-                    MinDateTimeIndex = logCurveInfo.MinDateTimeIndex,
-                    MinDepthIndex = logCurveInfo.MinIndex?.Value,
-                    MnemAlias = logCurveInfo.MnemAlias,
-                    SensorOffset = LengthMeasure.FromWitsml(logCurveInfo.SensorOffset),
-                    Unit = logCurveInfo.Unit,
-                    CurveDescription = logCurveInfo.CurveDescription,
-                    TypeLogData = logCurveInfo.TypeLogData,
-                    TraceState = logCurveInfo.TraceState,
-                    NullValue = logCurveInfo.NullValue,
-                    AxisDefinitions = logCurveInfo.AxisDefinitions?.Select(a => new AxisDefinition()
-                    {
-                        Uid = a.Uid,
-                        Order = a.Order,
-                        Count = a.Count,
-                        DoubleValues = a.DoubleValues
-                    }).ToList(),
-                }).ToList();
+            return witsmlLog?.LogCurveInfo.Select(LogObject.LogCurveInfoFromWitsml).ToList();
         }
 
         public async Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, IEnumerable<string> logUids)
