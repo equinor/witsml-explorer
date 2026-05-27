@@ -6,7 +6,6 @@ using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Models;
-using WitsmlExplorer.Api.Models.Measure;
 using WitsmlExplorer.Api.Query;
 
 namespace WitsmlExplorer.Api.Services
@@ -14,6 +13,7 @@ namespace WitsmlExplorer.Api.Services
     public interface IRiskService
     {
         Task<ICollection<Risk>> GetRisks(string wellUid, string wellboreUid);
+        Task<Risk> GetRisk(string wellUid, string wellboreUid, string riskUid);
     }
 
     public class RiskService : WitsmlService, IRiskService
@@ -25,37 +25,14 @@ namespace WitsmlExplorer.Api.Services
             WitsmlRisks query = RiskQueries.GetWitsmlRiskByWellbore(wellUid, wellboreUid);
             WitsmlRisks result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.Requested));
 
-            return result.Risks.Select(risk =>
+            return result.Risks.Select(Risk.FromWitsml).OrderBy(risk => risk.Name).ToList();
+        }
 
-                new Risk
-                {
-                    Name = risk.Name,
-                    WellboreName = risk.NameWellbore,
-                    WellboreUid = risk.UidWellbore,
-                    WellName = risk.NameWell,
-                    WellUid = risk.UidWell,
-                    Uid = risk.Uid,
-                    Type = risk.Type,
-                    Category = risk.Category,
-                    SubCategory = risk.SubCategory,
-                    ExtendCategory = risk.ExtendCategory,
-                    AffectedPersonnel = (risk.AffectedPersonnel != null) ? string.Join(", ", risk.AffectedPersonnel) : "",
-                    DTimStart = risk.DTimStart,
-                    DTimEnd = risk.DTimEnd,
-                    MdBitStart = (risk.MdBitStart == null) ? null : new MeasureWithDatum { Uom = risk.MdBitStart.Uom, Value = StringHelpers.ToDouble(risk.MdBitStart.Value) },
-                    MdBitEnd = (risk.MdBitEnd == null) ? null : new MeasureWithDatum { Uom = risk.MdBitEnd.Uom, Value = StringHelpers.ToDouble(risk.MdBitEnd.Value) },
-                    SeverityLevel = risk.SeverityLevel,
-                    ProbabilityLevel = risk.ProbabilityLevel,
-                    Summary = risk.Summary,
-                    Details = risk.Details,
-                    CommonData = new CommonData()
-                    {
-                        ItemState = risk.CommonData.ItemState,
-                        SourceName = risk.CommonData.SourceName,
-                        DTimLastChange = risk.CommonData.DTimLastChange,
-                        DTimCreation = risk.CommonData.DTimCreation,
-                    }
-                }).OrderBy(risk => risk.Name).ToList();
+        public async Task<Risk> GetRisk(string wellUid, string wellboreUid, string riskUid)
+        {
+            WitsmlRisks query = RiskQueries.QueryById(wellUid, wellboreUid, riskUid);
+            WitsmlRisks result = await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.All));
+            return Risk.FromWitsml(result.Risks.FirstOrDefault());
         }
     }
 }
