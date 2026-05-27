@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -47,9 +48,9 @@ namespace WitsmlExplorer.Api.Services.ETP
             return mudLogs;
         }
 
-        public async Task<List<MudLogGeologyInterval>> GetGeologyIntervals(string wellUid, string wellboreUid, string mudlogUid, CancellationToken? cancellationToken)
+        public Task<List<MudLogGeologyInterval>> GetGeologyIntervals(string wellUid, string wellboreUid, string mudlogUid, CancellationToken? cancellationToken)
         {
-            return (await GetMudLog(wellUid, wellboreUid, mudlogUid, cancellationToken))?.GeologyInterval;
+            throw new NotImplementedException("GeologyIntervals are not returned in the MudLog response. Implement this when EtpClient supports protocol 6 for GrowingObjects.");
         }
 
         private MudLog MapResourceToMudLog(Resource resource)

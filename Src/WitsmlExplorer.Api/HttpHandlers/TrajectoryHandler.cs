@@ -33,13 +33,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(IEnumerable<TrajectoryStation>))]
-        public static async Task<IResult> GetTrajectoryStations(HttpContext httpContext, string wellUid, string wellboreUid, string trajectoryUid, ITrajectoryService trajectoryService, IEtpTrajectoryService etpTrajectoryService, IProtocolCoordinator protocolCoordinator, CancellationToken cancellationToken)
+        public static async Task<IResult> GetTrajectoryStations(HttpContext httpContext, string wellUid, string wellboreUid, string trajectoryUid, ITrajectoryService trajectoryService, IProtocolCoordinator protocolCoordinator)
         {
-            EssentialHeaders eh = new(httpContext?.Request);
-            var protocol = (eh.WitsmlProtocol == WitsmlProtocol.Etp && !string.IsNullOrWhiteSpace(wellUid) && !string.IsNullOrWhiteSpace(wellboreUid)) ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
-            Task<List<TrajectoryStation>> SoapCall() => trajectoryService.GetTrajectoryStations(wellUid, wellboreUid, trajectoryUid);
-            Task<List<TrajectoryStation>> EtpCall() => etpTrajectoryService.GetTrajectoryStations(wellUid, wellboreUid, trajectoryUid, cancellationToken);
-            return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
+            protocolCoordinator.SetSoapProtocolHeader(httpContext);
+            return TypedResults.Ok(await trajectoryService.GetTrajectoryStations(wellUid, wellboreUid, trajectoryUid));
         }
     }
 }

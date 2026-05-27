@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -47,9 +48,9 @@ namespace WitsmlExplorer.Api.Services.ETP
             return trajectories;
         }
 
-        public async Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid, CancellationToken? cancellationToken)
+        public Task<List<TrajectoryStation>> GetTrajectoryStations(string wellUid, string wellboreUid, string trajectoryUid, CancellationToken? cancellationToken)
         {
-            return (await GetTrajectory(wellUid, wellboreUid, trajectoryUid, cancellationToken))?.TrajectoryStations?.OrderBy(tStation => tStation.Md.Value).ToList();
+            throw new NotImplementedException("TrajectoryStations are not returned in the Trajectory response. Implement this when EtpClient supports protocol 6 for GrowingObjects.");
         }
 
         private Trajectory MapResourceToTrajectory(Resource resource)

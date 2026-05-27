@@ -33,13 +33,10 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
         [Produces(typeof(List<MudLogGeologyInterval>))]
-        public static async Task<IResult> GetGeologyIntervals(HttpContext httpContext, string wellUid, string wellboreUid, string mudlogUid, IMudLogService mudLogService, IEtpMudLogService etpMudLogService, IProtocolCoordinator protocolCoordinator, CancellationToken cancellationToken)
+        public static async Task<IResult> GetGeologyIntervals(HttpContext httpContext, string wellUid, string wellboreUid, string mudlogUid, IMudLogService mudLogService, IProtocolCoordinator protocolCoordinator)
         {
-            EssentialHeaders eh = new(httpContext?.Request);
-            var protocol = (eh.WitsmlProtocol == WitsmlProtocol.Etp && !string.IsNullOrWhiteSpace(wellUid) && !string.IsNullOrWhiteSpace(wellboreUid)) ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
-            Task<List<MudLogGeologyInterval>> SoapCall() => mudLogService.GetGeologyIntervals(wellUid, wellboreUid, mudlogUid);
-            Task<List<MudLogGeologyInterval>> EtpCall() => etpMudLogService.GetGeologyIntervals(wellUid, wellboreUid, mudlogUid, cancellationToken);
-            return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
+            protocolCoordinator.SetSoapProtocolHeader(httpContext);
+            return TypedResults.Ok(await mudLogService.GetGeologyIntervals(wellUid, wellboreUid, mudlogUid));
         }
     }
 }
