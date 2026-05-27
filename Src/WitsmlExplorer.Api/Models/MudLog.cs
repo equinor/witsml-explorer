@@ -38,6 +38,65 @@ namespace WitsmlExplorer.Api.Models
                 CommonData = CommonData?.ToWitsml()
             }.AsItemInWitsmlList();
         }
+
+        public static MudLog FromWitsml(WitsmlMudLog witsmlMudLog)
+        {
+            return witsmlMudLog == null ? null : new MudLog
+            {
+                Uid = witsmlMudLog.Uid,
+                Name = witsmlMudLog.Name,
+                WellUid = witsmlMudLog.UidWell,
+                WellName = witsmlMudLog.NameWell,
+                WellboreUid = witsmlMudLog.UidWellbore,
+                WellboreName = witsmlMudLog.NameWellbore,
+                MudLogCompany = witsmlMudLog.MudLogCompany,
+                MudLogEngineers = witsmlMudLog.MudLogEngineers,
+                StartMd = MeasureWithDatum.FromWitsml(witsmlMudLog.StartMd),
+                EndMd = MeasureWithDatum.FromWitsml(witsmlMudLog.EndMd),
+                GeologyInterval = GetGeologyIntervals(witsmlMudLog.GeologyInterval),
+                CommonData = new CommonData
+                {
+                    DTimCreation = witsmlMudLog.CommonData?.DTimCreation,
+                    DTimLastChange = witsmlMudLog.CommonData?.DTimLastChange,
+                    ItemState = witsmlMudLog.CommonData?.ItemState,
+                }
+            };
+        }
+
+        private static List<MudLogGeologyInterval> GetGeologyIntervals(List<WitsmlMudLogGeologyInterval> geologyIntervals)
+        {
+            return geologyIntervals?.Select(geologyInterval =>
+                new MudLogGeologyInterval
+                {
+                    Uid = geologyInterval.Uid,
+                    TypeLithology = geologyInterval.TypeLithology,
+                    MdTop = MeasureWithDatum.FromWitsml(geologyInterval.MdTop),
+                    MdBottom = MeasureWithDatum.FromWitsml(geologyInterval.MdBottom),
+                    TvdTop = MeasureWithDatum.FromWitsml(geologyInterval.TvdTop),
+                    TvdBase = MeasureWithDatum.FromWitsml(geologyInterval.TvdBase),
+                    RopAv = LengthMeasure.FromWitsml(geologyInterval.RopAv),
+                    WobAv = LengthMeasure.FromWitsml(geologyInterval.WobAv),
+                    TqAv = LengthMeasure.FromWitsml(geologyInterval.TqAv),
+                    CurrentAv = LengthMeasure.FromWitsml(geologyInterval.CurrentAv),
+                    RpmAv = LengthMeasure.FromWitsml(geologyInterval.RpmAv),
+                    WtMudAv = LengthMeasure.FromWitsml(geologyInterval.WtMudAv),
+                    EcdTdAv = LengthMeasure.FromWitsml(geologyInterval.EcdTdAv),
+                    DxcAv = geologyInterval.DxcAv,
+                    Lithologies = geologyInterval.Lithologies?.Select(l => new MudLogLithology
+                    {
+                        Uid = l.Uid,
+                        CodeLith = l.CodeLith,
+                        LithPc = l.LithPc?.Value,
+                        Type = l.Type
+                    }).ToList(),
+                    Description = geologyInterval.Description,
+                    CommonTime = new CommonTime
+                    {
+                        DTimCreation = geologyInterval.CommonTime?.DTimCreation,
+                        DTimLastChange = geologyInterval.CommonTime?.DTimLastChange
+                    }
+                }).ToList();
+        }
     }
 }
 
