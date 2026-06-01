@@ -12,7 +12,9 @@ using System.Threading.Tasks;
 using Avro.IO;
 using Avro.Specific;
 
+using Energistics.Datatypes;
 using Energistics.Datatypes.Object;
+using Energistics.Protocol.Core;
 using Energistics.Protocol.Store;
 
 using Witsml.Data;
@@ -286,24 +288,31 @@ internal sealed class StoreProtocolHandler
         return outputStream.ToArray();
     }
 
-    public void TryHandle(int messageType, long correlationId, int messageFlags, BinaryDecoder decoder)
+    public void TryHandle(MessageHeader header, BinaryDecoder decoder)
     {
+        ArgumentNullException.ThrowIfNull(header);
+        var correlationId = header.correlationId;
+
         if (_pendingGetObjectByRequestId.TryGetValue(correlationId, out var getObjectRequest))
         {
-            HandleGetObjectResponse(messageType, messageFlags, decoder, getObjectRequest);
+            HandleGetObjectResponse(header, decoder, getObjectRequest, _clientContext);
             return;
         }
 
         if (_pendingAcknowledgeByRequestId.TryGetValue(correlationId, out var ackRequest))
         {
-            HandleAcknowledgeResponse(messageType, decoder, ackRequest);
+            HandleAcknowledgeResponse(header, decoder, ackRequest, _clientContext);
         }
     }
 
-    private static void HandleGetObjectResponse(int messageType, int messageFlags, BinaryDecoder decoder, PendingGetObjectRequest pendingRequest)
+    private static void HandleGetObjectResponse(MessageHeader header, BinaryDecoder decoder, PendingGetObjectRequest pendingRequest, IProtocolHandlerContext clientContext)
     {
-        if (EtpMessageHelpers.TryReadProtocolException(messageType, decoder, "Store.GetObject", out var protocolException))
+        var messageType = header.messageType;
+        var messageFlags = header.messageFlags;
+
+        if (EtpMessageHelpers.TryReadProtocolException(messageType, decoder, "Store.GetObject", out var protocolException, out var protocolExceptionBody))
         {
+            clientContext.LogReceivedMessage(header, protocolExceptionBody);
             pendingRequest.Completion.TrySetException(protocolException);
             return;
         }
@@ -321,6 +330,7 @@ internal sealed class StoreProtocolHandler
 
         var responseReader = new SpecificReader<Energistics.Protocol.Store.Object>(Energistics.Protocol.Store.Object._SCHEMA, Energistics.Protocol.Store.Object._SCHEMA);
         var response = responseReader.Read(new Energistics.Protocol.Store.Object(), decoder);
+        clientContext.LogReceivedMessage(header, response);
         if (response?.dataObject != null)
         {
             lock (pendingRequest)
@@ -351,16 +361,22 @@ internal sealed class StoreProtocolHandler
         pendingRequest.Completion.TrySetResult(result);
     }
 
-    private static void HandleAcknowledgeResponse(int messageType, BinaryDecoder decoder, PendingAcknowledgeRequest pendingRequest)
+    private static void HandleAcknowledgeResponse(MessageHeader header, BinaryDecoder decoder, PendingAcknowledgeRequest pendingRequest, IProtocolHandlerContext clientContext)
     {
-        if (EtpMessageHelpers.TryReadProtocolException(messageType, decoder, "Store", out var protocolException))
+        var messageType = header.messageType;
+
+        if (EtpMessageHelpers.TryReadProtocolException(messageType, decoder, "Store", out var protocolException, out var protocolExceptionBody))
         {
+            clientContext.LogReceivedMessage(header, protocolExceptionBody);
             pendingRequest.Completion.TrySetException(protocolException);
             return;
         }
 
         if (messageType == EtpMessageHelpers.AcknowledgeMessageType)
         {
+            var ackReader = new SpecificReader<Acknowledge>(Acknowledge._SCHEMA, Acknowledge._SCHEMA);
+            var acknowledge = ackReader.Read(new Acknowledge(), decoder);
+            clientContext.LogReceivedMessage(header, acknowledge);
             pendingRequest.Completion.TrySetResult();
         }
     }

@@ -120,24 +120,28 @@ internal sealed class CoreProtocolHandler
         }
     }
 
-    public async Task TryHandleAsync(int messageType, BinaryDecoder decoder, CancellationToken cancellationToken)
+    public async Task TryHandleAsync(MessageHeader header, BinaryDecoder decoder, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(header);
+
+        var messageType = header.messageType;
         if (messageType == OpenSessionMessageType)
         {
-            await HandleOpenSessionAsync(decoder, cancellationToken);
+            await HandleOpenSessionAsync(header, decoder, cancellationToken);
             return;
         }
 
         if (messageType == CloseSessionMessageType)
         {
-            await HandleCloseSessionAsync(decoder, cancellationToken);
+            await HandleCloseSessionAsync(header, decoder, cancellationToken);
         }
     }
 
-    private async Task HandleOpenSessionAsync(BinaryDecoder decoder, CancellationToken cancellationToken)
+    private async Task HandleOpenSessionAsync(MessageHeader header, BinaryDecoder decoder, CancellationToken cancellationToken)
     {
         var openSessionReader = new SpecificReader<OpenSession>(OpenSession._SCHEMA, OpenSession._SCHEMA);
         var openSession = openSessionReader.Read(new OpenSession(), decoder);
+        _clientContext.LogReceivedMessage(header, openSession);
         var sessionId = Guid.TryParse(openSession.sessionId, out var parsed) ? parsed : (Guid?)null;
         var capabilities = openSession.ToServerCapabilities(sessionId);
 
@@ -152,10 +156,11 @@ internal sealed class CoreProtocolHandler
         }
     }
 
-    private async Task HandleCloseSessionAsync(BinaryDecoder decoder, CancellationToken cancellationToken)
+    private async Task HandleCloseSessionAsync(MessageHeader header, BinaryDecoder decoder, CancellationToken cancellationToken)
     {
         var closeSessionReader = new SpecificReader<CloseSession>(CloseSession._SCHEMA, CloseSession._SCHEMA);
         var closeSession = closeSessionReader.Read(new CloseSession(), decoder);
+        _clientContext.LogReceivedMessage(header, closeSession);
         var reason = string.IsNullOrWhiteSpace(closeSession.reason)
             ? "The server closed the ETP session."
             : closeSession.reason;

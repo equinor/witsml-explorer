@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -10,6 +11,7 @@ using Moq;
 
 using Witsml.ETP;
 
+using WitsmlExplorer.Api.Configuration;
 using WitsmlExplorer.Api.Services.ETP;
 
 using Xunit;
@@ -19,7 +21,13 @@ namespace WitsmlExplorer.Api.Tests.Services;
 public class EtpSessionManagerTests
 {
     private readonly SessionManagerOptions _managerOptions = new() { IdleTimeout = TimeSpan.FromSeconds(1), AppName = "TestApp", AppVersion = "1.0.0" };
+    private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<ILogger<EtpSessionManager>> _logger = new();
+
+    public EtpSessionManagerTests()
+    {
+        _configuration.SetupGet(c => c[ConfigConstants.LogQueries]).Returns("false");
+    }
 
     private static SessionKey MakeKey(string userId = "user1", string username = "etpuser", string uri = "wss://etp-server.com") =>
         new(userId, username, new Uri(uri));
@@ -29,7 +37,7 @@ public class EtpSessionManagerTests
 
     private EtpSessionManager CreateManager(Func<EtpSessionOptions, CancellationToken, Task<IEtpClient>> clientFactory = null)
     {
-        return new EtpSessionManager(Options.Create(_managerOptions), _logger.Object, clientFactory);
+        return new EtpSessionManager(_configuration.Object, Options.Create(_managerOptions), _logger.Object, clientFactory);
     }
 
     [Fact]

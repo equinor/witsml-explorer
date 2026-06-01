@@ -5,10 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Witsml.ETP;
+
+using WitsmlExplorer.Api.Configuration;
 
 namespace WitsmlExplorer.Api.Services.ETP;
 
@@ -18,16 +21,19 @@ public class EtpSessionManager : IEtpSessionManager, IAsyncDisposable
     private readonly SemaphoreSlim _sessionCreationLock = new(1, 1);
     private readonly SessionManagerOptions _options;
     private readonly ILogger<EtpSessionManager> _logger;
+    private readonly bool _logMessages;
     private readonly Func<EtpSessionOptions, CancellationToken, Task<IEtpClient>> _clientFactory;
     public int SessionCount => _sessions.Count;
 
     public EtpSessionManager(
+        IConfiguration configuration,
         IOptions<SessionManagerOptions> options,
         ILogger<EtpSessionManager> logger,
         Func<EtpSessionOptions, CancellationToken, Task<IEtpClient>> clientFactory = null)
     {
         _options = options.Value;
         _logger = logger;
+        _logMessages = StringHelpers.ToBoolean(configuration[ConfigConstants.LogQueries]);
         _clientFactory = clientFactory ?? DefaultClientFactoryAsync;
     }
 
@@ -62,7 +68,8 @@ public class EtpSessionManager : IEtpSessionManager, IAsyncDisposable
                 _options.AppName,
                 _options.AppVersion,
                 new EtpBasicAuthCredentials(options.Username, options.Password),
-                new List<RequestedProtocol> { RequestedProtocol.Discovery, RequestedProtocol.Store }
+                new List<RequestedProtocol> { RequestedProtocol.Discovery, RequestedProtocol.Store },
+                _logMessages
             );
 
             IEtpClient client;

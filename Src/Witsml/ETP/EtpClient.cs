@@ -27,6 +27,8 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     private readonly CoreProtocolHandler _coreProtocolHandler;
     private readonly DiscoveryProtocolHandler _discoveryProtocolHandler;
     private readonly StoreProtocolHandler _storeProtocolHandler;
+    private readonly Uri _endpoint;
+    private IEtpMessageLogger _messageLogger;
     private EtpServerCapabilities _serverCapabilities;
     private long _messageId;
     private DateTime _lastMessageSentUtc;
@@ -35,9 +37,11 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     private EtpClient(EtpSessionOptions sessionOptions, Func<ClientWebSocket> webSocketFactory) : base(webSocketFactory)
     {
         var options = sessionOptions ?? throw new ArgumentNullException(nameof(sessionOptions));
+        _endpoint = options.Endpoint;
         _coreProtocolHandler = new CoreProtocolHandler(this, options);
         _discoveryProtocolHandler = new DiscoveryProtocolHandler(this);
         _storeProtocolHandler = new StoreProtocolHandler(this);
+        SetupMessageLogging(options.LogMessages);
     }
 
     public static async Task<EtpClient> ConnectAsync(EtpSessionOptions sessionOptions, Func<ClientWebSocket> webSocketFactory = null, CancellationToken cancellationToken = default)
@@ -63,6 +67,17 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     {
         ThrowIfDisposed();
         return _serverCapabilities;
+    }
+
+    private void SetupMessageLogging(bool logMessages)
+    {
+        if (!logMessages) return;
+        SetMessageLogger(new DefaultEtpMessageLogger());
+    }
+
+    public void SetMessageLogger(IEtpMessageLogger messageLogger)
+    {
+        _messageLogger = messageLogger;
     }
 
     protected override async Task OnDisposingAsync()
@@ -94,15 +109,16 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         switch (header.protocol)
         {
             case CoreProtocolHandler.ProtocolId:
-                await _coreProtocolHandler.TryHandleAsync(header.messageType, decoder, cancellationToken);
+                await _coreProtocolHandler.TryHandleAsync(header, decoder, cancellationToken);
                 break;
             case DiscoveryProtocolHandler.ProtocolId:
-                _discoveryProtocolHandler.TryHandle(header.messageType, header.correlationId, header.messageFlags, decoder);
+                _discoveryProtocolHandler.TryHandle(header, decoder);
                 break;
             case StoreProtocolHandler.ProtocolId:
-                _storeProtocolHandler.TryHandle(header.messageType, header.correlationId, header.messageFlags, decoder);
+                _storeProtocolHandler.TryHandle(header, decoder);
                 break;
             default:
+                LogEtpMessage("Received", header, payload.ToArray());
                 break;
         }
     }
@@ -117,6 +133,8 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
 
     Task IProtocolHandlerContext.SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken, long? messageId) => SendEtpMessageAsync(protocol, messageType, body, cancellationToken, messageId);
     long IProtocolHandlerContext.ReserveMessageId() => ReserveMessageId();
+    void IProtocolHandlerContext.LogReceivedMessage(MessageHeader header, object body) =>
+        LogEtpMessage("Received", header, body);
 
     private async Task SendEtpMessageAsync<TBody>(int protocol, int messageType, TBody body, CancellationToken cancellationToken, long? messageId = null) where TBody : ISpecificRecord
     {
@@ -145,8 +163,15 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         var bodyWriter = new SpecificWriter<TBody>(body.Schema);
         bodyWriter.Write(body, encoder);
 
+        LogEtpMessage("Sent", header, body);
         await SendMessageAsync(stream.ToArray(), WebSocketMessageType.Binary, cancellationToken);
         _lastMessageSentUtc = DateTime.UtcNow;
+    }
+
+    private void LogEtpMessage(string direction, MessageHeader header, object body = null)
+    {
+        if (_messageLogger == null) return;
+        _messageLogger.LogMessage(direction, _endpoint, header, body);
     }
 
     private long ReserveMessageId()
