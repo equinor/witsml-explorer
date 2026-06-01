@@ -10,6 +10,7 @@ public sealed record EtpSessionOptions
     string AppVersion,
     EtpBasicAuthCredentials BasicAuth,
     IReadOnlyList<RequestedProtocol> RequestedProtocols,
+    bool LogMessages = false,
     IReadOnlyDictionary<string, string> HttpHeaders = null
 );
 

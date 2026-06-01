@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Avro.IO;
 using Avro.Specific;
 
+using Energistics.Datatypes;
 using Energistics.Datatypes.Object;
+using Energistics.Protocol.Core;
 using Energistics.Protocol.Discovery;
 
 namespace Witsml.ETP;
@@ -63,21 +65,32 @@ internal sealed class DiscoveryProtocolHandler
         }
     }
 
-    public void TryHandle(int messageType, long correlationId, int messageFlags, BinaryDecoder decoder)
+    public void TryHandle(MessageHeader header, BinaryDecoder decoder)
     {
+        ArgumentNullException.ThrowIfNull(header);
+
+        var messageType = header.messageType;
+        var correlationId = header.correlationId;
+        var messageFlags = header.messageFlags;
+
         if (!_pendingGetResourcesByRequestId.TryGetValue(correlationId, out var pendingRequest))
         {
             return;
         }
 
-        if (EtpMessageHelpers.TryReadProtocolException(messageType, decoder, "Discovery.GetResources", out var protocolException))
+        if (EtpMessageHelpers.TryReadProtocolException(messageType, decoder, "Discovery.GetResources", out var protocolException, out var protocolExceptionBody))
         {
+            _clientContext.LogReceivedMessage(header, protocolExceptionBody);
             pendingRequest.Completion.TrySetException(protocolException);
             return;
         }
 
         if (messageType == EtpMessageHelpers.AcknowledgeMessageType)
         {
+            var ackReader = new SpecificReader<Acknowledge>(Acknowledge._SCHEMA, Acknowledge._SCHEMA);
+            var acknowledge = ackReader.Read(new Acknowledge(), decoder);
+            _clientContext.LogReceivedMessage(header, acknowledge);
+
             if (EtpMessageHelpers.HasMessageFlag(messageFlags, EtpMessageHelpers.NoDataMessageFlag))
             {
                 pendingRequest.Completion.TrySetResult(new List<Resource>());
@@ -110,6 +123,7 @@ internal sealed class DiscoveryProtocolHandler
 
         var responseReader = new SpecificReader<GetResourcesResponse>(GetResourcesResponse._SCHEMA, GetResourcesResponse._SCHEMA);
         var response = responseReader.Read(new GetResourcesResponse(), decoder);
+        _clientContext.LogReceivedMessage(header, response);
         if (response?.resource != null)
         {
             lock (pendingRequest)

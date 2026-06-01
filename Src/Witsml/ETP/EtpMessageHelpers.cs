@@ -18,9 +18,10 @@ internal static class EtpMessageHelpers
 
     internal static bool HasMessageFlag(int messageFlags, int flag) => (messageFlags & flag) == flag;
 
-    internal static bool TryReadProtocolException(int messageType, BinaryDecoder decoder, string operationName, out Exception exception)
+    internal static bool TryReadProtocolException(int messageType, BinaryDecoder decoder, string operationName, out Exception exception, out ProtocolException protocolException)
     {
         exception = null;
+        protocolException = null;
 
         if (messageType != ProtocolExceptionMessageType)
         {
@@ -28,7 +29,7 @@ internal static class EtpMessageHelpers
         }
 
         var protocolExceptionReader = new SpecificReader<ProtocolException>(ProtocolException._SCHEMA, ProtocolException._SCHEMA);
-        var protocolException = protocolExceptionReader.Read(new ProtocolException(), decoder);
+        protocolException = protocolExceptionReader.Read(new ProtocolException(), decoder);
         var errorCode = protocolException?.errorCode;
         var errorMessage = string.IsNullOrWhiteSpace(protocolException?.errorMessage)
             ? "Unknown protocol error."
