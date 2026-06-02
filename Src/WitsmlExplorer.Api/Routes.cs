@@ -23,7 +23,9 @@ namespace WitsmlExplorer.Api
             app.MapPatch("/witsml-servers/{witsmlServerId}", WitsmlServerHandler.UpdateWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
             app.MapDelete("/witsml-servers/{witsmlServerId}", WitsmlServerHandler.DeleteWitsmlServer, useOAuth2, AuthorizationPolicyRoles.ADMIN);
 
-            app.MapGet("/capabilities", CapHandler.GetCap, useOAuth2);
+            app.MapGet("/capabilities/witsml", CapHandler.GetCap, useOAuth2);
+            app.MapGet("/capabilities/etp", CapHandler.GetEtpCap, useOAuth2);
+            app.MapGet("/capabilities/objects", CapHandler.GetCapObjects, useOAuth2);
 
             app.MapGet("/wells", WellHandler.GetAllWells, useOAuth2);
             app.MapGet("/wells/{wellUid}", WellHandler.GetWell, useOAuth2);

@@ -46,6 +46,8 @@ internal static class EtpExtensions
             .ToList()
             ?? new List<SupportedProtocolInfo>();
 
-        return new EtpServerCapabilities(sessionId, supportedProtocols);
+        var supportedObjects = openSession.supportedObjects?.ToList() ?? new List<string>();
+
+        return new EtpServerCapabilities(sessionId, supportedProtocols, supportedObjects);
     }
 }

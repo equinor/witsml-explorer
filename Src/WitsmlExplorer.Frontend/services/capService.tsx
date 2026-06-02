@@ -9,7 +9,7 @@ export default class CapService {
     server?: Server
   ): Promise<ServerCapabilities> {
     const response = await ApiClient.get(
-      "/api/capabilities",
+      "/api/capabilities/witsml",
       abortSignal,
       server
     );
@@ -23,14 +23,21 @@ export default class CapService {
   }
 
   public static async getCapObjects(
-    capFunction: CapFunctions = CapFunctions.GetFromStore,
     abortSignal: AbortSignal = null,
     server?: Server
   ): Promise<string[]> {
-    const capabilities = await CapService.getCap(abortSignal, server);
-    return capabilities.functions
-      .find((fn) => fn.name == capFunction)
-      ?.dataObjects?.map((o) => o.name);
+    const response = await ApiClient.get(
+      "/api/capabilities/objects",
+      abortSignal,
+      server
+    );
+
+    if (response.ok) {
+      return response.json();
+    } else {
+      const { message }: ErrorDetails = await response.json();
+      throwError(response.status, message);
+    }
   }
 }
 

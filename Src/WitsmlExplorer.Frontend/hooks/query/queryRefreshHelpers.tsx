@@ -3,19 +3,24 @@ import { ObjectFilterType } from "../../contexts/filter";
 import { ComponentType, getParentType } from "../../models/componentType";
 import { ObjectType } from "../../models/objectType";
 import {
+  QUERY_KEY_AGENT_SETTINGS,
+  QUERY_KEY_ALL_OBJECTS_ON_WELLBORE,
+  QUERY_KEY_CAP_OBJECTS,
   QUERY_KEY_COMPONENTS,
   QUERY_KEY_JOB_INFO,
+  QUERY_KEY_LOCAL_PRIORITIZED_CURVES,
   QUERY_KEY_OBJECT,
   QUERY_KEY_OBJECTS,
+  QUERY_KEY_OBJECT_COUNT,
   QUERY_KEY_OBJECT_SEARCH,
+  QUERY_KEY_OBJECT_SEARCH_ALL,
   QUERY_KEY_SERVERS,
-  QUERY_KEY_WELLBORES,
-  QUERY_KEY_WELLS,
-  QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES,
-  QUERY_KEY_LOCAL_PRIORITIZED_CURVES,
-  QUERY_KEY_AGENT_SETTINGS,
   QUERY_KEY_UID_MAPPING_BASIC_INFOS,
-  QUERY_KEY_ALL_OBJECTS_ON_WELLBORE
+  QUERY_KEY_UNIVERSAL_PRIORITIZED_CURVES,
+  QUERY_KEY_WELL,
+  QUERY_KEY_WELLBORE,
+  QUERY_KEY_WELLBORES,
+  QUERY_KEY_WELLS
 } from "./queryKeys";
 
 export const refreshServersQuery = (queryClient: QueryClient) => {
@@ -211,5 +216,44 @@ export const refreshAgentSettings = (queryClient: QueryClient) => {
 export const refreshUidMappingBasicInfos = (queryClient: QueryClient) => {
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_UID_MAPPING_BASIC_INFOS]
+  });
+};
+
+export const refreshAllWitsmlDataQueries = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_WELLS]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_WELL]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_WELLBORES]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_WELLBORE]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECTS]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECT]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECT_COUNT]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECT_SEARCH]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECT_SEARCH_ALL]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_ALL_OBJECTS_ON_WELLBORE]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_COMPONENTS]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_CAP_OBJECTS]
   });
 };

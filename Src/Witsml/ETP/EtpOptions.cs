@@ -35,7 +35,8 @@ public sealed record RequestedProtocol
 public sealed record EtpServerCapabilities
 (
     Guid? SessionId,
-    IReadOnlyList<SupportedProtocolInfo> SupportedProtocols
+    IReadOnlyList<SupportedProtocolInfo> SupportedProtocols,
+    IReadOnlyList<string> SupportedObjects
 );
 
 public sealed record SupportedProtocolInfo

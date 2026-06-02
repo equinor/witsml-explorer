@@ -1,4 +1,5 @@
 import { Radio, TextField, Tooltip, Typography } from "@equinor/eds-core-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { getOffsetFromTimeZone } from "components/DateFormatter";
 import ModalDialog from "components/Modals/ModalDialog";
 import { StyledNativeSelect } from "components/Select";
@@ -12,6 +13,7 @@ import {
   UserTheme
 } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
+import { refreshAllWitsmlDataQueries } from "hooks/query/queryRefreshHelpers";
 import { useLocalStorageState } from "hooks/useLocalStorageState";
 import { useOperationState } from "hooks/useOperationState";
 import { getAccountInfo, msalEnabled, signOut } from "msal/MsalAuthProvider";
@@ -68,6 +70,7 @@ const timeZoneLabels: Record<TimeZone, string> = {
 };
 
 const SettingsModal = (): React.ReactElement => {
+  const queryClient = useQueryClient();
   const {
     operationState: {
       theme,
@@ -125,6 +128,7 @@ const SettingsModal = (): React.ReactElement => {
     const selectedProtocol = event.target.value;
     setWitsmlProtocol(selectedProtocol);
     AuthorizationService.setWitsmlProtocol(selectedProtocol);
+    refreshAllWitsmlDataQueries(queryClient);
   };
 
   const onChangeTimeZone = (event: any) => {
