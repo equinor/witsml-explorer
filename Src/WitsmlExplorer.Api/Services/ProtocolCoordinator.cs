@@ -15,6 +15,7 @@ namespace WitsmlExplorer.Api.Services
         Task<IResult> ExecuteOkAsync<T>(HttpContext httpContext, WitsmlProtocol requestedProtocol, Func<Task<T>> soapCall, Func<Task<T>> etpCall);
         void SetProtocolHeader(HttpContext httpContext, WitsmlProtocol protocol);
         void SetSoapProtocolHeader(HttpContext httpContext);
+        void SetEtpProtocolHeader(HttpContext httpContext);
     }
 
     public class ProtocolCoordinator : IProtocolCoordinator
@@ -56,6 +57,11 @@ namespace WitsmlExplorer.Api.Services
         public void SetSoapProtocolHeader(HttpContext httpContext)
         {
             SetProtocolHeader(httpContext, WitsmlProtocol.Soap);
+        }
+
+        public void SetEtpProtocolHeader(HttpContext httpContext)
+        {
+            SetProtocolHeader(httpContext, WitsmlProtocol.Etp);
         }
     }
 }

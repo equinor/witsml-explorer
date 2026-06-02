@@ -36,7 +36,7 @@ export const useGetCapObjects = (
 };
 
 const getCapObjects = async (server: Server): Promise<ObjectType[]> => {
-  const objects = await CapService.getCapObjects(undefined, undefined, server);
+  const objects = await CapService.getCapObjects(undefined, server);
 
   const capObjects = Object.values(ObjectType).filter((objectType) =>
     objects.map((o) => o.toLowerCase()).includes(objectType.toLowerCase())
