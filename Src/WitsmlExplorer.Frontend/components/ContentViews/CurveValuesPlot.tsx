@@ -92,7 +92,7 @@ export const CurveValuesPlot = React.memo(
     const [outliersThresholdLevel, setOutliersThresholdLevel] =
       useState<ThresholdLevel>(ThresholdLevel.Medium);
     const chart = useRef<ECharts>(null);
-    const selectedLabels = useRef<Record<string, boolean>>(null);
+    const selectedLabels = useRef<Record<string, boolean>>({});
     const scrollIndex = useRef<number>(0);
     const horizontalZoom = useRef<[number, number]>([0, 100]);
 
