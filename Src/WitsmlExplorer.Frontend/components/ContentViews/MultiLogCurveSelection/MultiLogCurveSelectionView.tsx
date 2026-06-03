@@ -164,6 +164,12 @@ export default function MultiLogCurveSelectionView() {
         );
 
         if (serverToAuthorize) {
+          if (serverToAuthorize.currentUsername) {
+            checkedServers.set(serverToAuthorize.id, true);
+            result.push(curveInfo);
+            continue;
+          }
+
           let finished = false;
           checkedServers.set(serverToAuthorize.id, false);
 
