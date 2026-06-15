@@ -12,7 +12,6 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useSidebar } from "contexts/sidebarContext";
 import { useGetServers } from "hooks/query/useGetServers";
-import { useGetWell } from "hooks/query/useGetWell";
 import { useGetWellbores } from "hooks/query/useGetWellbores";
 import { useOperationState } from "hooks/useOperationState";
 import { useWellboreFilter } from "hooks/useWellboreFilter";
@@ -24,16 +23,16 @@ import Wellbore, {
 import React, { MouseEvent } from "react";
 import { useParams } from "react-router-dom";
 import { getWellboresViewPath } from "routes/utils/pathBuilder";
-import { getStyles } from "./styles.ts";
 import { UidMappingBasicInfo } from "../../../models/uidMapping.tsx";
+import { getStyles } from "./styles.ts";
 
 interface WellItemProps {
-  wellUid: string;
+  well: Well;
   uidMappingBasicInfos: UidMappingBasicInfo[];
 }
 
 export default function WellItem({
-  wellUid,
+  well,
   uidMappingBasicInfos
 }: WellItemProps) {
   const {
@@ -44,21 +43,14 @@ export default function WellItem({
   const { wellUid: urlWellUid, wellboreUid: urlWellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
   const { expandedTreeNodes } = useSidebar();
-  const { well, isFetching: isFetchingWell } = useGetWell(
-    connectedServer,
-    wellUid
-  );
-  const isExpanded = expandedTreeNodes.includes(calculateWellNodeId(wellUid));
-  const { wellbores, isFetching: isFetchingWellbores } = useGetWellbores(
-    connectedServer,
-    wellUid,
-    { enabled: isExpanded }
-  );
+  const isExpanded = expandedTreeNodes.includes(calculateWellNodeId(well.uid));
+  const { wellbores, isFetching } = useGetWellbores(connectedServer, well.uid, {
+    enabled: isExpanded
+  });
 
   const generatedSx = getStyles(theme);
 
   const filteredWellbores = useWellboreFilter(wellbores, uidMappingBasicInfos);
-  const isFetching = isFetchingWell || isFetchingWellbores;
 
   const onContextMenu = (
     event: React.MouseEvent<HTMLLIElement>,
@@ -88,13 +80,13 @@ export default function WellItem({
         onContextMenu(event, well)
       }
       selected={
-        calculateWellNodeId(wellUid) === calculateWellNodeId(urlWellUid)
+        calculateWellNodeId(well.uid) === calculateWellNodeId(urlWellUid)
       }
-      key={wellUid}
+      key={well.uid}
       labelText={well?.name}
-      nodeId={calculateWellNodeId(wellUid)}
+      nodeId={calculateWellNodeId(well.uid)}
       isLoading={isFetching}
-      to={getWellboresViewPath(connectedServer?.url, wellUid)}
+      to={getWellboresViewPath(connectedServer?.url, well.uid)}
       sx={generatedSx}
     >
       {filteredWellbores?.length > 0 ? (
@@ -104,7 +96,7 @@ export default function WellItem({
             wellboreUid={wellbore.uid}
             selected={
               calculateWellboreNodeId({
-                wellUid: wellUid,
+                wellUid: well.uid,
                 uid: wellbore.uid
               }) ===
               calculateWellboreNodeId({

@@ -1,17 +1,15 @@
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { getObjectOnWellboreProperties } from "components/Modals/PropertiesModal/Properties/ObjectOnWellboreProperties";
-import { getWellProperties } from "components/Modals/PropertiesModal/Properties/WellProperties";
 import { getWellboreProperties } from "components/Modals/PropertiesModal/Properties/WellboreProperties";
 import {
   PropertiesModal,
   PropertiesModalProps
 } from "components/Modals/PropertiesModal/PropertiesModal";
+import { WellPropertiesModal } from "components/Modals/PropertiesModal/WellPropertiesModal";
 import {
   orderCreateObjectOnWellboreJob,
-  orderCreateWellJob,
   orderCreateWellboreJob,
   orderModifyObjectOnWellboreJob,
-  orderModifyWellJob,
   orderModifyWellboreJob
 } from "components/Modals/PropertiesModal/orderPropertyJobHelpers";
 import { DispatchOperation } from "contexts/operationStateReducer";
@@ -58,25 +56,10 @@ export const openWellProperties = async (
   mode: PropertiesModalMode = PropertiesModalMode.Edit
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const properties = getWellProperties(mode);
 
-  const propertyModalProps: PropertiesModalProps<Well> = {
-    title:
-      mode === PropertiesModalMode.Edit
-        ? `Edit properties for ${well.name}`
-        : "Create new Well",
-    object: well,
-    properties,
-    onSubmit: async (updates) => {
-      dispatchOperation({ type: OperationType.HideModal });
-      mode === PropertiesModalMode.Edit
-        ? orderModifyWellJob(well, updates)
-        : orderCreateWellJob(well, updates);
-    }
-  };
   dispatchOperation({
     type: OperationType.DisplayModal,
-    payload: <PropertiesModal {...propertyModalProps} />
+    payload: <WellPropertiesModal well={well} mode={mode} />
   });
 };
 
