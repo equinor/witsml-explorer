@@ -9,8 +9,12 @@ import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECT } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
+import {
+  TimedResponse,
+  withQueryTiming,
+  wrapPlaceholderData
+} from "./queryTiming";
 import { getObjectsQueryKey } from "./useGetObjects";
-import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getObjectQueryKey = (
   serverUrl: string,
@@ -104,6 +108,7 @@ export const objectQuery = <T extends ObjectType>(
     }),
 
   ...options,
+  placeholderData: wrapPlaceholderData(options?.placeholderData),
   gcTime: 0,
   enabled:
     !!server &&

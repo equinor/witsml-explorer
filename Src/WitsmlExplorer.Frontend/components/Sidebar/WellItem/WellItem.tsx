@@ -92,8 +92,7 @@ export default function WellItem({
       {filteredWellbores?.length > 0 ? (
         filteredWellbores.map((wellbore: Wellbore) => (
           <WellboreItem
-            wellUid={wellbore.wellUid}
-            wellboreUid={wellbore.uid}
+            wellbore={wellbore}
             selected={
               calculateWellboreNodeId({
                 wellUid: well.uid,

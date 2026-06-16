@@ -1,4 +1,4 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
@@ -34,11 +34,13 @@ export const wellboresQuery = (
   enabled: !!server && wellUid != null && !(options?.enabled === false)
 });
 
-type WellboresQueryResult = Omit<
-  QueryObserverResult<TimedResponse<Wellbore[]>, unknown>,
-  "data"
-> & {
+type WellboresQueryResult = {
   wellbores: Wellbore[];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  dataUpdatedAt: number;
   responseTime: number;
 };
 

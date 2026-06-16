@@ -1,16 +1,14 @@
 import { PropertiesModalMode } from "components/Modals/ModalParts";
 import { getObjectOnWellboreProperties } from "components/Modals/PropertiesModal/Properties/ObjectOnWellboreProperties";
-import { getWellboreProperties } from "components/Modals/PropertiesModal/Properties/WellboreProperties";
 import {
   PropertiesModal,
   PropertiesModalProps
 } from "components/Modals/PropertiesModal/PropertiesModal";
 import { WellPropertiesModal } from "components/Modals/PropertiesModal/WellPropertiesModal";
+import { WellborePropertiesModal } from "components/Modals/PropertiesModal/WellborePropertiesModal";
 import {
   orderCreateObjectOnWellboreJob,
-  orderCreateWellboreJob,
-  orderModifyObjectOnWellboreJob,
-  orderModifyWellboreJob
+  orderModifyObjectOnWellboreJob
 } from "components/Modals/PropertiesModal/orderPropertyJobHelpers";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
@@ -69,24 +67,9 @@ export const openWellboreProperties = async (
   mode: PropertiesModalMode = PropertiesModalMode.Edit
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
-  const properties = getWellboreProperties(mode);
 
-  const propertyModalProps: PropertiesModalProps<Wellbore> = {
-    title:
-      mode === PropertiesModalMode.Edit
-        ? `Edit properties for ${wellbore.name}`
-        : "Create new Wellbore",
-    object: wellbore,
-    properties,
-    onSubmit: async (updates) => {
-      dispatchOperation({ type: OperationType.HideModal });
-      mode === PropertiesModalMode.Edit
-        ? orderModifyWellboreJob(wellbore, updates)
-        : orderCreateWellboreJob(wellbore, updates);
-    }
-  };
   dispatchOperation({
     type: OperationType.DisplayModal,
-    payload: <PropertiesModal {...propertyModalProps} />
+    payload: <WellborePropertiesModal wellbore={wellbore} mode={mode} />
   });
 };

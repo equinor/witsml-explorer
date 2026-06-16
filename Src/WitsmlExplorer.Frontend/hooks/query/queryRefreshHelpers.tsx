@@ -37,13 +37,25 @@ export const refreshWellsQuery = (
     queryKey: [QUERY_KEY_WELLS, serverUrl.toLowerCase()]
   });
   queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_WELL, serverUrl.toLowerCase()]
+  });
+  queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_WELLBORES, serverUrl.toLowerCase()]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_WELLBORE, serverUrl.toLowerCase()]
   });
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_OBJECTS, serverUrl.toLowerCase()]
   });
   queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECT, serverUrl.toLowerCase()]
+  });
+  queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_COMPONENTS, serverUrl.toLowerCase()]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECT_COUNT, serverUrl.toLowerCase()]
   });
   queryClient.invalidateQueries({
     queryKey: [QUERY_KEY_ALL_OBJECTS_ON_WELLBORE, serverUrl.toLowerCase()]
@@ -64,14 +76,31 @@ export const refreshWellboresQuery = (
   });
   queryClient.invalidateQueries({
     queryKey: [
-      QUERY_KEY_OBJECTS,
+      QUERY_KEY_WELLBORE,
       serverUrl.toLowerCase(),
       wellUid.toLowerCase()
     ]
   });
   queryClient.invalidateQueries({
     queryKey: [
+      QUERY_KEY_OBJECTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase()
+    ]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [QUERY_KEY_OBJECT, serverUrl.toLowerCase(), wellUid.toLowerCase()]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [
       QUERY_KEY_COMPONENTS,
+      serverUrl.toLowerCase(),
+      wellUid.toLowerCase()
+    ]
+  });
+  queryClient.invalidateQueries({
+    queryKey: [
+      QUERY_KEY_OBJECT_COUNT,
       serverUrl.toLowerCase(),
       wellUid.toLowerCase()
     ]
