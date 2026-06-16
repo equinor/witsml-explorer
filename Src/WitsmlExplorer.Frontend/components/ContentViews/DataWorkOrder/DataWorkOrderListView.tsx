@@ -80,16 +80,17 @@ export default function DataWorkOrdersListView() {
         ...dataWorkOrder.commonData,
         id: dataWorkOrder.uid,
         dataWorkOrder: dataWorkOrder,
-        setsCount: (
-          <StyledLink
-            to={getDwoDetailPath(dataWorkOrder.uid)}
-            colors={colors}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Icon name="layers" size={16} />
-            {dataWorkOrder.dataSourceConfigurationSets.length} Sets
-          </StyledLink>
-        ),
+        setsCount:
+          dataWorkOrder.dataSourceConfigurationSets == null ? null : (
+            <StyledLink
+              to={getDwoDetailPath(dataWorkOrder.uid)}
+              colors={colors}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Icon name="layers" size={16} />
+              {dataWorkOrder.dataSourceConfigurationSets?.length} Sets
+            </StyledLink>
+          ),
         dTimPlannedStart: formatDateString(
           dataWorkOrder.dTimPlannedStart,
           timeZone,
@@ -101,12 +102,12 @@ export default function DataWorkOrdersListView() {
           dateTimeFormat
         ),
         dTimCreation: formatDateString(
-          dataWorkOrder.commonData.dTimCreation,
+          dataWorkOrder.commonData?.dTimCreation,
           timeZone,
           dateTimeFormat
         ),
         dTimLastChange: formatDateString(
-          dataWorkOrder.commonData.dTimLastChange,
+          dataWorkOrder.commonData?.dTimLastChange,
           timeZone,
           dateTimeFormat
         )

@@ -1,9 +1,4 @@
-import {
-  QueryClient,
-  QueryObserverResult,
-  useQuery,
-  useQueryClient
-} from "@tanstack/react-query";
+import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { ObjectType, ObjectTypeToModel } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
@@ -14,7 +9,6 @@ import {
   withQueryTiming,
   wrapPlaceholderData
 } from "./queryTiming";
-import { getObjectsQueryKey } from "./useGetObjects";
 
 export const getObjectQueryKey = (
   serverUrl: string,
@@ -33,44 +27,7 @@ export const getObjectQueryKey = (
   ];
 };
 
-const updatePartialObjects = <T extends ObjectType>(
-  queryClient: QueryClient,
-  server: Server,
-  objectType: ObjectType,
-  wellUid: string,
-  wellboreUid: string,
-  objectUid: string,
-  object: ObjectTypeToModel[T]
-) => {
-  const objectsQueryKey = getObjectsQueryKey(
-    server?.url,
-    wellUid,
-    wellboreUid,
-    objectType
-  );
-  const existingObjects =
-    queryClient.getQueryData<TimedResponse<ObjectTypeToModel[T][]>>(
-      objectsQueryKey
-    );
-
-  if (existingObjects) {
-    const existingObjectIndex = existingObjects.data.findIndex(
-      (o) => o.uid === objectUid
-    );
-    if (object) {
-      existingObjects.data[existingObjectIndex] = object;
-    } else {
-      existingObjects.data.splice(existingObjectIndex, 1);
-    }
-    queryClient.setQueryData<TimedResponse<ObjectTypeToModel[T][]>>(
-      objectsQueryKey,
-      existingObjects
-    );
-  }
-};
-
 export const objectQuery = <T extends ObjectType>(
-  queryClient: QueryClient,
   server: Server,
   wellUid: string,
   wellboreUid: string,
@@ -94,15 +51,6 @@ export const objectQuery = <T extends ObjectType>(
         objectType,
         null,
         server
-      );
-      updatePartialObjects(
-        queryClient,
-        server,
-        objectType,
-        wellUid,
-        wellboreUid,
-        objectUid,
-        object
       );
       return object;
     }),
@@ -135,17 +83,8 @@ export const useGetObject = <T extends ObjectType>(
   objectUid: string,
   options?: QueryOptions
 ): ObjectQueryResult<T> => {
-  const queryClient = useQueryClient();
   const { data, ...state } = useQuery<TimedResponse<ObjectTypeToModel[T]>>(
-    objectQuery<T>(
-      queryClient,
-      server,
-      wellUid,
-      wellboreUid,
-      objectType,
-      objectUid,
-      options
-    )
+    objectQuery<T>(server, wellUid, wellboreUid, objectType, objectUid, options)
   );
   return { object: data?.data, responseTime: data?.responseTime, ...state };
 };
