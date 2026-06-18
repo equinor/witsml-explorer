@@ -51,7 +51,8 @@ export default function LogsListView() {
   const [selectedRows, setSelectedRows] = useState([]);
   const navigate = useNavigate();
   const { connectedServer } = useConnectedServer();
-  const { wellUid, wellboreUid, logType } = useParams();
+  const { wellUid, wellboreUid, logType: logTypeString } = useParams();
+  const logType = logTypeString as RouterLogType;
   const {
     wellbore,
     isFetching: isFetchingWellbore,
@@ -65,11 +66,14 @@ export default function LogsListView() {
     dataUpdatedAt
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Log);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
+  const showByIndexType = logType != RouterLogType.ALL;
   const isTimeIndexed = logType === RouterLogType.TIME;
-  const logs = filterLogsByType(
-    allLogs,
-    isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD
-  );
+  const logs = showByIndexType
+    ? filterLogsByType(
+        allLogs,
+        isTimeIndexed ? WITSML_INDEX_TYPE_DATE_TIME : WITSML_INDEX_TYPE_MD
+      )
+    : allLogs ?? [];
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Log, logType);
   const isFetching = isFetchingWellbore || isFetchingLogs;
 
@@ -103,7 +107,7 @@ export default function LogsListView() {
         ...log,
         id: log.uid,
 
-        name: log.name + getNameOccurrenceSuffix(logs, log),
+        name: log.name + getNameOccurrenceSuffix(logs, log, showByIndexType),
         startIndex: isTimeIndexed
           ? formatDateString(log.startIndex, timeZone, dateTimeFormat)
           : log.startIndex,
@@ -166,9 +170,7 @@ export default function LogsListView() {
         log.wellUid,
         log.wellboreUid,
         ObjectType.Log,
-        (log as LogObject)?.indexType === WITSML_INDEX_TYPE_MD
-          ? RouterLogType.DEPTH
-          : RouterLogType.TIME,
+        logType,
         log.uid
       )
     );
@@ -188,6 +190,7 @@ export default function LogsListView() {
               checked={showGraph}
               onChange={() => setShowGraph(!showGraph)}
               size={theme === UserTheme.Compact ? "small" : "default"}
+              disabled={!showByIndexType}
             />
             <Typography>
               Gantt view{selectedRows.length > 0 && " (selected logs only)"}
@@ -198,7 +201,7 @@ export default function LogsListView() {
           <LogsGraph logs={selectedRows.length > 0 ? selectedRows : logs} />
         ) : (
           <ContentTable
-            viewId={isTimeIndexed ? "timeLogsListView" : "depthLogsListView"}
+            viewId={`${logType}LogsListView`}
             columns={columns}
             onSelect={onSelect}
             data={getTableData()}
@@ -211,7 +214,13 @@ export default function LogsListView() {
             checkableRows
             showRefresh
             initiallySelectedRows={selectedRows}
-            downloadToCsvFileName={isTimeIndexed ? "TimeLogs" : "DepthLogs"}
+            downloadToCsvFileName={
+              !showByIndexType
+                ? "Logs"
+                : isTimeIndexed
+                ? "TimeLogs"
+                : "DepthLogs"
+            }
           />
         )}
       </ContentContainer>
@@ -219,6 +228,6 @@ export default function LogsListView() {
   );
 }
 
-const filterLogsByType = (logs: LogObject[], logType: string) => {
-  return logs?.filter((log) => log.indexType === logType) ?? [];
+const filterLogsByType = (logs: LogObject[], indexType: string) => {
+  return logs?.filter((log) => log.indexType === indexType) ?? [];
 };

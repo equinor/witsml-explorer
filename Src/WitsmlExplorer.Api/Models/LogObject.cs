@@ -17,7 +17,7 @@ namespace WitsmlExplorer.Api.Models
         public string ServiceCompany { get; init; }
         public string RunNumber { get; init; }
         public string IndexCurve { get; init; }
-        public int Mnemonics { get; init; }
+        public int? Mnemonics { get; init; }
         public CommonData CommonData { get; init; }
         public string Direction { get; init; }
 
@@ -47,7 +47,7 @@ namespace WitsmlExplorer.Api.Models
                 ServiceCompany = witsmlLog.ServiceCompany,
                 RunNumber = witsmlLog.RunNumber,
                 Direction = ConvertDirection(witsmlLog),
-                Mnemonics = witsmlLog.LogCurveInfo?.Count ?? 0,
+                Mnemonics = witsmlLog.LogCurveInfo?.Count,
                 CommonData = witsmlLog.CommonData == null ? null : new CommonData
                 {
                     DTimCreation = witsmlLog.CommonData.DTimCreation,

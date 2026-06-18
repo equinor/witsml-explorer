@@ -24,16 +24,16 @@ import { truncateAbortHandler } from "services/apiClient";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
 import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
+import { RouterLogType } from "../../routes/routerConstants.ts";
+import { Colors, dark } from "../../styles/Colors.tsx";
+import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
+import AdjustDateTimeIndexRange from "../Modals/TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "../Modals/TrimLogObject/AdjustDepthIndexRange.tsx";
+import { Button } from "../StyledComponents/Button.tsx";
 import {
   CommonPanelContainer,
   ContentContainer
 } from "../StyledComponents/Container";
-import { normaliseThemeForEds } from "../../tools/themeHelpers.ts";
-import AdjustDepthIndexRange from "../Modals/TrimLogObject/AdjustDepthIndexRange.tsx";
-import AdjustDateTimeIndexRange from "../Modals/TrimLogObject/AdjustDateTimeIndexRange.tsx";
-import { Button } from "../StyledComponents/Button.tsx";
-import { RouterLogType } from "../../routes/routerConstants.ts";
-import { Colors, dark } from "../../styles/Colors.tsx";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -46,7 +46,8 @@ export const MultiLogCurveValuesView = (): React.ReactElement => {
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
-  const { wellUid, wellboreUid, logType } = useParams();
+  const { wellUid, wellboreUid, logType: logTypeString } = useParams();
+  const logType = logTypeString as RouterLogType;
   const [startIndexValue, setStartIndexValue] = useState<string | number>(
     startIndex
   );

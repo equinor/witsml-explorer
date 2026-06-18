@@ -6,14 +6,17 @@ import {
 } from "components/Constants";
 import ModalDialog from "components/Modals/ModalDialog";
 import { ReportModal } from "components/Modals/ReportModal";
-import AdjustDateTimeIndexRange from "./TrimLogObject/AdjustDateTimeIndexRange.tsx";
-import AdjustDepthIndexRange from "./TrimLogObject/AdjustDepthIndexRange.tsx";
+import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
+import { useGetObject } from "hooks/query/useGetObject";
 import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
-import React, { useState } from "react";
+import { ObjectType } from "models/objectType";
+import React, { useEffect, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
+import AdjustDateTimeIndexRange from "./TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import AdjustDepthIndexRange from "./TrimLogObject/AdjustDepthIndexRange.tsx";
 
 export interface AnalyzeGapModalProps {
   logObject: LogObject;
@@ -21,28 +24,40 @@ export interface AnalyzeGapModalProps {
 }
 
 const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
-  const { logObject, mnemonics } = props;
+  const { logObject: logReference, mnemonics } = props;
   const { dispatchOperation } = useOperationState();
+  const { connectedServer } = useConnectedServer();
+  const { object: log, isFetching: isFetchingLog } = useGetObject(
+    connectedServer,
+    logReference.wellUid,
+    logReference.wellboreUid,
+    ObjectType.Log,
+    logReference.uid
+  );
   const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
   const initialTime = "00:00:00";
-  const [log] = useState<LogObject>(logObject);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [gapSize, setGapSize] = useState<number>(0);
   const [timeGapSize, setTimeGapSize] = useState(initialTime);
   const [gapSizeIsValid, setGapSizeIsValid] = useState<boolean>(false);
-
-  const isTimeIndexed = logObject.indexType === WITSML_INDEX_TYPE_DATE_TIME;
-  const [startIndex, setStartIndex] = useState<string | number>(
-    isTimeIndexed ? logObject.startIndex : indexToNumber(logObject.startIndex)
-  );
-  const [endIndex, setEndIndex] = useState<string | number>(
-    isTimeIndexed ? logObject.endIndex : indexToNumber(logObject.endIndex)
-  );
+  const [startIndex, setStartIndex] = useState<string | number>("");
+  const [endIndex, setEndIndex] = useState<string | number>("");
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
+
+  useEffect(() => {
+    if (log) {
+      const isTimeIndexed = log?.indexType === WITSML_INDEX_TYPE_DATE_TIME;
+      setStartIndex(
+        isTimeIndexed ? log.startIndex : indexToNumber(log.startIndex)
+      );
+      setEndIndex(isTimeIndexed ? log.endIndex : indexToNumber(log.endIndex));
+    }
+  }, [log]);
+
   const onSubmit = async () => {
     setIsLoading(true);
     const analyzeGapsJob = {
-      logReference: logObject,
+      logReference: log,
       mnemonics: mnemonics,
       gapSize: gapSize,
       timeGapSize: convertToMilliseconds(timeGapSize),
@@ -155,9 +170,9 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
             </>
           }
           onSubmit={() => onSubmit()}
-          isLoading={isLoading}
+          isLoading={isLoading || isFetchingLog}
           confirmText={"Analyze"}
-          confirmDisabled={!gapSizeIsValid || confirmDisabled}
+          confirmDisabled={!gapSizeIsValid || confirmDisabled || isFetchingLog}
         />
       )}
     </>
