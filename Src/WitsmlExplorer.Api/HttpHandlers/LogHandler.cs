@@ -15,10 +15,13 @@ namespace WitsmlExplorer.Api.HttpHandlers
     public static class LogHandler
     {
         [Produces(typeof(IEnumerable<LogObject>))]
-        public static async Task<IResult> GetLogs(HttpContext httpContext, string wellUid, string wellboreUid, ILogObjectService logObjectService, IProtocolCoordinator protocolCoordinator)
+        public static async Task<IResult> GetLogs(HttpContext httpContext, string wellUid, string wellboreUid, ILogObjectService logObjectService, IEtpLogService etpLogService, IProtocolCoordinator protocolCoordinator, CancellationToken cancellationToken)
         {
-            protocolCoordinator.SetSoapProtocolHeader(httpContext);
-            return TypedResults.Ok(await logObjectService.GetLogs(wellUid, wellboreUid));
+            EssentialHeaders eh = new(httpContext?.Request);
+            var protocol = (eh.WitsmlProtocol == WitsmlProtocol.Etp && !string.IsNullOrWhiteSpace(wellUid) && !string.IsNullOrWhiteSpace(wellboreUid)) ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
+            Task<ICollection<LogObject>> SoapCall() => logObjectService.GetLogs(wellUid, wellboreUid);
+            Task<ICollection<LogObject>> EtpCall() => etpLogService.GetLogs(wellUid, wellboreUid, cancellationToken);
+            return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
         }
 
         [Produces(typeof(LogObject))]

@@ -42,7 +42,6 @@ import {
 import OperationType from "contexts/operationType";
 import { useServerFilter } from "hooks/useServerFilter";
 import { ComponentType } from "models/componentType";
-import { IndexCurve } from "models/indexCurve";
 import { createComponentReferences } from "models/jobs/componentReferences";
 import ModifyLogCurveInfoJob from "models/jobs/modifyLogCurveInfoJob";
 import LogCurveInfo from "models/logCurveInfo";
@@ -438,8 +437,8 @@ const LogCurveInfoContextMenu = (
                     selectedLog,
                     ObjectType.Log,
                     selectedLog.indexType === WITSML_INDEX_TYPE_MD
-                      ? IndexCurve.Depth
-                      : IndexCurve.Time
+                      ? RouterLogType.DEPTH
+                      : RouterLogType.TIME
                   )
                 }
                 disabled={isMultiLog}

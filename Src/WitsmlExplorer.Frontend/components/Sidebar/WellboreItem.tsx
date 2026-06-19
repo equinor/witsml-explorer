@@ -30,7 +30,6 @@ import TreeItem from "components/Sidebar/TreeItem";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetServers } from "hooks/query/useGetServers";
-import { useGetWellbore } from "hooks/query/useGetWellbore";
 import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import Wellbore from "models/wellbore";
@@ -41,8 +40,7 @@ import { UidMappingBasicInfo } from "../../models/uidMapping.tsx";
 import { WellIndicator } from "../StyledComponents/WellIndicator";
 
 interface WellboreItemProps {
-  wellUid: string;
-  wellboreUid: string;
+  wellbore: Wellbore;
   selected: boolean;
   nodeId: string;
   uidMappingBasicInfos: UidMappingBasicInfo[];
@@ -56,8 +54,7 @@ type ContextMenuActionHandler = (
 ) => void;
 
 export default function WellboreItem({
-  wellUid,
-  wellboreUid,
+  wellbore,
   selected,
   nodeId,
   uidMappingBasicInfos
@@ -72,11 +69,6 @@ export default function WellboreItem({
     operationState: { colors }
   } = useOperationState();
   const { connectedServer } = useConnectedServer();
-  const { wellbore, isFetching } = useGetWellbore(
-    connectedServer,
-    wellUid,
-    wellboreUid
-  );
 
   const onContextMenu: ContextMenuActionHandler = (event, wellbore) => {
     preventContextMenuPropagation(event);
@@ -163,7 +155,11 @@ export default function WellboreItem({
   };
 
   const getNavPath = () => {
-    return getObjectGroupsViewPath(connectedServer?.url, wellUid, wellboreUid);
+    return getObjectGroupsViewPath(
+      connectedServer?.url,
+      wellbore.wellUid,
+      wellbore.uid
+    );
   };
 
   return (
@@ -177,68 +173,68 @@ export default function WellboreItem({
         selected={selected}
         labelText={wellbore?.name}
         to={getNavPath()}
-        isLoading={isFetching}
+        isLoading={false}
       >
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.BhaRun}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.ChangeLog}
           onGroupContextMenu={preventContextMenuPropagation}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.DataWorkOrder}
           ObjectContextMenu={DataWorkOrderContextMenu}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.FluidsReport}
           ObjectContextMenu={FluidsReportContextMenu}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.FormationMarker}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.Log}
           onGroupContextMenu={(event) => onLogsContextMenu(event, wellbore)}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.Message}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.MudLog}
           ObjectContextMenu={MudLogContextMenu}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.Rig}
           ObjectContextMenu={RigContextMenu}
           onGroupContextMenu={(event) => onRigsContextMenu(event, wellbore)}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.Risk}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.Trajectory}
           ObjectContextMenu={TrajectoryContextMenu}
           onGroupContextMenu={(event) =>
@@ -246,15 +242,15 @@ export default function WellboreItem({
           }
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.Tubular}
           ObjectContextMenu={TubularContextMenu}
           onGroupContextMenu={(event) => onTubularsContextMenu(event, wellbore)}
         />
         <ObjectGroupItem
-          wellUid={wellUid}
-          wellboreUid={wellboreUid}
+          wellUid={wellbore.wellUid}
+          wellboreUid={wellbore.uid}
           objectType={ObjectType.WbGeometry}
           ObjectContextMenu={WbGeometryObjectContextMenu}
         />

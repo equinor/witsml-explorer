@@ -2,7 +2,8 @@ import LogObject from "models/logObject";
 
 export const getNameOccurrenceSuffix = (
   logObjects: LogObject[],
-  logObject: LogObject
+  logObject: LogObject,
+  filterByIndexType: boolean = true
 ): string => {
   if (logObject.runNumber) {
     return ` (${logObject.runNumber})`;
@@ -12,7 +13,7 @@ export const getNameOccurrenceSuffix = (
     .filter(
       (obj) =>
         obj.name === logObject.name &&
-        obj.indexType === logObject.indexType &&
+        (!filterByIndexType || obj.indexType === logObject.indexType) &&
         !obj.runNumber
     )
     .sort((a, b) => a.uid.localeCompare(b.uid));

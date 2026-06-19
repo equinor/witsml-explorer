@@ -40,7 +40,12 @@ namespace WitsmlExplorer.Api.Services.ETP
 
         public async Task<ICollection<LogObject>> GetLogs(string wellUid, string wellboreUid, CancellationToken? cancellationToken)
         {
-            throw new NotImplementedException("Index type is not part of a resource, which our UI relies on when listing logs. Implement this with workarounds either here or in the frontend.");
+            var client = await GetEtpClient(cancellationToken);
+            var uri = EtpUriHelper.CreateObjectUri(wellUid, wellboreUid, EntityType.Log);
+            var resources = await client.GetResourcesAsync(uri, cancellationToken ?? CancellationToken.None);
+            var logs = resources.Select(MapResourceToLog).ToList();
+
+            return logs;
         }
 
         public async Task<ICollection<LogCurveInfo>> GetLogCurveInfo(string wellUid, string wellboreUid, string logUid, CancellationToken? cancellationToken)

@@ -2,7 +2,6 @@ import { Typography } from "@equinor/eds-core-react";
 import { MenuItem } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  WITSML_INDEX_TYPE,
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
 } from "components/Constants";
@@ -56,17 +55,21 @@ export interface LogsContextMenuProps {
   ) => void;
   wellbore: Wellbore;
   servers: Server[];
-  indexType?: WITSML_INDEX_TYPE;
+  logType?: RouterLogType;
 }
 
 const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
-  const { dispatchOperation, wellbore, servers, indexType } = props;
+  const { dispatchOperation, wellbore, servers, logType } = props;
   const logReferences = useClipboardReferencesOfType(ObjectType.Log);
   const openInQueryView = useOpenInQueryView();
   const { connectedServer } = useConnectedServer();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const filteredServers = useServerFilter(servers);
+  const indexType =
+    logType === RouterLogType.TIME
+      ? WITSML_INDEX_TYPE_DATE_TIME
+      : WITSML_INDEX_TYPE_MD;
 
   const onClickNewLog = () => {
     const newLog: LogObject = {
@@ -76,7 +79,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
       wellName: wellbore.wellName,
       wellboreUid: wellbore.uid,
       wellboreName: wellbore.name,
-      indexType: indexType ?? WITSML_INDEX_TYPE_MD,
+      indexType: indexType,
       indexCurve:
         indexType === WITSML_INDEX_TYPE_DATE_TIME
           ? IndexCurve.Time
@@ -176,7 +179,7 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
                     connectedServer,
                     wellbore,
                     ObjectType.Log,
-                    indexType
+                    logType
                   )
                 }
               >

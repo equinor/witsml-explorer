@@ -8,6 +8,7 @@ import {
   createBrowserRouter,
   createHashRouter
 } from "react-router-dom";
+import ValidateParamsRoute from "routes/ValidateParamsRoute.tsx";
 import {
   COMPONENT_VIEW_ROUTE_PATH,
   DATA_SOURCE_CONFIGURATION_VIEW_ROUTE_PATH,
@@ -16,6 +17,7 @@ import {
   LOG_OBJECTS_VIEW_ROUTE_PATH,
   LOG_OBJECT_VIEW_ROUTE_PATH,
   LOG_TYPES_VIEW_ROUTE_PATH,
+  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH,
   MULTI_LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
   MULTI_LOGS_CURVE_VALUES_ROUTE_PATH,
   OBJECTS_VIEW_ROUTE_PATH,
@@ -25,8 +27,7 @@ import {
   SEARCH_VIEW_ROUTE_PATH,
   SERVER_ROUTE_PATH,
   WELLSBORES_VIEW_ROUTE_PATH,
-  WELLS_VIEW_ROUTE_PATH,
-  MULTIPLE_LOG_CURVE_SELECTION_NAVIGATION_PATH
+  WELLS_VIEW_ROUTE_PATH
 } from "routes/routerConstants";
 import { isDesktopApp } from "tools/desktopAppHelpers";
 import { MILLIS_IN_SECOND, SECONDS_IN_MINUTE } from "../components/Constants";
@@ -37,6 +38,7 @@ import JobsView from "../components/ContentViews/JobsView";
 import LogCurveInfoListView from "../components/ContentViews/LogCurveInfoListView";
 import LogTypeListView from "../components/ContentViews/LogTypeListView";
 import LogsListView from "../components/ContentViews/LogsListView";
+import MultiLogCurveSelectionView from "../components/ContentViews/MultiLogCurveSelection/MultiLogCurveSelectionView.tsx";
 import { ObjectView } from "../components/ContentViews/ObjectView";
 import { ObjectsListView } from "../components/ContentViews/ObjectsListView";
 import QueryView from "../components/ContentViews/QueryView";
@@ -49,7 +51,6 @@ import AuthRoute from "./AuthRoute";
 import { ErrorPage } from "./ErrorPage";
 import { PageNotFound } from "./PageNotFound";
 import Root from "./Root";
-import MultiLogCurveSelectionView from "../components/ContentViews/MultiLogCurveSelection/MultiLogCurveSelectionView.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -80,88 +81,93 @@ const router = createRouter([
         errorElement: <ErrorView />,
         children: [
           {
-            path: WELLS_VIEW_ROUTE_PATH,
-            element: <WellsListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: WELLSBORES_VIEW_ROUTE_PATH,
-            element: <WellboresListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: OBJECT_GROUPS_VIEW_ROUTE_PATH,
-            element: <WellboreObjectTypesListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: OBJECTS_VIEW_ROUTE_PATH,
-            element: <ObjectsListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: OBJECT_VIEW_ROUTE_PATH,
-            element: <ObjectView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: COMPONENT_VIEW_ROUTE_PATH,
-            element: <ComponentView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: LOG_TYPES_VIEW_ROUTE_PATH,
-            element: <LogTypeListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: LOG_OBJECTS_VIEW_ROUTE_PATH,
-            element: <LogsListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: LOG_OBJECT_VIEW_ROUTE_PATH,
-            element: <LogCurveInfoListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
-            element: <CurveValuesView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: MULTI_LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
-            element: <MultiLogsCurveInfoListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: MULTI_LOGS_CURVE_VALUES_ROUTE_PATH,
-            element: <MultiLogCurveValuesView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: JOBS_VIEW_ROUTE_PATH,
-            element: <JobsView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: QUERY_VIEW_ROUTE_PATH,
-            element: <QueryView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: SEARCH_VIEW_ROUTE_PATH,
-            element: <SearchListView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: DATA_SOURCE_CONFIGURATION_VIEW_ROUTE_PATH,
-            element: <DataSourceConfigurationView />,
-            errorElement: <ErrorView />
-          },
-          {
-            path: "*",
-            element: <ViewNotFound />
+            element: <ValidateParamsRoute />,
+            children: [
+              {
+                path: WELLS_VIEW_ROUTE_PATH,
+                element: <WellsListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: WELLSBORES_VIEW_ROUTE_PATH,
+                element: <WellboresListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: OBJECT_GROUPS_VIEW_ROUTE_PATH,
+                element: <WellboreObjectTypesListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: OBJECTS_VIEW_ROUTE_PATH,
+                element: <ObjectsListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: OBJECT_VIEW_ROUTE_PATH,
+                element: <ObjectView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: COMPONENT_VIEW_ROUTE_PATH,
+                element: <ComponentView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: LOG_TYPES_VIEW_ROUTE_PATH,
+                element: <LogTypeListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: LOG_OBJECTS_VIEW_ROUTE_PATH,
+                element: <LogsListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: LOG_OBJECT_VIEW_ROUTE_PATH,
+                element: <LogCurveInfoListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: LOG_CURVE_VALUES_VIEW_ROUTE_PATH,
+                element: <CurveValuesView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: MULTI_LOGS_CURVE_INFO_LIST_VIEW_ROUTE_PATH,
+                element: <MultiLogsCurveInfoListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: MULTI_LOGS_CURVE_VALUES_ROUTE_PATH,
+                element: <MultiLogCurveValuesView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: JOBS_VIEW_ROUTE_PATH,
+                element: <JobsView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: QUERY_VIEW_ROUTE_PATH,
+                element: <QueryView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: SEARCH_VIEW_ROUTE_PATH,
+                element: <SearchListView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: DATA_SOURCE_CONFIGURATION_VIEW_ROUTE_PATH,
+                element: <DataSourceConfigurationView />,
+                errorElement: <ErrorView />
+              },
+              {
+                path: "*",
+                element: <ViewNotFound />
+              }
+            ]
           }
         ]
       },

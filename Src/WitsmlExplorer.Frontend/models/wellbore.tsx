@@ -1,9 +1,6 @@
-import {
-  WITSML_INDEX_TYPE_DATE_TIME,
-  WITSML_INDEX_TYPE_MD
-} from "components/Constants";
 import Measure from "models/measure";
 import { ObjectType } from "models/objectType";
+import { RouterLogType } from "routes/routerConstants";
 
 export default interface Wellbore {
   uid: string;
@@ -58,7 +55,7 @@ export const calculateObjectGroupId = (
 
 export const calculateLogTypeId = (
   wellbore: Wellbore | { wellUid: string; uid: string },
-  logType: string
+  logType: RouterLogType
 ): string => {
   return calculateWellboreNodeId(wellbore) + `lt=${logType};`;
 };
@@ -66,31 +63,37 @@ export const calculateLogTypeId = (
 export const calculateLogTypeDepthId = (
   wellbore: Wellbore | { wellUid: string; uid: string }
 ): string => {
-  return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD);
+  return calculateLogTypeId(wellbore, RouterLogType.DEPTH);
 };
 
 export const calculateLogTypeTimeId = (
   wellbore: Wellbore | { wellUid: string; uid: string }
 ): string => {
-  return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_DATE_TIME);
+  return calculateLogTypeId(wellbore, RouterLogType.TIME);
+};
+
+export const calculateLogTypeAllId = (
+  wellbore: Wellbore | { wellUid: string; uid: string }
+): string => {
+  return calculateLogTypeId(wellbore, RouterLogType.ALL);
 };
 
 export const calculateMultipleLogsNode = (
   wellbore: Wellbore | { wellUid: string; uid: string },
+  logType: RouterLogType,
   logName: string
 ): string => {
-  return calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD) + `ln=${logName};`;
+  return calculateLogTypeId(wellbore, logType) + `ln=${logName};`;
 };
 
 export const calculateMultipleLogsNodeItem = (
   wellbore: Wellbore | { wellUid: string; uid: string },
+  logType: RouterLogType,
   logName: string,
   logUid: string
 ): string => {
   return (
-    calculateLogTypeId(wellbore, WITSML_INDEX_TYPE_MD) +
-    `ln=${logName};` +
-    `o=${logUid};`
+    calculateLogTypeId(wellbore, logType) + `ln=${logName};` + `o=${logUid};`
   );
 };
 

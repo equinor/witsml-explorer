@@ -56,6 +56,7 @@ import {
   useSearchParams
 } from "react-router-dom";
 import { ItemNotFound } from "routes/ItemNotFound";
+import { RouterLogType } from "routes/routerConstants.ts";
 import { truncateAbortHandler } from "services/apiClient";
 import LogObjectService from "services/logObjectService";
 import styled from "styled-components";
@@ -85,7 +86,13 @@ export const CurveValuesView = (): React.ReactElement => {
   const mnemonicsSearchParams = searchParams.get("mnemonics");
   const startIndex = searchParams.get("startIndex");
   const endIndex = searchParams.get("endIndex");
-  const { wellUid, wellboreUid, objectUid, logType } = useParams();
+  const {
+    wellUid,
+    wellboreUid,
+    objectUid,
+    logType: logTypeString
+  } = useParams();
+  const logType = logTypeString as RouterLogType;
   const [columns, setColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
   >([]);

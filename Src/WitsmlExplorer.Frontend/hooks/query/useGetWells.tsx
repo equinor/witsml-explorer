@@ -1,6 +1,6 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import Well from "models/well";
 import { Server } from "../../models/server";
-import Well from "../../models/well";
 import WellService from "../../services/wellService";
 import { QUERY_KEY_WELLS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
@@ -17,20 +17,22 @@ export const getWellsQueryKey = (serverUrl: string) => {
 export const wellsQuery = (server: Server, options?: QueryOptions) => ({
   queryKey: getWellsQueryKey(server?.url),
   queryFn: () =>
-    withQueryTiming(() => {
-      const wells = WellService.getWells(null, server);
-      return wells;
+    withQueryTiming(async () => {
+      const wellsResult = await WellService.getWells(null, server);
+      return wellsResult;
     }),
   ...options,
   placeholderData: wrapPlaceholderData(options?.placeholderData),
   enabled: !!server && !(options?.enabled === false)
 });
 
-type WellsQueryResult = Omit<
-  QueryObserverResult<TimedResponse<Well[]>, unknown>,
-  "data"
-> & {
+type WellsQueryResult = {
   wells: Well[];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  dataUpdatedAt: number;
   responseTime: number;
 };
 
@@ -41,5 +43,13 @@ export const useGetWells = (
   const { data, ...state } = useQuery<TimedResponse<Well[]>>(
     wellsQuery(server, options)
   );
-  return { wells: data?.data, responseTime: data?.responseTime, ...state };
+  return {
+    wells: data?.data,
+    responseTime: data?.responseTime,
+    error: state.error,
+    isError: state.isError,
+    isLoading: state.isLoading,
+    isFetching: state.isFetching,
+    dataUpdatedAt: state.dataUpdatedAt
+  };
 };
