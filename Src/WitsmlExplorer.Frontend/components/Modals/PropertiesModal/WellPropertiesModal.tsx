@@ -28,7 +28,7 @@ export const WellPropertiesModal = (
   const shouldFetchFullWell = mode === PropertiesModalMode.Edit;
   const {
     well: fullWell,
-    isLoading
+    isFetching
   } = // Input well might be partial, so ensure we have the full well data when in edit mode.
     useGetWell(connectedServer, wellReference.uid, {
       enabled: shouldFetchFullWell
@@ -50,7 +50,7 @@ export const WellPropertiesModal = (
         ? orderModifyWellJob(well, updates)
         : orderCreateWellJob(well, updates);
     },
-    isLoading: isLoading
+    isLoading: isFetching
   };
 
   return <PropertiesModal {...propertyModalProps} />;

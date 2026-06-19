@@ -26,7 +26,7 @@ export const WellborePropertiesModal = (
   const { connectedServer } = useConnectedServer();
   const { dispatchOperation } = useOperationState();
   const shouldFetchFullWellbore = mode === PropertiesModalMode.Edit;
-  const { wellbore: fullWellbore, isLoading } = useGetWellbore(
+  const { wellbore: fullWellbore, isFetching } = useGetWellbore(
     connectedServer,
     wellboreReference.wellUid,
     wellboreReference.uid,
@@ -52,7 +52,7 @@ export const WellborePropertiesModal = (
         ? orderModifyWellboreJob(wellbore, updates)
         : orderCreateWellboreJob(wellbore, updates);
     },
-    isLoading: isLoading
+    isLoading: isFetching
   };
 
   return <PropertiesModal {...propertyModalProps} />;
