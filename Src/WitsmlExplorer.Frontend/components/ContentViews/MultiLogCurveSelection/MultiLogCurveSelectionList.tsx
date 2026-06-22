@@ -1,5 +1,8 @@
 import { Autocomplete, Icon } from "@equinor/eds-core-react";
 import React, { CSSProperties, useEffect, useMemo, useState } from "react";
+import AuthorizationService, {
+  WitsmlProtocol
+} from "services/authorizationService";
 import styled from "styled-components";
 import { useCurveThreshold } from "../../../contexts/curveThresholdContext.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
@@ -237,7 +240,10 @@ const MultiLogCurveSelectionList = (
       </Button>
     </CommonPanelContainer>,
     <CommonPanelContainer key="addPanel">
-      <Button onClick={onAdd}>
+      <Button
+        onClick={onAdd}
+        disabled={AuthorizationService.witsmlProtocol === WitsmlProtocol.Etp}
+      >
         <Icon name="addCircleOutlined" />
         Add
       </Button>

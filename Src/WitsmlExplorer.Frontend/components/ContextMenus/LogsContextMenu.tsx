@@ -40,6 +40,9 @@ import Wellbore from "models/wellbore";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { getMultipleLogCurveSelectionViewPath } from "routes/utils/pathBuilder.ts";
+import AuthorizationService, {
+  WitsmlProtocol
+} from "services/authorizationService";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 import { RouterLogType } from "../../routes/routerConstants.ts";
@@ -215,7 +218,12 @@ const LogsContextMenu = (props: LogsContextMenuProps): React.ReactElement => {
           requiredRole={UserRole.Advanced}
           key="multiLogSelect"
         >
-          <MenuItem onClick={onClickMultiLogSelect}>
+          <MenuItem
+            onClick={onClickMultiLogSelect}
+            disabled={
+              AuthorizationService.witsmlProtocol === WitsmlProtocol.Etp
+            }
+          >
             <StyledIcon name="add" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>
               Add to Multiple Log Selection
