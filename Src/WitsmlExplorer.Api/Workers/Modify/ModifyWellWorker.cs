@@ -52,7 +52,7 @@ namespace WitsmlExplorer.Api.Workers.Modify
 
         private static void Verify(Well well)
         {
-            if (string.IsNullOrEmpty(well.Name))
+            if (well.Name == string.Empty)
             {
                 throw new InvalidOperationException($"{nameof(well.Name)} cannot be empty");
             }
