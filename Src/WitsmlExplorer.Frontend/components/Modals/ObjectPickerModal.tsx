@@ -89,7 +89,7 @@ const ObjectPickerModal = ({
     setIsLoading(true);
     setFetchError("");
     try {
-      const targetObject = await ObjectService.getObjectIdOnly(
+      const targetObjectResult = await ObjectService.getObjectIdOnly(
         wellUid,
         wellboreUid,
         objectType,
@@ -97,6 +97,7 @@ const ObjectPickerModal = ({
         null,
         targetServer
       );
+      const targetObject = targetObjectResult.data;
       if (targetObject?.uid === objectUid) {
         dispatchOperation({ type: OperationType.HideModal });
         checkedIncludeIndexDuplicates || checkedCompareAllLogIndexes

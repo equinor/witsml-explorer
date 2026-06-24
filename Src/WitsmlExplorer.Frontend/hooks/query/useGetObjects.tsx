@@ -1,14 +1,12 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { WitsmlProtocol } from "services/authorizationService";
+import { ProtocolAwareResponse } from "services/protocolAwareResponse";
 import { ObjectType, ObjectTypeToModel } from "../../models/objectType";
 import { Server } from "../../models/server";
 import ObjectService from "../../services/objectService";
 import { QUERY_KEY_OBJECTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import {
-  TimedResponse,
-  withQueryTiming,
-  wrapPlaceholderData
-} from "./queryTiming";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getObjectsQueryKey = (
   serverUrl: string,
@@ -34,17 +32,27 @@ export const objectsQuery = <T extends ObjectType>(
 ) => ({
   queryKey: getObjectsQueryKey(server?.url, wellUid, wellboreUid, objectType),
   queryFn: () =>
-    withQueryTiming(() =>
-      ObjectService.getObjects<T>(
-        wellUid,
-        wellboreUid,
-        objectType,
-        null,
-        server
-      )
+    withQueryTiming(
+      async () =>
+        await ObjectService.getObjects<T>(
+          wellUid,
+          wellboreUid,
+          objectType,
+          null,
+          server
+        )
     ),
-  placeholderData: wrapPlaceholderData(options?.placeholderData),
   ...options,
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: {
+            data: options?.placeholderData,
+            usedProtocol: undefined
+          },
+          responseTime: 0
+        } as TimedResponse<ProtocolAwareResponse<ObjectTypeToModel[T][]>>),
   enabled:
     !!server &&
     !!wellUid &&
@@ -53,12 +61,16 @@ export const objectsQuery = <T extends ObjectType>(
     !(options?.enabled === false)
 });
 
-type ObjectsQueryResult<T extends ObjectType> = Omit<
-  QueryObserverResult<TimedResponse<ObjectTypeToModel[T][]>, unknown>,
-  "data"
-> & {
+type ObjectsQueryResult<T extends ObjectType> = {
   objects: ObjectTypeToModel[T][];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  isFetched: boolean;
+  dataUpdatedAt: number;
   responseTime: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetObjects = <T extends ObjectType>(
@@ -68,12 +80,15 @@ export const useGetObjects = <T extends ObjectType>(
   objectType: T,
   options?: QueryOptions
 ): ObjectsQueryResult<T> => {
-  const { data, ...state } = useQuery<TimedResponse<ObjectTypeToModel[T][]>>(
-    objectsQuery<T>(server, wellUid, wellboreUid, objectType, options)
-  );
+  const { data: timedResult, ...state } = useQuery<
+    TimedResponse<ProtocolAwareResponse<ObjectTypeToModel[T][]>>
+  >(objectsQuery<T>(server, wellUid, wellboreUid, objectType, options));
+
+  const protocolAwareResult = timedResult?.data;
   return {
-    objects: data?.data as ObjectTypeToModel[T][],
-    responseTime: data?.responseTime,
+    objects: protocolAwareResult?.data ?? [],
+    responseTime: timedResult?.responseTime,
+    usedProtocol: protocolAwareResult?.usedProtocol,
     ...state
   };
 };

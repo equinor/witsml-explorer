@@ -1,14 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
+import { ProtocolAwareResponse } from "services/protocolAwareResponse";
 import { Server } from "../../models/server";
 import Well from "../../models/well";
 import WellService from "../../services/wellService";
 import { QUERY_KEY_WELL } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import {
-  TimedResponse,
-  withQueryTiming,
-  wrapPlaceholderData
-} from "./queryTiming";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getWellQueryKey = (serverUrl: string, wellUid: string) => {
   return [QUERY_KEY_WELL, serverUrl?.toLowerCase(), wellUid?.toLowerCase()];
@@ -26,7 +23,16 @@ export const wellQuery = (
       return well;
     }),
   ...options,
-  placeholderData: wrapPlaceholderData(options?.placeholderData),
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: {
+            data: options?.placeholderData,
+            usedProtocol: undefined
+          },
+          responseTime: 0
+        } as TimedResponse<ProtocolAwareResponse<Well>>),
   enabled: !!server && !!wellUid && !(options?.enabled === false)
 });
 
@@ -39,6 +45,7 @@ type WellQueryResult = {
   isFetched: boolean;
   dataUpdatedAt: number;
   responseTime: number;
+  usedProtocol?: string;
 };
 
 export const useGetWell = (
@@ -46,17 +53,21 @@ export const useGetWell = (
   wellUid: string,
   options?: QueryOptions
 ): WellQueryResult => {
-  const { data, ...state } = useQuery<TimedResponse<Well>>(
-    wellQuery(server, wellUid, options)
-  );
+  const { data: timedResult, ...state } = useQuery<
+    TimedResponse<ProtocolAwareResponse<Well>>
+  >(wellQuery(server, wellUid, options));
+  const protocolAwareResult = timedResult?.data;
+  const well = protocolAwareResult?.data;
+
   return {
-    well: data?.data,
-    responseTime: data?.responseTime,
+    well,
+    responseTime: timedResult?.responseTime,
     error: state.error,
     isError: state.isError,
     isLoading: state.isLoading,
     isFetching: state.isFetching,
     isFetched: state.isFetched,
-    dataUpdatedAt: state.dataUpdatedAt
+    dataUpdatedAt: state.dataUpdatedAt,
+    usedProtocol: protocolAwareResult?.usedProtocol
   };
 };

@@ -76,10 +76,11 @@ export const WellboreSearchListView = (): ReactElement => {
   const fetchSelectedWellbore = async (
     checkedWellboreRow: WellboreSearchRow
   ) => {
-    return await WellboreService.getWellbore(
+    const wellboreResult = await WellboreService.getWellbore(
       checkedWellboreRow.wellUid,
       checkedWellboreRow.uid
     );
+    return wellboreResult.data;
   };
 
   const onContextMenuSingleWellbore = async (

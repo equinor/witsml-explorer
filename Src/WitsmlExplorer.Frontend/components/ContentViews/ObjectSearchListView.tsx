@@ -130,12 +130,13 @@ export const ObjectSearchListView = (): ReactElement => {
   }, [error, isError]);
 
   const fetchSelectedObject = async (checkedObjectRow: ObjectSearchRow) => {
-    return await ObjectService.getObject(
+    const objectResult = await ObjectService.getObject(
       checkedObjectRow.wellUid,
       checkedObjectRow.wellboreUid,
       checkedObjectRow.uid,
       checkedObjectRow.objectType
     );
+    return objectResult.data;
   };
 
   const onContextMenuSingleObject = async (

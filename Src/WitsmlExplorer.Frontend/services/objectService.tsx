@@ -11,6 +11,10 @@ import SelectableObjectOnWellbore from "models/selectableObjectOnWellbore";
 import { Server } from "models/server";
 import { ExpandableObjectsCount } from "models/wellbore";
 import { ApiClient, throwError } from "services/apiClient";
+import {
+  getUsedProtocol,
+  ProtocolAwareResponse
+} from "services/protocolAwareResponse";
 
 export default class ObjectService {
   public static async getObjects<Key extends ObjectType>(
@@ -19,7 +23,7 @@ export default class ObjectService {
     objectType: Key,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<ObjectTypeToModel[Key][]> {
+  ): Promise<ProtocolAwareResponse<ObjectTypeToModel[Key][]>> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
@@ -29,9 +33,15 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json();
+      return {
+        data: await response.json(),
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
-      return [];
+      return {
+        data: [],
+        usedProtocol: getUsedProtocol(response)
+      };
     }
   }
 
@@ -42,7 +52,7 @@ export default class ObjectService {
     objectType: Key,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<ObjectTypeToModel[Key]> {
+  ): Promise<ProtocolAwareResponse<ObjectTypeToModel[Key]>> {
     const typeRoute = pluralizeObjectType(objectType).toLowerCase();
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
@@ -52,9 +62,15 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json().catch((): null => null);
+      return {
+        data: await response.json().catch((): null => null),
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
-      return null;
+      return {
+        data: null,
+        usedProtocol: getUsedProtocol(response)
+      };
     }
   }
 
@@ -64,7 +80,7 @@ export default class ObjectService {
     objectType: ObjectType,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<ObjectOnWellbore[]> {
+  ): Promise<ProtocolAwareResponse<ObjectOnWellbore[]>> {
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
@@ -73,9 +89,15 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json();
+      return {
+        data: await response.json(),
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
-      return [];
+      return {
+        data: [],
+        usedProtocol: getUsedProtocol(response)
+      };
     }
   }
 
@@ -84,7 +106,7 @@ export default class ObjectService {
     wellboreUid: string,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<SelectableObjectOnWellbore[]> {
+  ): Promise<ProtocolAwareResponse<SelectableObjectOnWellbore[]>> {
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
@@ -93,9 +115,15 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json();
+      return {
+        data: await response.json(),
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
-      return [];
+      return {
+        data: [],
+        usedProtocol: getUsedProtocol(response)
+      };
     }
   }
 
@@ -106,7 +134,7 @@ export default class ObjectService {
     objectUid: string,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<ObjectOnWellbore> {
+  ): Promise<ProtocolAwareResponse<ObjectOnWellbore>> {
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
@@ -117,10 +145,20 @@ export default class ObjectService {
     if (response.ok) {
       const text = await response.text();
       if (text.length) {
-        return JSON.parse(text);
+        return {
+          data: JSON.parse(text),
+          usedProtocol: getUsedProtocol(response)
+        };
       }
+      return {
+        data: null,
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
-      return null;
+      return {
+        data: null,
+        usedProtocol: getUsedProtocol(response)
+      };
     }
   }
 
@@ -129,7 +167,7 @@ export default class ObjectService {
     wellboreUid: string,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<ExpandableObjectsCount> {
+  ): Promise<ProtocolAwareResponse<ExpandableObjectsCount>> {
     const response = await ApiClient.get(
       `/api/wells/${encodeURIComponent(wellUid)}/wellbores/${encodeURIComponent(
         wellboreUid
@@ -138,19 +176,28 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json();
+      return {
+        data: await response.json(),
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
-      return null;
+      return {
+        data: null,
+        usedProtocol: getUsedProtocol(response)
+      };
     }
   }
 
   public static async getObjectsByType(
     type: ObjectType,
     abortSignal?: AbortSignal
-  ): Promise<ObjectSearchResult[]> {
+  ): Promise<ProtocolAwareResponse<ObjectSearchResult[]>> {
     const response = await ApiClient.get(`/api/objects/${type}`, abortSignal);
     if (response.ok) {
-      return response.json();
+      return {
+        data: await response.json(),
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
       const { message }: ErrorDetails = await response.json();
       throwError(response.status, message);
@@ -163,7 +210,7 @@ export default class ObjectService {
     propertyValue: string,
     abortSignal?: AbortSignal,
     server?: Server
-  ): Promise<ObjectSearchResult[]> {
+  ): Promise<ProtocolAwareResponse<ObjectSearchResult[]>> {
     const response = await ApiClient.get(
       `/api/objects/${type}/${propertyName}/${encodeURIComponent(
         propertyValue
@@ -172,7 +219,10 @@ export default class ObjectService {
       server
     );
     if (response.ok) {
-      return response.json();
+      return {
+        data: await response.json(),
+        usedProtocol: getUsedProtocol(response)
+      };
     } else {
       const { message }: ErrorDetails = await response.json();
       throwError(response.status, message);

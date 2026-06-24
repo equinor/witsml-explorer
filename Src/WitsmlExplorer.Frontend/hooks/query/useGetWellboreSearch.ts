@@ -1,6 +1,7 @@
 import { useGetWellbores } from "hooks/query/useGetWellbores";
 import Wellbore from "models/wellbore";
 import { useMemo } from "react";
+import { WitsmlProtocol } from "services/authorizationService";
 import {
   WellboreFilterType,
   filterTypeToProperty,
@@ -18,6 +19,7 @@ type WellboreSearchQueryResult = {
   isFetching: boolean;
   dataUpdatedAt: number;
   responseTime: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetWellboreSearch = (

@@ -1,10 +1,7 @@
-import {
-  QueryClient,
-  QueryObserverResult,
-  useQuery,
-  useQueryClient
-} from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { WitsmlProtocol } from "services/authorizationService";
+import { ProtocolAwareResponse } from "services/protocolAwareResponse";
 import {
   MILLIS_IN_SECOND,
   SECONDS_IN_MINUTE
@@ -70,15 +67,25 @@ export const objectSearchQuery = (
     !!filterType &&
     !(value === null || value === undefined) &&
     !(options?.enabled === false),
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: options?.placeholderData,
+          usedProtocol: undefined
+        } as ProtocolAwareResponse<ObjectSearchResult[]>),
   retry: 0,
   gcTime: 5 * SECONDS_IN_MINUTE * MILLIS_IN_SECOND // We don't want to cache unused search results for too long.
 });
 
-type ObjectSearchQueryResult = Omit<
-  QueryObserverResult<ObjectSearchResult[], unknown>,
-  "data"
-> & {
+type ObjectSearchQueryResult = {
   searchResults: ObjectSearchResult[];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  dataUpdatedAt: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetObjectSearch = (
@@ -94,7 +101,9 @@ export const useGetObjectSearch = (
     server.url,
     filterType
   );
-  const { data, ...state } = useQuery<ObjectSearchResult[]>(
+  const { data, ...state } = useQuery<
+    ProtocolAwareResponse<ObjectSearchResult[]>
+  >(
     objectSearchQuery(
       server,
       filterType,
@@ -107,8 +116,8 @@ export const useGetObjectSearch = (
     )
   );
 
-  const dataToFilter = useMemo(
-    () => cachedAllObjects ?? data ?? [],
+  const dataToFilter = useMemo<ObjectSearchResult[]>(
+    () => cachedAllObjects?.data ?? data?.data ?? [],
     [data, cachedAllObjects]
   );
 
@@ -119,7 +128,11 @@ export const useGetObjectSearch = (
     );
   }, [dataToFilter, value]);
 
-  return { searchResults: filteredData, ...state };
+  return {
+    searchResults: filteredData,
+    usedProtocol: data?.usedProtocol ?? cachedAllObjects?.usedProtocol,
+    ...state
+  };
 };
 
 const fetchObjects = async (
@@ -127,7 +140,7 @@ const fetchObjects = async (
   objectFilterType: ObjectFilterType,
   value = "",
   fetchAllObjects: boolean
-): Promise<ObjectSearchResult[]> => {
+): Promise<ProtocolAwareResponse<ObjectSearchResult[]>> => {
   if (!fetchAllObjects && needToFetchAllObjects(value)) {
     throw new Error(
       `The given search will fetch all ${getListedObjects(
@@ -136,6 +149,7 @@ const fetchObjects = async (
     );
   }
   const searchResults: ObjectSearchResult[] = [];
+  let usedProtocol: WitsmlProtocol;
   const errors: Error[] = [];
   const objectTypes = objectFilterTypeToObjects[objectFilterType];
 
@@ -148,7 +162,8 @@ const fetchObjects = async (
         undefined,
         server
       );
-      searchResults.push(...objects);
+      usedProtocol ??= objects.usedProtocol;
+      searchResults.push(...objects.data);
     } catch (error) {
       errors.push(error);
     }
@@ -165,7 +180,10 @@ const fetchObjects = async (
       )} before filtering.\n\nDo you still want to proceed?`
     );
   }
-  return searchResults;
+  return {
+    data: searchResults,
+    usedProtocol
+  };
 };
 
 const getCachedAllObjects = (
@@ -183,7 +201,9 @@ const getCachedAllObjects = (
   if (cachedState?.isInvalidated) {
     return null;
   }
-  return queryClient.getQueryData<ObjectSearchResult[]>(allObjectsQueryKey);
+  return queryClient.getQueryData<ProtocolAwareResponse<ObjectSearchResult[]>>(
+    allObjectsQueryKey
+  );
 };
 
 const needToFetchAllObjects = (value: string) => {
