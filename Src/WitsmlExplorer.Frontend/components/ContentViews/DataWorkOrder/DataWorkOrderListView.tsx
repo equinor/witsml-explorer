@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import DataWorkOrderContextMenu from "components/ContextMenus/DataWorkOrderContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -33,12 +35,18 @@ export default function DataWorkOrdersListView() {
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: dataWorkOrders, responseTime } = useGetObjects(
+  const {
+    objects: dataWorkOrders,
+    responseTime,
+    dataUpdatedAt,
+    usedProtocol
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.DataWorkOrder
   );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.DataWorkOrder);
 
@@ -172,6 +180,8 @@ export default function DataWorkOrdersListView() {
         showRefresh
         downloadToCsvFileName="DataWorkOrders"
         responseTime={responseTime}
+        lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

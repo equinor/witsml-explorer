@@ -53,7 +53,8 @@ export default function WbGeometryView() {
     components: wbGeometrySections,
     isFetching: isFetchingWbGeometrySections,
     responseTime: responseTimeComponents,
-    dataUpdatedAt: dataUpdatedAtComponents
+    dataUpdatedAt: dataUpdatedAtComponents,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -161,6 +162,7 @@ export default function WbGeometryView() {
         downloadToCsvFileName={`WbGeometry_${wbGeometry?.name}`}
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     </>
   );

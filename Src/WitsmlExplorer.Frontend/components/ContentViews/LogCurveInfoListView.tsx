@@ -82,7 +82,8 @@ export default function LogCurveInfoListView() {
     components: logCurveInfoList,
     isFetching: isFetchingLogCurveInfo,
     responseTime: responseTimeComponents,
-    dataUpdatedAt: dataUpdatedAtComponents
+    dataUpdatedAt: dataUpdatedAtComponents,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -299,6 +300,7 @@ export default function LogCurveInfoListView() {
           downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
           responseTime={responseTime}
           lastFetched={lastFetched}
+          usedProtocol={usedProtocol}
         />
       )}
     </>

@@ -35,7 +35,8 @@ export default function RisksListView() {
   const {
     objects: risks,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Risk);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Risk);
@@ -136,6 +137,7 @@ export default function RisksListView() {
         downloadToCsvFileName="Risks"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

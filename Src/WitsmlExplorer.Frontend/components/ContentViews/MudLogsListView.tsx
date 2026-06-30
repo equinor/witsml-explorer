@@ -45,7 +45,8 @@ export default function MudLogsListView() {
   const {
     objects: mudLogs,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.MudLog);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.MudLog);
@@ -148,6 +149,7 @@ export default function MudLogsListView() {
         downloadToCsvFileName="MudLogs"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

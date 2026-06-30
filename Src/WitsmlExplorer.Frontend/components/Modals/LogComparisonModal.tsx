@@ -113,8 +113,8 @@ const LogComparisonModal = (
       targetServer
     );
     return {
-      sourceLogCurveInfo: await fetchSource,
-      targetLogCurveInfo: await fetchTarget
+      sourceLogCurveInfo: (await fetchSource).data,
+      targetLogCurveInfo: (await fetchTarget).data
     };
   };
 

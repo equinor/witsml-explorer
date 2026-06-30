@@ -36,7 +36,8 @@ export default function FormationMarkersListView() {
   const {
     objects: formationMarkers,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(
     connectedServer,
     wellUid,
@@ -120,6 +121,7 @@ export default function FormationMarkersListView() {
         downloadToCsvFileName="FormationMarkers"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

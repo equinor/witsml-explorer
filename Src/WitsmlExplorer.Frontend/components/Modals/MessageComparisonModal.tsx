@@ -53,7 +53,7 @@ const MessageComparisonModal = (
 
   useEffect(() => {
     const fetchTarget = async () => {
-      const target = await ObjectService.getObject(
+      const targetResult = await ObjectService.getObject(
         targetObject.wellUid,
         targetObject.wellboreUid,
         targetObject.uid,
@@ -61,6 +61,7 @@ const MessageComparisonModal = (
         null,
         targetServer
       );
+      const target = targetResult.data;
       if (target == null) {
         dispatchOperation({ type: OperationType.HideModal });
         const failureMessageTarget = `Unable to compare the message as either the message with UID ${targetObject.uid} does not exist on the target server or it was not possible to fetch the message.`;

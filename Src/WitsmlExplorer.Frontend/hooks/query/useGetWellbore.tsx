@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import { WitsmlProtocol } from "services/authorizationService";
+import { ProtocolAwareResponse } from "services/protocolAwareResponse";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
 import { QUERY_KEY_WELLBORE } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import {
-  TimedResponse,
-  withQueryTiming,
-  wrapPlaceholderData
-} from "./queryTiming";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getWellboreQueryKey = (
   serverUrl: string,
@@ -41,7 +39,16 @@ export const wellboreQuery = (
       return wellbore;
     }),
   ...options,
-  placeholderData: wrapPlaceholderData(options?.placeholderData),
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: {
+            data: options?.placeholderData,
+            usedProtocol: undefined
+          },
+          responseTime: 0
+        } as TimedResponse<ProtocolAwareResponse<Wellbore>>),
   enabled:
     !!server && !!wellUid && !!wellboreUid && !(options?.enabled === false)
 });
@@ -55,6 +62,7 @@ type WellboreQueryResult = {
   isFetched: boolean;
   dataUpdatedAt: number;
   responseTime: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetWellbore = (
@@ -63,17 +71,22 @@ export const useGetWellbore = (
   wellboreUid: string,
   options?: QueryOptions
 ): WellboreQueryResult => {
-  const { data, ...state } = useQuery<TimedResponse<Wellbore>>(
-    wellboreQuery(server, wellUid, wellboreUid, options)
-  );
+  const { data: timedResult, ...state } = useQuery<
+    TimedResponse<ProtocolAwareResponse<Wellbore>>
+  >(wellboreQuery(server, wellUid, wellboreUid, options));
+
+  const protocolAwareResult = timedResult?.data;
+  const wellbore = protocolAwareResult?.data;
+
   return {
-    wellbore: data?.data,
-    responseTime: data?.responseTime,
+    wellbore,
+    responseTime: timedResult?.responseTime,
     error: state.error,
     isError: state.isError,
     isLoading: state.isLoading,
     isFetching: state.isFetching,
     isFetched: state.isFetched,
-    dataUpdatedAt: state.dataUpdatedAt
+    dataUpdatedAt: state.dataUpdatedAt,
+    usedProtocol: protocolAwareResult?.usedProtocol
   };
 };

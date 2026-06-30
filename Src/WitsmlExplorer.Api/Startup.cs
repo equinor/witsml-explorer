@@ -62,6 +62,7 @@ namespace WitsmlExplorer.Api
                         builder.AllowAnyMethod();
                         builder.AllowAnyHeader();
                         builder.AllowCredentials();
+                        builder.WithExposedHeaders("witsmlProtocol");
                     }
                 )
             );

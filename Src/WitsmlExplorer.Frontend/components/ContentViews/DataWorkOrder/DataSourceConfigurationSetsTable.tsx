@@ -49,15 +49,18 @@ export default function DataSourceConfigurationSetsTable() {
     objectUid
   );
 
-  const { components: dataSourceConfigurationSets, isFetching } =
-    useGetComponents(
-      connectedServer,
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.DataSourceConfigurationSet,
-      { placeholderData: [] }
-    );
+  const {
+    components: dataSourceConfigurationSets,
+    isFetching,
+    usedProtocol
+  } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.DataSourceConfigurationSet,
+    { placeholderData: [] }
+  );
 
   const getSetPath = (setUid: string) => {
     return getComponentViewPath(
@@ -161,6 +164,7 @@ export default function DataSourceConfigurationSetsTable() {
         data={dataSourceConfigurationSetRows}
         showRefresh
         downloadToCsvFileName={`DataWorkOrder_${dataWorkOrder?.name}_dataSourceConfigurationSets`}
+        usedProtocol={usedProtocol}
       />
     </>
   );

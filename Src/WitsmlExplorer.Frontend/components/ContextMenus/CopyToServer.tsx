@@ -45,12 +45,13 @@ export const onClickCopyToServer = async (
   let wellbore: Wellbore;
   try {
     if (mappings.length > 0) {
-      wellbore = await WellboreService.getWellbore(
+      const wellboreResult = await WellboreService.getWellbore(
         mappings[0].targetWellId,
         mappings[0].targetWellboreId,
         null,
         targetServer
       );
+      wellbore = wellboreResult.data;
 
       if (!wellbore) {
         await UidMappingService.removeUidMappings({
@@ -61,12 +62,13 @@ export const onClickCopyToServer = async (
     }
 
     if (!wellbore) {
-      wellbore = await WellboreService.getWellbore(
+      const wellboreResult = await WellboreService.getWellbore(
         sourceWellUid,
         sourceWellboreUid,
         null,
         targetServer
       );
+      wellbore = wellboreResult.data;
     }
   } catch {
     return; // Cancel the operation if unable to authorize to the target server.
@@ -150,7 +152,8 @@ const confirmedCopyToServer = async (
   );
   const existingObjects: ObjectOnWellbore[] = [];
   for (const query of queries) {
-    const receivedObject = await query;
+    const objectResult = await query;
+    const receivedObject = objectResult.data;
     if (
       toCopy.find((objectToCopy) => receivedObject?.uid === objectToCopy.uid)
     ) {

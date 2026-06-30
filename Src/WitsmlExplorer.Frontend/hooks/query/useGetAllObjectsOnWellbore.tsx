@@ -1,9 +1,11 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
-import { Server } from "../../models/server";
+import { useQuery } from "@tanstack/react-query";
 import SelectableObjectOnWellbore from "models/selectableObjectOnWellbore";
+import { WitsmlProtocol } from "services/authorizationService";
+import ObjectService from "services/objectService";
+import { ProtocolAwareResponse } from "services/protocolAwareResponse";
+import { Server } from "../../models/server";
 import { QUERY_KEY_ALL_OBJECTS_ON_WELLBORE } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import ObjectService from "services/objectService";
 
 export const getAllObjectsOnWellboreQueryKey = (
   serverUrl: string,
@@ -35,15 +37,25 @@ export const mixedObjectsReferenceQuery = (
     return objectsOnWellbore;
   },
   ...options,
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: options?.placeholderData,
+          usedProtocol: undefined
+        } as ProtocolAwareResponse<SelectableObjectOnWellbore[]>),
   enabled:
     !!server && !!wellUid && !!wellboreUid && !(options?.enabled === false)
 });
 
-type ObjectsOnWellboreQueryResult = Omit<
-  QueryObserverResult<SelectableObjectOnWellbore[], unknown>,
-  "data"
-> & {
+type ObjectsOnWellboreQueryResult = {
   objectsOnWellbore: SelectableObjectOnWellbore[];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  dataUpdatedAt: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetAllObjectsOnWellbore = (
@@ -52,8 +64,12 @@ export const useGetAllObjectsOnWellbore = (
   wellboreUid: string,
   options?: QueryOptions
 ): ObjectsOnWellboreQueryResult => {
-  const { data, ...state } = useQuery<SelectableObjectOnWellbore[]>(
-    mixedObjectsReferenceQuery(server, wellUid, wellboreUid, options)
-  );
-  return { objectsOnWellbore: data, ...state };
+  const { data, ...state } = useQuery<
+    ProtocolAwareResponse<SelectableObjectOnWellbore[]>
+  >(mixedObjectsReferenceQuery(server, wellUid, wellboreUid, options));
+  return {
+    objectsOnWellbore: data?.data ?? [],
+    usedProtocol: data?.usedProtocol,
+    ...state
+  };
 };

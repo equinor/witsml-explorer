@@ -43,7 +43,7 @@ export const WellboreSearchListView = (): ReactElement => {
   const { filterType } = useParams<{ filterType: WellboreFilterType }>();
   const value = searchParams.get("value");
   const { servers } = useGetServers();
-  const { wellboreSearchResults, isFetching, error, isError } =
+  const { wellboreSearchResults, isFetching, error, isError, usedProtocol } =
     useGetWellboreSearch(connectedServer, filterType, value);
   const navigate = useNavigate();
 
@@ -76,10 +76,11 @@ export const WellboreSearchListView = (): ReactElement => {
   const fetchSelectedWellbore = async (
     checkedWellboreRow: WellboreSearchRow
   ) => {
-    return await WellboreService.getWellbore(
+    const wellboreResult = await WellboreService.getWellbore(
       checkedWellboreRow.wellUid,
       checkedWellboreRow.uid
     );
+    return wellboreResult.data;
   };
 
   const onContextMenuSingleWellbore = async (
@@ -158,6 +159,7 @@ export const WellboreSearchListView = (): ReactElement => {
       data={wellboreSearchResults}
       onContextMenu={onContextMenu}
       downloadToCsvFileName={`${filterType}_search`}
+      usedProtocol={usedProtocol}
     />
   );
 };
