@@ -250,7 +250,17 @@ const ServerManager = (): React.ReactElement => {
                     server.name
                   )}
                 </Table.Cell>
-                <Table.Cell style={CellStyle}>{server.url}</Table.Cell>
+                <Table.Cell style={CellStyle}>
+                  {server.url}
+                  {server.etpUrl && (
+                    <>
+                      <br />
+                      <span style={{ color: colors.text.staticIconsTertiary }}>
+                        {server.etpUrl}
+                      </span>
+                    </>
+                  )}
+                </Table.Cell>
                 <Table.Cell style={CellStyle}>
                   {server.currentUsername == null ? "" : server.currentUsername}
                 </Table.Cell>
