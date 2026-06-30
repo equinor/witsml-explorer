@@ -24,15 +24,18 @@ export default function ChannelSetsTable() {
   const { connectedServer } = useConnectedServer();
   const { colors } = useOperationState().operationState;
 
-  const { components: dataSourceConfigurationSets, isFetching } =
-    useGetComponents(
-      connectedServer,
-      wellUid,
-      wellboreUid,
-      objectUid,
-      ComponentType.DataSourceConfigurationSet,
-      { placeholderData: [] }
-    );
+  const {
+    components: dataSourceConfigurationSets,
+    isFetching,
+    usedProtocol
+  } = useGetComponents(
+    connectedServer,
+    wellUid,
+    wellboreUid,
+    objectUid,
+    ComponentType.DataSourceConfigurationSet,
+    { placeholderData: [] }
+  );
   const dataSourceConfigurationSet = dataSourceConfigurationSets?.find(
     (set) => set.uid === componentUid
   );
@@ -101,6 +104,7 @@ export default function ChannelSetsTable() {
         )}
         showRefresh
         downloadToCsvFileName="ChannelConfigurations"
+        usedProtocol={usedProtocol}
       />
     </>
   );

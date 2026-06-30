@@ -23,7 +23,8 @@ export default function ChangeLogsListView() {
   const {
     objects: changeLogs,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(
     connectedServer,
     wellUid,
@@ -84,6 +85,7 @@ export default function ChangeLogsListView() {
         downloadToCsvFileName="ChangeLogs"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

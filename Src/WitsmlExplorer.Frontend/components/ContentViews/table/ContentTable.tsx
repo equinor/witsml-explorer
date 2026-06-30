@@ -112,6 +112,7 @@ export const ContentTable = React.memo(
       viewId,
       responseTime,
       lastFetched,
+      usedProtocol,
       downloadToCsvFileName = null,
       onRowSelectionChange,
       onFilteredRowSelectionChange,
@@ -425,6 +426,7 @@ export const ContentTable = React.memo(
             disableSearchParamsFilter={disableSearchParamsFilter}
             responseTime={responseTime}
             lastFetched={lastFetched}
+            usedProtocol={usedProtocol}
           />
         ) : null}
         <div

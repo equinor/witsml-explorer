@@ -59,7 +59,8 @@ export default function FluidsView() {
     components: fluids,
     isFetching: isFetchingFluids,
     responseTime: responseTimeComponents,
-    dataUpdatedAt: dataUpdatedAtComponents
+    dataUpdatedAt: dataUpdatedAtComponents,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -313,6 +314,7 @@ export default function FluidsView() {
         downloadToCsvFileName={`FluidsReport_${fluidsReport?.name}`}
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     </>
   );

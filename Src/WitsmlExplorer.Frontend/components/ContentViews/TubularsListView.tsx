@@ -31,7 +31,8 @@ export default function TubularsListView() {
   const {
     objects: tubulars,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Tubular);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Tubular);
@@ -113,6 +114,7 @@ export default function TubularsListView() {
         downloadToCsvFileName="Tubulars"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

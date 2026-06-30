@@ -37,7 +37,8 @@ export default function FluidsReportsListView() {
   const {
     objects: fluidsReports,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(
     connectedServer,
     wellUid,
@@ -139,6 +140,7 @@ export default function FluidsReportsListView() {
         downloadToCsvFileName="FluidsReports"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

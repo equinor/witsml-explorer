@@ -114,7 +114,8 @@ export const CurveValuesView = (): React.ReactElement => {
   const {
     object: log,
     isFetching: isFetchingLog,
-    isFetched: isFetchedLog
+    isFetched: isFetchedLog,
+    usedProtocol
   } = useGetObject(
     connectedServer,
     wellUid,
@@ -544,6 +545,7 @@ export const CurveValuesView = (): React.ReactElement => {
               panelElements={panelElements}
               stickyLeftColumns={2}
               autoRefresh={autoRefresh}
+              usedProtocol={usedProtocol}
             />
           ))}
       </ContentContainer>

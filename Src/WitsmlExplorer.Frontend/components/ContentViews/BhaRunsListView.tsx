@@ -34,7 +34,8 @@ export default function BhaRunsListView() {
   const {
     objects: bhaRuns,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.BhaRun);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.BhaRun);
@@ -133,6 +134,7 @@ export default function BhaRunsListView() {
         downloadToCsvFileName="BhaRuns"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

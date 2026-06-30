@@ -32,7 +32,8 @@ export default function TrajectoriesListView() {
   const {
     objects: trajectories,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(
     connectedServer,
     wellUid,
@@ -164,6 +165,7 @@ export default function TrajectoriesListView() {
         downloadToCsvFileName="Trajectories"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

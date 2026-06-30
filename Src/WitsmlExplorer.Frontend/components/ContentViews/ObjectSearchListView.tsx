@@ -65,13 +65,10 @@ export const ObjectSearchListView = (): ReactElement => {
   const value = searchParams.get("value");
   const [fetchAllObjects, setFetchAllObjects] = useState(false);
   const currentFilterType = useRef(filterType);
-  const { searchResults, isFetching, error, isError } = useGetObjectSearch(
-    connectedServer,
-    filterType,
-    value,
-    fetchAllObjects,
-    { enabled: filterType === currentFilterType.current }
-  );
+  const { searchResults, isFetching, error, isError, usedProtocol } =
+    useGetObjectSearch(connectedServer, filterType, value, fetchAllObjects, {
+      enabled: filterType === currentFilterType.current
+    });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -297,6 +294,7 @@ export const ObjectSearchListView = (): ReactElement => {
       data={searchResults}
       onContextMenu={onContextMenu}
       downloadToCsvFileName={`${filterType}_search`}
+      usedProtocol={usedProtocol}
     />
   );
 };

@@ -38,7 +38,8 @@ export default function DataWorkOrdersListView() {
   const {
     objects: dataWorkOrders,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(
     connectedServer,
     wellUid,
@@ -180,6 +181,7 @@ export default function DataWorkOrdersListView() {
         downloadToCsvFileName="DataWorkOrders"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

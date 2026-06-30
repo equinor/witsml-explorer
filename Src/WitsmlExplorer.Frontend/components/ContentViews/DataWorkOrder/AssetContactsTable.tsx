@@ -12,7 +12,11 @@ import { useParams } from "react-router-dom";
 export default function AssetContactsTable() {
   const { wellUid, wellboreUid, objectUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { object: dataWorkOrder, isFetching } = useGetObject(
+  const {
+    object: dataWorkOrder,
+    isFetching,
+    usedProtocol
+  } = useGetObject(
     connectedServer,
     wellUid,
     wellboreUid,
@@ -47,6 +51,7 @@ export default function AssetContactsTable() {
         disableSearchParamsFilter
         showRefresh
         downloadToCsvFileName={`DataWorkOrder_${dataWorkOrder?.name}_AssetContacts`}
+        usedProtocol={usedProtocol}
       />
     </>
   );

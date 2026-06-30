@@ -4,6 +4,7 @@ import {
   RowSelectionState
 } from "@tanstack/react-table";
 import React, { ReactNode } from "react";
+import { WitsmlProtocol } from "services/authorizationService.ts";
 import { Colors } from "../../../styles/Colors.tsx";
 
 export interface ExportableContentTableColumn<T> extends ContentTableColumn {
@@ -47,6 +48,7 @@ export interface ContentTableProps {
   showRefresh?: boolean;
   responseTime?: number;
   lastFetched?: string; // Timestamp of when data was last fetched, formatted as time string
+  usedProtocol?: WitsmlProtocol; // The protocol used to fetch the data, if applicable
   stickyLeftColumns?: number; // how many columns should be sticky
   viewId?: string; //id that will be used to save view settings to local storage, or null if should not save
   downloadToCsvFileName?: string;

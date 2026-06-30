@@ -42,7 +42,8 @@ export default function WellboresListView() {
     isFetching: isFetchingWellbores,
     isFetched: isFetchedWellbores,
     responseTime: responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetWellbores(connectedServer, wellUid);
   const isFetching = isFetchingWell || isFetchingWellbores;
   const {
@@ -153,6 +154,7 @@ export default function WellboresListView() {
         showRefresh
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     </>
   );
