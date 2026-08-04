@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Energistics.Datatypes.ChannelData;
 using Energistics.Datatypes.Object;
-
 using Witsml.Data;
+using Energistics.Protocol.ChannelStreaming;
 
 namespace Witsml.ETP;
 
@@ -31,4 +32,8 @@ public interface IEtpClient : IAsyncDisposable
     Task PutObjectAsync(DataObject dataObject, CancellationToken cancellationToken);
     Task PutObjectAsWitsmlAsync<T>(string uri, string contentType, T witsmlObject, CancellationToken cancellationToken) where T : IWitsmlQueryType;
     Task DeleteObjectAsync(string uri, CancellationToken cancellationToken);
+
+    // Protocol 1 (ChannelStreaming)
+    Task<Dictionary<long, ChannelMetadata>> GetChannelMetadataAsync(List<string> emls, CancellationToken? cancellationToken);
+    Task<List<ChannelData>> GetChannelRangeDataAsync(List<long> channelIds, long start, long end, int MaxRows, CancellationToken? cancellationToken);
 };

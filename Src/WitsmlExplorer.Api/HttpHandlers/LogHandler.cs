@@ -59,13 +59,19 @@ namespace WitsmlExplorer.Api.HttpHandlers
             [FromQuery(Name = "loadAllData")] bool loadAllData,
             [FromBody] IEnumerable<string> mnemonics,
             ILogObjectService logObjectService,
-            IProtocolCoordinator protocolCoordinator)
+            IEtpLogService etpLogService,
+            IProtocolCoordinator protocolCoordinator,
+            CancellationToken cancellationToken)
         {
             protocolCoordinator.SetSoapProtocolHeader(httpContext);
             if (mnemonics.Any())
             {
-                var logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData, CancellationToken.None);
-                return TypedResults.Ok(logData);
+                EssentialHeaders eh = new(httpContext?.Request);
+                var protocol = (eh.WitsmlProtocol == WitsmlProtocol.Etp && !string.IsNullOrWhiteSpace(wellUid) && !string.IsNullOrWhiteSpace(wellboreUid)) ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
+                Task<LogData> SoapCall() => logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData, CancellationToken.None);
+                Task<LogData> EtpCall() => etpLogService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData, cancellationToken);
+
+                return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
             }
             else
             {

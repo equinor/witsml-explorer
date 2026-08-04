@@ -10,6 +10,7 @@ using Avro.Specific;
 
 using Energistics.Datatypes;
 using Energistics.Datatypes.Object;
+using Energistics.Protocol.ChannelStreaming;
 
 using Witsml.Data;
 
@@ -27,6 +28,7 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     private readonly CoreProtocolHandler _coreProtocolHandler;
     private readonly DiscoveryProtocolHandler _discoveryProtocolHandler;
     private readonly StoreProtocolHandler _storeProtocolHandler;
+    private readonly StreamingProtocolHandler _streamingProtocolHandler;
     private readonly Uri _endpoint;
     private IEtpMessageLogger _messageLogger;
     private EtpServerCapabilities _serverCapabilities;
@@ -41,6 +43,7 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         _coreProtocolHandler = new CoreProtocolHandler(this, options);
         _discoveryProtocolHandler = new DiscoveryProtocolHandler(this);
         _storeProtocolHandler = new StoreProtocolHandler(this);
+        _streamingProtocolHandler = new StreamingProtocolHandler(this);
         SetupMessageLogging(options.LogMessages);
     }
 
@@ -111,6 +114,9 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
             case CoreProtocolHandler.ProtocolId:
                 await _coreProtocolHandler.TryHandleAsync(header, decoder, cancellationToken);
                 break;
+            case StreamingProtocolHandler.ProtocolId:
+                await _streamingProtocolHandler.TryHandleAsync(header, decoder, cancellationToken);
+                break;
             case DiscoveryProtocolHandler.ProtocolId:
                 _discoveryProtocolHandler.TryHandle(header, decoder);
                 break;
@@ -179,6 +185,8 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
         return Interlocked.Increment(ref _messageId);
     }
 
+
+
     public Task<IList<Resource>> GetResourcesAsync(string uri, CancellationToken cancellationToken) =>
         _discoveryProtocolHandler.GetResourcesAsync(uri, cancellationToken);
 
@@ -199,4 +207,12 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
 
     public Task DeleteObjectAsync(string uri, CancellationToken cancellationToken) =>
         _storeProtocolHandler.DeleteObjectAsync(uri, cancellationToken);
+
+    public Task<Dictionary<long, ChannelMetadata>> GetChannelMetadataAsync(List<string> emls, CancellationToken? cancellationToken) =>
+        _streamingProtocolHandler.GetChannelMetadataAsync(emls, cancellationToken);
+
+
+    public Task<List<ChannelData>> GetChannelRangeDataAsync(List<long> channelIds, long start, long end, int maxRows, CancellationToken? cancellationToken) =>
+        _streamingProtocolHandler.GetChannelRangeDataAsync(channelIds, start, end, maxRows, cancellationToken);
+    
 }

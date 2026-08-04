@@ -33,6 +33,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .IgnoreThisInterface<IWitsmlSystemCredentials>()
                 .IgnoreThisInterface<IWitsmlClientProvider>()
                 .IgnoreThisInterface<ICredentialsCache>()
+                .IgnoreThisInterface<IChannelMetadataMemoryCache>()
                 .IgnoreThisInterface<IAsyncDisposable>()
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
@@ -47,6 +48,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddScoped<IEtpClientProvider, EtpClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
+            services.AddSingleton<IChannelMetadataMemoryCache, ChannelMetadataMemoryCache>();
             services.AddSingleton<IJobProgressService, JobProgressService>();
             services.AddSingleton<IEtpSessionManager, EtpSessionManager>();
             services.AddScoped<IUidMappingService, UidMappingService>();
