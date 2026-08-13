@@ -18,7 +18,11 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useLiveJobProgress } from "hooks/useLiveJobProgress";
 import { useOperationState } from "hooks/useOperationState";
-import BaseReport, { createReport } from "models/reports/BaseReport";
+import BaseReport, {
+  createReport,
+  ReportItemColumn,
+  ReportItemType
+} from "models/reports/BaseReport";
 import React, { useEffect, useState } from "react";
 import JobService from "services/jobService";
 import NotificationService from "services/notificationService";
@@ -74,17 +78,33 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
     fetchJobInfo();
   }, [jobId]);
 
+  const asColumnType = (reportColumn: ReportItemColumn | undefined) => {
+    if (reportColumn) {
+      switch (reportColumn.type) {
+        case ReportItemType.DateTime:
+          return ContentType.DateTime;
+        case ReportItemType.Measure:
+          return ContentType.Measure;
+        case ReportItemType.Number:
+          return ContentType.Number;
+        case ReportItemType.String:
+        default:
+          return ContentType.String;
+      }
+    } else {
+      return ContentType.String;
+    }
+  };
+
   const columns: ContentTableColumn[] = React.useMemo(
     () =>
       report && report.reportItems?.length > 0
         ? Object.keys(report.reportItems[0]).map((key) => ({
             property: key,
             label: key,
-            type:
-              report.dateTimeColumns != null &&
-              report.dateTimeColumns.indexOf(key) > -1
-                ? ContentType.DateTime
-                : ContentType.String
+            type: asColumnType(
+              report?.reportItemColumns.find((c) => c.name == key)
+            )
           }))
         : [],
     [report]
@@ -96,8 +116,10 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         const clonedItem = JSON.parse(JSON.stringify(item));
         Object.keys(item).forEach((entry) => {
           if (
-            report.dateTimeColumns !== null &&
-            report.dateTimeColumns.indexOf(entry) > -1
+            report.reportItemColumns !== null &&
+            report.reportItemColumns.some(
+              (c) => c.name == entry && c.type == ReportItemType.DateTime
+            )
           ) {
             clonedItem[entry] = formatDateString(
               item[entry],
