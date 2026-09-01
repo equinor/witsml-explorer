@@ -30,11 +30,30 @@ namespace WitsmlExplorer.Api.Services
         Task<ICollection<MultiLogCurveInfo>> GetMultiLogCurveInfo(string wellUid, string wellboreUid, IEnumerable<string> logUids);
         Task<LogData> GetMultiLogData(string wellUid, string wellboreUid, string startIndex, string endIndex, bool startIndexIsInclusive, Dictionary<string, List<string>> logMnemonics);
         Task<LogData> ReadLogData(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, bool startIndexIsInclusive, string start, string end, bool loadAllData, CancellationToken? cancellationToken, IProgress<double> progressReporter = null);
+        Task<bool> Stream(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, string start, CancellationToken? cancellationToken);
+        Task<bool> StopStream(CancellationToken? cancellationToken);
+        Task<LogData> ReadStreamedData(CancellationToken? cancellationToken);
     }
 
     // ReSharper disable once UnusedMember.Global
     public class LogObjectService : WitsmlService, ILogObjectService
     {
+        public Task<bool> Stream(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, string start, CancellationToken? cancellationToken)
+        {
+            throw new NotSupportedException("SOAP protocal will not support Stream");
+        }
+
+        public Task<LogData> ReadStreamedData(CancellationToken? cancellationToken)
+        {
+            throw new NotSupportedException("SOAP protocal will not support Stream");
+        }
+
+        public async Task<bool> StopStream(CancellationToken? cancellationToken)
+        {
+            return true;
+        }
+
+
         public LogObjectService(IWitsmlClientProvider witsmlClientProvider) : base(witsmlClientProvider) { }
         public async Task<ICollection<LogObject>> GetLogs(string wellUid, string wellboreUid)
         {

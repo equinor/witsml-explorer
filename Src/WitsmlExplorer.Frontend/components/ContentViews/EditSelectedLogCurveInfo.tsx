@@ -31,6 +31,9 @@ import {
   useSearchParams
 } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
+import AuthorizationService, {
+  WitsmlProtocol
+} from "services/authorizationService";
 import { checkIsUrlTooLong } from "routes/utils/checkIsUrlTooLong";
 import styled from "styled-components";
 import { Colors, dark } from "styles/Colors";
@@ -73,6 +76,8 @@ const EditSelectedLogCurveInfo = (
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [isValidStart, setIsValidStart] = useState<boolean>(true);
   const [isValidEnd, setIsValidEnd] = useState<boolean>(true);
+  const shouldSkipIndexCurve =
+    AuthorizationService.witsmlProtocol === WitsmlProtocol.Soap;
 
   const { mnemonics: selectedMnemonics, setMnemonics: setSelectedMnemonics } =
     useGetMnemonics(isFetching, logCurveInfo, mnemonicsSearchParams);
@@ -210,7 +215,11 @@ const EditSelectedLogCurveInfo = (
               multiple={true}
               // @ts-ignore. Variant is defined and exists in the documentation, but not in the type definition.
               variant={selectedMnemonics.length === 0 ? "error" : null}
-              options={logCurveInfo?.slice(1)?.map((lci) => lci.mnemonic)} // Skip the first one as it is the index curve
+              options={
+                (shouldSkipIndexCurve ? logCurveInfo?.slice(1) : logCurveInfo)?.map(
+                  (lci) => lci.mnemonic
+                )
+              }
               selectedOptions={selectedMnemonics}
               onFocus={(e) => e.preventDefault()}
               onOptionsChange={onMnemonicsChange}

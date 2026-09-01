@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -60,21 +61,118 @@ namespace WitsmlExplorer.Api.HttpHandlers
             [FromQuery(Name = "endIndex")] string endIndex,
             [FromQuery(Name = "startIndexIsInclusive")] bool startIndexIsInclusive,
             [FromQuery(Name = "loadAllData")] bool loadAllData,
+            [FromQuery(Name = "streaming")] bool streaming,
+            [FromQuery(Name = "streamId")] string streamId,
             [FromBody] IEnumerable<string> mnemonics,
             ILogObjectService logObjectService,
-            IProtocolCoordinator protocolCoordinator)
+            IEtpLogService etpLogService,
+            IProtocolCoordinator protocolCoordinator,
+            CancellationToken cancellationToken)
         {
+
+            Console.WriteLine( $"Streaming {streaming}");
             protocolCoordinator.SetSoapProtocolHeader(httpContext);
             if (mnemonics.Any())
             {
-                var logData = await logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData, CancellationToken.None);
-                return TypedResults.Ok(logData);
+                EssentialHeaders eh = new(httpContext?.Request);
+                var protocol = (eh.WitsmlProtocol == WitsmlProtocol.Etp && !string.IsNullOrWhiteSpace(wellUid) && !string.IsNullOrWhiteSpace(wellboreUid)) ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
+                Task<LogData> SoapCall() => logObjectService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData, CancellationToken.None);
+                Task<LogData> EtpCall() => etpLogService.ReadLogData(wellUid, wellboreUid, logUid, mnemonics.ToList(), startIndexIsInclusive, startIndex, endIndex, loadAllData, streaming, streamId, cancellationToken);
+
+                return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
             }
             else
             {
                 return TypedResults.BadRequest("Missing list of mnemonics");
             }
         }
+
+
+        [Produces(typeof(LogData))]
+        public static async Task<IResult> StartStream(HttpContext httpContext,
+            string wellUid,
+            string wellboreUid,
+            string logUid,
+            string start,
+            [FromQuery(Name = "streamId")] string streamId,
+            [FromBody] IEnumerable<string> mnemonics,
+            ILogObjectService logObjectService,
+            IEtpLogService etpLogService,
+            IProtocolCoordinator protocolCoordinator,
+            CancellationToken cancellationToken)
+        {
+            protocolCoordinator.SetSoapProtocolHeader(httpContext);
+            if (mnemonics.Any())
+            {
+                EssentialHeaders eh = new(httpContext?.Request);
+                var protocol = (eh.WitsmlProtocol == WitsmlProtocol.Etp && !string.IsNullOrWhiteSpace(wellUid) && !string.IsNullOrWhiteSpace(wellboreUid)) ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
+
+                Task<bool> SoapCall() => logObjectService.Stream(wellUid, wellboreUid, logUid, mnemonics.ToList(), start, CancellationToken.None);
+                Task<bool> EtpCall() => etpLogService.StartStream(streamId, wellUid, wellboreUid, logUid, mnemonics.ToList(), start,  cancellationToken);
+
+                return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
+            }
+            else
+            {
+                return TypedResults.BadRequest("Missing list of mnemonics");
+            }
+
+        }
+
+        [Produces(typeof(LogData))]
+        public static async Task<IResult> ReadStreamedData(HttpContext httpContext,
+           [FromQuery(Name = "streamId")] string streamId,
+           [FromBody] IEnumerable<string> mnemonics,
+           ILogObjectService logObjectService,
+           IEtpLogService etpLogService,
+           IProtocolCoordinator protocolCoordinator,
+           CancellationToken cancellationToken)
+        {
+            protocolCoordinator.SetSoapProtocolHeader(httpContext);
+            if (mnemonics.Any())
+            {
+                EssentialHeaders eh = new(httpContext?.Request);
+                var protocol = eh.WitsmlProtocol == WitsmlProtocol.Etp ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
+
+                Task<LogData> SoapCall() => logObjectService.ReadStreamedData(CancellationToken.None);
+                Task<LogData> EtpCall() => etpLogService.ReadStreamedData(streamId, cancellationToken);
+
+                return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
+            }
+            else
+            {
+                return TypedResults.BadRequest("Missing list of mnemonics");
+            }
+
+        }
+
+        [Produces(typeof(LogData))]
+        public static async Task<IResult> StopStream(HttpContext httpContext,
+           [FromQuery(Name = "streamId")] string streamId,
+           [FromBody] IEnumerable<string> mnemonics,
+           ILogObjectService logObjectService,
+           IEtpLogService etpLogService,
+           IProtocolCoordinator protocolCoordinator,
+           CancellationToken cancellationToken)
+        {
+            protocolCoordinator.SetSoapProtocolHeader(httpContext);
+            if (mnemonics.Any())
+            {
+                EssentialHeaders eh = new(httpContext?.Request);
+                var protocol = eh.WitsmlProtocol == WitsmlProtocol.Etp  ? WitsmlProtocol.Etp : WitsmlProtocol.Soap;
+
+                Task<bool> SoapCall() => logObjectService.StopStream(CancellationToken.None);
+                Task<bool> EtpCall() => etpLogService.StopStream(streamId, cancellationToken);
+
+                return await protocolCoordinator.ExecuteOkAsync(httpContext, protocol, SoapCall, EtpCall);
+            }
+            else
+            {
+                return TypedResults.BadRequest("Missing list of mnemonics");
+            }
+
+        }
+
 
         [Produces(typeof(LogData))]
         public static async Task<IResult> GetMultiLogData(

@@ -37,6 +37,18 @@ namespace WitsmlExplorer.Api.Services.ETP
                 : $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})/{objectType.ToString().ToLower()}({objectUid})";
         }
 
+        public static string CreateChannelUri(string wellUid, string wellboreUid, string logUid, string channelUid)
+        {
+            if (string.IsNullOrWhiteSpace(wellUid))
+                throw new ArgumentException("wellUid must be provided.");
+            if (string.IsNullOrWhiteSpace(wellboreUid))
+                throw new ArgumentException("wellboreUid must be provided.");
+
+            return $"{UriPrefix}/well({wellUid})/wellbore({wellboreUid})/log({logUid})/logCurveInfo({channelUid})";
+        }
+
+
+
         public static string GetWellUid(string uri)
         {
             return GetUidForObjectType(uri, EntityType.Well);

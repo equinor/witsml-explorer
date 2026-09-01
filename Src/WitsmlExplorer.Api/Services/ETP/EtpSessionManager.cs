@@ -68,7 +68,7 @@ public class EtpSessionManager : IEtpSessionManager, IAsyncDisposable
                 _options.AppName,
                 _options.AppVersion,
                 new EtpBasicAuthCredentials(options.Username, options.Password),
-                new List<RequestedProtocol> { RequestedProtocol.Discovery, RequestedProtocol.Store },
+                new List<RequestedProtocol> { RequestedProtocol.ChannelStreaming, RequestedProtocol.Discovery, RequestedProtocol.Store },
                 _logMessages
             );
 
