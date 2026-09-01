@@ -36,4 +36,8 @@ public interface IEtpClient : IAsyncDisposable
     // Protocol 1 (ChannelStreaming)
     Task<Dictionary<long, ChannelMetadata>> GetChannelMetadataAsync(List<string> emls, CancellationToken? cancellationToken);
     Task<List<ChannelData>> GetChannelRangeDataAsync(List<long> channelIds, long start, long end, int MaxRows, CancellationToken? cancellationToken);
+
+    Task StartStreamAsync(List<long> channelIds, long? startIndex, CancellationToken? cancellationToken);
+    Task<List<ChannelData>> ReadStreamedDataAsync(CancellationToken? cancellationToken);
+    Task StopStreamAsync(CancellationToken? cancellationToken);
 };

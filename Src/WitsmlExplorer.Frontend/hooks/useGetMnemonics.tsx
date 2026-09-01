@@ -2,6 +2,9 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import LogCurveInfo from "models/logCurveInfo";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import AuthorizationService, {
+  WitsmlProtocol
+} from "services/authorizationService";
 import NotificationService from "services/notificationService";
 
 export function useGetMnemonics(
@@ -23,7 +26,10 @@ export function useGetMnemonics(
   useEffect(() => {
     if (!isFethingLogCurveInfoList) {
       if (mnemonicsSearchParams) {
-        const existingMnemonics = getExistingMnemonics(logCurveInfoList);
+        const existingMnemonics = getExistingMnemonics(
+          logCurveInfoList,
+          AuthorizationService.witsmlProtocol === WitsmlProtocol.Soap
+        );
         const mnemonicsFromSearchParams = getMnemonicsFromSearchParams(
           mnemonicsSearchParams
         );
@@ -45,7 +51,12 @@ export function useGetMnemonics(
       } else if (location?.state?.mnemonics) {
         updateMnemonics(JSON.parse(location.state.mnemonics));
       } else {
-        updateMnemonics(getExistingMnemonics(logCurveInfoList));
+        updateMnemonics(
+          getExistingMnemonics(
+            logCurveInfoList,
+            AuthorizationService.witsmlProtocol === WitsmlProtocol.Soap
+          )
+        );
       }
     }
   }, [
@@ -58,8 +69,12 @@ export function useGetMnemonics(
   return { mnemonics, setMnemonics };
 }
 
-const getExistingMnemonics = (logCurveInfoList: LogCurveInfo[]) => {
-  return logCurveInfoList.slice(1).map((logCurveInfo) => logCurveInfo.mnemonic); // slice(1) to skip index curve
+const getExistingMnemonics = (
+  logCurveInfoList: LogCurveInfo[],
+  isSOAPSelected: boolean
+) => {
+  const curves = isSOAPSelected ? logCurveInfoList.slice(1) : logCurveInfoList;
+  return curves.map((logCurveInfo) => logCurveInfo.mnemonic);
 };
 
 const getMnemonicsFromSearchParams = (mnemonicsSearchParams: string) => {

@@ -26,10 +26,18 @@ internal sealed class StreamingProtocolHandler
     internal const int ChannelStreamingStopMessageType = 5;
     internal const int ChannelRangeRequestMessageType = 9;
 
+    private const int MaxStreamCacheRecords = 10_000;
+
     private readonly IProtocolHandlerContext _clientContext;
     private readonly ConcurrentDictionary<long, PendingGetChannelDataRequest> _pendingByDescribeRequestId = new();
     private readonly ConcurrentDictionary<long, PendingGetChannelMetadataRequest> _pendingMetadataByDescribeRequestId = new();
     private readonly ConcurrentDictionary<long, PendingGetChannelRangeDataRequest> _pendingRangeByRequestId = new();
+
+    private readonly object _streamSyncRoot = new();
+    private readonly Queue<ChannelData> _streamCache = new();
+    private List<long> _activeStreamChannelIds = [];
+    private bool _isStreamActive;
+    private int _streamCacheRecordCount;
 
     public StreamingProtocolHandler(IProtocolHandlerContext clientContext)
     {
@@ -314,6 +322,8 @@ internal sealed class StreamingProtocolHandler
                 }
             }
         }
+
+        CacheStreamData(response);
     }
 
     public async Task<Dictionary<long, ChannelMetadata>> GetChannelMetadataAsync(List<string> emls, CancellationToken? cancellationToken)
@@ -420,6 +430,127 @@ internal sealed class StreamingProtocolHandler
         }
     }
 
+
+    public async Task StartStreamAsync(List<long> channelIds, long? startIndex, CancellationToken? cancellationToken)
+    {
+        if (channelIds == null || channelIds.Count == 0)
+        {
+            throw new ArgumentException("At least one channel id is required.", nameof(channelIds));
+        }
+
+        var ct = cancellationToken ?? CancellationToken.None;
+        var distinctChannelIds = channelIds.Distinct().ToList();
+
+        var start = new Start
+        {
+            maxMessageRate = 100,
+            maxDataItems = 1000
+        };
+
+        await _clientContext.SendEtpMessageAsync(ProtocolId, StartMessageType, start, ct);
+
+        var startStreaming = new ChannelStreamingStart
+        {
+            channels = distinctChannelIds
+                .Select(channelId => new ChannelStreamingInfo
+                {
+                    channelId = channelId,
+                    receiveChangeNotification = false,
+                    startIndex = new StreamingStartIndex { item = startIndex }
+                })
+                .ToList()
+        };
+
+        await _clientContext.SendEtpMessageAsync(ProtocolId, ChannelStreamingStartMessageType, startStreaming, ct);
+
+        lock (_streamSyncRoot)
+        {
+            _activeStreamChannelIds = distinctChannelIds;
+            _isStreamActive = true;
+            ClearStreamCacheUnsafe();
+        }
+    }
+
+    public Task<List<ChannelData>> ReadStreamedDataAsync(CancellationToken? cancellationToken)
+    {
+        lock (_streamSyncRoot)
+        {
+            var data = _streamCache.ToList();
+            ClearStreamCacheUnsafe();
+            return Task.FromResult(data);
+        }
+    }
+
+    public async Task StopStreamAsync(CancellationToken? cancellationToken)
+    {
+        var ct = cancellationToken ?? CancellationToken.None;
+
+        List<long> channelIds;
+        lock (_streamSyncRoot)
+        {
+            channelIds = _activeStreamChannelIds.ToList();
+            _isStreamActive = false;
+            _activeStreamChannelIds = [];
+        }
+
+        try
+        {
+            if (channelIds.Count > 0)
+            {
+                var stopStreaming = new ChannelStreamingStop { channels = channelIds };
+                await _clientContext.SendEtpMessageAsync(ProtocolId, ChannelStreamingStopMessageType, stopStreaming, ct);
+            }
+        }
+        finally
+        {
+            lock (_streamSyncRoot)
+            {
+                ClearStreamCacheUnsafe();
+            }
+        }
+    }
+
+    private void CacheStreamData(ChannelData response)
+    {
+        lock (_streamSyncRoot)
+        {
+            if (!_isStreamActive || response.data == null || response.data.Count == 0)
+            {
+                return;
+            }
+
+            var dataItems = response.data.Count > MaxStreamCacheRecords
+                ? response.data.Skip(response.data.Count - MaxStreamCacheRecords).ToList()
+                : response.data.ToList();
+
+            var cachedResponse = new ChannelData { data = dataItems };
+            _streamCache.Enqueue(cachedResponse);
+            _streamCacheRecordCount += dataItems.Count;
+
+            while (_streamCacheRecordCount > MaxStreamCacheRecords && _streamCache.Count > 0)
+            {
+                var oldest = _streamCache.Peek();
+                var oldestCount = oldest?.data?.Count ?? 0;
+                var overflow = _streamCacheRecordCount - MaxStreamCacheRecords;
+
+                if (oldestCount <= overflow)
+                {
+                    _streamCache.Dequeue();
+                    _streamCacheRecordCount -= oldestCount;
+                    continue;
+                }
+
+                oldest.data = oldest.data.Skip(overflow).ToList();
+                _streamCacheRecordCount -= overflow;
+            }
+        }
+    }
+
+    private void ClearStreamCacheUnsafe()
+    {
+        _streamCache.Clear();
+        _streamCacheRecordCount = 0;
+    }
 
     private sealed class PendingGetChannelMetadataRequest
     {
