@@ -36,6 +36,7 @@ import randomColor from "randomcolor";
 import { Colors, dark } from "../../../styles/Colors.tsx";
 import AdjustDepthIndexRange from "../../Modals/TrimLogObject/AdjustDepthIndexRange.tsx";
 import AdjustDateTimeIndexRange from "../../Modals/TrimLogObject/AdjustDateTimeIndexRange.tsx";
+import { WITSML_LOG_ORDERTYPE_DECREASING } from "../../Constants.tsx";
 
 interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
@@ -87,6 +88,10 @@ const MultiLogCurveSelectionValues = (
   const [plotColumns, setPlotColumns] = useState<
     ExportableContentTableColumn<CurveSpecification>[]
   >([]);
+
+  const isDecreasing =
+    (logObjects[0]?.direction ?? WITSML_LOG_ORDERTYPE_DECREASING) ==
+    WITSML_LOG_ORDERTYPE_DECREASING;
 
   const usedServers = useMemo(() => {
     return multiLogMetadatas
@@ -208,15 +213,27 @@ const MultiLogCurveSelectionValues = (
           joinedIndexValues = joinedIndexValues.concat(indexValues);
         }
 
-        joinedIndexValues = isDepthIndex
-          ? joinedIndexValues.toSorted(
-              (iv1, iv2) => (iv1 as number) - (iv2 as number)
-            )
-          : joinedIndexValues.toSorted(
-              (iv1, iv2) =>
-                toDate(iv1 as string).getTime() -
-                toDate(iv2 as string).getTime()
-            );
+        if (isDepthIndex) {
+          joinedIndexValues = isDecreasing
+            ? joinedIndexValues.toSorted(
+                (iv1, iv2) => (iv2 as number) - (iv1 as number)
+              )
+            : joinedIndexValues.toSorted(
+                (iv1, iv2) => (iv1 as number) - (iv2 as number)
+              );
+        } else {
+          joinedIndexValues = isDecreasing
+            ? joinedIndexValues.toSorted(
+                (iv1, iv2) =>
+                  toDate(iv2 as string).getTime() -
+                  toDate(iv1 as string).getTime()
+              )
+            : joinedIndexValues.toSorted(
+                (iv1, iv2) =>
+                  toDate(iv1 as string).getTime() -
+                  toDate(iv2 as string).getTime()
+              );
+        }
 
         let lastIndexValue = joinedIndexValues[0];
         const totalIndexValues = [joinedIndexValues[0]];
@@ -498,7 +515,7 @@ const MultiLogCurveSelectionValues = (
             data={tableData}
             columns={plotColumns}
             name={"Multiple Logs"}
-            isDescending={true}
+            isDescending={isDecreasing}
             autoRefresh={false}
             routerLogType={
               isDepthIndex ? RouterLogType.DEPTH : RouterLogType.TIME
