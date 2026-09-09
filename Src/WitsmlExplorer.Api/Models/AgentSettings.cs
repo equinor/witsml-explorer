@@ -23,6 +23,9 @@ namespace WitsmlExplorer.Api.Models
         [JsonPropertyName("minimumDataQcTimeDensityDefault")]
         public double MinimumDataQcTimeDensityDefault { get; set; }
 
+        [JsonPropertyName("gapAnalyzerIncludeMinMaxIndexDefault")]
+        public bool GapAnalyzerIncludeMinMaxIndexDefault { get; set; }
+
         [JsonPropertyName("username")]
         public string Username { get; set; }
 
