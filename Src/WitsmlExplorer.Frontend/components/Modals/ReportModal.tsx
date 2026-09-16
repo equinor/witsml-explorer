@@ -103,7 +103,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
             property: key,
             label: key,
             type: asColumnType(
-              report?.reportItemColumns.find((c) => c.name == key)
+              report?.reportItemColumns?.find((c) => c.name == key)
             )
           }))
         : [],
