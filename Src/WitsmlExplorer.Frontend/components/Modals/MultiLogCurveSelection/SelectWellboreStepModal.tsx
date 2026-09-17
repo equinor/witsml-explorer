@@ -1,6 +1,6 @@
 import React, {
-  CSSProperties,
   ChangeEvent,
+  CSSProperties,
   useCallback,
   useMemo,
   useState
@@ -8,7 +8,7 @@ import React, {
 import { Colors } from "../../../styles/Colors.tsx";
 import styled from "styled-components";
 import { TextField } from "@mui/material";
-import ModalDialog from "../ModalDialog.tsx";
+import ModalDialog, { ModalWidth } from "../ModalDialog.tsx";
 import { Server } from "../../../models/server.ts";
 import { useGetWells } from "../../../hooks/query/useGetWells.tsx";
 import { useGetWellbores } from "../../../hooks/query/useGetWellbores.tsx";
@@ -352,6 +352,7 @@ const SelectWellboreStepModal = (
           !indexTypeValue ||
           !targetServerValue
         }
+        width={ModalWidth.LARGE}
       />
     </>
   );
@@ -395,7 +396,6 @@ const StyledAutocomplete = styled(Autocomplete)<{ colors: Colors }>`
   label {
     color: ${(props) => props.colors.text.staticTextLabel};
   }
-  min-width: 25vw;
 `;
 
 export default SelectWellboreStepModal;
