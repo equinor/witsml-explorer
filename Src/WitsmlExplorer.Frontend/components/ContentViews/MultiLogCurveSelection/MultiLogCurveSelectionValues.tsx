@@ -90,8 +90,7 @@ const MultiLogCurveSelectionValues = (
   >([]);
 
   const isDecreasing =
-    (logObjects[0]?.direction ?? WITSML_LOG_ORDERTYPE_DECREASING) ==
-    WITSML_LOG_ORDERTYPE_DECREASING;
+    logObjects[0]?.direction === WITSML_LOG_ORDERTYPE_DECREASING;
 
   const usedServers = useMemo(() => {
     return multiLogMetadatas
