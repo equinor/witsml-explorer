@@ -1,8 +1,20 @@
+export enum ReportItemType {
+  String = "string",
+  Number = "number",
+  DateTime = "datetime",
+  Measure = "measure"
+}
+
+export interface ReportItemColumn {
+  name: string;
+  type: ReportItemType;
+}
+
 export default interface BaseReport {
   title: string;
   summary: string;
   reportItems: any[];
-  dateTimeColumns?: string[];
+  reportItemColumns?: ReportItemColumn[];
   warningMessage?: string;
   hasFile?: boolean;
   jobDetails?: string;
@@ -12,7 +24,7 @@ export const createReport = (
   title = "",
   summary = "",
   reportItems: any[] = [],
-  dateTimeColumns: string[] = null,
+  reportColumns: ReportItemColumn[] = null,
   warningMessage: string = null,
   hasFile: boolean = null,
   jobDetails: string = null
@@ -21,7 +33,7 @@ export const createReport = (
     title,
     summary,
     reportItems,
-    dateTimeColumns,
+    reportItemColumns: reportColumns,
     warningMessage,
     hasFile,
     jobDetails

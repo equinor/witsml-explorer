@@ -212,8 +212,31 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
                 ? $"Found {analyzeGapItems.Count} gaps in the {(isDepthLog ? "depth" : "time")} log '{logReference.Name}' {intervalMessage} for mnemonics: {mnemonics}."
                 : $"No gaps were found {intervalMessage} for mnemonics: {mnemonics}.",
             LogReference = logReference,
+            ReportItemColumns = CreateReportItemColumns(isDepthLog),
             ReportItems = analyzeGapItems
         };
+    }
+
+    private ICollection<ReportItemColumn> CreateReportItemColumns(bool isDepthLog)
+    {
+        if (isDepthLog)
+        {
+            return new List<ReportItemColumn>
+            {
+                new() { Name = "start", Type = ReportItemType.MEASURE },
+                new() { Name = "end", Type = ReportItemType.MEASURE },
+                new() { Name = "gapsize", Type = ReportItemType.MEASURE }
+            };
+        }
+        else
+        {
+            return new List<ReportItemColumn>
+            {
+                new() { Name = "start", Type = ReportItemType.DATE_TIME },
+                new() { Name = "end", Type = ReportItemType.DATE_TIME },
+                new() { Name = "gapsize", Type = ReportItemType.MEASURE }
+            };
+        }
     }
 
     /// <summary>
