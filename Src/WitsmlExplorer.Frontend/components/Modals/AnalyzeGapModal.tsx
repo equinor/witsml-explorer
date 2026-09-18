@@ -1,4 +1,4 @@
-import { TextField } from "@equinor/eds-core-react";
+import { TextField, Label, Switch } from "@equinor/eds-core-react";
 import {
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD,
@@ -14,6 +14,9 @@ import LogObject from "models/logObject";
 import React, { useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import { formatIndexValue, indexToNumber } from "tools/IndexHelpers";
+import { UserTheme } from "../../contexts/operationStateReducer.tsx";
+import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
+import styled from "styled-components";
 
 export interface AnalyzeGapModalProps {
   logObject: LogObject;
@@ -22,7 +25,12 @@ export interface AnalyzeGapModalProps {
 
 const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
   const { logObject, mnemonics } = props;
-  const { dispatchOperation } = useOperationState();
+  const {
+    dispatchOperation,
+    operationState: { theme }
+  } = useOperationState();
+  const { agentSettings, isFetching: isFetchingAgentSettings } =
+    useGetAgentSettings();
   const timePattern = /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
   const initialTime = "00:00:00";
   const [log] = useState<LogObject>(logObject);
@@ -38,6 +46,9 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
   const [endIndex, setEndIndex] = useState<string | number>(
     isTimeIndexed ? logObject.endIndex : indexToNumber(logObject.endIndex)
   );
+  const [includeMinMaxIndex, setIncludeMinMaxIndex] = useState<boolean>(
+    agentSettings?.gapAnalyzerIncludeMinMaxIndexDefault ?? true
+  );
   const [confirmDisabled, setConfirmDisabled] = useState<boolean>();
   const onSubmit = async () => {
     setIsLoading(true);
@@ -47,7 +58,8 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
       gapSize: gapSize,
       timeGapSize: convertToMilliseconds(timeGapSize),
       startIndex: formatIndexValue(startIndex),
-      endIndex: formatIndexValue(endIndex)
+      endIndex: formatIndexValue(endIndex),
+      includeMinMaxIndex: includeMinMaxIndex
     };
     const jobId = await JobService.orderJob(
       JobType.AnalyzeGaps,
@@ -152,10 +164,18 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
                   />
                 </>
               )}
+              <SwitchItem>
+                <Switch
+                  checked={includeMinMaxIndex}
+                  onChange={() => setIncludeMinMaxIndex(!includeMinMaxIndex)}
+                  size={theme === UserTheme.Compact ? "small" : "default"}
+                />
+                <Label label="Include min/max index value in gap analysis" />
+              </SwitchItem>
             </>
           }
           onSubmit={() => onSubmit()}
-          isLoading={isLoading}
+          isLoading={isLoading || isFetchingAgentSettings}
           confirmText={"Analyze"}
           confirmDisabled={!gapSizeIsValid || confirmDisabled}
         />
@@ -163,5 +183,12 @@ const AnalyzeGapModal = (props: AnalyzeGapModalProps): React.ReactElement => {
     </>
   );
 };
+
+const SwitchItem = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  align-items: center;
+`;
 
 export default AnalyzeGapModal;
