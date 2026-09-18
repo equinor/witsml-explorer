@@ -23,7 +23,8 @@
   },
   "resolutions": {
     "**/@electron/universal/minimatch": "9.0.7",
-    "**/cacache/glob/minimatch": "9.0.7"
+    "**/cacache/glob/minimatch": "9.0.7",
+    "tar": "^7.5.19"
   },
   "scripts": {
     "dotnet-format": "dotnet tool run dotnet-format --check",
