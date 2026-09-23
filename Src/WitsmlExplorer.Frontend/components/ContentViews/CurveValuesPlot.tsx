@@ -55,6 +55,7 @@ interface CurveRange {
   minValue: number;
   maxValue: number;
 }
+
 export type CurveRanges = Record<string, CurveRange>;
 
 interface CurveValuesPlotProps {
@@ -64,6 +65,7 @@ interface CurveValuesPlotProps {
   autoRefresh: boolean;
   isDescending?: boolean;
   routerLogType?: RouterLogType;
+  hideHeaderTooltip?: boolean;
 }
 
 export const CurveValuesPlot = React.memo(
@@ -74,7 +76,8 @@ export const CurveValuesPlot = React.memo(
       name,
       autoRefresh,
       isDescending = false,
-      routerLogType
+      routerLogType,
+      hideHeaderTooltip
     } = props;
     const columns = useMemo(
       () =>
@@ -377,32 +380,34 @@ export const CurveValuesPlot = React.memo(
               maxWidth: `${width}px`
             }}
           />
-          <div
-            style={{
-              // The style is added inline as using styled-components caused "flash of unstyled content"
-              position: "absolute",
-              maxWidth: "50%",
-              backgroundColor: "#fff",
-              color: "#333",
-              padding: "5px 15px",
-              borderRadius: "2px",
-              boxShadow: "0 0 2px #aaa",
-              transition: "opacity 0.1s ease-in-out",
-              opacity: controlledTooltip.visible ? 1 : 0,
-              transformOrigin: "bottom",
-              top: controlledTooltip.position
-                ? `${controlledTooltip.position.y}px`
-                : "0px",
-              left: controlledTooltip.position
-                ? `${controlledTooltip.position.x}px`
-                : "0px",
-              border: "1px solid black",
-              transform: "translate(-50%, 0)",
-              whiteSpace: "pre"
-            }}
-          >
-            {controlledTooltip.content}
-          </div>
+          {!hideHeaderTooltip && (
+            <div
+              style={{
+                // The style is added inline as using styled-components caused "flash of unstyled content"
+                position: "absolute",
+                maxWidth: "50%",
+                backgroundColor: "#fff",
+                color: "#333",
+                padding: "5px 15px",
+                borderRadius: "2px",
+                boxShadow: "0 0 2px #aaa",
+                transition: "opacity 0.1s ease-in-out",
+                opacity: controlledTooltip.visible ? 1 : 0,
+                transformOrigin: "bottom",
+                top: controlledTooltip.position
+                  ? `${controlledTooltip.position.y}px`
+                  : "0px",
+                left: controlledTooltip.position
+                  ? `${controlledTooltip.position.x}px`
+                  : "0px",
+                border: "1px solid black",
+                transform: "translate(-50%, 0)",
+                whiteSpace: "pre"
+              }}
+            >
+              {controlledTooltip.content}
+            </div>
+          )}
         </div>
       </div>
     );

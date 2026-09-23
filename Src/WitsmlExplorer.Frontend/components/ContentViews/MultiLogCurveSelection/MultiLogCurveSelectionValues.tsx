@@ -516,6 +516,7 @@ const MultiLogCurveSelectionValues = (
             name={"Multiple Logs"}
             isDescending={isDecreasing}
             autoRefresh={false}
+            hideHeaderTooltip={true}
             routerLogType={
               isDepthIndex ? RouterLogType.DEPTH : RouterLogType.TIME
             }
