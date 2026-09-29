@@ -276,10 +276,27 @@ namespace WitsmlExplorer.Api.Workers
                 ? $"Found {_compareLogDataReportItems.Count:n0} mismatches in the shared mnemonics in the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}':{indexRange}" + unsharedMnemonicsResult + mnemonicsMismatchCountResult
                 : $"No mismatches were found in the data indexes of the {(_isDepthLog ? "depth" : "time")} logs '{sourceLog.Name}' and '{targetLog.Name}'{indexRange}.",
                 ReportItems = _compareLogDataReportItems,
-                DateTimeColumns = _isDepthLog ? new List<string>() : new List<string> { "index" },
+                ReportItemColumns = CreateReportItemColumns(_isDepthLog),
                 WarningMessage = _compareLogDataReportItems.Count >= MaxMismatchesLimit ? $"When finding {MaxMismatchesLimit:n0} mismatches while searching through data indexes for any mnemonic, we stop comparing the log data for that particular mnemonic. This is because {MaxMismatchesLimit:n0} is the maximum limit for mismatches during the search for each mnemonic. It indicates that there might be an issue with the compare log setup. However, you can still access the report for the comparison performed below." : null,
                 JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceLog::{sourceLog.Name}|TargetLog::{targetLog.Name}|Number of mismatches for shared mnemonics::{_compareLogDataReportItems.Count:n0}|Number of unshared mnemonics::{_unsharedMnemonics.Count:n0}"
             };
+        }
+        private ICollection<ReportItemColumn> CreateReportItemColumns(bool isDepthLog)
+        {
+            if (isDepthLog)
+            {
+                return new List<ReportItemColumn>
+                {
+                    new() { Name = "index", Type = ReportItemType.NUMBER }
+                };
+            }
+            else
+            {
+                return new List<ReportItemColumn>
+                {
+                    new() { Name = "index", Type = ReportItemType.DATE_TIME }
+                };
+            }
         }
 
         private string GetSharedIntervalReportFormat(WitsmlLog sourceLog, WitsmlLog targetLog)
@@ -372,8 +389,8 @@ namespace WitsmlExplorer.Api.Workers
 
         private List<string> RemoveRoundedIndexDuplicates(List<string> indexes)
         {
-            List<string> newIndexes = new List<string>();
-            List<string> roundedIndexes = new List<string>();
+            List<string> newIndexes = new();
+            List<string> roundedIndexes = new();
             foreach (string index in indexes)
             {
                 string roundedIndex = RoundStringDouble(index, _smallestDepthLogDecimals);

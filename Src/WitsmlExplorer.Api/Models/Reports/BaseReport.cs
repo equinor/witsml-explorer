@@ -13,12 +13,26 @@ namespace WitsmlExplorer.Api.Models.Reports
         public string JobDetails { get; init; }
         [JsonIgnore]
         public ReportFileData FileData { get; init; }
-        public IEnumerable<string> DateTimeColumns { get; init; }
+        public IEnumerable<ReportItemColumn> ReportItemColumns { get; init; }
     }
 
     public class ReportFileData
     {
         public string FileName { get; init; }
         public string FileContent { get; init; }
+    }
+
+    public static class ReportItemType
+    {
+        public const string STRING = "string";
+        public const string NUMBER = "number";
+        public const string DATE_TIME = "datetime";
+        public const string MEASURE = "measure";
+    }
+
+    public struct ReportItemColumn
+    {
+        public string Name { get; init; }
+        public string Type { get; init; }
     }
 }
