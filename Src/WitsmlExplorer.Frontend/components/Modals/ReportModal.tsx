@@ -103,7 +103,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
             property: key,
             label: key,
             type: asColumnType(
-              report?.reportItemColumns.find((c) => c.name == key)
+              report?.reportItemColumns?.find((c) => c.name == key)
             )
           }))
         : [],
@@ -116,7 +116,7 @@ export const ReportModal = (props: ReportModal): React.ReactElement => {
         const clonedItem = JSON.parse(JSON.stringify(item));
         Object.keys(item).forEach((entry) => {
           if (
-            report.reportItemColumns !== null &&
+            !!report.reportItemColumns &&
             report.reportItemColumns.some(
               (c) => c.name == entry && c.type == ReportItemType.DateTime
             )
