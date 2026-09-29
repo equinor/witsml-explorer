@@ -151,15 +151,10 @@ const LogObjectContextMenu = (
   const onClickAgentSettings = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
 
-    if (
-      (!!localPrioritizedCurves && localPrioritizedCurves.length > 0) ||
-      (!!universalPrioritizedCurves && universalPrioritizedCurves.length > 0)
-    ) {
-      dispatchOperation({
-        type: OperationType.DisplayModal,
-        payload: <AgentSettingsModal />
-      });
-    }
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <AgentSettingsModal />
+    });
   };
 
   const orderCopyJob = () => {

@@ -4,7 +4,13 @@ import styled from "styled-components";
 import OperationType from "../../contexts/operationType.ts";
 import ModalDialog from "./ModalDialog.tsx";
 import { Colors } from "../../styles/Colors.tsx";
-import { Accordion, Label, TextField, Tooltip } from "@equinor/eds-core-react";
+import {
+  Accordion,
+  Label,
+  Switch,
+  TextField,
+  Tooltip
+} from "@equinor/eds-core-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { refreshAgentSettings } from "../../hooks/query/queryRefreshHelpers.tsx";
 import { useGetAgentSettings } from "../../hooks/query/useGetAgentSettings.tsx";
@@ -15,12 +21,13 @@ import {
   convertTimeStringToMilliseconds,
   timePattern
 } from "components/TimeConversionUtils.tsx";
+import { UserTheme } from "../../contexts/operationStateReducer.tsx";
 
 const AgentSettingsModal = (): React.ReactElement => {
   const queryClient = useQueryClient();
   const {
     dispatchOperation,
-    operationState: { colors }
+    operationState: { theme, colors }
   } = useOperationState();
 
   const { agentSettings, isFetching } = useGetAgentSettings();
@@ -42,6 +49,10 @@ const AgentSettingsModal = (): React.ReactElement => {
   const [minQcDepthDensityValue, setMinQcDepthDensityValue] = useState<number>(
     agentSettings?.minimumDataQcDepthDensityDefault ?? 0
   );
+  const [gapAnalyzerIncludeMinMaxIndex, setGapAnalyzerIncludeMinMaxIndex] =
+    useState<boolean>(
+      agentSettings?.gapAnalyzerIncludeMinMaxIndexDefault ?? true
+    );
   const [minQcGapSizeIsValid, setMinQcGapSizeIsValid] =
     useState<boolean>(false);
 
@@ -67,7 +78,8 @@ const AgentSettingsModal = (): React.ReactElement => {
       minimumDataQcDepthGapDefault: minQcDepthGapValue,
       minimumDataQcTimeDensityDefault: minQcTimeDensityValue,
       minimumDataQcTimeGapDefault:
-        convertTimeStringToMilliseconds(minQcTimeGapValue)
+        convertTimeStringToMilliseconds(minQcTimeGapValue),
+      gapAnalyzerIncludeMinMaxIndexDefault: gapAnalyzerIncludeMinMaxIndex
     } as AgentSettings;
 
     if (agentSettings) {
@@ -87,7 +99,7 @@ const AgentSettingsModal = (): React.ReactElement => {
         content={
           <ContentLayout>
             <Accordion>
-              <Accordion.Item isExpanded={true}>
+              <Accordion.Item>
                 <Accordion.Header>Minimum Data QC</Accordion.Header>
                 <Accordion.Panel>
                   <AccordionPanelContent>
@@ -165,6 +177,25 @@ const AgentSettingsModal = (): React.ReactElement => {
                   </AccordionPanelContent>
                 </Accordion.Panel>
               </Accordion.Item>
+              <Accordion.Item>
+                <Accordion.Header>Gap Analyzer</Accordion.Header>
+                <Accordion.Panel>
+                  <AccordionPanelContent>
+                    <AccordionPanelSwitchItem>
+                      <Switch
+                        checked={gapAnalyzerIncludeMinMaxIndex}
+                        onChange={() =>
+                          setGapAnalyzerIncludeMinMaxIndex(
+                            !gapAnalyzerIncludeMinMaxIndex
+                          )
+                        }
+                        size={theme === UserTheme.Compact ? "small" : "default"}
+                      />
+                      <Label label="Include min/max index value in gap analysis by default" />
+                    </AccordionPanelSwitchItem>
+                  </AccordionPanelContent>
+                </Accordion.Panel>
+              </Accordion.Item>
             </Accordion>
           </ContentLayout>
         }
@@ -192,6 +223,13 @@ const AccordionPanelContent = styled.div`
 const AccordionPanelItem = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+`;
+
+const AccordionPanelSwitchItem = styled.div`
+  display: flex;
+  flex-direction: row;
   gap: 0.25rem;
   align-items: center;
 `;
