@@ -171,6 +171,7 @@ namespace WitsmlExplorer.Api.Workers
                 Title = "Minimum data QC report",
                 Summary = $"Analyzed {logCurvesToCheck?.Count ?? 0} mnemonics, found {reportItems.Count(i => i.QcIssues.Count > 0)} QC issues.",
                 LogReference = job.LogReference,
+                ReportItemColumns = new List<ReportItemColumn> { new() { Name = "timestamp", Type = ReportItemType.DATE_TIME } },
                 ReportItems = reportItems
             };
 

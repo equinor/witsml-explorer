@@ -11,6 +11,7 @@ using Witsml.Data;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
+using WitsmlExplorer.Api.Extensions;
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Jobs.Common;
 using WitsmlExplorer.Api.Models;
@@ -105,7 +106,7 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         WorkerResult workerResult = new(GetTargetWitsmlClientOrThrow().GetServerHostname(), true, $"Comparison of 2 wellbores is done.", jobId: job.JobInfo.Id);
         var report = GenerateReport(reportItems, sourceServerName,
             targetServerName, existingSourceWellbore.Name,
-            existingTargetWellbore.Name);
+            existingTargetWellbore.Name, job);
         job.JobInfo.Report = report;
         Logger.LogInformation("Comparing of 2 wellbores sub objects is done. {jobDescription}", job.Description());
         return (workerResult, null);
@@ -138,18 +139,60 @@ public class WellboreSubObjectsComparisonWorker : BaseWorker<WellboreSubObjectsC
         return result.ToList();
     }
 
-    private BaseReport GenerateReport(List<WellboreSubObjectsComparisonItem> reportItems, string sourceServerName, string targetServerName, string sourceWellbore, string targetWellbore)
+    private BaseReport GenerateReport(List<WellboreSubObjectsComparisonItem> reportItems, string sourceServerName, string targetServerName, string sourceWellbore, string targetWellbore, WellboreSubObjectsComparisonJob job)
     {
 
         return new BaseReport
         {
             Title = $"Wellbore sub objects comparison",
+            ReportItemColumns = CreateReportItemColumns(reportItems, job),
             ReportItems = reportItems,
             Summary = reportItems.Count > 0
                 ? $"Found {reportItems.Count:n0} mismatches between the objects in the wellbores '{sourceWellbore}' and '{targetWellbore}'."
                 : $"No mismatches were found between the objects in the wellbores '{sourceWellbore}' and '{targetWellbore}'.",
             JobDetails = $"SourceServer::{sourceServerName}|TargetServer::{targetServerName}|SourceWellbore::{sourceWellbore}|TargetWellbore::{targetWellbore}"
         };
+    }
+    private ICollection<ReportItemColumn> CreateReportItemColumns(List<WellboreSubObjectsComparisonItem> reportItems, WellboreSubObjectsComparisonJob job)
+    {
+        if (reportItems.IsNullOrEmpty()) return Array.Empty<ReportItemColumn>();
+
+        var reportItemColumns = new List<ReportItemColumn>();
+
+        if (!(job.CheckDepthBasedLogsData && job.CheckTimeBasedLogsData))
+        {
+            if (job.CheckDepthBasedLogsData)
+            {
+                reportItemColumns.Add(new() { Name = "sourcestart", Type = ReportItemType.MEASURE });
+                reportItemColumns.Add(new() { Name = "targetstart", Type = ReportItemType.MEASURE });
+                reportItemColumns.Add(new() { Name = "sourceend", Type = ReportItemType.MEASURE });
+                reportItemColumns.Add(new() { Name = "targetend", Type = ReportItemType.MEASURE });
+            }
+            else
+            {
+                reportItemColumns.Add(new() { Name = "sourcestart", Type = ReportItemType.DATE_TIME });
+                reportItemColumns.Add(new() { Name = "targetstart", Type = ReportItemType.DATE_TIME });
+                reportItemColumns.Add(new() { Name = "sourceend", Type = ReportItemType.DATE_TIME });
+                reportItemColumns.Add(new() { Name = "targetend", Type = ReportItemType.DATE_TIME });
+            }
+        }
+
+        if (reportItems.All(i => i.DataPointsOfMnemonicOnSource.IsNumeric()))
+        {
+            reportItemColumns.Add(new() { Name = "datapointsofmnemoniconsource", Type = ReportItemType.NUMBER });
+        }
+
+        if (reportItems.All(i => i.DataPointsOfMnemonicOnTarget.IsNumeric()))
+        {
+            reportItemColumns.Add(new() { Name = "datapointsofmnemonicontarget", Type = ReportItemType.NUMBER });
+        }
+
+        if (reportItems.All(i => i.NumberOfDifferencesInValuesInMnemonics.IsNumeric()))
+        {
+            reportItemColumns.Add(new() { Name = "NumberOfDifferencesInValuesInMnemonics", Type = ReportItemType.NUMBER });
+        }
+
+        return reportItemColumns;
     }
 
     private async Task<List<WellboreSubObjectsComparisonItem>> FindMnemonicIndexRangeDifferences(
