@@ -281,23 +281,6 @@ namespace WitsmlExplorer.Api.Workers
                 JobDetails = $"SourceServer::{_sourceServerName}|TargetServer::{_targetServerName}|SourceLog::{sourceLog.Name}|TargetLog::{targetLog.Name}|Number of mismatches for shared mnemonics::{_compareLogDataReportItems.Count:n0}|Number of unshared mnemonics::{_unsharedMnemonics.Count:n0}"
             };
         }
-        private ICollection<ReportItemColumn> CreateReportItemColumns(bool isDepthLog)
-        {
-            if (isDepthLog)
-            {
-                return new List<ReportItemColumn>
-                {
-                    new() { Name = "index", Type = ReportItemType.NUMBER }
-                };
-            }
-            else
-            {
-                return new List<ReportItemColumn>
-                {
-                    new() { Name = "index", Type = ReportItemType.DATE_TIME }
-                };
-            }
-        }
 
         private ICollection<ReportItemColumn> CreateReportItemColumns(bool isDepthLog)
         {
