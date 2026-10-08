@@ -100,6 +100,7 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
                 ? $"Found a total of {totalCount} values in the {(isDepthLog ? "depth" : "time")} log '{logReference.Name}':"
                 : "No curve values found.",
             LogReference = logReference,
+            ReportItemColumns = new List<ReportItemColumn> { new() { Name = "logdatacount", Type = ReportItemType.NUMBER } },
             ReportItems = reportItems
         };
     }
