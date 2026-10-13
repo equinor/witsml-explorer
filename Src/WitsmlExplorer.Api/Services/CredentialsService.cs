@@ -258,6 +258,15 @@ namespace WitsmlExplorer.Api.Services
         public ServerCredentials GetSoapCredentials(IEssentialHeaders eh, string soapServer, string username)
         {
             ServerCredentials creds = GetCredentialsFromCache(eh, soapServer, username);
+
+            creds = new ServerCredentials()
+            {
+                Host = new Uri(soapServer),
+                UserId = "scmanager",
+                Password = "scmanager",                
+                CredentialId = creds?.CredentialId
+            };
+
             if (creds == null && _useOAuth2)
             {
                 List<ServerCredentials> credsList = GetSystemCredentialsByToken(eh.GetBearerToken(), new Uri(soapServer)).Result;

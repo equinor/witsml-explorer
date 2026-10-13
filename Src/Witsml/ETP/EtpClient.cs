@@ -215,12 +215,12 @@ public class EtpClient : EtpWebSocketTransport, IEtpClient, ICoreProtocolHandler
     public Task<List<ChannelData>> GetChannelRangeDataAsync(List<long> channelIds, long start, long end, int maxRows, CancellationToken? cancellationToken) =>
         _streamingProtocolHandler.GetChannelRangeDataAsync(channelIds, start, end, maxRows, cancellationToken);
 
-    public Task StartStreamAsync(List<long> channelIds, long? startIndex, CancellationToken? cancellationToken) =>
-        _streamingProtocolHandler.StartStreamAsync(channelIds, startIndex, cancellationToken);
+    public Task StartStreamAsync(string streamId, List<long> channelIds, long? startIndex, CancellationToken? cancellationToken) =>
+        _streamingProtocolHandler.StartStreamAsync(streamId, channelIds, startIndex, cancellationToken);
 
-    public Task<List<ChannelData>> ReadStreamedDataAsync(CancellationToken? cancellationToken) =>
-        _streamingProtocolHandler.ReadStreamedDataAsync(cancellationToken);
-    public Task StopStreamAsync(CancellationToken? cancellationToken) =>
-        _streamingProtocolHandler.StopStreamAsync(cancellationToken);
+    public Task<List<ChannelData>> ReadStreamedDataAsync(string streamId, CancellationToken? cancellationToken) =>
+        _streamingProtocolHandler.ReadStreamedDataAsync(streamId, cancellationToken);
+    public Task StopStreamAsync(string streamId, CancellationToken? cancellationToken) =>
+        _streamingProtocolHandler.StopStreamAsync(streamId, cancellationToken);
 
 }

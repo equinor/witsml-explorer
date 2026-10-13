@@ -65,9 +65,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
             IEtpLogService etpLogService,
             IProtocolCoordinator protocolCoordinator,
             CancellationToken cancellationToken)
-        {
-
-            Console.WriteLine( $"Streaming {streaming}");
+        {   
             protocolCoordinator.SetSoapProtocolHeader(httpContext);
             if (mnemonics.Any())
             {
@@ -85,7 +83,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
         }
 
 
-        [Produces(typeof(LogData))]
+        [Produces(typeof(bool))]
         public static async Task<IResult> StartStream(HttpContext httpContext,
             string wellUid,
             string wellboreUid,
@@ -143,7 +141,7 @@ namespace WitsmlExplorer.Api.HttpHandlers
 
         }
 
-        [Produces(typeof(LogData))]
+        [Produces(typeof(bool))]
         public static async Task<IResult> StopStream(HttpContext httpContext,
            [FromQuery(Name = "streamId")] string streamId,
            [FromBody] IEnumerable<string> mnemonics,

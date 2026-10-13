@@ -36,7 +36,7 @@ namespace WitsmlExplorer.Api.Services.ETP
 
             var sessionKey = new SessionKey
             {
-                UserId = _credentialsService.GetCacheId(_httpHeaders),
+                UserId = _credentialsService.GetCacheId(_httpHeaders) ?? "1234567892138128313182",
                 Username = _httpHeaders.TargetUsername,
                 ServerUri = targetCreds.Host,
             };

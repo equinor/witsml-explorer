@@ -34,7 +34,8 @@ internal sealed class StreamingProtocolHandler
     private readonly ConcurrentDictionary<long, PendingGetChannelRangeDataRequest> _pendingRangeByRequestId = new();
 
     private readonly object _streamSyncRoot = new();
-    private readonly Queue<ChannelData> _streamCache = new();
+    //private readonly Queue<ChannelData> _streamCache = new();
+    private string? _sessionId = null;
     private List<long> _activeStreamChannelIds = [];
     private bool _isStreamActive;
     private int _streamCacheRecordCount;
@@ -431,8 +432,9 @@ internal sealed class StreamingProtocolHandler
     }
 
 
-    public async Task StartStreamAsync(List<long> channelIds, long? startIndex, CancellationToken? cancellationToken)
+    public async Task StartStreamAsync(string streamId, List<long> channelIds, long? startIndex, CancellationToken? cancellationToken)
     {
+        _sessionId = streamId;
         if (channelIds == null || channelIds.Count == 0)
         {
             throw new ArgumentException("At least one channel id is required.", nameof(channelIds));
@@ -471,17 +473,27 @@ internal sealed class StreamingProtocolHandler
         }
     }
 
-    public Task<List<ChannelData>> ReadStreamedDataAsync(CancellationToken? cancellationToken)
+    public Task<List<ChannelData>> ReadStreamedDataAsync(string streamId, CancellationToken? cancellationToken)
     {
         lock (_streamSyncRoot)
         {
-            var data = _streamCache.ToList();
-            ClearStreamCacheUnsafe();
+            List<ChannelData> data;
+            if (StreamingDataCache.SessionData.TryGetValue(streamId, out var streamCache))
+            {
+                data = streamCache.ToList();
+                streamCache.Clear();
+                _streamCacheRecordCount = 0;
+            }
+            else
+            {
+                data = new List<ChannelData>();
+            }
+
             return Task.FromResult(data);
         }
     }
 
-    public async Task StopStreamAsync(CancellationToken? cancellationToken)
+    public async Task StopStreamAsync(string streamId, CancellationToken? cancellationToken)
     {
         var ct = cancellationToken ?? CancellationToken.None;
 
@@ -524,32 +536,46 @@ internal sealed class StreamingProtocolHandler
                 : response.data.ToList();
 
             var cachedResponse = new ChannelData { data = dataItems };
-            _streamCache.Enqueue(cachedResponse);
+
+            Queue<ChannelData> streamCache;
+            if (!StreamingDataCache.SessionData.TryGetValue(_sessionId, out streamCache))
+            {
+                streamCache = new Queue<ChannelData>();
+                StreamingDataCache.SessionData[_sessionId] = streamCache;
+            }
+            streamCache.Enqueue(cachedResponse);
             _streamCacheRecordCount += dataItems.Count;
 
-            while (_streamCacheRecordCount > MaxStreamCacheRecords && _streamCache.Count > 0)
+            while (_streamCacheRecordCount > MaxStreamCacheRecords && streamCache.Count > 0)
             {
-                var oldest = _streamCache.Peek();
+                var oldest = streamCache.Peek();
                 var oldestCount = oldest?.data?.Count ?? 0;
                 var overflow = _streamCacheRecordCount - MaxStreamCacheRecords;
 
                 if (oldestCount <= overflow)
                 {
-                    _streamCache.Dequeue();
+                    streamCache.Dequeue();
                     _streamCacheRecordCount -= oldestCount;
                     continue;
                 }
 
                 oldest.data = oldest.data.Skip(overflow).ToList();
                 _streamCacheRecordCount -= overflow;
+
             }
         }
     }
 
+
     private void ClearStreamCacheUnsafe()
     {
-        _streamCache.Clear();
-        _streamCacheRecordCount = 0;
+        if (StreamingDataCache.SessionData.TryGetValue(_sessionId, out var streamCache))
+        {
+            streamCache.Clear();
+            _streamCacheRecordCount = 0;
+        }
+
+        StreamingDataCache.SessionData.TryRemove(_sessionId, out _);
     }
 
     private sealed class PendingGetChannelMetadataRequest

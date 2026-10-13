@@ -40,12 +40,12 @@ namespace WitsmlExplorer.Api.Services
     {
         public Task<bool> Stream(string wellUid, string wellboreUid, string logUid, List<string> mnemonics, string start, CancellationToken? cancellationToken)
         {
-            throw new NotSupportedException("SOAP protocal will not support Stream");
+            throw new NotSupportedException("SOAP protocol will not support Stream");
         }
 
         public Task<LogData> ReadStreamedData(CancellationToken? cancellationToken)
         {
-            throw new NotSupportedException("SOAP protocal will not support Stream");
+            throw new NotSupportedException("SOAP protocol will not support Stream");
         }
 
         public async Task<bool> StopStream(CancellationToken? cancellationToken)

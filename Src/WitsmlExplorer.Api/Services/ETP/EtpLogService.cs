@@ -165,10 +165,10 @@ namespace WitsmlExplorer.Api.Services.ETP
             }
             else
             {
-                if (double.TryParse(start, out var s))
+                if (double.TryParse(start, CultureInfo.InvariantCulture, out var s))
                     startIndex = (long)(s * 1000);
 
-                if (double.TryParse(end, out var e))
+                if (double.TryParse(end, CultureInfo.InvariantCulture, out var e))
                     endIndex = (long)(e * 1000);
             }
 
@@ -237,7 +237,7 @@ namespace WitsmlExplorer.Api.Services.ETP
 
                     if (item.value?.item != null)
                     {
-                        row[mnemonic] = new LogDataValue(item.value.item.ToString());
+                        row[mnemonic] = new LogDataValue(Convert.ToString(item.value.item, CultureInfo.InvariantCulture));
                     }
 
                     if (!row.ContainsKey(indexCurveMnemonic))
@@ -258,7 +258,7 @@ namespace WitsmlExplorer.Api.Services.ETP
 
             if (string.Equals(direction, "Decreasing", StringComparison.OrdinalIgnoreCase))
             {
-                keys.Sort((a, b) => b.CompareTo(a)); // reverse sort fatser
+                keys.Sort((a, b) => b.CompareTo(a)); // reverse sort faster
             }
             else
             {
@@ -278,7 +278,12 @@ namespace WitsmlExplorer.Api.Services.ETP
                 first ??= k;
             }
 
-            long? last = keys[limit - 1];
+            long? last = null;
+            if (limit > 0)
+            {
+                last = keys[limit - 1];
+            }
+
 
              var mnemonicLookup = channelRecords.Values.Where(x => !string.IsNullOrWhiteSpace(x.channelName)).ToDictionary(x => x.channelName, x => x.uom);
 
@@ -312,15 +317,20 @@ namespace WitsmlExplorer.Api.Services.ETP
             }
 
 
-
             return new LogData
             {
-                StartIndex = first?.ToString(CultureInfo.InvariantCulture) ?? start,
-                EndIndex = last?.ToString(CultureInfo.InvariantCulture) ?? end,
+                StartIndex = first.HasValue ? FormatEtpIndex(first.Value) : start,
+                EndIndex = last.HasValue ? FormatEtpIndex(last.Value) : end,
                 Direction = direction,
                 CurveSpecifications = curveSpecifications,
                 Data = dataRows
             };
+        }
+
+        private static string FormatEtpIndex(long index)
+        {
+            var dateTime = DateTimeOffset.UnixEpoch.AddTicks(index * 10);
+            return dateTime.ToString("O", CultureInfo.InvariantCulture);
         }
 
         private static ChannelMetadata CreateSingleChannelMetadata(ChannelMetadataRecord channelMetadataRecord)
@@ -464,7 +474,7 @@ namespace WitsmlExplorer.Api.Services.ETP
                 }
             }
 
-            await client.StartStreamAsync(channelIds, streamStartIndex, ct);
+            await client.StartStreamAsync(streamId, channelIds, streamStartIndex, ct);
 
             _streamState.Set(
                 streamId,
@@ -492,7 +502,7 @@ namespace WitsmlExplorer.Api.Services.ETP
 
             try
             {
-                await client.StopStreamAsync(ct);
+                await client.StopStreamAsync(streamId, ct);
                 return true;
             }
             finally
@@ -505,8 +515,8 @@ namespace WitsmlExplorer.Api.Services.ETP
         {
             var ct = cancellationToken ?? CancellationToken.None;
             var streamState = _streamState.GetSnapshot(streamId);
-            var client = streamState.Client ?? throw new Exception("The StartStream required to be called before ReadStreamedData");
-            var channelData = await client.ReadStreamedDataAsync(ct);
+            var client = streamState.Client ?? throw new InvalidOperationException("StartStream must be called before ReadStreamedData.");
+            var channelData = await client.ReadStreamedDataAsync(streamId, ct);
 
             var channelMnemonicById = streamState.ChannelMnemonicById;
             var channelRecordsById = streamState.ChannelRecordsById;
@@ -557,7 +567,7 @@ namespace WitsmlExplorer.Api.Services.ETP
 
                     if (item.value?.item != null)
                     {
-                        row[mnemonic] = new LogDataValue(item.value.item.ToString());
+                        row[mnemonic] = new LogDataValue(Convert.ToString(item.value.item, CultureInfo.InvariantCulture));
                     }
 
                     if (!row.ContainsKey(indexCurveMnemonic))
@@ -609,8 +619,8 @@ namespace WitsmlExplorer.Api.Services.ETP
 
             return new LogData
             {
-                StartIndex = first?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
-                EndIndex = last.ToString(CultureInfo.InvariantCulture),
+                StartIndex = first.HasValue ? FormatEtpIndex(first.Value) : string.Empty,
+                EndIndex = FormatEtpIndex(last),
                 Direction = direction ?? string.Empty,
                 CurveSpecifications = curveSpecifications,
                 Data = dataRows
