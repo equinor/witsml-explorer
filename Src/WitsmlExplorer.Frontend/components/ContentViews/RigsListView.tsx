@@ -34,7 +34,8 @@ export default function RigsListView() {
   const {
     objects: rigs,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(connectedServer, wellUid, wellboreUid, ObjectType.Rig);
   const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.Rig);
@@ -160,6 +161,7 @@ export default function RigsListView() {
         downloadToCsvFileName="Rigs"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

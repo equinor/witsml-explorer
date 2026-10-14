@@ -32,10 +32,7 @@ const SidebarVirtualItem: FC<{
       virtualItem={virtualItem}
     >
       <WellListing>
-        <WellItem
-          wellUid={well.uid}
-          uidMappingBasicInfos={uidMappingBasicInfos}
-        />
+        <WellItem well={well} uidMappingBasicInfos={uidMappingBasicInfos} />
         <WellIndicator
           themeMode={theme}
           active={well.isActive}

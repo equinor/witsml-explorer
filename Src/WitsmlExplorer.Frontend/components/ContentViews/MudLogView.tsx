@@ -68,7 +68,8 @@ export default function MudLogView() {
     components: geologyIntervals,
     isFetching: isFetchingGeologyIntervals,
     responseTime: responseTimeComponents,
-    dataUpdatedAt: dataUpdatedAtComponents
+    dataUpdatedAt: dataUpdatedAtComponents,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -181,6 +182,7 @@ export default function MudLogView() {
         downloadToCsvFileName={`MudLog_${mudLog?.name}`}
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     </>
   );

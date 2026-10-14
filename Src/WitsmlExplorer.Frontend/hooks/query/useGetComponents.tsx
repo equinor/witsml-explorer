@@ -1,4 +1,6 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { WitsmlProtocol } from "services/authorizationService";
+import { ProtocolAwareResponse } from "services/protocolAwareResponse";
 import {
   ComponentType,
   ComponentTypeToModel,
@@ -8,11 +10,7 @@ import { Server } from "../../models/server";
 import ComponentService from "../../services/componentService";
 import { QUERY_KEY_COMPONENTS } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import {
-  TimedResponse,
-  withQueryTiming,
-  wrapPlaceholderData
-} from "./queryTiming";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getComponentsQueryKey = (
   serverUrl: string,
@@ -49,18 +47,27 @@ export const componentsQuery = <T extends ComponentType>(
   ),
 
   queryFn: () =>
-    withQueryTiming(() => {
-      const components = ComponentService.getComponents<T>(
+    withQueryTiming(async () => {
+      const componentsResult = await ComponentService.getComponents<T>(
         wellUid,
         wellboreUid,
         objectUid,
         componentType,
         server
       );
-      return components;
+      return componentsResult;
     }),
   ...options,
-  placeholderData: wrapPlaceholderData(options?.placeholderData),
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: {
+            data: options?.placeholderData,
+            usedProtocol: undefined
+          },
+          responseTime: 0
+        } as TimedResponse<ProtocolAwareResponse<ComponentTypeToModel[T][]>>),
   gcTime: 0,
   enabled:
     !!server &&
@@ -71,12 +78,16 @@ export const componentsQuery = <T extends ComponentType>(
     !(options?.enabled === false)
 });
 
-type ObjectComponentsQueryResult<T extends ComponentType> = Omit<
-  QueryObserverResult<TimedResponse<ComponentTypeToModel[T][]>, unknown>,
-  "data"
-> & {
+type ObjectComponentsQueryResult<T extends ComponentType> = {
   components: ComponentTypeToModel[T][];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  isFetched: boolean;
+  dataUpdatedAt: number;
   responseTime: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetComponents = <T extends ComponentType>(
@@ -87,7 +98,9 @@ export const useGetComponents = <T extends ComponentType>(
   componentType: T,
   options?: QueryOptions
 ): ObjectComponentsQueryResult<T> => {
-  const { data, ...state } = useQuery<TimedResponse<ComponentTypeToModel[T][]>>(
+  const { data: timedResult, ...state } = useQuery<
+    TimedResponse<ProtocolAwareResponse<ComponentTypeToModel[T][]>>
+  >(
     componentsQuery<T>(
       server,
       wellUid,
@@ -97,5 +110,13 @@ export const useGetComponents = <T extends ComponentType>(
       options
     )
   );
-  return { components: data?.data, responseTime: data?.responseTime, ...state };
+  const protocolAwareResult = timedResult?.data;
+  const components = protocolAwareResult?.data;
+
+  return {
+    components: components ?? [],
+    responseTime: timedResult?.responseTime,
+    usedProtocol: protocolAwareResult?.usedProtocol,
+    ...state
+  };
 };

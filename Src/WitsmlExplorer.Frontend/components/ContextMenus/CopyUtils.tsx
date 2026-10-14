@@ -1,4 +1,6 @@
+import ChangeWellboreUidModal from "components/Modals/ChangeWellboreUidModal";
 import { displayReplaceModal } from "components/Modals/ReplaceModal";
+import SubObjectsSelectionModal from "components/Modals/SubObjectsSelectionModal";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { ComponentType } from "models/componentType";
@@ -10,29 +12,27 @@ import {
   CopyObjectsJob,
   CopyWellboreWithObjectsJob
 } from "models/jobs/copyJobs";
+import { DeleteObjectsJob } from "models/jobs/deleteJobs";
 import ObjectReference from "models/jobs/objectReference";
 import ObjectReferences from "models/jobs/objectReferences";
+import { ReplaceObjectsJob } from "models/jobs/replaceObjectsJob";
 import WellboreReference, {
   toWellboreReference
 } from "models/jobs/wellboreReference";
+import WellReference from "models/jobs/wellReference";
+import LogObject from "models/logObject";
 import ObjectOnWellbore, {
   toObjectReference,
   toObjectReferences
 } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
+import { MixedObjectsReferences } from "models/selectableObjectOnWellbore";
 import { Server } from "models/server";
+import Well from "models/well";
+import Wellbore from "models/wellbore";
 import AuthorizationService from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import ObjectService from "services/objectService";
-import { DeleteObjectsJob } from "models/jobs/deleteJobs";
-import { ReplaceObjectsJob } from "models/jobs/replaceObjectsJob";
-import LogObject from "models/logObject";
-import Well from "models/well";
-import Wellbore from "models/wellbore";
-import WellReference from "models/jobs/wellReference";
-import ChangeWellboreUidModal from "components/Modals/ChangeWellboreUidModal";
-import SubObjectsSelectionModal from "components/Modals/SubObjectsSelectionModal";
-import { MixedObjectsReferences } from "models/selectableObjectOnWellbore";
 
 export const onClickPaste = (
   servers: Server[],
@@ -70,7 +70,8 @@ export const pasteObjectOnWellbore = async (
 
   const toCopy: ObjectOnWellbore[] = [];
   for (const query of sourceQueries) {
-    const receivedObject = await query;
+    const objectResult = await query;
+    const receivedObject = objectResult.data;
     toCopy.push(receivedObject);
   }
 
@@ -87,7 +88,8 @@ export const pasteObjectOnWellbore = async (
   const existingObjects: ObjectOnWellbore[] = [];
 
   for (const query of queries) {
-    const receivedObject = await query;
+    const objectResult = await query;
+    const receivedObject = objectResult.data;
 
     if (
       objectReferences.objectUids.find(

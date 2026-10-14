@@ -23,12 +23,12 @@ import { useClipboardReferencesOfType } from "components/ContextMenus/UseClipboa
 import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { DispatchOperation, UserRole } from "contexts/operationStateReducer";
 import { OpenInQueryView } from "hooks/useOpenInQueryView";
-import { IndexCurve } from "models/indexCurve";
 import LogObject from "models/logObject";
 import ObjectOnWellbore from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import { Server } from "models/server";
 import React from "react";
+import { RouterLogType } from "routes/routerConstants.ts";
 import { colors } from "styles/Colors";
 import { v4 as uuid } from "uuid";
 import { useConnectedServer } from "../../contexts/connectedServerContext.tsx";
@@ -197,10 +197,12 @@ export const ObjectMenuItems = (
                 connectedServer,
                 checkedObjects[0],
                 objectType,
-                (checkedObjects[0] as LogObject)?.indexType ===
-                  WITSML_INDEX_TYPE_MD
-                  ? IndexCurve.Depth
-                  : IndexCurve.Time
+                (checkedObjects[0] as LogObject)?.indexType === null
+                  ? RouterLogType.ALL
+                  : (checkedObjects[0] as LogObject)?.indexType ===
+                    WITSML_INDEX_TYPE_MD
+                  ? RouterLogType.DEPTH
+                  : RouterLogType.TIME
               )
             }
             disabled={checkedObjects.length !== 1}

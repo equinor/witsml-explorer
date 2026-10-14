@@ -2,6 +2,7 @@ using System;
 using System.Text.Json.Serialization;
 using System.Threading;
 
+using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 
 namespace WitsmlExplorer.Api.Jobs
@@ -55,6 +56,8 @@ namespace WitsmlExplorer.Api.Jobs
         public bool IsCancelable { get; internal set; } = false;
 
         public bool IsSlowJob { get; internal set; } = false;
+
+        public WitsmlProtocol WitsmlProtocol { get; set; }
 
         [JsonIgnore]
         public CancellationTokenSource CancellationTokenSource { get; private set; }

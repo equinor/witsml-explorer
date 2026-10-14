@@ -34,7 +34,8 @@ export default function DataSourceConfigurationSetView() {
   const {
     components: dataSourceConfigurationSets,
     isFetching,
-    isFetched
+    isFetched,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -175,6 +176,7 @@ export default function DataSourceConfigurationSetView() {
         onSelect={onSelect}
         showRefresh
         downloadToCsvFileName="DataSourceConfigurations"
+        usedProtocol={usedProtocol}
       />
     </>
   );

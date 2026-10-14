@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Table } from "@tanstack/react-table";
 import { ColumnOptionsMenu } from "components/ContentViews/table/ColumnOptionsMenu";
 import { Button } from "components/StyledComponents/Button";
+import { Chip } from "components/StyledComponents/Chip";
 import { isUserRoleAdvanced } from "components/UserRoles.ts";
 import { DecimalPreference } from "contexts/operationStateReducer.tsx";
 import {
@@ -16,6 +17,7 @@ import { useOperationState } from "hooks/useOperationState";
 import { ObjectType } from "models/objectType";
 import React, { useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { WitsmlProtocol } from "services/authorizationService.ts";
 import styled from "styled-components";
 import Icon from "styles/Icons";
 import { ContentTableColumn } from ".";
@@ -37,6 +39,7 @@ export interface PanelProps {
   disableSearchParamsFilter?: boolean;
   responseTime?: number;
   lastFetched?: string;
+  usedProtocol?: WitsmlProtocol;
 }
 
 const csvIgnoreColumns = ["select", "expander"]; //Ids of the columns that should be ignored when downloading as csv
@@ -53,6 +56,7 @@ const Panel = (props: PanelProps) => {
     columns,
     responseTime,
     lastFetched,
+    usedProtocol,
     expandableRows = false,
     downloadToCsvFileName = null,
     stickyLeftColumns,
@@ -185,9 +189,23 @@ const Panel = (props: PanelProps) => {
           </Button>
         )}
         {responseTime != null && isUserRoleAdvanced(userRole) && (
-          <Typography>Response time: {responseTime} ms</Typography>
+          <Chip title={`Response time: ${responseTime} ms`} variant="default">
+            <Icon name="timer" />
+            {responseTime} ms
+          </Chip>
         )}
-        {lastFetched && <Typography>Last fetched: {lastFetched}</Typography>}
+        {lastFetched && (
+          <Chip title={`Last fetched: ${lastFetched}`}>
+            <Icon name="time" />
+            Fetched {lastFetched}
+          </Chip>
+        )}
+        {usedProtocol != null && isUserRoleAdvanced(userRole) && (
+          <Chip title={`Data fetched with ${usedProtocol.toUpperCase()}`}>
+            <Icon name="cable" />
+            {usedProtocol.toUpperCase()}
+          </Chip>
+        )}
         {panelElements}
       </EdsProvider>
     </PanelContainer>

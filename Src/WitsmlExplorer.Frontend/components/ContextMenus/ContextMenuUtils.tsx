@@ -1,13 +1,11 @@
 import { TextField } from "@equinor/eds-core-react";
 import { QueryClient } from "@tanstack/react-query";
-import { WITSML_INDEX_TYPE, WITSML_INDEX_TYPE_MD } from "components/Constants";
 import ConfirmModal from "components/Modals/ConfirmModal";
 import { isExpandableGroupObject } from "components/Sidebar/ObjectGroupItem";
 import { DispatchOperation } from "contexts/operationStateReducer";
 import OperationType from "contexts/operationType";
 import { refreshObjectsQuery } from "hooks/query/queryRefreshHelpers";
 import { getParentType } from "models/componentType";
-import { IndexCurve } from "models/indexCurve";
 import ComponentReferences from "models/jobs/componentReferences";
 import { DeleteComponentsJob, DeleteObjectsJob } from "models/jobs/deleteJobs";
 import ObjectOnWellbore, { toObjectReferences } from "models/objectOnWellbore";
@@ -70,7 +68,7 @@ export const onClickShowObjectOnServer = async (
   connectedServer: Server,
   objectOnWellbore: ObjectOnWellbore,
   objectType: ObjectType,
-  indexCurve: IndexCurve = null
+  logType: RouterLogType = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
 
@@ -84,16 +82,12 @@ export const onClickShowObjectOnServer = async (
   });
 
   if (objectType === ObjectType.Log) {
-    const logTypePath =
-      indexCurve === IndexCurve.Depth
-        ? RouterLogType.DEPTH
-        : RouterLogType.TIME;
     url = getLogObjectViewPath(
       targetServer.url,
       targetWellId,
       targetWellboreId,
       objectType,
-      logTypePath,
+      logType,
       objectOnWellbore.uid
     );
   } else if (isExpandableGroupObject(objectType)) {
@@ -121,7 +115,7 @@ export const onClickShowGroupOnServer = async (
   connectedServer: Server,
   wellbore: Wellbore,
   objectType: ObjectType,
-  indexType: WITSML_INDEX_TYPE = null
+  logType: RouterLogType = null
 ) => {
   dispatchOperation({ type: OperationType.HideContextMenu });
 
@@ -134,17 +128,13 @@ export const onClickShowGroupOnServer = async (
     targetServerId: targetServer.id
   });
 
-  if (objectType === ObjectType.Log && indexType) {
-    const logTypePath =
-      indexType === WITSML_INDEX_TYPE_MD
-        ? RouterLogType.DEPTH
-        : RouterLogType.TIME;
+  if (objectType === ObjectType.Log && logType) {
     url = getLogObjectsViewPath(
       targetServer.url,
       targetWellId,
       targetWellboreId,
       objectType,
-      logTypePath
+      logType
     );
   } else if (objectType === ObjectType.Log) {
     url = getLogTypesViewPath(

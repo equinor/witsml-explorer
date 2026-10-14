@@ -1,14 +1,12 @@
-import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import { WitsmlProtocol } from "services/authorizationService";
+import { ProtocolAwareResponse } from "services/protocolAwareResponse";
 import { Server } from "../../models/server";
 import Wellbore from "../../models/wellbore";
 import WellboreService from "../../services/wellboreService";
 import { QUERY_KEY_WELLBORES } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
-import {
-  TimedResponse,
-  withQueryTiming,
-  wrapPlaceholderData
-} from "./queryTiming";
+import { TimedResponse, withQueryTiming } from "./queryTiming";
 
 export const getWellboresQueryKey = (serverUrl: string, wellUid: string) => {
   return [
@@ -25,21 +23,38 @@ export const wellboresQuery = (
 ) => ({
   queryKey: getWellboresQueryKey(server?.url, wellUid),
   queryFn: () =>
-    withQueryTiming(() => {
-      const wellbores = WellboreService.getWellbores(wellUid, null, server);
+    withQueryTiming(async () => {
+      const wellbores = await WellboreService.getWellbores(
+        wellUid,
+        null,
+        server
+      );
       return wellbores;
     }),
-  placeholderData: wrapPlaceholderData(options?.placeholderData),
   ...options,
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: {
+            data: options?.placeholderData,
+            usedProtocol: undefined
+          },
+          responseTime: 0
+        } as TimedResponse<ProtocolAwareResponse<Wellbore[]>>),
   enabled: !!server && wellUid != null && !(options?.enabled === false)
 });
 
-type WellboresQueryResult = Omit<
-  QueryObserverResult<TimedResponse<Wellbore[]>, unknown>,
-  "data"
-> & {
+type WellboresQueryResult = {
   wellbores: Wellbore[];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  isFetched: boolean;
+  dataUpdatedAt: number;
   responseTime: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetWellbores = (
@@ -47,8 +62,17 @@ export const useGetWellbores = (
   wellUid: string,
   options?: QueryOptions
 ): WellboresQueryResult => {
-  const { data, ...state } = useQuery<TimedResponse<Wellbore[]>>(
-    wellboresQuery(server, wellUid, options)
-  );
-  return { wellbores: data?.data, responseTime: data?.responseTime, ...state };
+  const { data: timedResult, ...state } = useQuery<
+    TimedResponse<ProtocolAwareResponse<Wellbore[]>>
+  >(wellboresQuery(server, wellUid, options));
+
+  const protocolAwareResult = timedResult?.data;
+  const wellbores = protocolAwareResult?.data;
+
+  return {
+    wellbores: wellbores,
+    responseTime: timedResult?.responseTime,
+    usedProtocol: protocolAwareResult?.usedProtocol,
+    ...state
+  };
 };

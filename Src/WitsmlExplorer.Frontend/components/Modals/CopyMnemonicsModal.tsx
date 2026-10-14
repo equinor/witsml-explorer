@@ -88,7 +88,7 @@ const CopyMnemonicsModal = (
     const parentUid = targetReference.uid;
     const parentType = getParentType(ComponentType.Mnemonic);
 
-    const targetParent = await ObjectService.getObject(
+    const targetParentResult = await ObjectService.getObject(
       targetReference.wellUid,
       targetReference.wellboreUid,
       parentUid,
@@ -96,14 +96,16 @@ const CopyMnemonicsModal = (
       undefined,
       targetServer
     );
+    const targetParent = targetParentResult.data;
 
-    const allTargetComponents = await ComponentService.getComponents(
+    const allTargetComponentsResult = await ComponentService.getComponents(
       targetReference.wellUid,
       targetReference.wellboreUid,
       targetReference.uid,
       ComponentType.Mnemonic,
       targetServer
     );
+    const allTargetComponents = allTargetComponentsResult.data;
 
     const indexCurve = (targetParent as LogObject)?.indexCurve;
 

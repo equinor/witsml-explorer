@@ -1,7 +1,7 @@
-import { QueryObserverResult } from "@tanstack/react-query";
 import { useGetWellbores } from "hooks/query/useGetWellbores";
 import Wellbore from "models/wellbore";
 import { useMemo } from "react";
+import { WitsmlProtocol } from "services/authorizationService";
 import {
   WellboreFilterType,
   filterTypeToProperty,
@@ -11,11 +11,15 @@ import {
 import { Server } from "../../models/server";
 import { QueryOptions } from "./queryOptions";
 
-type WellboreSearchQueryResult = Omit<
-  QueryObserverResult<Wellbore[], unknown>,
-  "data"
-> & {
+type WellboreSearchQueryResult = {
   wellboreSearchResults: Wellbore[];
+  error: Error;
+  isError: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
+  dataUpdatedAt: number;
+  responseTime: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetWellboreSearch = (

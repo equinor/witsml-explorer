@@ -32,12 +32,15 @@ const SubObjectsSelectionModal = (
   const { connectedServer } = useConnectedServer();
   const queryClient = useQueryClient();
 
-  const { objectsOnWellbore: objectsOnWellbore, isFetching } =
-    useGetAllObjectsOnWellbore(
-      connectedServer,
-      props.sourceWellbore.wellUid,
-      props.sourceWellbore.wellboreUid
-    );
+  const {
+    objectsOnWellbore: objectsOnWellbore,
+    isFetching,
+    usedProtocol
+  } = useGetAllObjectsOnWellbore(
+    connectedServer,
+    props.sourceWellbore.wellUid,
+    props.sourceWellbore.wellboreUid
+  );
 
   const [selectedRows, setSelectedRows] =
     useState<SelectableObjectOnWellbore[]>();
@@ -101,6 +104,7 @@ const SubObjectsSelectionModal = (
               panelElements={panelElements}
               disableSearchParamsFilter={true}
               checkableRows
+              usedProtocol={usedProtocol}
             />
           )}
         </SubObjectsSelectionModalContentLayout>

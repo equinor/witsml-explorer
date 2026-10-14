@@ -6,6 +6,10 @@ import {
 } from "models/componentType";
 import { Server } from "models/server";
 import { ApiClient } from "services/apiClient";
+import {
+  getUsedProtocol,
+  ProtocolAwareResponse
+} from "services/protocolAwareResponse";
 
 export default class ComponentService {
   public static async getComponents<Key extends ComponentType>(
@@ -15,7 +19,7 @@ export default class ComponentService {
     componentType: Key,
     server?: Server,
     abortSignal?: AbortSignal
-  ): Promise<ComponentTypeToModel[Key][]> {
+  ): Promise<ProtocolAwareResponse<ComponentTypeToModel[Key][]>> {
     const componentRoute = pluralize(componentType).toLowerCase();
     const typeRoute = pluralize(getParentType(componentType)).toLowerCase();
     const response = await ApiClient.get(
@@ -28,11 +32,20 @@ export default class ComponentService {
     if (response.ok) {
       const text = await response.text();
       if (text.length) {
-        return JSON.parse(text);
+        return {
+          data: JSON.parse(text),
+          usedProtocol: getUsedProtocol(response)
+        };
       } else {
-        return [];
+        return {
+          data: [],
+          usedProtocol: getUsedProtocol(response)
+        };
       }
     }
-    return [];
+    return {
+      data: [],
+      usedProtocol: getUsedProtocol(response)
+    };
   }
 }

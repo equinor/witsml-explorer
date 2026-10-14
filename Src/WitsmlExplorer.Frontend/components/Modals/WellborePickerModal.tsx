@@ -101,12 +101,13 @@ const WellborePickerModal = ({
   const onSubmit = async () => {
     setIsLoading(true);
     setFetchError("");
-    const sourceWellbore = await WellboreService.getWellbore(
+    const sourceWellboreResult = await WellboreService.getWellbore(
       wellUid,
       wellboreUid,
       null,
       sourceServer
     );
+    const sourceWellbore = sourceWellboreResult.data;
 
     try {
       const targetWellboreReference: WellboreReference = {

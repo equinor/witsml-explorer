@@ -1,5 +1,4 @@
 import {
-  WITSML_INDEX_TYPE,
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
 } from "components/Constants";
@@ -22,6 +21,7 @@ import LogObject from "models/logObject";
 import { calculateObjectNodeId } from "models/objectOnWellbore";
 import { ObjectType } from "models/objectType";
 import Wellbore, {
+  calculateLogTypeAllId,
   calculateLogTypeDepthId,
   calculateLogTypeId,
   calculateLogTypeTimeId,
@@ -33,8 +33,8 @@ import { Fragment, MouseEvent } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { RouterLogType } from "routes/routerConstants";
 import {
-  getLogObjectViewPath,
-  getLogObjectsViewPath
+  getLogObjectsViewPath,
+  getLogObjectViewPath
 } from "routes/utils/pathBuilder";
 
 interface LogTypeItemProps {
@@ -55,47 +55,50 @@ export default function LogTypeItem({
   const { wellbore } = useGetWellbore(connectedServer, wellUid, wellboreUid);
   const logTypeGroupDepth = calculateLogTypeDepthId(wellbore);
   const logTypeGroupTime = calculateLogTypeTimeId(wellbore);
+  const logTypeGroupAll = calculateLogTypeAllId(wellbore);
 
   const {
-    logType,
+    logType: logTypeString,
     wellUid: urlWellUid,
     wellboreUid: urlWellboreUid,
     objectUid
   } = useParams();
 
-  const getNavPath = (logTypeGroup: string) => {
-    const logTypePath =
-      logTypeGroup === logTypeGroupDepth
-        ? RouterLogType.DEPTH
-        : RouterLogType.TIME;
+  const routerLogType = logTypeString as RouterLogType;
+
+  const getNavPath = (logType: RouterLogType) => {
     return getLogObjectsViewPath(
       connectedServer?.url,
       wellUid,
       wellboreUid,
       ObjectType.Log,
-      logTypePath
+      logType
     );
   };
 
-  const getMultipleLogsNode = (logName: string) => {
-    return calculateMultipleLogsNode(wellbore, logName);
+  const getMultipleLogsNode = (logName: string, logType: RouterLogType) => {
+    return calculateMultipleLogsNode(wellbore, logType, logName);
   };
 
-  const getMultipleLogsNodeItem = (logName: string, logUid: string) => {
-    return calculateMultipleLogsNodeItem(wellbore, logName, logUid);
+  const getMultipleLogsNodeItem = (
+    logName: string,
+    logUid: string,
+    logType: RouterLogType
+  ) => {
+    return calculateMultipleLogsNodeItem(wellbore, logType, logName, logUid);
   };
 
   const onContextMenu = (
     event: MouseEvent<HTMLLIElement>,
     wellbore: Wellbore,
-    indexType: WITSML_INDEX_TYPE
+    logType: RouterLogType
   ) => {
     preventContextMenuPropagation(event);
     const contextMenuProps: LogsContextMenuProps = {
       dispatchOperation,
       wellbore,
       servers,
-      indexType
+      logType
     };
     const position = getContextMenuPosition(event);
     dispatchOperation({
@@ -107,25 +110,23 @@ export default function LogTypeItem({
     });
   };
 
-  const filterLogsByType = (logs: LogObject[], logType: string) => {
-    return logs?.filter((log) => log.indexType === logType) ?? [];
+  const filterLogsByType = (logs: LogObject[], indexType: string) => {
+    return logs?.filter((log) => log.indexType === indexType) ?? [];
   };
 
   const depthLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_MD);
   const timeLogs = filterLogsByType(logs, WITSML_INDEX_TYPE_DATE_TIME);
 
-  const isSelected = (log: LogObject) => {
+  const isSelected = (log: LogObject, logType: RouterLogType) => {
     return (
       calculateWellboreObjectNodeId(
         { wellUid: log.wellUid, uid: log.wellboreUid },
-        log.indexType,
+        logType,
         log.uid
       ) ===
       calculateWellboreObjectNodeId(
         { wellUid: urlWellUid, uid: urlWellboreUid },
-        logType === RouterLogType.DEPTH
-          ? WITSML_INDEX_TYPE_MD
-          : WITSML_INDEX_TYPE_DATE_TIME,
+        routerLogType,
         objectUid
       )
     );
@@ -139,21 +140,9 @@ export default function LogTypeItem({
     return logName + " (multiple)";
   };
 
-  const getLogTypePath = (logType: string) => {
-    return logType === WITSML_INDEX_TYPE_DATE_TIME
-      ? RouterLogType.TIME
-      : RouterLogType.DEPTH;
-  };
-
-  const getLogTypeGroup = (logType: string) => {
-    return logType === WITSML_INDEX_TYPE_DATE_TIME
-      ? logTypeGroupTime
-      : logTypeGroupDepth;
-  };
-
   const listSubLogItems = (
     logObjects: LogObject[],
-    logType: string,
+    logType: RouterLogType,
     wellUid: string,
     wellboreUid: string,
     serverUrl: string
@@ -164,19 +153,20 @@ export default function LogTypeItem({
           a.runNumber?.localeCompare(b.runNumber) || a.uid.localeCompare(b.uid)
       )
       .map((log) => (
-        <Fragment key={getMultipleLogsNodeItem(log.name, log.uid)}>
+        <Fragment key={getMultipleLogsNodeItem(log.name, log.uid, logType)}>
           <LogItem
             logObjects={logObjects}
             log={log}
-            nodeId={getMultipleLogsNodeItem(log.name, log.uid)}
-            selected={isSelected(log)}
+            logType={logType}
+            nodeId={getMultipleLogsNodeItem(log.name, log.uid, logType)}
+            selected={isSelected(log, logType)}
             objectGrowing={log.objectGrowing}
             to={getLogObjectViewPath(
               serverUrl,
               wellUid,
               wellboreUid,
               ObjectType.Log,
-              getLogTypePath(logType),
+              logType,
               log.uid
             )}
           />
@@ -186,10 +176,10 @@ export default function LogTypeItem({
 
   const listLogItemsByType = (
     logObjects: LogObject[],
-    logType: string,
+    logType: RouterLogType,
     wellUid: string,
     wellboreUid: string,
-    isSelected: (log: LogObject) => boolean,
+    isSelected: (log: LogObject, logType: RouterLogType) => boolean,
     serverUrl: string
   ) => {
     const distinctLogObjects = logObjects.filter(
@@ -200,23 +190,26 @@ export default function LogTypeItem({
       subLogsCount(logObjects, log.name) > 1 ? (
         <TreeItem
           labelText={subLogsNodeName(log.name)}
-          key={getMultipleLogsNode(log.name)}
-          nodeId={getMultipleLogsNode(log.name)}
+          key={getMultipleLogsNode(log.name, logType)}
+          nodeId={getMultipleLogsNode(log.name, logType)}
           isActive={logObjects
             .filter((x) => x.name === log.name)
             ?.some((log) => log.objectGrowing)}
-          to={`${getNavPath(
-            getLogTypeGroup(logType)
-          )}?${createColumnFilterSearchParams(searchParams, {
-            name: log.name
-          })}`}
+          to={`${getNavPath(logType)}?${createColumnFilterSearchParams(
+            searchParams,
+            {
+              name: log.name
+            }
+          )}`}
           selected={
             calculateMultipleLogsNode(
               { wellUid: urlWellUid, uid: urlWellboreUid },
+              routerLogType,
               log.name
             ) ===
             calculateMultipleLogsNode(
               wellbore,
+              logType,
               logObjects.find((x) => x.uid === objectUid)?.name
             )
           }
@@ -234,15 +227,16 @@ export default function LogTypeItem({
           <LogItem
             logObjects={logObjects}
             log={log}
+            logType={logType}
             nodeId={calculateObjectNodeId(log, ObjectType.Log)}
-            selected={isSelected(log)}
+            selected={isSelected(log, logType)}
             objectGrowing={log.objectGrowing}
             to={getLogObjectViewPath(
               serverUrl,
               wellUid,
               wellboreUid,
               ObjectType.Log,
-              getLogTypePath(logType),
+              logType,
               log.uid
             )}
           />
@@ -254,23 +248,47 @@ export default function LogTypeItem({
   return (
     <>
       <TreeItem
+        labelText={"All"}
+        nodeId={logTypeGroupAll}
+        to={getNavPath(RouterLogType.ALL)}
+        onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
+          onContextMenu(event, wellbore, RouterLogType.ALL)
+        }
+        isActive={false}
+        selected={
+          calculateLogTypeId(
+            { wellUid: urlWellUid, uid: urlWellboreUid },
+            routerLogType
+          ) === calculateLogTypeId(wellbore, RouterLogType.ALL)
+        }
+      >
+        {listLogItemsByType(
+          logs ?? [],
+          RouterLogType.ALL,
+          wellUid,
+          wellboreUid,
+          isSelected,
+          connectedServer?.url
+        )}
+      </TreeItem>
+      <TreeItem
         labelText={"Depth"}
         nodeId={logTypeGroupDepth}
-        to={getNavPath(logTypeGroupDepth)}
+        to={getNavPath(RouterLogType.DEPTH)}
         onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
-          onContextMenu(event, wellbore, WITSML_INDEX_TYPE_MD)
+          onContextMenu(event, wellbore, RouterLogType.DEPTH)
         }
         isActive={depthLogs?.some((log) => log.objectGrowing)}
         selected={
           calculateLogTypeId(
             { wellUid: urlWellUid, uid: urlWellboreUid },
-            logType
+            routerLogType
           ) === calculateLogTypeId(wellbore, RouterLogType.DEPTH)
         }
       >
         {listLogItemsByType(
           depthLogs,
-          WITSML_INDEX_TYPE_MD,
+          RouterLogType.DEPTH,
           wellUid,
           wellboreUid,
           isSelected,
@@ -280,21 +298,21 @@ export default function LogTypeItem({
       <TreeItem
         nodeId={logTypeGroupTime}
         labelText={"Time"}
-        to={getNavPath(logTypeGroupTime)}
+        to={getNavPath(RouterLogType.TIME)}
         onContextMenu={(event: MouseEvent<HTMLLIElement>) =>
-          onContextMenu(event, wellbore, WITSML_INDEX_TYPE_DATE_TIME)
+          onContextMenu(event, wellbore, RouterLogType.TIME)
         }
         isActive={timeLogs?.some((log) => log.objectGrowing)}
         selected={
           calculateLogTypeId(
             { wellUid: urlWellUid, uid: urlWellboreUid },
-            logType
+            routerLogType
           ) === calculateLogTypeId(wellbore, RouterLogType.TIME)
         }
       >
         {listLogItemsByType(
           timeLogs,
-          WITSML_INDEX_TYPE_DATE_TIME,
+          RouterLogType.TIME,
           wellUid,
           wellboreUid,
           isSelected,

@@ -66,5 +66,6 @@ export const DATA_SOURCE_CONFIGURATION_VIEW_NAVIGATION_PATH = `/${SERVER_ROUTE_P
 
 export enum RouterLogType {
   TIME = "time",
-  DEPTH = "depth"
+  DEPTH = "depth",
+  ALL = "all"
 }

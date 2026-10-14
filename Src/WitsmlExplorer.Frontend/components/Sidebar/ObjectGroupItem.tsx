@@ -81,7 +81,8 @@ export default function ObjectGroupItem({
   const { wellbore, isFetching: isFetchingWellbore } = useGetWellbore(
     connectedServer,
     wellUid,
-    wellboreUid
+    wellboreUid,
+    { placeholderData: { wellUid, uid: wellboreUid } }
   );
   const { objects: groupObjects, isFetching: isFetchingObjects } =
     useGetObjects(connectedServer, wellUid, wellboreUid, objectType, {
@@ -204,6 +205,7 @@ const shouldFetchGroupObjects = (
   wellbore: Wellbore,
   objectType: ObjectType
 ) => {
+  if (!wellbore) return false;
   const isExpanded = expandedTreeNodes.includes(
     calculateObjectGroupId(wellbore, objectType)
   );

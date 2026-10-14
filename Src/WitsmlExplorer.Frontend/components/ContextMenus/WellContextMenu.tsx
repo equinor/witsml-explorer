@@ -48,6 +48,9 @@ import {
   getMultipleLogCurveSelectionViewPath,
   getWellboresViewPath
 } from "routes/utils/pathBuilder";
+import AuthorizationService, {
+  WitsmlProtocol
+} from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
@@ -367,7 +370,12 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
           requiredRole={UserRole.Advanced}
           key="multiLogSelect"
         >
-          <MenuItem onClick={onClickMultiLogSelect}>
+          <MenuItem
+            onClick={onClickMultiLogSelect}
+            disabled={
+              AuthorizationService.witsmlProtocol === WitsmlProtocol.Etp
+            }
+          >
             <StyledIcon name="add" color={colors.interactive.primaryResting} />
             <Typography color={"primary"}>
               Add to Multiple Log Selection

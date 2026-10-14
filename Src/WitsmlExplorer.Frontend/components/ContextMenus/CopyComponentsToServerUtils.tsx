@@ -77,7 +77,7 @@ export const copyComponentsToServer = async (
       : (component: any) => {
           return component.uid;
         };
-  const targetParent = await ObjectService.getObject(
+  const targetParentResult = await ObjectService.getObject(
     wellUid,
     wellboreUid,
     parentUid,
@@ -85,6 +85,7 @@ export const copyComponentsToServer = async (
     null,
     targetServer
   );
+  const targetParent = targetParentResult.data;
   if (targetParent?.uid !== parentUid) {
     displayMissingObjectModal(
       targetServer,
@@ -126,13 +127,14 @@ export const copyComponentsToServer = async (
 
   const copyJob: CopyComponentsJob = createCopyJob();
 
-  const allTargetComponents = await ComponentService.getComponents(
+  const allTargetComponentsResult = await ComponentService.getComponents(
     wellUid,
     wellboreUid,
     parentUid,
     componentType,
     targetServer
   );
+  const allTargetComponents = allTargetComponentsResult.data;
   const existingTargetComponents = allTargetComponents.filter((component) =>
     componentsToCopy.find(
       (componentToCopy) => getId(componentToCopy) === getId(component)

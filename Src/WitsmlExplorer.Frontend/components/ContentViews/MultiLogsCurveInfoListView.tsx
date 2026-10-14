@@ -38,7 +38,8 @@ export default function MultiLogsCurveInfoListView() {
     operationState: { timeZone, dateTimeFormat, theme }
   } = useOperationState();
   const { dispatchOperation } = useOperationState();
-  const { wellUid, wellboreUid, logType } = useParams();
+  const { wellUid, wellboreUid, logType: logTypeString } = useParams();
+  const logType = logTypeString as RouterLogType;
   const { connectedServer } = useConnectedServer();
   const [logCurveInfoList, setLogCurveInfoList] = useState<LogCurveInfo[]>();
   const [logObjects, setLogObjects] = useState<Map<string, LogObject>>();

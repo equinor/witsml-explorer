@@ -9,6 +9,7 @@ import OperationType from "contexts/operationType";
 import { useOperationState } from "hooks/useOperationState";
 import LogObject from "models/logObject";
 import { MouseEvent } from "react";
+import { RouterLogType } from "routes/routerConstants";
 import { getNameOccurrenceSuffix } from "tools/logSameNamesHelper";
 
 interface LogItemProps {
@@ -18,6 +19,7 @@ interface LogItemProps {
   nodeId: string;
   objectGrowing: boolean;
   to: string;
+  logType: RouterLogType;
 }
 
 export default function LogItem({
@@ -26,7 +28,8 @@ export default function LogItem({
   selected,
   nodeId,
   objectGrowing,
-  to
+  to,
+  logType
 }: LogItemProps) {
   const { dispatchOperation } = useOperationState();
 
@@ -52,7 +55,10 @@ export default function LogItem({
       }
       key={nodeId}
       nodeId={nodeId}
-      labelText={log.name + getNameOccurrenceSuffix(logObjects, log)}
+      labelText={
+        log.name +
+        getNameOccurrenceSuffix(logObjects, log, logType !== RouterLogType.ALL)
+      }
       selected={selected}
       isActive={objectGrowing}
       to={to}

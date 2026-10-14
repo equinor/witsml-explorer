@@ -37,7 +37,8 @@ export default function WbGeometriesListView() {
   const {
     objects: wbGeometries,
     responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetObjects(
     connectedServer,
     wellUid,
@@ -141,6 +142,7 @@ export default function WbGeometriesListView() {
         downloadToCsvFileName="WbGeometries"
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

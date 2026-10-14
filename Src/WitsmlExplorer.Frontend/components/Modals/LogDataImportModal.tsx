@@ -25,6 +25,7 @@ import OperationType from "contexts/operationType";
 import { parse } from "date-fns";
 import { zonedTimeToUtc } from "date-fns-tz";
 import { useGetComponents } from "hooks/query/useGetComponents";
+import { useGetObject } from "hooks/query/useGetObject";
 import { useOperationState } from "hooks/useOperationState";
 import { countBy, Dictionary } from "lodash";
 import { ComponentType } from "models/componentType";
@@ -34,6 +35,7 @@ import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
+import { ObjectType } from "models/objectType";
 import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
 import styled, { CSSProperties } from "styled-components";
@@ -68,8 +70,15 @@ const UNITLESS_UNIT = "unitless";
 const LogDataImportModal = (
   props: LogDataImportModalProps
 ): React.ReactElement => {
-  const { targetLog } = props;
+  const { targetLog: targetLogReference } = props;
   const { connectedServer } = useConnectedServer();
+  const { object: targetLog, isFetching: isFetchingLog } = useGetObject(
+    connectedServer,
+    targetLogReference.wellUid,
+    targetLogReference.wellboreUid,
+    ObjectType.Log,
+    targetLogReference.uid
+  );
   const {
     dispatchOperation,
     operationState: { colors }
@@ -77,9 +86,9 @@ const LogDataImportModal = (
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
-      targetLog.wellUid,
-      targetLog.wellboreUid,
-      targetLog.uid,
+      targetLogReference.wellUid,
+      targetLogReference.wellboreUid,
+      targetLogReference.uid,
       ComponentType.Mnemonic
     );
   const [uploadedFile, setUploadedFile] = useState<File>(null);
@@ -100,7 +109,11 @@ const LogDataImportModal = (
   );
   const separator = ",";
 
-  const validate = (fileColumns: ImportColumn[], parseError?: string) => {
+  const validate = (
+    fileColumns: ImportColumn[],
+    log: LogObject,
+    parseError?: string
+  ) => {
     if (parseError) setError(parseError);
     if (fileColumns.length) {
       if (fileColumns.map((col) => col.name).some((value) => value === ""))
@@ -108,7 +121,7 @@ const LogDataImportModal = (
       if (
         !fileColumns
           .map((col) => col.name.toUpperCase())
-          .includes(targetLog.indexCurve.toUpperCase())
+          .includes(log.indexCurve.toUpperCase())
       )
         setError(MISSING_INDEX_CURVE);
     }
@@ -125,6 +138,7 @@ const LogDataImportModal = (
       } catch (error) {
         validate(
           uploadedFileColumns,
+          targetLog,
           dateTimeFormat ? `Unable to parse data. ${error}` : null
         );
         return null;
@@ -171,7 +185,10 @@ const LogDataImportModal = (
   };
 
   const handleFileChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    async (
+      e: React.ChangeEvent<HTMLInputElement>,
+      log: LogObject
+    ): Promise<void> => {
       const file = e.target.files.item(0);
       if (!file) return;
       const text = await file.text();
@@ -192,14 +209,14 @@ const LogDataImportModal = (
         const groupedByNum = countBy(header, "name");
         createWarningOfDuplicities(groupedByNum);
         header = countOccurrences(header, "name");
-        validate(header);
+        validate(header, log);
         data = parseLASData(dataSection);
         const indexCurveColumn = header.find(
-          (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
+          (x) => x.name.toLowerCase() === log.indexCurve.toLowerCase()
         )?.index;
-        header[indexCurveColumn].name = targetLog.indexCurve;
+        header[indexCurveColumn].name = log.indexCurve;
         if (
-          targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
+          log.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
           indexCurveColumn !== null
         ) {
           // las file time
@@ -218,6 +235,7 @@ const LogDataImportModal = (
         // csv files
         const headerLine = text.split("\n", 1)[0];
         header = parseCSVHeader(headerLine);
+        validate(header, log);
         data = text
           .split("\n")
           .slice(1)
@@ -320,7 +338,7 @@ const LogDataImportModal = (
     <>
       {
         <ModalDialog
-          heading={`Import data into "${targetLog.name}"`}
+          heading={`Import data into "${targetLogReference.name}"`}
           content={
             <Container>
               <FileContainer>
@@ -329,13 +347,16 @@ const LogDataImportModal = (
                   color={"primary"}
                   component="label"
                   startIcon={<Icon name="cloudUpload" />}
+                  disabled={isFetchingLog}
                 >
                   <Typography noWrap>Upload File</Typography>
                   <input
                     type="file"
                     accept=".csv,text/csv,.las,.txt"
                     hidden
-                    onChange={handleFileChange}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      handleFileChange(e, targetLog)
+                    }
                   />
                 </Button>
                 <Tooltip placement={"top"} title={uploadedFile?.name ?? ""}>
@@ -476,10 +497,12 @@ const LogDataImportModal = (
           width={ModalWidth.LARGE}
           height="800px"
           minHeight="650px"
-          confirmDisabled={!uploadedFile || !!error || isFetchingLogCurveInfo}
+          confirmDisabled={
+            !uploadedFile || !!error || isFetchingLogCurveInfo || isFetchingLog
+          }
           confirmText={"Import"}
           onSubmit={() => onSubmit()}
-          isLoading={isLoading}
+          isLoading={isLoading || isFetchingLog}
           errorMessage={error}
         />
       }

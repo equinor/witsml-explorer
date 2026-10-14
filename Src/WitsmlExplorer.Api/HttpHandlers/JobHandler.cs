@@ -37,7 +37,8 @@ namespace WitsmlExplorer.Api.HttpHandlers
                 WitsmlTargetUsername = eh.TargetUsername,
                 WitsmlSourceUsername = eh.SourceUsername,
                 SourceServer = eh.SourceServer,
-                TargetServer = eh.TargetServer
+                TargetServer = eh.TargetServer,
+                WitsmlProtocol = eh.WitsmlProtocol
             };
             return TypedResults.Ok(await jobService.CreateJob(jobType, jobInfo, httpRequest.Body));
         }

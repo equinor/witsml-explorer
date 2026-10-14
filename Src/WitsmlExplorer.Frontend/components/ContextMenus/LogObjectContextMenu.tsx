@@ -93,6 +93,16 @@ const LogObjectContextMenu = (
   const filteredServers = useServerFilter(servers);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const isKnownIndexType = checkedObjects.every(
+    (obj) => (obj as LogObject)?.indexType !== null
+  );
+  const isSameKnownIndexType =
+    isKnownIndexType &&
+    checkedObjects.every(
+      (obj) =>
+        (obj as LogObject)?.indexType ===
+        (checkedObjects[0] as LogObject)?.indexType
+    );
 
   const onClickTrimLogObject = () => {
     const logObject = checkedObjects[0];
@@ -151,15 +161,10 @@ const LogObjectContextMenu = (
   const onClickAgentSettings = async () => {
     dispatchOperation({ type: OperationType.HideContextMenu });
 
-    if (
-      (!!localPrioritizedCurves && localPrioritizedCurves.length > 0) ||
-      (!!universalPrioritizedCurves && universalPrioritizedCurves.length > 0)
-    ) {
-      dispatchOperation({
-        type: OperationType.DisplayModal,
-        payload: <AgentSettingsModal />
-      });
-    }
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <AgentSettingsModal />
+    });
   };
 
   const orderCopyJob = () => {
@@ -387,7 +392,7 @@ const LogObjectContextMenu = (
             <MenuItem
               key={"splice"}
               onClick={onClickSplice}
-              disabled={checkedObjects.length < 2}
+              disabled={checkedObjects.length < 2 || !isSameKnownIndexType}
             >
               <StyledIcon
                 name="compare"
@@ -416,7 +421,7 @@ const LogObjectContextMenu = (
             <MenuItem
               key={"comparelogheader"}
               onClick={onClickCompareHeader}
-              disabled={checkedObjects.length > 2}
+              disabled={checkedObjects.length > 2 || !isSameKnownIndexType}
             >
               <StyledIcon
                 name="compare"
@@ -431,7 +436,7 @@ const LogObjectContextMenu = (
             <MenuItem
               key={"comparelogdata"}
               onClick={onClickCompareData}
-              disabled={checkedObjects.length > 2}
+              disabled={checkedObjects.length > 2 || !isSameKnownIndexType}
             >
               <StyledIcon
                 name="compare"
@@ -498,8 +503,10 @@ const LogObjectContextMenu = (
               key={"minimumDataQc"}
               onClick={onClickMinimumDataQc}
               disabled={
-                localPrioritizedCurves.length == 0 &&
-                universalPrioritizedCurves.length == 0
+                checkedObjects.length !== 1 ||
+                !(checkedObjects[0] as LogObject)?.indexType ||
+                (localPrioritizedCurves.length == 0 &&
+                  universalPrioritizedCurves.length == 0)
               }
             >
               <StyledIcon
@@ -523,7 +530,7 @@ const LogObjectContextMenu = (
       <MenuItem
         key={"importlogdata"}
         onClick={onClickImport}
-        disabled={checkedObjects.length === 0}
+        disabled={checkedObjects.length !== 1}
       >
         <StyledIcon name="upload" color={colors.interactive.primaryResting} />
         <Typography color={"primary"}>Import log data</Typography>
@@ -552,7 +559,10 @@ const LogObjectContextMenu = (
         <MenuItem
           key={"open"}
           onClick={onClickOpenSeveralLogs}
-          disabled={checkedObjects.length > 8}
+          disabled={
+            checkedObjects.length > 8 ||
+            (checkedObjects.length > 1 && !isSameKnownIndexType)
+          }
         >
           <StyledIcon
             name="folderOpen"

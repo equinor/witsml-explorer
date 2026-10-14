@@ -62,6 +62,9 @@ import {
   getMultipleLogCurveSelectionViewPath,
   getObjectGroupsViewPath
 } from "routes/utils/pathBuilder";
+import AuthorizationService, {
+  WitsmlProtocol
+} from "services/authorizationService";
 import JobService, { JobType } from "services/jobService";
 import { colors } from "styles/Colors";
 import { openRouteInNewWindow } from "tools/windowHelpers";
@@ -378,7 +381,12 @@ const WellboreContextMenu = (
           requiredRole={UserRole.Advanced}
           key="multiLogSelect"
         >
-          <MenuItem onClick={onClickMultiLogSelect}>
+          <MenuItem
+            onClick={onClickMultiLogSelect}
+            disabled={
+              AuthorizationService.witsmlProtocol === WitsmlProtocol.Etp
+            }
+          >
             <StyledIcon
               name="viewList"
               color={colors.interactive.primaryResting}

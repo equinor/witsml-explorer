@@ -1,8 +1,4 @@
 import { useEffect } from "react";
-import {
-  WITSML_INDEX_TYPE_DATE_TIME,
-  WITSML_INDEX_TYPE_MD
-} from "../components/Constants";
 import { useSidebar } from "../contexts/sidebarContext";
 import { SidebarActionType } from "../contexts/sidebarReducer";
 import { ObjectType } from "../models/objectType";
@@ -19,7 +15,7 @@ export function useExpandSidebarNodes(
   wellUid: string,
   wellboreUid?: string,
   objectType?: ObjectType,
-  logType?: string,
+  logType?: RouterLogType,
   logName?: string
 ) {
   const { dispatchSidebar } = useSidebar();
@@ -41,19 +37,16 @@ export function useExpandSidebarNodes(
     }
 
     if (wellUid && wellboreUid && logType) {
-      nodeIds.push(
-        calculateLogTypeId(
-          { wellUid, uid: wellboreUid },
-          logType === RouterLogType.DEPTH
-            ? WITSML_INDEX_TYPE_MD
-            : WITSML_INDEX_TYPE_DATE_TIME
-        )
-      );
+      nodeIds.push(calculateLogTypeId({ wellUid, uid: wellboreUid }, logType));
     }
 
     if (wellUid && wellboreUid && logType && logName) {
       nodeIds.push(
-        calculateMultipleLogsNode({ wellUid, uid: wellboreUid }, logName)
+        calculateMultipleLogsNode(
+          { wellUid, uid: wellboreUid },
+          logType,
+          logName
+        )
       );
     }
 

@@ -7,7 +7,9 @@ import {
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import DataWorkOrderContextMenu from "components/ContextMenus/DataWorkOrderContextMenu";
 import { ObjectContextMenuProps } from "components/ContextMenus/ObjectMenuItems";
-import formatDateString from "components/DateFormatter";
+import formatDateString, {
+  formatTimeWithOffset
+} from "components/DateFormatter";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import OperationType from "contexts/operationType";
 import { useGetObjects } from "hooks/query/useGetObjects";
@@ -33,12 +35,18 @@ export default function DataWorkOrdersListView() {
   const navigate = useNavigate();
   const { wellUid, wellboreUid } = useParams();
   const { connectedServer } = useConnectedServer();
-  const { objects: dataWorkOrders, responseTime } = useGetObjects(
+  const {
+    objects: dataWorkOrders,
+    responseTime,
+    dataUpdatedAt,
+    usedProtocol
+  } = useGetObjects(
     connectedServer,
     wellUid,
     wellboreUid,
     ObjectType.DataWorkOrder
   );
+  const lastFetched = formatTimeWithOffset(dataUpdatedAt, timeZone) ?? "";
 
   useExpandSidebarNodes(wellUid, wellboreUid, ObjectType.DataWorkOrder);
 
@@ -80,16 +88,17 @@ export default function DataWorkOrdersListView() {
         ...dataWorkOrder.commonData,
         id: dataWorkOrder.uid,
         dataWorkOrder: dataWorkOrder,
-        setsCount: (
-          <StyledLink
-            to={getDwoDetailPath(dataWorkOrder.uid)}
-            colors={colors}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Icon name="layers" size={16} />
-            {dataWorkOrder.dataSourceConfigurationSets.length} Sets
-          </StyledLink>
-        ),
+        setsCount:
+          dataWorkOrder.dataSourceConfigurationSets == null ? null : (
+            <StyledLink
+              to={getDwoDetailPath(dataWorkOrder.uid)}
+              colors={colors}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Icon name="layers" size={16} />
+              {dataWorkOrder.dataSourceConfigurationSets?.length} Sets
+            </StyledLink>
+          ),
         dTimPlannedStart: formatDateString(
           dataWorkOrder.dTimPlannedStart,
           timeZone,
@@ -101,12 +110,12 @@ export default function DataWorkOrdersListView() {
           dateTimeFormat
         ),
         dTimCreation: formatDateString(
-          dataWorkOrder.commonData.dTimCreation,
+          dataWorkOrder.commonData?.dTimCreation,
           timeZone,
           dateTimeFormat
         ),
         dTimLastChange: formatDateString(
-          dataWorkOrder.commonData.dTimLastChange,
+          dataWorkOrder.commonData?.dTimLastChange,
           timeZone,
           dateTimeFormat
         )
@@ -171,6 +180,8 @@ export default function DataWorkOrdersListView() {
         showRefresh
         downloadToCsvFileName="DataWorkOrders"
         responseTime={responseTime}
+        lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     )
   );

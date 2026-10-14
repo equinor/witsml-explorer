@@ -1,20 +1,20 @@
 import { TextField } from "@equinor/eds-core-react";
 import OperationType from "contexts/operationType";
+import { ChangeEvent, useState } from "react";
+import AuthorizationService from "services/authorizationService";
+import { v4 as uuid } from "uuid";
+import { useOperationState } from "../../hooks/useOperationState";
+import { CopyObjectsJob } from "../../models/jobs/copyJobs";
 import ObjectOnWellbore, {
   toObjectReferences
 } from "../../models/objectOnWellbore";
 import { ObjectType } from "../../models/objectType";
-import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
-import AuthorizationService from "services/authorizationService";
-import { ChangeEvent, useState } from "react";
-import { useOperationState } from "../../hooks/useOperationState";
-import { validText } from "./ModalParts";
-import ModalDialog from "./ModalDialog";
-import { CopyObjectsJob } from "../../models/jobs/copyJobs";
-import JobService, { JobType } from "../../services/jobService";
-import { v4 as uuid } from "uuid";
-import { onClickPaste } from "../ContextMenus/CopyUtils";
 import { Server } from "../../models/server";
+import JobService, { JobType } from "../../services/jobService";
+import { onClickPaste } from "../ContextMenus/CopyUtils";
+import { ModalContentLayout } from "../StyledComponents/ModalContentLayout";
+import ModalDialog from "./ModalDialog";
+import { validText } from "./ModalParts";
 
 export interface DuplicateObjectModalProps {
   servers: Server[];
@@ -38,8 +38,6 @@ const DuplicateObjectModal = (
       maxLogNameLength - duplicateNameSuffix.length
     ) + duplicateNameSuffix
   );
-
-  const wellbore = objectsOnWellbore[0].wellboreName;
 
   const onConfirm = async () => {
     dispatchOperation({ type: OperationType.HideModal });
@@ -86,7 +84,10 @@ const DuplicateObjectModal = (
             readOnly
             id="wellbore"
             label="Wellbore"
-            defaultValue={wellbore}
+            defaultValue={
+              objectsOnWellbore[0].wellboreName ??
+              objectsOnWellbore[0].wellboreUid
+            }
             tabIndex={-1}
           />
 

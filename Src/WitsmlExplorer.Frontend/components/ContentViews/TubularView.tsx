@@ -61,7 +61,8 @@ export default function TubularView() {
     components: tubularComponents,
     isFetching: isFetchingTubularComponents,
     responseTime: responseTimeComponents,
-    dataUpdatedAt: dataUpdatedAtComponents
+    dataUpdatedAt: dataUpdatedAtComponents,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -172,6 +173,7 @@ export default function TubularView() {
         downloadToCsvFileName={`Tubular_${tubular?.name}`}
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     </>
   );

@@ -1,44 +1,44 @@
-import ProgressSpinner from "../../ProgressSpinner.tsx";
-import MultiLogSelectionRepository from "../../MultiLogSelectionRepository.tsx";
+import { useOperationState } from "hooks/useOperationState.tsx";
+import { useCallback, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
+import { useLoggedInUsernames } from "../../../contexts/loggedInUsernamesContext.tsx";
+import { LoggedInUsernamesActionType } from "../../../contexts/loggedInUsernamesReducer.tsx";
+import { DisplayModalAction } from "../../../contexts/operationStateReducer.tsx";
+import OperationType from "../../../contexts/operationType.ts";
+import { useGetServers } from "../../../hooks/query/useGetServers.tsx";
+import LogObject from "../../../models/logObject.tsx";
+import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
+import { ObjectType } from "../../../models/objectType.ts";
+import { RouterLogType } from "../../../routes/routerConstants.ts";
+import AuthorizationService from "../../../services/authorizationService.ts";
+import ObjectService from "../../../services/objectService.tsx";
 import {
   WITSML_INDEX_TYPE,
   WITSML_INDEX_TYPE_DATE_TIME,
   WITSML_INDEX_TYPE_MD
 } from "../../Constants.tsx";
-import { useCallback, useEffect, useState } from "react";
-import LogObject from "../../../models/logObject.tsx";
-import { useGetServers } from "../../../hooks/query/useGetServers.tsx";
-import {
-  GetStartIndex,
-  GetEndIndex,
-  MultiLogSelectionCurveInfo,
-  GetMultiLogWizardStepModalAction,
-  MultiLogWizardParams,
-  MultiLogMetadata
-} from "../../MultiLogUtils.tsx";
-import MultiLogCurveSelectionList from "./MultiLogCurveSelectionList.tsx";
-import MultiLogCurveSelectionValues from "./MultiLogCurveSelectionValues.tsx";
-import { ObjectType } from "../../../models/objectType.ts";
-import ObjectService from "../../../services/objectService.tsx";
-import { LogCurveInfoRow } from "../LogCurveInfoListViewUtils.tsx";
-import UserCredentialsModal, {
-  UserCredentialsModalProps
-} from "../../Modals/UserCredentialsModal.tsx";
-import OperationType from "../../../contexts/operationType.ts";
-import AuthorizationService from "../../../services/authorizationService.ts";
-import { LoggedInUsernamesActionType } from "../../../contexts/loggedInUsernamesReducer.tsx";
-import { useOperationState } from "hooks/useOperationState.tsx";
-import { useLoggedInUsernames } from "../../../contexts/loggedInUsernamesContext.tsx";
+import ConfirmModal from "../../Modals/ConfirmModal.tsx";
 import IndexRangeSelectionModal, {
   IndexRangeSelectionModalProps
 } from "../../Modals/IndexRangeSelectionModal.tsx";
-import { DisplayModalAction } from "../../../contexts/operationStateReducer.tsx";
-import ConfirmModal from "../../Modals/ConfirmModal.tsx";
-import MultiLogCurveInfo from "../../../models/multilogCurveInfo.ts";
-import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
-import { useParams } from "react-router-dom";
-import { RouterLogType } from "../../../routes/routerConstants.ts";
 import GlobalMnemonicsLoadingModal from "../../Modals/MultiLogCurveSelection/GlobalMnemonicsLoadingModal.tsx";
+import UserCredentialsModal, {
+  UserCredentialsModalProps
+} from "../../Modals/UserCredentialsModal.tsx";
+import MultiLogSelectionRepository from "../../MultiLogSelectionRepository.tsx";
+import {
+  GetEndIndex,
+  GetMultiLogWizardStepModalAction,
+  GetStartIndex,
+  MultiLogMetadata,
+  MultiLogSelectionCurveInfo,
+  MultiLogWizardParams
+} from "../../MultiLogUtils.tsx";
+import ProgressSpinner from "../../ProgressSpinner.tsx";
+import { LogCurveInfoRow } from "../LogCurveInfoListViewUtils.tsx";
+import MultiLogCurveSelectionList from "./MultiLogCurveSelectionList.tsx";
+import MultiLogCurveSelectionValues from "./MultiLogCurveSelectionValues.tsx";
 
 export default function MultiLogCurveSelectionView() {
   const { dispatchOperation } = useOperationState();
@@ -200,7 +200,7 @@ export default function MultiLogCurveSelectionView() {
   const getLogObjects = async (multiLogMetadatas: MultiLogMetadata[]) => {
     const los: LogObject[] = [];
     for (const multiLogMetadata of multiLogMetadatas) {
-      const logObject = await ObjectService.getObject(
+      const logObjectResult = await ObjectService.getObject(
         multiLogMetadata.wellId,
         multiLogMetadata.wellboreId,
         multiLogMetadata.logId,
@@ -208,6 +208,7 @@ export default function MultiLogCurveSelectionView() {
         new AbortController().signal,
         multiLogMetadata.server
       );
+      const logObject = logObjectResult.data;
       if (logObject) {
         los.push(logObject);
       }

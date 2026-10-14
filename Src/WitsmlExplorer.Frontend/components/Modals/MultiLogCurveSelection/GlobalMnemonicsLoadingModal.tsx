@@ -1,39 +1,39 @@
-import { Server } from "../../../models/server.ts";
-import { WITSML_INDEX_TYPE } from "../../Constants.tsx";
+import { Switch, Typography } from "@equinor/eds-core-react";
 import React, { useContext, useMemo, useState } from "react";
-import ModalDialog, { ModalWidth } from "../ModalDialog.tsx";
+import styled from "styled-components";
+import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
+import { FilterContext } from "../../../contexts/filter.tsx";
+import { useLoggedInUsernames } from "../../../contexts/loggedInUsernamesContext.tsx";
+import { LoggedInUsernamesActionType } from "../../../contexts/loggedInUsernamesReducer.tsx";
+import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
 import OperationType from "../../../contexts/operationType.ts";
+import { useGetServers } from "../../../hooks/query/useGetServers.tsx";
 import { useOperationState } from "../../../hooks/useOperationState.tsx";
+import { useServerFilter } from "../../../hooks/useServerFilter.ts";
+import { ObjectType } from "../../../models/objectType.ts";
+import { Server } from "../../../models/server.ts";
+import AuthorizationService from "../../../services/authorizationService.ts";
+import MnemonicsMappingService from "../../../services/mnemonicsMappingService.tsx";
+import ObjectService from "../../../services/objectService.tsx";
+import WellboreService from "../../../services/wellboreService.tsx";
+import {
+  setLocalStorageItem,
+  STORAGE_FILTER_PRIORITYSERVERS_KEY
+} from "../../../tools/localStorageHelpers.tsx";
+import { WITSML_INDEX_TYPE } from "../../Constants.tsx";
 import {
   ContentTable,
   ContentTableColumn,
   ContentTableRow,
   ContentType
 } from "../../ContentViews/table";
-import { Switch, Typography } from "@equinor/eds-core-react";
-import styled from "styled-components";
-import { useGetServers } from "../../../hooks/query/useGetServers.tsx";
-import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
-import {
-  setLocalStorageItem,
-  STORAGE_FILTER_PRIORITYSERVERS_KEY
-} from "../../../tools/localStorageHelpers.tsx";
-import { UserTheme } from "../../../contexts/operationStateReducer.tsx";
-import { FilterContext } from "../../../contexts/filter.tsx";
-import { useServerFilter } from "../../../hooks/useServerFilter.ts";
-import { MultiLogSelectionCurveInfo } from "../../MultiLogUtils.tsx";
 import MultiLogSelectionRepository from "../../MultiLogSelectionRepository.tsx";
-import { useConnectedServer } from "../../../contexts/connectedServerContext.tsx";
-import WellboreService from "../../../services/wellboreService.tsx";
-import MnemonicsMappingService from "../../../services/mnemonicsMappingService.tsx";
-import ObjectService from "../../../services/objectService.tsx";
-import { ObjectType } from "../../../models/objectType.ts";
+import { MultiLogSelectionCurveInfo } from "../../MultiLogUtils.tsx";
+import { CommonPanelContainer } from "../../StyledComponents/Container.tsx";
+import ModalDialog, { ModalWidth } from "../ModalDialog.tsx";
 import UserCredentialsModal, {
   UserCredentialsModalProps
 } from "../UserCredentialsModal.tsx";
-import AuthorizationService from "../../../services/authorizationService.ts";
-import { LoggedInUsernamesActionType } from "../../../contexts/loggedInUsernamesReducer.tsx";
-import { useLoggedInUsernames } from "../../../contexts/loggedInUsernamesContext.tsx";
 
 interface ServerRow extends ContentTableRow, Omit<Server, "id"> {
   server: Server;
@@ -102,11 +102,12 @@ const GlobalMnemonicsLoadingModal = (
           }
         }
 
-        const targetWellbore = await WellboreService.getWellboreByName(
+        const targetWellboreResult = await WellboreService.getWellboreByName(
           mnemonicToLoad.wellboreName,
           undefined,
           server
         );
+        const targetWellbore = targetWellboreResult.data;
 
         if (targetWellbore) {
           const mnemonicsMappings =
@@ -116,13 +117,14 @@ const GlobalMnemonicsLoadingModal = (
             });
 
           if (mnemonicsMappings?.mappings?.length > 0) {
-            const logs = await ObjectService.getObjects(
+            const logsResult = await ObjectService.getObjects(
               targetWellbore.wellUid,
               targetWellbore.uid,
               ObjectType.Log,
               null,
               server
             );
+            const logs = logsResult.data;
 
             for (const log of logs) {
               for (const mnemonicMapping of mnemonicsMappings.mappings) {

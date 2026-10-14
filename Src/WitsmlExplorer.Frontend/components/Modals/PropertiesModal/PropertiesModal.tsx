@@ -1,3 +1,4 @@
+import { CircularProgress } from "@equinor/eds-core-react";
 import { getNestedValue } from "components/Modals/PropertiesModal/NestedPropertyHelpers";
 import { PropertiesRenderer } from "components/Modals/PropertiesModal/PropertiesRenderer";
 import { PropertyType } from "components/Modals/PropertiesModal/PropertyTypes";
@@ -13,6 +14,7 @@ export interface PropertiesModalProps<T> {
   object: T;
   properties: PropertiesModalProperty<T>[];
   onSubmit: (updates: Partial<T>) => void;
+  isLoading?: boolean;
 }
 
 /**
@@ -39,7 +41,7 @@ export interface PropertiesModalProps<T> {
 export const PropertiesModal = <T,>(
   props: PropertiesModalProps<T>
 ): ReactElement => {
-  const { title, object, properties, onSubmit } = props;
+  const { title, object, properties, onSubmit, isLoading } = props;
   const [updates, setUpdates] = useState<Partial<T>>({});
   const allValid = properties.every((prop) =>
     isPropertyValid(prop, object, updates)
@@ -80,18 +82,28 @@ export const PropertiesModal = <T,>(
       heading={title}
       content={
         <Layout>
-          {properties.length === 0 && <p>No properties to update.</p>}
-          <PropertiesRenderer
-            properties={properties}
-            object={object}
-            updates={updates}
-            onChange={setUpdates}
-          />
+          {isLoading ? (
+            <CircularProgress
+              key="loading"
+              size={32}
+              style={{ margin: "8px" }}
+            />
+          ) : (
+            <>
+              {properties.length === 0 && <p>No properties to update.</p>}
+              <PropertiesRenderer
+                properties={properties}
+                object={object}
+                updates={updates}
+                onChange={setUpdates}
+              />
+            </>
+          )}
         </Layout>
       }
       confirmDisabled={!allValid || !anyUpdates}
       onSubmit={onInternalSubmit}
-      isLoading={false}
+      isLoading={isLoading ?? false}
     />
   );
 };

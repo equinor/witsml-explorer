@@ -1,7 +1,9 @@
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
+import { WitsmlProtocol } from "services/authorizationService";
 import { Server } from "../../models/server";
 import { ExpandableObjectsCount } from "../../models/wellbore";
 import ObjectService from "../../services/objectService";
+import { ProtocolAwareResponse } from "../../services/protocolAwareResponse";
 import { QUERY_KEY_OBJECT_COUNT, QUERY_KEY_WELLBORE } from "./queryKeys";
 import { QueryOptions } from "./queryOptions";
 
@@ -36,15 +38,24 @@ export const objectCountQuery = (
     return objectCount;
   },
   ...options,
+  placeholderData:
+    options?.placeholderData == null
+      ? undefined
+      : ({
+          data: options?.placeholderData,
+          usedProtocol: undefined
+        } as ProtocolAwareResponse<ExpandableObjectsCount>),
   enabled:
     !!server && !!wellUid && !!wellboreUid && !(options?.enabled === false)
 });
 
 type ObjectCountQueryResult = Omit<
-  QueryObserverResult<ExpandableObjectsCount, unknown>,
+  QueryObserverResult<ProtocolAwareResponse<ExpandableObjectsCount>, unknown>,
   "data"
 > & {
   objectCount: ExpandableObjectsCount;
+  responseTime?: number;
+  usedProtocol?: WitsmlProtocol;
 };
 
 export const useGetObjectCount = (
@@ -53,8 +64,12 @@ export const useGetObjectCount = (
   wellboreUid: string,
   options?: QueryOptions
 ): ObjectCountQueryResult => {
-  const { data, ...state } = useQuery<ExpandableObjectsCount>(
-    objectCountQuery(server, wellUid, wellboreUid, options)
-  );
-  return { objectCount: data, ...state };
+  const { data, ...state } = useQuery<
+    ProtocolAwareResponse<ExpandableObjectsCount>
+  >(objectCountQuery(server, wellUid, wellboreUid, options));
+  return {
+    objectCount: data?.data ?? null,
+    usedProtocol: data?.usedProtocol,
+    ...state
+  };
 };

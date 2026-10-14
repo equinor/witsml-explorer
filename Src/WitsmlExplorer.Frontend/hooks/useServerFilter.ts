@@ -9,7 +9,10 @@ const filterServersByPriority = (servers: Server[]): Server[] => {
 const filterServersByName = (servers: Server[], filterByName: string) => {
   const searchRegex = getSearchRegex(filterByName);
   return servers.filter(
-    (server) => searchRegex.test(server.name) || searchRegex.test(server.url)
+    (server) =>
+      searchRegex.test(server.name) ||
+      searchRegex.test(server.url) ||
+      (server.etpUrl != null && searchRegex.test(server.etpUrl))
   );
 };
 

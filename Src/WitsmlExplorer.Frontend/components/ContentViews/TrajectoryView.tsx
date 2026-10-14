@@ -62,7 +62,8 @@ export default function TrajectoryView() {
     components: trajectoryStations,
     isFetching: isFetchingTrajectoryStations,
     responseTime: responseTimeComponents,
-    dataUpdatedAt: dataUpdatedAtComponents
+    dataUpdatedAt: dataUpdatedAtComponents,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -164,6 +165,7 @@ export default function TrajectoryView() {
         downloadToCsvFileName={`Trajectory_${trajectory?.name}`}
         responseTime={responseTime}
         lastFetched={lastFetched}
+        usedProtocol={usedProtocol}
       />
     </>
   );

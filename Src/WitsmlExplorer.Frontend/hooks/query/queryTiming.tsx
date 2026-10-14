@@ -13,11 +13,3 @@ export type TimedResponse<T> = {
   data: T;
   responseTime: number;
 };
-
-export function wrapPlaceholderData<T>(
-  placeholderData?: T
-): TimedResponse<T> | undefined {
-  return placeholderData !== undefined
-    ? { data: placeholderData, responseTime: 0 }
-    : undefined;
-}

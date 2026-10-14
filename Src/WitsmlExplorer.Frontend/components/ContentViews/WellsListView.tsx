@@ -31,7 +31,8 @@ export default function WellsListView() {
     wells,
     isFetching,
     responseTime: responseTime,
-    dataUpdatedAt
+    dataUpdatedAt,
+    usedProtocol
   } = useGetWells(connectedServer, {
     placeholderData: []
   });
@@ -121,6 +122,7 @@ export default function WellsListView() {
           showRefresh
           responseTime={responseTime}
           lastFetched={lastFetched}
+          usedProtocol={usedProtocol}
         />
       )}
     </>

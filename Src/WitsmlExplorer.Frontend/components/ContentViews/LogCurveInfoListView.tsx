@@ -1,4 +1,5 @@
 import { Switch, Typography } from "@equinor/eds-core-react";
+import { WITSML_INDEX_TYPE_MD } from "components/Constants.tsx";
 import { ContentTable } from "components/ContentViews/table";
 import { getContextMenuPosition } from "components/ContextMenus/ContextMenu";
 import LogCurveInfoContextMenu, {
@@ -52,7 +53,13 @@ export default function LogCurveInfoListView() {
     operationState: { timeZone, dateTimeFormat, theme }
   } = useOperationState();
   const { dispatchOperation } = useOperationState();
-  const { wellUid, wellboreUid, logType, objectUid } = useParams();
+  const {
+    wellUid,
+    wellboreUid,
+    logType: logTypeString,
+    objectUid
+  } = useParams();
+  const logType = logTypeString as RouterLogType;
   const { connectedServer } = useConnectedServer();
   const { servers } = useGetServers();
   const {
@@ -75,7 +82,8 @@ export default function LogCurveInfoListView() {
     components: logCurveInfoList,
     isFetching: isFetchingLogCurveInfo,
     responseTime: responseTimeComponents,
-    dataUpdatedAt: dataUpdatedAtComponents
+    dataUpdatedAt: dataUpdatedAtComponents,
+    usedProtocol
   } = useGetComponents(
     connectedServer,
     wellUid,
@@ -96,7 +104,7 @@ export default function LogCurveInfoListView() {
     string[]
   >([]);
   const logObjects = new Map<string, LogObject>([[objectUid, logObject]]);
-  const isDepthIndex = logType === RouterLogType.DEPTH;
+  const isDepthIndex = logObject?.indexType === WITSML_INDEX_TYPE_MD;
   const isFetching = isFetchingLog || isFetchingLogCurveInfo;
   const responseTime = isFetching
     ? 0
@@ -264,11 +272,7 @@ export default function LogCurveInfoListView() {
       {isFetching && <ProgressSpinnerOverlay message={`Fetching Log.`} />}
       {logObject && (
         <ContentTable
-          viewId={
-            isDepthIndex
-              ? "depthLogCurveInfoListView"
-              : "timeLogCurveInfoListView"
-          }
+          viewId={`${logType}LogCurveInfoListView`}
           panelElements={panelElements}
           columns={getColumns(
             isDepthIndex,
@@ -296,6 +300,7 @@ export default function LogCurveInfoListView() {
           downloadToCsvFileName={`LogCurveInfo_${logObject.name}`}
           responseTime={responseTime}
           lastFetched={lastFetched}
+          usedProtocol={usedProtocol}
         />
       )}
     </>
