@@ -474,17 +474,20 @@ namespace WitsmlExplorer.Api.Services.ETP
                 }
             }
 
-            await client.StartStreamAsync(streamId, channelIds, streamStartIndex, ct);
+            if (streamId != "")
+            {
+                await client.StartStreamAsync(streamId, channelIds, streamStartIndex, ct);
 
-            _streamState.Set(
-                streamId,
-                channelRecords,
-                channelMnemonicById,
-                indexCurveMnemonic,
-                indexUom,
-                firstChannel.indexes[0].direction.ToString(),
-                isTimeBased,
-                client);
+                _streamState.Set(
+                    streamId,
+                    channelRecords,
+                    channelMnemonicById,
+                    indexCurveMnemonic,
+                    indexUom,
+                    firstChannel.indexes[0].direction.ToString(),
+                    isTimeBased,
+                    client);
+            }
 
             return true;
 

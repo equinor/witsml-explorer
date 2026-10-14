@@ -74,6 +74,9 @@ const DEPTH_INDEX_OFFSET = 1000000; // offset from current end index that should
 const DEFAULT_REFRESH_DELAY = 5.0; // seconds
 const AUTO_REFRESH_TIMEOUT = 1.0; // minutes
 
+const CreateNewStreamId = () =>
+  globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
+
 export interface CurveValueRow extends LogDataRow, ContentTableRow {}
 
 export const CurveValuesView = (): React.ReactElement => {
@@ -103,9 +106,7 @@ export const CurveValuesView = (): React.ReactElement => {
   const controller = useRef(new AbortController());
   const refreshDelayTimer = useRef<ReturnType<typeof setTimeout>>();
   const stopAutoRefreshTimer = useRef<ReturnType<typeof setTimeout>>();
-  const streamIdRef = useRef<string>(
-    globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`
-  );
+  const streamIdRef = useRef<string>(CreateNewStreamId());
   const streamingStopRequestRef = useRef({
     wellUid: undefined as string,
     wellboreUid: undefined as string,
@@ -125,7 +126,6 @@ export const CurveValuesView = (): React.ReactElement => {
     objectUid
   );
   const { exportData, exportOptions } = useExport();
-  const justFinishedStreaming = useRef(false);
   const { components: logCurveInfoList, isFetching: isFetchingLogCurveInfo } =
     useGetComponents(
       connectedServer,
@@ -158,7 +158,7 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [wellUid, wellboreUid, objectUid, mnemonics]);
 
   useEffect(() => {
-    if (refreshFlag != null && autoRefresh) {
+    if (refreshFlag != null && autoRefresh && streamIdRef.current) {
       // Fetch new data (streaming)
       const startIndex = getCurrentMaxIndex();
       const endIndex = getOffsetIndex(
@@ -167,8 +167,17 @@ export const CurveValuesView = (): React.ReactElement => {
         DEPTH_INDEX_OFFSET
       );
       getLogData(startIndex, endIndex, true).then(() => {
+        if (!streamIdRef.current) {
+          return;
+        }
+
         refreshDelayTimer.current = setTimeout(
-          () => setRefreshFlag((flag) => !flag),
+          () => {
+            if (!streamIdRef.current) {
+              return;
+            }
+            setRefreshFlag((flag) => !flag);
+          },
           refreshDelay * MILLIS_IN_SECOND
         );
       });
@@ -191,23 +200,42 @@ export const CurveValuesView = (): React.ReactElement => {
     };
   }, [autoRefresh]);
 
-  const stopAutoRefreshTimerCallback = async () => {
+  const stopStreaming = async () => {
     const { wellUid, wellboreUid, objectUid, mnemonics } =
       streamingStopRequestRef.current;
 
-    if (wellUid && wellboreUid && objectUid) {
+    setAutoRefresh(false);
+
+    if (refreshDelayTimer.current) {
+      clearTimeout(refreshDelayTimer.current);
+      refreshDelayTimer.current = undefined;
+    }
+
+    if (stopAutoRefreshTimer.current) {
+      clearTimeout(stopAutoRefreshTimer.current);
+      stopAutoRefreshTimer.current = undefined;
+    }
+
+    controller.current?.abort();
+
+    const streamId = streamIdRef.current;
+    streamIdRef.current = "";
+
+    if (wellUid && wellboreUid && objectUid && streamId) {
       await LogObjectService.stopStream(
         wellUid,
         wellboreUid,
         objectUid,
-        streamIdRef.current,
+        streamId,
         mnemonics
       );
     }
 
-    justFinishedStreaming.current = true;
-    setAutoRefresh(false);
     updateSearchParamsAfterStreaming();
+  };
+
+  const stopAutoRefreshTimerCallback = async () => {
+    await stopStreaming();
     const confirmation = (
       <ConfirmModal
         heading={"Stream stopped"}
@@ -313,12 +341,7 @@ export const CurveValuesView = (): React.ReactElement => {
   }, [tableData, columns, timeZone, dateTimeFormat]);
 
   useEffect(() => {
-    if (!justFinishedStreaming.current) {
-      // This is to prevent refreshing after the search params has been updated after the steam is stopped.
-      refreshData();
-    } else {
-      justFinishedStreaming.current = false;
-    }
+    refreshData();
     return () => controller.current?.abort();
   }, [startIndex, endIndex, mnemonics, log]);
 
@@ -344,21 +367,10 @@ export const CurveValuesView = (): React.ReactElement => {
 
   const onClickAutoRefresh = async () => {
     if (autoRefresh) {
-      const { wellUid, wellboreUid, objectUid, mnemonics } =
-        streamingStopRequestRef.current;
-      if (wellUid && wellboreUid && objectUid) {
-        await LogObjectService.stopStream(
-          wellUid,
-          wellboreUid,
-          objectUid,
-          streamIdRef.current,
-          mnemonics
-        );
-      }
-      justFinishedStreaming.current = true;
-      setAutoRefresh(false);
-      updateSearchParamsAfterStreaming();
+      await stopStreaming();
     } else {
+      streamIdRef.current = CreateNewStreamId();
+
       // First fetch the latest data, then start streaming
       const isTimeLog = log.indexType === WITSML_INDEX_TYPE_DATE_TIME;
       const currentEndIndex = isTimeLog
@@ -375,7 +387,9 @@ export const CurveValuesView = (): React.ReactElement => {
         DEPTH_INDEX_OFFSET
       );
       getLogData(startIndex, endIndex, true).then(() => {
-        setAutoRefresh(true);
+        if (streamIdRef.current) {
+          setAutoRefresh(true);
+        }
       });
     }
   };
@@ -444,6 +458,10 @@ export const CurveValuesView = (): React.ReactElement => {
     endIndex: string,
     streaming: boolean
   ) => {
+    if (!streamIdRef.current) {
+      return;
+    }
+
     const startIndexIsInclusive = !autoRefresh;
     controller.current = new AbortController();
 

@@ -475,22 +475,20 @@ internal sealed class StreamingProtocolHandler
 
     public Task<List<ChannelData>> ReadStreamedDataAsync(string streamId, CancellationToken? cancellationToken)
     {
+        List<ChannelData> data = new List<ChannelData>();
         lock (_streamSyncRoot)
         {
-            List<ChannelData> data;
             if (StreamingDataCache.SessionData.TryGetValue(streamId, out var streamCache))
             {
                 data = streamCache.ToList();
                 streamCache.Clear();
                 _streamCacheRecordCount = 0;
-            }
-            else
-            {
-                data = new List<ChannelData>();
-            }
 
-            return Task.FromResult(data);
+            }
         }
+
+        return Task.FromResult(data);
+
     }
 
     public async Task StopStreamAsync(string streamId, CancellationToken? cancellationToken)
@@ -500,6 +498,7 @@ internal sealed class StreamingProtocolHandler
         List<long> channelIds;
         lock (_streamSyncRoot)
         {
+            StreamingDataCache.SessionData.TryRemove(streamId, out _);
             channelIds = _activeStreamChannelIds.ToList();
             _isStreamActive = false;
             _activeStreamChannelIds = [];
@@ -531,18 +530,15 @@ internal sealed class StreamingProtocolHandler
                 return;
             }
 
+            var streamCache = StreamingDataCache.SessionData.GetOrAdd(_sessionId, _ => new Queue<ChannelData>());
+
             var dataItems = response.data.Count > MaxStreamCacheRecords
                 ? response.data.Skip(response.data.Count - MaxStreamCacheRecords).ToList()
                 : response.data.ToList();
 
             var cachedResponse = new ChannelData { data = dataItems };
 
-            Queue<ChannelData> streamCache;
-            if (!StreamingDataCache.SessionData.TryGetValue(_sessionId, out streamCache))
-            {
-                streamCache = new Queue<ChannelData>();
-                StreamingDataCache.SessionData[_sessionId] = streamCache;
-            }
+            
             streamCache.Enqueue(cachedResponse);
             _streamCacheRecordCount += dataItems.Count;
 
