@@ -44,7 +44,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async void MnemonicEmpty_ModifyLogCurveInfo_ShouldThrowException()
+        public async Task MnemonicEmpty_ModifyLogCurveInfo_ShouldThrowException()
         {
             ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Mnemonic = string.Empty } };
 
@@ -57,7 +57,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async void MnemonicNull_ModifyLogCurveInfo_ShouldThrowException()
+        public async Task MnemonicNull_ModifyLogCurveInfo_ShouldThrowException()
         {
             ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Mnemonic = null } };
 
@@ -70,7 +70,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async void ModifyLogCurveInfoProperties_Execute_ValidResults()
+        public async Task ModifyLogCurveInfoProperties_Execute_ValidResults()
         {
             var expectedMnemonic = "Mnemonic1";
             var expectedUnit = "NewUnit";
@@ -102,7 +102,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
-        public async void RenameMnemonic_Execute_ValidResults()
+        public async Task RenameMnemonic_Execute_ValidResults()
         {
             var originalUid = "Mnemonic1";
             var expectedMnemonic = "NewMnemonic";
