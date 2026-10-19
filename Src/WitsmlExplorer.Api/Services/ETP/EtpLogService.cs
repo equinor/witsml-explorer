@@ -674,5 +674,20 @@ namespace WitsmlExplorer.Api.Services.ETP
             return curveSpecifications;
         }
 
+
+        private LogObject MapResourceToLog(Resource resource)
+        {
+            return new LogObject
+            {
+                Uid = EtpUriHelper.GetObjectUid(resource.uri, EntityType.Log),
+                Name = resource.name,
+                WellboreUid = EtpUriHelper.GetWellboreUid(resource.uri),
+                WellUid = EtpUriHelper.GetWellUid(resource.uri),
+                CommonData = new CommonData
+                {
+                    DTimLastChange = ToUtcDateTimeLastChange(resource.lastChanged)
+                }
+            };
+        }
     }
 }
