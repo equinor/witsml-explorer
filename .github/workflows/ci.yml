@@ -16,11 +16,11 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3 # v4.0.0
+      - uses: actions/checkout@v7.0.1
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v6.0.0
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
       - name: Build
         run: dotnet build /warnaserror --configuration Release
       - name: Install dotnet format

@@ -13,7 +13,7 @@ jobs:
     if: github.repository_owner == 'equinor'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@v7.0.1
       - name: Create repository dispatch event
         run: |
           curl -L \
