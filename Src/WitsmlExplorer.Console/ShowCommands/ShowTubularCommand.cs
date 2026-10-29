@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Spectre.Console;
@@ -24,7 +25,7 @@ namespace WitsmlExplorer.Console.ShowCommands
             _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, ShowTubularSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, ShowTubularSettings settings, CancellationToken cancellationToken)
         {
             if (_witsmlClient == null)
             {

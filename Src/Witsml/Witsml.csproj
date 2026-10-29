@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <LangVersion>latestMajor</LangVersion>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <NoWarn>$(NoWarn);NU1507</NoWarn>
   </PropertyGroup>
 
@@ -21,7 +21,6 @@
     <PackageReference Include="OpenTelemetry.Api" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.Sinks.File" />
-    <PackageReference Include="System.Formats.Asn1" />
   <PackageReference Include="System.Security.Cryptography.Pkcs" />
   <PackageReference Include="System.Security.Cryptography.Xml" />
     <PackageReference Include="System.ServiceModel.Http" />
