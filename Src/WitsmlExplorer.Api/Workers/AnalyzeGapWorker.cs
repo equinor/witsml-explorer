@@ -234,7 +234,7 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
             {
                 new() { Name = "start", Type = ReportItemType.DATE_TIME },
                 new() { Name = "end", Type = ReportItemType.DATE_TIME },
-                new() { Name = "gapsize", Type = ReportItemType.MEASURE }
+                new() { Name = "gapSize", Type = ReportItemType.MEASURE }
             };
         }
     }
