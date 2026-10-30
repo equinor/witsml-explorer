@@ -204,8 +204,33 @@ namespace WitsmlExplorer.Api.Workers
                     ? $"Found {mismatchingIndexes.Count} header index mismatches for {(isDepthLog ? "depth" : "time")} log '{logReference.Name}':"
                     : "No mismatches were found in the header indexes.",
                 LogReference = logReference,
+                ReportItemColumns = CreateReportItemColumns(isDepthLog),
                 ReportItems = mismatchingIndexes
             };
+        }
+
+        private static ICollection<ReportItemColumn> CreateReportItemColumns(bool isDepthLog)
+        {
+            if (isDepthLog)
+            {
+                return new List<ReportItemColumn>
+            {
+                new() { Name = "headerstartindex", Type = ReportItemType.MEASURE },
+                new() { Name = "datastartindex", Type = ReportItemType.MEASURE },
+                new() { Name = "headerendindex", Type = ReportItemType.MEASURE },
+                new() { Name = "dataendindex", Type = ReportItemType.MEASURE }
+            };
+            }
+            else
+            {
+                return new List<ReportItemColumn>
+            {
+                new() { Name = "headerstartindex", Type = ReportItemType.DATE_TIME },
+                new() { Name = "datastartindex", Type = ReportItemType.DATE_TIME },
+                new() { Name = "headerendindex", Type = ReportItemType.DATE_TIME },
+                new() { Name = "dataendindex", Type = ReportItemType.DATE_TIME }
+            };
+            }
         }
 
         private static List<string> ExtractColumnIndexes(List<string[]> data, int indexColumn = 0)
