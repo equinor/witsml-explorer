@@ -42,7 +42,6 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
-    "electron": "^42.11.16",
     "electron-updater": "^6.3.0"
   }
 }
