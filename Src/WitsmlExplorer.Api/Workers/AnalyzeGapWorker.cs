@@ -138,22 +138,44 @@ public class AnalyzeGapWorker : BaseWorker<AnalyzeGapJob>, IWorker
                 : new TimeSpanIndex(job.TimeGapSize);
 
 
-            if (startIndexForGap < logCurveMinMaxIndex.MinIndex && isLogIncreasing)
+            if (job.IncludeMinMaxIndex)
             {
-                CreateNoDataReportItem(gapReportItems, startIndexForGap, logCurveMinMaxIndex.MinIndex, gapSize, logMnemonic.value, isLogIncreasing, false);
+                if (startIndexForGap < logCurveMinMaxIndex.MinIndex &&
+                    isLogIncreasing)
+                {
+                    CreateNoDataReportItem(gapReportItems, startIndexForGap,
+                        logCurveMinMaxIndex.MinIndex, gapSize,
+                        logMnemonic.value, isLogIncreasing, false);
+                }
+
+                if (endIndexForGap > logCurveMinMaxIndex.MaxIndex &&
+                    !isLogIncreasing)
+                {
+                    CreateNoDataReportItem(gapReportItems,
+                        logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize,
+                        logMnemonic.value, isLogIncreasing, false);
+                }
             }
-            if (endIndexForGap > logCurveMinMaxIndex.MaxIndex && !isLogIncreasing)
-            {
-                CreateNoDataReportItem(gapReportItems, logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize, logMnemonic.value, isLogIncreasing, false);
-            }
+
             gapReportItems.AddRange(GetAnalyzeGapReportItem(logMnemonic.value, inputAnalyzeDataList, gapSize, isLogIncreasing));
-            if (endIndexForGap > logCurveMinMaxIndex.MaxIndex && isLogIncreasing)
+
+            if (job.IncludeMinMaxIndex)
             {
-                CreateNoDataReportItem(gapReportItems, logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize, logMnemonic.value, isLogIncreasing, false);
-            }
-            if (startIndexForGap < logCurveMinMaxIndex.MinIndex && !isLogIncreasing)
-            {
-                CreateNoDataReportItem(gapReportItems, startIndexForGap, logCurveMinMaxIndex.MinIndex, gapSize, logMnemonic.value, isLogIncreasing, false);
+                if (endIndexForGap > logCurveMinMaxIndex.MaxIndex &&
+                    isLogIncreasing)
+                {
+                    CreateNoDataReportItem(gapReportItems,
+                        logCurveMinMaxIndex.MaxIndex, endIndexForGap, gapSize,
+                        logMnemonic.value, isLogIncreasing, false);
+                }
+
+                if (startIndexForGap < logCurveMinMaxIndex.MinIndex &&
+                    !isLogIncreasing)
+                {
+                    CreateNoDataReportItem(gapReportItems, startIndexForGap,
+                        logCurveMinMaxIndex.MinIndex, gapSize,
+                        logMnemonic.value, isLogIncreasing, false);
+                }
             }
         }
         return GetGapReportResult(job, jobMnemonics, gapReportItems, isDepthLog, logUid, startIndex, endIndex);

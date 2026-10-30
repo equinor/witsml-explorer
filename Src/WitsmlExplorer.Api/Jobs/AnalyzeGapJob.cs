@@ -40,6 +40,11 @@ public record AnalyzeGapJob : Job
     public string EndIndex { get; set; }
 
     /// <summary>
+    /// Include minimum and maximum index in the analysis.
+    /// </summary>
+    public bool IncludeMinMaxIndex { get; set; }
+
+    /// <summary>
     /// Getting description of log reference object.
     /// </summary>
     /// <returns>String of job info which provide WellUid, WellboreUid and LogUid.</returns>
