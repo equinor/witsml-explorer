@@ -20,6 +20,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Repositories
         public MongoDbRepositoryTests(ITestOutputHelper output)
         {
             IConfiguration configuration = ConfigurationReader.GetConfig();
+            MongoDbConfig.Configure();
             _repo = new MongoRepository<Server, Guid>(configuration);
             _output = output;
         }
