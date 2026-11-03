@@ -4,6 +4,7 @@ export interface AgentSettings {
   minimumDataQcDepthDensityDefault: number;
   minimumDataQcTimeGapDefault: number;
   minimumDataQcTimeDensityDefault: number;
+  gapAnalyzerIncludeMinMaxIndexDefault: boolean;
   username?: string;
   timestamp?: string;
 }
