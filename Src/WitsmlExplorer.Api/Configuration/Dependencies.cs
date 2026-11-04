@@ -23,6 +23,11 @@ namespace WitsmlExplorer.Api.Configuration
 
         public static void ConfigureDependencies(this IServiceCollection services, IConfiguration configuration)
         {
+            if (!string.IsNullOrEmpty(configuration["MongoDb:Name"]))
+            {
+                MongoDbConfig.Configure();
+            }
+
             services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(Program)))
                 .IgnoreThisInterface<ICopyLogDataWorker>()
                 .IgnoreThisInterface<ICredentials>()

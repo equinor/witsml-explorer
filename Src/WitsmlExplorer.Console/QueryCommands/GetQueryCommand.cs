@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -23,7 +24,7 @@ namespace WitsmlExplorer.Console.QueryCommands
             _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, GetQuerySettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, GetQuerySettings settings, CancellationToken cancellationToken)
         {
             if (_witsmlClient == null)
             {

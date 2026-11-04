@@ -1,17 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace WitsmlExplorer.Api.Repositories
 {
+    public static class MongoDbConfig
+    {
+        public static void Configure()
+        {
+            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.CSharpLegacy));
+        }
+    }
+
     public class MongoRepository<TDocument, TDocumentId> : IDocumentRepository<TDocument, TDocumentId> where TDocument : DbDocument<TDocumentId>
     {
         private readonly IMongoCollection<TDocument> _collection;

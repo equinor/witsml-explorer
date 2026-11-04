@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace WitsmlExplorer.Api.Swagger
 {
@@ -31,17 +30,14 @@ namespace WitsmlExplorer.Api.Swagger
                             },
                             Type = SecuritySchemeType.OAuth2
                         };
-                        options.AddSecurityDefinition("OAuth2", oAuth2Scheme);
-                        options.AddSecurityRequirement(new OpenApiSecurityRequirement {
-                        {
-                            new OpenApiSecurityScheme
+                        options.AddSecurityDefinition("oauth2", oAuth2Scheme);
+                        options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
                             {
-                                Reference = new OpenApiReference { Id = "OAuth2", Type = ReferenceType.SecurityScheme },
-                                Type = SecuritySchemeType.OAuth2,
-                            },
-                            new List<string> { }
-                        }
-                        });
+                                {
+                                    new OpenApiSecuritySchemeReference("oauth2", document),
+                                    []
+                                }
+                            });
                     }
                 }
             );

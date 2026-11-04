@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +34,7 @@ namespace WitsmlExplorer.IntegrationTests.Api.Workers
         }
 
         [Fact(Skip = "Should only be run manually")]
-        public async void ValidInputRenameMnemonicShouldReturnSuccess()
+        public async Task ValidInputRenameMnemonicShouldReturnSuccess()
         {
             ModifyLogCurveInfoJob job = CreateJobTemplate() with { LogCurveInfo = new LogCurveInfo() { Mnemonic = "" } };
 

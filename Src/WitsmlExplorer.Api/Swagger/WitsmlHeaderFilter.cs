@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -31,7 +31,7 @@ namespace WitsmlExplorer.Api.Swagger
         {
             List<string> nonWitsmlMethods = new() { typeof(WitsmlServerHandler).ToString(), typeof(AuthorizeHandler).ToString() };
             List<string> jobHandlerMethods = new() { typeof(JobHandler).ToString() };
-            operation.Parameters ??= new List<OpenApiParameter>();
+            operation.Parameters ??= new List<IOpenApiParameter>();
             bool noHeader = nonWitsmlMethods.Contains(context.MethodInfo.DeclaringType.FullName);
             bool jobHeaders = jobHandlerMethods.Contains(context.MethodInfo.DeclaringType.FullName);
             bool targetUsernameHeader = context.ApiDescription.RelativePath.Contains("wells");
@@ -43,7 +43,7 @@ namespace WitsmlExplorer.Api.Swagger
                 {
                     Name = EssentialHeaders.WitsmlAuthHeader,
                     In = ParameterLocation.Header,
-                    Schema = new OpenApiSchema { Type = "string" },
+                    Schema = new OpenApiSchema { Type = JsonSchemaType.String },
                     Required = true,
                     Description = AUTHORIZE_DESCRIPTION
                 });
@@ -54,7 +54,7 @@ namespace WitsmlExplorer.Api.Swagger
                 {
                     Name = EssentialHeaders.WitsmlTargetServer,
                     In = ParameterLocation.Header,
-                    Schema = new OpenApiSchema { Type = "string" },
+                    Schema = new OpenApiSchema { Type = JsonSchemaType.String },
                     Required = true,
                     Description = SERVER_DESCRIPTION
                 });
@@ -69,7 +69,7 @@ namespace WitsmlExplorer.Api.Swagger
                     {
                         Name = EssentialHeaders.WitsmlSourceServer,
                         In = ParameterLocation.Header,
-                        Schema = new OpenApiSchema { Type = "string" },
+                        Schema = new OpenApiSchema { Type = JsonSchemaType.String },
                         Required = false,
                         Description = SERVER_DESCRIPTION
 
@@ -78,7 +78,7 @@ namespace WitsmlExplorer.Api.Swagger
                     {
                         Name = EssentialHeaders.WitsmlSourceUsername,
                         In = ParameterLocation.Header,
-                        Schema = new OpenApiSchema { Type = "string" },
+                        Schema = new OpenApiSchema { Type = JsonSchemaType.String },
                         Required = false,
                         Description = USERNAME_DESCRIPTION
                     });
@@ -92,7 +92,7 @@ namespace WitsmlExplorer.Api.Swagger
             {
                 Name = EssentialHeaders.WitsmlTargetUsername,
                 In = ParameterLocation.Header,
-                Schema = new OpenApiSchema { Type = "string" },
+                Schema = new OpenApiSchema { Type = JsonSchemaType.String },
                 Required = true,
                 Description = USERNAME_DESCRIPTION
             });

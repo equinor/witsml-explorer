@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Spectre.Console;
@@ -24,7 +25,7 @@ namespace WitsmlExplorer.Console.ShowCommands
             _witsmlClient = witsmlClientProvider?.GetClient();
         }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, ShowLogHeaderSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, ShowLogHeaderSettings settings, CancellationToken cancellationToken)
         {
             if (_witsmlClient == null)
             {

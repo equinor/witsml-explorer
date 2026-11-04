@@ -1,9 +1,6 @@
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Amazon.Runtime.Internal;
 
 using Microsoft.AspNetCore.Http;
 

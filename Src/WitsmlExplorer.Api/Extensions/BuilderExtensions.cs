@@ -23,7 +23,7 @@ namespace WitsmlExplorer.Api.Extensions
             {
                 configuration.AddAzureKeyVault(
                     new Uri($"https://{keyVault}.vault.azure.net/"),
-                    new DefaultAzureCredential(),
+                    new DefaultAzureCredential(), //TODO: Use proper credential objects (see https://learn.microsoft.com/en-us/dotnet/api/azure.identity.defaultazurecredential?view=azure-dotnet)
                     new AzureKeyVaultConfigurationOptions()
                     {
                         ReloadInterval = TimeSpan.FromMinutes(CommonConstants.DefaultReloadIntervalMinutes)
