@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: read
   packages: read
 
 jobs:
@@ -17,6 +18,10 @@ jobs:
     if: github.repository_owner == 'equinor'
     name: Package and publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Setup .NET 10
@@ -33,5 +38,12 @@ jobs:
         run: dotnet test ./Tests/Witsml.Tests/Witsml.Tests.csproj --configuration Release
       - name: Package
         run: dotnet pack --configuration Release Src/Witsml -p:Version=2.9.${GITHUB_RUN_NUMBER}
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
       - name: Publish
-        run: dotnet nuget push --api-key ${{secrets.NUGET_PUBLISH_KEY}} --source https://api.nuget.org/v3/index.json Src/Witsml/bin/Release/WitsmlClient.2.9.${GITHUB_RUN_NUMBER}.nupkg
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json Src/Witsml/bin/Release/WitsmlClient.2.9.${GITHUB_RUN_NUMBER}.nupkg
