@@ -48,11 +48,20 @@ namespace Witsml.Data
         [XmlElement("dTimKickoff")]
         public string DTimKickoff { get; set; }
 
+        [XmlElement("achievedTD")]
+        public string AchievedTD { get; set; }
+
         [XmlElement("md")]
         public WitsmlMeasuredDepthCoord Md { get; set; }
 
         [XmlElement("tvd")]
         public WitsmlWellVerticalDepthCoord Tvd { get; set; }
+
+        [XmlElement("mdBit")]
+        public WitsmlMeasuredDepthCoord MdBit { get; set; }
+
+        [XmlElement("tvdBit")]
+        public WitsmlWellVerticalDepthCoord TvdBit { get; set; }
 
         [XmlElement("mdKickoff")]
         public WitsmlMeasuredDepthCoord MdKickoff { get; set; }
@@ -77,5 +86,8 @@ namespace Witsml.Data
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; set; }
     }
 }

@@ -12,6 +12,7 @@ using Witsml;
 using Witsml.Data;
 using Witsml.Data.Curves;
 using Witsml.Data.DataWorkOrder;
+using Witsml.Data.Measures;
 using Witsml.Data.MudLog;
 using Witsml.Data.Rig;
 using Witsml.Data.Tubular;
@@ -58,8 +59,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
 
         public WellboreSubObjectsComparisonWorkerTests()
         {
-            _witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_targetWitsmlClient.Object);
-            _witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_sourceWitsmlClient.Object);
+            _witsmlClientProvider.Setup(provider => provider.GetClient()).Returns(_sourceWitsmlClient.Object);
+            _witsmlClientProvider.Setup(provider => provider.GetSourceClient()).Returns(_targetWitsmlClient.Object);
             _countLogDataRowWorker = new Mock<ICountLogDataRowWorker>();
             _compareLogDataRowWorker = new Mock<ICompareLogDataWorker>();
             MockWorkers();
@@ -123,16 +124,693 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Empty(sameFluidReport);
             Assert.Equal(13, existsOnSource.Count());
             Assert.Equal(13, existsOnTarget.Count());
-            Assert.Equal(33, reportItems.Count());
-            Assert.Equal(7, logsExistsOnBoth.Count());
+            Assert.Equal(35, reportItems.Count());
+            Assert.Equal(9, logsExistsOnBoth.Count());
             Assert.Equal(3, differentNumberOfMnemonics.Count());
-            Assert.Single(countOfIssuesInMnemonics);
+            Assert.Equal(3, countOfIssuesInMnemonics.Count());
             Assert.Equal("3", numberOfIssuesInMnemonics);
+            var firstCurveDiff = countOfIssuesInMnemonics.First();
+            Assert.Equal("a", firstCurveDiff.Mnemonic);
+            Assert.Equal("1", firstCurveDiff.IndexOrKey);
+            Assert.Equal("LogCurve[a]", firstCurveDiff.PropertyPath);
             Assert.Equal("10", log.SourceStart);
             Assert.Equal("15", log.SourceEnd);
             Assert.Equal("1", log.TargetStart);
             Assert.Equal("5", log.TargetEnd);
 
+        }
+
+        [Fact]
+        public async Task Execute_CompareDepthLogs_False_ExcludesDepthLogs()
+        {
+            // Arrange
+            var witsmlLog = new WitsmlLog();
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+
+            MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
+            MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, false);
+
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                CompareDepthLogs = false,
+                CompareTimeLogs = true
+            };
+
+            MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
+            MakeLogsListSetups(_targetWitsmlClient, job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, false);
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            var depthLogItems = reportItems.Where(x => x.LogType == WitsmlLog.WITSML_INDEX_TYPE_MD || x.ObjectUid == $"Uid_{WitsmlLog.WITSML_INDEX_TYPE_MD}");
+            Assert.Empty(depthLogItems);
+        }
+
+        [Fact]
+        public async Task Execute_SpecificLogFilter_FiltersLogs()
+        {
+            // Arrange
+            var witsmlLog = new WitsmlLog();
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+
+            MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
+            MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, false);
+
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                SpecificLogUidsOrNames = new List<string> { "NonExistentLog" }
+            };
+
+            MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
+            MakeLogsListSetups(_targetWitsmlClient, job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, false);
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            var logItems = reportItems.Where(x => x.ObjectType == "Log" || x.LogType != null);
+            Assert.Empty(logItems);
+        }
+
+        [Fact]
+        public async Task Execute_SpecificMnemonicFilter_FiltersMnemonics()
+        {
+            // Arrange
+            var witsmlLog = new WitsmlLog();
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+
+            MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
+            MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, false);
+
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                SpecificMnemonics = new List<string> { "MnemonicNonExistent" }
+            };
+
+            MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
+            MakeLogsListSetups(_targetWitsmlClient, job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, false);
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            var mnemonicItems = reportItems.Where(x => x.Mnemonic != null);
+            Assert.Empty(mnemonicItems);
+        }
+
+
+        [Fact]
+        public async Task Execute_CountLogsData_WhenDataPointsMatch_IncludesMatchingItemsAndReportsNoMismatches()
+        {
+            // Arrange
+            _countLogDataRowWorker
+                .Setup(worker => worker.Execute(It.IsAny<CountLogDataRowJob>(), null))
+                .ReturnsAsync((CountLogDataRowJob job, object _) =>
+                {
+                    job.JobInfo = new JobInfo
+                    {
+                        Report = new CountLogDataReport
+                        {
+                            ReportItems = new List<CountLogDataReportItem>
+                            {
+                                new() { Mnemonic = "M1", LogDataCount = 500 },
+                                new() { Mnemonic = "M2", LogDataCount = 1000 }
+                            }
+                        }
+                    };
+                    return (new WorkerResult(null, true, null), null);
+                });
+
+            var witsmlLog = new WitsmlLog();
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+
+            MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
+            MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, true);
+
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                CountLogsData = true,
+                CheckLogsData = false,
+                DeepCompareObjects = false
+            };
+
+            MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
+            MakeLogsListSetups(_targetWitsmlClient, job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, true);
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            Assert.NotNull(reportItems);
+            var matchedItems = reportItems.Where(x => x.DifferenceType == "DataPointsCountMatched").ToList();
+            Assert.Equal(2, matchedItems.Count);
+
+            var m1 = matchedItems.FirstOrDefault(x => x.Mnemonic == "M1");
+            Assert.NotNull(m1);
+            Assert.Equal("500", m1.SourceValue);
+            Assert.Equal("500", m1.TargetValue);
+            Assert.Equal("500", m1.DataPointsOfMnemonicOnSource);
+            Assert.Equal("500", m1.DataPointsOfMnemonicOnTarget);
+
+            var m2 = matchedItems.FirstOrDefault(x => x.Mnemonic == "M2");
+            Assert.NotNull(m2);
+            Assert.Equal("1000", m2.SourceValue);
+            Assert.Equal("1000", m2.TargetValue);
+
+            Assert.Contains("All compared objects are identical", job.JobInfo.Report.Summary);
+            Assert.Contains("No mismatches were found. Verified 2 mnemonic data point counts.", job.JobInfo.Report.Summary);
+            Assert.DoesNotContain("Found", job.JobInfo.Report.Summary);
+        }
+
+
+        [Fact]
+        public async Task Execute_CountLogsData_WhenDataPointsPartiallyMismatch_ReportsOnlyMismatchesAndVerifiesMatches()
+        {
+            // Arrange
+            _countLogDataRowWorker
+                .Setup(worker => worker.Execute(It.IsAny<CountLogDataRowJob>(), null))
+                .ReturnsAsync((CountLogDataRowJob job, object _) =>
+                {
+                    bool isTarget = job.LogReference.WellboreUid == TargetWellboreUid;
+                    job.JobInfo = new JobInfo
+                    {
+                        Report = new CountLogDataReport
+                        {
+                            ReportItems = new List<CountLogDataReportItem>
+                            {
+                                new() { Mnemonic = "M1", LogDataCount = 500 },
+                                new() { Mnemonic = "M2", LogDataCount = isTarget ? 999 : 1000 }
+                            }
+                        }
+                    };
+                    return (new WorkerResult(null, true, null), null);
+                });
+
+            var witsmlLog = new WitsmlLog();
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+
+            MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
+            MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, true);
+
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                CountLogsData = true,
+                CheckLogsData = false,
+                DeepCompareObjects = false
+            };
+
+            MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
+            MakeLogsListSetups(_targetWitsmlClient, job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, true);
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            Assert.NotNull(reportItems);
+            var matchedItems = reportItems.Where(x => x.DifferenceType == "DataPointsCountMatched").ToList();
+            var diffItems = reportItems.Where(x => x.DifferenceType == "DataPointsCountDifference").ToList();
+            Assert.Single(matchedItems);
+            Assert.Single(diffItems);
+
+            Assert.Equal("M1", matchedItems[0].Mnemonic);
+            Assert.Equal("500", matchedItems[0].SourceValue);
+            Assert.Equal("500", matchedItems[0].TargetValue);
+
+            Assert.Equal("M2", diffItems[0].Mnemonic);
+            Assert.Equal("1000", diffItems[0].SourceValue);
+            Assert.Equal("999", diffItems[0].TargetValue);
+
+            Assert.Contains("Found 1 mismatches", job.JobInfo.Report.Summary);
+            Assert.Contains("1 mnemonic data point counts verified matching", job.JobInfo.Report.Summary);
+        }
+
+
+        [Fact]
+        public async Task Execute_CheckLogsData_PopulatesDataPointsOfMnemonicOnSourceAndTarget()
+        {
+            // Arrange
+            _compareLogDataRowWorker
+                .Setup(worker => worker.Execute(It.IsAny<CompareLogDataJob>(), null))
+                .ReturnsAsync((CompareLogDataJob job, object _) =>
+                {
+                    job.JobInfo = new JobInfo
+                    {
+                        Report = new BaseReport
+                        {
+                            ReportItems = new List<CompareLogDataItem>
+                            {
+                                new()
+                                {
+                                    Mnemonic = "PWEA-T",
+                                    Index = "1500.5",
+                                    SourceValue = "10.0", // from TargetLog of job
+                                    TargetValue = "10.5", // from SourceLog of job
+                                    SourceDataPoints = "572", // Target points
+                                    TargetDataPoints = "572"  // Source points
+                                }
+                            }
+                        }
+                    };
+                    return (new WorkerResult(null, true, null), null);
+                });
+
+            var witsmlLog = new WitsmlLog();
+            WitsmlLogs sourceLogs = new() { Logs = witsmlLog.AsItemInList() };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(sourceLogs);
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+
+            MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
+            MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, true);
+
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                CountLogsData = false,
+                CheckLogsData = true,
+                DeepCompareObjects = false
+            };
+
+            MakeLogsListSetups(_sourceWitsmlClient, job.SourceWellbore.WellUid, job.SourceWellbore.WellboreUid, true);
+            MakeLogsListSetups(_targetWitsmlClient, job.TargetWellbore.WellUid, job.TargetWellbore.WellboreUid, true);
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            Assert.NotNull(reportItems);
+            var valueDiff = reportItems.FirstOrDefault(x => x.DifferenceType == "LogDataValueDifference");
+            Assert.NotNull(valueDiff);
+            Assert.Equal("PWEA-T", valueDiff.Mnemonic);
+            Assert.Equal("572", valueDiff.DataPointsOfMnemonicOnSource);
+            Assert.Equal("572", valueDiff.DataPointsOfMnemonicOnTarget);
+            Assert.Equal("1", valueDiff.NumberOfDifferencesInValuesInMnemonics);
+        }
+
+        [Fact]
+        public async Task Execute_DetectsLogCurveAndHeaderUnitDifferences()
+        {
+            // Arrange
+            var sourceLog = new WitsmlLog
+            {
+                Uid = "log1",
+                Name = "Log 1",
+                IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
+                StartIndex = new WitsmlIndex { Value = "100", Uom = "m" },
+                EndIndex = new WitsmlIndex { Value = "200", Uom = "m" },
+                LogCurveInfo = new List<WitsmlLogCurveInfo>
+                {
+                    new()
+                    {
+                        Uid = "GR",
+                        Mnemonic = "GR",
+                        Unit = "gAPI",
+                        MinIndex = new WitsmlIndex { Value = "100", Uom = "m" },
+                        MaxIndex = new WitsmlIndex { Value = "200", Uom = "m" }
+                    },
+                    new()
+                    {
+                        Uid = "ROP",
+                        Mnemonic = "ROP",
+                        Unit = "m/h",
+                        MinIndex = new WitsmlIndex { Value = "100", Uom = "m" },
+                        MaxIndex = new WitsmlIndex { Value = "200", Uom = "ft" }
+                    }
+                }
+            };
+
+            var targetLog = new WitsmlLog
+            {
+                Uid = "log1",
+                Name = "Log 1",
+                IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
+                StartIndex = new WitsmlIndex { Value = "100", Uom = "ft" },
+                EndIndex = new WitsmlIndex { Value = "200", Uom = "m" },
+                LogCurveInfo = new List<WitsmlLogCurveInfo>
+                {
+                    new()
+                    {
+                        Uid = "GR",
+                        Mnemonic = "GR",
+                        Unit = "API",
+                        MinIndex = new WitsmlIndex { Value = "100", Uom = "m" },
+                        MaxIndex = new WitsmlIndex { Value = "200", Uom = "m" }
+                    },
+                    new()
+                    {
+                        Uid = "ROP",
+                        Mnemonic = "ROP",
+                        Unit = "m/h",
+                        MinIndex = new WitsmlIndex { Value = "100", Uom = "m" },
+                        MaxIndex = new WitsmlIndex { Value = "200", Uom = "m" }
+                    }
+                }
+            };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { sourceLog } });
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { targetLog } });
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreAsync(It.IsAny<WitsmlLogs>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { sourceLog } });
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreAsync(It.IsAny<WitsmlLogs>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { targetLog } });
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                CountLogsData = false,
+                CheckLogsData = false,
+                DeepCompareObjects = false
+            };
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            Assert.NotNull(reportItems);
+
+            var unitDiffs = reportItems.Where(x => x.DifferenceType == "UnitMismatch").ToList();
+            Assert.Equal(3, unitDiffs.Count);
+
+            var startUomDiff = unitDiffs.FirstOrDefault(x => x.PropertyPath == "StartIndex.Uom");
+            Assert.NotNull(startUomDiff);
+            Assert.Equal("m", startUomDiff.SourceValue);
+            Assert.Equal("ft", startUomDiff.TargetValue);
+
+            var curveUnitDiff = unitDiffs.FirstOrDefault(x => x.PropertyPath == "LogCurve[GR].Unit");
+            Assert.NotNull(curveUnitDiff);
+            Assert.Equal("gAPI", curveUnitDiff.SourceValue);
+            Assert.Equal("API", curveUnitDiff.TargetValue);
+
+            var maxIndexUomDiff = unitDiffs.FirstOrDefault(x => x.PropertyPath == "LogCurve[ROP].MaxIndex.Uom");
+            Assert.NotNull(maxIndexUomDiff);
+            Assert.Equal("ft", maxIndexUomDiff.SourceValue);
+            Assert.Equal("m", maxIndexUomDiff.TargetValue);
+
+            var report = job.JobInfo.Report;
+            Assert.NotNull(report);
+            Assert.Contains("Found 3 mismatches", report.Summary);
+            Assert.Contains("Element differences: 3", report.Summary);
+        }
+
+        [Fact]
+        public async Task Execute_WhenDeepCompareObjects_DetectsLogCurveMetadataDifferences()
+        {
+            // Arrange
+            var sourceLog = new WitsmlLog
+            {
+                Uid = "log1",
+                Name = "Log 1",
+                IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
+                LogCurveInfo = new List<WitsmlLogCurveInfo>
+                {
+                    new()
+                    {
+                        Uid = "GR",
+                        Mnemonic = "GR",
+                        Unit = "gAPI",
+                        NullValue = "-999.25",
+                        CurveDescription = "Raw GR",
+                        ClassWitsml = "gamma ray",
+                        SensorOffset = new WitsmlLengthMeasure { Value = "10.0", Uom = "m" },
+                        ExtensionNameValues = new List<WitsmlExtensionNameValue>
+                        {
+                            new() { Name = "Vendor", Value = new WitsmlExtensionValue { Value = "VendorA" } }
+                        }
+                    }
+                }
+            };
+
+            var targetLog = new WitsmlLog
+            {
+                Uid = "log1",
+                Name = "Log 1",
+                IndexType = WitsmlLog.WITSML_INDEX_TYPE_MD,
+                LogCurveInfo = new List<WitsmlLogCurveInfo>
+                {
+                    new()
+                    {
+                        Uid = "GR",
+                        Mnemonic = "GR",
+                        Unit = "gAPI",
+                        NullValue = "-9999",
+                        CurveDescription = "Filtered GR",
+                        ClassWitsml = "gamma ray",
+                        SensorOffset = new WitsmlLengthMeasure { Value = "12.5", Uom = "m" },
+                        ExtensionNameValues = new List<WitsmlExtensionNameValue>
+                        {
+                            new() { Name = "Vendor", Value = new WitsmlExtensionValue { Value = "VendorB" } }
+                        }
+                    }
+                }
+            };
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { sourceLog } });
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreNullableAsync(It.IsAny<IWitsmlObjectList>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { targetLog } });
+
+            _sourceWitsmlClient.Setup(c =>
+                    c.GetFromStoreAsync(It.IsAny<WitsmlLogs>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { sourceLog } });
+
+            _targetWitsmlClient.Setup(c =>
+                    c.GetFromStoreAsync(It.IsAny<WitsmlLogs>(),
+                        It.IsAny<OptionsIn>(), null))
+                .ReturnsAsync(new WitsmlLogs { Logs = new() { targetLog } });
+
+            SetupGetSourceWellbore();
+            SetupGetTargetWellbore();
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                CountLogsData = false,
+                CheckLogsData = false,
+                DeepCompareObjects = true
+            };
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            Assert.NotNull(reportItems);
+
+            var nullValueDiff = reportItems.FirstOrDefault(x => x.PropertyPath == "LogCurve[GR].NullValue");
+            Assert.NotNull(nullValueDiff);
+            Assert.Equal("-999.25", nullValueDiff.SourceValue);
+            Assert.Equal("-9999", nullValueDiff.TargetValue);
+
+            var descDiff = reportItems.FirstOrDefault(x => x.PropertyPath == "LogCurve[GR].CurveDescription");
+            Assert.NotNull(descDiff);
+            Assert.Equal("Raw GR", descDiff.SourceValue);
+            Assert.Equal("Filtered GR", descDiff.TargetValue);
+
+            var sensorDiff = reportItems.FirstOrDefault(x => x.PropertyPath == "LogCurve[GR].SensorOffset");
+            Assert.NotNull(sensorDiff);
+            Assert.Equal("MeasureMismatch", sensorDiff.DifferenceType);
+
+            var extDiff = reportItems.FirstOrDefault(x => x.PropertyPath.Contains("Vendor"));
+            Assert.NotNull(extDiff);
+            Assert.Equal("VendorA", extDiff.SourceValue);
+            Assert.Equal("VendorB", extDiff.TargetValue);
+        }
+
+        [Fact]
+        public async Task Execute_WhenCompareWellboreMetadata_ComparesWellboreElementsWithOptionsInAll()
+        {
+            // Arrange
+            var sourceWellbore = new WitsmlWellbore
+            {
+                Uid = SourceWellboreUid,
+                UidWell = SourceWellUid,
+                Name = "Wellbore 1",
+                PurposeWellbore = "exploration",
+                AchievedTD = "true",
+                DTimKickoff = "2026-11-01T04:06:23.767+01:00",
+                MdBit = new WitsmlMeasuredDepthCoord { Value = "1500", Uom = "m", Datum = "KB" }
+            };
+            var targetWellbore = new WitsmlWellbore
+            {
+                Uid = TargetWellboreUid,
+                UidWell = TargetWellUid,
+                Name = "Wellbore 1",
+                PurposeWellbore = "development",
+                AchievedTD = "false",
+                DTimKickoff = "2026-11-01T04:06:23.000+01:00",
+                MdBit = new WitsmlMeasuredDepthCoord { Value = "1500", Uom = "m", Datum = "MSL" }
+            };
+
+            WitsmlWellbores srcQuery = WellboreQueries.GetWitsmlWellboreByUid(SourceWellUid, SourceWellboreUid);
+            WitsmlWellbores tgtQuery = WellboreQueries.GetWitsmlWellboreByUid(TargetWellUid, TargetWellboreUid);
+
+            _sourceWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(srcQuery), It.Is<OptionsIn>(o => o.ReturnElements == ReturnElements.All), null))
+                .ReturnsAsync(new WitsmlWellbores { Wellbores = new List<WitsmlWellbore> { sourceWellbore } });
+            _targetWitsmlClient.Setup(c => c.GetFromStoreAsync(IsQuery(tgtQuery), It.Is<OptionsIn>(o => o.ReturnElements == ReturnElements.All), null))
+                .ReturnsAsync(new WitsmlWellbores { Wellbores = new List<WitsmlWellbore> { targetWellbore } });
+
+            MakeObjectListSetups(_sourceWitsmlClient, SourceWellUid, SourceWellboreUid, true);
+            MakeObjectListSetups(_targetWitsmlClient, TargetWellUid, TargetWellboreUid, false);
+            MockServerCapabilites(_sourceWitsmlClient);
+            MockServerCapabilites(_targetWitsmlClient);
+
+            var job = CreateJobTemplate() with
+            {
+                CompareWellboreMetadata = true,
+                CompareAllObjects = false,
+                ObjectTypesToCompare = new List<EntityType>(),
+                DeepCompareObjects = true,
+                MatchByNameIfUidDiffers = true,
+                TimezoneMode = TimezoneComparisonMode.Utc,
+                CountLogsData = false,
+                CheckLogsData = false
+            };
+
+            // Act
+            (WorkerResult, RefreshAction) result = await _worker.Execute(job);
+
+            // Assert
+            Assert.True(result.Item1.IsSuccess);
+            var reportItems = job.JobInfo.Report.ReportItems as List<WellboreSubObjectsComparisonItem>;
+            Assert.NotNull(reportItems);
+            Assert.All(reportItems, x => Assert.Equal("Wellbore", x.ObjectType));
+            Assert.Contains("Compared: Wellbore metadata.", job.JobInfo.Report.Summary);
+            Assert.Contains(reportItems, x => x.ObjectType == "Wellbore" && x.PropertyPath == "Wellbore.PurposeWellbore" && x.SourceValue == "exploration" && x.TargetValue == "development");
+            Assert.Contains(reportItems, x => x.ObjectType == "Wellbore" && x.PropertyPath == "Wellbore.AchievedTD" && x.SourceValue == "true" && x.TargetValue == "false");
+            Assert.Contains(reportItems, x => x.ObjectType == "Wellbore" && x.PropertyPath == "Wellbore.DTimKickoff" && x.SourceValue == "2026-11-01T03:06:23.767Z" && x.TargetValue == "2026-11-01T03:06:23.000Z");
+            Assert.Contains(reportItems, x => x.ObjectType == "Wellbore" && x.PropertyPath == "Wellbore.MdBit.Datum" && x.SourceValue == "KB" && x.TargetValue == "MSL");
         }
 
         private void MockWorkers()
@@ -207,34 +885,39 @@ namespace WitsmlExplorer.Api.Tests.Workers
                 .Setup(worker => worker.Execute(It.IsAny<CompareLogDataJob>(), null))
                 .ReturnsAsync((CompareLogDataJob job, object _) =>
                 {
+                    var reportItems = new List<CompareLogDataItem>()
+                    {
+                        new ()
+                        {
+                            Mnemonic = "a",
+                            Index = "1",
+                            SourceValue = "",
+                            TargetValue = ""
+                        },
+                        new ()
+                        {
+                            Mnemonic = "b",
+                            Index = "3",
+                            SourceValue = "",
+                            TargetValue = ""
+                        },
+                        new ()
+                        {
+                            Mnemonic = "c",
+                            Index = "4",
+                            SourceValue = "",
+                            TargetValue = ""
+                        }
+                    };
+                    if (job.Mnemonics != null && job.Mnemonics.Any())
+                    {
+                        reportItems = reportItems.Where(x => job.Mnemonics.Any(m => string.Equals(m, x.Mnemonic, StringComparison.OrdinalIgnoreCase))).ToList();
+                    }
                     job.JobInfo = new JobInfo
                     {
                         Report = new BaseReport()
                         {
-                            ReportItems = new List<CompareLogDataItem>()
-                            {
-                                new ()
-                                {
-                                    Mnemonic = "a",
-                                    Index = "1",
-                                    SourceValue = "",
-                                    TargetValue = ""
-                                },
-                                new ()
-                                {
-                                    Mnemonic = "b",
-                                    Index = "3",
-                                    SourceValue = "",
-                                    TargetValue = ""
-                                },
-                                new ()
-                                {
-                                    Mnemonic = "c",
-                                    Index = "4",
-                                    SourceValue = "",
-                                    TargetValue = ""
-                                }
-                            }
+                            ReportItems = reportItems
                         }
                     };
 

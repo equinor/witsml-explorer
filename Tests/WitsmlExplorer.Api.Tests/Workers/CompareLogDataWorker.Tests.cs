@@ -95,6 +95,78 @@ namespace WitsmlExplorer.Api.Tests.Workers
         }
 
         [Fact]
+        public async Task CompareLogDataWorker_DepthLogsWithDecimalValueDifferencesAndZeroServerDecimals_DetectsMismatches()
+        {
+            SetupWorker(0, 0);
+            string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
+            TestLog sourceLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "100.1",
+                EndIndex = "100.3",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("PWEA-T", "psi") },
+                Data = new() { "100.1,14.2", "100.2,20.0", "100.3,30.5" }
+            };
+
+            TestLog targetLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "100.1",
+                EndIndex = "100.3",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("PWEA-T", "psi") },
+                Data = new() { "100.1,14.8", "100.2,20.0", "100.3,30.1" }
+            };
+
+            var job = SetupTest(sourceLog, targetLog);
+            var (workerResult, refreshAction) = await _worker.Execute(job);
+            List<CompareLogDataItem> resultReportItems = job.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
+
+            Assert.Equal(2, resultReportItems.Count);
+            Assert.Contains(resultReportItems, item => item.Index == "100.1" && item.SourceValue == "14.2" && item.TargetValue == "14.8");
+            Assert.Contains(resultReportItems, item => item.Index == "100.3" && item.SourceValue == "30.5" && item.TargetValue == "30.1");
+        }
+
+        [Fact]
+        public async Task CompareLogDataWorker_EqualDepthLogsWithCustomDecimalsAndPrecisionDifferences_ReturnsZeroReportItems()
+        {
+            SetupWorker(0, 0);
+            string indexType = WitsmlLog.WITSML_INDEX_TYPE_MD;
+            TestLog sourceLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "1279.5",
+                EndIndex = "1284.0",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
+                Data = new() { "1279.5,974243.85", "1280.5,973977.51", "1283,973349.82", "1284,967569.64" }
+            };
+
+            TestLog targetLog = new TestLog()
+            {
+                IndexType = indexType,
+                StartIndex = "1279.4999",
+                EndIndex = "1284.0001",
+                LogCurveInfo = new() { ("IndexCurve", CommonConstants.Unit.Meter), ("Curve1", "Unit1") },
+                Data = new() { "1279.4999,974243.85", "1280.5001,973977.51", "1282.9999,973349.82", "1284.0001,967569.64" }
+            };
+
+            var job = SetupTest(sourceLog, targetLog);
+            var jobWithDecimals = new CompareLogDataJob
+            {
+                SourceLog = job.SourceLog,
+                TargetLog = job.TargetLog,
+                IncludeIndexDuplicates = job.IncludeIndexDuplicates,
+                CompareAllIndexes = job.CompareAllIndexes,
+                CustomDecimalPlaces = 3,
+                JobInfo = new()
+            };
+
+            var (workerResult, refreshAction) = await _worker.Execute(jobWithDecimals);
+            List<CompareLogDataItem> resultReportItems = jobWithDecimals.JobInfo.Report.ReportItems.Select(x => (CompareLogDataItem)x).ToList();
+
+            Assert.Empty(resultReportItems);
+        }
+
+        [Fact]
         public async Task CompareLogDataWorker_EqualTimeLogs_ReturnsZeroReportItems()
         {
             SetupWorker(0, 0);
@@ -162,6 +234,8 @@ namespace WitsmlExplorer.Api.Tests.Workers
             Assert.Equal(expectedMismatchItem1.Mnemonic, resultReportItems[0].Mnemonic);
             Assert.Equal(expectedMismatchItem1.SourceValue, resultReportItems[0].SourceValue);
             Assert.Equal(expectedMismatchItem1.TargetValue, resultReportItems[0].TargetValue);
+            Assert.Equal("3", resultReportItems[0].SourceDataPoints);
+            Assert.Equal("3", resultReportItems[0].TargetDataPoints);
         }
 
         [Fact]

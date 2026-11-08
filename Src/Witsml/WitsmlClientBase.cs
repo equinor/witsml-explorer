@@ -47,7 +47,8 @@ public abstract class WitsmlClientBase
                 }
             },
             MaxReceivedMessageSize = int.MaxValue,
-            SendTimeout = requestTimeout
+            SendTimeout = requestTimeout,
+            ReceiveTimeout = requestTimeout
         };
     }
 
@@ -83,7 +84,8 @@ public abstract class WitsmlClientBase
                 }
             },
             MaxReceivedMessageSize = int.MaxValue,
-            SendTimeout = requestTimeout
+            SendTimeout = requestTimeout,
+            ReceiveTimeout = requestTimeout
         };
     }
 

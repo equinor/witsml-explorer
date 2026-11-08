@@ -1,5 +1,7 @@
 using System.Xml.Serialization;
 
+using Witsml.Data.Measures;
+
 namespace Witsml.Data
 {
     public class WitsmlExtensionNameValue
@@ -20,7 +22,7 @@ namespace Witsml.Data
         public string DTim { get; set; }
 
         [XmlElement("md")]
-        public string Md { get; set; }
+        public WitsmlMeasuredDepthCoord Md { get; set; }
 
         [XmlElement("index")]
         public string Index { get; set; }

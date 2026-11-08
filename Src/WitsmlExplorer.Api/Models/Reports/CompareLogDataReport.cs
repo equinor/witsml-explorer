@@ -5,6 +5,9 @@ namespace WitsmlExplorer.Api.Models.Reports
         string Mnemonic { get; set; }
         string SourceValue { get; set; }
         string TargetValue { get; set; }
+        string Delta { get; set; }
+        string SourceDataPoints { get; set; }
+        string TargetDataPoints { get; set; }
     }
 
     public class CompareLogDataItem : ICompareLogDataItem
@@ -13,6 +16,9 @@ namespace WitsmlExplorer.Api.Models.Reports
         public string Index { get; set; }
         public string SourceValue { get; set; }
         public string TargetValue { get; set; }
+        public string Delta { get; set; }
+        public string SourceDataPoints { get; set; }
+        public string TargetDataPoints { get; set; }
     }
 
     public class CompareLogDataUnequalServerDecimalsItem : ICompareLogDataItem
@@ -22,6 +28,9 @@ namespace WitsmlExplorer.Api.Models.Reports
         public string TargetIndex { get; set; }
         public string SourceValue { get; set; }
         public string TargetValue { get; set; }
+        public string Delta { get; set; }
+        public string SourceDataPoints { get; set; }
+        public string TargetDataPoints { get; set; }
     }
 
     public class CompareLogDataUnequalServerDecimalsIndexDuplicateItem : ICompareLogDataItem
@@ -31,6 +40,9 @@ namespace WitsmlExplorer.Api.Models.Reports
         public string TargetIndex { get; set; }
         public string SourceValue { get; set; }
         public string TargetValue { get; set; }
+        public string Delta { get; set; }
+        public string SourceDataPoints { get; set; }
+        public string TargetDataPoints { get; set; }
         public string IndexDuplicate { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace Witsml.Data.MudLog
         public WitsmlMeasureWithDatum EndMd { get; set; }
 
         [XmlElement("relatedLog")]
-        public List<string> RelatedLog { get; set; }
+        public List<WitsmlRefNameString> RelatedLog { get; set; }
 
         [XmlElement("parameter")]
         public List<WitsmlMudLogParameter> MudLogParameters { get; set; }

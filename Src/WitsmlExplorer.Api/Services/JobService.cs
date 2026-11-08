@@ -42,6 +42,7 @@ namespace WitsmlExplorer.Api.Services
             Job job = await worker.CreateJob(jobStream);
             job.JobInfo = jobInfo;
             job.ProgressReporter = new Progress<double>(progress => _jobProgressService.ReportProgress(new JobProgress(jobInfo.Id, progress)));
+            job.ProgressUpdateReporter = new Progress<JobProgressUpdate>(update => _jobProgressService.ReportProgress(new JobProgress(jobInfo.Id, update.Progress, update.CurrentStage, update.ObjectName, update.Mnemonic, update.CurrentIndex, update.IndexRange)));
 
             _jobCache.CacheJob(jobInfo);
 

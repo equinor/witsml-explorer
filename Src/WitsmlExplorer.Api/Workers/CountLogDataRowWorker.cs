@@ -1,17 +1,23 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
+using Witsml;
 using Witsml.Data;
 using Witsml.ServiceReference;
 
 using WitsmlExplorer.Api.Jobs;
 using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
+using WitsmlExplorer.Api.Query;
 using WitsmlExplorer.Api.Services;
+
+using Index = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers;
 
@@ -55,18 +61,63 @@ public class CountLogDataRowWorker : BaseWorker<CountLogDataRowJob>, IWorker, IC
             return (new WorkerResult(job.UseTargetClient ? GetTargetWitsmlClientOrThrow().GetServerHostname() : GetSourceWitsmlClientOrThrow().GetServerHostname(), false, message), null);
         }
 
-        var logMnemonics = witsmlLog.LogCurveInfo.Where(x => x.Mnemonic != indexCurve).Select(x => x.Mnemonic).ToList();
+        var logMnemonicsQuery = witsmlLog.LogCurveInfo.Where(x => x.Mnemonic != indexCurve).Select(x => x.Mnemonic);
+        if (job.Mnemonics != null && job.Mnemonics.Any())
+        {
+            logMnemonicsQuery = logMnemonicsQuery.Where(m => job.Mnemonics.Any(req => string.Equals(req, m, StringComparison.OrdinalIgnoreCase)));
+        }
+        var logMnemonics = logMnemonicsQuery.ToList();
+        var startIndex = Index.Start(witsmlLog, job.StartIndex);
+        var endIndex = Index.End(witsmlLog, job.EndIndex);
+        double samplingInterval = job.SamplingInterval ?? 0;
         var totalEstimatedDuration = logMnemonics.Count;
         var currentElapsedDuration = 0;
         var countLogDataReportItemTasks = logMnemonics.Select(async mnemonic =>
         {
             int mnemonicLogDataRowsCount = 0;
-            await using LogDataReader logDataReader = new(job.UseTargetClient ? GetTargetWitsmlClientOrThrow() : GetSourceWitsmlClientOrThrow(), witsmlLog, new List<string>() { mnemonic }, Logger);
+            double? lastDepthIndex = null;
+            DateTime? lastTimeIndex = null;
+
+            await using LogDataReader logDataReader = new(job.UseTargetClient ? GetTargetWitsmlClientOrThrow() : GetSourceWitsmlClientOrThrow(), witsmlLog, new List<string>() { mnemonic }, Logger, startIndex, endIndex);
             WitsmlLogData logData = await logDataReader.GetNextBatch();
             while (logData != null)
             {
                 cancellationToken?.ThrowIfCancellationRequested();
-                mnemonicLogDataRowsCount += logData.Data?.Count ?? 0;
+                if (samplingInterval > 0 && logData.Data != null)
+                {
+                    foreach (var row in logData.Data)
+                    {
+                        string indexStr = row.Data?.Split(CommonConstants.DataSeparator).FirstOrDefault();
+                        if (string.IsNullOrEmpty(indexStr)) continue;
+
+                        if (isDepthLog)
+                        {
+                            if (double.TryParse(indexStr, NumberStyles.Float, CultureInfo.InvariantCulture, out double currentDepth))
+                            {
+                                if (!lastDepthIndex.HasValue || Math.Abs(currentDepth - lastDepthIndex.Value) >= samplingInterval - 1e-6)
+                                {
+                                    mnemonicLogDataRowsCount++;
+                                    lastDepthIndex = currentDepth;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (DateTime.TryParse(indexStr, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime currentTime))
+                            {
+                                if (!lastTimeIndex.HasValue || Math.Abs((currentTime - lastTimeIndex.Value).TotalSeconds) >= samplingInterval - 1e-3)
+                                {
+                                    mnemonicLogDataRowsCount++;
+                                    lastTimeIndex = currentTime;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    mnemonicLogDataRowsCount += logData.Data?.Count ?? 0;
+                }
                 logData = await logDataReader.GetNextBatch();
             }
 

@@ -55,7 +55,7 @@ public class WitsmlDataSourceConfiguration
     [XmlElement("customData")]
     public WitsmlCustomData CustomData { get; set; }
 
-    [XmlElement("ExtensionNameValue")]
+    [XmlElement("extensionNameValue")]
     public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
     [XmlAttribute("versionNumber")]

@@ -90,7 +90,7 @@ export const useColumnDef = (
           headerColors: column.headerColors,
           headerTooltip: column.headerTooltip
         },
-        sortingFn: getSortingFn(column),
+        sortingFn: (column.sortingFn as any) ?? getSortingFn(column),
         enableColumnFilter: column.type !== ContentType.Component,
         filterFn: getFilterFn(column),
         ...addComponentCell(column.type),
@@ -349,10 +349,11 @@ const getFilterFn = (column: ContentTableColumn): FilterFn<any> => {
     value: any,
     addMeta: (meta: FilterMeta) => void
   ): boolean => {
+    if (!value) return true;
+    if (column.filterFn) {
+      return column.filterFn(row, id, value, addMeta);
+    }
     const filter = getSearchRegex(value, false);
-    return (
-      (!value || filter.test(row.getValue(id) ?? "")) &&
-      (!column.filterFn || column.filterFn(row, id, value, addMeta))
-    );
+    return filter.test(row.getValue(id) ?? "");
   };
 };

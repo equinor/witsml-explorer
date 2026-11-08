@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace Witsml.Data
@@ -28,5 +29,7 @@ namespace Witsml.Data
         [XmlElement("stringValues")]
         public string StringValues { get; set; }
 
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
     }
 }

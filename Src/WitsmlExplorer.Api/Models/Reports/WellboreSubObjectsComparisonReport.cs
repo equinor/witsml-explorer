@@ -8,6 +8,13 @@ public class WellboreSubObjectsComparisonItem
     public string LogType { get; set; }
     public string ObjectUid { get; init; }
     public string ObjectName { get; init; }
+    public string DifferenceType { get; set; }
+    public string PropertyPath { get; set; }
+    public string IndexOrKey { get; set; }
+    public string SourceValue { get; set; }
+    public string TargetValue { get; set; }
+    public string Delta { get; set; }
+    public string Description { get; set; }
     public string Mnemonic { get; set; }
     public string ExistsOnSource { get; set; }
     public string ExistsOnTarget { get; set; }

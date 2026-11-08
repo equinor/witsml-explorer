@@ -41,7 +41,16 @@ export enum RefreshType {
   BatchUpdate = "BatchUpdate"
 }
 
-export type JobProgress = Record<string, number>;
+export interface JobProgressDetails {
+  progress: number;
+  currentStage?: string;
+  objectName?: string;
+  mnemonic?: string;
+  currentIndex?: string;
+  indexRange?: string;
+}
+
+export type JobProgress = Record<string, JobProgressDetails | number>;
 
 export default class NotificationService {
   private static _instance: NotificationService;

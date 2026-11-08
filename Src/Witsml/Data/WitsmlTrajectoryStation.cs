@@ -136,6 +136,7 @@ namespace Witsml.Data
         [XmlElement("location")] public List<WitsmlLocation> Location { get; set; }
         [XmlElement("sourceStation")] public WitsmlRefWellboreTrajectoryStation SourceStation { get; set; }
         [XmlElement("commonData")] public WitsmlCommonData CommonData { get; set; }
+        [XmlElement("extensionNameValue")] public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
     }
 }

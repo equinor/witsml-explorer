@@ -20,6 +20,17 @@ namespace WitsmlExplorer.Api.Query
             return GetWitsmlWell(wellUid);
         }
 
+        public static WitsmlWells GetFullWitsmlWellByUid(string wellUid)
+        {
+            return new WitsmlWells
+            {
+                Wells = new WitsmlWell
+                {
+                    Uid = wellUid
+                }.AsItemInList()
+            };
+        }
+
         public static WitsmlWells CreateWitsmlWell(Well well)
         {
             return new WitsmlWells

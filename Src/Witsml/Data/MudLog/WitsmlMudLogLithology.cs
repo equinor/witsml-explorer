@@ -85,5 +85,8 @@ namespace Witsml.Data.MudLog
         [XmlElement("qualifier")]
         public List<WitsmlQualifier> Qualifier { get; set; }
 
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
+
     }
 }

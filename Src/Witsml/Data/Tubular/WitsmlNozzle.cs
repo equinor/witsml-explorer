@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
@@ -34,5 +35,11 @@ namespace Witsml.Data.Tubular
 
         [XmlElement("customData")]
         public WitsmlCustomData CustomData { get; set; }
+
+        [XmlElement("extensionAny")]
+        public WitsmlCustomData ExtensionAny { get; set; }
+
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
     }
 }
