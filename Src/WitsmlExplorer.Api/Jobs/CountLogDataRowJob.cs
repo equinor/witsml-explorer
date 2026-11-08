@@ -18,6 +18,15 @@ public record CountLogDataRowJob : Job
     public bool UseTargetClient { get; set; } = true;
 
     /// <summary>
+    /// Optional specific mnemonics to count
+    /// </summary>
+    public System.Collections.Generic.List<string> Mnemonics { get; init; }
+
+    public double? SamplingInterval { get; init; }
+    public string StartIndex { get; init; }
+    public string EndIndex { get; init; }
+
+    /// <summary>
     /// Gets a description of the log reference object.
     /// </summary>
     /// <returns>A string of job information provides WellUid, WellboreUid, logIndexType and LogUid.</returns>

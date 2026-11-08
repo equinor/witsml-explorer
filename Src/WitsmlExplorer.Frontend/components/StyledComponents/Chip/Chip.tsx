@@ -14,10 +14,14 @@ type ChipProps = Omit<EdsChipProps, "variant"> & {
 };
 
 export const Chip = forwardRef<HTMLDivElement, ChipProps>(
-  ({ variant = "default", ...props }, ref) => {
+  ({ variant = "default", children, ...props }, ref) => {
     const {
       operationState: { colors }
     } = useOperationState();
+
+    // Equinor EDS Chip crashes if any child is null/undefined (accesses child.props directly).
+    // React.Children.toArray removes null, undefined, and booleans.
+    const safeChildren = React.Children.toArray(children);
 
     switch (variant) {
       case "default":
@@ -27,12 +31,22 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
             {...props}
             variant={variant}
             colors={colors}
-          />
+          >
+            {safeChildren}
+          </WitsmlDefaultChip>
         );
       case "warning":
-        return <WitsmlWarnChip ref={ref} {...props} colors={colors} />;
+        return (
+          <WitsmlWarnChip ref={ref} {...props} colors={colors}>
+            {safeChildren}
+          </WitsmlWarnChip>
+        );
       default:
-        return <EdsChip ref={ref} {...props} variant={variant} />;
+        return (
+          <EdsChip ref={ref} {...props} variant={variant}>
+            {safeChildren}
+          </EdsChip>
+        );
     }
   }
 );

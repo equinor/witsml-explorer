@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -32,5 +33,8 @@ namespace Witsml.Data
 
         [XmlElement("vis600Rpm")]
         public string Vis600Rpm { get; set; }
+
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
     }
 }

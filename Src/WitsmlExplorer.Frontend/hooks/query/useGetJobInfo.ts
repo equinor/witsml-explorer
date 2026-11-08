@@ -65,9 +65,14 @@ export const useGetJobInfo = (
   }, [queryClient]);
 
   const updatedJobInfos = data?.map((jobInfo) => {
+    const rawProgress = liveProgress[jobInfo.id];
+    const liveNum =
+      typeof rawProgress === "number"
+        ? rawProgress
+        : rawProgress?.progress ?? 0;
     return {
       ...jobInfo,
-      progress: Math.max(liveProgress[jobInfo.id] ?? 0, jobInfo.progress ?? 0)
+      progress: Math.max(liveNum, jobInfo.progress ?? 0)
     };
   });
 

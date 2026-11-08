@@ -69,5 +69,8 @@ namespace Witsml.Data.Rig
 
         [XmlElement("nameTag")]
         public List<WitsmlNameTag> NameTag { get; set; }
+
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
     }
 }

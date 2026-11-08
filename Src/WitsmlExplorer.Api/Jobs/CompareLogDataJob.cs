@@ -8,6 +8,13 @@ namespace WitsmlExplorer.Api.Jobs
         public ObjectReference TargetLog { get; init; }
         public bool IncludeIndexDuplicates { get; init; }
         public bool CompareAllIndexes { get; init; }
+        public bool ReportAllMismatches { get; init; }
+        public int? CustomDecimalPlaces { get; init; }
+        public DecimalComparisonMode? DecimalMode { get; init; }
+        public System.Collections.Generic.List<string> Mnemonics { get; init; }
+        public double? SamplingInterval { get; init; }
+        public string StartIndex { get; init; }
+        public string EndIndex { get; init; }
 
         public override string Description()
         {

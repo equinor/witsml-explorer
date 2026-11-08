@@ -253,5 +253,8 @@ namespace Witsml.Data.Rig
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; set; }
     }
 }

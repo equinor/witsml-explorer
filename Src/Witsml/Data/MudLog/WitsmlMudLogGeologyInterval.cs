@@ -130,6 +130,9 @@ namespace Witsml.Data.MudLog
         [XmlElement("commonTime")]
         public WitsmlCommonTime CommonTime { get; set; }
 
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
+
         public string TypeName => "geologyInterval";
     }
 }

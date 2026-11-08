@@ -17,6 +17,8 @@ namespace Witsml.Data
         }
         [XmlElement("objectReference")]
         public WitsmlObjectReference ObjectReference { get; set; }
+        [XmlElement("subObjectReference")]
+        public WitsmlObjectReference SubObjectReference { get; set; }
         [XmlElement("type")]
         public string Type { get; set; }
         [XmlElement("category")]
@@ -61,6 +63,8 @@ namespace Witsml.Data
         public string Mitigation { get; set; }
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; set; }
 
     }
 }

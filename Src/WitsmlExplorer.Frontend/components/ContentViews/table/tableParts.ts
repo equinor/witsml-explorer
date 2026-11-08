@@ -1,7 +1,8 @@
 import {
   ExpandedState,
   FilterFn,
-  RowSelectionState
+  RowSelectionState,
+  SortingFn
 } from "@tanstack/react-table";
 import React, { ReactNode } from "react";
 import { Colors } from "../../../styles/Colors.tsx";
@@ -15,6 +16,7 @@ export interface ContentTableColumn {
   label: string;
   type: ContentType;
   filterFn?: FilterFn<any>;
+  sortingFn?: SortingFn<any> | string;
   width?: number;
   headerColors?: Colors;
   headerTooltip?: React.ReactNode;

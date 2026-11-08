@@ -180,5 +180,8 @@ namespace Witsml.Data
 
         [XmlElement("comments")]
         public string Comments { get; set; }
+
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
+using Witsml.Data.Measures;
 using Witsml.Extensions;
 
 namespace Witsml.Data
@@ -23,6 +24,15 @@ namespace Witsml.Data
         [XmlElement("objectGrowing")]
         public string ObjectGrowing { get; set; }
 
+        [XmlElement("dataUpateRate")]
+        public string DataUpateRate { get; set; }
+
+        [XmlElement("curveSensorsAligned")]
+        public string CurveSensorsAligned { get; set; }
+
+        [XmlElement("dataGroup")]
+        public string DataGroup { get; set; }
+
         [XmlElement("serviceCompany")]
         public string ServiceCompany { get; set; }
 
@@ -41,6 +51,9 @@ namespace Witsml.Data
         [XmlElement("description")]
         public string Description { get; set; }
 
+        [XmlElement("dataDelimiter")]
+        public string DataDelimiter { get; set; }
+
         [XmlElement("indexType")]
         public string IndexType { get; set; }
 
@@ -49,6 +62,9 @@ namespace Witsml.Data
 
         [XmlElement("endIndex")]
         public WitsmlIndex EndIndex { get; set; }
+
+        [XmlElement("stepIncrement")]
+        public WitsmlRatioGenericMeasure StepIncrement { get; set; }
 
         [XmlElement("startDateTimeIndex")]
         public string StartDateTimeIndex { get; set; }
@@ -62,6 +78,12 @@ namespace Witsml.Data
         [XmlElement("indexCurve")]
         public WitsmlIndexCurve IndexCurve { get; set; }
 
+        [XmlElement("nullValue")]
+        public string NullValue { get; set; }
+
+        [XmlElement("logParam")]
+        public List<WitsmlIndexedObject> LogParam { get; set; }
+
         [XmlElement("logCurveInfo")]
         public List<WitsmlLogCurveInfo> LogCurveInfo { get; set; }
 
@@ -70,5 +92,8 @@ namespace Witsml.Data
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; set; }
     }
 }

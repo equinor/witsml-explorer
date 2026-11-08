@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
@@ -29,6 +30,7 @@ namespace Witsml.Data
             set => Original = !string.IsNullOrEmpty(value) ? bool.Parse(value) : default(bool?);
         }
         [XmlElement("description")] public string Description { get; set; }
+        [XmlElement("extensionNameValue")] public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
         public static WitsmlLocation ToFetch()
         {

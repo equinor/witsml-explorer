@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using Witsml;
 using Witsml.Data;
+using Witsml.Data.Curves;
 using Witsml.Extensions;
 using Witsml.ServiceReference;
 
@@ -17,6 +18,8 @@ using WitsmlExplorer.Api.Models;
 using WitsmlExplorer.Api.Models.Reports;
 using WitsmlExplorer.Api.Repositories;
 using WitsmlExplorer.Api.Services;
+
+using CurveIndex = Witsml.Data.Curves.Index;
 
 namespace WitsmlExplorer.Api.Workers
 {
@@ -35,14 +38,18 @@ namespace WitsmlExplorer.Api.Workers
         private string _sourceServerName;
         private string _targetServerName;
         private const int MaxMismatchesLimit = 500;
+        private int _maxMismatchesLimit = MaxMismatchesLimit;
         private int _sourceDepthLogDecimals;
         private int _targetDepthLogDecimals;
         private int _smallestDepthLogDecimals;
+        private int? _customDecimalPlaces;
         private bool _isEqualNumOfDecimals;
+        private bool _isRawDecimals;
         private bool _isDecreasing;
         private bool _isDepthLog;
         private bool _includeIndexDuplicates;
         private bool _compareAllIndexes;
+        private double? _samplingInterval;
 
         public CompareLogDataWorker(ILogger<CompareLogDataJob> logger, IWitsmlClientProvider witsmlClientProvider, IDocumentRepository<Server, Guid> witsmlServerRepository = null) : base(witsmlClientProvider, logger)
         {
@@ -53,12 +60,33 @@ namespace WitsmlExplorer.Api.Workers
             Uri sourceHostname = GetSourceWitsmlClientOrThrow().GetServerHostname();
             Uri targetHostname = GetTargetWitsmlClientOrThrow().GetServerHostname();
             IEnumerable<Server> servers = _witsmlServerRepository == null ? new List<Server>() : await _witsmlServerRepository.GetDocumentsAsync();
-            _sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
-            _targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
+            _customDecimalPlaces = job.CustomDecimalPlaces;
+            if (job.DecimalMode == DecimalComparisonMode.Raw)
+            {
+                _isRawDecimals = true;
+                _isEqualNumOfDecimals = true;
+                _smallestDepthLogDecimals = 0;
+                _customDecimalPlaces = null;
+            }
+            else if (job.CustomDecimalPlaces.HasValue)
+            {
+                _isRawDecimals = false;
+                _sourceDepthLogDecimals = job.CustomDecimalPlaces.Value;
+                _targetDepthLogDecimals = job.CustomDecimalPlaces.Value;
+                _smallestDepthLogDecimals = job.CustomDecimalPlaces.Value;
+                _isEqualNumOfDecimals = true;
+            }
+            else
+            {
+                _isRawDecimals = false;
+                _sourceDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.DepthLogDecimals ?? 0;
+                _targetDepthLogDecimals = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.DepthLogDecimals ?? 0;
+                _smallestDepthLogDecimals = Math.Min(_sourceDepthLogDecimals, _targetDepthLogDecimals);
+                _isEqualNumOfDecimals = _sourceDepthLogDecimals == _targetDepthLogDecimals;
+            }
+            _maxMismatchesLimit = job.ReportAllMismatches ? int.MaxValue : MaxMismatchesLimit;
             _sourceServerName = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(sourceHostname))?.Name;
             _targetServerName = servers.FirstOrDefault((server) => server.Url.EqualsIgnoreCase(targetHostname))?.Name;
-            _smallestDepthLogDecimals = Math.Min(_sourceDepthLogDecimals, _targetDepthLogDecimals);
-            _isEqualNumOfDecimals = _sourceDepthLogDecimals == _targetDepthLogDecimals;
 
             // Set up log report list
             _compareLogDataReportItems = new();
@@ -74,6 +102,7 @@ namespace WitsmlExplorer.Api.Workers
             WitsmlLog targetLog = await LogWorkerTools.GetLog(GetTargetWitsmlClientOrThrow(), job.TargetLog, ReturnElements.HeaderOnly);
             _includeIndexDuplicates = job.IncludeIndexDuplicates;
             _compareAllIndexes = job.CompareAllIndexes;
+            _samplingInterval = job.SamplingInterval;
 
             try
             {
@@ -92,9 +121,15 @@ namespace WitsmlExplorer.Api.Workers
                 {
                     (sourceLog, targetLog) = SetSharedIndexInterval(sourceLog, targetLog);
                 }
+                ApplyCustomIndexInterval(sourceLog, targetLog, job.StartIndex, job.EndIndex);
 
                 List<string> sourceLogMnemonics = GetLogMnemonics(sourceLog);
                 List<string> targetLogMnemonics = GetLogMnemonics(targetLog);
+                if (job.Mnemonics != null && job.Mnemonics.Any())
+                {
+                    sourceLogMnemonics = sourceLogMnemonics.Where(m => job.Mnemonics.Any(req => string.Equals(req, m, StringComparison.OrdinalIgnoreCase))).ToList();
+                    targetLogMnemonics = targetLogMnemonics.Where(m => job.Mnemonics.Any(req => string.Equals(req, m, StringComparison.OrdinalIgnoreCase))).ToList();
+                }
 
                 // Get all mnemonics in source and target log
                 List<string> allMnemonics = sourceLogMnemonics.Union(targetLogMnemonics).ToList();
@@ -110,12 +145,11 @@ namespace WitsmlExplorer.Api.Workers
                     _mnemonicsMismatchCount[mnemonic] = 0;
                     if (sharedMnemonics.Contains(mnemonic))
                     {
-                        await AddSharedMnemonicData(sourceLog, targetLog, mnemonic);
+                        await AddSharedMnemonicData(job, sourceLog, targetLog, mnemonic, i, allMnemonics.Count);
                     }
                     else if (sourceLogMnemonics.Contains(mnemonic))
                     {
                         _unsharedMnemonics[mnemonic] = sourceLog.Name;
-
                     }
                     else if (targetLogMnemonics.Contains(mnemonic))
                     {
@@ -125,7 +159,7 @@ namespace WitsmlExplorer.Api.Workers
                     {
                         throw new ArgumentException($"mnemonic={mnemonic} does not exist in source log or target log.");
                     }
-                    ReportProgress(job, (double)i / allMnemonics.Count);
+                    ReportProgressWithDetails(job, (double)(i + 1) / allMnemonics.Count, "Curve comparison completed", sourceLog.Name, mnemonic);
                 }
                 BaseReport report = GenerateReport(sourceLog, targetLog);
                 job.JobInfo.Report = report;
@@ -144,14 +178,128 @@ namespace WitsmlExplorer.Api.Workers
 
         private static void ReportProgress(CompareLogDataJob job, double progress)
         {
-            if (job.JobInfo != null) job.JobInfo.Progress = progress;
-            job.ProgressReporter?.Report(progress);
+            ReportProgressWithDetails(job, progress);
         }
 
-        private async Task AddSharedMnemonicData(WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic)
+        private static void ReportProgressWithDetails(CompareLogDataJob job, double progress, string stage = null, string objName = null, string mnemonic = null, string currentIndex = null, string indexRange = null)
         {
-            WitsmlLogData sourceLogData = await LogWorkerTools.GetLogDataForCurve(GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic, Logger);
-            WitsmlLogData targetLogData = await LogWorkerTools.GetLogDataForCurve(GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger);
+            if (job.JobInfo != null) job.JobInfo.Progress = progress;
+            if (job.ProgressUpdateReporter != null)
+            {
+                job.ProgressUpdateReporter.Report(new JobProgressUpdate(progress, stage, objName, mnemonic, currentIndex, indexRange));
+            }
+            else
+            {
+                job.ProgressReporter?.Report(progress);
+            }
+        }
+
+        private static double CalculateIndexProgress(string currentIndexStr, CurveIndex start, CurveIndex end, bool isDecreasing)
+        {
+            if (string.IsNullOrEmpty(currentIndexStr) || start == null || end == null) return 0.0;
+            try
+            {
+                if (double.TryParse(currentIndexStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double current) &&
+                    double.TryParse(start.GetValueAsString(), NumberStyles.Any, CultureInfo.InvariantCulture, out double s) &&
+                    double.TryParse(end.GetValueAsString(), NumberStyles.Any, CultureInfo.InvariantCulture, out double e))
+                {
+                    double span = isDecreasing ? (s - e) : (e - s);
+                    if (Math.Abs(span) < 1e-6) return 1.0;
+                    double progress = isDecreasing ? (s - current) / span : (current - s) / span;
+                    return Math.Clamp(progress, 0.0, 1.0);
+                }
+                if (DateTime.TryParse(currentIndexStr, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime currentDt) &&
+                    DateTime.TryParse(start.GetValueAsString(), CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime sDt) &&
+                    DateTime.TryParse(end.GetValueAsString(), CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime eDt))
+                {
+                    double span = (eDt - sDt).TotalMilliseconds;
+                    if (Math.Abs(span) < 1.0) return 1.0;
+                    double progress = (currentDt - sDt).TotalMilliseconds / span;
+                    return Math.Clamp(progress, 0.0, 1.0);
+                }
+            }
+            catch
+            {
+                // ignored
+            }
+            return 0.0;
+        }
+
+        private (CurveIndex Start, CurveIndex End) GetCurveInterval(WitsmlLog log, string mnemonic, CurveIndex fallbackStart, CurveIndex fallbackEnd)
+        {
+            var curveInfo = log.LogCurveInfo?.FirstOrDefault(c => string.Equals(c.Mnemonic, mnemonic, StringComparison.OrdinalIgnoreCase));
+            if (curveInfo == null) return (fallbackStart, fallbackEnd);
+
+            try
+            {
+                CurveIndex curveMin = CurveIndex.Min(log.IndexType, curveInfo);
+                CurveIndex curveMax = CurveIndex.Max(log.IndexType, curveInfo);
+
+                CurveIndex start = fallbackStart;
+                CurveIndex end = fallbackEnd;
+
+                if (curveMin != null && start != null)
+                {
+                    if (_isDecreasing ? curveMin < start : curveMin > start)
+                    {
+                        start = curveMin;
+                    }
+                }
+
+                if (curveMax != null && end != null)
+                {
+                    if (_isDecreasing ? curveMax > end : curveMax < end)
+                    {
+                        end = curveMax;
+                    }
+                }
+
+                return (start ?? fallbackStart, end ?? fallbackEnd);
+            }
+            catch
+            {
+                return (fallbackStart, fallbackEnd);
+            }
+        }
+
+        private async Task AddSharedMnemonicData(CompareLogDataJob job, WitsmlLog sourceLog, WitsmlLog targetLog, string mnemonic, int mnemonicIndex, int totalMnemonics)
+        {
+            (CurveIndex sourceStartIndex, CurveIndex sourceEndIndex) = GetCurveInterval(sourceLog, mnemonic, CurveIndex.Start(sourceLog), CurveIndex.End(sourceLog));
+            (CurveIndex targetStartIndex, CurveIndex targetEndIndex) = GetCurveInterval(targetLog, mnemonic, CurveIndex.Start(targetLog), CurveIndex.End(targetLog));
+
+            string rangeStr = _isDepthLog
+                ? $"{sourceStartIndex?.GetValueAsString() ?? "start"}m - {sourceEndIndex?.GetValueAsString() ?? "end"}m"
+                : $"{sourceStartIndex?.GetValueAsString() ?? "start"} - {sourceEndIndex?.GetValueAsString() ?? "end"}";
+
+            double baseProgress = (double)mnemonicIndex / totalMnemonics;
+            double curveWeight = 1.0 / totalMnemonics;
+
+            ReportProgressWithDetails(job, baseProgress, $"Querying Source: {_sourceServerName ?? "Server A"}", sourceLog.Name, mnemonic, null, rangeStr);
+
+            WitsmlLogData sourceLogData = await LogWorkerTools.GetLogDataForCurve(
+                GetSourceWitsmlClientOrThrow(), sourceLog, mnemonic, Logger, sourceStartIndex, sourceEndIndex,
+                (batchIdx, count) =>
+                {
+                    double batchFrac = CalculateIndexProgress(batchIdx, sourceStartIndex, sourceEndIndex, _isDecreasing);
+                    double progress = baseProgress + ((0.05 + 0.40 * batchFrac) * curveWeight);
+                    string indexWithCount = count > 0 ? $"{batchIdx} ({count:n0} pts)" : batchIdx;
+                    ReportProgressWithDetails(job, progress, $"Querying Source: {_sourceServerName ?? "Server A"}", sourceLog.Name, mnemonic, indexWithCount, rangeStr);
+                });
+
+            ReportProgressWithDetails(job, baseProgress + (0.45 * curveWeight), $"Querying Target: {_targetServerName ?? "Server B"}", targetLog.Name, mnemonic, null, rangeStr);
+
+            WitsmlLogData targetLogData = await LogWorkerTools.GetLogDataForCurve(
+                GetTargetWitsmlClientOrThrow(), targetLog, mnemonic, Logger, targetStartIndex, targetEndIndex,
+                (batchIdx, count) =>
+                {
+                    double batchFrac = CalculateIndexProgress(batchIdx, targetStartIndex, targetEndIndex, _isDecreasing);
+                    double progress = baseProgress + ((0.45 + 0.45 * batchFrac) * curveWeight);
+                    string indexWithCount = count > 0 ? $"{batchIdx} ({count:n0} pts)" : batchIdx;
+                    ReportProgressWithDetails(job, progress, $"Querying Target: {_targetServerName ?? "Server B"}", targetLog.Name, mnemonic, indexWithCount, rangeStr);
+                });
+
+            ReportProgressWithDetails(job, baseProgress + (0.92 * curveWeight), "Comparing values", sourceLog.Name, mnemonic, null, rangeStr);
+
             Dictionary<string, string> sourceData = WitsmlLogDataToDictionary(sourceLogData);
             Dictionary<string, string> targetData = WitsmlLogDataToDictionary(targetLogData);
 
@@ -167,35 +315,75 @@ namespace WitsmlExplorer.Api.Workers
 
         private void CompareLogData(Dictionary<string, string> sourceData, Dictionary<string, string> targetData, string mnemonic)
         {
-            List<string> indexes = sourceData.Keys.Union(targetData.Keys).ToList();
+            Dictionary<string, string> effectiveSourceData = sourceData;
+            Dictionary<string, string> effectiveTargetData = targetData;
+
+            if (_isDepthLog && !_isRawDecimals && _smallestDepthLogDecimals > 0)
+            {
+                effectiveSourceData = NormalizeDepthData(sourceData);
+                effectiveTargetData = NormalizeDepthData(targetData);
+            }
+
+            List<string> indexes = effectiveSourceData.Keys.Union(effectiveTargetData.Keys).ToList();
             indexes = SortIndexes(indexes);
+            if (_samplingInterval.HasValue && _samplingInterval.Value > 0)
+            {
+                indexes = FilterIndexesBySamplingInterval(indexes, _samplingInterval.Value);
+            }
+
+            int srcPoints = (_samplingInterval.HasValue && _samplingInterval.Value > 0)
+                ? indexes.Count(i => effectiveSourceData.ContainsKey(i))
+                : sourceData.Count;
+            int tgtPoints = (_samplingInterval.HasValue && _samplingInterval.Value > 0)
+                ? indexes.Count(i => effectiveTargetData.ContainsKey(i))
+                : targetData.Count;
+            string srcPointsStr = srcPoints.ToString();
+            string tgtPointsStr = tgtPoints.ToString();
 
             foreach (string index in indexes)
             {
-                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= _maxMismatchesLimit) break;
 
-                if (sourceData.ContainsKey(index) && targetData.ContainsKey(index))
+                if (effectiveSourceData.ContainsKey(index) && effectiveTargetData.ContainsKey(index))
                 {
-                    string sourceValue = sourceData[index];
-                    string targetValue = targetData[index];
+                    string sourceValue = effectiveSourceData[index];
+                    string targetValue = effectiveTargetData[index];
                     if (!IsMnemonicDataEqual(sourceValue, targetValue))
                     {
-                        AddReportItem(mnemonic, index, sourceValue, targetValue);
+                        AddReportItem(mnemonic, index, sourceValue, targetValue, srcPointsStr, tgtPointsStr);
                     }
                 }
-                else if (sourceData.ContainsKey(index))
+                else if (effectiveSourceData.ContainsKey(index))
                 {
-                    AddReportItem(mnemonic, index, sourceData[index], null);
+                    AddReportItem(mnemonic, index, effectiveSourceData[index], null, srcPointsStr, tgtPointsStr);
                 }
-                else if (targetData.ContainsKey(index))
+                else if (effectiveTargetData.ContainsKey(index))
                 {
-                    AddReportItem(mnemonic, index, null, targetData[index]);
+                    AddReportItem(mnemonic, index, null, effectiveTargetData[index], srcPointsStr, tgtPointsStr);
                 }
                 else
                 {
                     throw new ArgumentException($"index={index} does not exist in source log or target log.");
                 }
             }
+        }
+
+        private Dictionary<string, string> NormalizeDepthData(Dictionary<string, string> data)
+        {
+            if (_isRawDecimals || _smallestDepthLogDecimals <= 0)
+            {
+                return data;
+            }
+            Dictionary<string, string> normalized = new();
+            foreach (var kvp in data)
+            {
+                string roundedKey = RoundStringDouble(kvp.Key, _smallestDepthLogDecimals);
+                if (!normalized.ContainsKey(roundedKey))
+                {
+                    normalized[roundedKey] = kvp.Value;
+                }
+            }
+            return normalized;
         }
 
         private void CompareLogDataWithUnequalNumOfDecimals(Dictionary<string, string> sourceData, Dictionary<string, string> targetData, string mnemonic)
@@ -211,13 +399,28 @@ namespace WitsmlExplorer.Api.Workers
 
             List<string> allIndexes = lessDecimalsIndexes.Union(moreDecimalsIndexes).ToList();
             allIndexes = SortIndexes(allIndexes);
+            if (_samplingInterval.HasValue && _samplingInterval.Value > 0)
+            {
+                allIndexes = FilterIndexesBySamplingInterval(allIndexes, _samplingInterval.Value);
+            }
+
+            int lessPoints = (_samplingInterval.HasValue && _samplingInterval.Value > 0)
+                ? allIndexes.Count(i => lessDecimalsIndexes.Contains(i) || lessDecimalsIndexes.Contains(RoundStringDouble(i, _smallestDepthLogDecimals)))
+                : Logs.LessDecimals.Count;
+            int morePoints = (_samplingInterval.HasValue && _samplingInterval.Value > 0)
+                ? allIndexes.Count(i => moreDecimalsIndexes.Contains(i))
+                : Logs.MoreDecimals.Count;
+            int srcPoints = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessPoints : morePoints;
+            int tgtPoints = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessPoints : morePoints;
+            string srcPointsStr = srcPoints.ToString();
+            string tgtPointsStr = tgtPoints.ToString();
 
             List<string> moreDecimalsRoundedIndexes = moreDecimalsIndexes.Select(x => RoundStringDouble(x, _smallestDepthLogDecimals)).ToList();
             List<string> moreDecimalsRoundedIndexesDuplicates = GetIndexDuplicates(moreDecimalsRoundedIndexes);
 
             foreach (string index in allIndexes)
             {
-                if (_mnemonicsMismatchCount[mnemonic] >= MaxMismatchesLimit) break;
+                if (_mnemonicsMismatchCount[mnemonic] >= _maxMismatchesLimit) break;
 
                 string roundedIndex = RoundStringDouble(index, _smallestDepthLogDecimals);
 
@@ -227,29 +430,40 @@ namespace WitsmlExplorer.Api.Workers
                     string moreDecimalsValue = Logs.MoreDecimals[index];
                     if (moreDecimalsRoundedIndexesDuplicates.Contains(roundedIndex))
                     {
-                        AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue, true);
+                        AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue, true, srcPointsStr, tgtPointsStr);
                     }
                     else if (!IsMnemonicDataEqual(lessDecimalsValue, moreDecimalsValue))
                     {
-                        AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue);
+                        AddUnequalServerDecimalsReportItem(mnemonic, roundedIndex, index, lessDecimalsValue, moreDecimalsValue, false, srcPointsStr, tgtPointsStr);
                     }
                 }
                 else if (lessDecimalsIndexes.Contains(index) && !moreDecimalsRoundedIndexes.Contains(index))
                 {
                     string lessDecimalsValue = Logs.LessDecimals[index];
-                    AddUnequalServerDecimalsReportItem(mnemonic, index, null, lessDecimalsValue, null);
+                    AddUnequalServerDecimalsReportItem(mnemonic, index, null, lessDecimalsValue, null, false, srcPointsStr, tgtPointsStr);
                 }
                 else if (moreDecimalsIndexes.Contains(index) && !lessDecimalsIndexes.Contains(index))
                 {
                     string moreDecimalsValue = Logs.MoreDecimals[index];
-                    AddUnequalServerDecimalsReportItem(mnemonic, null, index, null, moreDecimalsValue);
+                    AddUnequalServerDecimalsReportItem(mnemonic, null, index, null, moreDecimalsValue, false, srcPointsStr, tgtPointsStr);
                 }
             }
         }
 
         private bool IsMnemonicDataEqual(string sourceValue, string targetValue)
         {
-            return String.Equals(sourceValue, targetValue);
+            if (string.Equals(sourceValue, targetValue, StringComparison.Ordinal)) return true;
+            if (double.TryParse(sourceValue, NumberStyles.Float, CultureInfo.InvariantCulture, out double sNum) &&
+                double.TryParse(targetValue, NumberStyles.Float, CultureInfo.InvariantCulture, out double tNum))
+            {
+                if (_isRawDecimals || !_customDecimalPlaces.HasValue)
+                {
+                    return sNum == tNum;
+                }
+                int decimals = _customDecimalPlaces.Value;
+                return Math.Round(sNum, decimals, MidpointRounding.AwayFromZero) == Math.Round(tNum, decimals, MidpointRounding.AwayFromZero);
+            }
+            return false;
         }
 
         private BaseReport GenerateReport(WitsmlLog sourceLog, WitsmlLog targetLog)
@@ -308,7 +522,7 @@ namespace WitsmlExplorer.Api.Workers
             return log.LogCurveInfo.Select(logCurveInfo => logCurveInfo.Mnemonic).Skip(1).ToList();
         }
 
-        private void AddReportItem(string mnemonic, string index, string sourceValue, string targetValue)
+        private void AddReportItem(string mnemonic, string index, string sourceValue, string targetValue, string sourceDataPoints = null, string targetDataPoints = null)
         {
             _mnemonicsMismatchCount[mnemonic]++;
             _compareLogDataReportItems.Add(new CompareLogDataItem
@@ -317,12 +531,18 @@ namespace WitsmlExplorer.Api.Workers
                 Index = index,
                 SourceValue = sourceValue,
                 TargetValue = targetValue,
+                Delta = DeepComparison.DeepObjectComparer.CalculateDelta(sourceValue, targetValue, mnemonic),
+                SourceDataPoints = sourceDataPoints,
+                TargetDataPoints = targetDataPoints
             });
         }
 
-        private void AddUnequalServerDecimalsReportItem(string mnemonic, string lessDecimalsIndex, string moreDecimalsIndex, string lessDecimalsValue, string moreDecimalsValue, bool isDuplicate = false)
+        private void AddUnequalServerDecimalsReportItem(string mnemonic, string lessDecimalsIndex, string moreDecimalsIndex, string lessDecimalsValue, string moreDecimalsValue, bool isDuplicate = false, string sourceDataPoints = null, string targetDataPoints = null)
         {
             _mnemonicsMismatchCount[mnemonic]++;
+            string srcVal = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue;
+            string tgtVal = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue;
+            string delta = DeepComparison.DeepObjectComparer.CalculateDelta(srcVal, tgtVal, mnemonic);
             if (_includeIndexDuplicates)
             {
                 _compareLogDataReportItems.Add(new CompareLogDataUnequalServerDecimalsIndexDuplicateItem
@@ -330,9 +550,12 @@ namespace WitsmlExplorer.Api.Workers
                     Mnemonic = mnemonic,
                     SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
                     TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
-                    SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
-                    TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
-                    IndexDuplicate = isDuplicate ? "X" : null
+                    SourceValue = srcVal,
+                    TargetValue = tgtVal,
+                    Delta = delta,
+                    IndexDuplicate = isDuplicate ? "X" : null,
+                    SourceDataPoints = sourceDataPoints,
+                    TargetDataPoints = targetDataPoints
                 });
             }
             else
@@ -342,8 +565,11 @@ namespace WitsmlExplorer.Api.Workers
                     Mnemonic = mnemonic,
                     SourceIndex = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
                     TargetIndex = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsIndex : moreDecimalsIndex,
-                    SourceValue = _sourceDepthLogDecimals < _targetDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
-                    TargetValue = _targetDepthLogDecimals < _sourceDepthLogDecimals ? lessDecimalsValue : moreDecimalsValue,
+                    SourceValue = srcVal,
+                    TargetValue = tgtVal,
+                    Delta = delta,
+                    SourceDataPoints = sourceDataPoints,
+                    TargetDataPoints = targetDataPoints
                 });
             }
         }
@@ -362,7 +588,23 @@ namespace WitsmlExplorer.Api.Workers
 
         private Dictionary<string, string> WitsmlLogDataToDictionary(WitsmlLogData logData)
         {
-            return logData.Data?.ToDictionary(row => row.Data.Split(CommonConstants.DataSeparator).First(), row => row.Data.Split(CommonConstants.DataSeparator).Last());
+            Dictionary<string, string> dict = new();
+            if (logData?.Data != null)
+            {
+                foreach (var row in logData.Data)
+                {
+                    var parts = row.Data?.Split(CommonConstants.DataSeparator);
+                    if (parts != null && parts.Length >= 2)
+                    {
+                        var key = parts[0];
+                        if (!dict.ContainsKey(key))
+                        {
+                            dict[key] = parts[1];
+                        }
+                    }
+                }
+            }
+            return dict;
         }
 
         private void VerifyLogs(WitsmlLog sourceLog, WitsmlLog targetLog)
@@ -375,7 +617,11 @@ namespace WitsmlExplorer.Api.Workers
 
         private string RoundStringDouble(string value, int digits)
         {
-            return Math.Round(StringHelpers.ToDouble(value), digits, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture);
+            if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
+            {
+                return Math.Round(d, digits, MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture);
+            }
+            return value;
         }
 
         private List<string> GetIndexDuplicates(List<string> indexes)
@@ -445,6 +691,130 @@ namespace WitsmlExplorer.Api.Workers
                 targetLog.EndDateTimeIndex = newEndDateTimeIndex?.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
                 return (sourceLog, targetLog);
+            }
+        }
+
+        private List<string> FilterIndexesBySamplingInterval(List<string> sortedIndexes, double interval)
+        {
+            if (interval <= 0 || sortedIndexes.Count <= 1) return sortedIndexes;
+
+            List<string> filtered = new();
+            if (_isDepthLog)
+            {
+                double? lastVal = null;
+                foreach (var idx in sortedIndexes)
+                {
+                    if (double.TryParse(idx, NumberStyles.Float, CultureInfo.InvariantCulture, out double currentVal))
+                    {
+                        if (!lastVal.HasValue || Math.Abs(currentVal - lastVal.Value) >= interval - 1e-6)
+                        {
+                            filtered.Add(idx);
+                            lastVal = currentVal;
+                        }
+                    }
+                    else
+                    {
+                        filtered.Add(idx);
+                    }
+                }
+            }
+            else
+            {
+                DateTime? lastVal = null;
+                foreach (var idx in sortedIndexes)
+                {
+                    if (DateTime.TryParse(idx, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime currentVal))
+                    {
+                        if (!lastVal.HasValue || Math.Abs((currentVal - lastVal.Value).TotalSeconds) >= interval - 1e-3)
+                        {
+                            filtered.Add(idx);
+                            lastVal = currentVal;
+                        }
+                    }
+                    else
+                    {
+                        filtered.Add(idx);
+                    }
+                }
+            }
+            return filtered;
+        }
+
+        private void ApplyCustomIndexInterval(WitsmlLog sourceLog, WitsmlLog targetLog, string startIndexStr, string endIndexStr)
+        {
+            if (string.IsNullOrWhiteSpace(startIndexStr) && string.IsNullOrWhiteSpace(endIndexStr)) return;
+
+            if (_isDepthLog)
+            {
+                if (double.TryParse(startIndexStr, NumberStyles.Float, CultureInfo.InvariantCulture, out double userStart))
+                {
+                    if (sourceLog.StartIndex == null) sourceLog.StartIndex = new WitsmlIndex { Value = userStart.ToString(CultureInfo.InvariantCulture), Uom = CommonConstants.DepthIndex.DefaultUnit };
+                    else
+                    {
+                        double s = StringHelpers.ToDouble(sourceLog.StartIndex.Value);
+                        sourceLog.StartIndex.Value = (_isDecreasing ? Math.Min(s, userStart) : Math.Max(s, userStart)).ToString(CultureInfo.InvariantCulture);
+                    }
+
+                    if (targetLog.StartIndex == null) targetLog.StartIndex = new WitsmlIndex { Value = userStart.ToString(CultureInfo.InvariantCulture), Uom = CommonConstants.DepthIndex.DefaultUnit };
+                    else
+                    {
+                        double t = StringHelpers.ToDouble(targetLog.StartIndex.Value);
+                        targetLog.StartIndex.Value = (_isDecreasing ? Math.Min(t, userStart) : Math.Max(t, userStart)).ToString(CultureInfo.InvariantCulture);
+                    }
+                }
+                if (double.TryParse(endIndexStr, NumberStyles.Float, CultureInfo.InvariantCulture, out double userEnd))
+                {
+                    if (sourceLog.EndIndex == null) sourceLog.EndIndex = new WitsmlIndex { Value = userEnd.ToString(CultureInfo.InvariantCulture), Uom = CommonConstants.DepthIndex.DefaultUnit };
+                    else
+                    {
+                        double s = StringHelpers.ToDouble(sourceLog.EndIndex.Value);
+                        sourceLog.EndIndex.Value = (_isDecreasing ? Math.Max(s, userEnd) : Math.Min(s, userEnd)).ToString(CultureInfo.InvariantCulture);
+                    }
+
+                    if (targetLog.EndIndex == null) targetLog.EndIndex = new WitsmlIndex { Value = userEnd.ToString(CultureInfo.InvariantCulture), Uom = CommonConstants.DepthIndex.DefaultUnit };
+                    else
+                    {
+                        double t = StringHelpers.ToDouble(targetLog.EndIndex.Value);
+                        targetLog.EndIndex.Value = (_isDecreasing ? Math.Max(t, userEnd) : Math.Min(t, userEnd)).ToString(CultureInfo.InvariantCulture);
+                    }
+                }
+            }
+            else
+            {
+                if (DateTime.TryParse(startIndexStr, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime userStartTime))
+                {
+                    var userIso = userStartTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    if (string.IsNullOrEmpty(sourceLog.StartDateTimeIndex)) sourceLog.StartDateTimeIndex = userIso;
+                    else
+                    {
+                        var s = DateTime.Parse(sourceLog.StartDateTimeIndex, CultureInfo.InvariantCulture);
+                        sourceLog.StartDateTimeIndex = (s > userStartTime ? s : userStartTime).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    }
+
+                    if (string.IsNullOrEmpty(targetLog.StartDateTimeIndex)) targetLog.StartDateTimeIndex = userIso;
+                    else
+                    {
+                        var t = DateTime.Parse(targetLog.StartDateTimeIndex, CultureInfo.InvariantCulture);
+                        targetLog.StartDateTimeIndex = (t > userStartTime ? t : userStartTime).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    }
+                }
+                if (DateTime.TryParse(endIndexStr, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime userEndTime))
+                {
+                    var userIso = userEndTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    if (string.IsNullOrEmpty(sourceLog.EndDateTimeIndex)) sourceLog.EndDateTimeIndex = userIso;
+                    else
+                    {
+                        var s = DateTime.Parse(sourceLog.EndDateTimeIndex, CultureInfo.InvariantCulture);
+                        sourceLog.EndDateTimeIndex = (s < userEndTime ? s : userEndTime).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    }
+
+                    if (string.IsNullOrEmpty(targetLog.EndDateTimeIndex)) targetLog.EndDateTimeIndex = userIso;
+                    else
+                    {
+                        var t = DateTime.Parse(targetLog.EndDateTimeIndex, CultureInfo.InvariantCulture);
+                        targetLog.EndDateTimeIndex = (t < userEndTime ? t : userEndTime).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    }
+                }
             }
         }
     }

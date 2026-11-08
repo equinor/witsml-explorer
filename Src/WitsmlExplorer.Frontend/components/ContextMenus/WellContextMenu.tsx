@@ -26,6 +26,9 @@ import {
 import WellBatchUpdateModal, {
   WellBatchUpdateModalProps
 } from "components/Modals/WellBatchUpdateModal";
+import WellPickerModal, {
+  WellPickerProps
+} from "components/Modals/WellPickerModal";
 import { RoleLimitedAccess } from "components/UserRoles.ts";
 import { useConnectedServer } from "contexts/connectedServerContext";
 import {
@@ -224,6 +227,26 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
     });
   };
 
+  const onClickCompareWell = () => {
+    compareWell(well, dispatchOperation);
+  };
+
+  const compareWell = async (
+    well: Well,
+    dispatchOperation: (
+      action: DisplayModalAction | HideModalAction | HideContextMenuAction
+    ) => void
+  ) => {
+    const props: WellPickerProps = {
+      selectedWell: well
+    };
+    dispatchOperation({ type: OperationType.HideContextMenu });
+    dispatchOperation({
+      type: OperationType.DisplayModal,
+      payload: <WellPickerModal {...props} />
+    });
+  };
+
   return (
     <ContextMenu
       menuItems={[
@@ -384,6 +407,15 @@ const WellContextMenu = (props: WellContextMenuProps): React.ReactElement => {
               color={colors.interactive.primaryResting}
             />
             <Typography color={"primary"}>Upload Mnemonics Mappings</Typography>
+          </MenuItem>
+        </RoleLimitedAccess>,
+        <RoleLimitedAccess
+          requiredRole={UserRole.Advanced}
+          key="compareWell"
+        >
+          <MenuItem onClick={onClickCompareWell}>
+            <StyledIcon name="copy" color={colors.interactive.primaryResting} />
+            <Typography color={"primary"}>Compare well</Typography>
           </MenuItem>
         </RoleLimitedAccess>,
         <Divider key={"divider"} />,

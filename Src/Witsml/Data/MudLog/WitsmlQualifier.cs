@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 using Witsml.Data.Measures;
@@ -29,6 +30,9 @@ namespace Witsml.Data.MudLog
 
         [XmlElement("description")]
         public string Description { get; set; }
+
+        [XmlElement("extensionNameValue")]
+        public List<WitsmlExtensionNameValue> ExtensionNameValues { get; set; }
 
     }
 }

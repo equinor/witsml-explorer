@@ -40,11 +40,17 @@ namespace Witsml.Data
         [XmlElement("fileType")]
         public string FileType { get; set; }
 
+        [XmlElement("fileSize")]
+        public Measure FileSize { get; set; }
+
         [XmlElement("content")]
         public string Content { get; set; }
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; set; }
+
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; set; }
 
     }
 }

@@ -42,7 +42,7 @@ namespace WitsmlExplorer.Api.Workers
             return result;
         }
 
-        public static async Task<WitsmlLogData> GetLogDataForCurve(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic, ILogger logger, CurveIndex startIndex = null, CurveIndex endIndex = null)
+        public static async Task<WitsmlLogData> GetLogDataForCurve(IWitsmlClient witsmlClient, WitsmlLog log, string mnemonic, ILogger logger, CurveIndex startIndex = null, CurveIndex endIndex = null, Action<string, int> onBatchProgress = null)
         {
             await using LogDataReader logDataReader = new(witsmlClient, log, mnemonic.AsItemInList(), logger, startIndex ?? CurveIndex.Start(log), endIndex ?? CurveIndex.End(log));
             List<WitsmlData> data = new();
@@ -52,6 +52,11 @@ namespace WitsmlExplorer.Api.Workers
             while (logData != null)
             {
                 data.AddRange(logData.Data);
+                string lastIndex = logData.Data?.LastOrDefault()?.Data?.Split(CommonConstants.DataSeparator)?.FirstOrDefault();
+                if (lastIndex != null)
+                {
+                    onBatchProgress?.Invoke(lastIndex, data.Count);
+                }
                 logData = await logDataReader.GetNextBatch();
             }
 

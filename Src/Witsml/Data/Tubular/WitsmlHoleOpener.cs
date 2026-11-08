@@ -28,5 +28,8 @@ namespace Witsml.Data.Tubular
 
         [XmlElement("customData")]
         public WitsmlCustomData CustomData { get; set; }
+
+        [XmlElement("extensionAny")]
+        public WitsmlCustomData ExtensionAny { get; set; }
     }
 }

@@ -1,0 +1,41 @@
+services:
+  mongodb:
+    image: mongo:4.4.1
+    container_name: witsmlexplorer-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile-api
+    image: witsmlexplorer-api:latest
+    container_name: witsmlexplorer-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - MongoDb__Name=witsml-explorer-db
+      - MongoDb__ConnectionString=mongodb://mongodb:27017
+      - AllowedOrigin=http://localhost:3000
+      - OAuth2Enabled=false
+    depends_on:
+      - mongodb
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontend
+    image: witsmlexplorer-frontend:latest
+    container_name: witsmlexplorer-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  mongo-data:

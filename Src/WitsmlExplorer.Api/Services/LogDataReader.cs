@@ -39,6 +39,8 @@ namespace WitsmlExplorer.Api.Services
         private readonly Task _produceTask;
 
         public string StartIndex => _startIndex.GetValueAsString();
+        private readonly bool _isDecreasing;
+        private bool _hasReachedEnd;
         private bool _finished;
 
         /// <summary>
@@ -73,6 +75,7 @@ namespace WitsmlExplorer.Api.Services
             _uidWellbore = sourceLog.UidWellbore;
             _uidLog = sourceLog.Uid;
             _indexType = sourceLog.IndexType;
+            _isDecreasing = sourceLog?.Direction == WitsmlLog.WITSML_DIRECTION_DECREASING;
             _buffer = new BufferBlock<WitsmlLogData>(new DataflowBlockOptions() { BoundedCapacity = bufferSize });
 
             _startIndex = startIndex;
@@ -122,6 +125,11 @@ namespace WitsmlExplorer.Api.Services
 
         private async Task<WitsmlLogData> FetchNextBatch()
         {
+            if (_hasReachedEnd)
+            {
+                return null;
+            }
+
             WitsmlLogs query = LogQueries.GetLogContent(_uidWell, _uidWellbore, _uidLog, _indexType, _mnemonics, _startIndex, _endIndex);
             WitsmlLogs sourceData = await RequestUtils.WithRetry(async () => await _witsmlClient.GetFromStoreAsync(query, new OptionsIn(ReturnElements.DataOnly)), _logger);
             if (!sourceData.Logs.Any() || sourceData.Logs.First().LogData == null || !sourceData.Logs.First().LogData.Data.Any())
@@ -141,10 +149,21 @@ namespace WitsmlExplorer.Api.Services
             }
 
             string index = sourceLogData.Data.Last().Data.Split(CommonConstants.DataSeparator)[0];
-            _startIndex = _indexType == WitsmlLog.WITSML_INDEX_TYPE_MD
-            ? new DepthIndex(double.Parse(index, CultureInfo.InvariantCulture), ((DepthIndex)_endIndex).Uom)
-            : new DateTimeIndex(DateTime.Parse(index, CultureInfo.InvariantCulture));
+            Index nextIndex = _indexType == WitsmlLog.WITSML_INDEX_TYPE_MD
+                ? new DepthIndex(double.Parse(index, CultureInfo.InvariantCulture), ((DepthIndex)_endIndex).Uom)
+                : new DateTimeIndex(DateTime.Parse(index, CultureInfo.InvariantCulture));
 
+            if (_dropFirstRow)
+            {
+                bool didNotAdvance = _startIndex != null && (_isDecreasing ? nextIndex >= _startIndex : nextIndex <= _startIndex);
+                bool reachedEnd = _endIndex != null && (_isDecreasing ? nextIndex <= _endIndex : nextIndex >= _endIndex);
+                if (didNotAdvance || reachedEnd)
+                {
+                    _hasReachedEnd = true;
+                }
+            }
+
+            _startIndex = nextIndex;
             _dropFirstRow = true;
             return sourceLogData;
         }

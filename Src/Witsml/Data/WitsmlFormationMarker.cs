@@ -65,5 +65,8 @@ namespace Witsml.Data
 
         [XmlElement("commonData")]
         public WitsmlCommonData CommonData { get; init; }
+
+        [XmlElement("customData")]
+        public WitsmlCustomData CustomData { get; init; }
     }
 }
