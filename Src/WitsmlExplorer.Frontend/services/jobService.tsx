@@ -184,6 +184,7 @@ export enum JobType {
   TrimLogObject = "TrimLogObject",
   BatchModifyWell = "BatchModifyWell",
   ImportLogData = "ImportLogData",
+  ImportLasFile = "ImportLasFile",
   ReplaceComponents = "ReplaceComponents",
   ReplaceObjects = "ReplaceObjects",
   AnalyzeGaps = "AnalyzeGaps",

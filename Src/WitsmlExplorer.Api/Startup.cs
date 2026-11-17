@@ -69,6 +69,7 @@ namespace WitsmlExplorer.Api
             services.AddDataProtection();
             services.ConfigureDependencies(Configuration);
             services.AddHostedService<BackgroundWorkerService>();
+            services.AddHostedService<UploadCleanupService>();
             services.AddScoped<ICopyLogDataWorker, CopyLogDataWorker>();
             services.AddEndpointsApiExplorer();
             services.ConfigureSwaggerGen(Configuration);

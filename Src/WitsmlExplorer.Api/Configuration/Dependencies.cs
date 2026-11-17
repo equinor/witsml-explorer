@@ -38,6 +38,7 @@ namespace WitsmlExplorer.Api.Configuration
                 .IgnoreThisInterface<IWitsmlClientProvider>()
                 .IgnoreThisInterface<ICredentialsCache>()
                 .IgnoreThisInterface<IAsyncDisposable>()
+                .IgnoreThisInterface<ILogUploadService>()
                 .AsPublicImplementedInterfaces();
             AddRepository<Server, Guid>(services, configuration);
             AddRepository<LogCurvePriority, string>(services, configuration);
@@ -51,6 +52,7 @@ namespace WitsmlExplorer.Api.Configuration
             services.AddScoped<IWitsmlClientProvider, WitsmlClientProvider>();
             services.AddSingleton<ICredentialsCache, CredentialsCache>();
             services.AddSingleton<IJobProgressService, JobProgressService>();
+            services.AddSingleton<ILogUploadService, LogUploadService>();
             services.AddScoped<IUidMappingService, UidMappingService>();
             services.AddScoped<IMnemonicsMappingService, MnemonicsMappingService>();
         }
