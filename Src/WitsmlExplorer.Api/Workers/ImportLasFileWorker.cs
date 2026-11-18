@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.ServiceModel;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using Witsml;
@@ -28,13 +32,20 @@ namespace WitsmlExplorer.Api.Workers
     public class ImportLasFileWorker : BaseWorker<ImportLasFileJob>, IWorker
     {
         private const int MaxUpdateAttempts = 2;
+        public const long DefaultMaxRequestBytes = 1024 * 1024;
+        // Approximate XML overhead of a single <data></data> element.
+        private const int DataElementOverheadBytes = 16;
         private readonly ILogUploadService _uploadService;
+        private readonly long _maxRequestBytes;
 
         public JobType JobType => JobType.ImportLasFile;
 
-        public ImportLasFileWorker(ILogger<ImportLasFileJob> logger, IWitsmlClientProvider witsmlClientProvider, ILogUploadService uploadService) : base(witsmlClientProvider, logger)
+        public ImportLasFileWorker(ILogger<ImportLasFileJob> logger, IWitsmlClientProvider witsmlClientProvider, ILogUploadService uploadService, IConfiguration configuration) : base(witsmlClientProvider, logger)
         {
             _uploadService = uploadService;
+            _maxRequestBytes = long.TryParse(configuration?["LogUpload:MaxRequestBytes"], out long maxBytes) && maxBytes > 0
+                ? maxBytes
+                : DefaultMaxRequestBytes;
         }
 
         public override async Task<(WorkerResult, RefreshAction)> Execute(ImportLasFileJob job, CancellationToken? cancellationToken = null)
@@ -92,10 +103,13 @@ namespace WitsmlExplorer.Api.Workers
             }
 
             string mnemonicList = string.Join(CommonConstants.DataSeparator, columns.Select(c => c.Mnemonic));
-            string unitList = string.Join(CommonConstants.DataSeparator, columns.Select(c => c.Unit));
+            string unitList = GetUnitList(witsmlLog, columns);
             int batchSize = await GetMaxBatchSize(columns.Count, CommonConstants.WitsmlFunctionType.WMLSUpdateInStore, CommonConstants.WitsmlQueryTypeName.Log);
+            long headerBytes = Encoding.UTF8.GetByteCount(mnemonicList) + Encoding.UTF8.GetByteCount(unitList);
+            BatchLimits limits = new(Math.Max(1, batchSize), Math.Max(1, _maxRequestBytes - headerBytes));
 
-            List<WitsmlData> batch = new(batchSize);
+            List<WitsmlData> batch = new();
+            long batchBytes = 0;
             long importedRows = 0;
             int batchNumber = 0;
             foreach (string[] row in reader.ReadRows())
@@ -109,32 +123,35 @@ namespace WitsmlExplorer.Api.Workers
                 {
                     values[0] = ConvertDateTime(values[0], job.DateTimeFormat);
                 }
-                batch.Add(new WitsmlData { Data = string.Join(CommonConstants.DataSeparator, values) });
-
-                if (batch.Count >= batchSize)
+                string data = string.Join(CommonConstants.DataSeparator, values);
+                long rowBytes = Encoding.UTF8.GetByteCount(data) + DataElementOverheadBytes;
+                if (batch.Count > 0 && (batch.Count >= limits.MaxRows || batchBytes + rowBytes > limits.MaxBytes))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    QueryResult result = await WriteBatch(witsmlLog, batch, mnemonicList, unitList);
+                    (QueryResult result, int written) = await WriteRows(witsmlLog, batch, mnemonicList, unitList, limits);
+                    importedRows += written;
                     if (!result.IsSuccessful)
                     {
                         return BatchFailed(job, witsmlLog, result, importedRows, batchNumber);
                     }
-                    importedRows += batch.Count;
                     batchNumber++;
-                    batch = new List<WitsmlData>(batchSize);
+                    batch = new List<WitsmlData>();
+                    batchBytes = 0;
                     ReportProgress(job, Math.Min(0.99, reader.BytesRead / (double)upload.TotalSize));
                 }
+                batch.Add(new WitsmlData { Data = data });
+                batchBytes += rowBytes;
             }
 
             if (batch.Count > 0)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                QueryResult result = await WriteBatch(witsmlLog, batch, mnemonicList, unitList);
+                (QueryResult result, int written) = await WriteRows(witsmlLog, batch, mnemonicList, unitList, limits);
+                importedRows += written;
                 if (!result.IsSuccessful)
                 {
                     return BatchFailed(job, witsmlLog, result, importedRows, batchNumber);
                 }
-                importedRows += batch.Count;
             }
             ReportProgress(job, 1.0);
 
@@ -142,6 +159,67 @@ namespace WitsmlExplorer.Api.Workers
             RefreshObjects refreshAction = new(hostname, wellUid, wellboreUid, EntityType.Log, logUid);
             WorkerResult workerResult = new(hostname, true, $"Imported {importedRows} rows from {upload.FileName} for mnemonics: {string.Join(", ", columns.Select(c => c.Mnemonic))}, for log: {logUid}");
             return (workerResult, refreshAction);
+        }
+
+        /// <summary>
+        /// Writes the rows, splitting them in halves when the server rejects the request as too large (HTTP 413).
+        /// The limits are lowered so that following batches are sent with a size the server accepts.
+        /// </summary>
+        private async Task<(QueryResult Result, int Written)> WriteRows(WitsmlLog witsmlLog, List<WitsmlData> rows, string mnemonicList, string unitList, BatchLimits limits)
+        {
+            try
+            {
+                QueryResult result = await WriteBatch(witsmlLog, rows, mnemonicList, unitList);
+                return (result, result.IsSuccessful ? rows.Count : 0);
+            }
+            catch (Exception ex) when (IsRequestTooLarge(ex))
+            {
+                if (rows.Count <= 1)
+                {
+                    return (new QueryResult(false, $"A single data row is too large for the WITSML server: {ex.Message}"), 0);
+                }
+                int half = rows.Count / 2;
+                limits.MaxRows = Math.Max(1, Math.Min(limits.MaxRows, half));
+                limits.MaxBytes = Math.Max(1, limits.MaxBytes / 2);
+                Logger.LogWarning("WITSML server rejected {Rows} rows as too large, retrying with smaller requests", rows.Count);
+
+                (QueryResult first, int firstWritten) = await WriteRows(witsmlLog, rows.GetRange(0, half), mnemonicList, unitList, limits);
+                if (!first.IsSuccessful)
+                {
+                    return (first, firstWritten);
+                }
+                (QueryResult second, int secondWritten) = await WriteRows(witsmlLog, rows.GetRange(half, rows.Count - half), mnemonicList, unitList, limits);
+                return (second, firstWritten + secondWritten);
+            }
+        }
+
+        internal static bool IsRequestTooLarge(Exception ex)
+        {
+            for (Exception current = ex; current != null; current = current.InnerException)
+            {
+                if (current is WebException { Response: HttpWebResponse { StatusCode: HttpStatusCode.RequestEntityTooLarge } })
+                {
+                    return true;
+                }
+                if (current is ProtocolException or CommunicationException or WebException
+                    && (current.Message.Contains("(413)", StringComparison.Ordinal) || current.Message.Contains("Request Entity Too Large", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private sealed class BatchLimits
+        {
+            public BatchLimits(int maxRows, long maxBytes)
+            {
+                MaxRows = maxRows;
+                MaxBytes = maxBytes;
+            }
+
+            public int MaxRows { get; set; }
+            public long MaxBytes { get; set; }
         }
 
         private async Task<QueryResult> WriteBatch(WitsmlLog witsmlLog, List<WitsmlData> batch, string mnemonicList, string unitList)
@@ -250,6 +328,23 @@ namespace WitsmlExplorer.Api.Workers
             return columns;
         }
 
+        // Can't updateInStore with an empty unit
+        private static string NormalizeUnit(string unit) => string.IsNullOrWhiteSpace(unit) ? CommonConstants.Unit.Unitless : unit.Trim();
+
+        /// <summary>
+        /// The server requires the unitList to match the units in the log header, so existing curves keep their header unit
+        /// and new curves use the (normalized) unit they were added with.
+        /// </summary>
+        internal static string GetUnitList(WitsmlLog witsmlLog, IList<ImportColumn> columns)
+        {
+            List<WitsmlLogCurveInfo> headerCurves = witsmlLog.LogCurveInfo ?? new List<WitsmlLogCurveInfo>();
+            return string.Join(CommonConstants.DataSeparator, columns.Select(c =>
+            {
+                WitsmlLogCurveInfo existing = headerCurves.FirstOrDefault(l => string.Equals(l.Mnemonic, c.Mnemonic, StringComparison.Ordinal));
+                return existing != null && !string.IsNullOrEmpty(existing.Unit) ? existing.Unit : NormalizeUnit(c.Unit);
+            }));
+        }
+
         internal static string ConvertDateTime(string value, string format)
         {
             DateTimeStyles styles = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal;
@@ -276,7 +371,7 @@ namespace WitsmlExplorer.Api.Workers
                         .Select(c => new WitsmlLogCurveInfo
                         {
                             Mnemonic = c.Mnemonic,
-                            Unit = string.IsNullOrEmpty(c.Unit) ? CommonConstants.Unit.Unitless : c.Unit, // Can't updateInStore with an empty unit
+                            Unit = NormalizeUnit(c.Unit),
                             Uid = c.Mnemonic,
                             TypeLogData = WitsmlLogCurveInfo.LogDataTypeDouble
                         }).ToList()
