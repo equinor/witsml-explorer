@@ -2,6 +2,7 @@ import { useConnectedServer } from "contexts/connectedServerContext";
 import { useSnackbar } from "notistack";
 import { useEffect } from "react";
 import NotificationService from "services/notificationService";
+import styled from "styled-components";
 
 export function Snackbar() {
   const { enqueueSnackbar } = useSnackbar();
@@ -35,13 +36,21 @@ export function Snackbar() {
             connectedServerMatchesNotificationServer;
 
           if (shouldNotify) {
-            enqueueSnackbar(notification.message, {
-              variant: notification.isSuccess
-                ? notification.severity == "warning"
-                  ? "warning"
-                  : "success"
-                : "error"
-            });
+            const variant = notification.isSuccess
+              ? notification.severity == "warning"
+                ? "warning"
+                : "success"
+              : "error";
+            enqueueSnackbar(
+              variant === "success" ? (
+                <SingleLineMessage title={notification.message}>
+                  {notification.message}
+                </SingleLineMessage>
+              ) : (
+                notification.message
+              ),
+              { variant }
+            );
           }
         }
       );
@@ -53,3 +62,12 @@ export function Snackbar() {
 
   return <></>;
 }
+
+const SingleLineMessage = styled.span`
+  display: block;
+  min-width: 0;
+  max-width: min(600px, calc(100vw - 120px));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
