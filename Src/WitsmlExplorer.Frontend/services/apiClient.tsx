@@ -158,6 +158,29 @@ export class ApiClient {
     });
   }
 
+  public static async requestAtServer(
+    path: string,
+    server: Server,
+    options: Pick<RequestInit, "method" | "body" | "signal"> = {}
+  ): Promise<Response> {
+    return this.runHttpRequest(
+      path,
+      {
+        ...options,
+        headers: {
+          ...(await this.getCommonHeaders(server)),
+          ...(options.body instanceof Blob
+            ? { "Content-Type": "application/octet-stream" }
+            : {})
+        },
+        credentials: "include"
+      },
+      server,
+      undefined,
+      false
+    );
+  }
+
   private static fetchWithRerun(
     url: URL,
     requestInit: RequestInit,
@@ -184,7 +207,7 @@ export class ApiClient {
         }
       })
       .catch((error) => {
-        if (error.name === "AbortError") {
+        if (error.name === "AbortError" && rerun) {
           return;
         }
         reject(error);

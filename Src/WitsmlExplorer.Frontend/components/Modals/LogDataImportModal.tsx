@@ -29,22 +29,14 @@ import { useOperationState } from "hooks/useOperationState";
 import { countBy, Dictionary } from "lodash";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
-import ImportLasFileJob from "models/jobs/importLasFileJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
 import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
 import JobService, { JobType } from "services/jobService";
-import UploadService from "services/uploadService";
+import { lasImportQueue } from "services/lasImportQueue";
 import styled, { CSSProperties } from "styled-components";
 import { Colors } from "styles/Colors";
 import {
@@ -110,11 +102,8 @@ const LogDataImportModal = (
   const [duplicityWarning, setDuplicityWarning] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLasFile, setIsLasFile] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(null);
-  const uploadAbortController = useRef<AbortController>(null);
   const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
 
-  useEffect(() => () => uploadAbortController.current?.abort(), []);
   const [contentTableId, setContentTableId] = useState<string>(
     "listOfSelectedMmenomics"
   );
@@ -172,13 +161,24 @@ const LogDataImportModal = (
   );
 
   const onSubmit = async () => {
-    setIsLoading(true);
-
     const logReference: ObjectReference = toObjectReference(targetLog);
     if (isLasFile) {
-      await submitLasFile(logReference);
+      if (!connectedServer) {
+        setError("Connect to a WITSML server before importing LAS files.");
+        return;
+      }
+      lasImportQueue.enqueue(uploadedFile, connectedServer, {
+        targetLog: logReference,
+        mnemonics: uploadedFileColumns.map((col) => col.name),
+        dateTimeFormat:
+          targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
+            ? dateTimeFormat
+            : null
+      });
+      dispatchOperation({ type: OperationType.HideModal });
       return;
     }
+    setIsLoading(true);
     const job: ImportLogDataJob = {
       targetLog: logReference,
       mnemonics: uploadedFileColumns.map((col) => col.name),
@@ -192,41 +192,6 @@ const LogDataImportModal = (
     await JobService.orderJob(JobType.ImportLogData, job);
     setIsLoading(false);
     dispatchOperation({ type: OperationType.HideModal });
-  };
-
-  // Large LAS files are uploaded in chunks and imported by a background job on the server,
-  // instead of sending all data rows in the job request.
-  const submitLasFile = async (logReference: ObjectReference) => {
-    const abortController = new AbortController();
-    uploadAbortController.current = abortController;
-    setError("");
-    setUploadProgress(0);
-    try {
-      const uploadId = await UploadService.uploadFile(
-        uploadedFile,
-        setUploadProgress,
-        abortController.signal
-      );
-      const job: ImportLasFileJob = {
-        targetLog: logReference,
-        uploadId,
-        mnemonics: uploadedFileColumns.map((col) => col.name),
-        dateTimeFormat:
-          targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
-            ? dateTimeFormat
-            : null
-      };
-      await JobService.orderJob(JobType.ImportLasFile, job);
-      dispatchOperation({ type: OperationType.HideModal });
-    } catch (e) {
-      if (e?.name !== "AbortError") {
-        setError(`Failed to upload the file. ${e?.message ?? ""}`);
-      }
-    } finally {
-      uploadAbortController.current = null;
-      setUploadProgress(null);
-      setIsLoading(false);
-    }
   };
 
   const handleFileChange = useCallback(
@@ -547,18 +512,13 @@ const LogDataImportModal = (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
               {duplicityWarning && <WarningBar message={duplicityWarning} />}
-              {uploadProgress !== null && (
-                <Typography>
-                  {`Uploading file: ${Math.round(uploadProgress * 100)}%`}
-                </Typography>
-              )}
             </Container>
           }
           width={ModalWidth.LARGE}
           height="800px"
           minHeight="650px"
           confirmDisabled={!uploadedFile || !!error || isFetchingLogCurveInfo}
-          confirmText={"Import"}
+          confirmText={isLasFile ? "Add to import queue" : "Import"}
           onSubmit={() => onSubmit()}
           isLoading={isLoading}
           errorMessage={error}

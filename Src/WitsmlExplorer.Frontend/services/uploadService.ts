@@ -1,3 +1,4 @@
+import { Server } from "models/server";
 import { ApiClient } from "services/apiClient";
 
 export const UPLOAD_CHUNK_SIZE = 8 * 1024 * 1024;
@@ -18,40 +19,47 @@ export default class UploadService {
    */
   public static async uploadFile(
     file: File,
-    onProgress?: (fraction: number) => void,
+    server: Server,
+    onProgress?: (receivedBytes: number) => void,
     abortSignal: AbortSignal | null = null,
     chunkSize: number = UPLOAD_CHUNK_SIZE
   ): Promise<string> {
-    const upload = await this.createUpload(file, abortSignal);
+    // Let creation return its ID so an immediate cancellation can still clean up.
+    const upload = await this.createUpload(file, server);
     try {
       let offset = upload.receivedBytes;
-      onProgress?.(file.size === 0 ? 1 : offset / file.size);
+      abortSignal?.throwIfAborted();
+      onProgress?.(offset);
       while (offset < file.size) {
         const end = Math.min(offset + chunkSize, file.size);
         offset = await this.sendChunk(
           upload.uploadId,
           file.slice(offset, end),
           offset,
+          server,
           abortSignal
         );
-        onProgress?.(offset / file.size);
+        onProgress?.(offset);
       }
+      abortSignal?.throwIfAborted();
       return upload.uploadId;
     } catch (error) {
-      await this.deleteUpload(upload.uploadId).catch(() => undefined);
+      await this.deleteUpload(upload.uploadId, server).catch((cleanupError) => {
+        console.warn("Could not remove temporary LAS upload", cleanupError);
+      });
       throw error;
     }
   }
 
   public static async createUpload(
     file: File,
-    abortSignal: AbortSignal | null = null
+    server: Server
   ): Promise<UploadInfo> {
-    const response = await ApiClient.post(
-      "/api/uploads",
-      JSON.stringify({ fileName: file.name, totalSize: file.size }),
-      abortSignal
-    );
+    const response = await ApiClient.requestAtServer("/api/uploads", server, {
+      method: "POST",
+      body: JSON.stringify({ fileName: file.name, totalSize: file.size }),
+      signal: AbortSignal.timeout(30_000)
+    });
     if (!response.ok) {
       throw new Error(await this.getErrorMessage(response));
     }
@@ -60,11 +68,13 @@ export default class UploadService {
 
   public static async getUpload(
     uploadId: string,
+    server: Server,
     abortSignal: AbortSignal | null = null
   ): Promise<UploadInfo> {
-    const response = await ApiClient.get(
+    const response = await ApiClient.requestAtServer(
       `/api/uploads/${uploadId}`,
-      abortSignal
+      server,
+      { signal: abortSignal }
     );
     if (!response.ok) {
       throw new Error(await this.getErrorMessage(response));
@@ -72,8 +82,18 @@ export default class UploadService {
     return response.json();
   }
 
-  public static async deleteUpload(uploadId: string): Promise<void> {
-    await ApiClient.delete(`/api/uploads/${uploadId}`);
+  public static async deleteUpload(
+    uploadId: string,
+    server: Server
+  ): Promise<void> {
+    const response = await ApiClient.requestAtServer(
+      `/api/uploads/${uploadId}`,
+      server,
+      { method: "DELETE", signal: AbortSignal.timeout(10_000) }
+    );
+    if (!response.ok && response.status !== 404) {
+      throw new Error(await this.getErrorMessage(response));
+    }
   }
 
   /**
@@ -85,23 +105,26 @@ export default class UploadService {
     uploadId: string,
     chunk: Blob,
     offset: number,
+    server: Server,
     abortSignal: AbortSignal | null
   ): Promise<number> {
     let lastError: Error = null;
     for (let attempt = 1; attempt <= MAX_CHUNK_ATTEMPTS; attempt++) {
       try {
-        const response = await ApiClient.postBinary(
+        abortSignal?.throwIfAborted();
+        const response = await ApiClient.requestAtServer(
           `/api/uploads/${uploadId}/chunks?offset=${offset}`,
-          chunk,
-          abortSignal
+          server,
+          { method: "POST", body: chunk, signal: abortSignal }
         );
         if (response.ok) {
           const info: UploadInfo = await response.json();
           return info.receivedBytes;
         }
         if (response.status === 409) {
-          const info = await this.getUpload(uploadId, abortSignal);
-          return info.receivedBytes;
+          const info = await this.getUpload(uploadId, server, abortSignal);
+          if (info.receivedBytes > offset) return info.receivedBytes;
+          throw new Error(`Unexpected upload offset: ${info.receivedBytes}.`);
         }
         lastError = new Error(await this.getErrorMessage(response));
         if (response.status < 500) {
