@@ -186,7 +186,7 @@ namespace WitsmlExplorer.Api.Services
                 return (line.Trim(), string.Empty, string.Empty);
             }
             string mnemonic = line[..dotIndex].Trim();
-            int colonIndex = line.LastIndexOf(':');
+            int colonIndex = line.IndexOf(':', dotIndex + 1);
             string rest = colonIndex > dotIndex ? line[(dotIndex + 1)..colonIndex] : line[(dotIndex + 1)..];
             int unitEnd = 0;
             while (unitEnd < rest.Length && !char.IsWhiteSpace(rest[unitEnd]))
