@@ -58,7 +58,7 @@ namespace WitsmlExplorer.Api.Tests.Workers
             ILoggerFactory loggerFactory = new LoggerFactory();
             loggerFactory.AddSerilog(Log.Logger);
             _uploadService = new Mock<ILogUploadService>();
-            _worker = new ImportLasFileWorker(loggerFactory.CreateLogger<ImportLasFileJob>(), witsmlClientProvider.Object, _uploadService.Object);
+            _worker = new ImportLasFileWorker(loggerFactory.CreateLogger<ImportLasFileJob>(), witsmlClientProvider.Object, _uploadService.Object, configuration: null);
         }
 
         [Fact]
