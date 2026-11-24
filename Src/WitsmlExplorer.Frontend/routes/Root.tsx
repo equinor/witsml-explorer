@@ -4,6 +4,7 @@ import ContextMenuPresenter from "components/ContextMenus/ContextMenuPresenter";
 import { DesktopAppEventHandler } from "components/DesktopAppEventHandler";
 import { GlobalStylesWrapper } from "components/GlobalStyles";
 import { HotKeyHandler } from "components/HotKeyHandler";
+import LasImportQueuePanel from "components/LasImportQueuePanel";
 import ModalPresenter from "components/Modals/ModalPresenter";
 import PageLayout from "components/PageLayout";
 import RefreshHandler from "components/RefreshHandler";
@@ -53,6 +54,7 @@ export default function Root() {
                         <UserGroupWarningHandler />
                         <ContextMenuPresenter />
                         <ModalPresenter />
+                        <LasImportQueuePanel />
                       </QueryContextProvider>
                     </FilterContextProvider>
                   </SidebarProvider>

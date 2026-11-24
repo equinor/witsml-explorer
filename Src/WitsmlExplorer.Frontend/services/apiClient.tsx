@@ -76,6 +76,29 @@ export class ApiClient {
     );
   }
 
+  public static async postBinary(
+    pathName: string,
+    body: Blob,
+    abortSignal: AbortSignal | null = null,
+    targetServer = AuthorizationService.selectedServer
+  ): Promise<Response> {
+    const headers = {
+      ...((await ApiClient.getCommonHeaders(targetServer)) as Record<
+        string,
+        string
+      >),
+      "Content-Type": "application/octet-stream"
+    };
+    const requestInit: RequestInit = {
+      signal: abortSignal,
+      method: "POST",
+      body: body,
+      headers: headers,
+      credentials: "include"
+    };
+    return ApiClient.runHttpRequest(pathName, requestInit, targetServer);
+  }
+
   public static async patch(
     pathName: string,
     body: string,
@@ -135,6 +158,29 @@ export class ApiClient {
     });
   }
 
+  public static async requestAtServer(
+    path: string,
+    server: Server,
+    options: Pick<RequestInit, "method" | "body" | "signal"> = {}
+  ): Promise<Response> {
+    return this.runHttpRequest(
+      path,
+      {
+        ...options,
+        headers: {
+          ...(await this.getCommonHeaders(server)),
+          ...(options.body instanceof Blob
+            ? { "Content-Type": "application/octet-stream" }
+            : {})
+        },
+        credentials: "include"
+      },
+      server,
+      undefined,
+      false
+    );
+  }
+
   private static fetchWithRerun(
     url: URL,
     requestInit: RequestInit,
@@ -161,7 +207,7 @@ export class ApiClient {
         }
       })
       .catch((error) => {
-        if (error.name === "AbortError") {
+        if (error.name === "AbortError" && rerun) {
           return;
         }
         reject(error);

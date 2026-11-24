@@ -127,6 +127,11 @@ namespace WitsmlExplorer.Api
             app.MapGet("/jobs/report/{jobId}", JobHandler.GetReport, useOAuth2);
             app.MapGet("/jobs/download/{jobId}", JobHandler.DownloadFile, useOAuth2);
 
+            app.MapPost("/uploads", UploadHandler.CreateUpload, useOAuth2);
+            app.MapPost("/uploads/{uploadId}/chunks", UploadHandler.AppendChunk, useOAuth2);
+            app.MapGet("/uploads/{uploadId}", UploadHandler.GetUpload, useOAuth2);
+            app.MapDelete("/uploads/{uploadId}", UploadHandler.DeleteUpload, useOAuth2);
+
             app.MapGet("/credentials/authorize", AuthorizeHandler.Authorize, useOAuth2);
             app.MapGet("/credentials/deauthorize", AuthorizeHandler.Deauthorize, useOAuth2);
             app.MapPost("/credentials/verifyuserisloggedin", AuthorizeHandler.VerifyUserIsLoggedIn, useOAuth2);
