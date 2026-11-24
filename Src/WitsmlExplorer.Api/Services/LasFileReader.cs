@@ -103,16 +103,21 @@ namespace WitsmlExplorer.Api.Services
                 foreach (string token in Tokenize(trimmed))
                 {
                     buffer.Add(IsNull(token) ? string.Empty : token);
-                    if (buffer.Count == curveCount)
+                    if (Wrapped && buffer.Count == curveCount)
                     {
                         yield return buffer.ToArray();
                         buffer.Clear();
                     }
                 }
 
-                if (!Wrapped && buffer.Count > 0)
+                if (!Wrapped)
                 {
-                    throw new InvalidDataException($"Data row has {buffer.Count} values, expected {curveCount}: '{Truncate(trimmed)}'.");
+                    if (buffer.Count != curveCount)
+                    {
+                        throw new InvalidDataException($"Data row has {buffer.Count} values, expected {curveCount}: '{Truncate(trimmed)}'.");
+                    }
+                    yield return buffer.ToArray();
+                    buffer.Clear();
                 }
             }
 
