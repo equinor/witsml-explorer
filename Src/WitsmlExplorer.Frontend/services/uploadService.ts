@@ -1,7 +1,7 @@
 import { Server } from "models/server";
 import { ApiClient } from "services/apiClient";
 
-export const UPLOAD_CHUNK_SIZE = 8 * 1024 * 1024;
+export const UPLOAD_CHUNK_SIZE = 512 * 1024;
 const MAX_CHUNK_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1000;
 
