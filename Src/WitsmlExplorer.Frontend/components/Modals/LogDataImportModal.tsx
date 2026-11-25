@@ -29,13 +29,22 @@ import { useOperationState } from "hooks/useOperationState";
 import { countBy, Dictionary } from "lodash";
 import { ComponentType } from "models/componentType";
 import { IndexRange } from "models/jobs/deleteLogCurveValuesJob";
+import ImportLasFileJob from "models/jobs/importLasFileJob";
 import ImportLogDataJob from "models/jobs/importLogDataJob";
 import ObjectReference from "models/jobs/objectReference";
 import LogCurveInfo from "models/logCurveInfo";
 import LogObject from "models/logObject";
 import { toObjectReference } from "models/objectOnWellbore";
-import React, { ChangeEvent, useCallback, useMemo, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import JobService, { JobType } from "services/jobService";
+import UploadService from "services/uploadService";
 import styled, { CSSProperties } from "styled-components";
 import { Colors } from "styles/Colors";
 import {
@@ -64,6 +73,12 @@ const IMPORT_FORMAT_INVALID =
 const MISSING_INDEX_CURVE =
   "The target index curve needs to be present in the file";
 const UNITLESS_UNIT = "unitless";
+// LAS files can be very large, so only the beginning of the file is read in the browser
+// (curve header and preview). The full file is uploaded in chunks and parsed on the server.
+const LAS_PREVIEW_BYTES = 2 * 1024 * 1024;
+const LAS_SECTIONS_NOT_FOUND = `Unable to find the ~CURVE INFORMATION and ~ASCII sections within the first ${
+  LAS_PREVIEW_BYTES / 1024 / 1024
+} MB of the file.`;
 
 const LogDataImportModal = (
   props: LogDataImportModalProps
@@ -94,7 +109,12 @@ const LogDataImportModal = (
   const [error, setError] = useState<string>("");
   const [duplicityWarning, setDuplicityWarning] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLasFile, setIsLasFile] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(null);
+  const uploadAbortController = useRef<AbortController>(null);
   const [dateTimeFormat, setDateTimeFormat] = useState<string>(null);
+
+  useEffect(() => () => uploadAbortController.current?.abort(), []);
   const [contentTableId, setContentTableId] = useState<string>(
     "listOfSelectedMmenomics"
   );
@@ -155,6 +175,10 @@ const LogDataImportModal = (
     setIsLoading(true);
 
     const logReference: ObjectReference = toObjectReference(targetLog);
+    if (isLasFile) {
+      await submitLasFile(logReference);
+      return;
+    }
     const job: ImportLogDataJob = {
       targetLog: logReference,
       mnemonics: uploadedFileColumns.map((col) => col.name),
@@ -170,18 +194,57 @@ const LogDataImportModal = (
     dispatchOperation({ type: OperationType.HideModal });
   };
 
+  // Large LAS files are uploaded in chunks and imported by a background job on the server,
+  // instead of sending all data rows in the job request.
+  const submitLasFile = async (logReference: ObjectReference) => {
+    const abortController = new AbortController();
+    uploadAbortController.current = abortController;
+    setError("");
+    setUploadProgress(0);
+    try {
+      const uploadId = await UploadService.uploadFile(
+        uploadedFile,
+        setUploadProgress,
+        abortController.signal
+      );
+      const job: ImportLasFileJob = {
+        targetLog: logReference,
+        uploadId,
+        mnemonics: uploadedFileColumns.map((col) => col.name),
+        dateTimeFormat:
+          targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME
+            ? dateTimeFormat
+            : null
+      };
+      await JobService.orderJob(JobType.ImportLasFile, job);
+      dispatchOperation({ type: OperationType.HideModal });
+    } catch (e) {
+      if (e?.name !== "AbortError") {
+        setError(`Failed to upload the file. ${e?.message ?? ""}`);
+      }
+    } finally {
+      uploadAbortController.current = null;
+      setUploadProgress(null);
+      setIsLoading(false);
+    }
+  };
+
   const handleFileChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
       const file = e.target.files.item(0);
       if (!file) return;
-      const text = await file.text();
+      const isLas =
+        file.name.toLowerCase().endsWith(".las") ||
+        (await file.slice(0, 2).text()) === "~V";
+      const text = isLas ? await readLasPreview(file) : await file.text();
 
       let header: ImportColumn[] = null;
       let data: string[] = null;
       setDuplicityWarning("");
+      setError("");
+      setIsLasFile(isLas);
 
-      if (text.startsWith("~V")) {
-        // LAS files should start with ~V.
+      if (isLas) {
         const curveSection = extractLASSection(
           text,
           "CURVE INFORMATION",
@@ -189,6 +252,9 @@ const LogDataImportModal = (
         );
         const dataSection = extractLASSection(text, "ASCII", "A");
         header = parseLASHeader(curveSection);
+        if (!header.length || !/\n~A/i.test(text)) {
+          setError(LAS_SECTIONS_NOT_FOUND);
+        }
         const groupedByNum = countBy(header, "name");
         createWarningOfDuplicities(groupedByNum);
         header = countOccurrences(header, "name");
@@ -197,10 +263,13 @@ const LogDataImportModal = (
         const indexCurveColumn = header.find(
           (x) => x.name.toLowerCase() === targetLog.indexCurve.toLowerCase()
         )?.index;
-        header[indexCurveColumn].name = targetLog.indexCurve;
+        if (indexCurveColumn !== undefined) {
+          header[indexCurveColumn].name = targetLog.indexCurve;
+        }
         if (
           targetLog.indexType === WITSML_INDEX_TYPE_DATE_TIME &&
-          indexCurveColumn !== null
+          indexCurveColumn !== undefined &&
+          data.length
         ) {
           // las file time
           const dateTimeFormat = findDateTimeFormat(data, indexCurveColumn);
@@ -432,6 +501,13 @@ const LogDataImportModal = (
                           </List.Item>
                         </List>
                       </List.Item>
+                      <List.Item>
+                        Las files are uploaded in chunks and imported by a
+                        background job on the server, so large files are
+                        supported. The preview and the overlap check only cover
+                        the first {LAS_PREVIEW_BYTES / 1024 / 1024} MB of a las
+                        file.
+                      </List.Item>
                     </List>
                   </Accordion.Panel>
                 </Accordion.Item>
@@ -471,6 +547,11 @@ const LogDataImportModal = (
                 <WarningBar message="The import data overlaps existing data. Any overlap will be overwritten!" />
               )}
               {duplicityWarning && <WarningBar message={duplicityWarning} />}
+              {uploadProgress !== null && (
+                <Typography>
+                  {`Uploading file: ${Math.round(uploadProgress * 100)}%`}
+                </Typography>
+              )}
             </Container>
           }
           width={ModalWidth.LARGE}
@@ -676,6 +757,15 @@ function removeColumn(arr: any[][], colIndex: number): any[][] {
 function swapArrayElements<T>(arr: T[], i: number, j: number): void {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 }
+
+// Only the start of a LAS file is read in the browser to build the preview.
+// The complete file is uploaded and parsed on the server.
+const readLasPreview = async (file: File): Promise<string> => {
+  const text = await file.slice(0, LAS_PREVIEW_BYTES).text();
+  if (file.size <= LAS_PREVIEW_BYTES) return text;
+  const lastNewLine = text.lastIndexOf("\n");
+  return lastNewLine === -1 ? text : text.slice(0, lastNewLine + 1);
+};
 
 const inputDateFormats: string[] = [
   "YYYY-MM-DDTHH:mm:ss.sssZ", // ISO 8601 format
